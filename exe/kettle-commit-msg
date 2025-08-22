@@ -47,16 +47,46 @@ else
 end
 
 class GitCommitFooter
-  GIT_HOOKS_DIR = File.join(ENV["HOME"], ".git-hooks")
-  GIT_HOOKS_FILE = ->(filename) { File.join(GIT_HOOKS_DIR, filename) }
+  # Prefer project-local .git-hooks (repo root), then fallback to global ~/.git-hooks
   NAME_ASSIGNMENT_REGEX = /\bname\s*=\s*(["'])([^"']+)\1/.freeze
   FOOTER_APPEND = ENV.fetch("GIT_HOOK_FOOTER_APPEND", "false").casecmp("true").zero?
   SENTINEL = ENV["GIT_HOOK_FOOTER_SENTINEL"] # No default to avoid accidental duplicate commit of a footer via ammended commits
   raise "Set GIT_HOOK_FOOTER_SENTINEL=<footer sentinel> in .env.local (e.g., '⚡️ A message from a fellow meat-based-AI ⚡️')" if FOOTER_APPEND && SENTINEL.nil? || SENTINEL.empty?
 
   class << self
+    def git_toplevel
+      toplevel = nil
+      begin
+        # 'git rev-parse --show-toplevel' returns the repo root when run anywhere inside the repo
+        out = %x(git rev-parse --show-toplevel 2>/dev/null)
+        toplevel = out.strip unless out.nil? || out.empty?
+      rescue StandardError
+        # ignore
+      end
+      toplevel
+    end
+
+    def local_hooks_dir
+      top = git_toplevel
+      return unless top && !top.empty?
+      File.join(top, ".git-hooks")
+    end
+
+    def global_hooks_dir
+      File.join(ENV["HOME"], ".git-hooks")
+    end
+
+    def hooks_path_for(filename)
+      local_dir = local_hooks_dir
+      if local_dir
+        local_path = File.join(local_dir, filename)
+        return local_path if File.file?(local_path)
+      end
+      File.join(global_hooks_dir, filename)
+    end
+
     def commit_goalie_path
-      File.join(GIT_HOOKS_FILE.call("commit-subjects-goalie.txt"))
+      hooks_path_for("commit-subjects-goalie.txt")
     end
 
     # Determine whether the commit subject allows footer append, based on optional goalie file
@@ -148,7 +178,7 @@ class GitCommitFooter
   #   export GIT_HOOK_FOOTER_SENTINEL="⚡️ A message from a fellow meat-based-AI ⚡️"
   #
   def template
-    File.read(GIT_HOOKS_FILE.call("footer-template.erb.txt"))
+    File.read(self.class.hooks_path_for("footer-template.erb.txt"))
   end
 end
 

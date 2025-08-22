@@ -1,0 +1,299 @@
+namespace :kettle do
+  namespace :dev do
+    # New template task split from kettle:dev:install
+    # Copies and replaces files pulled from this gem checkout into the host project.
+    # This task can be run independently of `kettle:dev:install`.
+    desc "Template kettle-dev files into the current project"
+    task :template do
+      require "fileutils"
+      require "kettle/dev/template_helpers"
+
+      helpers = Kettle::Dev::TemplateHelpers
+
+      project_root = helpers.project_root
+      gem_checkout_root = helpers.gem_checkout_root
+
+      # Ensure git working tree is clean before making changes (when run standalone)
+      helpers.ensure_clean_git!(root: project_root, task_label: "kettle:dev:template")
+
+      meta = helpers.gemspec_metadata(project_root)
+      gem_name = meta[:gem_name]
+      min_ruby = meta[:min_ruby]
+      gh_org = meta[:gh_org]
+      entrypoint_require = meta[:entrypoint_require]
+      namespace = meta[:namespace]
+      namespace_shield = meta[:namespace_shield]
+      gem_shield = meta[:gem_shield]
+
+      # 1) .devcontainer directory
+      helpers.copy_dir_with_prompt(File.join(gem_checkout_root, ".devcontainer"), File.join(project_root, ".devcontainer"))
+
+      # 2) .github/**/*.yml with FUNDING.yml customizations
+      source_github_dir = File.join(gem_checkout_root, ".github")
+      if Dir.exist?(source_github_dir)
+        Dir.glob(File.join(source_github_dir, "**", "*.yml")).each do |src|
+          rel = src.sub(/^#{Regexp.escape(gem_checkout_root)}\/?/, "")
+          dest = File.join(project_root, rel)
+          if File.basename(src) == "FUNDING.yml"
+            helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true) do |content|
+              c = content.dup
+              c = c.gsub(/^open_collective:\s+.*$/i) { |line| gh_org ? "open_collective: #{gh_org}" : line }
+              if gem_name && !gem_name.empty?
+                c = c.gsub(/^tidelift:\s+.*$/i, "tidelift: rubygems/#{gem_name}")
+              end
+              c
+            end
+          else
+            helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true)
+          end
+        end
+      end
+
+      # 3) .qlty/qlty.toml
+      helpers.copy_file_with_prompt(File.join(gem_checkout_root, ".qlty/qlty.toml"), File.join(project_root, ".qlty/qlty.toml"), allow_create: true, allow_replace: true)
+
+      # 4) gemfile/modular/*.gemfile (from gem's gemfiles/modular)
+      [%w[coverage.gemfile], %w[documentation.gemfile], %w[style.gemfile]].each do |base|
+        src = File.join(gem_checkout_root, "gemfiles/modular", base[0])
+        dest = File.join(project_root, "gemfile/modular", base[0])
+        if File.basename(src) == "style.gemfile"
+          helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true) do |content|
+            # Adjust rubocop-lts constraint based on min_ruby
+            version_map = [
+              [Gem::Version.new("1.8"), "~> 0.0"],
+              [Gem::Version.new("1.9"), "~> 2.0"],
+              [Gem::Version.new("2.0"), "~> 4.0"],
+              [Gem::Version.new("2.1"), "~> 6.0"],
+              [Gem::Version.new("2.2"), "~> 8.0"],
+              [Gem::Version.new("2.3"), "~> 10.0"],
+              [Gem::Version.new("2.4"), "~> 12.0"],
+              [Gem::Version.new("2.5"), "~> 14.0"],
+              [Gem::Version.new("2.6"), "~> 16.0"],
+              [Gem::Version.new("2.7"), "~> 18.0"],
+              [Gem::Version.new("3.0"), "~> 20.0"],
+              [Gem::Version.new("3.1"), "~> 22.0"],
+              [Gem::Version.new("3.2"), "~> 24.0"],
+              [Gem::Version.new("3.3"), "~> 26.0"],
+              [Gem::Version.new("3.4"), "~> 28.0"],
+            ]
+            new_constraint = nil
+            begin
+              if min_ruby && !min_ruby.empty?
+                v = Gem::Version.new(min_ruby.split(".")[0, 2].join("."))
+                version_map.reverse_each do |min, req|
+                  if v >= min
+                    new_constraint = req
+                    break
+                  end
+                end
+              end
+            rescue StandardError
+              # leave nil
+            end
+            if new_constraint
+              content.gsub(/^gem\s+"rubocop-lts",\s*"[^"]+".*$/) do |line|
+                # Preserve any ", ">= X" tail if present after first constraint
+                tail = line[/,(.*)\z/, 1]
+                %(gem "rubocop-lts", "#{new_constraint}"#{tail ? ",#{tail}" : ""})
+              end
+            else
+              content
+            end
+          end
+        else
+          helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true)
+        end
+      end
+
+      # 5) spec/spec_helper.rb (no create)
+      dest_spec_helper = File.join(project_root, "spec/spec_helper.rb")
+      if File.file?(dest_spec_helper)
+        old = File.read(dest_spec_helper)
+        if old.include?('require "kettle/dev"') || old.include?("require 'kettle/dev'")
+          replacement = %(require "#{entrypoint_require}")
+          new_content = old.gsub(/require\s+["']kettle\/dev["']/, replacement)
+          if new_content != old
+            if helpers.ask("Replace require \"kettle/dev\" in spec/spec_helper.rb with #{replacement}?", true)
+              helpers.write_file(dest_spec_helper, new_content)
+              puts "Updated require in spec/spec_helper.rb"
+            else
+              puts "Skipped modifying spec/spec_helper.rb"
+            end
+          end
+        end
+      end
+
+      # 6) Root and other files
+      files_to_copy = %w[
+        .env.local.example
+        .envrc
+        .gitignore
+        .gitlab-ci.yml
+        .rspec
+        .rubocop.yml
+        .simplecov
+        .tool-versions
+        .yard_gfm_support.rb
+        .yardopts
+        Appraisal.root.gemfile
+        Appraisals
+        CHANGELOG.md
+        CITATION.cff
+        CODE_OF_CONDUCT.md
+        CONTRIBUTING.md
+        Gemfile
+        Rakefile
+        README.md
+        RUBOCOP.md
+        SECURITY.md
+        .junie/guidelines.md
+      ]
+
+      files_to_copy.each do |rel|
+        src = File.join(gem_checkout_root, rel)
+        dest = File.join(project_root, rel)
+        next unless File.exist?(src)
+        if File.basename(rel) == "README.md"
+          helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true) do |content|
+            # 1) Do token replacements on the template content (org/gem/namespace/shields)
+            c = content.dup
+            c = c.gsub(/\bkettle-rb\b/, gh_org.to_s) if gh_org && !gh_org.empty?
+            if gem_name && !gem_name.empty?
+              c = c.gsub(/\bkettle-dev\b/, gem_name)
+              c = c.gsub(/\bKettle::Dev\b/, namespace) unless namespace.empty?
+              c = c.gsub("Kettle%3A%3ADev", namespace_shield) unless namespace_shield.empty?
+              c = c.gsub("kettle--dev", gem_shield)
+            end
+
+            # 2) Merge specific sections from destination README, if present
+            begin
+              dest_existing = File.exist?(dest) ? File.read(dest) : nil
+
+              # Helper to parse level-2 sections (## ...)
+              parse_sections = lambda do |md|
+                sections = []
+                return sections unless md
+                lines = md.split("\n", -1) # keep trailing empty lines
+                indices = []
+                lines.each_with_index do |ln, i|
+                  indices << i if ln =~ /^##\s+.+/
+                end
+                indices << lines.length
+                indices.each_cons(2) do |start_i, nxt|
+                  heading = lines[start_i]
+                  body_lines = lines[(start_i + 1)...nxt] || []
+                  title = heading.sub(/^##\s+/, "")
+                  # Normalize by removing leading emoji/non-alnum and extra spaces
+                  base = title.sub(/\A[^\p{Alnum}]+/u, "").strip.downcase
+                  sections << {start: start_i, stop: nxt - 1, heading: heading, body: body_lines.join("\n"), base: base}
+                end
+                {lines: lines, sections: sections}
+              end
+
+              # Parse src (c) and dest
+              src_parsed = parse_sections.call(c)
+              dest_parsed = parse_sections.call(dest_existing)
+
+              # Build lookup for destination sections by base title
+              dest_lookup = {}
+              if dest_parsed && dest_parsed[:sections]
+                dest_parsed[:sections].each do |s|
+                  dest_lookup[s[:base]] = s[:body]
+                end
+              end
+
+              targets = ["synopsis", "configuration", "basic usage"]
+
+              # Replace matching sections in src
+              if src_parsed && src_parsed[:sections] && !src_parsed[:sections].empty?
+                lines = src_parsed[:lines].dup
+                # Iterate over src sections; when base is in targets, rewrite its body
+                src_parsed[:sections].reverse_each do |sec|
+                  next unless targets.include?(sec[:base])
+                  new_body = dest_lookup.fetch(sec[:base], "\n\n")
+                  new_block = [sec[:heading], new_body].join("\n")
+                  # Replace the range from start+0 to stop with new_block lines
+                  range_start = sec[:start]
+                  range_end = sec[:stop]
+                  # Remove old range
+                  lines.slice!(range_start..range_end)
+                  # Insert new block (split preserves potential empty tail)
+                  insert_lines = new_block.split("\n", -1)
+                  lines.insert(range_start, *insert_lines)
+                end
+                c = lines.join("\n")
+              end
+            rescue StandardError
+              # Best effort; if anything fails, keep c as-is
+            end
+
+            c
+          end
+        elsif ["CHANGELOG.md", "CITATION.cff", "CONTRIBUTING.md", ".junie/guidelines.md"].include?(rel)
+          helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true) do |content|
+            c = content.dup
+            c = c.gsub(/\bkettle-rb\b/, gh_org.to_s) if gh_org && !gh_org.empty?
+            if gem_name && !gem_name.empty?
+              c = c.gsub(/\bkettle-dev\b/, gem_name)
+              c = c.gsub(/\bKettle::Dev\b/, namespace) unless namespace.empty?
+            end
+            c
+          end
+        else
+          helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true)
+        end
+      end
+
+      # Handle .git-hooks template files (commit-subjects-goalie.txt, footer-template.erb.txt)
+      source_hooks_dir = File.join(gem_checkout_root, ".git-hooks")
+      if Dir.exist?(source_hooks_dir)
+        goalie_src = File.join(source_hooks_dir, "commit-subjects-goalie.txt")
+        footer_src = File.join(source_hooks_dir, "footer-template.erb.txt")
+        if File.file?(goalie_src) && File.file?(footer_src)
+          puts
+          puts "Git hooks templates found:"
+          puts "  - #{goalie_src}"
+          puts "  - #{footer_src}"
+          puts
+          puts "About these files:"
+          puts "- commit-subjects-goalie.txt:"
+          puts "  Lists commit subject prefixes to look for; if a commit subject starts with any listed prefix,"
+          puts "  kettle-commit-msg will append a footer to the commit message (when GIT_HOOK_FOOTER_APPEND=true)."
+          puts "  Defaults include release prep (🔖 Prepare release v) and checksum commits (🔒️ Checksums for v)."
+          puts "- footer-template.erb.txt:"
+          puts "  ERB template rendered to produce the footer. You can customize its contents and variables."
+          puts
+          puts "Where would you like to install these two templates?"
+          puts "  [l] Local to this project (#{File.join(project_root, ".git-hooks")})"
+          puts "  [g] Global for this user (#{File.join(ENV["HOME"], ".git-hooks")})"
+          puts "  [s] Skip copying"
+          print "Choose (l/g/s) [l]: "
+          choice = $stdin.gets&.strip
+          choice = "l" if choice.nil? || choice.empty?
+          dest_dir = case choice.downcase
+          when "g", "global" then File.join(ENV["HOME"], ".git-hooks")
+          when "s", "skip" then nil
+          else File.join(project_root, ".git-hooks")
+          end
+
+          if dest_dir
+            FileUtils.mkdir_p(dest_dir)
+            [[goalie_src, "commit-subjects-goalie.txt"], [footer_src, "footer-template.erb.txt"]].each do |src, base|
+              dest = File.join(dest_dir, base)
+              FileUtils.cp(src, dest)
+              # Ensure readable (0644). These are data/templates, not executables.
+              begin
+                File.chmod(0o644, dest)
+              rescue StandardError
+                # ignore permission issues
+              end
+              puts "Copied #{base} -> #{dest}"
+            end
+          else
+            puts "Skipping copy of .git-hooks templates."
+          end
+        end
+      end
+    end
+  end
+end

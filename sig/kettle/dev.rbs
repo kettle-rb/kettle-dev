@@ -1,0 +1,21 @@
+module Kettle
+  module Dev
+    module Version
+      VERSION: String
+    end
+
+    class Error < ::StandardError
+    end
+
+    DEBUGGING: bool
+    IS_CI: bool
+    REQUIRE_BENCH: bool
+
+    # Singleton methods
+    class << self
+      def install_tasks: () -> void
+      def defaults: () -> Array[String]
+      def register_default: (String | Symbol task_name) -> Array[String]
+    end
+  end
+end

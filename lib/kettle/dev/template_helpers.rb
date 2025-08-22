@@ -1,0 +1,251 @@
+# frozen_string_literal: true
+
+# :nocov:
+require "find"
+require_relative "ci_helpers"
+
+module Kettle
+  module Dev
+    # Helpers shared by kettle:dev Rake tasks for templating and file ops.
+    module TemplateHelpers
+      # Track results of templating actions across a single process run.
+      # Keys: absolute destination paths (String)
+      # Values: Hash with keys: :action (Symbol, one of :create, :replace, :skip, :dir_create, :dir_replace), :timestamp (Time)
+      @@template_results = {}
+
+      module_function
+
+      # Root of the host project where Rake was invoked
+      # @return [String]
+      def project_root
+        CIHelpers.project_root
+      end
+
+      # Root of this gem's checkout (repository root when working from source)
+      # Calculated relative to lib/kettle/dev/
+      # @return [String]
+      def gem_checkout_root
+        File.expand_path("../../..", __dir__)
+      end
+
+      # Simple yes/no prompt.
+      # @param prompt [String]
+      # @param default [Boolean]
+      # @return [Boolean]
+      def ask(prompt, default)
+        print("#{prompt} #{default ? "[Y/n]" : "[y/N]"}: ")
+        ans = $stdin.gets&.strip
+        ans = "" if ans.nil?
+        if default
+          ans.empty? || ans =~ /\Ay(es)?\z/i
+        else
+          ans =~ /\Ay(es)?\z/i
+        end
+      end
+
+      # Write file content creating directories as needed
+      # @param dest_path [String]
+      # @param content [String]
+      # @return [void]
+      def write_file(dest_path, content)
+        FileUtils.mkdir_p(File.dirname(dest_path))
+        File.open(dest_path, "w") { |f| f.write(content) }
+      end
+
+      # Record a template action for a destination path
+      # @param dest_path [String]
+      # @param action [Symbol] one of :create, :replace, :skip, :dir_create, :dir_replace
+      # @return [void]
+      def record_template_result(dest_path, action)
+        abs = File.expand_path(dest_path.to_s)
+        if action == :skip && @@template_results.key?(abs)
+          # Preserve the last meaningful action; do not downgrade to :skip
+          return
+        end
+        @@template_results[abs] = {action: action, timestamp: Time.now}
+      end
+
+      # Access all template results (read-only clone)
+      # @return [Hash]
+      def template_results
+        @@template_results.clone
+      end
+
+      # Returns true if the given path was created or replaced by the template task in this run
+      # @param dest_path [String]
+      # @return [Boolean]
+      def modified_by_template?(dest_path)
+        rec = @@template_results[File.expand_path(dest_path.to_s)]
+        return false unless rec
+        [:create, :replace, :dir_create, :dir_replace].include?(rec[:action])
+      end
+
+      # Ensure git working tree is clean before making changes in a task.
+      # If not a git repo, this is a no-op.
+      # @param root [String] project root to run git commands in
+      # @param task_label [String] name of the rake task for user-facing messages (e.g., "kettle:dev:install")
+      # @return [void]
+      def ensure_clean_git!(root:, task_label:)
+        inside_repo = begin
+          system("git", "-C", root.to_s, "rev-parse", "--is-inside-work-tree", out: File::NULL, err: File::NULL)
+        rescue StandardError
+          false
+        end
+        return unless inside_repo
+
+        status_output = begin
+          IO.popen(["git", "-C", root.to_s, "status", "--porcelain"], &:read).to_s
+        rescue StandardError
+          ""
+        end
+        return if status_output.strip.empty?
+
+        puts "ERROR: Your git working tree has uncommitted changes."
+        puts "#{task_label} may modify files (e.g., .github/, .gitignore, *.gemspec)."
+        puts "Please commit or stash your changes, then re-run: rake #{task_label}"
+        preview = status_output.lines.take(10).map(&:rstrip)
+        unless preview.empty?
+          puts "Detected changes:"
+          preview.each { |l| puts "  #{l}" }
+          puts "(showing up to first 10 lines)"
+        end
+        abort("Aborting: git working tree is not clean.")
+      end
+
+      # Copy a single file with interactive prompts for create/replace.
+      # Yields content for transformation when block given.
+      # @return [void]
+      def copy_file_with_prompt(src_path, dest_path, allow_create: true, allow_replace: true)
+        return unless File.exist?(src_path)
+        dest_exists = File.exist?(dest_path)
+        action = nil
+        if dest_exists
+          if allow_replace
+            action = ask("Replace #{dest_path}?", true) ? :replace : :skip
+          else
+            puts "Skipping #{dest_path} (replace not allowed)."
+            action = :skip
+          end
+        elsif allow_create
+          action = ask("Create #{dest_path}?", true) ? :create : :skip
+        else
+          puts "Skipping #{dest_path} (create not allowed)."
+          action = :skip
+        end
+        if action == :skip
+          record_template_result(dest_path, :skip)
+          return
+        end
+
+        content = File.read(src_path)
+        content = yield(content) if block_given?
+        write_file(dest_path, content)
+        record_template_result(dest_path, dest_exists ? :replace : :create)
+        puts "Wrote #{dest_path}"
+      end
+
+      # Copy a directory tree, prompting before creating or overwriting.
+      # @return [void]
+      def copy_dir_with_prompt(src_dir, dest_dir)
+        return unless Dir.exist?(src_dir)
+        dest_exists = Dir.exist?(dest_dir)
+        if dest_exists
+          if ask("Replace directory #{dest_dir} (will overwrite files)?", true)
+            Find.find(src_dir) do |path|
+              rel = path.sub(/^#{Regexp.escape(src_dir)}\/?/, "")
+              next if rel.empty?
+              target = File.join(dest_dir, rel)
+              if File.directory?(path)
+                FileUtils.mkdir_p(target)
+              else
+                FileUtils.mkdir_p(File.dirname(target))
+                FileUtils.cp(path, target)
+              end
+            end
+            puts "Updated #{dest_dir}"
+            record_template_result(dest_dir, :dir_replace)
+          else
+            puts "Skipped #{dest_dir}"
+            record_template_result(dest_dir, :skip)
+          end
+        elsif ask("Create directory #{dest_dir}?", true)
+          FileUtils.mkdir_p(dest_dir)
+          Find.find(src_dir) do |path|
+            rel = path.sub(/^#{Regexp.escape(src_dir)}\/?/, "")
+            next if rel.empty?
+            target = File.join(dest_dir, rel)
+            if File.directory?(path)
+              FileUtils.mkdir_p(target)
+            else
+              FileUtils.mkdir_p(File.dirname(target))
+              FileUtils.cp(path, target)
+            end
+          end
+          puts "Created #{dest_dir}"
+          record_template_result(dest_dir, :dir_create)
+        end
+      end
+
+      # Parse gemspec metadata and derive useful strings
+      # @param root [String] project root
+      # @return [Hash]
+      def gemspec_metadata(root = project_root)
+        gemspecs = Dir.glob(File.join(root, "*.gemspec"))
+        gemspec_path = gemspecs.first
+        gemspec_text = (gemspec_path && File.file?(gemspec_path)) ? File.read(gemspec_path) : ""
+        gem_name = (gemspec_text[/\bspec\.name\s*=\s*["']([^"']+)["']/, 1] || "").strip
+        min_ruby = (
+          gemspec_text[/\bspec\.minimum_ruby_version\s*=\s*["'](?:>=\s*)?([0-9]+\.[0-9]+(?:\.[0-9]+)?)["']/i, 1] ||
+          gemspec_text[/\bspec\.required_ruby_version\s*=\s*["']>=\s*([0-9]+\.[0-9]+(?:\.[0-9]+)?)["']/i, 1] ||
+          gemspec_text[/\brequired_ruby_version\s*[:=]\s*["'](?:>=\s*)?([0-9]+\.[0-9]+(?:\.[0-9]+)?)["']/i, 1] ||
+          ""
+        ).strip
+        homepage_line = gemspec_text.lines.find { |l| l =~ /\bspec\.homepage\s*=\s*/ }
+        homepage_val = homepage_line ? homepage_line.split("=", 2).last.to_s.strip : ""
+        if (homepage_val.start_with?("\"") && homepage_val.end_with?("\"")) || (homepage_val.start_with?("'") && homepage_val.end_with?("'"))
+          homepage_val = begin
+            homepage_val[1..-2]
+          rescue
+            homepage_val
+          end
+        end
+        gh_match = homepage_val&.match(%r{github\.com/([^/]+)/([^/]+)}i)
+        gh_org = gh_match && gh_match[1]
+        gh_repo = gh_match && gh_match[2]&.sub(/\.git\z/, "")
+        if gh_org.nil?
+          begin
+            origin_url = IO.popen(["git", "-C", root.to_s, "remote", "get-url", "origin"], &:read).to_s.strip
+            if (m = origin_url.match(%r{github\.com[/:]([^/]+)/([^/]+)}i))
+              gh_org = m[1]
+              gh_repo = m[2]&.sub(/\.git\z/, "")
+            end
+          rescue StandardError
+            # ignore
+          end
+        end
+
+        camel = lambda do |s|
+          s.split(/[_-]/).map { |p| p.gsub(/\b([a-z])/) { Regexp.last_match(1).upcase } }.join
+        end
+        namespace = gem_name.to_s.split("-").map { |seg| camel.call(seg) }.join("::")
+        namespace_shield = namespace.gsub("::", "%3A%3A")
+        entrypoint_require = gem_name.to_s.tr("-", "/")
+        gem_shield = gem_name.to_s.gsub("-", "--").gsub("_", "__")
+
+        {
+          gemspec_path: gemspec_path,
+          gem_name: gem_name,
+          min_ruby: min_ruby,
+          homepage: homepage_val,
+          gh_org: gh_org,
+          gh_repo: gh_repo,
+          namespace: namespace,
+          namespace_shield: namespace_shield,
+          entrypoint_require: entrypoint_require,
+          gem_shield: gem_shield,
+        }
+      end
+    end
+  end
+end
+# :nocov:
