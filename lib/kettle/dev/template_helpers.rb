@@ -109,7 +109,7 @@ module Kettle
           preview.each { |l| puts "  #{l}" }
           puts "(showing up to first 10 lines)"
         end
-        abort("Aborting: git working tree is not clean.")
+        raise Kettle::Dev::Error, "Aborting: git working tree is not clean."
       end
 
       # Copy a single file with interactive prompts for create/replace.

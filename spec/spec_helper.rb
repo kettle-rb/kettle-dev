@@ -3,10 +3,7 @@
 # Config for development dependencies of this library
 # i.e., not configured by this library
 #
-# RSpec & related config
-require "kettle/test/rspec"
-
-# Simplecov & related config
+# Simplecov & related config (must run BEFORE any other requires)
 # NOTE: Gemfiles for older rubies won't have kettle-soup-cover.
 #       The rescue LoadError handles that scenario.
 begin
@@ -16,6 +13,9 @@ rescue LoadError => error
   # check the error message and re-raise when unexpected
   raise error unless error.message.include?("kettle")
 end
+
+# RSpec & related config
+require "kettle/test/rspec"
 
 # this library
 require "kettle/dev"

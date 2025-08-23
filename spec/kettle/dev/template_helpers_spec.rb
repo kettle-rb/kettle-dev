@@ -249,13 +249,13 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
       expect { helpers.ensure_clean_git!(root: "/tmp/project", task_label: "kettle:dev:template") }.not_to raise_error
     end
 
-    it "aborts with helpful message when dirty" do
+    it "raises helpful error when dirty" do
       allow(helpers).to receive(:system).and_return(true)
       dirty = " M lib/file.rb\n?? new.txt\n"
       allow(IO).to receive(:popen).and_return(dirty)
-      allow(Kernel).to receive(:abort).and_return(nil)
-      helpers.ensure_clean_git!(root: "/tmp/project", task_label: "kettle:dev:template")
-      expect(Kernel).to have_received(:abort).with("Aborting: git working tree is not clean.")
+      expect {
+        helpers.ensure_clean_git!(root: "/tmp/project", task_label: "kettle:dev:template")
+      }.to raise_error(Kettle::Dev::Error, /Aborting: git working tree is not clean\./)
     end
   end
 
