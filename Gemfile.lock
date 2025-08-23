@@ -136,6 +136,8 @@ GEM
     racc (1.8.1)
     rainbow (3.1.1)
     rake (13.3.0)
+    rbs (3.9.4)
+      logger
     rdoc (6.14.2)
       erb
       psych (>= 4.0.0)
@@ -194,6 +196,11 @@ GEM
       version_gem (>= 1.1.2, < 3)
     rubocop-md (1.2.4)
       rubocop (>= 1.45)
+    rubocop-on-rbs (1.8.0)
+      lint_roller (~> 1.1)
+      rbs (~> 3.5)
+      rubocop (>= 1.72.1, < 2.0)
+      zlib
     rubocop-packaging (0.6.0)
       lint_roller (~> 1.1.0)
       rubocop (>= 1.72.1, < 2.0)
@@ -278,6 +285,7 @@ GEM
     yard-relative_markdown_links (0.5.0)
       nokogiri (>= 1.14.3, < 2)
     zeitwerk (2.7.3)
+    zlib (3.2.1)
 
 PLATFORMS
   x86_64-linux
@@ -294,6 +302,7 @@ DEPENDENCIES
   rdoc (~> 6.11)
   reek (~> 6.5)
   rubocop-lts (~> 10.1, >= 10.1.1)
+  rubocop-on-rbs (~> 1.8)
   rubocop-packaging (~> 0.6, >= 0.6.0)
   rubocop-rspec (~> 3.6)
   rubocop-ruby2_3 (~> 2.0, >= 2.0.5)

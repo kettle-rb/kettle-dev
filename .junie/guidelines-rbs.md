@@ -10,6 +10,7 @@ Requirements for RBS documentation and signatures:
 - Do not use Ruby heredocs (`<<-DOC`, `<<~RUBY`, etc.) or any Ruby code constructs in `.rbs` files.
 - Do not use Ruby metaprogramming notation like `class << self` in `.rbs`. For singleton methods, use:
   - `def self.method_name: ...`
+- Do not use `extend self` or `module self` in `.rbs`. Declare singleton methods explicitly with `def self.method_name: ...`.
 - Keep type aliases, interfaces, and method signatures in proper RBS form only (e.g., `def foo: (String) -> Integer`).
 - If you need to document parameters or returns, place brief comments above the signature lines using `#` and keep them RBS-friendly (no `@param` / `@return` tags from YARD).
 

@@ -1,19 +1,17 @@
 module Kettle
   module Dev
     module CIHelpers
-      extend self
+      def self.project_root: () -> String
 
-      def project_root: () -> String
+      def self.repo_info: () -> [String, String]?
 
-      def repo_info: () -> [String, String]?
+      def self.current_branch: () -> String?
 
-      def current_branch: () -> String?
+      def self.workflows_list: (?String root) -> Array[String]
 
-      def workflows_list: (?String root) -> Array[String]
+      def self.exclusions: () -> Array[String]
 
-      def exclusions: () -> Array[String]
-
-      def latest_run: (
+      def self.latest_run: (
         owner: String,
         repo: String,
         workflow_file: String,
@@ -21,11 +19,11 @@ module Kettle
         ?token: String?
       ) -> { "status" => String?, "conclusion" => String?, "html_url" => String?, "id" => untyped }?
 
-      def success?: ({ "status" => String?, "conclusion" => String? } run) -> bool
+      def self.success?: ({ "status" => String?, "conclusion" => String? } | nil run) -> bool
 
-      def failed?: ({ "status" => String?, "conclusion" => String? } run) -> bool
+      def self.failed?: ({ "status" => String?, "conclusion" => String? } | nil run) -> bool
 
-      def default_token: () -> String?
+      def self.default_token: () -> String?
     end
   end
 end

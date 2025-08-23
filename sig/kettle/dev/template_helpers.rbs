@@ -2,38 +2,36 @@ module Kettle
   module Dev
     # Helpers shared by kettle:dev Rake tasks for templating and file ops.
     module TemplateHelpers
-      extend self
-
       # Symbol actions recorded by templating helpers
       type template_action = :create | :replace | :skip | :dir_create | :dir_replace
 
       # Root of the host project where Rake was invoked
-      def project_root: () -> String
+      def self.project_root: () -> String
 
       # Root of this gem's checkout (repository root when working from source)
-      def gem_checkout_root: () -> String
+      def self.gem_checkout_root: () -> String
 
       # Simple yes/no prompt.
-      def ask: (String prompt, bool default) -> bool
+      def self.ask: (String prompt, bool default) -> bool
 
       # Write file content creating directories as needed
-      def write_file: (String dest_path, String content) -> void
+      def self.write_file: (String dest_path, String content) -> void
 
       # Record a template action for a destination path
-      def record_template_result: (String dest_path, template_action action) -> void
+      def self.record_template_result: (String dest_path, template_action action) -> void
 
       # Access all template results (read-only clone)
-      def template_results: () -> Hash[String, { action: template_action, timestamp: ::Time }]
+      def self.template_results: () -> Hash[String, { action: template_action, timestamp: ::Time }]
 
       # Returns true if the given path was created or replaced by the template task in this run
-      def modified_by_template?: (String dest_path) -> bool
+      def self.modified_by_template?: (String dest_path) -> bool
 
       # Ensure git working tree is clean before making changes in a task.
       # If not a git repo, this is a no-op.
-      def ensure_clean_git!: (root: String, task_label: String) -> void
+      def self.ensure_clean_git!: (root: String, task_label: String) -> void
 
       # Copy a single file with interactive prompts for create/replace.
-      def copy_file_with_prompt: (
+      def self.copy_file_with_prompt: (
         String src_path,
         String dest_path,
         ?allow_create: bool,
@@ -41,11 +39,11 @@ module Kettle
       ) -> void
 
       # Copy a directory tree, prompting before creating or overwriting.
-      def copy_dir_with_prompt: (String src_dir, String dest_dir) -> void
+      def self.copy_dir_with_prompt: (String src_dir, String dest_dir) -> void
 
       # Parse gemspec metadata and derive useful strings
       # When no gemspec is present, gemspec_path may be nil; gh_org/gh_repo may be nil when not derivable.
-      def gemspec_metadata: (?String root) -> {
+      def self.gemspec_metadata: (?String root) -> {
         gemspec_path: String?,
         gem_name: String,
         min_ruby: String,

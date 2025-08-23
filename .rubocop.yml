@@ -1,5 +1,10 @@
 inherit_gem:
   rubocop-lts: config/rubygem_rspec.yml
 
+plugins: rubocop-on-rbs
+
+RBS:
+  Enabled: true
+
 Layout/IndentationConsistency:
   Exclude: ['*.md']
