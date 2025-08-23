@@ -65,13 +65,13 @@ Gem::Specification.new do |spec|
   spec.files = Dir[
     # Splats (alphabetical)
     "lib/**/*.rb",
+    "sig/**/*.rbs",
   ]
   # Automatically included with gem package, no need to list again in files.
   spec.extra_rdoc_files = Dir[
     # Splats (alphabetical)
     "checksums/**/*.sha256",
     "checksums/**/*.sha512",
-    "sig/**/*.rbs",
     # Files (alphabetical)
     "CHANGELOG.md",
     "CITATION.cff",
@@ -87,18 +87,9 @@ Gem::Specification.new do |spec|
     "--title",
     "#{spec.name} - #{spec.summary}",
     "--main",
-    "checksums/**/*.sha256",
-    "checksums/**/*.sha512",
-    "sig/**/*.rbs",
-    "CHANGELOG.md",
-    "CITATION.cff",
-    "CODE_OF_CONDUCT.md",
-    "CONTRIBUTING.md",
-    "LICENSE.txt",
     "README.md",
-    "REEK",
-    "RUBOCOP.md",
-    "SECURITY.md",
+    "--exclude",
+    "^sig/",
     "--line-numbers",
     "--inline-source",
     "--quiet",
