@@ -5,7 +5,6 @@
 # :nocov:
 require "require_bench" if ENV.fetch("REQUIRE_BENCH", "false").casecmp("true").zero?
 # :nocov:
-require "rubocop/lts"
 require "version_gem"
 require_relative "dev/version"
 
@@ -67,11 +66,18 @@ module Kettle
       # Set up rubocop-lts, which cascades to rubocop-rubyX_X => rubocop_gradual)
       # @return [void]
       def linting_tasks
-        Rubocop::Lts.install_tasks
-        if Kettle::Dev::IS_CI
-          Kettle::Dev.register_default("rubocop_gradual:check")
-        else
-          Kettle::Dev.register_default("rubocop_gradual:autocorrect")
+        begin
+          # Lazy loaded because it won't be installed for Ruby < 2.7
+          require "rubocop/lts"
+
+          Rubocop::Lts.install_tasks
+          if Kettle::Dev::IS_CI
+            Kettle::Dev.register_default("rubocop_gradual:check")
+          else
+            Kettle::Dev.register_default("rubocop_gradual:autocorrect")
+          end
+        rescue LoadError
+          # OK, no styles for you.
         end
       end
 

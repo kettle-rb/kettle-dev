@@ -1,6 +1,6 @@
 {
-  "lib/kettle/dev.rb:1796061474": [
-    [27, 17, 2, "ThreadSafety/MutableClassInstanceVariable: Freeze mutable objects assigned to class instance variables.", 5862883]
+  "lib/kettle/dev.rb:2837300664": [
+    [26, 17, 2, "ThreadSafety/MutableClassInstanceVariable: Freeze mutable objects assigned to class instance variables.", 5862883]
   ],
   "spec/kettle/dev/ci_helpers_spec.rb:1096298546": [
     [12, 5, 311, "RSpec/ExampleLength: Example has too many lines. [13/5]", 8731794],

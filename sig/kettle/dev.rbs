@@ -12,10 +12,8 @@ module Kettle
     REQUIRE_BENCH: bool
 
     # Singleton methods
-    class << self
-      def install_tasks: () -> void
-      def defaults: () -> Array[String]
-      def register_default: (String | Symbol task_name) -> Array[String]
-    end
+    def self.install_tasks: () -> void
+    def self.defaults: () -> Array[String]
+    def self.register_default: (String | Symbol task_name) -> Array[String]
   end
 end
