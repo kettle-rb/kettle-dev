@@ -41,6 +41,16 @@ module Kettle
       # Copy a directory tree, prompting before creating or overwriting.
       def self.copy_dir_with_prompt: (String src_dir, String dest_dir) -> void
 
+      # Apply common token replacements used when templating text files
+      def self.apply_common_replacements: (
+        String content,
+        gh_org: String?,
+        gem_name: String,
+        namespace: String,
+        namespace_shield: String,
+        gem_shield: String
+      ) -> String
+
       # Parse gemspec metadata and derive useful strings
       # When no gemspec is present, gemspec_path may be nil; gh_org/gh_repo may be nil when not derivable.
       def self.gemspec_metadata: (?String root) -> {

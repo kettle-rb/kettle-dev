@@ -61,22 +61,36 @@
   module Dev<br>
     # Helpers shared by kettle:dev Rake tasks for templating and file ops.<br>
     module TemplateHelpers<br>
-      extend self</p>
+      # Symbol actions recorded by templating helpers<br>
+      type template_action = :create | :replace | :skip | :dir_create | :dir_replace</p>
 
 <pre class="code ruby"><code class="ruby">  # Root of the host project where Rake was invoked
-  def project_root: () -&gt; String
+  def self.project_root: () -&gt; String
 
   # Root of this gem&#39;s checkout (repository root when working from source)
-  def gem_checkout_root: () -&gt; String
+  def self.gem_checkout_root: () -&gt; String
 
   # Simple yes/no prompt.
-  def ask: (String prompt, bool default) -&gt; bool
+  def self.ask: (String prompt, bool default) -&gt; bool
 
   # Write file content creating directories as needed
-  def write_file: (String dest_path, String content) -&gt; void
+  def self.write_file: (String dest_path, String content) -&gt; void
+
+  # Record a template action for a destination path
+  def self.record_template_result: (String dest_path, template_action action) -&gt; void
+
+  # Access all template results (read-only clone)
+  def self.template_results: () -&gt; Hash[String, { action: template_action, timestamp: ::Time }]
+
+  # Returns true if the given path was created or replaced by the template task in this run
+  def self.modified_by_template?: (String dest_path) -&gt; bool
+
+  # Ensure git working tree is clean before making changes in a task.
+  # If not a git repo, this is a no-op.
+  def self.ensure_clean_git!: (root: String, task_label: String) -&gt; void
 
   # Copy a single file with interactive prompts for create/replace.
-  def copy_file_with_prompt: (
+  def self.copy_file_with_prompt: (
     String src_path,
     String dest_path,
     ?allow_create: bool,
@@ -84,11 +98,21 @@
   ) -&gt; void
 
   # Copy a directory tree, prompting before creating or overwriting.
-  def copy_dir_with_prompt: (String src_dir, String dest_dir) -&gt; void
+  def self.copy_dir_with_prompt: (String src_dir, String dest_dir) -&gt; void
+
+  # Apply common token replacements used when templating text files
+  def self.apply_common_replacements: (
+    String content,
+    gh_org: String?,
+    gem_name: String,
+    namespace: String,
+    namespace_shield: String,
+    gem_shield: String
+  ) -&gt; String
 
   # Parse gemspec metadata and derive useful strings
   # When no gemspec is present, gemspec_path may be nil; gh_org/gh_repo may be nil when not derivable.
-  def gemspec_metadata: (?String root) -&gt; {
+  def self.gemspec_metadata: (?String root) -&gt; {
     gemspec_path: String?,
     gem_name: String,
     min_ruby: String,
@@ -105,7 +129,7 @@ end   end end
 </div></div>
 
       <div id="footer">
-  Generated on Sat Aug 23 13:32:06 2025 by
+  Generated on Sat Aug 23 17:59:55 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

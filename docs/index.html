@@ -288,9 +288,23 @@ Kettle::Dev.install_tasks
       <li>
 <code>ci:act</code> — interactive selector for running GitHub Actions workflows via <code>act</code>.</li>
       <li>
-<code>kettle:dev:install</code> — copies this repo’s .github automation and offers to install .git-hooks templates.</li>
+<code>kettle:dev:install</code> — copies this repo’s .github automation and offers to install .git-hooks templates.
+        <ul>
+          <li>option: force: When truthy (1, true, y, yes), treat all y/N prompts as Yes. Useful for non-interactive runs or to accept defaults quickly. Example: <code>bundle exec rake kettle:dev:template force=true</code>
+</li>
+          <li>option: allowed: When truthy (1, true, y, yes), resume task after you have reviewed <code>.envrc</code>/<code>.env.local</code> and run <code>direnv allow</code>. If either file is created or updated, the task will abort with instructions unless <code>allowed=true</code> is present. Example: <code>bundle exec rake kettle:dev:install allowed=true</code>
+</li>
+        </ul>
+      </li>
       <li>
-<code>kettle:dev:template</code> — templates files from this gem into your project (e.g., .github workflows, .devcontainer, .qlty, modular Gemfiles, README/CONTRIBUTING stubs). You can run this independently to refresh templates without the extra install prompts.</li>
+<code>kettle:dev:template</code> — templates files from this gem into your project (e.g., .github workflows, .devcontainer, .qlty, modular Gemfiles, README/CONTRIBUTING stubs). You can run this independently to refresh templates without the extra install prompts.
+        <ul>
+          <li>option: force: When truthy (1, true, y, yes), treat all y/N prompts as Yes. Useful for non-interactive runs or to accept defaults quickly. Example: <code>bundle exec rake kettle:dev:template force=true</code>
+</li>
+          <li>option: allowed: When truthy (1, true, y, yes), resume task after you have reviewed <code>.envrc</code>/<code>.env.local</code> and run <code>direnv allow</code>. If either file is created or updated, the task will abort with instructions unless <code>allowed=true</code> is present. Example: <code>bundle exec rake kettle:dev:template allowed=true</code>
+</li>
+        </ul>
+      </li>
     </ul>
   </li>
 </ul>
@@ -425,6 +439,17 @@ Tip: When running a single spec file locally, you may want <code>K_SOUP_COV_MIN_
 <code>bundle exec rake kettle:dev:install</code> — copies the library’s <code>.github</code> folder into your project and offers to install <code>.git-hooks</code> templates locally or globally.</li>
   <li>
 <code>bundle exec rake kettle:dev:template</code> — runs only the templating step used by install; useful to re-apply updates to templates (.github workflows, .devcontainer, .qlty, modular Gemfiles, README and friends) without install’s extra prompts.</li>
+  <li>Notes about task options:
+    <ul>
+      <li>Non-interactive confirmations: append <code>force=true</code> to accept all y/N prompts as Yes, e.g., <code>bundle exec rake kettle:dev:template force=true</code>.</li>
+      <li>direnv review flow: if <code>.envrc</code> or <code>.env.local</code> is created or updated, the task stops and asks you to run <code>direnv allow</code>. After you review and allow, resume with <code>allowed=true</code>:
+        <ul>
+          <li><code>bundle exec rake kettle:dev:template allowed=true</code></li>
+          <li><code>bundle exec rake kettle:dev:install allowed=true</code></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
   <li>After that, set up binstubs and direnv for convenience:
     <ul>
       <li><code>bundle binstubs kettle-dev --path bin</code></li>
@@ -597,7 +622,7 @@ Please consider sponsoring me.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Sat Aug 23 13:32:05 2025 by
+  Generated on Sat Aug 23 17:59:54 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

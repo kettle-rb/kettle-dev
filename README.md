@@ -151,7 +151,11 @@ That’s it. When installed, kettle-dev:
 - Adds gem-shipped Rake tasks from `lib/kettle/dev/rakelib`, including:
   - `ci:act` — interactive selector for running GitHub Actions workflows via `act`.
   - `kettle:dev:install` — copies this repo’s .github automation and offers to install .git-hooks templates.
+    - option: force: When truthy (1, true, y, yes), treat all y/N prompts as Yes. Useful for non-interactive runs or to accept defaults quickly. Example: `bundle exec rake kettle:dev:template force=true`
+    - option: allowed: When truthy (1, true, y, yes), resume task after you have reviewed `.envrc`/`.env.local` and run `direnv allow`. If either file is created or updated, the task will abort with instructions unless `allowed=true` is present. Example: `bundle exec rake kettle:dev:install allowed=true`
   - `kettle:dev:template` — templates files from this gem into your project (e.g., .github workflows, .devcontainer, .qlty, modular Gemfiles, README/CONTRIBUTING stubs). You can run this independently to refresh templates without the extra install prompts.
+    - option: force: When truthy (1, true, y, yes), treat all y/N prompts as Yes. Useful for non-interactive runs or to accept defaults quickly. Example: `bundle exec rake kettle:dev:template force=true`
+    - option: allowed: When truthy (1, true, y, yes), resume task after you have reviewed `.envrc`/`.env.local` and run `direnv allow`. If either file is created or updated, the task will abort with instructions unless `allowed=true` is present. Example: `bundle exec rake kettle:dev:template allowed=true`
 
 Recommended one-time setup in your project:
 - Install binstubs so kettle-dev executables are available under `./bin`:
@@ -227,6 +231,11 @@ GitHub Actions local runner helper
 Project automation bootstrap
 - `bundle exec rake kettle:dev:install` — copies the library’s `.github` folder into your project and offers to install `.git-hooks` templates locally or globally.
 - `bundle exec rake kettle:dev:template` — runs only the templating step used by install; useful to re-apply updates to templates (.github workflows, .devcontainer, .qlty, modular Gemfiles, README and friends) without install’s extra prompts.
+- Notes about task options:
+  - Non-interactive confirmations: append `force=true` to accept all y/N prompts as Yes, e.g., `bundle exec rake kettle:dev:template force=true`.
+  - direnv review flow: if `.envrc` or `.env.local` is created or updated, the task stops and asks you to run `direnv allow`. After you review and allow, resume with `allowed=true`:
+    - `bundle exec rake kettle:dev:template allowed=true`
+    - `bundle exec rake kettle:dev:install allowed=true`
 - After that, set up binstubs and direnv for convenience:
   - `bundle binstubs kettle-dev --path bin`
   - Add to `.envrc`: `PATH_add bin` (so `bin/` tools run without the prefix)

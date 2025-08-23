@@ -15,14 +15,14 @@
     [225, 5, 39, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 4038128320],
     [225, 5, 395, "RSpec/ExampleLength: Example has too many lines. [6/5]", 2619497543]
   ],
-  "spec/kettle/dev_private_spec.rb:11693709": [
+  "spec/kettle/dev_private_spec.rb:688594158": [
     [5, 5, 49, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 146084145],
     [5, 5, 463, "RSpec/ExampleLength: Example has too many lines. [6/5]", 4014272829],
     [10, 7, 20, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 794029890],
     [10, 31, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `default_task` as a spy using `allow` or `instance_spy`.", 1384559950],
-    [71, 5, 456, "RSpec/ExampleLength: Example has too many lines. [8/5]", 3240308720],
-    [74, 9, 18, "RSpec/LeakyConstantDeclaration: Stub module constant instead of declaring explicitly.", 3236815244],
-    [77, 41, 36, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 1790782556]
+    [73, 5, 456, "RSpec/ExampleLength: Example has too many lines. [8/5]", 3240308720],
+    [76, 9, 18, "RSpec/LeakyConstantDeclaration: Stub module constant instead of declaring explicitly.", 3236815244],
+    [79, 41, 36, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 1790782556]
   ],
   "spec/kettle/dev_spec.rb:2808932314": [
     [15, 5, 378, "RSpec/ExampleLength: Example has too many lines. [11/5]", 2068367997]

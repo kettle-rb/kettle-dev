@@ -71,16 +71,14 @@ IS_CI: bool
 REQUIRE_BENCH: bool
 
 # Singleton methods
-class &lt;&lt; self
-  def install_tasks: () -&gt; void
-  def defaults: () -&gt; Array[String]
-  def register_default: (String | Symbol task_name) -&gt; Array[String]
-end   end end
+def self.install_tasks: () -&gt; void
+def self.defaults: () -&gt; Array[String]
+def self.register_default: (String | Symbol task_name) -&gt; Array[String]   end end
 </code></pre>
 </div></div>
 
       <div id="footer">
-  Generated on Sat Aug 23 13:32:06 2025 by
+  Generated on Sat Aug 23 17:59:55 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

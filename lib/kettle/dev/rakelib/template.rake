@@ -92,9 +92,8 @@ namespace :kettle do
             end
             if new_constraint
               content.gsub(/^gem\s+"rubocop-lts",\s*"[^"]+".*$/) do |line|
-                # Preserve any ", ">= X" tail if present after first constraint
-                tail = line[/,(.*)\z/, 1]
-                %(gem "rubocop-lts", "#{new_constraint}"#{tail ? ",#{tail}" : ""})
+                # Do not preserve whatever tail was there before
+                %(gem "rubocop-lts", "#{new_constraint}")
               end
             else
               content
@@ -147,6 +146,7 @@ namespace :kettle do
         RUBOCOP.md
         SECURITY.md
         .junie/guidelines.md
+        .junie/guidelines-rbs.md
       ]
 
       files_to_copy.each do |rel|
@@ -156,14 +156,14 @@ namespace :kettle do
         if File.basename(rel) == "README.md"
           helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true) do |content|
             # 1) Do token replacements on the template content (org/gem/namespace/shields)
-            c = content.dup
-            c = c.gsub(/\bkettle-rb\b/, gh_org.to_s) if gh_org && !gh_org.empty?
-            if gem_name && !gem_name.empty?
-              c = c.gsub(/\bkettle-dev\b/, gem_name)
-              c = c.gsub(/\bKettle::Dev\b/, namespace) unless namespace.empty?
-              c = c.gsub("Kettle%3A%3ADev", namespace_shield) unless namespace_shield.empty?
-              c = c.gsub("kettle--dev", gem_shield)
-            end
+            c = helpers.apply_common_replacements(
+              content,
+              gh_org: gh_org,
+              gem_name: gem_name,
+              namespace: namespace,
+              namespace_shield: namespace_shield,
+              gem_shield: gem_shield,
+            )
 
             # 2) Merge specific sections from destination README, if present
             begin
@@ -231,17 +231,47 @@ namespace :kettle do
           end
         elsif ["CHANGELOG.md", "CITATION.cff", "CONTRIBUTING.md", ".junie/guidelines.md"].include?(rel)
           helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true) do |content|
-            c = content.dup
-            c = c.gsub(/\bkettle-rb\b/, gh_org.to_s) if gh_org && !gh_org.empty?
-            if gem_name && !gem_name.empty?
-              c = c.gsub(/\bkettle-dev\b/, gem_name)
-              c = c.gsub(/\bKettle::Dev\b/, namespace) unless namespace.empty?
-            end
-            c
+            helpers.apply_common_replacements(
+              content,
+              gh_org: gh_org,
+              gem_name: gem_name,
+              namespace: namespace,
+              namespace_shield: namespace_shield,
+              gem_shield: gem_shield,
+            )
           end
         else
           helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true)
         end
+      end
+
+      # After creating or replacing .envrc or .env.local, require `direnv allow` and exit unless allowed
+      begin
+        envrc_path = File.join(project_root, ".envrc")
+        envlocal_path = File.join(project_root, ".env.local")
+        changed_env_files = []
+        changed_env_files << envrc_path if helpers.modified_by_template?(envrc_path)
+        changed_env_files << envlocal_path if helpers.modified_by_template?(envlocal_path)
+        if !changed_env_files.empty?
+          if ENV.fetch("allowed", "").to_s =~ /\A(1|true|y|yes)\z/i
+            puts "Detected updates to #{changed_env_files.map { |p| File.basename(p) }.join(" and ")}. Proceeding because allowed=true."
+          else
+            puts
+            puts "IMPORTANT: The following environment files were created/updated:"
+            changed_env_files.each { |p| puts "  - #{p}" }
+            puts
+            puts "Please review these files and then run:"
+            puts "  direnv allow"
+            puts
+            puts "After that, re-run to resume:"
+            puts "  bundle exec rake kettle:dev:template allowed=true"
+            puts "  # or to run the full install afterwards:"
+            puts "  bundle exec rake kettle:dev:install allowed=true"
+            abort("Aborting: direnv allow required after environment file changes.")
+          end
+        end
+      rescue StandardError => e
+        puts "WARNING: Could not determine env file changes: #{e.class}: #{e.message}"
       end
 
       # Handle .git-hooks template files (commit-subjects-goalie.txt, footer-template.erb.txt)

@@ -76,6 +76,7 @@ namespace :kettle do
             end
             File.open(envrc_path, "w") { |f| f.write(content) }
             puts "   Updated #{envrc_path} with PATH_add bin"
+            updated_envrc_by_install = true
           else
             puts "   Skipping modification of .envrc. You may add 'PATH_add bin' manually at the top."
           end
@@ -105,7 +106,11 @@ namespace :kettle do
           puts "Would you like to add '.env.local' to #{gitignore_path}?"
           print "Add to .gitignore now [Y/n]: "
           answer = $stdin.gets&.strip
-          add_it = answer.nil? || answer.empty? || answer =~ /\Ay(es)?\z/i
+          add_it = if ENV.fetch("force", "").to_s =~ /\A(1|true|y|yes)\z/i
+            true
+          else
+            answer.nil? || answer.empty? || answer =~ /\Ay(es)?\z/i
+          end
           if add_it
             FileUtils.mkdir_p(File.dirname(gitignore_path))
             mode = File.exist?(gitignore_path) ? "a" : "w"
@@ -220,7 +225,11 @@ namespace :kettle do
               puts "Suggested literal homepage: \"#{suggested}\""
               print("Update #{File.basename(gemspec_path)} to use this homepage? [Y/n]: ")
               ans = $stdin.gets&.strip
-              do_update = ans.nil? || ans.empty? || ans =~ /\Ay(es)?\z/i
+              do_update = if ENV.fetch("force", "").to_s =~ /\A(1|true|y|yes)\z/i
+                true
+              else
+                ans.nil? || ans.empty? || ans =~ /\Ay(es)?\z/i
+              end
 
               if do_update
                 new_line = homepage_line.sub(/=.*/, "= \"#{suggested}\"\n")
@@ -235,6 +244,22 @@ namespace :kettle do
         end
       rescue StandardError => e
         puts "WARNING: An error occurred while checking gemspec homepage: #{e.class}: #{e.message}"
+      end
+
+      # If .envrc was modified during install step, require `direnv allow` and exit unless allowed
+      if defined?(updated_envrc_by_install) && updated_envrc_by_install
+        if ENV.fetch("allowed", "").to_s =~ /\A(1|true|y|yes)\z/i
+          puts "Proceeding after .envrc update because allowed=true."
+        else
+          puts
+          puts "IMPORTANT: .envrc was updated during kettle:dev:install."
+          puts "Please review it and then run:"
+          puts "  direnv allow"
+          puts
+          puts "After that, re-run to resume:"
+          puts "  bundle exec rake kettle:dev:install allowed=true"
+          abort("Aborting: direnv allow required after .envrc changes.")
+        end
       end
 
       # Summary of templating changes

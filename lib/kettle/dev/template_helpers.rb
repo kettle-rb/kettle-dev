@@ -33,6 +33,11 @@ module Kettle
       # @param default [Boolean]
       # @return [Boolean]
       def ask(prompt, default)
+        # Force mode: any prompt resolves to Yes when ENV["force"] is set truthy
+        if ENV.fetch("force", "").to_s =~ /\A(1|true|y|yes)\z/i
+          puts "#{prompt} #{default ? "[Y/n]" : "[y/N]"}: Y (forced)"
+          return true
+        end
         print("#{prompt} #{default ? "[Y/n]" : "[y/N]"}: ")
         ans = $stdin.gets&.strip
         ans = "" if ans.nil?
@@ -184,6 +189,28 @@ module Kettle
           puts "Created #{dest_dir}"
           record_template_result(dest_dir, :dir_create)
         end
+      end
+
+      # Apply common token replacements used when templating text files
+      # @param content [String]
+      # @param gh_org [String, nil]
+      # @param gem_name [String]
+      # @param namespace [String]
+      # @param namespace_shield [String]
+      # @param gem_shield [String]
+      # @return [String]
+      def apply_common_replacements(content, gh_org:, gem_name:, namespace:, namespace_shield:, gem_shield:)
+        c = content.dup
+        c = c.gsub("kettle-rb", gh_org.to_s) if gh_org && !gh_org.empty?
+        if gem_name && !gem_name.empty?
+          # Replace occurrences of the template gem name in text, including inside
+          # markdown reference labels like [🖼️kettle-dev] and identifiers like kettle-dev-i
+          c = c.gsub("kettle-dev", gem_name)
+          c = c.gsub(/\bKettle::Dev\b/u, namespace) unless namespace.empty?
+          c = c.gsub("Kettle%3A%3ADev", namespace_shield) unless namespace_shield.empty?
+          c = c.gsub("kettle--dev", gem_shield)
+        end
+        c
       end
 
       # Parse gemspec metadata and derive useful strings

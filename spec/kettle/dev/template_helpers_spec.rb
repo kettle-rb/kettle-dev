@@ -308,5 +308,23 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
       end
     end
   end
+
+  describe "::apply_common_replacements" do
+    let(:meta) do
+      {gh_org: "some-org", gem_name: "foo_bar", namespace: "FooBar", namespace_shield: "Foo%3A%3ABar", gem_shield: "foo__bar"}
+    end
+
+    def rep(s)
+      helpers.apply_common_replacements(s, **meta)
+    end
+
+    it "replaces kettle-dev inside bracketed emoji label in README references" do
+      expect(rep("[🖼️kettle-dev]")).to eq("[🖼️foo_bar]")
+    end
+
+    it "replaces kettle-dev inside suffixed identifiers like -i without touching suffix" do
+      expect(rep("[🖼️kettle-dev-i]")).to eq("[🖼️foo_bar-i]")
+    end
+  end
 end
 # rubocop:enable RSpec/MultipleExpectations, RSpec/ExampleLength, RSpec/StubbedMock, RSpec/MessageSpies

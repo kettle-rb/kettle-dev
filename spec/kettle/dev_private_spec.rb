@@ -45,6 +45,8 @@ RSpec.describe Kettle::Dev do
 
   describe "linting and coverage tasks" do
     before do
+      pending("RuboCop::Lts is only a dependency for Ruby >= 2.7") if RUBY_VERSION < "2.7"
+      require "rubocop/lts" # have to require here so we can spy on it
       # stub register_default to observe calls without mutating global Rake
       allow(described_class).to receive(:register_default).and_call_original
       allow(Rubocop::Lts).to receive(:install_tasks)
