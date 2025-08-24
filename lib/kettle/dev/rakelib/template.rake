@@ -32,9 +32,10 @@ namespace :kettle do
       source_github_dir = File.join(gem_checkout_root, ".github")
       if Dir.exist?(source_github_dir)
         Dir.glob(File.join(source_github_dir, "**", "*.yml")).each do |src|
+          src = helpers.prefer_example(src)
           rel = src.sub(/^#{Regexp.escape(gem_checkout_root)}\/?/, "")
           dest = File.join(project_root, rel)
-          if File.basename(src) == "FUNDING.yml"
+          if File.basename(src).sub(/\.example\z/, "") == "FUNDING.yml"
             helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true) do |content|
               c = content.dup
               c = c.gsub(/^open_collective:\s+.*$/i) { |line| gh_org ? "open_collective: #{gh_org}" : line }
@@ -67,13 +68,18 @@ namespace :kettle do
       end
 
       # 3) .qlty/qlty.toml
-      helpers.copy_file_with_prompt(File.join(gem_checkout_root, ".qlty/qlty.toml"), File.join(project_root, ".qlty/qlty.toml"), allow_create: true, allow_replace: true)
+      helpers.copy_file_with_prompt(
+        helpers.prefer_example(File.join(gem_checkout_root, ".qlty/qlty.toml")),
+        File.join(project_root, ".qlty/qlty.toml"),
+        allow_create: true,
+        allow_replace: true,
+      )
 
       # 4) gemfile/modular/*.gemfile (from gem's gemfiles/modular)
       [%w[coverage.gemfile], %w[documentation.gemfile], %w[style.gemfile]].each do |base|
-        src = File.join(gem_checkout_root, "gemfiles/modular", base[0])
+        src = helpers.prefer_example(File.join(gem_checkout_root, "gemfiles/modular", base[0]))
         dest = File.join(project_root, "gemfile/modular", base[0])
-        if File.basename(src) == "style.gemfile"
+        if File.basename(src).sub(/\.example\z/, "") == "style.gemfile"
           helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true) do |content|
             # Adjust rubocop-lts constraint based on min_ruby
             version_map = [
@@ -141,7 +147,7 @@ namespace :kettle do
 
       # 6) Root and other files
       files_to_copy = %w[
-        .env.local.example
+        .env.local
         .envrc
         .gitignore
         .gitlab-ci.yml
@@ -167,7 +173,7 @@ namespace :kettle do
       ]
 
       files_to_copy.each do |rel|
-        src = File.join(gem_checkout_root, rel)
+        src = helpers.prefer_example(File.join(gem_checkout_root, rel))
         dest = File.join(project_root, rel)
         next unless File.exist?(src)
         if File.basename(rel) == "README.md"

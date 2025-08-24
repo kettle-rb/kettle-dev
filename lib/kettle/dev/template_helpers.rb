@@ -57,6 +57,18 @@ module Kettle
         File.open(dest_path, "w") { |f| f.write(content) }
       end
 
+      # Prefer an .example variant for a given source path when present
+      # For a given intended source path (e.g., "/src/Rakefile"), this will return
+      # "/src/Rakefile.example" if it exists, otherwise returns the original path.
+      # If the given path already ends with .example, it is returned as-is.
+      # @param src_path [String]
+      # @return [String]
+      def prefer_example(src_path)
+        return src_path if src_path.end_with?(".example")
+        example = src_path + ".example"
+        File.exist?(example) ? example : src_path
+      end
+
       # Record a template action for a destination path
       # @param dest_path [String]
       # @param action [Symbol] one of :create, :replace, :skip, :dir_create, :dir_replace
