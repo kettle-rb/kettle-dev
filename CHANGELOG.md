@@ -12,6 +12,15 @@ and this project adheres to [Semantic Versioning v2](https://semver.org/spec/v2.
 ### Fixed
 ### Security
 
+## [1.0.2] - 2025-08-24
+- TAG: [v1.0.2][1.0.2t]
+- COVERAGE: 100.00% -- 98/98 lines in 7 files
+- BRANCH COVERAGE: 100.00% -- 30/30 branches in 7 files
+- 94.59% documented
+### Fixed
+- Added files necessary for kettle:dev:template task to work
+- .github/workflows/opencollective.yml working!
+
 ## [1.0.1] - 2025-08-24
 - TAG: [v1.0.1][1.0.1t]
 - COVERAGE: 100.00% -- 98/98 lines in 7 files
@@ -50,7 +59,9 @@ and this project adheres to [Semantic Versioning v2](https://semver.org/spec/v2.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.1...HEAD
+[Unreleased]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.2...HEAD
+[1.0.2]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.1...v1.0.2
+[1.0.2t]: https://gitlab.com/kettle-rb/kettle-dev/-/tags/v1.0.2
 [1.0.1]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.0...v1.0.1
 [1.0.1t]: https://gitlab.com/kettle-rb/kettle-dev/-/tags/v1.0.1
 [1.0.0]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/a427c302df09cfe4253a7c8d400333f9a4c1a208...v1.0.0

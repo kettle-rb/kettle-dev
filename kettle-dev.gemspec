@@ -101,7 +101,8 @@ Gem::Specification.new do |spec|
     ".junie/guidelines.md",
     ".junie/guidelines-rbs.md",
   ]
-  # Automatically included with gem package, no need to list again in files.
+  # Automatically included with gem package, normally no need to list again in files.
+  # But this gem acts as a pseudo-template, so we include some in both places.
   spec.extra_rdoc_files = Dir[
     # Splats (alphabetical)
     "checksums/**/*.sha256",
