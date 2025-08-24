@@ -12,6 +12,14 @@ and this project adheres to [Semantic Versioning v2](https://semver.org/spec/v2.
 ### Fixed
 ### Security
 
+## [1.0.5] - 2025-08-24
+- TAG: [v1.0.5][1.0.5t]
+- COVERAGE: 100.00% -- 130/130 lines in 7 files
+- BRANCH COVERAGE:  96.00% -- 48/50 branches in 7 files
+- 95.35% documented
+### Fixed
+- kettle-release: will run regardless of how it is invoked (i.e. works as binstub)
+
 ## [1.0.4] - 2025-08-24
 - TAG: [v1.0.4][1.0.4t]
 - COVERAGE: 100.00% -- 130/130 lines in 7 files
@@ -83,7 +91,9 @@ and this project adheres to [Semantic Versioning v2](https://semver.org/spec/v2.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.4...HEAD
+[Unreleased]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.5...HEAD
+[1.0.5]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.4...v1.0.5
+[1.0.5t]: https://gitlab.com/kettle-rb/kettle-dev/-/tags/v1.0.5
 [1.0.4]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.3...v1.0.4
 [1.0.4t]: https://gitlab.com/kettle-rb/kettle-dev/-/tags/v1.0.4
 [1.0.3]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.2...v1.0.3

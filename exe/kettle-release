@@ -21,15 +21,22 @@ rescue LoadError
   # Allow running outside of Bundler; runtime deps should still be available via rubygems
 end
 
-require "open3"
-require "shellwords"
-require "time"
-require "fileutils"
-require "net/http"
-require "json"
-require "uri"
-require "kettle/dev/ci_helpers"
-require "ruby-progressbar"
+begin
+  require "open3"
+  require "shellwords"
+  require "time"
+  require "fileutils"
+  require "net/http"
+  require "json"
+  require "uri"
+  require "kettle/dev/ci_helpers"
+  require "ruby-progressbar"
+rescue LoadError => e
+  warn("kettle-release: failed to load a required library: #{e.message}")
+  warn("Hint: Ensure the host project includes kettle-dev and its runtime deps, then run bundle install.")
+  warn(e.backtrace.join("\n")) if ENV["DEBUG"]
+  exit(1)
+end
 
 module Kettle
   module Dev
@@ -554,6 +561,42 @@ module Kettle
   end
 end
 
-if __FILE__ == $PROGRAM_NAME
+# Always execute when this file is loaded (e.g., via a Bundler binstub).
+# Do not guard with __FILE__ == $PROGRAM_NAME because binstubs use Kernel.load.
+if ARGV.include?("-h") || ARGV.include?("--help")
+  puts <<~USAGE
+    Usage: kettle-release
+
+    Automates the release flow for a Ruby gem in the host project:
+      - Runs bin/setup and bin/rake sanity checks
+      - Prompts to confirm version and changelog updates
+      - Commits a release prep change
+      - Ensures trunk is up-to-date, pushes branch, and monitors CI (GitHub/GitLab)
+      - Merges feature into trunk upon CI success
+      - Exports SOURCE_DATE_EPOCH, builds, records checksums, and releases
+
+    Environment:
+      SKIP_GEM_SIGNING=true        # skip gem signing during build/release
+      GEM_CERT_USER=<user>         # selects certs/<user>.pem for signing
+      GITHUB_TOKEN / GH_TOKEN      # optional, to query GitHub Actions
+      GITLAB_TOKEN / GL_TOKEN      # optional, to query GitLab pipelines
+      DEBUG=true                   # print backtraces on errors
+  USAGE
+  exit 0
+end
+
+begin
   Kettle::Dev::ReleaseCLI.new.run
+rescue LoadError => e
+  warn("kettle-release: could not load dependency: #{e.message}")
+  warn(e.backtrace.join("\n")) if ENV["DEBUG"]
+  exit(1)
+rescue SystemExit => e
+  # Preserve exit status, but ensure at least a newline so shells don't show an empty line only.
+  warn("kettle-release exited (status=#{e.status})") if e.status != 0
+  raise
+rescue StandardError => e
+  warn("kettle-release: unexpected error: #{e.class}: #{e.message}")
+  warn(e.backtrace.join("\n"))
+  exit(1)
 end
