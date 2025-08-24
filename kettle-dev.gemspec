@@ -97,7 +97,11 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
   spec.bindir = "exe"
   # files listed are relative paths from bindir above.
-  spec.executables = []
+  spec.executables = [
+    "kettle-commit-msg",
+    "kettle-readme-backers",
+    "kettle-release",
+  ]
 
   # Utilities
   spec.add_dependency("version_gem", "~> 1.1", ">= 1.1.8")              # ruby >= 2.2.0
