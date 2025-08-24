@@ -19,16 +19,11 @@ jobs:
           bundler: default
           bundler-cache: true
 
-      - name: Machine User & Gem Install
-        run: |
-          git config user.name 'autobolt'
-          git config user.email 'autobots@9thbit.net'
-
-      - name: README Update & Commit
+      - name: README Update
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
+          git config user.name 'autobolt'
+          git config user.email 'autobots@9thbit.net'
           bin/kettle-readme-backers
-      - name: Push Changes
-        run: |
           git push
