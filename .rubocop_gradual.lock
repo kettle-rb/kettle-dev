@@ -10,12 +10,12 @@
     [141, 5, 47, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 45456806],
     [225, 5, 39, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 4038128320]
   ],
-  "spec/kettle/dev_private_spec.rb:652722627": [
+  "spec/kettle/dev_private_spec.rb:2199858227": [
     [5, 5, 49, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 146084145],
     [10, 7, 20, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 794029890],
     [10, 31, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `default_task` as a spy using `allow` or `instance_spy`.", 1384559950],
-    [78, 11, 18, "RSpec/LeakyConstantDeclaration: Stub module constant instead of declaring explicitly.", 3236815244],
-    [81, 43, 36, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 1790782556]
+    [79, 9, 18, "RSpec/LeakyConstantDeclaration: Stub module constant instead of declaring explicitly.", 3236815244],
+    [82, 41, 36, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 1790782556]
   ],
   "spec/kettle_dev_file_spec.rb:1811427211": [
     [3, 16, 25, "RSpec/DescribeClass: The first argument to describe should be the class or module being tested.", 3060513619],

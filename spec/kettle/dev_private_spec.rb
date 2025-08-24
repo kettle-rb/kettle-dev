@@ -45,43 +45,44 @@ RSpec.describe Kettle::Dev do
 
   # pending("RuboCop::Lts is only a dependency for Ruby >= 2.7") if RUBY_VERSION < "2.7"
   # But the next release of RuboCop::Lts will be for Ruby >= 3.2
-  if RUBY_VERSION >= "3.2"
-    describe "linting and coverage tasks" do
-      before do
-        require "rubocop/lts" # have to require here so we can spy on it
-        # stub register_default to observe calls without mutating global Rake
-        allow(described_class).to receive(:register_default).and_call_original
-        allow(Rubocop::Lts).to receive(:install_tasks)
-      end
+  # But also RuboCop::Lts is only installed on the Style and Locked / Unlocked CI workflows,
+  #   so these would fail everywhere else.
+  # As such, these specs are only useful on local.
+  describe "linting and coverage tasks", :skip_ci do
+    before do
+      require "rubocop/lts" # have to require here so we can spy on it
+      # stub register_default to observe calls without mutating global Rake
+      allow(described_class).to receive(:register_default).and_call_original
+      allow(Rubocop::Lts).to receive(:install_tasks)
+    end
 
-      it "registers autocorrect when not on CI" do
-        stub_const("Kettle::Dev::IS_CI", false)
-        described_class.send(:linting_tasks)
-        expect(described_class.defaults).to include("rubocop_gradual:autocorrect")
-      end
+    it "registers autocorrect when not on CI" do
+      stub_const("Kettle::Dev::IS_CI", false)
+      described_class.send(:linting_tasks)
+      expect(described_class.defaults).to include("rubocop_gradual:autocorrect")
+    end
 
-      it "registers check when on CI" do
-        stub_const("Kettle::Dev::IS_CI", true)
-        described_class.send(:linting_tasks)
-        expect(described_class.defaults).to include("rubocop_gradual:check")
-      end
+    it "registers check when on CI" do
+      stub_const("Kettle::Dev::IS_CI", true)
+      described_class.send(:linting_tasks)
+      expect(described_class.defaults).to include("rubocop_gradual:check")
+    end
 
-      it "handles missing kettle-soup-cover (LoadError)" do
-        # Force require to raise when asking for kettle-soup-cover
-        allow(described_class).to receive(:require).with("kettle-soup-cover").and_raise(LoadError)
-        expect { described_class.send(:coverage_tasks) }.not_to raise_error
-      end
+    it "handles missing kettle-soup-cover (LoadError)" do
+      # Force require to raise when asking for kettle-soup-cover
+      allow(described_class).to receive(:require).with("kettle-soup-cover").and_raise(LoadError)
+      expect { described_class.send(:coverage_tasks) }.not_to raise_error
+    end
 
-      it "registers coverage when kettle-soup-cover present and not CI" do
-        stub_const("Kettle::Dev::IS_CI", false)
-        Module.new do
-          module Kettle; end
-        end
-        allow(described_class).to receive(:require).with("kettle-soup-cover").and_return(true)
-        stub_const("Kettle::Soup::Cover", double("Cover", install_tasks: true))
-        described_class.send(:coverage_tasks)
-        expect(described_class.defaults).to include("coverage")
+    it "registers coverage when kettle-soup-cover present and not CI" do
+      stub_const("Kettle::Dev::IS_CI", false)
+      Module.new do
+        module Kettle; end
       end
+      allow(described_class).to receive(:require).with("kettle-soup-cover").and_return(true)
+      stub_const("Kettle::Soup::Cover", double("Cover", install_tasks: true))
+      described_class.send(:coverage_tasks)
+      expect(described_class.defaults).to include("coverage")
     end
   end
 end
