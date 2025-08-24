@@ -275,9 +275,11 @@ namespace :kettle do
                   if first_h1_dest
                     after = first_h1_dest.sub(/^#\s+/, "")
                     emojis = +""
-                    while (m = after.match(/\A#{emoji_re.source}/u))
-                      emojis << m[0]
-                      after = after[m[0].length..-1].to_s
+                    while after =~ /\A#{emoji_re.source}/u
+                      # Capture the entire grapheme cluster for the emoji (handles VS16/ZWJ sequences)
+                      cluster = after[/\A\X/u]
+                      emojis << cluster
+                      after = after[cluster.length..-1].to_s
                     end
                     dest_emojis = emojis unless emojis.empty?
                   end
@@ -288,7 +290,15 @@ namespace :kettle do
                   idx = lines_new.index { |ln| ln =~ /^#\s+/ }
                   if idx
                     rest = lines_new[idx].sub(/^#\s+/, "")
-                    rest_wo_emoji = rest.sub(/\A(?:#{emoji_re.source})+\s*/u, "")
+                    # Remove any leading emojis from the H1 by peeling full grapheme clusters
+                    rest_wo_emoji = begin
+                      tmp = rest.dup
+                      while tmp =~ /\A#{emoji_re.source}/u
+                        cluster = tmp[/\A\X/u]
+                        tmp = tmp[cluster.length..-1].to_s
+                      end
+                      tmp.sub(/\A\s+/, "")
+                    end
                     lines_new[idx] = ["#", dest_emojis, rest_wo_emoji].join(" ").gsub(/\s+/, " ").sub(/^#\s+/, "# ")
                     c = lines_new.join("\n")
                   end
