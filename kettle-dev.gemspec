@@ -62,10 +62,44 @@ Gem::Specification.new do |spec|
   spec.metadata["rubygems_mfa_required"] = "true"
 
   # Specify which files are part of the released package.
+  # Include all sources required by install/template tasks so they work from the shipped gem.
   spec.files = Dir[
-    # Splats (alphabetical)
+    # Executables and tasks
+    "exe/*",
     "lib/**/*.rb",
+    "lib/**/*.rake",
+    # Signatures
     "sig/**/*.rbs",
+    # Template-able project assets
+    ".devcontainer/**/*",
+    ".github/**/*",
+    ".git-hooks/*",
+    ".qlty/**/*",
+    "gemfiles/modular/*.gemfile",
+    # Root files used by template tasks
+    ".envrc",
+    ".gitignore",
+    ".gitlab-ci.yml",
+    ".opencollective.yml",
+    ".rspec",
+    ".rubocop.yml",
+    ".simplecov",
+    ".tool-versions",
+    ".yard_gfm_support.rb",
+    ".yardopts",
+    "Appraisal.root.gemfile",
+    "Appraisals",
+    "CHANGELOG.md",
+    "CITATION.cff",
+    "CODE_OF_CONDUCT.md",
+    "CONTRIBUTING.md",
+    "Gemfile",
+    "Rakefile",
+    "README.md",
+    "RUBOCOP.md",
+    "SECURITY.md",
+    ".junie/guidelines.md",
+    ".junie/guidelines-rbs.md",
   ]
   # Automatically included with gem package, no need to list again in files.
   spec.extra_rdoc_files = Dir[
