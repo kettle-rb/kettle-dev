@@ -92,12 +92,12 @@ module Kettle
         checkout!(trunk)
         pull!(trunk)
 
-        export_source_date_epoch!
+        epoch = export_source_date_epoch!
 
         ensure_signing_setup_or_skip!
         # Build: expect PEM password prompt unless SKIP_GEM_SIGNING
         puts "Running build (you may be prompted for the signing key password)..."
-        run_cmd!("bundle exec rake build")
+        run_cmd!("SOURCE_DATE_EPOCH=#{epoch} bundle exec rake build")
 
         # Checksums (commits, but does not push)
         run_cmd!("bin/gem_checksums")
@@ -105,7 +105,7 @@ module Kettle
 
         # Release: expect PEM password + RubyGems MFA OTP
         puts "Running release (you may be prompted for signing key password and RubyGems MFA OTP)..."
-        run_cmd!("bundle exec rake release")
+        run_cmd!("SOURCE_DATE_EPOCH=#{epoch} bundle exec rake release")
         # Some release tasks rebuild the gem; re-validate to ensure reproducibility
         validate_checksums!(version, stage: "after release")
 
@@ -486,6 +486,7 @@ module Kettle
         epoch = Time.now.to_i
         ENV["SOURCE_DATE_EPOCH"] = epoch.to_s
         puts "Exported SOURCE_DATE_EPOCH=#{epoch}"
+        epoch
       end
 
       def ensure_signing_setup_or_skip!

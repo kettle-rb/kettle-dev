@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning v2](https://semver.org/spec/v2.
 ### Deprecated
 ### Removed
 ### Fixed
+- kettle-release: ensure SOURCE_DATE_EPOCH is applied within the same shell for both build and release by prefixing the commands with the env var (e.g., `SOURCE_DATE_EPOCH=$epoch bundle exec rake build` and `... rake release`); prevents losing the variable across shell boundaries and improves reproducible checksums.
 ### Security
 
 ## [1.0.5] - 2025-08-24
