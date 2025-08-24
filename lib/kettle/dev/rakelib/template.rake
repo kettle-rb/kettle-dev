@@ -358,11 +358,18 @@ namespace :kettle do
         puts "WARNING: Could not determine env file changes: #{e.class}: #{e.message}"
       end
 
-      # Handle .git-hooks template files (commit-subjects-goalie.txt, footer-template.erb.txt)
+      # Handle .git-hooks files
+      # - Two template files (.txt) are offered with a location prompt (local/global/skip).
+      # - Two hook scripts are always copied to both local and global locations by default;
+      #   if they already exist, ask before overwriting.
       source_hooks_dir = File.join(gem_checkout_root, ".git-hooks")
       if Dir.exist?(source_hooks_dir)
         goalie_src = File.join(source_hooks_dir, "commit-subjects-goalie.txt")
         footer_src = File.join(source_hooks_dir, "footer-template.erb.txt")
+        hook_ruby_src = File.join(source_hooks_dir, "commit-msg")
+        hook_sh_src = File.join(source_hooks_dir, "prepare-commit-msg")
+
+        # First: templates (.txt) — keep the existing single question which applies only to these
         if File.file?(goalie_src) && File.file?(footer_src)
           puts
           puts "Git hooks templates found:"
@@ -394,17 +401,58 @@ namespace :kettle do
             FileUtils.mkdir_p(dest_dir)
             [[goalie_src, "commit-subjects-goalie.txt"], [footer_src, "footer-template.erb.txt"]].each do |src, base|
               dest = File.join(dest_dir, base)
-              FileUtils.cp(src, dest)
+              # Use helpers to allow create/replace prompts for these files (question applies to them)
+              helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true)
               # Ensure readable (0644). These are data/templates, not executables.
               begin
-                File.chmod(0o644, dest)
+                File.chmod(0o644, dest) if File.exist?(dest)
               rescue StandardError
                 # ignore permission issues
               end
-              puts "Copied #{base} -> #{dest}"
             end
           else
             puts "Skipping copy of .git-hooks templates."
+          end
+        end
+
+        # Second: hook scripts — copy only to the local project; prompt only on overwrite
+        # Per requirements: do not install hook scripts to global ~/.git-hooks
+        hook_dests = [File.join(project_root, ".git-hooks")]
+        hook_pairs = [[hook_ruby_src, "commit-msg", 0o755], [hook_sh_src, "prepare-commit-msg", 0o755]]
+        hook_pairs.each do |src, base, mode|
+          next unless File.file?(src)
+          hook_dests.each do |dstdir|
+            begin
+              FileUtils.mkdir_p(dstdir)
+              dest = File.join(dstdir, base)
+              # Create without prompt if missing; if exists, ask to replace
+              if File.exist?(dest)
+                # ask to overwrite
+                if helpers.ask("Overwrite existing #{dest}?", true)
+                  content = File.read(src)
+                  helpers.write_file(dest, content)
+                  begin
+                    File.chmod(mode, dest)
+                  rescue StandardError
+                    # ignore permission issues
+                  end
+                  puts "Replaced #{dest}"
+                else
+                  puts "Kept existing #{dest}"
+                end
+              else
+                content = File.read(src)
+                helpers.write_file(dest, content)
+                begin
+                  File.chmod(mode, dest)
+                rescue StandardError
+                  # ignore permission issues
+                end
+                puts "Installed #{dest}"
+              end
+            rescue StandardError => e
+              puts "WARNING: Could not install hook #{base} to #{dstdir}: #{e.class}: #{e.message}"
+            end
           end
         end
       end
