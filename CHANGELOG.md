@@ -10,9 +10,16 @@ and this project adheres to [Semantic Versioning v2](https://semver.org/spec/v2.
 ### Deprecated
 ### Removed
 ### Fixed
+### Security
+
+## [1.0.7] - 2025-08-24
+- TAG: [v1.0.7][1.0.7t]
+- COVERAGE: 100.00% -- 130/130 lines in 7 files
+- BRANCH COVERAGE:  96.00% -- 48/50 branches in 7 files
+- 95.35% documented
+### Fixed
 - Reproducible builds, with consistent checksums, by *not* using SOURCE_DATE_EPOCH.
   - Since bundler v2.7.0 builds are reproducible by default.
-### Security
 
 ## [1.0.6] - 2025-08-24
 - TAG: [v1.0.6][1.0.6t]
@@ -101,7 +108,9 @@ and this project adheres to [Semantic Versioning v2](https://semver.org/spec/v2.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.6...HEAD
+[Unreleased]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.7...HEAD
+[1.0.7]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.6...v1.0.7
+[1.0.7t]: https://gitlab.com/kettle-rb/kettle-dev/-/tags/v1.0.7
 [1.0.6]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.5...v1.0.6
 [1.0.6t]: https://gitlab.com/kettle-rb/kettle-dev/-/tags/v1.0.6
 [1.0.5]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.4...v1.0.5
