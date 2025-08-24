@@ -33,6 +33,13 @@ This document captures project-specific knowledge to streamline setup, testing, 
 - Gem signing (for releases)
   - Signing is enabled unless SKIP_GEM_SIGNING is set. If enabled and certificates are present (certs/<USER>.pem), gem build will attempt to sign using ~/.ssh/gem-private_key.pem.
   - See CONTRIBUTING.md for releasing details; use SKIP_GEM_SIGNING when building in environments without the private key.
+  - Important for local testing (to avoid hanging prompts): ALWAYS skip signing when building locally to test the packaging or install process. Without the private key password, the build will wait indefinitely at a signing prompt.
+    - One-off commands (recommended):
+      - SKIP_GEM_SIGNING=true gem build kettle-dev.gemspec
+      - SKIP_GEM_SIGNING=true bundle exec rake build
+      - SKIP_GEM_SIGNING=true bundle exec rake release  # only to test workflow; do not actually push
+    - direnv option (optional, not recommended globally): add `export SKIP_GEM_SIGNING=true` to your .env.local when you know you won’t be signing in this environment.
+    - Remove or unset SKIP_GEM_SIGNING when performing a real, signed release in the environment that has the private key.
 
 2. Testing
 - Framework and helpers
