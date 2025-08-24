@@ -145,9 +145,19 @@ namespace :kettle do
         end
       end
 
-      # 6) Root and other files
+      # 6) .env.local special case: never overwrite project .env.local; copy template as .env.local.example
+      begin
+        envlocal_src = helpers.prefer_example(File.join(gem_checkout_root, ".env.local"))
+        envlocal_dest = File.join(project_root, ".env.local.example")
+        if File.exist?(envlocal_src)
+          helpers.copy_file_with_prompt(envlocal_src, envlocal_dest, allow_create: true, allow_replace: true)
+        end
+      rescue StandardError => e
+        puts "WARNING: Skipped .env.local example copy due to #{e.class}: #{e.message}"
+      end
+
+      # 7) Root and other files
       files_to_copy = %w[
-        .env.local
         .envrc
         .gitignore
         .gitlab-ci.yml
@@ -268,29 +278,29 @@ namespace :kettle do
         end
       end
 
-      # After creating or replacing .envrc or .env.local, require `direnv allow` and exit unless allowed
+      # After creating or replacing .envrc or .env.local.example, require review and exit unless allowed
       begin
         envrc_path = File.join(project_root, ".envrc")
-        envlocal_path = File.join(project_root, ".env.local")
+        envlocal_example_path = File.join(project_root, ".env.local.example")
         changed_env_files = []
         changed_env_files << envrc_path if helpers.modified_by_template?(envrc_path)
-        changed_env_files << envlocal_path if helpers.modified_by_template?(envlocal_path)
+        changed_env_files << envlocal_example_path if helpers.modified_by_template?(envlocal_example_path)
         if !changed_env_files.empty?
           if ENV.fetch("allowed", "").to_s =~ /\A(1|true|y|yes)\z/i
             puts "Detected updates to #{changed_env_files.map { |p| File.basename(p) }.join(" and ")}. Proceeding because allowed=true."
           else
             puts
-            puts "IMPORTANT: The following environment files were created/updated:"
+            puts "IMPORTANT: The following environment-related files were created/updated:"
             changed_env_files.each { |p| puts "  - #{p}" }
             puts
-            puts "Please review these files and then run:"
+            puts "Please review these files. If .envrc changed, run:"
             puts "  direnv allow"
             puts
             puts "After that, re-run to resume:"
             puts "  bundle exec rake kettle:dev:template allowed=true"
             puts "  # or to run the full install afterwards:"
             puts "  bundle exec rake kettle:dev:install allowed=true"
-            abort("Aborting: direnv allow required after environment file changes.")
+            abort("Aborting: review of environment files required before continuing.")
           end
         end
       rescue StandardError => e

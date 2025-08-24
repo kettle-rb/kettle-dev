@@ -323,6 +323,29 @@ Values: Hash with keys: :action (Symbol, one of :create, :replace, :skip, :dir_c
         <li class="public ">
   <span class="summary_signature">
     
+      <a href="#prefer_example-class_method" title="prefer_example (class method)">.<strong>prefer_example</strong>(src_path)  &#x21d2; String </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Prefer an .example variant for a given source path when present For a given intended source path (e.g., “/src/Rakefile”), this will return “/src/Rakefile.example” if it exists, otherwise returns the original path.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
       <a href="#project_root-class_method" title="project_root (class method)">.<strong>project_root</strong>  &#x21d2; String </a>
     
 
@@ -529,22 +552,22 @@ Values: Hash with keys: :action (Symbol, one of :create, :replace, :skip, :dir_c
       <pre class="lines">
 
 
-202
-203
-204
-205
-206
-207
-208
-209
-210
-211
-212
-213
-214</pre>
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 202</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 214</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_apply_common_replacements'>apply_common_replacements</span><span class='lparen'>(</span><span class='id identifier rubyid_content'>content</span><span class='comma'>,</span> <span class='label'>gh_org:</span><span class='comma'>,</span> <span class='label'>gem_name:</span><span class='comma'>,</span> <span class='label'>namespace:</span><span class='comma'>,</span> <span class='label'>namespace_shield:</span><span class='comma'>,</span> <span class='label'>gem_shield:</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='id identifier rubyid_content'>content</span><span class='period'>.</span><span class='id identifier rubyid_dup'>dup</span>
@@ -692,18 +715,6 @@ Values: Hash with keys: :action (Symbol, one of :create, :replace, :skip, :dir_c
       <pre class="lines">
 
 
-154
-155
-156
-157
-158
-159
-160
-161
-162
-163
-164
-165
 166
 167
 168
@@ -730,10 +741,22 @@ Values: Hash with keys: :action (Symbol, one of :create, :replace, :skip, :dir_c
 189
 190
 191
-192</pre>
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 154</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 166</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_copy_dir_with_prompt'>copy_dir_with_prompt</span><span class='lparen'>(</span><span class='id identifier rubyid_src_dir'>src_dir</span><span class='comma'>,</span> <span class='id identifier rubyid_dest_dir'>dest_dir</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='const'>Dir</span><span class='period'>.</span><span class='id identifier rubyid_exist?'>exist?</span><span class='lparen'>(</span><span class='id identifier rubyid_src_dir'>src_dir</span><span class='rparen'>)</span>
@@ -805,18 +828,6 @@ Yields content for transformation when block given.</p>
       <pre class="lines">
 
 
-123
-124
-125
-126
-127
-128
-129
-130
-131
-132
-133
-134
 135
 136
 137
@@ -832,10 +843,22 @@ Yields content for transformation when block given.</p>
 147
 148
 149
-150</pre>
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 123</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 135</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_copy_file_with_prompt'>copy_file_with_prompt</span><span class='lparen'>(</span><span class='id identifier rubyid_src_path'>src_path</span><span class='comma'>,</span> <span class='id identifier rubyid_dest_path'>dest_path</span><span class='comma'>,</span> <span class='label'>allow_create:</span> <span class='kw'>true</span><span class='comma'>,</span> <span class='label'>allow_replace:</span> <span class='kw'>true</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_exist?'>exist?</span><span class='lparen'>(</span><span class='id identifier rubyid_src_path'>src_path</span><span class='rparen'>)</span>
@@ -943,18 +966,6 @@ If not a git repo, this is a no-op.</p>
       <pre class="lines">
 
 
-93
-94
-95
-96
-97
-98
-99
-100
-101
-102
-103
-104
 105
 106
 107
@@ -968,10 +979,22 @@ If not a git repo, this is a no-op.</p>
 115
 116
 117
-118</pre>
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 93</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 105</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_ensure_clean_git!'>ensure_clean_git!</span><span class='lparen'>(</span><span class='label'>root:</span><span class='comma'>,</span> <span class='label'>task_label:</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_inside_repo'>inside_repo</span> <span class='op'>=</span> <span class='kw'>begin</span>
@@ -1117,18 +1140,6 @@ Calculated relative to lib/kettle/dev/</p>
       <pre class="lines">
 
 
-219
-220
-221
-222
-223
-224
-225
-226
-227
-228
-229
-230
 231
 232
 233
@@ -1172,10 +1183,22 @@ Calculated relative to lib/kettle/dev/</p>
 271
 272
 273
-274</pre>
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 219</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 231</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_gemspec_metadata'>gemspec_metadata</span><span class='lparen'>(</span><span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span> <span class='op'>=</span> <span class='id identifier rubyid_project_root'>project_root</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_gemspecs'>gemspecs</span> <span class='op'>=</span> <span class='const'>Dir</span><span class='period'>.</span><span class='id identifier rubyid_glob'>glob</span><span class='lparen'>(</span><span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>*.gemspec</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='rparen'>)</span>
@@ -1291,19 +1314,94 @@ Calculated relative to lib/kettle/dev/</p>
       <pre class="lines">
 
 
-82
-83
-84
-85
-86</pre>
+94
+95
+96
+97
+98</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 82</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 94</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_modified_by_template?'>modified_by_template?</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_path'>dest_path</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_rec'>rec</span> <span class='op'>=</span> <span class='cvar'>@@template_results</span><span class='lbracket'>[</span><span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_expand_path'>expand_path</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_path'>dest_path</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span><span class='rbracket'>]</span>
   <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='id identifier rubyid_rec'>rec</span>
   <span class='lbracket'>[</span><span class='symbol'>:create</span><span class='comma'>,</span> <span class='symbol'>:replace</span><span class='comma'>,</span> <span class='symbol'>:dir_create</span><span class='comma'>,</span> <span class='symbol'>:dir_replace</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_rec'>rec</span><span class='lbracket'>[</span><span class='symbol'>:action</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="prefer_example-class_method">
+  
+    .<strong>prefer_example</strong>(src_path)  &#x21d2; <tt>String</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Prefer an .example variant for a given source path when present<br />
+For a given intended source path (e.g., “/src/Rakefile”), this will return<br />
+“/src/Rakefile.example” if it exists, otherwise returns the original path.<br />
+If the given path already ends with .example, it is returned as-is.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>src_path</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+66
+67
+68
+69
+70</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 66</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_prefer_example'>prefer_example</span><span class='lparen'>(</span><span class='id identifier rubyid_src_path'>src_path</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='id identifier rubyid_src_path'>src_path</span> <span class='kw'>if</span> <span class='id identifier rubyid_src_path'>src_path</span><span class='period'>.</span><span class='id identifier rubyid_end_with?'>end_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>.example</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_example'>example</span> <span class='op'>=</span> <span class='id identifier rubyid_src_path'>src_path</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>.example</span><span class='tstring_end'>&quot;</span></span>
+  <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_exist?'>exist?</span><span class='lparen'>(</span><span class='id identifier rubyid_example'>example</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_example'>example</span> <span class='op'>:</span> <span class='id identifier rubyid_src_path'>src_path</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1418,17 +1516,17 @@ Calculated relative to lib/kettle/dev/</p>
       <pre class="lines">
 
 
-64
-65
-66
-67
-68
-69
-70
-71</pre>
+76
+77
+78
+79
+80
+81
+82
+83</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 64</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 76</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_record_template_result'>record_template_result</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_path'>dest_path</span><span class='comma'>,</span> <span class='id identifier rubyid_action'>action</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_abs'>abs</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_expand_path'>expand_path</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_path'>dest_path</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span>
@@ -1481,12 +1579,12 @@ Calculated relative to lib/kettle/dev/</p>
       <pre class="lines">
 
 
-75
-76
-77</pre>
+87
+88
+89</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 75</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 87</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_template_results'>template_results</span>
   <span class='cvar'>@@template_results</span><span class='period'>.</span><span class='id identifier rubyid_clone'>clone</span>
@@ -1569,7 +1667,7 @@ Calculated relative to lib/kettle/dev/</p>
 </div>
 
       <div id="footer">
-  Generated on Sat Aug 23 17:59:55 2025 by
+  Generated on Sat Aug 23 18:54:13 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>
