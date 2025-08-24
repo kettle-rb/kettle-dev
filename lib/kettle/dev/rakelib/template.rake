@@ -75,10 +75,10 @@ namespace :kettle do
         allow_replace: true,
       )
 
-      # 4) gemfile/modular/*.gemfile (from gem's gemfiles/modular)
+      # 4) gemfiles/modular/*.gemfile (from gem's gemfiles/modular)
       [%w[coverage.gemfile], %w[documentation.gemfile], %w[style.gemfile]].each do |base|
         src = helpers.prefer_example(File.join(gem_checkout_root, "gemfiles/modular", base[0]))
-        dest = File.join(project_root, "gemfile/modular", base[0])
+        dest = File.join(project_root, "gemfiles/modular", base[0])
         if File.basename(src).sub(/\.example\z/, "") == "style.gemfile"
           helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true) do |content|
             # Adjust rubocop-lts constraint based on min_ruby
