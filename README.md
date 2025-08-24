@@ -310,7 +310,7 @@ and [Tidelift][🏙️entsup-tidelift].
 ### Open Collective for Individuals
 
 <!-- OPENCOLLECTIVE-INDIVIDUALS:START -->
-
+No backers yet. Be the first!
 <!-- OPENCOLLECTIVE-INDIVIDUALS:END -->
 
 Support us with a monthly donation and help us continue our activities. [[Become a backer](https://opencollective.com/kettle-rb#backer)]
@@ -318,7 +318,7 @@ Support us with a monthly donation and help us continue our activities. [[Become
 ### Open Collective for Organizations
 
 <!-- OPENCOLLECTIVE-ORGANIZATIONS:START -->
-
+No sponsors yet. Be the first!
 <!-- OPENCOLLECTIVE-ORGANIZATIONS:END -->
 
 Become a sponsor and get your logo on our README on GitHub with a link to your site. [[Become a sponsor](https://opencollective.com/kettle-rb#sponsor)]
