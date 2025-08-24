@@ -20,7 +20,7 @@ RSpec.describe Kettle::Dev do
       block_is_expected.to not_raise_error &
         change {
           Rake.application.options.rakelib
-        }.from(["rakelib"]).to(include(rakelibs))
+        }.from(["rakelib"]).to(include(*rakelibs))
     end
   end
 end
