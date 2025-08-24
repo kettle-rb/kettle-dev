@@ -254,6 +254,26 @@ Releasing (maintainers)
 
 Tip: The commit message helper `exe/kettle-commit-msg` prefers project-local `.git-hooks` (then falls back to `~/.git-hooks`). The goalie file `commit-subjects-goalie.txt` controls when a footer is appended; customize `footer-template.erb.txt` as you like.
 
+### Open Collective README updater
+
+- Script: `exe/kettle-readme-backers`
+- Purpose: Updates README sections for Open Collective backers (individuals) and sponsors (organizations) by fetching live data from your collective.
+- Tags updated in README.md (first match wins for backers):
+  - Backers (Individuals): `<!-- OPENCOLLECTIVE:START --> … <!-- OPENCOLLECTIVE:END -->` or `<!-- OPENCOLLECTIVE-INDIVIDUALS:START --> … <!-- OPENCOLLECTIVE-INDIVIDUALS:END -->`
+  - Sponsors (Organizations): `<!-- OPENCOLLECTIVE-ORGANIZATIONS:START --> … <!-- OPENCOLLECTIVE-ORGANIZATIONS:END -->`
+- Handle resolution:
+  1. `OPENCOLLECTIVE_HANDLE` environment variable, if set
+  2. `opencollective.yml` in the project root (`collective: "kettle-rb"` by default in this repo)
+- Usage:
+  - `exe/kettle-readme-backers`
+  - `OPENCOLLECTIVE_HANDLE=my-collective exe/kettle-readme-backers`
+- Behavior:
+  - Writes to README.md only if content between the tags would change.
+  - If neither the backers nor sponsors tags are present, prints a helpful warning and exits with status 2.
+  - When there are no entries, inserts a friendly placeholder: "No backers yet. Be the first!" or "No sponsors yet. Be the first!".
+  - When updates are written and the repository is a git work tree, the script stages README.md and commits with a message: "Thanks to our new backers and subscribers", including mentions for any newly added backers and subscribers (GitHub @handles when their website/profile is a github.com URL; otherwise their name).
+- Tip: Run this locally before committing to keep your README current, or schedule it in CI to refresh periodically.
+
 
 ## 🦷 FLOSS Funding
 
@@ -280,9 +300,17 @@ and [Tidelift][🏙️entsup-tidelift].
 
 ### Open Collective for Individuals
 
+<!-- OPENCOLLECTIVE-INDIVIDUALS:START -->
+
+<!-- OPENCOLLECTIVE-INDIVIDUALS:END -->
+
 Support us with a monthly donation and help us continue our activities. [[Become a backer](https://opencollective.com/kettle-rb#backer)]
 
 ### Open Collective for Organizations
+
+<!-- OPENCOLLECTIVE-ORGANIZATIONS:START -->
+
+<!-- OPENCOLLECTIVE-ORGANIZATIONS:END -->
 
 Become a sponsor and get your logo on our README on GitHub with a link to your site. [[Become a sponsor](https://opencollective.com/kettle-rb#sponsor)]
 

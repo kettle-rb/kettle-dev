@@ -167,6 +167,7 @@ namespace :kettle do
         .tool-versions
         .yard_gfm_support.rb
         .yardopts
+        .opencollective.yml
         Appraisal.root.gemfile
         Appraisals
         CHANGELOG.md
@@ -312,7 +313,7 @@ namespace :kettle do
 
             c
           end
-        elsif ["CHANGELOG.md", "CITATION.cff", "CONTRIBUTING.md", ".junie/guidelines.md"].include?(rel)
+        elsif ["CHANGELOG.md", "CITATION.cff", "CONTRIBUTING.md", ".opencollective.yml", ".junie/guidelines.md"].include?(rel)
           helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true) do |content|
             helpers.apply_common_replacements(
               content,
