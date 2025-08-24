@@ -104,9 +104,6 @@ Gem::Specification.new do |spec|
   # Automatically included with gem package, normally no need to list again in files.
   # But this gem acts as a pseudo-template, so we include some in both places.
   spec.extra_rdoc_files = Dir[
-    # Splats (alphabetical)
-    "checksums/**/*.sha256",
-    "checksums/**/*.sha512",
     # Files (alphabetical)
     "CHANGELOG.md",
     "CITATION.cff",

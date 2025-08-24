@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning v2](https://semver.org/spec/v2.
 ### Deprecated
 ### Removed
 ### Fixed
+- Can't add checksums to the gem package, because it changes the checksum (duh!)
 ### Security
 
 ## [1.0.7] - 2025-08-24
