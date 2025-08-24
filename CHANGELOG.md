@@ -10,8 +10,15 @@ and this project adheres to [Semantic Versioning v2](https://semver.org/spec/v2.
 ### Deprecated
 ### Removed
 ### Fixed
-- Can't add checksums to the gem package, because it changes the checksum (duh!)
 ### Security
+
+## [1.0.8] - 2025-08-24
+- TAG: [v1.0.8][1.0.8t]
+- COVERAGE: 100.00% -- 130/130 lines in 7 files
+- BRANCH COVERAGE:  96.00% -- 48/50 branches in 7 files
+- 95.35% documented
+### Fixed
+- Can't add checksums to the gem package, because it changes the checksum (duh!)
 
 ## [1.0.7] - 2025-08-24
 - TAG: [v1.0.7][1.0.7t]
@@ -109,7 +116,9 @@ and this project adheres to [Semantic Versioning v2](https://semver.org/spec/v2.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.7...HEAD
+[Unreleased]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.8...HEAD
+[1.0.8]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.7...v1.0.8
+[1.0.8t]: https://gitlab.com/kettle-rb/kettle-dev/-/tags/v1.0.8
 [1.0.7]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.6...v1.0.7
 [1.0.7t]: https://gitlab.com/kettle-rb/kettle-dev/-/tags/v1.0.7
 [1.0.6]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.5...v1.0.6

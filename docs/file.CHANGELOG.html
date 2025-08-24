@@ -63,16 +63,25 @@
 <p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog v1</a>,<br>
 and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semantic Versioning v2</a>.</p>
 
-<h2 id="unreleased"><a href="https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.7...HEAD">Unreleased</a></h2>
+<h2 id="unreleased"><a href="https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.8...HEAD">Unreleased</a></h2>
 <h3 id="added">Added</h3>
 <h3 id="changed">Changed</h3>
 <h3 id="deprecated">Deprecated</h3>
 <h3 id="removed">Removed</h3>
 <h3 id="fixed">Fixed</h3>
+<h3 id="security">Security</h3>
+
+<h2 id="108---2025-08-24">
+<a href="https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.7...v1.0.8">1.0.8</a> - 2025-08-24</h2>
 <ul>
-  <li>Can’t add checksums to the gem package, because it changes the checksum (duh!)
-    <h3 id="security">Security</h3>
+  <li>TAG: <a href="https://gitlab.com/kettle-rb/kettle-dev/-/tags/v1.0.8">v1.0.8</a>
+</li>
+  <li>COVERAGE: 100.00% – 130/130 lines in 7 files</li>
+  <li>BRANCH COVERAGE:  96.00% – 48/50 branches in 7 files</li>
+  <li>95.35% documented
+    <h3 id="fixed-1">Fixed</h3>
   </li>
+  <li>Can’t add checksums to the gem package, because it changes the checksum (duh!)</li>
 </ul>
 
 <h2 id="107---2025-08-24">
@@ -83,7 +92,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
   <li>COVERAGE: 100.00% – 130/130 lines in 7 files</li>
   <li>BRANCH COVERAGE:  96.00% – 48/50 branches in 7 files</li>
   <li>95.35% documented
-    <h3 id="fixed-1">Fixed</h3>
+    <h3 id="fixed-2">Fixed</h3>
   </li>
   <li>Reproducible builds, with consistent checksums, by <em>not</em> using SOURCE_DATE_EPOCH.
     <ul>
@@ -100,7 +109,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
   <li>COVERAGE: 100.00% – 130/130 lines in 7 files</li>
   <li>BRANCH COVERAGE:  96.00% – 48/50 branches in 7 files</li>
   <li>95.35% documented
-    <h3 id="fixed-2">Fixed</h3>
+    <h3 id="fixed-3">Fixed</h3>
   </li>
   <li>kettle-release: ensure SOURCE_DATE_EPOCH is applied within the same shell for both build and release by prefixing the commands with the env var (e.g., <code>SOURCE_DATE_EPOCH=$epoch bundle exec rake build</code> and <code>... rake release</code>); prevents losing the variable across shell boundaries and improves reproducible checksums.</li>
 </ul>
@@ -113,7 +122,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
   <li>COVERAGE: 100.00% – 130/130 lines in 7 files</li>
   <li>BRANCH COVERAGE:  96.00% – 48/50 branches in 7 files</li>
   <li>95.35% documented
-    <h3 id="fixed-3">Fixed</h3>
+    <h3 id="fixed-4">Fixed</h3>
   </li>
   <li>kettle-release: will run regardless of how it is invoked (i.e. works as binstub)</li>
 </ul>
@@ -130,7 +139,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
   </li>
   <li>kettle-release: checks all remotes for a GitHub remote and syncs origin/trunk with it; prompts to rebase or –no-ff merge when histories diverge; pushes to both origin and the GitHub remote on merge; uses the GitHub remote for GitHub Actions CI checks, and also checks GitLab CI when a GitLab remote and .gitlab-ci.yml are present.</li>
   <li>kettle-release: push logic improved — if a remote named <code>all</code> exists, push the current branch to it (assumed to cover multiple push URLs). Otherwise push the current branch to <code>origin</code> and to any GitHub, GitLab, and Codeberg remotes (whatever their names are).
-    <h3 id="fixed-4">Fixed</h3>
+    <h3 id="fixed-5">Fixed</h3>
   </li>
   <li>kettle-release now validates SHA256 checksums of the built gem against the recorded checksums and aborts on mismatch; helps ensure reproducible artifacts (honoring SOURCE_DATE_EPOCH).</li>
   <li>kettle-release now enforces CI checks and aborts if CI cannot be verified; supports GitHub Actions and GitLab pipelines, including releases from trunk/main.</li>
@@ -148,7 +157,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
     <h3 id="added-2">Added</h3>
   </li>
   <li>template task now copies .git-hooks files necessary for git hooks to work
-    <h3 id="fixed-5">Fixed</h3>
+    <h3 id="fixed-6">Fixed</h3>
   </li>
   <li>kettle-release now uses the host project’s root, instead of this gem’s installed root.</li>
   <li>Added .git-hooks files necessary for git hooks to work</li>
@@ -162,7 +171,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
   <li>COVERAGE: 100.00% – 98/98 lines in 7 files</li>
   <li>BRANCH COVERAGE: 100.00% – 30/30 branches in 7 files</li>
   <li>94.59% documented
-    <h3 id="fixed-6">Fixed</h3>
+    <h3 id="fixed-7">Fixed</h3>
   </li>
   <li>Added files necessary for kettle:dev:template task to work</li>
   <li>.github/workflows/opencollective.yml working!</li>
@@ -246,7 +255,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 </div></div>
 
       <div id="footer">
-  Generated on Sun Aug 24 07:11:14 2025 by
+  Generated on Sun Aug 24 07:14:02 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>
