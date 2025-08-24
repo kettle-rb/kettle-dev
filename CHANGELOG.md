@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning v2](https://semver.org/spec/v2.
 ### Deprecated
 ### Removed
 ### Fixed
+- Reproducible builds, with consistent checksums, by *not* using SOURCE_DATE_EPOCH.
+  - Since bundler v2.7.0 builds are reproducible by default.
 ### Security
 
 ## [1.0.6] - 2025-08-24

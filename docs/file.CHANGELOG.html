@@ -69,7 +69,15 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <h3 id="deprecated">Deprecated</h3>
 <h3 id="removed">Removed</h3>
 <h3 id="fixed">Fixed</h3>
-<h3 id="security">Security</h3>
+<ul>
+  <li>Reproducible builds, with consistent checksums, by <em>not</em> using SOURCE_DATE_EPOCH.
+    <ul>
+      <li>Since bundler v2.7.0 builds are reproducible by default.
+        <h3 id="security">Security</h3>
+      </li>
+    </ul>
+  </li>
+</ul>
 
 <h2 id="106---2025-08-24">
 <a href="https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.5...v1.0.6">1.0.6</a> - 2025-08-24</h2>
@@ -225,7 +233,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 </div></div>
 
       <div id="footer">
-  Generated on Sun Aug 24 06:21:18 2025 by
+  Generated on Sun Aug 24 06:55:14 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

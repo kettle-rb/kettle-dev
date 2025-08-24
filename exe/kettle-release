@@ -6,7 +6,7 @@
 # - Ensures version/changelog updated (with confirmation)
 # - Commits and pushes a release prep commit
 # - Ensures on trunk, up-to-date
-# - Exports SOURCE_DATE_EPOCH for reproducible checksums
+# - Builds and releases using Bundler/Rake (reproducible by default in Bundler 2.7+)
 # - Runs `bundle exec rake build` (expects PEM password unless SKIP_GEM_SIGNING)
 #   - If signing not skipped and no public cert in certs/<user>.pem, aborts with guidance
 # - Runs bin/gem_checksums
@@ -48,6 +48,8 @@ module Kettle
 
       def run
         puts "== kettle-release =="
+
+        ensure_bundler_2_7_plus!
 
         run_cmd!("bin/setup")
         run_cmd!("bin/rake")
@@ -92,12 +94,10 @@ module Kettle
         checkout!(trunk)
         pull!(trunk)
 
-        epoch = export_source_date_epoch!
-
         ensure_signing_setup_or_skip!
         # Build: expect PEM password prompt unless SKIP_GEM_SIGNING
         puts "Running build (you may be prompted for the signing key password)..."
-        run_cmd!("SOURCE_DATE_EPOCH=#{epoch} bundle exec rake build")
+        run_cmd!("bundle exec rake build")
 
         # Checksums (commits, but does not push)
         run_cmd!("bin/gem_checksums")
@@ -105,7 +105,7 @@ module Kettle
 
         # Release: expect PEM password + RubyGems MFA OTP
         puts "Running release (you may be prompted for signing key password and RubyGems MFA OTP)..."
-        run_cmd!("SOURCE_DATE_EPOCH=#{epoch} bundle exec rake release")
+        run_cmd!("bundle exec rake release")
         # Some release tasks rebuild the gem; re-validate to ensure reproducibility
         validate_checksums!(version, stage: "after release")
 
@@ -200,7 +200,7 @@ module Kettle
 
       def run_cmd!(cmd)
         puts "$ #{cmd}"
-        # Ensure current ENV (including SOURCE_DATE_EPOCH) is propagated explicitly
+        # Execute commands with the current environment
         success = system(ENV, cmd)
         abort("Command failed: #{cmd}") unless success
       end
@@ -219,6 +219,19 @@ module Kettle
         name, ok1 = git_output(["config", "user.name"])
         email, ok2 = git_output(["config", "user.email"])
         abort("Git user.name or user.email not configured.") unless ok1 && ok2 && !name.empty? && !email.empty?
+      end
+
+      def ensure_bundler_2_7_plus!
+        begin
+          require "bundler"
+        rescue LoadError
+          abort("Bundler is required. Please install bundler >= 2.7.0 and try again.")
+        end
+        ver = Gem::Version.new(Bundler::VERSION)
+        min = Gem::Version.new("2.7.0")
+        if ver < min
+          abort("kettle-release requires Bundler >= 2.7.0 for reproducible builds by default. Current: #{Bundler::VERSION}. Please upgrade bundler.")
+        end
       end
 
       def detect_version
@@ -482,13 +495,6 @@ module Kettle
         puts "Merged #{feature} into #{trunk} and pushed. The PR (if any) should auto-close."
       end
 
-      def export_source_date_epoch!
-        epoch = Time.now.to_i
-        ENV["SOURCE_DATE_EPOCH"] = epoch.to_s
-        puts "Exported SOURCE_DATE_EPOCH=#{epoch}"
-        epoch
-      end
-
       def ensure_signing_setup_or_skip!
         return if ENV.key?("SKIP_GEM_SIGNING")
 
@@ -528,8 +534,8 @@ module Kettle
               sha256sum: #{actual}
               file: #{checks_path}
               file: #{expected}
-            Ensure SOURCE_DATE_EPOCH is set consistently and that the artifact used by release is identical to the one checksummed.
-            You can retry: export SOURCE_DATE_EPOCH=$EPOCHSECONDS; bundle exec rake build && bin/gem_checksums && bundle exec rake release
+            The artifact being released must match the checksummed artifact exactly.
+            Retry locally: bundle exec rake build && bin/gem_checksums && bundle exec rake release
           MSG
         else
           puts "Checksum OK #{stage}: #{File.basename(gem_path)}"
@@ -574,7 +580,7 @@ if ARGV.include?("-h") || ARGV.include?("--help")
       - Commits a release prep change
       - Ensures trunk is up-to-date, pushes branch, and monitors CI (GitHub/GitLab)
       - Merges feature into trunk upon CI success
-      - Exports SOURCE_DATE_EPOCH, builds, records checksums, and releases
+      - Builds, records checksums, and releases (requires Bundler >= 2.7.0)
 
     Environment:
       SKIP_GEM_SIGNING=true        # skip gem signing during build/release

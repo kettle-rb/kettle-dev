@@ -187,8 +187,9 @@ See: <a href="https://guides.rubygems.org/security/#building-gems">RubyGems Secu
   <li>Run <code>git checkout $GIT_TRUNK_BRANCH_NAME</code>
 </li>
   <li>Run <code>git pull origin $GIT_TRUNK_BRANCH_NAME</code> to ensure latest trunk code</li>
-  <li>Set <code>SOURCE_DATE_EPOCH</code> so <code>rake build</code> and <code>rake release</code> use same timestamp, and generate same checksums
+  <li>Optional for older Bundler (&lt; 2.7.0): Set <code>SOURCE_DATE_EPOCH</code> so <code>rake build</code> and <code>rake release</code> use the same timestamp and generate the same checksums
     <ul>
+      <li>If your Bundler is &gt;= 2.7.0, you can skip this; builds are reproducible by default.</li>
       <li>Run <code>export SOURCE_DATE_EPOCH=$EPOCHSECONDS &amp;&amp; echo $SOURCE_DATE_EPOCH</code>
 </li>
       <li>If the echo above has no output, then it didn’t work.</li>
@@ -219,7 +220,7 @@ push git commits and tags, and push the <code>.gem</code> file to <a href="https
 </div></div>
 
       <div id="footer">
-  Generated on Sun Aug 24 06:21:18 2025 by
+  Generated on Sun Aug 24 06:55:14 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>
