@@ -21,7 +21,6 @@ jobs:
 
       - name: Machine User & Gem Install
         run: |
-          gem install kettle-dev
           git config user.name 'autobolt'
           git config user.email 'autobots@9thbit.net'
 
@@ -29,7 +28,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
-          kettle-readme-backers
+          bin/kettle-readme-backers
       - name: Push Changes
         run: |
           git push
