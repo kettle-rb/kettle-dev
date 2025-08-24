@@ -271,7 +271,11 @@ Tip: The commit message helper `exe/kettle-commit-msg` prefers project-local `.g
   - Writes to README.md only if content between the tags would change.
   - If neither the backers nor sponsors tags are present, prints a helpful warning and exits with status 2.
   - When there are no entries, inserts a friendly placeholder: "No backers yet. Be the first!" or "No sponsors yet. Be the first!".
-  - When updates are written and the repository is a git work tree, the script stages README.md and commits with a message: "Thanks to our new backers and subscribers", including mentions for any newly added backers and subscribers (GitHub @handles when their website/profile is a github.com URL; otherwise their name).
+  - When updates are written and the repository is a git work tree, the script stages README.md and commits with a message thanking new backers and subscribers, including mentions for any newly added backers and subscribers (GitHub @handles when their website/profile is a github.com URL; otherwise their name).
+  - Customize the commit subject via env var: `KETTLE_README_BACKERS_COMMIT_SUBJECT="💸 Thanks 🙏 to our new backers 🎒 and subscribers 📜"`.
+    - Or via .opencollective.yml: set `readme-backers-commit-subject: "💸 Thanks 🙏 to our new backers 🎒 and subscribers 📜"`.
+    - Precedence: ENV overrides .opencollective.yml; if neither is set, a sensible default is used.
+    - Note: When used with the provided `.git-hooks`, the subject should start with a gitmoji character (see [gitmoji][📌gitmoji]).
 - Tip: Run this locally before committing to keep your README current, or schedule it in CI to refresh periodically.
 
 

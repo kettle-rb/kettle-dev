@@ -275,7 +275,7 @@ module Kettle
       def perform_git_commit(new_backers, new_sponsors)
         backer_mentions = new_backers.map { |m| mention_for_member(m, default_name: "Backer") }.uniq
         sponsor_mentions = new_sponsors.map { |m| mention_for_member(m, default_name: "Subscriber") }.uniq
-        title = "🙏 Thanks to our new backers and subscribers"
+        title = commit_subject
         lines = [title]
         lines << ""
         lines << "Backers: #{backer_mentions.join(", ")}" unless backer_mentions.empty?
@@ -289,6 +289,25 @@ module Kettle
           return
         end
         system("git", "commit", "-m", message)
+      end
+
+      def commit_subject
+        env = ENV["KETTLE_README_BACKERS_COMMIT_SUBJECT"].to_s
+        return env unless env.strip.empty?
+        # Fallback to .opencollective.yml key: readme-backers-commit-subject
+        if File.file?(OC_YML_PATH)
+          begin
+            yml = YAML.safe_load(File.read(OC_YML_PATH))
+            if yml.is_a?(Hash)
+              from_yml = yml["readme-backers-commit-subject"] || yml[:"readme-backers-commit-subject"]
+              from_yml = from_yml.to_s if from_yml
+              return from_yml unless from_yml.nil? || from_yml.strip.empty?
+            end
+          rescue StandardError
+            # ignore yaml read errors and fall back to default
+          end
+        end
+        "💸 Thanks 🙏 to our new backers 🎒 and subscribers 📜"
       end
 
       def git_repo?

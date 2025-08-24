@@ -27,8 +27,10 @@ Oh snap, think again...
 |___|  |_||_______||_______||_______||_______|  |___|  |_______||______| |__|
 
 
-Did you forget to add a relevant gitmoji? (see https://gitmoji.dev/ for tools)?
-A Gitmoji needs to be the first character of the commit message.
+Did you forget to add a relevant gitmoji? (see https://gitmoji.dev/ for tools)
+In this project, a Gitmoji must be the first grapheme of the commit message.
+What's a grapheme?
+A symbol rendered to be visually identifiable as a single character, but which may be composed of multiple Unicode code points)
 Must match: #{Gitmoji::Regex::REGEX.to_s}
 #{gitmoji_index ? "Found a gitmoji at character index #{gitmoji_index}... not good enough.\n" : ""}
 Example: git commit -m "✨ My excellent new feature"
