@@ -12,8 +12,8 @@
 # - Runs bin/gem_checksums
 # - Runs `bundle exec rake release` (expects PEM password and RubyGems MFA OTP)
 
+$stdout.sync = true
 require "rubygems"
-require "bundler/setup"
 
 require "open3"
 require "shellwords"
@@ -103,48 +103,83 @@ module Kettle
       def monitor_workflows_after_push!
         root = Kettle::Dev::CIHelpers.project_root
         workflows = Kettle::Dev::CIHelpers.workflows_list(root)
-        if workflows.empty?
-          puts "No workflows detected under .github/workflows; skipping CI checks."
-          return
-        end
+        gitlab_ci = File.exist?(File.join(root, ".gitlab-ci.yml"))
 
-        owner, repo = Kettle::Dev::CIHelpers.repo_info
         branch = Kettle::Dev::CIHelpers.current_branch
-        unless owner && repo && branch
-          puts "Unable to determine repository or branch; skipping CI checks."
-          return
+        abort("Could not determine current branch for CI checks.") unless branch
+
+        # Prefer an explicit GitHub remote if available; fall back to origin repo_info
+        gh_remote = preferred_github_remote
+        gh_owner = nil
+        gh_repo = nil
+        if gh_remote && !workflows.empty?
+          url = remote_url(gh_remote)
+          gh_owner, gh_repo = parse_github_owner_repo(url)
         end
 
-        total = workflows.size
-        passed = {}
-        idx = 0
-        puts "Ensuring CI workflows pass on branch #{branch} (#{owner}/#{repo})"
-        pbar = ProgressBar.create(title: "CI", total: total, format: "%t %b %c/%C", length: 30)
+        checks_any = false
 
-        loop do
-          wf = workflows[idx]
-          run = Kettle::Dev::CIHelpers.latest_run(owner: owner, repo: repo, workflow_file: wf, branch: branch)
-          if run
-            if Kettle::Dev::CIHelpers.success?(run)
-              unless passed[wf]
-                passed[wf] = true
-                pbar.increment
+        if gh_owner && gh_repo && !workflows.empty?
+          checks_any = true
+          total = workflows.size
+          abort("No GitHub workflows found under .github/workflows; aborting.") if total.zero?
+
+          passed = {}
+          idx = 0
+          puts "Ensuring GitHub Actions workflows pass on #{branch} (#{gh_owner}/#{gh_repo}) via remote '#{gh_remote}'"
+          pbar = ProgressBar.create(title: "CI", total: total, format: "%t %b %c/%C", length: 30)
+
+          loop do
+            wf = workflows[idx]
+            run = Kettle::Dev::CIHelpers.latest_run(owner: gh_owner, repo: gh_repo, workflow_file: wf, branch: branch)
+            if run
+              if Kettle::Dev::CIHelpers.success?(run)
+                unless passed[wf]
+                  passed[wf] = true
+                  pbar.increment
+                end
+              elsif Kettle::Dev::CIHelpers.failed?(run)
+                puts
+                url = run["html_url"] || "https://github.com/#{gh_owner}/#{gh_repo}/actions/workflows/#{wf}"
+                abort("Workflow failed: #{wf} -> #{url}")
               end
-            elsif Kettle::Dev::CIHelpers.failed?(run)
-              # Fail fast with link to the failed run
-              puts
-              url = run["html_url"] || "https://github.com/#{owner}/#{repo}/actions/workflows/#{wf}"
-              abort("Workflow failed: #{wf} -> #{url}")
             end
+            break if passed.size == total
+            idx = (idx + 1) % total
+            sleep(1)
           end
-
-          break if passed.size == total
-
-          idx = (idx + 1) % total
-          sleep(1)
+          pbar.finish unless pbar.finished?
+          puts "\nAll GitHub workflows passing (#{passed.size}/#{total})."
         end
-        pbar.finish unless pbar.finished?
-        puts "\nAll workflows passing (#{passed.size}/#{total})."
+
+        # Additionally, check GitLab if configured
+        gl_remote = gitlab_remote_candidates.first
+        if gitlab_ci && gl_remote
+          owner, repo = Kettle::Dev::CIHelpers.repo_info_gitlab
+          if owner && repo
+            checks_any = true
+            puts "Ensuring GitLab pipeline passes on #{branch} (#{owner}/#{repo}) via remote '#{gl_remote}'"
+            pbar = ProgressBar.create(title: "CI", total: 1, format: "%t %b %c/%C", length: 30)
+            loop do
+              pipe = Kettle::Dev::CIHelpers.gitlab_latest_pipeline(owner: owner, repo: repo, branch: branch)
+              if pipe
+                if Kettle::Dev::CIHelpers.gitlab_success?(pipe)
+                  pbar.increment unless pbar.finished?
+                  break
+                elsif Kettle::Dev::CIHelpers.gitlab_failed?(pipe)
+                  puts
+                  url = pipe["web_url"] || "https://gitlab.com/#{owner}/#{repo}/-/pipelines"
+                  abort("Pipeline failed: #{url}")
+                end
+              end
+              sleep(1)
+            end
+            pbar.finish unless pbar.finished?
+            puts "\nGitLab pipeline passing."
+          end
+        end
+
+        abort("CI configuration not detected (GitHub or GitLab). Ensure CI is configured and remotes point to the correct hosts.") unless checks_any
       end
 
       def run_cmd!(cmd)
@@ -226,6 +261,52 @@ module Kettle
         ok ? out.split(/\s+/).reject(&:empty?) : []
       end
 
+      def remotes_with_urls
+        out, ok = git_output(["remote", "-v"])
+        return {} unless ok
+        urls = {}
+        out.each_line do |line|
+          if line =~ /(\S+)\s+(\S+)\s+\((fetch|push)\)/
+            name = Regexp.last_match(1)
+            url = Regexp.last_match(2)
+            kind = Regexp.last_match(3)
+            # prefer fetch URL when available
+            urls[name] = url if kind == "fetch" || !urls.key?(name)
+          end
+        end
+        urls
+      end
+
+      def remote_url(name)
+        remotes_with_urls[name]
+      end
+
+      def github_remote_candidates
+        remotes_with_urls.select { |n, u| u.include?("github.com") }.keys
+      end
+
+      def gitlab_remote_candidates
+        remotes_with_urls.select { |n, u| u.include?("gitlab.com") }.keys
+      end
+
+      def preferred_github_remote
+        cands = github_remote_candidates
+        return if cands.empty?
+        # Prefer a remote literally named 'github', otherwise the first
+        cands.find { |n| n == "github" } || cands.first
+      end
+
+      def parse_github_owner_repo(url)
+        return [nil, nil] unless url
+        if url =~ %r{git@github.com:(.+?)/(.+?)(\.git)?$}
+          [Regexp.last_match(1), Regexp.last_match(2).sub(/\.git\z/, "")]
+        elsif url =~ %r{https://github.com/(.+?)/(.+?)(\.git)?$}
+          [Regexp.last_match(1), Regexp.last_match(2).sub(/\.git\z/, "")]
+        else
+          [nil, nil]
+        end
+      end
+
       def has_remote?(name)
         list_remotes.include?(name)
       end
@@ -271,7 +352,7 @@ module Kettle
           return
         end
 
-        # Default behavior: ensure local trunk is not behind origin/trunk; if it is, rebase flows
+        # Ensure local trunk is in sync with origin/trunk
         run_cmd!("git fetch origin #{Shellwords.escape(trunk)}")
         if trunk_behind_remote?(trunk, "origin")
           puts "Local #{trunk} is behind origin/#{trunk}. Rebasing..."
@@ -283,6 +364,56 @@ module Kettle
           puts "Rebase complete. Will push updated branch next."
         else
           puts "Local #{trunk} is up to date with origin/#{trunk}."
+        end
+
+        # If there is a GitHub remote that is not origin, ensure origin/#{trunk} incorporates it
+        gh_remote = preferred_github_remote
+        if gh_remote && gh_remote != "origin"
+          puts "GitHub remote detected: #{gh_remote}. Fetching #{trunk}..."
+          run_cmd!("git fetch #{gh_remote} #{Shellwords.escape(trunk)}")
+
+          # Compare origin/trunk vs github/trunk to see if they differ
+          left, right = ahead_behind_counts("origin/#{trunk}", "#{gh_remote}/#{trunk}")
+          if left.zero? && right.zero?
+            puts "origin/#{trunk} and #{gh_remote}/#{trunk} are already in sync."
+            return
+          end
+
+          checkout!(trunk)
+          run_cmd!("git pull --rebase origin #{Shellwords.escape(trunk)}")
+
+          if left.positive? && right.positive?
+            # Histories have diverged -> let user choose
+            puts "origin/#{trunk} and #{gh_remote}/#{trunk} have diverged (#{left} ahead of GH, #{right} behind GH)."
+            puts "Choose how to reconcile:"
+            puts "  [r] Rebase local/#{trunk} on top of #{gh_remote}/#{trunk} (push to origin)"
+            puts "  [m] Merge --no-ff #{gh_remote}/#{trunk} into #{trunk} (push to origin and #{gh_remote})"
+            puts "  [a] Abort"
+            print("> ")
+            choice = $stdin.gets&.strip&.downcase
+            case choice
+            when "r"
+              run_cmd!("git rebase #{Shellwords.escape("#{gh_remote}/#{trunk}")}")
+              run_cmd!("git push origin #{Shellwords.escape(trunk)}")
+              puts "Rebased #{trunk} onto #{gh_remote}/#{trunk} and pushed to origin."
+            when "m"
+              run_cmd!("git merge --no-ff #{Shellwords.escape("#{gh_remote}/#{trunk}")}")
+              run_cmd!("git push origin #{Shellwords.escape(trunk)}")
+              run_cmd!("git push #{Shellwords.escape(gh_remote)} #{Shellwords.escape(trunk)}")
+              puts "Merged #{gh_remote}/#{trunk} into #{trunk} and pushed to origin and #{gh_remote}."
+            else
+              abort("Aborted by user. Please reconcile trunks and re-run.")
+            end
+          elsif right.positive? && left.zero?
+            # One side can be fast-forwarded
+            puts "Fast-forwarding #{trunk} to include #{gh_remote}/#{trunk}..."
+            run_cmd!("git merge --ff-only #{Shellwords.escape("#{gh_remote}/#{trunk}")}")
+            run_cmd!("git push origin #{Shellwords.escape(trunk)}")
+          # origin is behind GH -> fast-forward merge
+          elsif left.positive? && right.zero?
+            # origin ahead of GH -> nothing required for origin, optionally inform user
+            puts "origin/#{trunk} is ahead of #{gh_remote}/#{trunk}; no action required before push."
+          end
         end
       end
 

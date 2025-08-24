@@ -2,7 +2,7 @@
   "lib/kettle/dev.rb:2837300664": [
     [26, 17, 2, "ThreadSafety/MutableClassInstanceVariable: Freeze mutable objects assigned to class instance variables.", 5862883]
   ],
-  "spec/kettle/dev/ci_helpers_spec.rb:1096298546": [
+  "spec/kettle/dev/ci_helpers_spec.rb:2175257948": [
     [34, 16, 42, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 465257938],
     [35, 28, 33, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 3247304381],
     [38, 9, 19, "ThreadSafety/DirChdir: Avoid using `Dir.chdir` due to its process-wide effect.", 585207512],

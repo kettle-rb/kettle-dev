@@ -16,11 +16,6 @@ module Kettle
       module_function
 
       # Determine the project root directory.
-      #
-      # Prefers the directory Rake was invoked from (Rake.application.original_dir)
-      # so that tasks shipped with this gem operate relative to the host project.
-      # Falls back to the current working directory when Rake context is absent.
-      #
       # @return [String] absolute path to the project root
       def project_root
         # Too difficult to test every possible branch here, so ignoring
@@ -33,10 +28,8 @@ module Kettle
       end
 
       # Parse the GitHub owner/repo from the configured origin remote.
-      #
       # Supports SSH (git@github.com:owner/repo(.git)) and HTTPS
       # (https://github.com/owner/repo(.git)) forms.
-      #
       # @return [Array(String, String), nil] [owner, repo] or nil when unavailable
       def repo_info
         out, status = Open3.capture2("git", "config", "--get", "remote.origin.url")
@@ -57,9 +50,7 @@ module Kettle
       end
 
       # List workflow YAML basenames under .github/workflows at the given root.
-      #
       # Excludes maintenance workflows defined by {#exclusions}.
-      #
       # @param root [String] project root (defaults to {#project_root})
       # @return [Array<String>] sorted list of basenames (e.g., "ci.yml")
       def workflows_list(root = project_root)
@@ -75,35 +66,6 @@ module Kettle
       end
 
       # List of workflow files to exclude from interactive menus and checks.
-      #
-      # For reference...
-      #
-      # A list of all worlflows,
-      #   with each marked relative to if they exist in this repo,
-      #   or at the top of the README marked.
-      #
-      #   - ancient                 (+)
-      #   - auto-assign.yml         (-)
-      #   - codeql-analysis.yml     (-)
-      #   - coverage.yml            (+)
-      #   - current.yml             (+)
-      #   - danger.yml              (x)
-      #   - dependency-review.yml   (-)
-      #   - discord-notifier.yml    (-)
-      #   - heads.yml               (+)
-      #   - jruby.yml               (+)
-      #   - legacy.yml              (+)
-      #   - locked_deps.yml         (+)
-      #   - opencollective.yml      (-)
-      #   - style.yml               (+)
-      #   - supported.yml           (+)
-      #   - truffle.yml             (+)
-      #   - unlocked_deps.yml       (+)
-      #   - unsupported.yml         (+)
-      #
-      # All those marked as (-) or (x) are excluded from interactive menus and checks.
-      # The (x) exist because they may be common in other repos.
-      #
       # @return [Array<String>]
       def exclusions
         %w[
@@ -117,7 +79,6 @@ module Kettle
       end
 
       # Fetch latest workflow run info for a given workflow and branch via GitHub API.
-      #
       # @param owner [String]
       # @param repo [String]
       # @param workflow_file [String] the workflow basename (e.g., "ci.yml")
@@ -165,6 +126,77 @@ module Kettle
       # @return [String, nil]
       def default_token
         ENV["GITHUB_TOKEN"] || ENV["GH_TOKEN"]
+      end
+
+      # --- GitLab support ---
+
+      # Raw origin URL string from git config
+      # @return [String, nil]
+      def origin_url
+        out, status = Open3.capture2("git", "config", "--get", "remote.origin.url")
+        status.success? ? out.strip : nil
+      end
+
+      # Parse GitLab owner/repo from origin if pointing to gitlab.com
+      # @return [Array(String, String), nil]
+      def repo_info_gitlab
+        url = origin_url
+        return unless url
+        if url =~ %r{git@gitlab.com:(.+?)/(.+?)(\.git)?$}
+          [Regexp.last_match(1), Regexp.last_match(2).sub(/\.git\z/, "")]
+        elsif url =~ %r{https://gitlab.com/(.+?)/(.+?)(\.git)?$}
+          [Regexp.last_match(1), Regexp.last_match(2).sub(/\.git\z/, "")]
+        end
+      end
+
+      # Default GitLab token from environment
+      # @return [String, nil]
+      def default_gitlab_token
+        ENV["GITLAB_TOKEN"] || ENV["GL_TOKEN"]
+      end
+
+      # Fetch the latest pipeline for a branch on GitLab
+      # @param owner [String]
+      # @param repo [String]
+      # @param branch [String, nil]
+      # @param host [String]
+      # @param token [String, nil]
+      # @return [Hash{String=>String,Integer}, nil]
+      def gitlab_latest_pipeline(owner:, repo:, branch: nil, host: "gitlab.com", token: default_gitlab_token)
+        return unless owner && repo
+        b = branch || current_branch
+        return unless b
+        project = URI.encode_www_form_component("#{owner}/#{repo}")
+        uri = URI("https://#{host}/api/v4/projects/#{project}/pipelines?ref=#{URI.encode_www_form_component(b)}&per_page=1")
+        req = Net::HTTP::Get.new(uri)
+        req["User-Agent"] = "kettle-dev/ci-helpers"
+        req["PRIVATE-TOKEN"] = token if token && !token.empty?
+        res = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) { |http| http.request(req) }
+        return unless res.is_a?(Net::HTTPSuccess)
+        data = JSON.parse(res.body)
+        pipe = data&.first
+        return unless pipe
+        {
+          "status" => pipe["status"],
+          "web_url" => pipe["web_url"],
+          "id" => pipe["id"],
+        }
+      rescue StandardError
+        nil
+      end
+
+      # Whether a GitLab pipeline has succeeded
+      # @param pipeline [Hash, nil]
+      # @return [Boolean]
+      def gitlab_success?(pipeline)
+        pipeline && pipeline["status"] == "success"
+      end
+
+      # Whether a GitLab pipeline has failed
+      # @param pipeline [Hash, nil]
+      # @return [Boolean]
+      def gitlab_failed?(pipeline)
+        pipeline && pipeline["status"] == "failed"
       end
     end
   end
