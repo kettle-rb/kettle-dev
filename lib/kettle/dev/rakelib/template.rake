@@ -41,10 +41,27 @@ namespace :kettle do
               if gem_name && !gem_name.empty?
                 c = c.gsub(/^tidelift:\s+.*$/i, "tidelift: rubygems/#{gem_name}")
               end
-              c
+              # Also apply common replacements for org/gem/namespace/shields
+              helpers.apply_common_replacements(
+                c,
+                gh_org: gh_org,
+                gem_name: gem_name,
+                namespace: namespace,
+                namespace_shield: namespace_shield,
+                gem_shield: gem_shield,
+              )
             end
           else
-            helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true)
+            helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true) do |content|
+              helpers.apply_common_replacements(
+                content,
+                gh_org: gh_org,
+                gem_name: gem_name,
+                namespace: namespace,
+                namespace_shield: namespace_shield,
+                gem_shield: gem_shield,
+              )
+            end
           end
         end
       end
