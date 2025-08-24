@@ -28,19 +28,15 @@ require "uri"
 require "net/http"
 require "set"
 
-DEFAULT_AVATAR = "https://opencollective.com/static/images/default-avatar.png"
-README_PATH = File.expand_path("../README.md", __dir__)
-OC_YML_PATH = File.expand_path("../.opencollective.yml", __dir__)
-GENERIC_START_TAG = "<!-- OPENCOLLECTIVE:START -->"
-GENERIC_END_TAG = "<!-- OPENCOLLECTIVE:END -->"
-INDIVIDUALS_START_TAG = "<!-- OPENCOLLECTIVE-INDIVIDUALS:START -->"
-INDIVIDUALS_END_TAG = "<!-- OPENCOLLECTIVE-INDIVIDUALS:END -->"
-ORGS_START_TAG = "<!-- OPENCOLLECTIVE-ORGANIZATIONS:START -->"
-ORGS_END_TAG = "<!-- OPENCOLLECTIVE-ORGANIZATIONS:END -->"
-
 module Kettle
   module Dev
     class ReadmeBackers
+      DEFAULT_AVATAR = "https://opencollective.com/static/images/default-avatar.png"
+      README_PATH = File.expand_path("../README.md", __dir__)
+      OC_YML_PATH = File.expand_path("../.opencollective.yml", __dir__)
+      README_OSC_TAG_DEFAULT = "OPENCOLLECTIVE"
+      COMMIT_SUBJECT_DEFAULT = "💸 Thanks 🙏 to our new backers 🎒 and subscribers 📜"
+
       Backer = Struct.new(:name, :image, :website, :profile, keyword_init: true)
 
       def initialize(handle: nil, readme_path: README_PATH)
@@ -99,8 +95,9 @@ module Kettle
 
         if !backers_changed && !sponsors_changed
           if b_start == :not_found && s_start == :not_found
+            ts = tag_strings
             warn("No recognized Open Collective tags found in #{@readme_path}. Expected one or more of: " \
-              "#{GENERIC_START_TAG}/#{GENERIC_END_TAG}, #{INDIVIDUALS_START_TAG}/#{INDIVIDUALS_END_TAG}, #{ORGS_START_TAG}/#{ORGS_END_TAG}.")
+              "#{ts[:generic_start]}/#{ts[:generic_end]}, #{ts[:individuals_start]}/#{ts[:individuals_end]}, #{ts[:orgs_start]}/#{ts[:orgs_end]}.")
             exit(2)
           end
           puts "No changes to backers or sponsors sections in #{@readme_path}."
@@ -118,6 +115,36 @@ module Kettle
       end
 
       private
+
+      def readme_osc_tag
+        env = ENV["KETTLE_DEV_BACKER_README_OSC_TAG"].to_s
+        return env unless env.strip.empty?
+        if File.file?(OC_YML_PATH)
+          begin
+            yml = YAML.safe_load(File.read(OC_YML_PATH))
+            if yml.is_a?(Hash)
+              from_yml = yml["readme-osc-tag"] || yml[:"readme-osc-tag"]
+              from_yml = from_yml.to_s if from_yml
+              return from_yml unless from_yml.nil? || from_yml.strip.empty?
+            end
+          rescue StandardError
+            # ignore yaml errors and fall back
+          end
+        end
+        README_OSC_TAG_DEFAULT
+      end
+
+      def tag_strings
+        base = readme_osc_tag
+        {
+          generic_start: "<!-- #{base}:START -->",
+          generic_end: "<!-- #{base}:END -->",
+          individuals_start: "<!-- #{base}-INDIVIDUALS:START -->",
+          individuals_end: "<!-- #{base}-INDIVIDUALS:END -->",
+          orgs_start: "<!-- #{base}-ORGANIZATIONS:START -->",
+          orgs_end: "<!-- #{base}-ORGANIZATIONS:END -->",
+        }
+      end
 
       def resolve_handle
         env = ENV["OPENCOLLECTIVE_HANDLE"]
@@ -182,18 +209,20 @@ module Kettle
       end
 
       def detect_backer_tags(content)
-        if content.include?(GENERIC_START_TAG) && content.include?(GENERIC_END_TAG)
-          [GENERIC_START_TAG, GENERIC_END_TAG]
-        elsif content.include?(INDIVIDUALS_START_TAG) && content.include?(INDIVIDUALS_END_TAG)
-          [INDIVIDUALS_START_TAG, INDIVIDUALS_END_TAG]
+        ts = tag_strings
+        if content.include?(ts[:generic_start]) && content.include?(ts[:generic_end])
+          [ts[:generic_start], ts[:generic_end]]
+        elsif content.include?(ts[:individuals_start]) && content.include?(ts[:individuals_end])
+          [ts[:individuals_start], ts[:individuals_end]]
         else
           [:not_found, :not_found]
         end
       end
 
       def detect_sponsor_tags(content)
-        if content.include?(ORGS_START_TAG) && content.include?(ORGS_END_TAG)
-          [ORGS_START_TAG, ORGS_END_TAG]
+        ts = tag_strings
+        if content.include?(ts[:orgs_start]) && content.include?(ts[:orgs_end])
+          [ts[:orgs_start], ts[:orgs_end]]
         else
           [:not_found, :not_found]
         end
@@ -307,7 +336,7 @@ module Kettle
             # ignore yaml read errors and fall back to default
           end
         end
-        "💸 Thanks 🙏 to our new backers 🎒 and subscribers 📜"
+        COMMIT_SUBJECT_DEFAULT
       end
 
       def git_repo?

@@ -438,7 +438,7 @@ Tip: When running a single spec file locally, you may want <code>K_SOUP_COV_MIN_
   <li>
 <code>bundle exec rake kettle:dev:install</code> — copies the library’s <code>.github</code> folder into your project and offers to install <code>.git-hooks</code> templates locally or globally.</li>
   <li>
-<code>bundle exec rake kettle:dev:template</code> — runs only the templating step used by install; useful to re-apply updates to templates (.github workflows, .devcontainer, .qlty, modular Gemfiles, README and friends) without install’s extra prompts.
+<code>bundle exec rake kettle:dev:template</code> — runs only the templating step used by install; useful to re-apply updates to templates (.github workflows, .devcontainer, .qlty, modular Gemfiles, README, and friends) without the <code>install</code> task’s extra prompts.
     <ul>
       <li>README carry-over during templating: when your project’s README.md is replaced by the template, selected sections from your existing README are preserved and merged into the new one. Specifically, the task carries over the following sections (matched case-insensitively):
         <ul>
@@ -484,7 +484,111 @@ Tip: When running a single spec file locally, you may want <code>K_SOUP_COV_MIN_
 
 <p>Tip: The commit message helper <code>exe/kettle-commit-msg</code> prefers project-local <code>.git-hooks</code> (then falls back to <code>~/.git-hooks</code>). The goalie file <code>commit-subjects-goalie.txt</code> controls when a footer is appended; customize <code>footer-template.erb.txt</code> as you like.</p>
 
+<h3 id="open-collective-readme-updater">Open Collective README updater</h3>
+
+<ul>
+  <li>Script: <code>exe/kettle-readme-backers</code>
+</li>
+  <li>Purpose: Updates README sections for Open Collective backers (individuals) and sponsors (organizations) by fetching live data from your collective.</li>
+  <li>Tags updated in README.md (first match wins for backers):
+    <ul>
+      <li>The default tag prefix is <code>OPENCOLLECTIVE</code>, and it is configurable:
+        <ul>
+          <li>ENV: <code>KETTLE_DEV_BACKER_README_OSC_TAG="OPENCOLLECTIVE"</code>
+</li>
+          <li>YAML (.opencollective.yml): <code>readme-osc-tag: "OPENCOLLECTIVE"</code>
+</li>
+          <li>The resulting markers become: <code>&lt;!-- &lt;TAG&gt;:START --&gt; … &lt;!-- &lt;TAG&gt;:END --&gt;</code>, <code>&lt;!-- &lt;TAG&gt;-INDIVIDUALS:START --&gt; … &lt;!-- &lt;TAG&gt;-INDIVIDUALS:END --&gt;</code>, and <code>&lt;!-- &lt;TAG&gt;-ORGANIZATIONS:START --&gt; … &lt;!-- &lt;TAG&gt;-ORGANIZATIONS:END --&gt;</code>.</li>
+          <li>ENV overrides YAML.</li>
+        </ul>
+      </li>
+      <li>Backers (Individuals): <code>&lt;!-- &lt;TAG&gt;:START --&gt; … &lt;!-- &lt;TAG&gt;:END --&gt;</code> or <code>&lt;!-- &lt;TAG&gt;-INDIVIDUALS:START --&gt; … &lt;!-- &lt;TAG&gt;-INDIVIDUALS:END --&gt;</code>
+</li>
+      <li>Sponsors (Organizations): <code>&lt;!-- &lt;TAG&gt;-ORGANIZATIONS:START --&gt; … &lt;!-- &lt;TAG&gt;-ORGANIZATIONS:END --&gt;</code>
+</li>
+    </ul>
+  </li>
+  <li>Handle resolution:
+    <ol>
+      <li>
+<code>OPENCOLLECTIVE_HANDLE</code> environment variable, if set</li>
+      <li>
+<code>opencollective.yml</code> in the project root (<code>collective: "kettle-rb"</code> by default in this repo)</li>
+    </ol>
+  </li>
+  <li>Usage:
+    <ul>
+      <li><code>exe/kettle-readme-backers</code></li>
+      <li><code>OPENCOLLECTIVE_HANDLE=my-collective exe/kettle-readme-backers</code></li>
+    </ul>
+  </li>
+  <li>Behavior:
+    <ul>
+      <li>Writes to README.md only if content between the tags would change.</li>
+      <li>If neither the backers nor sponsors tags are present, prints a helpful warning and exits with status 2.</li>
+      <li>When there are no entries, inserts a friendly placeholder: “No backers yet. Be the first!” or “No sponsors yet. Be the first!”.</li>
+      <li>When updates are written and the repository is a git work tree, the script stages README.md and commits with a message thanking new backers and subscribers, including mentions for any newly added backers and subscribers (GitHub @handles when their website/profile is a github.com URL; otherwise their name).</li>
+      <li>Customize the commit subject via env var: <code>KETTLE_README_BACKERS_COMMIT_SUBJECT="💸 Thanks 🙏 to our new backers 🎒 and subscribers 📜"</code>.
+        <ul>
+          <li>Or via .opencollective.yml: set <code>readme-backers-commit-subject: "💸 Thanks 🙏 to our new backers 🎒 and subscribers 📜"</code>.</li>
+          <li>Precedence: ENV overrides .opencollective.yml; if neither is set, a sensible default is used.</li>
+          <li>Note: When used with the provided <code>.git-hooks</code>, the subject should start with a gitmoji character (see <a href="https://gitmoji.dev">gitmoji</a>).</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Tip: Run this locally before committing to keep your README current, or schedule it in CI to refresh periodically.</li>
+</ul>
+
 <h2 id="-floss-funding">🦷 FLOSS Funding</h2>
+
+<p>While kettle-rb tools are free software and will always be, the project would benefit immensely from some funding.<br>
+Raising a monthly budget of… “dollars” would make the project more sustainable.</p>
+
+<p>We welcome both individual and corporate sponsors! We also offer a<br>
+wide array of funding channels to account for your preferences<br>
+(although currently <a href="https://opencollective.com/kettle-rb">Open Collective</a> is our preferred funding platform).</p>
+
+<p><strong>If you’re working in a company that’s making significant use of kettle-rb tools we’d<br>
+appreciate it if you suggest to your company to become a kettle-rb sponsor.</strong></p>
+
+<p>You can support the development of kettle-rb tools via<br>
+<a href="https://github.com/sponsors/pboling">GitHub Sponsors</a>,<br>
+<a href="https://liberapay.com/pboling/donate">Liberapay</a>,<br>
+<a href="https://www.paypal.com/paypalme/peterboling">PayPal</a>,<br>
+<a href="https://opencollective.com/kettle-rb">Open Collective</a><br>
+and <a href="https://tidelift.com/subscription/pkg/rubygems-kettle-dev?utm_source=rubygems-kettle-dev&amp;utm_medium=referral&amp;utm_campaign=readme">Tidelift</a>.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>📍 NOTE</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>If doing a sponsorship in the form of donation is problematic for your company <br> from an accounting standpoint, we’d recommend the use of Tidelift, <br> where you can get a support-like subscription instead.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="open-collective-for-individuals">Open Collective for Individuals</h3>
+
+<!-- OPENCOLLECTIVE-INDIVIDUALS:START -->
+
+<!-- OPENCOLLECTIVE-INDIVIDUALS:END -->
+
+<p>Support us with a monthly donation and help us continue our activities. [<a href="https://opencollective.com/kettle-rb#backer">Become a backer</a>]</p>
+
+<h3 id="open-collective-for-organizations">Open Collective for Organizations</h3>
+
+<!-- OPENCOLLECTIVE-ORGANIZATIONS:START -->
+
+<!-- OPENCOLLECTIVE-ORGANIZATIONS:END -->
+
+<p>Become a sponsor and get your logo on our README on GitHub with a link to your site. [<a href="https://opencollective.com/kettle-rb#sponsor">Become a sponsor</a>]</p>
+
+<h3 id="another-way-to-support-open-source">Another way to support open-source</h3>
 
 <blockquote>
   <p>How wonderful it is that nobody need wait a single moment before starting to improve the world.<br><br>
@@ -619,9 +723,9 @@ After getting laid off in an RIF in March, and filled with many dozens of reject
 I’m now spending ~80 hours a week building open source tools.<br>
 I’m hoping to be able to pay for my kids’ health insurance this month,<br>
 so if you value the work I am doing, I need your support.<br>
-Please consider sponsoring me.</p>
+Please consider sponsoring me or the project.</p>
 
-<p><a href="https://github.com/sponsors/pboling"><img src="https://img.shields.io/badge/Sponsor_Me!-pboling-blue?style=for-the-badge&amp;logo=github" alt="Sponsor me on GitHub Sponsors"></a> 💌 <a href="https://img.shields.io/liberapay/goal/pboling.svg?logo=liberapay&amp;color=a51611"><img src="https://img.shields.io/liberapay/goal/pboling.svg?style=for-the-badge&amp;logo=liberapay&amp;color=a51611" alt="Sponsor me on Liberapay"></a> 💌 <a href="https://img.shields.io/badge/donate-paypal-a51611.svg?style=flat&amp;logo=paypal"><img src="https://img.shields.io/badge/donate-paypal-a51611.svg?style=for-the-badge&amp;logo=paypal&amp;color=0A0A0A" alt="Donate on PayPal"></a></p>
+<p><a href="https://opencollective.com/kettle-rb"><img src="https://img.shields.io/opencollective/all/kettle-rb?style=for-the-badge" alt="Sponsor kettle-rb/kettle-dev on Open Source Collective"></a> 💌 <a href="https://github.com/sponsors/pboling"><img src="https://img.shields.io/badge/Sponsor_Me!-pboling-blue?style=for-the-badge&amp;logo=github" alt="Sponsor me on GitHub Sponsors"></a> 💌 <a href="https://img.shields.io/liberapay/goal/pboling.svg?logo=liberapay&amp;color=a51611"><img src="https://img.shields.io/liberapay/goal/pboling.svg?style=for-the-badge&amp;logo=liberapay&amp;color=a51611" alt="Sponsor me on Liberapay"></a> 💌 <a href="https://img.shields.io/badge/donate-paypal-a51611.svg?style=flat&amp;logo=paypal"><img src="https://img.shields.io/badge/donate-paypal-a51611.svg?style=for-the-badge&amp;logo=paypal&amp;color=0A0A0A" alt="Donate on PayPal"></a></p>
 
 <p>To say “thanks for maintaining such a great tool” 👇️ Join the Discord or ☝️ send money.</p>
 
@@ -634,7 +738,7 @@ Please consider sponsoring me.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Sat Aug 23 21:05:08 2025 by
+  Generated on Sun Aug 24 00:02:16 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

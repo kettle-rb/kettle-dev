@@ -259,8 +259,13 @@ Tip: The commit message helper `exe/kettle-commit-msg` prefers project-local `.g
 - Script: `exe/kettle-readme-backers`
 - Purpose: Updates README sections for Open Collective backers (individuals) and sponsors (organizations) by fetching live data from your collective.
 - Tags updated in README.md (first match wins for backers):
-  - Backers (Individuals): `<!-- OPENCOLLECTIVE:START --> … <!-- OPENCOLLECTIVE:END -->` or `<!-- OPENCOLLECTIVE-INDIVIDUALS:START --> … <!-- OPENCOLLECTIVE-INDIVIDUALS:END -->`
-  - Sponsors (Organizations): `<!-- OPENCOLLECTIVE-ORGANIZATIONS:START --> … <!-- OPENCOLLECTIVE-ORGANIZATIONS:END -->`
+  - The default tag prefix is `OPENCOLLECTIVE`, and it is configurable:
+    - ENV: `KETTLE_DEV_BACKER_README_OSC_TAG="OPENCOLLECTIVE"`
+    - YAML (.opencollective.yml): `readme-osc-tag: "OPENCOLLECTIVE"`
+    - The resulting markers become: `<!-- <TAG>:START --> … <!-- <TAG>:END -->`, `<!-- <TAG>-INDIVIDUALS:START --> … <!-- <TAG>-INDIVIDUALS:END -->`, and `<!-- <TAG>-ORGANIZATIONS:START --> … <!-- <TAG>-ORGANIZATIONS:END -->`.
+    - ENV overrides YAML.
+  - Backers (Individuals): `<!-- <TAG>:START --> … <!-- <TAG>:END -->` or `<!-- <TAG>-INDIVIDUALS:START --> … <!-- <TAG>-INDIVIDUALS:END -->`
+  - Sponsors (Organizations): `<!-- <TAG>-ORGANIZATIONS:START --> … <!-- <TAG>-ORGANIZATIONS:END -->`
 - Handle resolution:
   1. `OPENCOLLECTIVE_HANDLE` environment variable, if set
   2. `opencollective.yml` in the project root (`collective: "kettle-rb"` by default in this repo)
