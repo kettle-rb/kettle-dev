@@ -263,6 +263,39 @@ namespace :kettle do
                 end
                 c = lines.join("\n")
               end
+
+              # 3) Preserve first H1 emojis from destination README, if any
+              begin
+                require "kettle/emoji_regex"
+                emoji_re = Kettle::EmojiRegex::REGEX
+
+                dest_emojis = nil
+                if dest_existing
+                  first_h1_dest = dest_existing.lines.find { |ln| ln =~ /^#\s+/ }
+                  if first_h1_dest
+                    after = first_h1_dest.sub(/^#\s+/, "")
+                    emojis = +""
+                    while (m = after.match(/\A#{emoji_re.source}/u))
+                      emojis << m[0]
+                      after = after[m[0].length..-1].to_s
+                    end
+                    dest_emojis = emojis unless emojis.empty?
+                  end
+                end
+
+                if dest_emojis && !dest_emojis.empty?
+                  lines_new = c.split("\n", -1)
+                  idx = lines_new.index { |ln| ln =~ /^#\s+/ }
+                  if idx
+                    rest = lines_new[idx].sub(/^#\s+/, "")
+                    rest_wo_emoji = rest.sub(/\A(?:#{emoji_re.source})+\s*/u, "")
+                    lines_new[idx] = ["#", dest_emojis, rest_wo_emoji].join(" ").gsub(/\s+/, " ").sub(/^#\s+/, "# ")
+                    c = lines_new.join("\n")
+                  end
+                end
+              rescue StandardError
+                # ignore emoji preservation errors
+              end
             rescue StandardError
               # Best effort; if anything fails, keep c as-is
             end

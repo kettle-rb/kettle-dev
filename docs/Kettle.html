@@ -78,18 +78,34 @@
   
   <dl>
     <dt>Defined in:</dt>
-    <dd>lib/kettle/dev.rb<span class="defines">,<br />
-  lib/kettle/dev/version.rb,<br /> lib/kettle/dev/ci_helpers.rb,<br /> lib/kettle/dev/template_helpers.rb</span>
+    <dd>lib/kettle/emoji_regex.rb<span class="defines">,<br />
+  lib/kettle/dev.rb,<br /> lib/kettle/dev/version.rb,<br /> lib/kettle/dev/ci_helpers.rb,<br /> lib/kettle/dev/template_helpers.rb</span>
 </dd>
   </dl>
   
 </div>
 
-<h2>Defined Under Namespace</h2>
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    <p>Stolen lovingly from @ticky:<br />
+  https://github.com/ticky/ruby-emoji-regex/blob/develop/lib/emoji_regex.rb<br />
+  because that project is Ruby &gt;= 2.4, and this project is Ruby &gt;= 2.3.<br />
+That project is under the MIT license, same as this project:<br />
+  https://github.com/ticky/ruby-emoji-regex/blob/develop/LICENSE.md<br />
+If the minimum_ruby_version numbers align, will switch to a real dependency.<br />
+Wrapping it in a namespace to avoid collisions with the real emoji_regex.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><h2>Defined Under Namespace</h2>
 <p class="children">
   
     
-      <strong class="modules">Modules:</strong> <span class='object_link'><a href="Kettle/Dev.html" title="Kettle::Dev (module)">Dev</a></span>
+      <strong class="modules">Modules:</strong> <span class='object_link'><a href="Kettle/Dev.html" title="Kettle::Dev (module)">Dev</a></span>, <span class='object_link'><a href="Kettle/EmojiRegex.html" title="Kettle::EmojiRegex (module)">EmojiRegex</a></span>
     
   
     
@@ -107,7 +123,7 @@
 </div>
 
       <div id="footer">
-  Generated on Sat Aug 23 19:58:09 2025 by
+  Generated on Sat Aug 23 20:28:31 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>
