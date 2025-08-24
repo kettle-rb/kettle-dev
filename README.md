@@ -231,6 +231,12 @@ GitHub Actions local runner helper
 Project automation bootstrap
 - `bundle exec rake kettle:dev:install` — copies the library’s `.github` folder into your project and offers to install `.git-hooks` templates locally or globally.
 - `bundle exec rake kettle:dev:template` — runs only the templating step used by install; useful to re-apply updates to templates (.github workflows, .devcontainer, .qlty, modular Gemfiles, README and friends) without install’s extra prompts.
+  - README carry-over during templating: when your project’s README.md is replaced by the template, selected sections from your existing README are preserved and merged into the new one. Specifically, the task carries over the following sections (matched case-insensitively):
+    - "Synopsis"
+    - "Configuration"
+    - "Basic Usage"
+    - Any section whose heading starts with "Note:" at any heading level (for example: "# NOTE: …", "## Note: …", or "### note: …").
+    - Headings are recognized at any level using Markdown hashes (#, ##, ###, …).
 - Notes about task options:
   - Non-interactive confirmations: append `force=true` to accept all y/N prompts as Yes, e.g., `bundle exec rake kettle:dev:template force=true`.
   - direnv review flow: if `.envrc` or `.env.local` is created or updated, the task stops and asks you to run `direnv allow`. After you review and allow, resume with `allowed=true`:

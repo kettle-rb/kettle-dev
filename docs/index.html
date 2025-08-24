@@ -438,7 +438,19 @@ Tip: When running a single spec file locally, you may want <code>K_SOUP_COV_MIN_
   <li>
 <code>bundle exec rake kettle:dev:install</code> — copies the library’s <code>.github</code> folder into your project and offers to install <code>.git-hooks</code> templates locally or globally.</li>
   <li>
-<code>bundle exec rake kettle:dev:template</code> — runs only the templating step used by install; useful to re-apply updates to templates (.github workflows, .devcontainer, .qlty, modular Gemfiles, README and friends) without install’s extra prompts.</li>
+<code>bundle exec rake kettle:dev:template</code> — runs only the templating step used by install; useful to re-apply updates to templates (.github workflows, .devcontainer, .qlty, modular Gemfiles, README and friends) without install’s extra prompts.
+    <ul>
+      <li>README carry-over during templating: when your project’s README.md is replaced by the template, selected sections from your existing README are preserved and merged into the new one. Specifically, the task carries over the following sections (matched case-insensitively):
+        <ul>
+          <li>“Synopsis”</li>
+          <li>“Configuration”</li>
+          <li>“Basic Usage”</li>
+          <li>Any section whose heading starts with “Note:” at any heading level (for example: “# NOTE: …”, “## Note: …”, or “### note: …”).</li>
+          <li>Headings are recognized at any level using Markdown hashes (#, ##, ###, …).</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
   <li>Notes about task options:
     <ul>
       <li>Non-interactive confirmations: append <code>force=true</code> to accept all y/N prompts as Yes, e.g., <code>bundle exec rake kettle:dev:template force=true</code>.</li>
@@ -622,7 +634,7 @@ Please consider sponsoring me.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Sat Aug 23 19:40:41 2025 by
+  Generated on Sat Aug 23 19:58:09 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

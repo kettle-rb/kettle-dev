@@ -202,20 +202,20 @@ namespace :kettle do
             begin
               dest_existing = File.exist?(dest) ? File.read(dest) : nil
 
-              # Helper to parse level-2 sections (## ...)
+              # Helper to parse markdown sections at any heading level (#, ##, ###, ...)
               parse_sections = lambda do |md|
                 sections = []
                 return sections unless md
                 lines = md.split("\n", -1) # keep trailing empty lines
                 indices = []
                 lines.each_with_index do |ln, i|
-                  indices << i if ln =~ /^##\s+.+/
+                  indices << i if ln =~ /^#+\s+.+/
                 end
                 indices << lines.length
                 indices.each_cons(2) do |start_i, nxt|
                   heading = lines[start_i]
                   body_lines = lines[(start_i + 1)...nxt] || []
-                  title = heading.sub(/^##\s+/, "")
+                  title = heading.sub(/^#+\s+/, "")
                   # Normalize by removing leading emoji/non-alnum and extra spaces
                   base = title.sub(/\A[^\p{Alnum}]+/u, "").strip.downcase
                   sections << {start: start_i, stop: nxt - 1, heading: heading, body: body_lines.join("\n"), base: base}
@@ -235,7 +235,14 @@ namespace :kettle do
                 end
               end
 
-              targets = ["synopsis", "configuration", "basic usage"]
+              # Build targets to merge: existing curated list plus any NOTE sections at any level
+              note_bases = []
+              if src_parsed && src_parsed[:sections]
+                note_bases = src_parsed[:sections]
+                  .select { |s| s[:heading] =~ /^#+\s+note:.*/i }
+                  .map { |s| s[:base] }
+              end
+              targets = ["synopsis", "configuration", "basic usage"] + note_bases
 
               # Replace matching sections in src
               if src_parsed && src_parsed[:sections] && !src_parsed[:sections].empty?
