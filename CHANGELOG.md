@@ -12,6 +12,18 @@ and this project adheres to [Semantic Versioning v2](https://semver.org/spec/v2.
 ### Fixed
 ### Security
 
+## [1.0.3] - 2025-08-24
+- TAG: [v1.0.3][1.0.3t]
+- COVERAGE: 100.00% -- 98/98 lines in 7 files
+- BRANCH COVERAGE: 100.00% -- 30/30 branches in 7 files
+- 94.59% documented
+### Added
+- template task now copies .git-hooks files necessary for git hooks to work
+### Fixed
+- kettle-release now uses the host project's root, instead of this gem's installed root.
+- Added .git-hooks files necessary for git hooks to work
+
+
 ## [1.0.2] - 2025-08-24
 - TAG: [v1.0.2][1.0.2t]
 - COVERAGE: 100.00% -- 98/98 lines in 7 files
@@ -59,7 +71,9 @@ and this project adheres to [Semantic Versioning v2](https://semver.org/spec/v2.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.2...HEAD
+[Unreleased]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.3...HEAD
+[1.0.3]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.2...v1.0.3
+[1.0.3t]: https://gitlab.com/kettle-rb/kettle-dev/-/tags/v1.0.3
 [1.0.2]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.1...v1.0.2
 [1.0.2t]: https://gitlab.com/kettle-rb/kettle-dev/-/tags/v1.0.2
 [1.0.1]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.0...v1.0.1

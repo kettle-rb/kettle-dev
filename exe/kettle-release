@@ -12,8 +12,6 @@
 # - Runs bin/gem_checksums
 # - Runs `bundle exec rake release` (expects PEM password and RubyGems MFA OTP)
 
-ENV["BUNDLE_GEMFILE"] ||= File.expand_path("../Gemfile", __dir__)
-
 require "rubygems"
 require "bundler/setup"
 
@@ -31,7 +29,8 @@ module Kettle
   module Dev
     class ReleaseCLI
       def initialize
-        @root = File.expand_path("..", __dir__)
+        # Use the host project's root, not the installed gem's directory
+        @root = Kettle::Dev::CIHelpers.project_root
       end
 
       def run
