@@ -230,7 +230,7 @@ GitHub Actions local runner helper
 
 Project automation bootstrap
 - `bundle exec rake kettle:dev:install` — copies the library’s `.github` folder into your project and offers to install `.git-hooks` templates locally or globally.
-- `bundle exec rake kettle:dev:template` — runs only the templating step used by install; useful to re-apply updates to templates (.github workflows, .devcontainer, .qlty, modular Gemfiles, README and friends) without install’s extra prompts.
+- `bundle exec rake kettle:dev:template` — runs only the templating step used by install; useful to re-apply updates to templates (.github workflows, .devcontainer, .qlty, modular Gemfiles, README, and friends) without the `install` task’s extra prompts.
   - README carry-over during templating: when your project’s README.md is replaced by the template, selected sections from your existing README are preserved and merged into the new one. Specifically, the task carries over the following sections (matched case-insensitively):
     - "Synopsis"
     - "Configuration"
@@ -256,6 +256,37 @@ Tip: The commit message helper `exe/kettle-commit-msg` prefers project-local `.g
 
 
 ## 🦷 FLOSS Funding
+
+While kettle-rb tools are free software and will always be, the project would benefit immensely from some funding.
+Raising a monthly budget of... "dollars" would make the project more sustainable.
+
+We welcome both individual and corporate sponsors! We also offer a
+wide array of funding channels to account for your preferences
+(although currently [Open Collective][🖇osc] is our preferred funding platform).
+
+**If you're working in a company that's making significant use of kettle-rb tools we'd
+appreciate it if you suggest to your company to become a kettle-rb sponsor.**
+
+You can support the development of kettle-rb tools via
+[GitHub Sponsors][🖇sponsor],
+[Liberapay][⛳liberapay],
+[PayPal][🖇paypal],
+[Open Collective][🖇osc]
+and [Tidelift][🏙️entsup-tidelift].
+
+| 📍 NOTE                                                                                                                                                                                                              |
+|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| If doing a sponsorship in the form of donation is problematic for your company <br/> from an accounting standpoint, we'd recommend the use of Tidelift, <br/> where you can get a support-like subscription instead. |
+
+### Open Collective for Individuals
+
+Support us with a monthly donation and help us continue our activities. [[Become a backer](https://opencollective.com/kettle-rb#backer)]
+
+### Open Collective for Organizations
+
+Become a sponsor and get your logo on our README on GitHub with a link to your site. [[Become a sponsor](https://opencollective.com/kettle-rb#sponsor)]
+
+### Another way to support open-source
 
 > How wonderful it is that nobody need wait a single moment before starting to improve the world.<br/>
 >—Anne Frank
@@ -387,9 +418,9 @@ After getting laid off in an RIF in March, and filled with many dozens of reject
 I'm now spending ~80 hours a week building open source tools.
 I'm hoping to be able to pay for my kids' health insurance this month,
 so if you value the work I am doing, I need your support.
-Please consider sponsoring me.
+Please consider sponsoring me or the project.
 
-[![Sponsor me on GitHub Sponsors][🖇sponsor-bottom-img]][🖇sponsor] 💌 [![Sponsor me on Liberapay][⛳liberapay-bottom-img]][⛳liberapay-img] 💌 [![Donate on PayPal][🖇paypal-bottom-img]][🖇paypal-img]
+[![Sponsor kettle-rb/kettle-dev on Open Source Collective][🖇osc-all-bottom-img]][🖇osc] 💌 [![Sponsor me on GitHub Sponsors][🖇sponsor-bottom-img]][🖇sponsor] 💌 [![Sponsor me on Liberapay][⛳liberapay-bottom-img]][⛳liberapay-img] 💌 [![Donate on PayPal][🖇paypal-bottom-img]][🖇paypal-img]
 
 To say "thanks for maintaining such a great tool" 👇️ Join the Discord or ☝️ send money.
 
@@ -402,6 +433,13 @@ Thanks for RTFM. ☺️
 [⛳liberapay-img]: https://img.shields.io/liberapay/goal/pboling.svg?logo=liberapay&color=a51611
 [⛳liberapay-bottom-img]: https://img.shields.io/liberapay/goal/pboling.svg?style=for-the-badge&logo=liberapay&color=a51611
 [⛳liberapay]: https://liberapay.com/pboling/donate
+[🖇osc-all-img]: https://img.shields.io/opencollective/all/kettle-rb
+[🖇osc-sponsors-img]: https://img.shields.io/opencollective/sponsors/kettle-rb
+[🖇osc-backers-img]: https://img.shields.io/opencollective/backers/kettle-rb
+[🖇osc-all-bottom-img]: https://img.shields.io/opencollective/all/kettle-rb?style=for-the-badge
+[🖇osc-sponsors-bottom-img]: https://img.shields.io/opencollective/sponsors/kettle-rb?style=for-the-badge
+[🖇osc-backers-bottom-img]: https://img.shields.io/opencollective/backers/kettle-rb?style=for-the-badge
+[🖇osc]: https://opencollective.com/kettle-rb
 [🖇sponsor-img]: https://img.shields.io/badge/Sponsor_Me!-pboling.svg?style=social&logo=github
 [🖇sponsor-bottom-img]: https://img.shields.io/badge/Sponsor_Me!-pboling-blue?style=for-the-badge&logo=github
 [🖇sponsor]: https://github.com/sponsors/pboling
@@ -455,7 +493,7 @@ Thanks for RTFM. ☺️
 [👨🏼‍🏫expsup-upwork-img]: https://img.shields.io/badge/UpWork-13544E?style=for-the-badge&logo=Upwork&logoColor=white
 [👨🏼‍🏫expsup-codementor]: https://www.codementor.io/peterboling?utm_source=github&utm_medium=button&utm_term=peterboling&utm_campaign=github
 [👨🏼‍🏫expsup-codementor-img]: https://img.shields.io/badge/CodeMentor-Get_Help-1abc9c?style=for-the-badge&logo=CodeMentor&logoColor=white
-[🏙️entsup-tidelift]: https://tidelift.com/subscription
+[🏙️entsup-tidelift]: https://tidelift.com/subscription/pkg/rubygems-kettle-dev?utm_source=rubygems-kettle-dev&utm_medium=referral&utm_campaign=readme
 [🏙️entsup-tidelift-img]: https://img.shields.io/badge/Tidelift_and_Sonar-Enterprise_Support-FD3456?style=for-the-badge&logo=sonar&logoColor=white
 [🏙️entsup-tidelift-sonar]: https://blog.tidelift.com/tidelift-joins-sonar
 [💁🏼‍♂️peterboling]: http://www.peterboling.com

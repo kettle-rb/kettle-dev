@@ -1,0 +1,29 @@
+name: Open Collective Backers
+
+on:
+  schedule:
+    # Run once a week on Sunday at 12:00 AM UTC
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+
+jobs:
+  update-backers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install Open Collective CLI
+        run: npm install -g opencollective-setup
+      - name: Run Open Collective update
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: opencollective-setup --repo ${{ github.repository }}
+      - name: Commit and push changes
+        run: |
+          git config user.name 'github-actions'
+          git config user.email 'github-actions@github.com'
+          git add README.md
+          git commit -m 'chore: Update Open Collective backers' || echo 'No changes to commit'
+          git push
