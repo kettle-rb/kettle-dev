@@ -77,7 +77,7 @@ This document captures project-specific knowledge to streamline setup, testing, 
   - Spec file names must map to a real class or module under lib/ (mirror the path). Do not introduce specs for non-existent classes or ad-hoc names (e.g., avoid template_helpers_replacements_spec.rb when testing Kettle::Dev::TemplateHelpers; add those examples to template_helpers_spec.rb).
   - REQUIRED: Provide unit tests for every class, module, constant, and public method. Place them in spec/ mirroring the path under lib/. When a file under lib/ is added or changed, ensure a corresponding spec file exists/updated for it.
   - Add tests for all public methods and add contexts for variations of their arguments, and arity.
-  - This repository targets near-100% coverage of Kettle::Test public API and RSpec-integrations (silent_stream, timecop, stubbed_env); when you add new public methods or config behavior, add or update specs accordingly.
+  - This repository targets near-100% coverage of its public API; when you add new public methods, rake tasks to a rakelib, or config behavior, add or update specs accordingly.
   - Place new specs under spec/ mirroring lib/ structure where possible. Do not require "spec_helper" at the top of spec files, as it is automatically loaded by .rspec.
   - If your code relies on environment variables that drive activation (see "Activation env vars" below), prefer using rspec-stubbed_env:
     - it does not support stubbing with blocks, but it does automatically clean up after itself.
