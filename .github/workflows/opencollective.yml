@@ -21,7 +21,7 @@ jobs:
 
       - name: README Update
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.README_UPDATER_TOKEN }}
         run: |
           git config user.name 'autobolt'
           git config user.email 'autobots@9thbit.net'
