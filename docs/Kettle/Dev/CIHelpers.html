@@ -421,12 +421,12 @@ kettle-release executable.</p>
       <pre class="lines">
 
 
-136
-137
-138</pre>
+166
+167
+168</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_helpers.rb', line 136</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_helpers.rb', line 166</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_default_token'>default_token</span>
   <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>GITHUB_TOKEN</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>||</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>GH_TOKEN</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
@@ -448,6 +448,36 @@ kettle-release executable.</p>
 </h3><div class="docstring">
   <div class="discussion">
     <p>List of workflow files to exclude from interactive menus and checks.</p>
+
+<p>For reference…</p>
+
+<p>A list of all worlflows,<br />
+  with each marked relative to if they exist in this repo,<br />
+  or at the top of the README marked.</p>
+
+<ul>
+  <li>ancient                 (+)</li>
+  <li>auto-assign.yml         (-)</li>
+  <li>codeql-analysis.yml     (-)</li>
+  <li>coverage.yml            (+)</li>
+  <li>current.yml             (+)</li>
+  <li>danger.yml              (x)</li>
+  <li>dependency-review.yml   (-)</li>
+  <li>discord-notifier.yml    (-)</li>
+  <li>heads.yml               (+)</li>
+  <li>jruby.yml               (+)</li>
+  <li>legacy.yml              (+)</li>
+  <li>locked_deps.yml         (+)</li>
+  <li>opencollective.yml      (-)</li>
+  <li>style.yml               (+)</li>
+  <li>supported.yml           (+)</li>
+  <li>truffle.yml             (+)</li>
+  <li>unlocked_deps.yml       (+)</li>
+  <li>unsupported.yml         (+)</li>
+</ul>
+
+<p>All those marked as (-) or (x) are excluded from interactive menus and checks.<br />
+The (x) exist because they may be common in other repos.</p>
 
 
   </div>
@@ -474,18 +504,19 @@ kettle-release executable.</p>
       <pre class="lines">
 
 
-79
-80
-81
-82
-83
-84
-85
-86
-87</pre>
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_helpers.rb', line 79</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_helpers.rb', line 108</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_exclusions'>exclusions</span>
   <span class='qwords_beg'>%w[</span><span class='words_sep'>
@@ -494,6 +525,7 @@ kettle-release executable.</p>
 </span><span class='words_sep'>    </span><span class='tstring_content'>danger.yml</span><span class='words_sep'>
 </span><span class='words_sep'>    </span><span class='tstring_content'>dependency-review.yml</span><span class='words_sep'>
 </span><span class='words_sep'>    </span><span class='tstring_content'>discord-notifier.yml</span><span class='words_sep'>
+</span><span class='words_sep'>    </span><span class='tstring_content'>opencollective.yml</span><span class='words_sep'>
 </span><span class='words_sep'>  </span><span class='tstring_end'>]</span></span>
 <span class='kw'>end</span></pre>
     </td>
@@ -554,12 +586,12 @@ kettle-release executable.</p>
       <pre class="lines">
 
 
-130
-131
-132</pre>
+160
+161
+162</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_helpers.rb', line 130</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_helpers.rb', line 160</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_failed?'>failed?</span><span class='lparen'>(</span><span class='id identifier rubyid_run'>run</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_run'>run</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_run'>run</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>status</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>completed</span><span class='tstring_end'>&quot;</span></span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_run'>run</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>conclusion</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_run'>run</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>conclusion</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>!=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>success</span><span class='tstring_end'>&quot;</span></span>
@@ -686,31 +718,31 @@ kettle-release executable.</p>
       <pre class="lines">
 
 
-97
-98
-99
-100
-101
-102
-103
-104
-105
-106
-107
-108
-109
-110
-111
-112
-113
-114
-115
-116
-117
-118</pre>
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_helpers.rb', line 97</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_helpers.rb', line 127</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_latest_run'>latest_run</span><span class='lparen'>(</span><span class='label'>owner:</span><span class='comma'>,</span> <span class='label'>repo:</span><span class='comma'>,</span> <span class='label'>workflow_file:</span><span class='comma'>,</span> <span class='label'>branch:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>token:</span> <span class='id identifier rubyid_default_token'>default_token</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_owner'>owner</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_repo'>repo</span>
@@ -939,12 +971,12 @@ Falls back to the current working directory when Rake context is absent.</p>
       <pre class="lines">
 
 
-123
-124
-125</pre>
+153
+154
+155</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_helpers.rb', line 123</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_helpers.rb', line 153</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_success?'>success?</span><span class='lparen'>(</span><span class='id identifier rubyid_run'>run</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_run'>run</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_run'>run</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>status</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>completed</span><span class='tstring_end'>&quot;</span></span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_run'>run</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>conclusion</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>success</span><span class='tstring_end'>&quot;</span></span>
@@ -1055,7 +1087,7 @@ Falls back to the current working directory when Rake context is absent.</p>
 </div>
 
       <div id="footer">
-  Generated on Sun Aug 24 00:02:16 2025 by
+  Generated on Sun Aug 24 02:21:11 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

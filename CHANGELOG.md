@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning v2](https://semver.org/spec/v2.
 ### Fixed
 ### Security
 
-## [1.0.0] - 2025-08-23
+## [1.0.0] - 2025-08-24
 - TAG: [v1.0.0][1.0.0t]
 - COVERAGE: 100.00% -- 98/98 lines in 7 files
 - BRANCH COVERAGE: 100.00% -- 30/30 branches in 7 files
@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning v2](https://semver.org/spec/v2.
 ### Added
 - initial release, with auto-config support for:
   - bundler-audit
+  - rake
   - require_bench
   - appraisal2
   - gitmoji-regex (& git-hooks to enforce gitmoji commit-style)
@@ -37,6 +38,8 @@ and this project adheres to [Semantic Versioning v2](https://semver.org/spec/v2.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 - `kettle-release` ruby script for safely, securely, releasing a gem.
+  - This may move to its own gem in the future.
+- `kettle-readme-backers` ruby script for integrating Open Source Collective backers into a README.md file.
   - This may move to its own gem in the future.
 
 [Unreleased]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.0...HEAD
