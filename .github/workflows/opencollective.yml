@@ -11,19 +11,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
+      - name: Setup Ruby & RubyGems
+        uses: ruby/setup-ruby@v1
         with:
-          node-version: '20'
-      - name: Install Open Collective CLI
-        run: npm install -g opencollective-setup
-      - name: Run Open Collective update
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: opencollective-setup --repo ${{ github.repository }}
-      - name: Commit and push changes
+          ruby-version: ruby
+          rubygems: default
+          bundler: default
+          bundler-cache: true
+
+      - name: Machine User & Gem Install
         run: |
-          git config user.name 'github-actions'
-          git config user.email 'github-actions@github.com'
-          git add README.md
-          git commit -m 'chore: Update Open Collective backers' || echo 'No changes to commit'
+          gem install kettle-dev
+          git config user.name 'autobolt'
+          git config user.email 'autobots@9thbit.net'
+
+      - name: README Update & Commit
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          kettle-readme-backers
+      - name: Push Changes
+        run: |
           git push

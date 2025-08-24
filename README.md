@@ -415,7 +415,7 @@ spec.add_dependency("kettle-dev", "~> 1.0")
 <details>
 <summary>📌 Is "Platform Support" part of the public API? More details inside.</summary>
 
-SemVer should, but doesn't explicitly, say that dropping support for specific Platforms
+SemVer should, IMO, but doesn't explicitly, say that dropping support for specific Platforms
 is a *breaking change* to an API.
 It is obvious to many, but not all, and since the spec is silent, the bike shedding is endless.
 
@@ -464,6 +464,8 @@ To say "thanks for maintaining such a great tool" 👇️ Join the Discord or �
 To join the community or get help 👇️ Join the Discord.
 
 [![Live Chat on Discord][✉️discord-invite-img]][✉️discord-invite]
+
+### Please give the project a star ⭐ ♥.
 
 Thanks for RTFM. ☺️
 
