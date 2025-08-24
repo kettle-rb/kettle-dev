@@ -63,7 +63,7 @@
 <p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog v1</a>,<br>
 and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semantic Versioning v2</a>.</p>
 
-<h2 id="unreleased"><a href="https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.3...HEAD">Unreleased</a></h2>
+<h2 id="unreleased"><a href="https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.4...HEAD">Unreleased</a></h2>
 <h3 id="added">Added</h3>
 <h3 id="changed">Changed</h3>
 <h3 id="deprecated">Deprecated</h3>
@@ -71,17 +71,21 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <h3 id="fixed">Fixed</h3>
 <h3 id="security">Security</h3>
 
-<h2 id="104---2025-08-24">[1.0.4] - 2025-08-24</h2>
+<h2 id="104---2025-08-24">
+<a href="https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.3...v1.0.4">1.0.4</a> - 2025-08-24</h2>
 <ul>
-  <li>TAG: [v1.0.4][1.0.4t]</li>
+  <li>TAG: <a href="https://gitlab.com/kettle-rb/kettle-dev/-/tags/v1.0.4">v1.0.4</a>
+</li>
   <li>COVERAGE: 100.00% – 130/130 lines in 7 files</li>
   <li>BRANCH COVERAGE:  96.00% – 48/50 branches in 7 files</li>
-  <li>94.59% documented
+  <li>95.35% documented
     <h3 id="added-1">Added</h3>
   </li>
-  <li>kettle-release: checks all remotes for a GitHub remote and syncs origin/trunk with it; prompts to rebase or –no-ff merge when histories diverge; pushes to both origin and the GitHub remote on merge; uses the GitHub remote for GitHub Actions CI checks, and also checks GitLab CI when a GitLab remote and .gitlab-ci.yml are present.
+  <li>kettle-release: checks all remotes for a GitHub remote and syncs origin/trunk with it; prompts to rebase or –no-ff merge when histories diverge; pushes to both origin and the GitHub remote on merge; uses the GitHub remote for GitHub Actions CI checks, and also checks GitLab CI when a GitLab remote and .gitlab-ci.yml are present.</li>
+  <li>kettle-release: push logic improved — if a remote named <code>all</code> exists, push the current branch to it (assumed to cover multiple push URLs). Otherwise push the current branch to <code>origin</code> and to any GitHub, GitLab, and Codeberg remotes (whatever their names are).
     <h3 id="fixed-1">Fixed</h3>
   </li>
+  <li>kettle-release now validates SHA256 checksums of the built gem against the recorded checksums and aborts on mismatch; helps ensure reproducible artifacts (honoring SOURCE_DATE_EPOCH).</li>
   <li>kettle-release now enforces CI checks and aborts if CI cannot be verified; supports GitHub Actions and GitLab pipelines, including releases from trunk/main.</li>
   <li>kettle-release no longer requires bundler/setup, preventing silent exits when invoked from a dependent project; adds robust output flushing.</li>
 </ul>
@@ -195,7 +199,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 </div></div>
 
       <div id="footer">
-  Generated on Sun Aug 24 04:51:33 2025 by
+  Generated on Sun Aug 24 05:40:06 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

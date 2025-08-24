@@ -14,6 +14,12 @@
 
 $stdout.sync = true
 require "rubygems"
+# Ensure we run within the host project's Bundler context (do not override BUNDLE_GEMFILE)
+begin
+  require "bundler/setup"
+rescue LoadError
+  # Allow running outside of Bundler; runtime deps should still be available via rubygems
+end
 
 require "open3"
 require "shellwords"
@@ -88,10 +94,13 @@ module Kettle
 
         # Checksums (commits, but does not push)
         run_cmd!("bin/gem_checksums")
+        validate_checksums!(version, stage: "after build + gem_checksums")
 
         # Release: expect PEM password + RubyGems MFA OTP
         puts "Running release (you may be prompted for signing key password and RubyGems MFA OTP)..."
         run_cmd!("bundle exec rake release")
+        # Some release tasks rebuild the gem; re-validate to ensure reproducibility
+        validate_checksums!(version, stage: "after release")
 
         puts "\nRelease complete. Don't forget to push the checksums commit if needed."
       end
@@ -184,7 +193,8 @@ module Kettle
 
       def run_cmd!(cmd)
         puts "$ #{cmd}"
-        success = system(cmd)
+        # Ensure current ENV (including SOURCE_DATE_EPOCH) is propagated explicitly
+        success = system(ENV, cmd)
         abort("Command failed: #{cmd}") unless success
       end
 
@@ -227,11 +237,45 @@ module Kettle
       end
 
       def push!
-        puts "$ git push"
-        success = system("git push")
-        unless success
-          warn("Normal push failed; retrying with force push...")
-          run_cmd!("git push -f")
+        branch = current_branch
+        abort("Could not determine current branch to push.") unless branch
+
+        if has_remote?("all")
+          puts "$ git push all #{branch}"
+          success = system("git push all #{Shellwords.escape(branch)}")
+          unless success
+            warn("Normal push to 'all' failed; retrying with force push...")
+            run_cmd!("git push -f all #{Shellwords.escape(branch)}")
+          end
+          return
+        end
+
+        # Build the list of remotes to push to
+        remotes = []
+        remotes << "origin" if has_remote?("origin")
+        remotes |= github_remote_candidates
+        remotes |= gitlab_remote_candidates
+        remotes |= codeberg_remote_candidates
+        remotes.uniq!
+
+        if remotes.empty?
+          # Fallback to default behavior if we couldn't detect any remotes
+          puts "$ git push #{branch}"
+          success = system("git push #{Shellwords.escape(branch)}")
+          unless success
+            warn("Normal push failed; retrying with force push...")
+            run_cmd!("git push -f #{Shellwords.escape(branch)}")
+          end
+          return
+        end
+
+        remotes.each do |remote|
+          puts "$ git push #{remote} #{branch}"
+          success = system("git push #{Shellwords.escape(remote)} #{Shellwords.escape(branch)}")
+          unless success
+            warn("Push to #{remote} failed; retrying with force push...")
+            run_cmd!("git push -f #{Shellwords.escape(remote)} #{Shellwords.escape(branch)}")
+          end
         end
       end
 
@@ -287,6 +331,10 @@ module Kettle
 
       def gitlab_remote_candidates
         remotes_with_urls.select { |n, u| u.include?("gitlab.com") }.keys
+      end
+
+      def codeberg_remote_candidates
+        remotes_with_urls.select { |n, u| u.include?("codeberg.org") }.keys
       end
 
       def preferred_github_remote
@@ -447,6 +495,60 @@ module Kettle
         end
         puts "Found signing cert: #{cert_path}"
         puts "When prompted during build/release, enter the PEM password for ~/.ssh/gem-private_key.pem"
+      end
+
+      # --- Checksum validation ---
+      # Validate that the sha256 of the built gem in pkg/ matches the recorded
+      # checksum stored under checksums/<gem>.gem.sha256. Abort with guidance if not.
+      # @param version [String]
+      # @param stage [String] human-readable context (e.g., "after release")
+      def validate_checksums!(version, stage: "")
+        gem_path = gem_file_for_version(version)
+        unless gem_path && File.file?(gem_path)
+          abort("Unable to locate built gem for version #{version} in pkg/. Did the build succeed?")
+        end
+        actual = compute_sha256(gem_path)
+        checks_path = File.join(@root, "checksums", "#{File.basename(gem_path)}.sha256")
+        unless File.file?(checks_path)
+          abort("Expected checksum file not found: #{checks_path}. Did bin/gem_checksums run?")
+        end
+        expected = File.read(checks_path).strip
+        if actual != expected
+          abort(<<~MSG)
+            SHA256 mismatch #{stage}:
+              gem:   #{gem_path}
+              sha256sum: #{actual}
+              file: #{checks_path}
+              file: #{expected}
+            Ensure SOURCE_DATE_EPOCH is set consistently and that the artifact used by release is identical to the one checksummed.
+            You can retry: export SOURCE_DATE_EPOCH=$EPOCHSECONDS; bundle exec rake build && bin/gem_checksums && bundle exec rake release
+          MSG
+        else
+          puts "Checksum OK #{stage}: #{File.basename(gem_path)}"
+        end
+      end
+
+      # Find the gem file in pkg/ that matches the given version
+      def gem_file_for_version(version)
+        pkg = File.join(@root, "pkg")
+        pattern = File.join(pkg, "*.gem")
+        gems = Dir[pattern].select { |p| File.basename(p).include?("-#{version}.gem") }
+        gems.sort.last
+      end
+
+      # Compute sha256 using system utilities (sha256sum or shasum -a 256),
+      # falling back to Ruby Digest if neither is available.
+      def compute_sha256(path)
+        if system("which sha256sum > /dev/null 2>&1")
+          out, _ = Open3.capture2e("sha256sum", path)
+          out.split.first
+        elsif system("which shasum > /dev/null 2>&1")
+          out, _ = Open3.capture2e("shasum", "-a", "256", path)
+          out.split.first
+        else
+          require "digest"
+          Digest::SHA256.file(path).hexdigest
+        end
       end
     end
   end
