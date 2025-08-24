@@ -8,3 +8,6 @@ RBS:
 
 Layout/IndentationConsistency:
   Exclude: ['*.md']
+
+RSpec/ExampleLength:
+  Enabled: false

@@ -14,9 +14,9 @@ and this project adheres to [Semantic Versioning v2](https://semver.org/spec/v2.
 
 ## [1.0.0] - 2025-08-23
 - TAG: [v1.0.0][1.0.0t]
-- COVERAGE: 100.00% -- 69/69 lines in 13 files
-- BRANCH COVERAGE: 100.00% -- 2/2 branches in 13 files
-- 94.44% documented
+- COVERAGE: 100.00% -- 98/98 lines in 7 files
+- BRANCH COVERAGE: 100.00% -- 30/30 branches in 7 files
+- 94.59% documented
 ### Added
 - initial release, with auto-config support for:
   - bundler-audit
@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning v2](https://semver.org/spec/v2.
     - silent_stream
     - timecop-rspec
 - `kettle:dev:install` rake task for installing githooks, and various instructions for optimal configuration
+- `kettle:dev:template` rake task for copying most of this gem's files (excepting bin/, docs/, exe/, sig/, lib/, specs/) to another gem, as a template.
 - `ci:act` rake task CLI menu / scoreboard for a project's GHA workflows
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.

@@ -36,7 +36,6 @@ module Kettle
 
       def run
         puts "== kettle-release =="
-        check_git_clean!
 
         run_cmd!("bin/setup")
         run_cmd!("bin/rake")

@@ -3,29 +3,19 @@
     [26, 17, 2, "ThreadSafety/MutableClassInstanceVariable: Freeze mutable objects assigned to class instance variables.", 5862883]
   ],
   "spec/kettle/dev/ci_helpers_spec.rb:1096298546": [
-    [12, 5, 311, "RSpec/ExampleLength: Example has too many lines. [13/5]", 8731794],
-    [30, 5, 416, "RSpec/ExampleLength: Example has too many lines. [10/5]", 3308212503],
     [34, 16, 42, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 465257938],
     [35, 28, 33, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 3247304381],
     [38, 9, 19, "ThreadSafety/DirChdir: Avoid using `Dir.chdir` due to its process-wide effect.", 585207512],
     [96, 5, 61, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 2945006178],
-    [96, 5, 501, "RSpec/ExampleLength: Example has too many lines. [10/5]", 2162954513],
     [141, 5, 47, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 45456806],
-    [141, 5, 577, "RSpec/ExampleLength: Example has too many lines. [6/5]", 2528108516],
-    [225, 5, 39, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 4038128320],
-    [225, 5, 395, "RSpec/ExampleLength: Example has too many lines. [6/5]", 2619497543]
+    [225, 5, 39, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 4038128320]
   ],
-  "spec/kettle/dev_private_spec.rb:688594158": [
+  "spec/kettle/dev_private_spec.rb:652722627": [
     [5, 5, 49, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 146084145],
-    [5, 5, 463, "RSpec/ExampleLength: Example has too many lines. [6/5]", 4014272829],
     [10, 7, 20, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 794029890],
     [10, 31, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `default_task` as a spy using `allow` or `instance_spy`.", 1384559950],
-    [73, 5, 456, "RSpec/ExampleLength: Example has too many lines. [8/5]", 3240308720],
-    [76, 9, 18, "RSpec/LeakyConstantDeclaration: Stub module constant instead of declaring explicitly.", 3236815244],
-    [79, 41, 36, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 1790782556]
-  ],
-  "spec/kettle/dev_spec.rb:2808932314": [
-    [15, 5, 378, "RSpec/ExampleLength: Example has too many lines. [11/5]", 2068367997]
+    [78, 11, 18, "RSpec/LeakyConstantDeclaration: Stub module constant instead of declaring explicitly.", 3236815244],
+    [81, 43, 36, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 1790782556]
   ],
   "spec/kettle_dev_file_spec.rb:1811427211": [
     [3, 16, 25, "RSpec/DescribeClass: The first argument to describe should be the class or module being tested.", 3060513619],
