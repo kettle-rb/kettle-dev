@@ -75,6 +75,35 @@ module Kettle
       end
 
       # List of workflow files to exclude from interactive menus and checks.
+      #
+      # For reference...
+      #
+      # A list of all worlflows,
+      #   with each marked relative to if they exist in this repo,
+      #   or at the top of the README marked.
+      #
+      #   - ancient                 (+)
+      #   - auto-assign.yml         (-)
+      #   - codeql-analysis.yml     (-)
+      #   - coverage.yml            (+)
+      #   - current.yml             (+)
+      #   - danger.yml              (x)
+      #   - dependency-review.yml   (-)
+      #   - discord-notifier.yml    (-)
+      #   - heads.yml               (+)
+      #   - jruby.yml               (+)
+      #   - legacy.yml              (+)
+      #   - locked_deps.yml         (+)
+      #   - opencollective.yml      (-)
+      #   - style.yml               (+)
+      #   - supported.yml           (+)
+      #   - truffle.yml             (+)
+      #   - unlocked_deps.yml       (+)
+      #   - unsupported.yml         (+)
+      #
+      # All those marked as (-) or (x) are excluded from interactive menus and checks.
+      # The (x) exist because they may be common in other repos.
+      #
       # @return [Array<String>]
       def exclusions
         %w[
@@ -83,6 +112,7 @@ module Kettle
           danger.yml
           dependency-review.yml
           discord-notifier.yml
+          opencollective.yml
         ]
       end
 
