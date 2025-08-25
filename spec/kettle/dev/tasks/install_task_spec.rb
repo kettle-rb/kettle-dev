@@ -197,7 +197,6 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
           end
         end
 
-
         # Case 1: forced update
         stub_env("force" => "true")
         described_class.run
@@ -233,7 +232,6 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
             spec.homepage = "https://github.com/acme/demo"
           end
         G
-
 
         # No allowed set, so after updating .envrc the task should abort
         expect { described_class.run }.to raise_error { |e| expect([SystemExit, Kettle::Dev::Error]).to include(e.class) }

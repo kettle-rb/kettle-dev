@@ -21,11 +21,16 @@ OTOH, if `ci_badges.map(&:color).all? { it == "green"}` 👇️ send money so I 
 
 ## 🌻 Synopsis
 
-Add to your `Rakefile`:
+This gem integrates tightly with [kettle-test](https://github.com/kettle-rb/kettle-test).
+
+```ruby
+require "kettle/test/rspec"
+```
+
+Then, add to your `Rakefile`:
 
 ```ruby
 require "kettle/dev"
-Kettle::Dev.install_tasks
 ```
 
 Now you have many powerful development and testing tools at your disposal, all fully [documented](#-configuration) and tested.
@@ -136,11 +141,20 @@ NOTE: Be prepared to track down certs for signed gems and add them the same way 
 
 ## ⚙️ Configuration
 
+### RSpec
+
+This gem integrates tightly with [kettle-test](https://github.com/kettle-rb/kettle-test).
+
+```ruby
+require "kettle/test/rspec"
+```
+
+### Rakefile
+
 Add to your `Rakefile`:
 
 ```ruby
 require "kettle/dev"
-Kettle::Dev.install_tasks
 ```
 
 That’s it. When installed, kettle-dev:
@@ -287,7 +301,6 @@ Tip: The commit message helper `exe/kettle-commit-msg` prefers project-local `.g
     - Precedence: ENV overrides .opencollective.yml; if neither is set, a sensible default is used.
     - Note: When used with the provided `.git-hooks`, the subject should start with a gitmoji character (see [gitmoji][📌gitmoji]).
 - Tip: Run this locally before committing to keep your README current, or schedule it in CI to refresh periodically.
-
 
 ## 🦷 FLOSS Funding
 

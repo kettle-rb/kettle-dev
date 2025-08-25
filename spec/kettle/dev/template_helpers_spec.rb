@@ -385,7 +385,13 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
           )
 
           load_template_task!
-          Rake::Task["kettle:dev:template"].invoke
+          begin
+            Rake::Task["kettle:dev:template"].invoke
+          rescue Kettle::Dev::Error => e
+            # The task intentionally aborts to force a manual review of environment files.
+            # For this example we only care that the copy behavior occurred prior to aborting.
+            expect(e.message).to include("Aborting: review of environment files required")
+          end
 
           expect(File).not_to exist(File.join(project_root, ".env.local"))
           expect(File).to exist(File.join(project_root, ".env.local.example"))

@@ -252,7 +252,9 @@ module Kettle
         gh_repo = gh_match && gh_match[2]&.sub(/\.git\z/, "")
         if gh_org.nil?
           begin
-            origin_url = IO.popen(["git", "-C", root.to_s, "remote", "get-url", "origin"], &:read).to_s.strip
+            origin_out = IO.popen(["git", "-C", root.to_s, "remote", "get-url", "origin"], &:read)
+            origin_out = origin_out.read if origin_out.respond_to?(:read)
+            origin_url = origin_out.to_s.strip
             if (m = origin_url.match(%r{github\.com[/:]([^/]+)/([^/]+)}i))
               gh_org = m[1]
               gh_repo = m[2]&.sub(/\.git\z/, "")

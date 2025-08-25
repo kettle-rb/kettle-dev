@@ -187,7 +187,9 @@ module Kettle
                   origin_url = nil
                   begin
                     origin_cmd = ["git", "-C", project_root.to_s, "remote", "get-url", "origin"]
-                    origin_url = IO.popen(origin_cmd, &:read).to_s.strip
+                    origin_out = IO.popen(origin_cmd, &:read)
+                    origin_out = origin_out.read if origin_out.respond_to?(:read)
+                    origin_url = origin_out.to_s.strip
                   rescue StandardError
                     origin_url = ""
                   end
@@ -228,6 +230,8 @@ module Kettle
               end
             end
           rescue StandardError => e
+            # Do not swallow intentional task aborts signaled via Kettle::Dev::Error
+            raise if e.is_a?(Kettle::Dev::Error)
             puts "WARNING: An error occurred while checking gemspec homepage: #{e.class}: #{e.message}"
           end
 

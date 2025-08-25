@@ -381,6 +381,8 @@ module Kettle
               end
             end
           rescue StandardError => e
+            # Do not swallow intentional task aborts
+            raise if e.is_a?(Kettle::Dev::Error)
             puts "WARNING: Could not determine env file changes: #{e.class}: #{e.message}"
           end
 
