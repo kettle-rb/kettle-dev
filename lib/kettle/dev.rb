@@ -9,6 +9,7 @@ require "version_gem"
 
 # This gem
 require_relative "dev/version"
+require_relative "emoji_regex"
 
 module Kettle
   module Dev
@@ -113,5 +114,15 @@ end
 Kettle::Dev::Version.class_eval do
   extend VersionGem::Basic
 end
+
+# Eagerly load public CLI/APIs so requiring "kettle-dev" exposes them
+# for tests and executables
+require_relative "dev/tasks/template_task"
+require_relative "dev/tasks/install_task"
+require_relative "dev/tasks/ci_task"
+require_relative "dev/git_commit_footer"
+require_relative "dev/readme_backers"
+require_relative "dev/release_cli"
+require_relative "dev/template_helpers"
 
 Kettle::Dev.install_tasks if Kettle::Dev::RUNNING_AS == "rake"

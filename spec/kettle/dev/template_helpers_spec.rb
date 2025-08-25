@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 # rubocop:disable RSpec/MultipleExpectations, RSpec/ExampleLength, RSpec/StubbedMock, RSpec/MessageSpies
-require "kettle/dev/template_helpers"
 require "rake"
 
 RSpec.describe Kettle::Dev::TemplateHelpers do

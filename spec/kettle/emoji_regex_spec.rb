@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "kettle/emoji_regex"
-
 RSpec.describe Kettle::EmojiRegex do
   describe "::REGEX" do
     let(:regex) { described_class::REGEX }

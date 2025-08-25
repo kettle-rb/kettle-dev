@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
-require "kettle/dev"
-require "kettle/dev/ci_helpers"
+# External stdlib
 require "open3"
 require "shellwords"
 require "time"
@@ -10,11 +9,12 @@ require "net/http"
 require "json"
 require "uri"
 
-begin
-  require "ruby-progressbar"
-rescue LoadError
-  # Allow requiring file even if progressbar is not present; the CLI will error when used.
-end
+# External gems
+require "ruby-progressbar"
+
+# This library
+require "kettle/dev"
+require "kettle/dev/ci_helpers"
 
 module Kettle
   module Dev
@@ -99,6 +99,18 @@ module Kettle
 
         checkout!(trunk)
         pull!(trunk)
+
+        # Strong reminder for local runs: skip signing when testing a release flow
+        unless ENV.key?("SKIP_GEM_SIGNING")
+          puts "TIP: For local dry-runs or testing the release workflow, set SKIP_GEM_SIGNING=true to avoid PEM password prompts."
+          unless ENV.fetch("CI", "false").casecmp("true").zero?
+            print("Proceed with signing enabled? This may hang waiting for a PEM password. [y/N]: ")
+            ans = $stdin.gets&.strip
+            unless ans&.downcase&.start_with?("y")
+              abort("Aborted. Re-run with SKIP_GEM_SIGNING=true bundle exec kettle-release (or set it in your environment).")
+            end
+          end
+        end
 
         ensure_signing_setup_or_skip!
         puts "Running build (you may be prompted for the signing key password)..."
@@ -201,8 +213,15 @@ module Kettle
       end
 
       def run_cmd!(cmd)
+        # For Bundler-invoked build/release, explicitly prefix SKIP_GEM_SIGNING so
+        # the signing step is skipped even when Bundler scrubs ENV.
+        if ENV["SKIP_GEM_SIGNING"] && cmd =~ /\Abundle(\s+exec)?\s+rake\s+(build|release)\b/
+          cmd = "SKIP_GEM_SIGNING=true #{cmd}"
+        end
         puts "$ #{cmd}"
-        success = system(ENV, cmd)
+        # Pass a plain Hash for the environment to satisfy tests and avoid ENV object oddities
+        env_hash = ENV.respond_to?(:to_hash) ? ENV.to_hash : ENV.to_h
+        success = system(env_hash, cmd)
         abort("Command failed: #{cmd}") unless success
       end
 

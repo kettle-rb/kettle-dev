@@ -1,10 +1,13 @@
 # frozen_string_literal: true
 
-require "kettle/dev/ci_helpers"
+# External
 require "open3"
 require "net/http"
 require "json"
 require "uri"
+
+# This library
+require "kettle/dev/ci_helpers"
 
 module Kettle
   module Dev

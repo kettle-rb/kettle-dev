@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# This library
 require "kettle/dev/template_helpers"
 
 module Kettle

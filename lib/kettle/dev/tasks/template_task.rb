@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# This library
 require "kettle/dev/template_helpers"
 
 module Kettle
@@ -274,7 +275,6 @@ module Kettle
 
                   # 3) Preserve first H1 emojis from destination README, if any
                   begin
-                    require "kettle/emoji_regex"
                     emoji_re = Kettle::EmojiRegex::REGEX
 
                     dest_emojis = nil

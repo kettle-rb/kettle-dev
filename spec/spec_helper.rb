@@ -20,3 +20,48 @@ require "kettle-dev"
 # RSpec & related config
 require "kettle/test/rspec"
 require_relative "support/shared_contexts/with_rake"
+
+# Global input machine to prevent blocking prompts during tests
+# Many tasks/executables read from $stdin directly (e.g., $stdin.gets).
+# Replace $stdin with a fake IO that returns an immediate answer.
+class KettleTestInputMachine
+  def initialize(default: nil)
+    # default of nil => return "\n" to accept defaults like [Y/n] or [l]
+    @default = default
+  end
+
+  def gets(*_args)
+    (@default.nil? ? "\n" : @default.to_s) + ("\n" unless @default&.to_s&.end_with?("\n")).to_s
+  end
+
+  def readline(*_args)
+    gets
+  end
+
+  def read(*_args)
+    # Behave like non-interactive empty input
+    ""
+  end
+
+  def each_line
+    return enum_for(:each_line) unless block_given?
+    # No lines by default
+    nil
+  end
+
+  def tty?
+    false
+  end
+end
+
+RSpec.configure do |config|
+  config.before(:suite) do
+    $original_stdin = $stdin
+    default = ENV["TEST_INPUT_DEFAULT"]
+    $stdin = KettleTestInputMachine.new(default: (default && !default.empty? ? default : nil))
+  end
+
+  config.after(:suite) do
+    $stdin = $original_stdin if defined?($original_stdin) && $original_stdin
+  end
+end

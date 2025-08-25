@@ -3,8 +3,6 @@
 require "tmpdir"
 require "fileutils"
 
-require "kettle/dev/ci_helpers"
-
 RSpec.describe Kettle::Dev::CIHelpers do
   include_context "with stubbed env"
 

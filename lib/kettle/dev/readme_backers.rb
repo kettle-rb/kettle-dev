@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# External stdlib
 require "yaml"
 require "json"
 require "uri"
@@ -75,7 +76,8 @@ module Kettle
             ts = tag_strings
             warn("No recognized Open Collective tags found in #{@readme_path}. Expected one or more of: " \
               "#{ts[:generic_start]}/#{ts[:generic_end]}, #{ts[:individuals_start]}/#{ts[:individuals_end]}, #{ts[:orgs_start]}/#{ts[:orgs_end]}.")
-            exit(2)
+            # Do not exit the process during tests or library use; just return.
+            return
           end
           puts "No changes to backers or sponsors sections in #{@readme_path}."
           return
