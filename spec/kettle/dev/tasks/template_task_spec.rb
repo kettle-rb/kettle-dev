@@ -48,7 +48,6 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
           )
 
           # Exercise
-          require "kettle/dev/tasks/template_task"
           expect { described_class.run }.not_to raise_error
 
           # Assert
@@ -84,7 +83,6 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
             ask: true,
           )
 
-          require "kettle/dev/tasks/template_task"
           expect { described_class.run }.not_to raise_error
 
           expect(File).to exist(File.join(project_root, ".env.local.example"))
@@ -119,7 +117,6 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
             ask: true,
           )
 
-          require "kettle/dev/tasks/template_task"
           described_class.run
 
           dest = File.join(project_root, "gemfiles", "modular", "style.gemfile")
@@ -153,7 +150,6 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
 
           # Case 1: confirm replacement
           allow(helpers).to receive(:ask).and_return(true)
-          require "kettle/dev/tasks/template_task"
           described_class.run
           content = File.read(File.join(spec_dir, "spec_helper.rb"))
           expect(content).to include('require "demo"')
@@ -189,7 +185,6 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
 
           # Unset allowed so the code path aborts
           stub_env("allowed" => nil)
-          require "kettle/dev/tasks/template_task"
           expect { described_class.run }.to raise_error(SystemExit, /review of environment files required/)
         end
       end
@@ -219,7 +214,6 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
             ask: true,
           )
 
-          require "kettle/dev/tasks/template_task"
           described_class.run
 
           local_hooks = File.join(project_root, ".git-hooks")
@@ -256,7 +250,6 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
             end
           end
 
-          require "kettle/dev/tasks/template_task"
           expect { Kettle::Dev::Tasks::TemplateTask.run }.not_to raise_error
         end
       end
