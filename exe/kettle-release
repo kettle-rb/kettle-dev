@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+# vim: set syntax=ruby
+
 # kettle-release: Automate release steps from CONTRIBUTING.md
 # - Runs sanity checks
 # - Ensures version/changelog updated (with confirmation)
@@ -12,14 +14,13 @@
 # - Runs bin/gem_checksums
 # - Runs `bundle exec rake release` (expects PEM password and RubyGems MFA OTP)
 
+# Immediate, unbuffered output
 $stdout.sync = true
-require "rubygems"
-# Ensure we run within the host project's Bundler context (do not override BUNDLE_GEMFILE)
-begin
-  require "bundler/setup"
-rescue LoadError
-  # Allow running outside of Bundler; runtime deps should still be available via rubygems
-end
+# Depending library or project must be using bundler
+require "bundler/setup"
+
+require "kettle/dev"
+require "kettle/dev/ci_helpers"
 
 begin
   require "open3"
@@ -29,7 +30,6 @@ begin
   require "net/http"
   require "json"
   require "uri"
-  require "kettle/dev/ci_helpers"
   require "ruby-progressbar"
 rescue LoadError => e
   warn("kettle-release: failed to load a required library: #{e.message}")
@@ -357,11 +357,16 @@ module Kettle
         # Look for lib/**/version.rb and extract VERSION constant string
         candidates = Dir[File.join(@root, "lib", "**", "version.rb")]
         abort("Could not find version.rb under lib/**.") if candidates.empty?
-        path = candidates.min
-        content = File.read(path)
-        m = content.match(/VERSION\s*=\s*(["'])([^"']+)\1/)
-        abort("VERSION constant not found in #{path}.") unless m
-        m[2]
+        versions = candidates.map do |path|
+          content = File.read(path)
+          m = content.match(/VERSION\s*=\s*(["'])([^"']+)\1/)
+          next unless m
+          m[2]
+        end.compact
+        abort("VERSION constant not found in #{@root}/lib/**/version.rb") if versions.none?
+        abort("Multiple VERSION constants found to be out of sync (#{versions.inspect}) in #{@root}/lib/**/version.rb") unless versions.uniq.length == 1
+
+        versions.first
       end
 
       def detect_gem_name

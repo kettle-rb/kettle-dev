@@ -1,12 +1,12 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
+
 # vim: set syntax=ruby
 
-require "rubygems"
-begin
-  require "bundler/setup"
-rescue LoadError
-  # Allow running outside of Bundler; runtime deps should still be available via rubygems
-end
+# Immediate, unbuffered output
+$stdout.sync = true
+# Depending library or project must be using bundler
+require "bundler/setup"
 
 # Standard library
 require "erb"

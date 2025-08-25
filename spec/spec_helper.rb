@@ -18,4 +18,4 @@ end
 require "kettle/test/rspec"
 
 # this library
-require "kettle/dev"
+require "kettle-dev"

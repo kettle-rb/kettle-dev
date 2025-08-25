@@ -21,7 +21,10 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Changed
 ### Deprecated
 ### Removed
+- attempts to make exe/* scripts work without bundler. Bundler is required.
 ### Fixed
+- `Kettle::Dev::ReleaseCLI#detect_version` handles gems with multiple VERSION constants
+- `kettle:dev:template` task was fixed to copy `.example` files with the destination filename lacking the `.example` extension, except for `.env.local.example`
 ### Security
 
 ## [1.0.9] - 2025-08-24

@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+# vim: set syntax=ruby
+
 # Updates README.md backers and sponsors sections using data from Open Collective
 # backers.json and sponsors.json for the configured handle.
 #
@@ -19,18 +21,23 @@
 #   OPENCOLLECTIVE_HANDLE=kettle-rb exe/kettle-readme-backers
 #   # or ensure .opencollective.yml exists with collective: "kettle-rb"
 
-require "rubygems"
-begin
-  require "bundler/setup"
-rescue LoadError
-  # Allow running outside of Bundler; runtime deps should still be available via rubygems
-end
+# Immediate, unbuffered output
+$stdout.sync = true
+# Depending library or project must be using bundler
+require "bundler/setup"
 
-require "yaml"
-require "json"
-require "uri"
-require "net/http"
-require "set"
+begin
+  require "yaml"
+  require "json"
+  require "uri"
+  require "net/http"
+  require "set"
+rescue LoadError => e
+  warn("kettle-release: failed to load a required library: #{e.message}")
+  warn("Hint: Ensure the host project includes kettle-dev and its runtime deps, then run bundle install.")
+  warn(e.backtrace.join("\n")) if ENV["DEBUG"]
+  exit(1)
+end
 
 module Kettle
   module Dev

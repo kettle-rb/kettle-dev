@@ -2,6 +2,7 @@
 
 # rubocop:disable RSpec/MultipleExpectations, RSpec/ExampleLength, RSpec/StubbedMock, RSpec/MessageSpies
 require "kettle/dev/template_helpers"
+require "rake"
 
 RSpec.describe Kettle::Dev::TemplateHelpers do
   let(:helpers) { described_class }
@@ -324,6 +325,73 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
 
     it "replaces kettle-dev inside suffixed identifiers like -i without touching suffix" do
       expect(rep("[🖼️kettle-dev-i]")).to eq("[🖼️foo_bar-i]")
+    end
+  end
+
+  context "when running kettle:dev:template" do
+    def load_template_task!
+      Rake.application = Rake::Application.new
+      load File.join(__dir__.sub(%r{/spec/.*\z}, ""), "lib", "kettle", "dev", "rakelib", "template.rake")
+    end
+
+    it "uses .example source but writes destination filename without .example for .github files" do
+      Dir.mktmpdir do |gem_root|
+        Dir.mktmpdir do |project_root|
+          github_dir = File.join(gem_root, ".github", "workflows")
+          FileUtils.mkdir_p(github_dir)
+          real_yml = File.join(github_dir, "ci.yml")
+          File.write(real_yml, "name: REAL\n")
+          File.write(real_yml + ".example", "name: EXAMPLE\n")
+
+          File.write(File.join(project_root, "demo.gemspec"), <<~G)
+            Gem::Specification.new do |spec|
+              spec.name = "demo"
+              spec.required_ruby_version = ">= 3.1"
+            end
+          G
+
+          allow(helpers).to receive_messages(
+            project_root: project_root,
+            gem_checkout_root: gem_root,
+            ensure_clean_git!: nil,
+            ask: true,
+          )
+
+          load_template_task!
+          Rake::Task["kettle:dev:template"].invoke
+
+          dest_ci = File.join(project_root, ".github", "workflows", "ci.yml")
+          expect(File).to exist(dest_ci)
+          expect(File.read(dest_ci)).to include("EXAMPLE")
+        end
+      end
+    end
+
+    it "copies .env.local.example and does not create/overwrite .env.local" do
+      Dir.mktmpdir do |gem_root|
+        Dir.mktmpdir do |project_root|
+          File.write(File.join(gem_root, ".env.local.example"), "SECRET=1\n")
+          File.write(File.join(project_root, "demo.gemspec"), <<~G)
+            Gem::Specification.new do |spec|
+              spec.name = "demo"
+              spec.required_ruby_version = ">= 3.1"
+            end
+          G
+
+          allow(helpers).to receive_messages(
+            project_root: project_root,
+            gem_checkout_root: gem_root,
+            ensure_clean_git!: nil,
+            ask: true,
+          )
+
+          load_template_task!
+          Rake::Task["kettle:dev:template"].invoke
+
+          expect(File).not_to exist(File.join(project_root, ".env.local"))
+          expect(File).to exist(File.join(project_root, ".env.local.example"))
+        end
+      end
     end
   end
 end
