@@ -1,21 +1,7 @@
 # frozen_string_literal: true
 
-# Galtzo FLOSS Rakefile v1.0.11 - 2025-08-19
+# kettle-dev Rakefile v1.0.0 - 2025-08-23
 # Ruby 2.3 (Safe Navigation) or higher required
-#
-# CHANGELOG
-# v1.0.0 - initial release w/ support for rspec, minitest, rubocop, reek, yard, and stone_checksums
-# v1.0.1 - fix test / spec tasks running 2x
-# v1.0.2 - fix duplicate task warning from RuboCop
-# v1.0.3 - add bench tasks to run mini benchmarks (add scripts to /benchmarks)
-# v1.0.4 - add support for floss_funding:install
-# v1.0.5 - add support for halting in Rake tasks with binding.b (from debug gem)
-# v1.0.6 - add RBS files and checksums to YARD-generated docs site
-# v1.0.7 - works with vanilla ruby, non-gem, bundler-managed, projects
-# v1.0.8 - improved Dir globs, add back and document rbconfig dependency
-# v1.0.9 - add appraisal:update task to update Appraisal gemfiles and autocorrect with RuboCop Gradual
-# v1.0.10 - add ci:act to run GHA workflows locally, and get status of remote workflows
-# v1.0.11 - ci:act workflows are populated entirely dynamically, based on existing files
 #
 # MIT License (see License.txt)
 #
@@ -25,34 +11,41 @@
 #
 # Sets up tasks for appraisal, floss_funding, rspec, minitest, rubocop, reek, yard, and stone_checksums.
 #
-# rake appraisal:update                 # Update Appraisal gemfiles and run RuboCop Gradual autocorrect
-# rake bench                            # Run all benchmarks (alias for bench:run)
-# rake bench:list                       # List available benchmark scripts
-# rake bench:run                        # Run all benchmark scripts (skips on CI)
-# rake build                            # Build gitmoji-regex-1.0.2.gem into the pkg directory
-# rake build:checksum                   # Generate SHA512 checksum of gitmoji-regex-1.0.2.gem into the checksums directory
-# rake build:generate_checksums         # Generate both SHA256 & SHA512 checksums into the checksums directory, and git...
-# rake bundle:audit:check               # Checks the Gemfile.lock for insecure dependencies
-# rake bundle:audit:update              # Updates the bundler-audit vulnerability database
-# rake ci:act[opt]                      # Run 'act' with a selected workflow
-# rake clean                            # Remove any temporary products
-# rake clobber                          # Remove any generated files
-# rake coverage                         # Run specs w/ coverage and open results in browser
-# rake floss_funding:install            # (stub) floss_funding is unavailable
-# rake install                          # Build and install gitmoji-regex-1.0.2.gem into system gems
-# rake install:local                    # Build and install gitmoji-regex-1.0.2.gem into system gems without network ac...
-# rake reek                             # Check for code smells
-# rake reek:update                      # Run reek and store the output into the REEK file
-# rake release[remote]                  # Create tag v1.0.2 and build and push gitmoji-regex-1.0.2.gem to rubygems.org
-# rake rubocop                          # alias rubocop task to rubocop_gradual
-# rake rubocop_gradual                  # Run RuboCop Gradual
-# rake rubocop_gradual:autocorrect      # Run RuboCop Gradual with autocorrect (only when it's safe)
-# rake rubocop_gradual:autocorrect_all  # Run RuboCop Gradual with autocorrect (safe and unsafe)
-# rake rubocop_gradual:check            # Run RuboCop Gradual to check the lock file
-# rake rubocop_gradual:force_update     # Run RuboCop Gradual to force update the lock file
-# rake spec                             # Run RSpec code examples
-# rake test                             # Run tests
-# rake yard                             # Generate YARD Documentation
+# rake appraisal:update                       # Update Appraisal gemfiles and run RuboCop...
+# rake bench                                  # Run all benchmarks (alias for bench:run)
+# rake bench:list                             # List available benchmark scripts
+# rake bench:run                              # Run all benchmark scripts (skips on CI)
+# rake build                                  # Build kettle-dev-1.0.0.gem into the pkg d...
+# rake build:checksum                         # Generate SHA512 checksum of kettle-dev-1....
+# rake build:generate_checksums               # Generate both SHA256 & SHA512 checksums i...
+# rake bundle:audit:check                     # Checks the Gemfile.lock for insecure depe...
+# rake bundle:audit:update                    # Updates the bundler-audit vulnerability d...
+# rake ci:act[opt]                            # Run 'act' with a selected workflow
+# rake clean                                  # Remove any temporary products
+# rake clobber                                # Remove any generated files
+# rake coverage                               # Run specs w/ coverage and open results in...
+# rake default                                # Default tasks aggregator
+# rake install                                # Build and install kettle-dev-1.0.0.gem in...
+# rake install:local                          # Build and install kettle-dev-1.0.0.gem in...
+# rake kettle:dev:install                     # Install kettle-dev GitHub automation and ...
+# rake kettle:dev:template                    # Template kettle-dev files into the curren...
+# rake reek                                   # Check for code smells
+# rake reek:update                            # Run reek and store the output into the RE...
+# rake release[remote]                        # Create tag v1.0.0 and build and push kett...
+# rake rubocop_gradual                        # Run RuboCop Gradual
+# rake rubocop_gradual:autocorrect            # Run RuboCop Gradual with autocorrect (onl...
+# rake rubocop_gradual:autocorrect_all        # Run RuboCop Gradual with autocorrect (saf...
+# rake rubocop_gradual:check                  # Run RuboCop Gradual to check the lock file
+# rake rubocop_gradual:force_update           # Run RuboCop Gradual to force update the l...
+# rake rubocop_gradual_debug                  # Run RuboCop Gradual
+# rake rubocop_gradual_debug:autocorrect      # Run RuboCop Gradual with autocorrect (onl...
+# rake rubocop_gradual_debug:autocorrect_all  # Run RuboCop Gradual with autocorrect (saf...
+# rake rubocop_gradual_debug:check            # Run RuboCop Gradual to check the lock file
+# rake rubocop_gradual_debug:force_update     # Run RuboCop Gradual to force update the l...
+# rake spec                                   # Run RSpec code examples
+# rake test                                   # Run tests
+# rake yard                                   # Generate YARD Documentation
+#
 
 # External gems
 require "bundler/gem_tasks" if !Dir[File.join(__dir__, "*.gemspec")].empty?
