@@ -65,6 +65,21 @@ namespace :ci do
       end
     end
 
+    get_sha = proc do
+      out, status = Open3.capture2("git", "rev-parse", "--short", "HEAD")
+      status.success? ? out.strip : nil
+    end
+
+    get_upstream = proc do
+      out, status = Open3.capture2("git", "rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}")
+      if status.success?
+        out.strip
+      else
+        br = get_branch.call
+        br ? "origin/#{br}" : nil
+      end
+    end
+
     status_emoji = proc do |status, conclusion|
       case status
       when "queued"
@@ -196,6 +211,20 @@ namespace :ci do
     owner, repo = org if org
     token = ENV["GITHUB_TOKEN"] || ENV["GH_TOKEN"]
 
+    # Header with remote branch and SHA
+    upstream = get_upstream.call
+    sha = get_sha.call
+    if org && branch
+      puts "Repo: #{owner}/#{repo}"
+    elsif org
+      puts "Repo: #{owner}/#{repo}"
+    else
+      puts "Repo: n/a"
+    end
+    puts "Upstream: #{upstream || "n/a"}"
+    puts "HEAD: #{sha || "n/a"}"
+    puts
+
     puts "Select a workflow to run with 'act':"
 
     # Render initial menu with placeholder statuses
@@ -239,16 +268,40 @@ namespace :ci do
             Thread.exit
           end
           uri = URI("https://api.github.com/repos/#{ow}/#{rp}/actions/workflows/#{f}/runs?branch=#{URI.encode_www_form_component(br)}&per_page=1")
-          req = Net::HTTP::Get.new(uri)
-          req["User-Agent"] = "ci:act rake task"
-          req["Authorization"] = "token #{tk}" if tk && !tk.empty?
-          res = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) { |http| http.request(req) }
-          status_q <<
-            if res.is_a?(Net::HTTPSuccess)
-              process_success_response(res, c, f)
-            else
-              [c, f, "fail #{res.code}"]
+          poll_interval = Integer(ENV["CI_ACT_POLL_INTERVAL"] || 5)
+          loop do
+            begin
+              req = Net::HTTP::Get.new(uri)
+              req["User-Agent"] = "ci:act rake task"
+              req["Authorization"] = "token #{tk}" if tk && !tk.empty?
+              res = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) { |http| http.request(req) }
+              if res.is_a?(Net::HTTPSuccess)
+                data = JSON.parse(res.body)
+                run = data["workflow_runs"]&.first
+                if run
+                  st = run["status"]
+                  con = run["conclusion"]
+                  emoji = case st
+                  when "queued" then "⏳️"
+                  when "in_progress" then "👟"
+                  when "completed" then ((con == "success") ? "✅" : "🍅")
+                  else "⏳️"
+                  end
+                  details = [st, con].compact.join("/")
+                  status_q << [c, f, "#{emoji} (#{details})"]
+                  break if st == "completed"
+                else
+                  status_q << [c, f, "none"]
+                  break
+                end
+              else
+                status_q << [c, f, "fail #{res.code}"]
+              end
+            rescue StandardError
+              status_q << [c, f, "err"]
             end
+            sleep(poll_interval)
+          end
         rescue StandardError
           status_q << [c, f, "err"]
         end
