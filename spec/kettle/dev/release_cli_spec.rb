@@ -432,6 +432,145 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       expect { cli.send(:monitor_workflows_after_push!) }.to raise_error(SystemExit, /CI configuration not detected/)
     end
   end
+
+  describe "#run" do
+    around do |ex|
+      orig_stdin = $stdin
+      begin
+        ex.run
+      ensure
+        $stdin = orig_stdin
+      end
+    end
+
+    it "aborts when current version is not greater than latest released for series" do
+      allow(cli).to receive(:ensure_bundler_2_7_plus!) # skip real check
+      allow(cli).to receive(:detect_version).and_return("1.2.3")
+      allow(cli).to receive(:detect_gem_name).and_return("mygem")
+      allow(cli).to receive(:latest_released_versions).and_return(["1.2.3", "1.2.3"]) # equal -> abort
+      # First prompt will not be reached because we abort earlier
+      expect { cli.run }.to raise_error(SystemExit, /version bump required/)
+    end
+
+    it "runs happy path when RubyGems is offline and Appraisals exist and SKIP_GEM_SIGNING is set" do
+      # Make prompts auto-accept
+      $stdin = KettleTestInputMachine.new(default: "y")
+
+      stub_env("SKIP_GEM_SIGNING" => "true")
+
+      allow(cli).to receive(:ensure_bundler_2_7_plus!)
+      allow(cli).to receive(:detect_version).and_return("9.9.9")
+      allow(cli).to receive(:detect_gem_name).and_return("mygem")
+      allow(cli).to receive(:latest_released_versions).and_return([nil, nil])
+
+      # Stub commands that would actually run
+      allow(cli).to receive(:run_cmd!).and_return(true)
+      allow(cli).to receive(:ensure_git_user!)
+      allow(cli).to receive(:commit_release_prep!).and_return(true)
+      allow(cli).to receive(:maybe_run_local_ci_before_push!)
+      allow(cli).to receive(:detect_trunk_branch).and_return("main")
+      allow(cli).to receive(:current_branch).and_return("feature/my-work")
+      allow(cli).to receive(:ensure_trunk_synced_before_push!)
+      allow(cli).to receive(:push!)
+      allow(cli).to receive(:monitor_workflows_after_push!)
+      allow(cli).to receive(:merge_feature_into_trunk_and_push!)
+      allow(cli).to receive(:checkout!)
+      allow(cli).to receive(:pull!)
+      allow(cli).to receive(:ensure_signing_setup_or_skip!)
+      expect(cli).to receive(:validate_checksums!).with("9.9.9", stage: "after build + gem_checksums")
+      expect(cli).to receive(:validate_checksums!).with("9.9.9", stage: "after release")
+
+      # Appraisals exists at repo root; ensure truthy branch executes
+      expect { cli.run }.not_to raise_error
+
+      # Ensure the initial build/release commands were attempted
+      expect(cli).to have_received(:run_cmd!).with("bin/setup")
+      expect(cli).to have_received(:run_cmd!).with("bin/rake")
+      expect(cli).to have_received(:run_cmd!).with("bin/rake appraisal:update")
+      expect(cli).to have_received(:run_cmd!).with("bundle exec rake build")
+      expect(cli).to have_received(:run_cmd!).with("bin/gem_checksums")
+      expect(cli).to have_received(:run_cmd!).with("bundle exec rake release")
+    end
+
+    it "skips appraisal:update when Appraisals file missing" do
+      # Accept initial prompt
+      $stdin = KettleTestInputMachine.new(default: "y")
+
+      stub_env("SKIP_GEM_SIGNING" => "true")
+
+      allow(cli).to receive(:ensure_bundler_2_7_plus!)
+      allow(cli).to receive(:detect_version).and_return("9.9.9")
+      allow(cli).to receive(:detect_gem_name).and_return("mygem")
+      allow(cli).to receive(:latest_released_versions).and_return([nil, nil])
+
+      allow(cli).to receive(:run_cmd!).and_return(true)
+      allow(cli).to receive(:ensure_git_user!)
+      allow(cli).to receive(:commit_release_prep!).and_return(false)
+      allow(cli).to receive(:maybe_run_local_ci_before_push!)
+      allow(cli).to receive(:detect_trunk_branch).and_return("main")
+      allow(cli).to receive(:current_branch).and_return("feat")
+      allow(cli).to receive(:ensure_trunk_synced_before_push!)
+      allow(cli).to receive(:push!)
+      allow(cli).to receive(:monitor_workflows_after_push!)
+      allow(cli).to receive(:merge_feature_into_trunk_and_push!)
+      allow(cli).to receive(:checkout!)
+      allow(cli).to receive(:pull!)
+      allow(cli).to receive(:ensure_signing_setup_or_skip!)
+      allow(cli).to receive(:validate_checksums!)
+
+      # Force File.file?(Appraisals) false just for that path
+      appraisals_path = File.join(Kettle::Dev::CIHelpers.project_root, "Appraisals")
+      allow(File).to receive(:file?).and_wrap_original do |m, path|
+        if path == appraisals_path
+          false
+        else
+          m.call(path)
+        end
+      end
+
+      expect { cli.run }.not_to raise_error
+      expect(cli).to have_received(:run_cmd!).with("bin/setup")
+      expect(cli).to have_received(:run_cmd!).with("bin/rake")
+      expect(cli).not_to have_received(:run_cmd!).with("bin/rake appraisal:update")
+    end
+
+    it "aborts when signing enabled on CI and user declines prompt" do
+      # Two prompts: first we answer 'y' to proceed, second we answer 'n' to abort signing
+      seq = Class.new do
+        def initialize(seq)
+          @seq = seq
+        end
+
+        def gets(*_args)
+          (@seq.shift || "\n") + "\n"
+        end
+      end
+      $stdin = seq.new(["y", "n"]) # yes to version/changelog, no to signing
+
+      stub_env("SKIP_GEM_SIGNING" => nil, "CI" => "true")
+
+      allow(cli).to receive(:ensure_bundler_2_7_plus!)
+      allow(cli).to receive(:detect_version).and_return("9.9.9")
+      allow(cli).to receive(:detect_gem_name).and_return("mygem")
+      allow(cli).to receive(:latest_released_versions).and_return([nil, nil])
+
+      # Stub through to the signing gate
+      allow(cli).to receive(:run_cmd!).and_return(true)
+      allow(cli).to receive(:ensure_git_user!)
+      allow(cli).to receive(:commit_release_prep!).and_return(true)
+      allow(cli).to receive(:maybe_run_local_ci_before_push!)
+      allow(cli).to receive(:detect_trunk_branch).and_return("main")
+      allow(cli).to receive(:current_branch).and_return("feat")
+      allow(cli).to receive(:ensure_trunk_synced_before_push!)
+      allow(cli).to receive(:push!)
+      allow(cli).to receive(:monitor_workflows_after_push!)
+      allow(cli).to receive(:merge_feature_into_trunk_and_push!)
+      allow(cli).to receive(:checkout!)
+      allow(cli).to receive(:pull!)
+
+      expect { cli.run }.to raise_error(SystemExit, /SKIP_GEM_SIGNING=true/)
+    end
+  end
 end
 
 # rubocop:enable RSpec/MultipleExpectations, RSpec/MessageSpies, RSpec/StubbedMock, RSpec/ReceiveMessages
