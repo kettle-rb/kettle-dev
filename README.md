@@ -231,6 +231,7 @@ GitHub Actions local runner helper
 Project automation bootstrap
 - `bundle exec rake kettle:dev:install` — copies the library’s `.github` folder into your project and offers to install `.git-hooks` templates locally or globally.
 - `bundle exec rake kettle:dev:template` — runs only the templating step used by install; useful to re-apply updates to templates (.github workflows, .devcontainer, .qlty, modular Gemfiles, README, and friends) without the `install` task’s extra prompts.
+  - Also copies maintainer certificate `certs/pboling.pem` into your project when present (used for signed gem builds).
   - README carry-over during templating: when your project’s README.md is replaced by the template, selected sections from your existing README are preserved and merged into the new one. Specifically, the task carries over the following sections (matched case-insensitively):
     - "Synopsis"
     - "Configuration"
@@ -249,6 +250,10 @@ Project automation bootstrap
 Releasing (maintainers)
 - `exe/kettle-release` — guided release helper that:
   - Runs sanity checks (`bin/setup`, `bin/rake`), confirms version/changelog, optionally updates Appraisals, commits “🔖 Prepare release vX.Y.Z”.
+  - Optionally runs your CI locally with `act` before any push:
+    - Enable with env: `K_RELEASE_LOCAL_CI="true"` (run automatically) or `K_RELEASE_LOCAL_CI="ask"` (prompt [Y/n]).
+    - Select workflow with `K_RELEASE_LOCAL_CI_WORKFLOW` (with or without .yml/.yaml). Defaults to `locked_deps.yml` if present; otherwise the first workflow discovered.
+    - On failure, the release prep commit is soft-rolled-back (`git reset --soft HEAD^`) and the process aborts.
   - Ensures trunk sync and rebases feature as needed, pushes, monitors GitHub Actions with a progress bar, and merges feature to trunk on success.
   - Exports `SOURCE_DATE_EPOCH`, builds (optionally signed), creates gem checksums, and runs `bundle exec rake release` (prompts for signing key + RubyGems MFA OTP as needed).
 

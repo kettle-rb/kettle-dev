@@ -75,7 +75,10 @@ module Kettle
         end
 
         ensure_git_user!
-        commit_release_prep!(version)
+        committed = commit_release_prep!(version)
+
+        # Optional: run a local CI check with 'act' prior to pushing
+        maybe_run_local_ci_before_push!(committed)
 
         trunk = detect_trunk_branch
         feature = current_branch
@@ -234,6 +237,86 @@ module Kettle
         end
       end
 
+      # Run a local CI workflow using 'act' before pushing the release prep commit, if enabled.
+      # Controlled by env var K_RELEASE_LOCAL_CI:
+      #   - "true" => run without prompt
+      #   - "ask"  => prompt user [Y/n]
+      #   - anything else or unset => skip
+      # Workflow selection:
+      #   - If .github/workflows/locked_deps.yml (or .yaml) exists, default to it.
+      #   - Else, use the first workflow from CIHelpers.workflows_list unless K_RELEASE_LOCAL_CI_WORKFLOW points to another file.
+      # On failure, soft reset the last commit if one was created, then abort.
+      def maybe_run_local_ci_before_push!(committed)
+        mode = (ENV["K_RELEASE_LOCAL_CI"] || "").strip.downcase
+        run_it = case mode
+        when "true", "1", "yes", "y" then true
+        when "ask"
+          print("Run local CI with 'act' before pushing? [Y/n] ")
+          ans = $stdin.gets&.strip
+          ans.nil? || ans.empty? || ans =~ /\Ay(es)?\z/i
+        else
+          false
+        end
+        return unless run_it
+
+        # Check for 'act'
+        act_ok = begin
+          system("act", "--version", out: File::NULL, err: File::NULL)
+        rescue StandardError
+          false
+        end
+        unless act_ok
+          puts "Skipping local CI: 'act' command not found. Install https://github.com/nektos/act to enable."
+          return
+        end
+
+        root = Kettle::Dev::CIHelpers.project_root
+        workflows_dir = File.join(root, ".github", "workflows")
+        candidates = Kettle::Dev::CIHelpers.workflows_list(root)
+
+        # Explicit override via env
+        chosen = (ENV["K_RELEASE_LOCAL_CI_WORKFLOW"] || "").strip
+        if !chosen.empty?
+          # Normalize to a basename with extension
+          if chosen !~ /\.ya?ml\z/
+            chosen = "#{chosen}.yml"
+          end
+        else
+          # Default to locked_deps if present
+          if candidates.include?("locked_deps.yml")
+            chosen = "locked_deps.yml"
+          elsif candidates.include?("locked_deps.yaml")
+            chosen = "locked_deps.yaml"
+          else
+            chosen = candidates.first
+          end
+        end
+
+        unless chosen
+          puts "Skipping local CI: no workflows found under .github/workflows."
+          return
+        end
+
+        file_path = File.join(workflows_dir, chosen)
+        unless File.file?(file_path)
+          puts "Skipping local CI: selected workflow not found: #{file_path}"
+          return
+        end
+
+        puts "== Running local CI with act on #{chosen} =="
+        ok = system("act", "-W", file_path)
+        if ok
+          puts "Local CI succeeded for #{chosen}."
+        else
+          puts "Local CI failed for #{chosen}."
+          if committed
+            puts "Rolling back release prep commit (soft reset)..."
+            system("git", "reset", "--soft", "HEAD^")
+          end
+          abort("Aborting due to local CI failure.")
+        end
+      end
+
       def detect_version
         # Look for lib/**/version.rb and extract VERSION constant string
         candidates = Dir[File.join(@root, "lib", "**", "version.rb")]
@@ -251,8 +334,10 @@ module Kettle
         out, _ = git_output(["status", "--porcelain"])
         if out.empty?
           puts "No changes to commit for release prep (continuing)."
+          false
         else
           run_cmd!(%(git commit -am #{Shellwords.escape(msg)}))
+          true
         end
       end
 

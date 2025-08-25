@@ -24,6 +24,25 @@ module Kettle
       def self.failed?: ({ "status" => String?, "conclusion" => String? } | nil run) -> bool
 
       def self.default_token: () -> String?
+
+      # GitLab support
+      def self.origin_url: () -> String?
+
+      def self.repo_info_gitlab: () -> [String, String]?
+
+      def self.default_gitlab_token: () -> String?
+
+      def self.gitlab_latest_pipeline: (
+        owner: String,
+        repo: String,
+        ?branch: String?,
+        ?host: String,
+        ?token: String?
+      ) -> { "status" => String?, "web_url" => String?, "id" => untyped }?
+
+      def self.gitlab_success?: ({ "status" => String? } | nil pipeline) -> bool
+
+      def self.gitlab_failed?: ({ "status" => String? } | nil pipeline) -> bool
     end
   end
 end

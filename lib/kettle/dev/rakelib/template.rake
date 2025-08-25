@@ -329,6 +329,17 @@ namespace :kettle do
         end
       end
 
+      # 7b) certs/pboling.pem
+      begin
+        cert_src = File.join(gem_checkout_root, "certs", "pboling.pem")
+        cert_dest = File.join(project_root, "certs", "pboling.pem")
+        if File.exist?(cert_src)
+          helpers.copy_file_with_prompt(cert_src, cert_dest, allow_create: true, allow_replace: true)
+        end
+      rescue StandardError => e
+        puts "WARNING: Skipped copying certs/pboling.pem due to #{e.class}: #{e.message}"
+      end
+
       # After creating or replacing .envrc or .env.local.example, require review and exit unless allowed
       begin
         envrc_path = File.join(project_root, ".envrc")

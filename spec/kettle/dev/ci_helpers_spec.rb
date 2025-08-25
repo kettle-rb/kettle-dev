@@ -20,6 +20,12 @@ RSpec.describe Kettle::Dev::CIHelpers do
         success?
         failed?
         default_token
+        origin_url
+        repo_info_gitlab
+        default_gitlab_token
+        gitlab_latest_pipeline
+        gitlab_success?
+        gitlab_failed?
       ].each do |m|
         expect(described_class).to respond_to(m)
       end
