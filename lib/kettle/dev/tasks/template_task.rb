@@ -8,6 +8,15 @@ module Kettle
       module TemplateTask
         module_function
 
+        # Abort wrapper that avoids terminating the entire process during specs
+        def task_abort(msg)
+          if defined?(RSpec)
+            raise Kettle::Dev::Error, msg
+          else
+            abort(msg)
+          end
+        end
+
         # Execute the template operation into the current project.
         # All options/IO are controlled via TemplateHelpers and ENV.
         def run
@@ -368,7 +377,7 @@ module Kettle
                 puts "  bundle exec rake kettle:dev:template allowed=true"
                 puts "  # or to run the full install afterwards:"
                 puts "  bundle exec rake kettle:dev:install allowed=true"
-                abort("Aborting: review of environment files required before continuing.")
+                task_abort("Aborting: review of environment files required before continuing.")
               end
             end
           rescue StandardError => e

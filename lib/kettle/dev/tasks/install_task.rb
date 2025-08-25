@@ -6,6 +6,15 @@ module Kettle
       module InstallTask
         module_function
 
+        # Abort wrapper that avoids terminating the entire process during specs
+        def task_abort(msg)
+          if defined?(RSpec)
+            raise Kettle::Dev::Error, msg
+          else
+            abort(msg)
+          end
+        end
+
         def run
           helpers = Kettle::Dev::TemplateHelpers
           project_root = helpers.project_root
@@ -191,7 +200,7 @@ module Kettle
                     puts "  git remote rename origin something_else"
                     puts "  git remote add origin https://github.com/<org>/<repo>.git"
                     puts "After fixing, re-run: rake kettle:dev:install"
-                    abort("Aborting: homepage cannot be corrected without a GitHub origin remote.")
+                    task_abort("Aborting: homepage cannot be corrected without a GitHub origin remote.")
                   end
 
                   org, repo = org_repo
@@ -236,7 +245,7 @@ module Kettle
               puts
               puts "After that, re-run to resume:"
               puts "  bundle exec rake kettle:dev:install allowed=true"
-              abort("Aborting: direnv allow required after .envrc changes.")
+              task_abort("Aborting: direnv allow required after .envrc changes.")
             end
           end
 

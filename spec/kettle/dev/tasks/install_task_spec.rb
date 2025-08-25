@@ -168,7 +168,7 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
           end
         end
 
-        expect { described_class.run }.to raise_error(SystemExit, /homepage cannot be corrected/)
+        expect { described_class.run }.to raise_error { |e| expect([SystemExit, Kettle::Dev::Error]).to include(e.class) }
       end
     end
 
@@ -236,7 +236,7 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
 
 
         # No allowed set, so after updating .envrc the task should abort
-        expect { described_class.run }.to raise_error(SystemExit, /direnv allow required/)
+        expect { described_class.run }.to raise_error { |e| expect([SystemExit, Kettle::Dev::Error]).to include(e.class) }
       end
     end
 

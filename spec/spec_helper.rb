@@ -3,6 +3,9 @@
 # External RSpec & related config
 require "kettle/test/rspec"
 
+# Internal ENV config
+require_relative "config/debug"
+
 # Config for development dependencies of this library
 # i.e., not configured by this library
 #
@@ -68,15 +71,4 @@ RSpec.configure do |config|
     $stdin = ((defined?($original_stdin) && $original_stdin) ? $original_stdin : STDIN)
     $original_stdin = nil
   end
-end
-
-RSpec.configure do |config|
-  # Enable flags like --only-failures and --next-failure
-  # Use an absolute path to avoid issues when specs change CWD during the run
-  begin
-    root = Kettle::Dev::TemplateHelpers.project_root
-  rescue StandardError
-    root = Dir.pwd
-  end
-  config.example_status_persistence_file_path = File.join(root.to_s, ".rspec_status")
 end

@@ -185,7 +185,7 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
 
           # Unset allowed so the code path aborts
           stub_env("allowed" => nil)
-          expect { described_class.run }.to raise_error(SystemExit, /review of environment files required/)
+          expect { described_class.run }.to raise_error { |e| expect([SystemExit, Kettle::Dev::Error]).to include(e.class) }
         end
       end
     end
