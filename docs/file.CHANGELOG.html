@@ -71,6 +71,12 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 <h2 id="unreleased"><a href="https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.8...HEAD">Unreleased</a></h2>
 <h3 id="added">Added</h3>
 <ul>
+  <li>kettle-release: Add a sanity check for the latest released version of the gem being released, and display it during the confirmation with user that CHANGELOG.md and version.rb have been updated, so they can compare the value in version.rb with the value of the latest released version.
+    <ul>
+      <li>If the value in version.rb is less than the latest released version’s major or minor, then check for the latest released version that matches the major + minor of what is in version.rb.</li>
+      <li>This way a stable branch intended to release patch updates to older versions is able to work use the script.</li>
+    </ul>
+  </li>
   <li>kettle-release: optional pre-push local CI run using <code>act</code>, controlled by env var <code>K_RELEASE_LOCAL_CI</code> (“true” to run, “ask” to prompt) and <code>K_RELEASE_LOCAL_CI_WORKFLOW</code> to choose a workflow; defaults to <code>locked_deps.yml</code> when present; on failure, soft-resets the release prep commit and aborts.</li>
   <li>template task: now copies <code>certs/pboling.pem</code> into the host project when available.
     <h3 id="changed">Changed</h3>
@@ -265,7 +271,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Sun Aug 24 21:38:25 2025 by
+  Generated on Sun Aug 24 22:07:37 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

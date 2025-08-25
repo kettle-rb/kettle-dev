@@ -56,6 +56,45 @@ module Kettle
 
         version = detect_version
         puts "Detected version: #{version.inspect}"
+
+        # Sanity check against latest released gem version (RubyGems)
+        begin
+          gem_name = detect_gem_name
+          latest_overall, latest_for_series = latest_released_versions(gem_name, version)
+          if latest_overall
+            msg = "Latest released: #{latest_overall}"
+            if latest_for_series && latest_for_series != latest_overall
+              msg += " | Latest for series #{Gem::Version.new(version).segments[0, 2].join(".")}.x: #{latest_for_series}"
+            elsif latest_for_series
+              msg += " (matches current series)"
+            end
+            puts msg
+
+            # Choose the comparison target:
+            # - If current series (MAJOR.MINOR) is behind overall latest, compare against the latest for the current series.
+            # - Otherwise (same or ahead), compare against overall latest.
+            cur = Gem::Version.new(version)
+            overall = Gem::Version.new(latest_overall)
+            cur_series = cur.segments[0, 2]
+            overall_series = overall.segments[0, 2]
+            target = if (cur_series <=> overall_series) == -1
+              latest_for_series # may be nil if no prior release in this series
+            else
+              latest_overall
+            end
+            if target && Gem::Version.new(version) <= Gem::Version.new(target)
+              series = cur_series.join(".")
+              warn("version.rb (#{version}) must be greater than the latest released version for series #{series}. Latest for series: #{target}.")
+              warn("Tip: bump PATCH for a stable branch release, or bump MINOR/MAJOR when on trunk.")
+              abort("Aborting: version bump required.")
+            end
+          else
+            puts "Could not determine latest released version from RubyGems (offline?). Proceeding without sanity check."
+          end
+        rescue StandardError => e
+          warn("Warning: failed to check RubyGems for latest version (#{e.class}: #{e.message}). Proceeding.")
+        end
+
         puts "Have you updated lib/**/version.rb and CHANGELOG.md for v#{version}? [y/N]"
         print("> ")
         ans = $stdin.gets&.strip
@@ -326,6 +365,38 @@ module Kettle
         m = content.match(/VERSION\s*=\s*(["'])([^"']+)\1/)
         abort("VERSION constant not found in #{path}.") unless m
         m[2]
+      end
+
+      def detect_gem_name
+        # Find a .gemspec in project root and extract spec.name
+        gemspecs = Dir[File.join(@root, "*.gemspec")]
+        abort("Could not find a .gemspec in project root.") if gemspecs.empty?
+        path = gemspecs.min
+        content = File.read(path)
+        m = content.match(/spec\.name\s*=\s*(["'])([^"']+)\1/)
+        abort("Could not determine gem name from #{path}.") unless m
+        m[2]
+      end
+
+      # Returns [latest_overall, latest_for_series] as strings (or nils)
+      def latest_released_versions(gem_name, current_version)
+        uri = URI("https://rubygems.org/api/v1/versions/#{gem_name}.json")
+        res = Net::HTTP.get_response(uri)
+        return [nil, nil] unless res.is_a?(Net::HTTPSuccess)
+        data = JSON.parse(res.body)
+        versions = data.map { |h| h["number"] }.compact
+        # Drop pre-releases if API indicates; fall back to simple filter by '-' pattern
+        versions.reject! { |v| v.to_s.include?("-pre") || v.to_s.include?(".pre") || v.to_s =~ /[a-zA-Z]/ }
+        gversions = versions.map { |s| Gem::Version.new(s) }.sort
+        latest_overall = gversions.last&.to_s
+
+        cur = Gem::Version.new(current_version)
+        series = cur.segments[0, 2]
+        series_versions = gversions.select { |gv| gv.segments[0, 2] == series }
+        latest_series = series_versions.last&.to_s
+        [latest_overall, latest_series]
+      rescue StandardError
+        [nil, nil]
       end
 
       def commit_release_prep!(version)
