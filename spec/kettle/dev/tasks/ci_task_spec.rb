@@ -208,7 +208,10 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
       allow(Net::HTTP).to receive(:start).and_return(*seq)
       with_workflows(["ci.yml"]) do |_root, _dir|
         allow($stdout).to receive(:tty?).and_return(true)
-        allow($stdin).to receive(:gets) { sleep 0.1; "q\n" }
+        allow($stdin).to receive(:gets) {
+          sleep 0.1
+          "q\n"
+        }
         expect { described_class.act(nil) }.not_to raise_error
       end
     end
@@ -217,7 +220,10 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
       # ensure non-tty
       allow($stdout).to receive(:tty?).and_return(false)
       with_workflows(["ci.yml"]) do |_root, _dir|
-        allow($stdin).to receive(:gets) { sleep 0.05; "q\n" }
+        allow($stdin).to receive(:gets) {
+          sleep 0.05
+          "q\n"
+        }
         expect { described_class.act(nil) }.not_to raise_error
       end
     end
@@ -238,6 +244,118 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
         allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
         allow($stdin).to receive(:gets).and_return("q\n")
         expect { described_class.act(nil) }.not_to raise_error
+      end
+    end
+  end
+
+  describe "::act edge cases and interactive behaviors" do
+    it "uses default emoji for unknown status in non-interactive fetch", :check_output do
+      with_workflows(["ci.yml"]) do |_root, dir|
+        seq = [
+          http_ok_with({"workflow_runs" => [{"status" => "unknown_state"}]}),
+          http_ok_with({"workflow_runs" => [{"status" => "completed", "conclusion" => "success"}]}),
+        ]
+        allow(Net::HTTP).to receive(:start).and_return(*seq)
+        file_path = File.join(dir, "ci.yml")
+        expect(described_class).to receive(:system).with("act", "-W", file_path).and_return(true)
+        expect { described_class.act("ci") }.not_to raise_error
+      end
+    end
+
+    it "worker early-exits with n/a when repo or branch missing (pushes n/a)", :check_output do
+      with_workflows(["ci.yml"]) do |_root, _dir|
+        allow(Kettle::Dev::CIHelpers).to receive(:repo_info).and_return(nil)
+        allow($stdout).to receive(:tty?).and_return(true)
+        # Let the worker thread run before we quit
+        allow($stdin).to receive(:gets) {
+          sleep 0.15
+          "q\n"
+        }
+        expect { described_class.act(nil) }.not_to raise_error
+      end
+    end
+
+    it "ensures TTY status update lines are printed before input arrives", :check_output do
+      stub_env("CI_ACT_POLL_INTERVAL" => "0")
+      seq = [
+        http_ok_with({"workflow_runs" => [{"status" => "queued"}]}),
+        http_ok_with({"workflow_runs" => [{"status" => "in_progress"}]}),
+        http_ok_with({"workflow_runs" => [{"status" => "completed", "conclusion" => "success"}]}),
+      ]
+      allow(Net::HTTP).to receive(:start).and_return(*seq)
+      with_workflows(["ci.yml"]) do |_root, _dir|
+        allow($stdout).to receive(:tty?).and_return(true)
+        # Delay input so worker can print at least one line in TTY branch
+        allow($stdin).to receive(:gets) {
+          sleep 0.25
+          "q\n"
+        }
+        expect { described_class.act(nil) }.not_to raise_error
+      end
+    end
+
+    it "recovers from ThreadError on first input pop and continues", :check_output do
+      with_workflows(["ci.yml"]) do |_root, _dir|
+        # Provide input immediately to make queue non-empty soon
+        allow($stdin).to receive(:gets).and_return("q\n")
+        # Make the first Queue#pop(true) raise, then behave normally
+        # Provide a default stub for other arities (e.g., blocking pop with no args)
+        allow_any_instance_of(Queue).to receive(:pop).and_call_original
+        cnt = 0
+        allow_any_instance_of(Queue).to receive(:pop).with(true) do |q, *_args|
+          cnt += 1
+          if cnt == 1
+            raise ThreadError
+          else
+            # Fallback to real behavior
+            Queue.instance_method(:pop).bind(q).call(true)
+          end
+        end
+        expect { described_class.act(nil) }.not_to raise_error
+      end
+    end
+
+    it "aborts on invalid numeric selection (too high)", :check_output do
+      with_workflows(["ci.yml"]) do |_root, _dir|
+        # Only 1 option + quit => entering 99 should abort
+        allow($stdin).to receive(:gets).and_return("99\n")
+        expect { described_class.act(nil) }.to raise_error(SystemExit, /invalid selection/)
+      end
+    end
+
+    it "quits when numeric selection points to quit option", :check_output do
+      with_workflows(["ci.yml"]) do |_root, _dir|
+        # Menu has 2 items (1: workflow, 2: quit)
+        allow($stdin).to receive(:gets).and_return("2\n")
+        expect(described_class).not_to receive(:system)
+        expect { described_class.act(nil) }.not_to raise_error
+      end
+    end
+
+    it "runs when numeric selection points to a valid option", :check_output do
+      with_workflows(["ci.yml"]) do |_root, dir|
+        allow($stdin).to receive(:gets).and_return("1\n")
+        file_path = File.join(dir, "ci.yml")
+        expect(described_class).to receive(:system).with("act", "-W", file_path).and_return(true)
+        expect { described_class.act(nil) }.not_to raise_error
+      end
+    end
+
+    it "aborts on unknown non-numeric code entry", :check_output do
+      with_workflows(["ci.yml"]) do |_root, _dir|
+        allow($stdin).to receive(:gets).and_return("zzz\n")
+        expect { described_class.act(nil) }.to raise_error(SystemExit, /unknown code/)
+      end
+    end
+
+    it "aborts when chosen workflow file is missing at run time", :check_output do
+      with_workflows(["ci.yml"]) do |_root, dir|
+        allow($stdin).to receive(:gets).and_return("1\n")
+        file_path = File.join(dir, "ci.yml")
+        # Pretend file is missing at the final check
+        allow(File).to receive(:file?).and_call_original
+        allow(File).to receive(:file?).with(file_path).and_return(false)
+        expect { described_class.act(nil) }.to raise_error(SystemExit, /workflow not found/)
       end
     end
   end

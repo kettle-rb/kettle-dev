@@ -571,6 +571,283 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       expect { cli.run }.to raise_error(SystemExit, /SKIP_GEM_SIGNING=true/)
     end
   end
+
+  # Additional coverage for branches and helpers
+
+  describe "#run version sanity messaging and rescue" do
+    around do |ex|
+      orig_stdin = $stdin
+      begin
+        ex.run
+      ensure
+        $stdin = orig_stdin
+      end
+    end
+
+    it "prints series info when latest overall is different series and continues" do
+      $stdin = KettleTestInputMachine.new(default: "y")
+      allow(cli).to receive(:ensure_bundler_2_7_plus!)
+      allow(cli).to receive(:detect_version).and_return("1.2.10")
+      allow(cli).to receive(:detect_gem_name).and_return("mygem")
+      allow(cli).to receive(:latest_released_versions).and_return(["1.3.0", "1.2.9"]) # triggers line 36 and 47 branch
+      allow(cli).to receive(:run_cmd!).and_return(true)
+      allow(cli).to receive(:ensure_git_user!)
+      allow(cli).to receive(:commit_release_prep!).and_return(false)
+      allow(cli).to receive(:maybe_run_local_ci_before_push!)
+      allow(cli).to receive(:detect_trunk_branch).and_return("main")
+      allow(cli).to receive(:current_branch).and_return("main")
+      allow(cli).to receive(:ensure_trunk_synced_before_push!)
+      allow(cli).to receive(:push!)
+      allow(cli).to receive(:monitor_workflows_after_push!)
+      allow(cli).to receive(:merge_feature_into_trunk_and_push!)
+      allow(cli).to receive(:checkout!)
+      allow(cli).to receive(:pull!)
+      stub_env("SKIP_GEM_SIGNING" => "true")
+      allow(cli).to receive(:ensure_signing_setup_or_skip!)
+      allow(cli).to receive(:validate_checksums!)
+      expect { cli.run }.not_to raise_error
+    end
+
+    it "rescues failures from RubyGems check and proceeds to user prompt" do
+      seq = Class.new do
+        def gets(*)
+          "n\n"
+        end
+      end
+      $stdin = seq.new
+      allow(cli).to receive(:ensure_bundler_2_7_plus!)
+      allow(cli).to receive(:detect_version).and_return("1.2.3")
+      allow(cli).to receive(:detect_gem_name).and_raise(StandardError.new("boom"))
+      expect { cli.run }.to raise_error(SystemExit, /please update version.rb/)
+    end
+  end
+
+  describe "#ensure_git_user!" do
+    it "passes when name and email are configured" do
+      allow(cli).to receive(:git_output).with(["config", "user.name"]).and_return(["Alice", true])
+      allow(cli).to receive(:git_output).with(["config", "user.email"]).and_return(["alice@example.com", true])
+      expect { cli.send(:ensure_git_user!) }.not_to raise_error
+    end
+
+    it "aborts when missing name or email" do
+      allow(cli).to receive(:git_output).with(["config", "user.name"]).and_return(["", true])
+      allow(cli).to receive(:git_output).with(["config", "user.email"]).and_return(["", false])
+      expect { cli.send(:ensure_git_user!) }.to raise_error(SystemExit, /Git user.name or user.email/)
+    end
+  end
+
+  describe "#maybe_run_local_ci_before_push!" do
+    it "returns immediately when mode is disabled" do
+      stub_env("K_RELEASE_LOCAL_CI" => nil)
+      expect(cli.send(:maybe_run_local_ci_before_push!, true)).to be_nil
+    end
+
+    it "asks the user and proceeds on default yes, but skips when act not found" do
+      stub_env("K_RELEASE_LOCAL_CI" => "ask")
+      allow($stdin).to receive(:gets).and_return("\n") # default yes
+      allow(cli).to receive(:system).with("act", "--version", out: File::NULL, err: File::NULL).and_return(false)
+      expect { cli.send(:maybe_run_local_ci_before_push!, true) }.not_to raise_error
+    end
+
+    it "runs with act when chosen workflow is nil due to no candidates" do
+      stub_env("K_RELEASE_LOCAL_CI" => "true")
+      allow(cli).to receive(:system).with("act", "--version", out: File::NULL, err: File::NULL).and_return(true)
+      allow(ci_helpers).to receive(:project_root).and_return(Dir.pwd)
+      allow(ci_helpers).to receive(:workflows_list).and_return([])
+      expect { cli.send(:maybe_run_local_ci_before_push!, false) }.not_to raise_error
+    end
+
+    it "skips when selected workflow file does not exist" do
+      Dir.mktmpdir do |root|
+        stub_env("K_RELEASE_LOCAL_CI" => "true")
+        allow(cli).to receive(:system).with("act", "--version", out: File::NULL, err: File::NULL).and_return(true)
+        allow(ci_helpers).to receive(:project_root).and_return(root)
+        # Create workflows dir but not the chosen file
+        wf_dir = File.join(root, ".github", "workflows")
+        FileUtils.mkdir_p(wf_dir)
+        allow(ci_helpers).to receive(:workflows_list).and_return(["ci.yml"]) # chosen => first
+        expect { cli.send(:maybe_run_local_ci_before_push!, false) }.not_to raise_error
+      end
+    end
+
+    it "runs act successfully on an existing workflow" do
+      Dir.mktmpdir do |root|
+        stub_env("K_RELEASE_LOCAL_CI" => "true")
+        allow(cli).to receive(:system).with("act", "--version", out: File::NULL, err: File::NULL).and_return(true)
+        allow(ci_helpers).to receive(:project_root).and_return(root)
+        wf_dir = File.join(root, ".github", "workflows")
+        FileUtils.mkdir_p(wf_dir)
+        file_path = File.join(wf_dir, "locked_deps.yml")
+        File.write(file_path, "name: demo")
+        allow(ci_helpers).to receive(:workflows_list).and_return(["locked_deps.yml"]) # will pick locked_deps.yml
+        expect(cli).to receive(:system).with("act", "-W", file_path).and_return(true)
+        expect { cli.send(:maybe_run_local_ci_before_push!, false) }.not_to raise_error
+      end
+    end
+
+    it "aborts on act failure and rolls back when committed" do
+      Dir.mktmpdir do |root|
+        stub_env("K_RELEASE_LOCAL_CI" => "true")
+        allow(cli).to receive(:system).with("act", "--version", out: File::NULL, err: File::NULL).and_return(true)
+        allow(ci_helpers).to receive(:project_root).and_return(root)
+        wf_dir = File.join(root, ".github", "workflows")
+        FileUtils.mkdir_p(wf_dir)
+        file_path = File.join(wf_dir, "ci.yml")
+        File.write(file_path, "name: ci")
+        allow(ci_helpers).to receive(:workflows_list).and_return(["ci.yml"])
+        expect(cli).to receive(:system).with("act", "-W", file_path).and_return(false)
+        expect(cli).to receive(:system).with("git", "reset", "--soft", "HEAD^")
+        expect { cli.send(:maybe_run_local_ci_before_push!, true) }.to raise_error(SystemExit, /local CI failure/)
+      end
+    end
+  end
+
+  describe "direct git wrappers" do
+    it "runs checkout! and pull! via run_cmd!" do
+      expect(cli).to receive(:run_cmd!).with("git checkout main")
+      cli.send(:checkout!, "main")
+      expect(cli).to receive(:run_cmd!).with("git pull origin main")
+      cli.send(:pull!, "main")
+    end
+
+    it "returns current_branch and lists remotes" do
+      allow(cli).to receive(:git_output).with(["rev-parse", "--abbrev-ref", "HEAD"]).and_return(["feat", true])
+      expect(cli.send(:current_branch)).to eq("feat")
+      allow(cli).to receive(:git_output).with(["remote"]).and_return(["origin\ngithub\n", true])
+      expect(cli.send(:list_remotes)).to include("origin", "github")
+    end
+
+    it "fetches remote_url and prefers origin when appropriate" do
+      allow(cli).to receive(:remotes_with_urls).and_return({"origin" => "https://github.com/me/repo.git"})
+      expect(cli.send(:remote_url, "origin")).to include("github.com")
+      expect(cli.send(:preferred_github_remote)).to eq("origin")
+    end
+
+    it "checks remote presence and remote branch existence" do
+      allow(cli).to receive(:list_remotes).and_return(["origin"])
+      expect(cli.send(:has_remote?, "origin")).to be true
+      expect(cli.send(:has_remote?, "github")).to be false
+      allow(cli).to receive(:git_output).with(["show-ref", "--verify", "--quiet", "refs/remotes/origin/main"]).and_return(["", true])
+      expect(cli.send(:remote_branch_exists?, "origin", "main")).to be true
+      allow(cli).to receive(:git_output).with(["show-ref", "--verify", "--quiet", "refs/remotes/origin/other"]).and_return(["", false])
+      expect(cli.send(:remote_branch_exists?, "origin", "other")).to be false
+    end
+  end
+
+  describe "ensure_trunk_synced_before_push! divergence reconciliation" do
+    around do |ex|
+      orig_stdin = $stdin
+      begin
+        ex.run
+      ensure
+        $stdin = orig_stdin
+      end
+    end
+
+    it "rebases when user selects r" do
+      allow(cli).to receive(:has_remote?).with("all").and_return(false)
+      expect(cli).to receive(:run_cmd!).with("git fetch origin main")
+      allow(cli).to receive(:trunk_behind_remote?).and_return(false)
+      allow(cli).to receive(:preferred_github_remote).and_return("github")
+      expect(cli).to receive(:run_cmd!).with("git fetch github main")
+      allow(cli).to receive(:ahead_behind_counts).with("origin/main", "github/main").and_return([1, 1])
+      expect(cli).to receive(:checkout!).with("main").at_least(:once)
+      expect(cli).to receive(:run_cmd!).with("git pull --rebase origin main")
+      $stdin = KettleTestInputMachine.new(default: "r")
+      expect(cli).to receive(:run_cmd!).with("git rebase github/main")
+      expect(cli).to receive(:run_cmd!).with("git push origin main")
+      cli.send(:ensure_trunk_synced_before_push!, "main", "feat")
+    end
+
+    it "merges when user selects m" do
+      allow(cli).to receive(:has_remote?).with("all").and_return(false)
+      expect(cli).to receive(:run_cmd!).with("git fetch origin main")
+      allow(cli).to receive(:trunk_behind_remote?).and_return(false)
+      allow(cli).to receive(:preferred_github_remote).and_return("github")
+      expect(cli).to receive(:run_cmd!).with("git fetch github main")
+      allow(cli).to receive(:ahead_behind_counts).with("origin/main", "github/main").and_return([1, 1])
+      expect(cli).to receive(:checkout!).with("main").at_least(:once)
+      expect(cli).to receive(:run_cmd!).with("git pull --rebase origin main")
+      $stdin = KettleTestInputMachine.new(default: "m")
+      expect(cli).to receive(:run_cmd!).with("git merge --no-ff github/main")
+      expect(cli).to receive(:run_cmd!).with("git push origin main")
+      expect(cli).to receive(:run_cmd!).with("git push github main")
+      cli.send(:ensure_trunk_synced_before_push!, "main", "feat")
+    end
+
+    it "aborts when user selects a (abort)" do
+      allow(cli).to receive(:has_remote?).with("all").and_return(false)
+      expect(cli).to receive(:run_cmd!).with("git fetch origin main")
+      allow(cli).to receive(:trunk_behind_remote?).and_return(false)
+      allow(cli).to receive(:preferred_github_remote).and_return("github")
+      expect(cli).to receive(:run_cmd!).with("git fetch github main")
+      allow(cli).to receive(:ahead_behind_counts).with("origin/main", "github/main").and_return([1, 1])
+      expect(cli).to receive(:checkout!).with("main").at_least(:once)
+      expect(cli).to receive(:run_cmd!).with("git pull --rebase origin main")
+      $stdin = KettleTestInputMachine.new(default: "a")
+      expect { cli.send(:ensure_trunk_synced_before_push!, "main", "feat") }.to raise_error(SystemExit, /Aborted by user/)
+    end
+
+    it "returns early when origin and github trunks are in sync" do
+      allow(cli).to receive(:has_remote?).with("all").and_return(false)
+      expect(cli).to receive(:run_cmd!).with("git fetch origin main")
+      allow(cli).to receive(:trunk_behind_remote?).and_return(false)
+      allow(cli).to receive(:preferred_github_remote).and_return("github")
+      expect(cli).to receive(:run_cmd!).with("git fetch github main")
+      allow(cli).to receive(:ahead_behind_counts).with("origin/main", "github/main").and_return([0, 0])
+      expect { cli.send(:ensure_trunk_synced_before_push!, "main", "feat") }.not_to raise_error
+    end
+  end
+
+  describe "#validate_checksums! error cases" do
+    it "aborts when built gem cannot be found" do
+      allow(cli).to receive(:gem_file_for_version).with("0.0.1").and_return(nil)
+      expect { cli.send(:validate_checksums!, "0.0.1", stage: "stage") }.to raise_error(SystemExit, /Unable to locate built gem/)
+    end
+
+    it "aborts when checksum file is missing" do
+      Dir.mktmpdir do |root|
+        allow(ci_helpers).to receive(:project_root).and_return(root)
+        other = described_class.new
+        # create gem in pkg
+        pkg = File.join(root, "pkg")
+        FileUtils.mkdir_p(pkg)
+        gem_file = File.join(pkg, "mygem-0.1.0.gem")
+        File.write(gem_file, "data")
+        expect { other.send(:validate_checksums!, "0.1.0", stage: "stage") }.to raise_error(SystemExit, /Expected checksum file not found/)
+      end
+    end
+  end
+
+  describe "#compute_sha256 shasum path" do
+    it "uses shasum when available" do
+      Dir.mktmpdir do |root|
+        file = File.join(root, "f.bin")
+        File.binwrite(file, "xyz")
+        allow(cli).to receive(:system).with("which sha256sum > /dev/null 2>&1").and_return(false)
+        allow(cli).to receive(:system).with("which shasum > /dev/null 2>&1").and_return(true)
+        allow(Open3).to receive(:capture2e).with("shasum", "-a", "256", file).and_return(["abc123 #{file}", instance_double(Process::Status)])
+        expect(cli.send(:compute_sha256, file)).to eq("abc123")
+      end
+    end
+  end
+
+  describe "#monitor_workflows_after_push! gitlab loop nil then success" do
+    it "sleeps when pipeline initially missing then proceeds" do
+      allow(ci_helpers).to receive(:project_root).and_return(Dir.pwd)
+      allow(ci_helpers).to receive(:current_branch).and_return("feat")
+      allow(cli).to receive(:preferred_github_remote).and_return(nil)
+      allow(ci_helpers).to receive(:workflows_list).and_return([])
+      allow(File).to receive(:exist?).with(File.join(Dir.pwd, ".gitlab-ci.yml")).and_return(true)
+      allow(cli).to receive(:gitlab_remote_candidates).and_return(["gitlab"])
+      allow(ci_helpers).to receive(:repo_info_gitlab).and_return(["me", "repo"])
+      # first returns nil, then a success
+      allow(ci_helpers).to receive(:gitlab_latest_pipeline).and_return(nil, {"web_url" => "http://gitlab/pipeline"})
+      allow(ci_helpers).to receive(:gitlab_success?).and_return(true)
+      allow(ci_helpers).to receive(:gitlab_failed?).and_return(false)
+      expect { cli.send(:monitor_workflows_after_push!) }.not_to raise_error
+    end
+  end
 end
 
 # rubocop:enable RSpec/MultipleExpectations, RSpec/MessageSpies, RSpec/StubbedMock, RSpec/ReceiveMessages

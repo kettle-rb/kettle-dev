@@ -178,10 +178,13 @@ module Kettle
           print(prompt)
           $stdout.flush
 
-          input_q = Queue.new
+          selected = nil
           input_thread = Thread.new do
-            line = $stdin.gets&.strip
-            input_q << line
+            begin
+              selected = $stdin.gets&.strip
+            rescue StandardError
+              selected = nil
+            end
           end
 
           status_q = Queue.new
@@ -241,16 +244,10 @@ module Kettle
           end
 
           statuses = Hash.new(placeholder)
-          selected = nil
 
           loop do
-            unless input_q.empty?
-              selected = begin
-                input_q.pop(true)
-              rescue
-                nil
-              end
-              break if selected
+            if selected
+              break
             end
 
             begin
