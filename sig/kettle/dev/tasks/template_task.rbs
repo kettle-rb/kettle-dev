@@ -1,0 +1,10 @@
+module Kettle
+  module Dev
+    module Tasks
+      module TemplateTask
+        # Entrypoint to copy/update template files into a host project.
+        def self.run: () -> void
+      end
+    end
+  end
+end

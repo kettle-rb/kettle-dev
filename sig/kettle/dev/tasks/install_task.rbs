@@ -1,0 +1,10 @@
+module Kettle
+  module Dev
+    module Tasks
+      module InstallTask
+        # Entrypoint to perform installation steps and project setup.
+        def self.run: () -> void
+      end
+    end
+  end
+end

@@ -1,0 +1,16 @@
+class GitCommitFooter
+  NAME_ASSIGNMENT_REGEX: ::Regexp
+  FOOTER_APPEND: bool
+  SENTINEL: String?
+
+  def self.git_toplevel: () -> String?
+  def self.local_hooks_dir: () -> String?
+  def self.global_hooks_dir: () -> String
+  def self.hooks_path_for: (String filename) -> String
+  def self.commit_goalie_path: () -> String
+  def self.goalie_allows_footer?: (String subject_line) -> bool
+  def self.render: (*Array[String]) -> void
+
+  def initialize: () -> void
+  def render: () -> String
+end

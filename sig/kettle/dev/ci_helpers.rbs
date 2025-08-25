@@ -1,14 +1,11 @@
 module Kettle
   module Dev
     module CIHelpers
+      # singleton (module) methods
       def self.project_root: () -> String
-
       def self.repo_info: () -> [String, String]?
-
       def self.current_branch: () -> String?
-
       def self.workflows_list: (?String root) -> Array[String]
-
       def self.exclusions: () -> Array[String]
 
       def self.latest_run: (
@@ -17,32 +14,26 @@ module Kettle
         workflow_file: String,
         ?branch: String?,
         ?token: String?
-      ) -> { "status" => String?, "conclusion" => String?, "html_url" => String?, "id" => untyped }?
+      ) -> { "status" => String, "conclusion" => String?, "html_url" => String, "id" => Integer }?
 
-      def self.success?: ({ "status" => String?, "conclusion" => String? } | nil run) -> bool
-
-      def self.failed?: ({ "status" => String?, "conclusion" => String? } | nil run) -> bool
+      def self.success?: ({ "status" => String, "conclusion" => String? }?) -> bool
+      def self.failed?: ({ "status" => String, "conclusion" => String? }?) -> bool
 
       def self.default_token: () -> String?
 
-      # GitLab support
+      # GitLab
       def self.origin_url: () -> String?
-
       def self.repo_info_gitlab: () -> [String, String]?
-
       def self.default_gitlab_token: () -> String?
-
       def self.gitlab_latest_pipeline: (
         owner: String,
         repo: String,
         ?branch: String?,
         ?host: String,
         ?token: String?
-      ) -> { "status" => String?, "web_url" => String?, "id" => untyped }?
-
-      def self.gitlab_success?: ({ "status" => String? } | nil pipeline) -> bool
-
-      def self.gitlab_failed?: ({ "status" => String? } | nil pipeline) -> bool
+      ) -> { "status" => String, "web_url" => String, "id" => Integer }?
+      def self.gitlab_success?: ({ "status" => String }?) -> bool
+      def self.gitlab_failed?: ({ "status" => String }?) -> bool
     end
   end
 end

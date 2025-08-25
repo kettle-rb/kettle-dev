@@ -4,12 +4,21 @@
 # Exposed from lib/ so that exe/kettle-commit-msg can be a minimal wrapper.
 
 class GitCommitFooter
+  # Regex to extract `name = "value"` assignments from a gemspec.
+  # @return [Regexp]
   NAME_ASSIGNMENT_REGEX = /\bname\s*=\s*(["'])([^"']+)\1/.freeze
+
+  # Whether footer appending is enabled (via GIT_HOOK_FOOTER_APPEND=true)
+  # @return [Boolean]
   FOOTER_APPEND = ENV.fetch("GIT_HOOK_FOOTER_APPEND", "false").casecmp("true").zero?
+  # The sentinel string that must be present to avoid duplicate footers
+  # @return [String, nil]
   SENTINEL = ENV["GIT_HOOK_FOOTER_SENTINEL"]
   raise "Set GIT_HOOK_FOOTER_SENTINEL=<footer sentinel> in .env.local (e.g., '⚡️ A message from a fellow meat-based-AI ⚡️')" if FOOTER_APPEND && (SENTINEL.nil? || SENTINEL.to_s.empty?)
 
   class << self
+    # Resolve git repository top-level dir, or nil outside a repo.
+    # @return [String, nil]
     def git_toplevel
       toplevel = nil
       begin

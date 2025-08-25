@@ -1,0 +1,20 @@
+module Kettle
+  module Dev
+    class ReadmeBackers
+      def initialize: (
+        handle: String?,
+        readme_path: String?,
+        osc_api_base: String?,
+        osc_default_name: String?,
+        osc_empty_message: String?
+      ) -> void
+
+      def run!: () -> void
+
+      # Selected public helpers (kept minimal)
+      def readme_osc_tag: () -> String
+      def tag_strings: () -> [String, String]
+      def resolve_handle: () -> String
+    end
+  end
+end

@@ -1,0 +1,5 @@
+module Kettle
+  module EmojiRegex
+    REGEX: ::Regexp
+  end
+end
