@@ -14,8 +14,9 @@ rescue LoadError => error
   raise error unless error.message.include?("kettle")
 end
 
-# RSpec & related config
-require "kettle/test/rspec"
-
 # this library
 require "kettle-dev"
+
+# RSpec & related config
+require "kettle/test/rspec"
+require_relative "support/shared_contexts/with_rake"
