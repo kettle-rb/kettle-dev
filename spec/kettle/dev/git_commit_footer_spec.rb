@@ -5,7 +5,7 @@
 require "tmpdir"
 require "fileutils"
 
-RSpec.describe GitCommitFooter do
+RSpec.describe Kettle::Dev::GitCommitFooter do
   include_context "with stubbed env"
 
   describe "::hooks_path_for and directories" do

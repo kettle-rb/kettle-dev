@@ -7,10 +7,6 @@ require "require_bench" if ENV.fetch("REQUIRE_BENCH", "false").casecmp("true").z
 # :nocov:
 require "version_gem"
 
-# This gem
-require_relative "dev/version"
-require_relative "emoji_regex"
-
 module Kettle
   module Dev
     # Base error type for kettle-dev.
@@ -111,20 +107,30 @@ module Kettle
   end
 end
 
+# Autoload public CLI/APIs so requiring "kettle-dev" exposes them lazily
+# for tests and executables. Files will be loaded on first constant access.
+module Kettle
+  autoload :EmojiRegex, "kettle/emoji_regex"
+  module Dev
+    autoload :CIHelpers, "kettle/dev/ci_helpers"
+    autoload :CommitMsg, "kettle/dev/commit_msg"
+    autoload :GitCommitFooter, "kettle/dev/git_commit_footer"
+    autoload :ReadmeBackers, "kettle/dev/readme_backers"
+    autoload :ReleaseCLI, "kettle/dev/release_cli"
+    autoload :TemplateHelpers, "kettle/dev/template_helpers"
+    autoload :Version, "kettle/dev/version"
+
+    # Nested tasks namespace with autoloaded task modules
+    module Tasks
+      autoload :TemplateTask, "kettle/dev/tasks/template_task"
+      autoload :InstallTask, "kettle/dev/tasks/install_task"
+      autoload :CITask, "kettle/dev/tasks/ci_task"
+    end
+  end
+end
+
 Kettle::Dev::Version.class_eval do
   extend VersionGem::Basic
 end
-
-# Eagerly load public CLI/APIs so requiring "kettle-dev" exposes them
-# for tests and executables
-require_relative "dev/tasks/template_task"
-require_relative "dev/tasks/install_task"
-require_relative "dev/tasks/ci_task"
-require_relative "dev/ci_helpers"
-require_relative "dev/commit_msg"
-require_relative "dev/git_commit_footer"
-require_relative "dev/readme_backers"
-require_relative "dev/release_cli"
-require_relative "dev/template_helpers"
 
 Kettle::Dev.install_tasks if Kettle::Dev::RUNNING_AS == "rake"

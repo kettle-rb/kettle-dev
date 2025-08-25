@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Setup Bundle Audit
 begin
   require "bundler/audit/task"

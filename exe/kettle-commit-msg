@@ -50,4 +50,4 @@ else
   # puts "No branch rule configured (set GIT_HOOK_BRANCH_VALIDATE=jira to enforce rules for jira style branch names)"
 end
 
-GitCommitFooter.render(*ARGV)
+Kettle::Dev::GitCommitFooter.render(*ARGV)

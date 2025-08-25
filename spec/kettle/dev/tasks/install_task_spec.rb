@@ -25,7 +25,6 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
           template_results: {},
         )
 
-        require "kettle/dev/tasks/install_task"
         expect { described_class.run }.not_to raise_error
       end
     end
@@ -41,7 +40,6 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
           template_results: {},
         )
 
-        require "kettle/dev/tasks/install_task"
         expect { described_class.run }.not_to raise_error
       end
     end
@@ -61,7 +59,6 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
 
         stub_env("allowed" => "true")
 
-        require "kettle/dev/tasks/install_task"
         expect { described_class.run }.not_to raise_error
         # Ensure file was created with PATH_add
         expect(File.file?(envrc)).to be true
@@ -78,7 +75,6 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
           template_results: {},
         )
 
-        require "kettle/dev/tasks/install_task"
         expect { described_class.run }.not_to raise_error
         expect(File).not_to exist(File.join(project_root, ".envrc"))
       end
@@ -95,7 +91,6 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
         # Force non-interactive add
         stub_env("force" => "true")
 
-        require "kettle/dev/tasks/install_task"
         expect { described_class.run }.not_to raise_error
         gi = File.join(project_root, ".gitignore")
         expect(File).to exist(gi)
@@ -116,7 +111,6 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
         # Decline prompt; stub stdin for this example only
         allow($stdin).to receive(:gets).and_return("n\n")
 
-        require "kettle/dev/tasks/install_task"
         expect { described_class.run }.not_to raise_error
         gi = File.join(project_root, ".gitignore")
         expect(File).not_to exist(gi)
@@ -130,7 +124,6 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
           modified_by_template?: false,
           template_results: {},
         )
-        require "kettle/dev/tasks/install_task"
         expect { described_class.run }.not_to raise_error
       end
     end
@@ -146,7 +139,6 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
           template_results: {},
         )
 
-        require "kettle/dev/tasks/install_task"
         expect { described_class.run }.not_to raise_error
       end
     end
@@ -176,7 +168,6 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
           end
         end
 
-        require "kettle/dev/tasks/install_task"
         expect { described_class.run }.to raise_error(SystemExit, /homepage cannot be corrected/)
       end
     end
@@ -206,7 +197,6 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
           end
         end
 
-        require "kettle/dev/tasks/install_task"
 
         # Case 1: forced update
         stub_env("force" => "true")
@@ -244,7 +234,6 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
           end
         G
 
-        require "kettle/dev/tasks/install_task"
 
         # No allowed set, so after updating .envrc the task should abort
         expect { described_class.run }.to raise_error(SystemExit, /direnv allow required/)
@@ -264,7 +253,6 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
           File.join(project_root, "dir2") => {action: :dir_replace, timestamp: Time.now},
         })
 
-        require "kettle/dev/tasks/install_task"
         expect { described_class.run }.not_to raise_error
 
         # Second run: force an error when fetching summary

@@ -1,8 +1,9 @@
+# frozen_string_literal: true
+
 namespace :kettle do
   namespace :dev do
     desc "Template kettle-dev files into the current project"
     task :template do
-      require "kettle/dev/tasks/template_task"
       Kettle::Dev::Tasks::TemplateTask.run
     end
   end

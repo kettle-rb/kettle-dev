@@ -1,9 +1,4 @@
-begin
-  require "bundler"
-rescue LoadError
-  warn("[kettle-dev][appraisal.rake] failed to load bundler") if Kettle::Dev::DEBUGGING
-  # ok, might still work
-end
+# frozen_string_literal: true
 
 # --- Appraisals (dev-only) ---
 begin

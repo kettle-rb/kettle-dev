@@ -56,7 +56,6 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
         file_path = File.join(dir, "ci.yml")
         expect(File).to exist(file_path)
         expect(described_class).to receive(:system).with("act", "-W", file_path).and_return(true)
-        require "kettle/dev/tasks/ci_task"
         expect { described_class.act("ci") }.not_to raise_error
       end
     end
@@ -65,7 +64,6 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
       with_workflows(["ci.yml", "style.yaml"]) do |_root, dir|
         file_path = File.join(dir, "style.yaml")
         expect(described_class).to receive(:system).with("act", "-W", file_path).and_return(true)
-        require "kettle/dev/tasks/ci_task"
         expect { described_class.act("style.yaml") }.not_to raise_error
       end
     end
@@ -74,14 +72,12 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
       with_workflows(["style.yaml"]) do |_root, dir|
         file_path = File.join(dir, "style.yaml")
         expect(described_class).to receive(:system).with("act", "-W", file_path).and_return(true)
-        require "kettle/dev/tasks/ci_task"
         expect { described_class.act("style") }.not_to raise_error
       end
     end
 
     it "aborts and lists available options when workflow file is missing", :check_output do
       with_workflows(["ci.yml"]) do |_root, _dir|
-        require "kettle/dev/tasks/ci_task"
         expect do
           described_class.act("bogus")
         end.to raise_error(SystemExit, /ci:act aborted/)
@@ -95,7 +91,6 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
         allow($stdin).to receive(:gets).and_return("q\n")
         # Should not run system at all
         expect(described_class).not_to receive(:system)
-        require "kettle/dev/tasks/ci_task"
         expect { described_class.act(nil) }.not_to raise_error
       end
     end
@@ -105,7 +100,6 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
         allow($stdin).to receive(:gets).and_return("1\n")
         file_path = File.join(dir, "ci.yml")
         expect(described_class).to receive(:system).with("act", "-W", file_path).and_return(true)
-        require "kettle/dev/tasks/ci_task"
         expect { described_class.act(nil) }.not_to raise_error
       end
     end
@@ -113,7 +107,6 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
     it "aborts for unknown code", :check_output do
       with_workflows(["ci.yml"]) do |_root, _dir|
         allow($stdin).to receive(:gets).and_return("zzz\n")
-        require "kettle/dev/tasks/ci_task"
         expect { described_class.act(nil) }.to raise_error(SystemExit, /unknown code 'zzz'/)
       end
     end
@@ -122,7 +115,6 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
       with_workflows(["ci.yml"]) do |_root, _dir|
         # Simulate user just pressing Enter; gets -> "\n" then strip -> ""
         allow($stdin).to receive(:gets).and_return("\n")
-        require "kettle/dev/tasks/ci_task"
         expect { described_class.act(nil) }.to raise_error(SystemExit, /no selection/)
       end
     end
@@ -130,7 +122,6 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
     it "aborts for invalid numeric selection (out of bounds)", :check_output do
       with_workflows(["ci.yml"]) do |_root, _dir|
         allow($stdin).to receive(:gets).and_return("9\n")
-        require "kettle/dev/tasks/ci_task"
         expect { described_class.act(nil) }.to raise_error(SystemExit, /invalid selection 9/)
       end
     end

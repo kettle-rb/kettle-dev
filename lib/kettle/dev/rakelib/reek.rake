@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Setup Reek
 begin
   require "reek/rake/task"

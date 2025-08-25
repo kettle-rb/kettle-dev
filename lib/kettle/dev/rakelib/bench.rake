@@ -1,11 +1,6 @@
-require "rbconfig" if !Dir[File.join(__dir__, "benchmarks")].empty? # Used by `rake bench:run`
+# frozen_string_literal: true
 
-begin
-  require "bundler"
-rescue LoadError
-  warn("[kettle-dev][bench.rake] failed to load bundler") if Kettle::Dev::DEBUGGING
-  # ok, might still work
-end
+require "rbconfig" if !Dir[File.join(__dir__, "benchmarks")].empty? # Used by `rake bench:run`
 
 # --- Benchmarks (dev-only) ---
 namespace :bench do
