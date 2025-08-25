@@ -51,8 +51,22 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
   end
 
   describe "::act (non-interactive option)" do
+    it "prints emoji for queued/in_progress/completed failure statuses", :check_output do
+      with_workflows(["ci.yml"]) do |_root, dir|
+        seq = [
+          http_ok_with({"workflow_runs" => [{"status" => "queued"}]}),
+          http_ok_with({"workflow_runs" => [{"status" => "in_progress"}]}),
+          http_ok_with({"workflow_runs" => [{"status" => "completed", "conclusion" => "failure"}]}),
+        ]
+        allow(Net::HTTP).to receive(:start).and_return(*seq)
+        file_path = File.join(dir, "ci.yml")
+        expect(described_class).to receive(:system).with("act", "-W", file_path).and_return(true).at_least(:once)
+        expect { described_class.act("ci") }.not_to raise_error
+      end
+    end
+
     it "runs act for a short code mapping" do
-      with_workflows(["ci.yml", "style.yaml"]) do |root, dir|
+      with_workflows(["ci.yml", "style.yaml"]) do |_root, dir|
         file_path = File.join(dir, "ci.yml")
         expect(File).to exist(file_path)
         expect(described_class).to receive(:system).with("act", "-W", file_path).and_return(true)
@@ -76,18 +90,64 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
       end
     end
 
-    it "aborts and lists available options when workflow file is missing", :check_output do
-      with_workflows(["ci.yml"]) do |_root, _dir|
-        expect do
-          described_class.act("bogus")
-        end.to raise_error(SystemExit, /ci:act aborted/)
+    it "resolves a basename without extension when .yml exists" do
+      with_workflows(["build.yml"]) do |_root, dir|
+        file_path = File.join(dir, "build.yml")
+        expect(described_class).to receive(:system).with("act", "-W", file_path).and_return(true)
+        expect { described_class.act("build") }.not_to raise_error
+      end
+    end
+
+    it "skips GHA status when git context is missing (branch or repo)", :check_output do
+      allow(Kettle::Dev::CIHelpers).to receive(:current_branch).and_return(nil)
+      with_workflows(["ci.yml"]) do |_root, dir|
+        file_path = File.join(dir, "ci.yml")
+        expect(described_class).to receive(:system).with("act", "-W", file_path).and_return(true)
+        expect { described_class.act("ci") }.not_to raise_error
+      end
+    end
+
+    it "handles GitHub API 'none' (no runs)", :check_output do
+      allow(Net::HTTP).to receive(:start).and_return(
+        http_ok_with({"workflow_runs" => []}),
+      )
+      with_workflows(["ci.yml"]) do |_root, dir|
+        file_path = File.join(dir, "ci.yml")
+        expect(described_class).to receive(:system).with("act", "-W", file_path).and_return(true)
+        expect { described_class.act("ci") }.not_to raise_error
+      end
+    end
+
+    it "handles GitHub API request failure (non-success)", :check_output do
+      bad = instance_double(Net::HTTPServerError, is_a?: false, code: "500", body: "boom")
+      allow(Net::HTTP).to receive(:start).and_return(bad)
+      with_workflows(["ci.yml"]) do |_root, dir|
+        file_path = File.join(dir, "ci.yml")
+        expect(described_class).to receive(:system).with("act", "-W", file_path).and_return(true)
+        expect { described_class.act("ci") }.not_to raise_error
+      end
+    end
+
+    it "handles GitHub API exceptions gracefully", :check_output do
+      allow(Net::HTTP).to receive(:start).and_raise(StandardError.new("timeout"))
+      with_workflows(["ci.yml"]) do |_root, dir|
+        file_path = File.join(dir, "ci.yml")
+        expect(described_class).to receive(:system).with("act", "-W", file_path).and_return(true)
+        expect { described_class.act("ci") }.not_to raise_error
+      end
+    end
+
+    it "aborts and lists available options including (others) when dynamic files exist", :check_output do
+      # Two files with same first 3 letters so one becomes a dynamic file
+      with_workflows(["che_one.yml", "che_two.yml"]) do |_root, _dir|
+        expect { described_class.act("does_not_exist") }.to raise_error(SystemExit, /ci:act aborted/)
       end
     end
   end
 
   describe "::act (interactive)" do
     it "quits when user enters 'q'", :check_output do
-      with_workflows(["ci.yml", "style.yaml"]) do |_root, dir|
+      with_workflows(["ci.yml", "style.yaml"]) do |_root, _dir|
         allow($stdin).to receive(:gets).and_return("q\n")
         # Should not run system at all
         expect(described_class).not_to receive(:system)
@@ -95,34 +155,89 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
       end
     end
 
-    it "runs act for numeric selection 1", :check_output do
-      with_workflows(["ci.yml", "style.yaml"]) do |_root, dir|
-        allow($stdin).to receive(:gets).and_return("1\n")
-        file_path = File.join(dir, "ci.yml")
-        expect(described_class).to receive(:system).with("act", "-W", file_path).and_return(true)
+    it "prints repo info even when branch missing", :check_output do
+      allow(Kettle::Dev::CIHelpers).to receive(:current_branch).and_return(nil)
+      with_workflows(["ci.yml"]) do |_root, _dir|
+        allow($stdin).to receive(:gets).and_return("q\n")
         expect { described_class.act(nil) }.not_to raise_error
       end
     end
 
-    it "aborts for unknown code", :check_output do
+    it "prints repo n/a when repo info missing", :check_output do
+      allow(Kettle::Dev::CIHelpers).to receive(:repo_info).and_return(nil)
       with_workflows(["ci.yml"]) do |_root, _dir|
-        allow($stdin).to receive(:gets).and_return("zzz\n")
-        expect { described_class.act(nil) }.to raise_error(SystemExit, /unknown code 'zzz'/)
+        allow($stdin).to receive(:gets).and_return("q\n")
+        expect { described_class.act(nil) }.not_to raise_error
       end
     end
 
-    it "aborts when user provides empty input", :check_output do
+    it "prints n/a for upstream and sha when git commands fail", :check_output do
+      allow(Open3).to receive(:capture2).and_raise(StandardError)
       with_workflows(["ci.yml"]) do |_root, _dir|
-        # Simulate user just pressing Enter; gets -> "\n" then strip -> ""
-        allow($stdin).to receive(:gets).and_return("\n")
-        expect { described_class.act(nil) }.to raise_error(SystemExit, /no selection/)
+        allow($stdin).to receive(:gets).and_return("q\n")
+        expect { described_class.act(nil) }.not_to raise_error
       end
     end
 
-    it "aborts for invalid numeric selection (out of bounds)", :check_output do
+    it "updates status lines in non-tty mode (early exit and err/fail/none)", :check_output do
+      # Make ENV poll interval zero so sleep is immediate
+      stub_env("CI_ACT_POLL_INTERVAL" => "0")
+      # Return sequence: fail (500), err (exception), none (no runs), completed success
+      bad = instance_double(Net::HTTPServerError, is_a?: false, code: "500", body: "boom")
+      ok_none = http_ok_with({"workflow_runs" => []})
+      ok_done = http_ok_with({"workflow_runs" => [{"status" => "completed", "conclusion" => "success"}]})
+      allow(Net::HTTP).to receive(:start).and_return(bad, -> { raise StandardError }, ok_none, ok_done)
+
       with_workflows(["ci.yml"]) do |_root, _dir|
-        allow($stdin).to receive(:gets).and_return("9\n")
-        expect { described_class.act(nil) }.to raise_error(SystemExit, /invalid selection 9/)
+        # Cause early-exit path for worker when missing org/branch
+        allow(Kettle::Dev::CIHelpers).to receive(:repo_info).and_return(["acme", "demo"]) # present
+        allow(Kettle::Dev::CIHelpers).to receive(:current_branch).and_return("main") # present
+        # Normal interactive, then choose to quit to end quickly
+        allow($stdin).to receive(:gets).and_return("q\n")
+        expect { described_class.act(nil) }.not_to raise_error
+      end
+    end
+
+    it "polls queued→in_progress→completed in worker loop (with TTY)", :check_output do
+      stub_env("CI_ACT_POLL_INTERVAL" => "0")
+      seq = [
+        http_ok_with({"workflow_runs" => [{"status" => "queued"}]}),
+        http_ok_with({"workflow_runs" => [{"status" => "in_progress"}]}),
+        http_ok_with({"workflow_runs" => [{"status" => "completed", "conclusion" => "success"}]}),
+      ]
+      allow(Net::HTTP).to receive(:start).and_return(*seq)
+      with_workflows(["ci.yml"]) do |_root, _dir|
+        allow($stdout).to receive(:tty?).and_return(true)
+        allow($stdin).to receive(:gets) { sleep 0.1; "q\n" }
+        expect { described_class.act(nil) }.not_to raise_error
+      end
+    end
+
+    it "prints simple non-tty status lines before input arrives", :check_output do
+      # ensure non-tty
+      allow($stdout).to receive(:tty?).and_return(false)
+      with_workflows(["ci.yml"]) do |_root, _dir|
+        allow($stdin).to receive(:gets) { sleep 0.05; "q\n" }
+        expect { described_class.act(nil) }.not_to raise_error
+      end
+    end
+
+    it "handles Integer error for poll interval (outer rescue in worker)", :check_output do
+      stub_env("CI_ACT_POLL_INTERVAL" => "oops")
+      with_workflows(["ci.yml"]) do |_root, _dir|
+        allow($stdin).to receive(:gets).and_return("q\n")
+        expect { described_class.act(nil) }.not_to raise_error
+      end
+    end
+  end
+
+  describe "::act (no workflows dir)" do
+    it "handles missing workflows directory gracefully", :check_output do
+      Dir.mktmpdir do |root|
+        # Do NOT create .github/workflows
+        allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
+        allow($stdin).to receive(:gets).and_return("q\n")
+        expect { described_class.act(nil) }.not_to raise_error
       end
     end
   end

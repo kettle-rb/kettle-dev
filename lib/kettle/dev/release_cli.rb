@@ -99,7 +99,8 @@ module Kettle
         # Strong reminder for local runs: skip signing when testing a release flow
         unless ENV.key?("SKIP_GEM_SIGNING")
           puts "TIP: For local dry-runs or testing the release workflow, set SKIP_GEM_SIGNING=true to avoid PEM password prompts."
-          if ENV.fetch("CI", "false").casecmp("true").nonzero?
+          # Prompt on CI to allow an explicit abort when signing would otherwise hang
+          if ENV.fetch("CI", "false").casecmp("true").zero?
             print("Proceed with signing enabled? This may hang waiting for a PEM password. [y/N]: ")
             ans = $stdin.gets&.strip
             unless ans&.downcase&.start_with?("y")
