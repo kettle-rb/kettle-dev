@@ -120,6 +120,8 @@ end
 require_relative "dev/tasks/template_task"
 require_relative "dev/tasks/install_task"
 require_relative "dev/tasks/ci_task"
+require_relative "dev/ci_helpers"
+require_relative "dev/commit_msg"
 require_relative "dev/git_commit_footer"
 require_relative "dev/readme_backers"
 require_relative "dev/release_cli"

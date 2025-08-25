@@ -12,10 +12,6 @@ require "uri"
 # External gems
 require "ruby-progressbar"
 
-# This library
-require "kettle/dev"
-require "kettle/dev/ci_helpers"
-
 module Kettle
   module Dev
     class ReleaseCLI

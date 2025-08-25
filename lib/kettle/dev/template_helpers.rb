@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
+# External stdlibs
 require "find"
-require_relative "ci_helpers"
 
 module Kettle
   module Dev

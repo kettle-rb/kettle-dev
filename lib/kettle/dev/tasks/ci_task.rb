@@ -6,9 +6,6 @@ require "net/http"
 require "json"
 require "uri"
 
-# This library
-require "kettle/dev/ci_helpers"
-
 module Kettle
   module Dev
     module Tasks
