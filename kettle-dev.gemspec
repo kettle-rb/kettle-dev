@@ -90,6 +90,7 @@ Gem::Specification.new do |spec|
     "Appraisal.root.gemfile",
     "Appraisals",
     "CHANGELOG.md",
+    "CHANGELOG.md.example",
     "CITATION.cff",
     "CODE_OF_CONDUCT.md",
     "CONTRIBUTING.md",
