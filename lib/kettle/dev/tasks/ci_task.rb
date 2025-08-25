@@ -175,7 +175,7 @@ module Kettle
 
           puts "(Fetching latest GHA status for branch #{branch || "n/a"} — you can type your choice and press Enter)"
           prompt = "Enter number or code (or 'q' to quit): "
-          print prompt
+          print(prompt)
           $stdout.flush
 
           input_q = Queue.new

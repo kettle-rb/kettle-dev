@@ -11,13 +11,7 @@ require "bundler/setup"
 # Standard library
 require "erb"
 
-begin
-  require "kettle/dev"
-rescue LoadError => e
-  warn("kettle-readme-backers: failed to load kettle/dev: #{e.message}")
-  warn("Hint: Ensure the host project includes kettle-dev and run bundle install.")
-  exit(1)
-end
+require "kettle/dev"
 
 # ENV variable control (set in .envrc, or .env.local)
 # BRANCH_RULE_TYPE = jira, or another type of branch rule validation, or false to disable

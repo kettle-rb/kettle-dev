@@ -400,7 +400,7 @@ module Kettle
               puts "  [l] Local to this project (#{File.join(project_root, ".git-hooks")})"
               puts "  [g] Global for this user (#{File.join(ENV["HOME"], ".git-hooks")})"
               puts "  [s] Skip copying"
-              print "Choose (l/g/s) [l]: "
+              print("Choose (l/g/s) [l]: ")
               choice = $stdin.gets&.strip
               choice = "l" if choice.nil? || choice.empty?
               dest_dir = case choice.downcase

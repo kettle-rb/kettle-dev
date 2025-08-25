@@ -8,12 +8,6 @@ $stdout.sync = true
 # Ensure bundler is set up by the host project
 require "bundler/setup"
 
-begin
-  require "kettle/dev"
-rescue LoadError => e
-  warn("kettle-readme-backers: failed to load kettle/dev: #{e.message}")
-  warn("Hint: Ensure the host project includes kettle-dev and run bundle install.")
-  exit(1)
-end
+require "kettle/dev"
 
 Kettle::Dev::ReadmeBackers.new.run!

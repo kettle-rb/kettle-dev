@@ -58,7 +58,7 @@ RSpec.configure do |config|
   config.before(:suite) do
     $original_stdin = $stdin
     default = ENV["TEST_INPUT_DEFAULT"]
-    $stdin = KettleTestInputMachine.new(default: (default && !default.empty? ? default : nil))
+    $stdin = KettleTestInputMachine.new(default: ((default && !default.empty?) ? default : nil))
   end
 
   config.after(:suite) do

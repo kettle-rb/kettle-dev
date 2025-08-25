@@ -90,7 +90,7 @@ module Kettle
             unless has_env_local
               puts
               puts "Would you like to add '.env.local' to #{gitignore_path}?"
-              print "Add to .gitignore now [Y/n]: "
+              print("Add to .gitignore now [Y/n]: ")
               answer = $stdin.gets&.strip
               add_it = if ENV.fetch("force", "").to_s =~ /\A(1|true|y|yes)\z/i
                 true
