@@ -18,16 +18,23 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [Unreleased]
 ### Added
-- kettle-release: Add a sanity check for the latest released version of the gem being released, and display it during the confirmation with user that CHANGELOG.md and version.rb have been updated, so they can compare the value in version.rb with the value of the latest released version.
-  - If the value in version.rb is less than the latest released version's major or minor, then check for the latest released version that matches the major + minor of what is in version.rb.
-  - This way a stable branch intended to release patch updates to older versions is able to work use the script.
-- kettle-release: optional pre-push local CI run using `act`, controlled by env var `K_RELEASE_LOCAL_CI` ("true" to run, "ask" to prompt) and `K_RELEASE_LOCAL_CI_WORKFLOW` to choose a workflow; defaults to `locked_deps.yml` when present; on failure, soft-resets the release prep commit and aborts.
-- template task: now copies `certs/pboling.pem` into the host project when available.
 ### Changed
 ### Deprecated
 ### Removed
 ### Fixed
 ### Security
+
+## [1.0.9] - 2025-08-24
+- TAG: [v1.0.9][1.0.9t]
+- COVERAGE: 100.00% -- 130/130 lines in 7 files
+- BRANCH COVERAGE:  96.00% -- 48/50 branches in 7 files
+- 95.35% documented
+### Added
+- kettle-release: Add a sanity check for the latest released version of the gem being released, and display it during the confirmation with user that CHANGELOG.md and version.rb have been updated, so they can compare the value in version.rb with the value of the latest released version.
+    - If the value in version.rb is less than the latest released version's major or minor, then check for the latest released version that matches the major + minor of what is in version.rb.
+    - This way a stable branch intended to release patch updates to older versions is able to work use the script.
+- kettle-release: optional pre-push local CI run using `act`, controlled by env var `K_RELEASE_LOCAL_CI` ("true" to run, "ask" to prompt) and `K_RELEASE_LOCAL_CI_WORKFLOW` to choose a workflow; defaults to `locked_deps.yml` when present; on failure, soft-resets the release prep commit and aborts.
+- template task: now copies `certs/pboling.pem` into the host project when available.
 
 ## [1.0.8] - 2025-08-24
 - TAG: [v1.0.8][1.0.8t]
@@ -133,7 +140,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.8...HEAD
+[Unreleased]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.9...HEAD
+[1.0.9]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.8...v1.0.9
+[1.0.9t]: https://gitlab.com/kettle-rb/kettle-dev/-/tags/v1.0.9
 [1.0.8]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.7...v1.0.8
 [1.0.8t]: https://gitlab.com/kettle-rb/kettle-dev/-/tags/v1.0.8
 [1.0.7]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.6...v1.0.7
