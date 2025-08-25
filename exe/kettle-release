@@ -51,9 +51,6 @@ module Kettle
 
         ensure_bundler_2_7_plus!
 
-        run_cmd!("bin/setup")
-        run_cmd!("bin/rake")
-
         version = detect_version
         puts "Detected version: #{version.inspect}"
 
