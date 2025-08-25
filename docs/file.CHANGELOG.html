@@ -58,18 +58,28 @@
       </div>
 
       <div id="content"><div id='filecontents'><h1 id="changelog">Changelog</h1>
+
+<p><a href="https://semver.org/spec/v2.0.0.html"><img src="https://img.shields.io/badge/semver-2.0.0-FFDD67.svg?style=flat" alt="SemVer 2.0.0"></a> <a href="https://keepachangelog.com/en/1.0.0/"><img src="https://img.shields.io/badge/keep--a--changelog-1.0.0-FFDD67.svg?style=flat" alt="Keep-A-Changelog 1.0.0"></a></p>
+
 <p>All notable changes to this project will be documented in this file.</p>
 
-<p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog v1</a>,<br>
-and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semantic Versioning v2</a>.</p>
+<p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>,<br>
+and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>,<br>
+and <a href="https://tom.preston-werner.com/2022/05/23/major-version-numbers-are-not-sacred.html">yes</a>, platform and engine support are part of the <a href="https://github.com/semver/semver/issues/716#issuecomment-869336139">public API</a>.<br>
+Please file a bug if you notice a violation of semantic versioning.</p>
 
 <h2 id="unreleased"><a href="https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.8...HEAD">Unreleased</a></h2>
 <h3 id="added">Added</h3>
-<h3 id="changed">Changed</h3>
-<h3 id="deprecated">Deprecated</h3>
-<h3 id="removed">Removed</h3>
-<h3 id="fixed">Fixed</h3>
-<h3 id="security">Security</h3>
+<ul>
+  <li>kettle-release: optional pre-push local CI run using <code>act</code>, controlled by env var <code>K_RELEASE_LOCAL_CI</code> (“true” to run, “ask” to prompt) and <code>K_RELEASE_LOCAL_CI_WORKFLOW</code> to choose a workflow; defaults to <code>locked_deps.yml</code> when present; on failure, soft-resets the release prep commit and aborts.</li>
+  <li>template task: now copies <code>certs/pboling.pem</code> into the host project when available.
+    <h3 id="changed">Changed</h3>
+    <h3 id="deprecated">Deprecated</h3>
+    <h3 id="removed">Removed</h3>
+    <h3 id="fixed">Fixed</h3>
+    <h3 id="security">Security</h3>
+  </li>
+</ul>
 
 <h2 id="108---2025-08-24">
 <a href="https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.7...v1.0.8">1.0.8</a> - 2025-08-24</h2>
@@ -255,7 +265,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 </div></div>
 
       <div id="footer">
-  Generated on Sun Aug 24 07:14:02 2025 by
+  Generated on Sun Aug 24 21:38:25 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

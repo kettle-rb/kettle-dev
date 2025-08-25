@@ -440,6 +440,7 @@ Tip: When running a single spec file locally, you may want <code>K_SOUP_COV_MIN_
   <li>
 <code>bundle exec rake kettle:dev:template</code> — runs only the templating step used by install; useful to re-apply updates to templates (.github workflows, .devcontainer, .qlty, modular Gemfiles, README, and friends) without the <code>install</code> task’s extra prompts.
     <ul>
+      <li>Also copies maintainer certificate <code>certs/pboling.pem</code> into your project when present (used for signed gem builds).</li>
       <li>README carry-over during templating: when your project’s README.md is replaced by the template, selected sections from your existing README are preserved and merged into the new one. Specifically, the task carries over the following sections (matched case-insensitively):
         <ul>
           <li>“Synopsis”</li>
@@ -476,6 +477,13 @@ Tip: When running a single spec file locally, you may want <code>K_SOUP_COV_MIN_
 <code>exe/kettle-release</code> — guided release helper that:
     <ul>
       <li>Runs sanity checks (<code>bin/setup</code>, <code>bin/rake</code>), confirms version/changelog, optionally updates Appraisals, commits “🔖 Prepare release vX.Y.Z”.</li>
+      <li>Optionally runs your CI locally with <code>act</code> before any push:
+        <ul>
+          <li>Enable with env: <code>K_RELEASE_LOCAL_CI="true"</code> (run automatically) or <code>K_RELEASE_LOCAL_CI="ask"</code> (prompt [Y/n]).</li>
+          <li>Select workflow with <code>K_RELEASE_LOCAL_CI_WORKFLOW</code> (with or without .yml/.yaml). Defaults to <code>locked_deps.yml</code> if present; otherwise the first workflow discovered.</li>
+          <li>On failure, the release prep commit is soft-rolled-back (<code>git reset --soft HEAD^</code>) and the process aborts.</li>
+        </ul>
+      </li>
       <li>Ensures trunk sync and rebases feature as needed, pushes, monitors GitHub Actions with a progress bar, and merges feature to trunk on success.</li>
       <li>Exports <code>SOURCE_DATE_EPOCH</code>, builds (optionally signed), creates gem checksums, and runs <code>bundle exec rake release</code> (prompts for signing key + RubyGems MFA OTP as needed).</li>
     </ul>
@@ -740,7 +748,7 @@ Please consider sponsoring me or the project.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Sun Aug 24 07:14:02 2025 by
+  Generated on Sun Aug 24 21:38:25 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

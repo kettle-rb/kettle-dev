@@ -283,12 +283,12 @@ module Kettle
           end
         else
           # Default to locked_deps if present
-          if candidates.include?("locked_deps.yml")
-            chosen = "locked_deps.yml"
+          chosen = if candidates.include?("locked_deps.yml")
+            "locked_deps.yml"
           elsif candidates.include?("locked_deps.yaml")
-            chosen = "locked_deps.yaml"
+            "locked_deps.yaml"
           else
-            chosen = candidates.first
+            candidates.first
           end
         end
 

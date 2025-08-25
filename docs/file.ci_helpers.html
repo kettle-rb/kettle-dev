@@ -83,12 +83,31 @@
   def self.failed?: ({ &quot;status&quot; =&gt; String?, &quot;conclusion&quot; =&gt; String? } | nil run) -&gt; bool
 
   def self.default_token: () -&gt; String?
+
+  # GitLab support
+  def self.origin_url: () -&gt; String?
+
+  def self.repo_info_gitlab: () -&gt; [String, String]?
+
+  def self.default_gitlab_token: () -&gt; String?
+
+  def self.gitlab_latest_pipeline: (
+    owner: String,
+    repo: String,
+    ?branch: String?,
+    ?host: String,
+    ?token: String?
+  ) -&gt; { &quot;status&quot; =&gt; String?, &quot;web_url&quot; =&gt; String?, &quot;id&quot; =&gt; untyped }?
+
+  def self.gitlab_success?: ({ &quot;status&quot; =&gt; String? } | nil pipeline) -&gt; bool
+
+  def self.gitlab_failed?: ({ &quot;status&quot; =&gt; String? } | nil pipeline) -&gt; bool
 end   end end
 </code></pre>
 </div></div>
 
       <div id="footer">
-  Generated on Sun Aug 24 07:14:03 2025 by
+  Generated on Sun Aug 24 21:38:25 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>
