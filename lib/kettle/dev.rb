@@ -6,6 +6,8 @@
 require "require_bench" if ENV.fetch("REQUIRE_BENCH", "false").casecmp("true").zero?
 # :nocov:
 require "version_gem"
+
+# This gem
 require_relative "dev/version"
 
 module Kettle

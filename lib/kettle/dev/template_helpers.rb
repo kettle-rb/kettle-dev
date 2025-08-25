@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# :nocov:
 require "find"
 require_relative "ci_helpers"
 
@@ -287,4 +286,3 @@ module Kettle
     end
   end
 end
-# :nocov:
