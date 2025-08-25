@@ -1,10 +1,12 @@
 #!/usr/bin/env ruby
 # vim: set syntax=ruby
 
-ENV["BUNDLE_GEMFILE"] ||= File.expand_path("../Gemfile", __dir__)
-
 require "rubygems"
-require "bundler/setup"
+begin
+  require "bundler/setup"
+rescue LoadError
+  # Allow running outside of Bundler; runtime deps should still be available via rubygems
+end
 
 # Standard library
 require "erb"
@@ -51,7 +53,7 @@ class GitCommitFooter
   NAME_ASSIGNMENT_REGEX = /\bname\s*=\s*(["'])([^"']+)\1/.freeze
   FOOTER_APPEND = ENV.fetch("GIT_HOOK_FOOTER_APPEND", "false").casecmp("true").zero?
   SENTINEL = ENV["GIT_HOOK_FOOTER_SENTINEL"] # No default to avoid accidental duplicate commit of a footer via ammended commits
-  raise "Set GIT_HOOK_FOOTER_SENTINEL=<footer sentinel> in .env.local (e.g., '⚡️ A message from a fellow meat-based-AI ⚡️')" if FOOTER_APPEND && SENTINEL.nil? || SENTINEL.empty?
+  raise "Set GIT_HOOK_FOOTER_SENTINEL=<footer sentinel> in .env.local (e.g., '⚡️ A message from a fellow meat-based-AI ⚡️')" if FOOTER_APPEND && (SENTINEL.nil? || SENTINEL.to_s.empty?)
 
   class << self
     def git_toplevel

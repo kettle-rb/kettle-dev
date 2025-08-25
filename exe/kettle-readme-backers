@@ -20,7 +20,11 @@
 #   # or ensure .opencollective.yml exists with collective: "kettle-rb"
 
 require "rubygems"
-require "bundler/setup"
+begin
+  require "bundler/setup"
+rescue LoadError
+  # Allow running outside of Bundler; runtime deps should still be available via rubygems
+end
 
 require "yaml"
 require "json"
