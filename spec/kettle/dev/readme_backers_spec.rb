@@ -70,6 +70,51 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
         expect(File).not_to have_received(:write)
       end
     end
+
+    context "when both sections change" do
+      it "writes file, prints update message, and commits when in git repo", :check_output do
+        # Prepare README with tags but different content to force changes
+        initial = [
+          "# Title",
+          tags[:generic_start],
+          "old backers",
+          tags[:generic_end],
+          "",
+          tags[:orgs_start],
+          "old sponsors",
+          tags[:orgs_end],
+          "",
+        ].join("\n")
+        File.write(tmp_readme, initial)
+
+        # Members that will generate different markdown
+        new_backers = [
+          Kettle::Dev::ReadmeBackers::Backer.new(name: "Alice", image: nil, website: nil, profile: "https://github.com/Alice"),
+        ]
+        new_sponsors = [
+          Kettle::Dev::ReadmeBackers::Backer.new(name: "Acme", image: nil, website: "https://acme.example", profile: nil),
+        ]
+        allow(instance).to receive(:fetch_members).with("backers.json").and_return(new_backers)
+        allow(instance).to receive(:fetch_members).with("sponsors.json").and_return(new_sponsors)
+
+        # In a git repo, ensure commit is attempted
+        allow(instance).to receive(:git_repo?).and_return(true)
+        allow(instance).to receive(:perform_git_commit)
+
+        expect {
+          instance.run!
+        }.to output(a_string_matching(/Updated backers and sponsors sections? in/)).to_stdout
+
+        # File should have been updated
+        content = File.read(tmp_readme)
+        expect(content).to include(tags[:generic_start])
+        expect(content).to include(tags[:orgs_start])
+        expect(content).to include("[![Alice]")
+        expect(content).to include("[![Acme]")
+
+        expect(instance).to have_received(:perform_git_commit).with(kind_of(Array), kind_of(Array))
+      end
+    end
   end
 
   describe "#readme_osc_tag" do
@@ -242,6 +287,15 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
       res = instance.send(:compute_new_members, prev, [m1, m2, m3])
       expect(res).to contain_exactly(m3)
       expect(instance.send(:identity_for_member, m3)).to eq("")
+    end
+
+    it "uses profile first, then website, then name" do
+      m_profile = Kettle::Dev::ReadmeBackers::Backer.new(name: "John", image: nil, website: "https://Site", profile: "https://Profile")
+      m_website = Kettle::Dev::ReadmeBackers::Backer.new(name: "John", image: nil, website: "https://Site", profile: " ")
+      m_name = Kettle::Dev::ReadmeBackers::Backer.new(name: " John ", image: nil, website: nil, profile: nil)
+      expect(instance.send(:identity_for_member, m_profile)).to eq("https://profile")
+      expect(instance.send(:identity_for_member, m_website)).to eq("https://site")
+      expect(instance.send(:identity_for_member, m_name)).to eq("john")
     end
   end
 
