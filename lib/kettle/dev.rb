@@ -24,6 +24,11 @@ module Kettle
     # Whether to benchmark requires with require_bench.
     # @return [Boolean]
     REQUIRE_BENCH = ENV.fetch("REQUIRE_BENCH", "false").casecmp("true").zero?
+    # Whether to load rake tasks at the bottom of this file.
+    # Normally they would be loaded in the project's Rakefile,
+    #   but if we do that in this project then we can't get accurate code coverage.
+    # @return [Boolean]
+    RUNNING_AS = File.basename($PROGRAM_NAME)
 
     @defaults = []
 
@@ -108,3 +113,5 @@ end
 Kettle::Dev::Version.class_eval do
   extend VersionGem::Basic
 end
+
+Kettle::Dev.install_tasks if Kettle::Dev::RUNNING_AS == "rake"

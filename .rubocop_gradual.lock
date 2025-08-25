@@ -1,6 +1,6 @@
 {
-  "lib/kettle/dev.rb:2837300664": [
-    [26, 17, 2, "ThreadSafety/MutableClassInstanceVariable: Freeze mutable objects assigned to class instance variables.", 5862883]
+  "lib/kettle/dev.rb:2657922173": [
+    [33, 17, 2, "ThreadSafety/MutableClassInstanceVariable: Freeze mutable objects assigned to class instance variables.", 5862883]
   ],
   "spec/kettle/dev/ci_helpers_spec.rb:1360061830": [
     [40, 16, 42, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 465257938],

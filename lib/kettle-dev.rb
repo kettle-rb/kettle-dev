@@ -15,9 +15,8 @@
 # Hook for other libraries to load this library (e.g. via bundler)
 #
 # @example In your spec/spec_helper.rb
-#   require "kettle-dev"
+#   require "kettle-dev" # or require "kettle/dev"
 # @example In your Rakefile
-#   require "kettle/dev"
-#   Kettle::Dev.install_tasks
+#   require "kettle-dev" # or require "kettle/dev"
 require "kettle/dev"
 # rubocop:enable Naming/FileName
