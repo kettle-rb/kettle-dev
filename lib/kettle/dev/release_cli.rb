@@ -1,35 +1,121 @@
-#!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# vim: set syntax=ruby
+require "kettle/dev"
+require "kettle/dev/ci_helpers"
+require "open3"
+require "shellwords"
+require "time"
+require "fileutils"
+require "net/http"
+require "json"
+require "uri"
 
-# kettle-release: Automate release steps from CONTRIBUTING.md
-# - Runs sanity checks
-# - Ensures version/changelog updated (with confirmation)
-# - Commits and pushes a release prep commit
-# - Ensures on trunk, up-to-date
-# - Builds and releases using Bundler/Rake (reproducible by default in Bundler 2.7+)
-# - Runs `bundle exec rake build` (expects PEM password unless SKIP_GEM_SIGNING)
-#   - If signing not skipped and no public cert in certs/<user>.pem, aborts with guidance
-# - Runs bin/gem_checksums
-# - Runs `bundle exec rake release` (expects PEM password and RubyGems MFA OTP)
-
-# Immediate, unbuffered output
-$stdout.sync = true
-# Depending library or project must be using bundler
-require "bundler/setup"
-
-require "kettle/dev/release_cli"
+begin
+  require "ruby-progressbar"
+rescue LoadError
+  # Allow requiring file even if progressbar is not present; the CLI will error when used.
+end
 
 module Kettle
   module Dev
     class ReleaseCLI
-    end
+      def initialize
+        @root = Kettle::Dev::CIHelpers.project_root
+      end
+
+      def run
+        puts "== kettle-release =="
+
+        ensure_bundler_2_7_plus!
+
+        version = detect_version
+        puts "Detected version: #{version.inspect}"
+
+        begin
+          gem_name = detect_gem_name
+          latest_overall, latest_for_series = latest_released_versions(gem_name, version)
+          if latest_overall
+            msg = "Latest released: #{latest_overall}"
+            if latest_for_series && latest_for_series != latest_overall
+              msg += " | Latest for series #{Gem::Version.new(version).segments[0, 2].join(".")}.x: #{latest_for_series}"
+            elsif latest_for_series
+              msg += " (matches current series)"
+            end
+            puts msg
+
+            cur = Gem::Version.new(version)
+            overall = Gem::Version.new(latest_overall)
+            cur_series = cur.segments[0, 2]
+            overall_series = overall.segments[0, 2]
+            target = if (cur_series <=> overall_series) == -1
+              latest_for_series
+            else
+              latest_overall
+            end
+            if target && Gem::Version.new(version) <= Gem::Version.new(target)
+              series = cur_series.join(".")
+              warn("version.rb (#{version}) must be greater than the latest released version for series #{series}. Latest for series: #{target}.")
+              warn("Tip: bump PATCH for a stable branch release, or bump MINOR/MAJOR when on trunk.")
+              abort("Aborting: version bump required.")
+            end
+          else
+            puts "Could not determine latest released version from RubyGems (offline?). Proceeding without sanity check."
+          end
+        rescue StandardError => e
+          warn("Warning: failed to check RubyGems for latest version (#{e.class}: #{e.message}). Proceeding.")
+        end
+
+        puts "Have you updated lib/**/version.rb and CHANGELOG.md for v#{version}? [y/N]"
+        print("> ")
+        ans = $stdin.gets&.strip
+        abort("Aborted: please update version.rb and CHANGELOG.md, then re-run.") unless ans&.downcase&.start_with?("y")
+
+        run_cmd!("bin/setup")
+        run_cmd!("bin/rake")
+
+        appraisals_path = File.join(@root, "Appraisals")
+        if File.file?(appraisals_path)
+          puts "Appraisals detected at #{appraisals_path}. Running: bin/rake appraisal:update"
+          run_cmd!("bin/rake appraisal:update")
+        else
+          puts "No Appraisals file found; skipping appraisal:update"
+        end
+
+        ensure_git_user!
+        committed = commit_release_prep!(version)
+
+        maybe_run_local_ci_before_push!(committed)
+
+        trunk = detect_trunk_branch
+        feature = current_branch
+        puts "Trunk branch detected: #{trunk}"
+        ensure_trunk_synced_before_push!(trunk, feature)
+
+        push!
+
+        monitor_workflows_after_push!
+
+        merge_feature_into_trunk_and_push!(trunk, feature)
+
+        checkout!(trunk)
+        pull!(trunk)
+
+        ensure_signing_setup_or_skip!
+        puts "Running build (you may be prompted for the signing key password)..."
+        run_cmd!("bundle exec rake build")
+
+        run_cmd!("bin/gem_checksums")
+        validate_checksums!(version, stage: "after build + gem_checksums")
+
+        puts "Running release (you may be prompted for signing key password and RubyGems MFA OTP)..."
+        run_cmd!("bundle exec rake release")
+        validate_checksums!(version, stage: "after release")
+
+        puts "\nRelease complete. Don't forget to push the checksums commit if needed."
+      end
 
       private
 
-      # Monitor GitHub Actions workflows discovered by ci:act logic.
-      # Checks one workflow per second in a round-robin loop until all pass, or any fails.
       def monitor_workflows_after_push!
         root = Kettle::Dev::CIHelpers.project_root
         workflows = Kettle::Dev::CIHelpers.workflows_list(root)
@@ -38,7 +124,6 @@ module Kettle
         branch = Kettle::Dev::CIHelpers.current_branch
         abort("Could not determine current branch for CI checks.") unless branch
 
-        # Prefer an explicit GitHub remote if available; fall back to origin repo_info
         gh_remote = preferred_github_remote
         gh_owner = nil
         gh_repo = nil
@@ -57,7 +142,9 @@ module Kettle
           passed = {}
           idx = 0
           puts "Ensuring GitHub Actions workflows pass on #{branch} (#{gh_owner}/#{gh_repo}) via remote '#{gh_remote}'"
-          pbar = ProgressBar.create(title: "CI", total: total, format: "%t %b %c/%C", length: 30)
+          pbar = if defined?(ProgressBar)
+            ProgressBar.create(title: "CI", total: total, format: "%t %b %c/%C", length: 30)
+          end
 
           loop do
             wf = workflows[idx]
@@ -66,7 +153,7 @@ module Kettle
               if Kettle::Dev::CIHelpers.success?(run)
                 unless passed[wf]
                   passed[wf] = true
-                  pbar.increment
+                  pbar&.increment
                 end
               elsif Kettle::Dev::CIHelpers.failed?(run)
                 puts
@@ -78,23 +165,24 @@ module Kettle
             idx = (idx + 1) % total
             sleep(1)
           end
-          pbar.finish unless pbar.finished?
+          pbar&.finish unless pbar&.finished?
           puts "\nAll GitHub workflows passing (#{passed.size}/#{total})."
         end
 
-        # Additionally, check GitLab if configured
         gl_remote = gitlab_remote_candidates.first
         if gitlab_ci && gl_remote
           owner, repo = Kettle::Dev::CIHelpers.repo_info_gitlab
           if owner && repo
             checks_any = true
             puts "Ensuring GitLab pipeline passes on #{branch} (#{owner}/#{repo}) via remote '#{gl_remote}'"
-            pbar = ProgressBar.create(title: "CI", total: 1, format: "%t %b %c/%C", length: 30)
+            pbar = if defined?(ProgressBar)
+              ProgressBar.create(title: "CI", total: 1, format: "%t %b %c/%C", length: 30)
+            end
             loop do
               pipe = Kettle::Dev::CIHelpers.gitlab_latest_pipeline(owner: owner, repo: repo, branch: branch)
               if pipe
                 if Kettle::Dev::CIHelpers.gitlab_success?(pipe)
-                  pbar.increment unless pbar.finished?
+                  pbar&.increment unless pbar&.finished?
                   break
                 elsif Kettle::Dev::CIHelpers.gitlab_failed?(pipe)
                   puts
@@ -104,7 +192,7 @@ module Kettle
               end
               sleep(1)
             end
-            pbar.finish unless pbar.finished?
+            pbar&.finish unless pbar&.finished?
             puts "\nGitLab pipeline passing."
           end
         end
@@ -114,7 +202,6 @@ module Kettle
 
       def run_cmd!(cmd)
         puts "$ #{cmd}"
-        # Execute commands with the current environment
         success = system(ENV, cmd)
         abort("Command failed: #{cmd}") unless success
       end
@@ -122,11 +209,6 @@ module Kettle
       def git_output(args)
         out, status = Open3.capture2("git", *args)
         [out.strip, status.success?]
-      end
-
-      def check_git_clean!
-        out, ok = git_output(["status", "--porcelain"])
-        abort("Git working tree is not clean. Commit/stash changes before releasing.\n\n#{out}") unless ok && out.empty?
       end
 
       def ensure_git_user!
@@ -148,15 +230,6 @@ module Kettle
         end
       end
 
-      # Run a local CI workflow using 'act' before pushing the release prep commit, if enabled.
-      # Controlled by env var K_RELEASE_LOCAL_CI:
-      #   - "true" => run without prompt
-      #   - "ask"  => prompt user [Y/n]
-      #   - anything else or unset => skip
-      # Workflow selection:
-      #   - If .github/workflows/locked_deps.yml (or .yaml) exists, default to it.
-      #   - Else, use the first workflow from CIHelpers.workflows_list unless K_RELEASE_LOCAL_CI_WORKFLOW points to another file.
-      # On failure, soft reset the last commit if one was created, then abort.
       def maybe_run_local_ci_before_push!(committed)
         mode = (ENV["K_RELEASE_LOCAL_CI"] || "").strip.downcase
         run_it = case mode
@@ -170,7 +243,6 @@ module Kettle
         end
         return unless run_it
 
-        # Check for 'act'
         act_ok = begin
           system("act", "--version", out: File::NULL, err: File::NULL)
         rescue StandardError
@@ -185,15 +257,10 @@ module Kettle
         workflows_dir = File.join(root, ".github", "workflows")
         candidates = Kettle::Dev::CIHelpers.workflows_list(root)
 
-        # Explicit override via env
         chosen = (ENV["K_RELEASE_LOCAL_CI_WORKFLOW"] || "").strip
         if !chosen.empty?
-          # Normalize to a basename with extension
-          if chosen !~ /\.ya?ml\z/
-            chosen = "#{chosen}.yml"
-          end
+          chosen = "#{chosen}.yml" unless chosen =~ /\.ya?ml\z/
         else
-          # Default to locked_deps if present
           chosen = if candidates.include?("locked_deps.yml")
             "locked_deps.yml"
           elsif candidates.include?("locked_deps.yaml")
@@ -229,7 +296,6 @@ module Kettle
       end
 
       def detect_version
-        # Look for lib/**/version.rb and extract VERSION constant string
         candidates = Dir[File.join(@root, "lib", "**", "version.rb")]
         abort("Could not find version.rb under lib/**.") if candidates.empty?
         versions = candidates.map do |path|
@@ -240,12 +306,10 @@ module Kettle
         end.compact
         abort("VERSION constant not found in #{@root}/lib/**/version.rb") if versions.none?
         abort("Multiple VERSION constants found to be out of sync (#{versions.inspect}) in #{@root}/lib/**/version.rb") unless versions.uniq.length == 1
-
         versions.first
       end
 
       def detect_gem_name
-        # Find a .gemspec in project root and extract spec.name
         gemspecs = Dir[File.join(@root, "*.gemspec")]
         abort("Could not find a .gemspec in project root.") if gemspecs.empty?
         path = gemspecs.min
@@ -255,14 +319,12 @@ module Kettle
         m[2]
       end
 
-      # Returns [latest_overall, latest_for_series] as strings (or nils)
       def latest_released_versions(gem_name, current_version)
         uri = URI("https://rubygems.org/api/v1/versions/#{gem_name}.json")
         res = Net::HTTP.get_response(uri)
         return [nil, nil] unless res.is_a?(Net::HTTPSuccess)
         data = JSON.parse(res.body)
         versions = data.map { |h| h["number"] }.compact
-        # Drop pre-releases if API indicates; fall back to simple filter by '-' pattern
         versions.reject! { |v| v.to_s.include?("-pre") || v.to_s.include?(".pre") || v.to_s =~ /[a-zA-Z]/ }
         gversions = versions.map { |s| Gem::Version.new(s) }.sort
         latest_overall = gversions.last&.to_s
@@ -278,7 +340,6 @@ module Kettle
 
       def commit_release_prep!(version)
         msg = "🔖 Prepare release v#{version}"
-        # Only commit if there are changes (version/changelog)
         out, _ = git_output(["status", "--porcelain"])
         if out.empty?
           puts "No changes to commit for release prep (continuing)."
@@ -303,7 +364,6 @@ module Kettle
           return
         end
 
-        # Build the list of remotes to push to
         remotes = []
         remotes << "origin" if has_remote?("origin")
         remotes |= github_remote_candidates
@@ -312,7 +372,6 @@ module Kettle
         remotes.uniq!
 
         if remotes.empty?
-          # Fallback to default behavior if we couldn't detect any remotes
           puts "$ git push #{branch}"
           success = system("git push #{Shellwords.escape(branch)}")
           unless success
@@ -367,7 +426,6 @@ module Kettle
             name = Regexp.last_match(1)
             url = Regexp.last_match(2)
             kind = Regexp.last_match(3)
-            # prefer fetch URL when available
             urls[name] = url if kind == "fetch" || !urls.key?(name)
           end
         end
@@ -393,7 +451,6 @@ module Kettle
       def preferred_github_remote
         cands = github_remote_candidates
         return if cands.empty?
-        # Prefer a remote literally named 'github', otherwise the first
         cands.find { |n| n == "github" } || cands.first
       end
 
@@ -427,7 +484,6 @@ module Kettle
       end
 
       def trunk_behind_remote?(trunk, remote)
-        # If the remote branch doesn't exist, treat as not behind
         return false unless remote_branch_exists?(remote, trunk)
         _ahead, behind = ahead_behind_counts(trunk, "#{remote}/#{trunk}")
         behind.positive?
@@ -453,7 +509,6 @@ module Kettle
           return
         end
 
-        # Ensure local trunk is in sync with origin/trunk
         run_cmd!("git fetch origin #{Shellwords.escape(trunk)}")
         if trunk_behind_remote?(trunk, "origin")
           puts "Local #{trunk} is behind origin/#{trunk}. Rebasing..."
@@ -467,13 +522,11 @@ module Kettle
           puts "Local #{trunk} is up to date with origin/#{trunk}."
         end
 
-        # If there is a GitHub remote that is not origin, ensure origin/#{trunk} incorporates it
         gh_remote = preferred_github_remote
         if gh_remote && gh_remote != "origin"
           puts "GitHub remote detected: #{gh_remote}. Fetching #{trunk}..."
           run_cmd!("git fetch #{gh_remote} #{Shellwords.escape(trunk)}")
 
-          # Compare origin/trunk vs github/trunk to see if they differ
           left, right = ahead_behind_counts("origin/#{trunk}", "#{gh_remote}/#{trunk}")
           if left.zero? && right.zero?
             puts "origin/#{trunk} and #{gh_remote}/#{trunk} are already in sync."
@@ -484,7 +537,6 @@ module Kettle
           run_cmd!("git pull --rebase origin #{Shellwords.escape(trunk)}")
 
           if left.positive? && right.positive?
-            # Histories have diverged -> let user choose
             puts "origin/#{trunk} and #{gh_remote}/#{trunk} have diverged (#{left} ahead of GH, #{right} behind GH)."
             puts "Choose how to reconcile:"
             puts "  [r] Rebase local/#{trunk} on top of #{gh_remote}/#{trunk} (push to origin)"
@@ -506,13 +558,10 @@ module Kettle
               abort("Aborted by user. Please reconcile trunks and re-run.")
             end
           elsif right.positive? && left.zero?
-            # One side can be fast-forwarded
             puts "Fast-forwarding #{trunk} to include #{gh_remote}/#{trunk}..."
             run_cmd!("git merge --ff-only #{Shellwords.escape("#{gh_remote}/#{trunk}")}")
             run_cmd!("git push origin #{Shellwords.escape(trunk)}")
-          # origin is behind GH -> fast-forward merge
           elsif left.positive? && right.zero?
-            # origin ahead of GH -> nothing required for origin, optionally inform user
             puts "origin/#{trunk} is ahead of #{gh_remote}/#{trunk}; no action required before push."
           end
         end
@@ -544,11 +593,6 @@ module Kettle
         puts "When prompted during build/release, enter the PEM password for ~/.ssh/gem-private_key.pem"
       end
 
-      # --- Checksum validation ---
-      # Validate that the sha256 of the built gem in pkg/ matches the recorded
-      # checksum stored under checksums/<gem>.gem.sha256. Abort with guidance if not.
-      # @param version [String]
-      # @param stage [String] human-readable context (e.g., "after release")
       def validate_checksums!(version, stage: "")
         gem_path = gem_file_for_version(version)
         unless gem_path && File.file?(gem_path)
@@ -575,7 +619,6 @@ module Kettle
         end
       end
 
-      # Find the gem file in pkg/ that matches the given version
       def gem_file_for_version(version)
         pkg = File.join(@root, "pkg")
         pattern = File.join(pkg, "*.gem")
@@ -583,8 +626,6 @@ module Kettle
         gems.sort.last
       end
 
-      # Compute sha256 using system utilities (sha256sum or shasum -a 256),
-      # falling back to Ruby Digest if neither is available.
       def compute_sha256(path)
         if system("which sha256sum > /dev/null 2>&1")
           out, _ = Open3.capture2e("sha256sum", path)
@@ -599,97 +640,4 @@ module Kettle
       end
     end
   end
-end
-
-# Always execute when this file is loaded (e.g., via a Bundler binstub).
-# Do not guard with __FILE__ == $PROGRAM_NAME because binstubs use Kernel.load.
-if ARGV.include?("-h") || ARGV.include?("--help")
-  puts <<~USAGE
-    Usage: kettle-release
-
-    Automates the release flow for a Ruby gem in the host project:
-      - Runs bin/setup and bin/rake sanity checks
-      - Prompts to confirm version and changelog updates
-      - Commits a release prep change
-      - Ensures trunk is up-to-date, pushes branch, and monitors CI (GitHub/GitLab)
-      - Merges feature into trunk upon CI success
-      - Builds, records checksums, and releases (requires Bundler >= 2.7.0)
-
-    Environment:
-      SKIP_GEM_SIGNING=true        # skip gem signing during build/release
-      GEM_CERT_USER=<user>         # selects certs/<user>.pem for signing
-      GITHUB_TOKEN / GH_TOKEN      # optional, to query GitHub Actions
-      GITLAB_TOKEN / GL_TOKEN      # optional, to query GitLab pipelines
-      DEBUG=true                   # print backtraces on errors
-  USAGE
-  exit 0
-end
-
-begin
-  Kettle::Dev::ReleaseCLI.new.run
-rescue LoadError => e
-  warn("kettle-release: could not load dependency: #{e.message}")
-  warn(e.backtrace.join("\n")) if ENV["DEBUG"]
-  exit(1)
-rescue SystemExit => e
-  # Preserve exit status, but ensure at least a newline so shells don't show an empty line only.
-  warn("kettle-release exited (status=#{e.status})") if e.status != 0
-  raise
-rescue StandardError => e
-  warn("kettle-release: unexpected error: #{e.class}: #{e.message}")
-  warn(e.backtrace.join("\n"))
-  exit(1)
-end
-
-#!/usr/bin/env ruby
-# frozen_string_literal: true
-
-# vim: set syntax=ruby
-
-$stdout.sync = true
-require "bundler/setup"
-
-begin
-  require "kettle/dev/release_cli"
-rescue LoadError => e
-  warn("kettle-release: failed to load kettle/dev/release_cli: #{e.message}")
-  warn("Hint: Ensure the host project includes kettle-dev and run bundle install.")
-  exit(1)
-end
-
-if ARGV.include?("-h") || ARGV.include?("--help")
-  puts <<~USAGE
-    Usage: kettle-release
-
-    Automates the release flow for a Ruby gem in the host project:
-      - Runs bin/setup and bin/rake sanity checks
-      - Prompts to confirm version and changelog updates
-      - Commits a release prep change
-      - Ensures trunk is up-to-date, pushes branch, and monitors CI (GitHub/GitLab)
-      - Merges feature into trunk upon CI success
-      - Builds, records checksums, and releases (requires Bundler >= 2.7.0)
-
-    Environment:
-      SKIP_GEM_SIGNING=true        # skip gem signing during build/release
-      GEM_CERT_USER=<user>         # selects certs/<user>.pem for signing
-      GITHUB_TOKEN / GH_TOKEN      # optional, to query GitHub Actions
-      GITLAB_TOKEN / GL_TOKEN      # optional, to query GitLab pipelines
-      DEBUG=true                   # print backtraces on errors
-  USAGE
-  exit 0
-end
-
-begin
-  Kettle::Dev::ReleaseCLI.new.run
-rescue LoadError => e
-  warn("kettle-release: could not load dependency: #{e.message}")
-  warn(e.backtrace.join("\n")) if ENV["DEBUG"]
-  exit(1)
-rescue SystemExit => e
-  warn("kettle-release exited (status=#{e.status})") if e.status != 0
-  raise
-rescue StandardError => e
-  warn("kettle-release: unexpected error: #{e.class}: #{e.message}")
-  warn(e.backtrace.join("\n"))
-  exit(1)
 end
