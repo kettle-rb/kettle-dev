@@ -35,12 +35,14 @@ module Kettle
           # 2) .github/**/*.yml with FUNDING.yml customizations
           source_github_dir = File.join(gem_checkout_root, ".github")
           if Dir.exist?(source_github_dir)
-            Dir.glob(File.join(source_github_dir, "**", "*.yml")).each do |orig_src|
+            files = Dir.glob(File.join(source_github_dir, "**", "*.yml")) +
+              Dir.glob(File.join(source_github_dir, "**", "*.yml.example"))
+            files.uniq.each do |orig_src|
               src = helpers.prefer_example(orig_src)
               # Destination path should never include the .example suffix.
-              rel = orig_src.sub(/^#{Regexp.escape(gem_checkout_root)}\/?/, "")
+              rel = orig_src.sub(/^#{Regexp.escape(gem_checkout_root)}\/?/, "").sub(/\.example\z/, "")
               dest = File.join(project_root, rel)
-              if File.basename(src).sub(/\.example\z/, "") == "FUNDING.yml"
+              if File.basename(rel) == "FUNDING.yml"
                 helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true) do |content|
                   c = content.dup
                   c = c.gsub(/^open_collective:\s+.*$/i) { |line| gh_org ? "open_collective: #{gh_org}" : line }

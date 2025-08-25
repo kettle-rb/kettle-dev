@@ -51,6 +51,12 @@ To run all tests
 bundle exec rake test
 ```
 
+### Spec organization (required)
+
+- For each class or module under `lib/`, keep all of its unit tests in a single spec file under `spec/` that mirrors the path and file name (e.g., specs for `lib/kettle/dev/release_cli.rb` live in `spec/kettle/dev/release_cli_spec.rb`).
+- Do not create ad-hoc "_more" or split spec files for the same class/module. Consolidate all unit tests into the main spec file for that class/module.
+- Only integration scenarios that intentionally span multiple classes belong in `spec/integration/`.
+
 ## Lint It
 
 Run all the default tasks, which includes running the gradually autocorrecting linter, `rubocop-gradual`.

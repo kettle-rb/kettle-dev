@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# External RSpec & related config
+require "kettle/test/rspec"
+
 # Config for development dependencies of this library
 # i.e., not configured by this library
 #
@@ -17,8 +20,7 @@ end
 # this library
 require "kettle-dev"
 
-# RSpec & related config
-require "kettle/test/rspec"
+# Internal RSpec & related config
 require_relative "support/shared_contexts/with_rake"
 
 # Global input machine to prevent blocking prompts during tests
@@ -62,6 +64,19 @@ RSpec.configure do |config|
   end
 
   config.after(:suite) do
-    $stdin = $original_stdin if defined?($original_stdin) && $original_stdin
+    # Always restore the real STDIN at the end of the suite, even if $original_stdin was overwritten
+    $stdin = ((defined?($original_stdin) && $original_stdin) ? $original_stdin : STDIN)
+    $original_stdin = nil
   end
+end
+
+RSpec.configure do |config|
+  # Enable flags like --only-failures and --next-failure
+  # Use an absolute path to avoid issues when specs change CWD during the run
+  begin
+    root = Kettle::Dev::TemplateHelpers.project_root
+  rescue StandardError
+    root = Dir.pwd
+  end
+  config.example_status_persistence_file_path = File.join(root.to_s, ".rspec_status")
 end

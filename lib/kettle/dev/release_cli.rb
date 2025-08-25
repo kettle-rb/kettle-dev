@@ -99,7 +99,7 @@ module Kettle
         # Strong reminder for local runs: skip signing when testing a release flow
         unless ENV.key?("SKIP_GEM_SIGNING")
           puts "TIP: For local dry-runs or testing the release workflow, set SKIP_GEM_SIGNING=true to avoid PEM password prompts."
-          unless ENV.fetch("CI", "false").casecmp("true").zero?
+          if ENV.fetch("CI", "false").casecmp("true").nonzero?
             print("Proceed with signing enabled? This may hang waiting for a PEM password. [y/N]: ")
             ans = $stdin.gets&.strip
             unless ans&.downcase&.start_with?("y")
@@ -466,7 +466,11 @@ module Kettle
       def preferred_github_remote
         cands = github_remote_candidates
         return if cands.empty?
-        cands.find { |n| n == "github" } || cands.first
+        # Prefer explicitly named GitHub remotes first, then origin (only if it points to GitHub), else the first candidate
+        explicit = cands.find { |n| n == "github" } || cands.find { |n| n == "gh" }
+        return explicit if explicit
+        return "origin" if cands.include?("origin")
+        cands.first
       end
 
       def parse_github_owner_repo(url)

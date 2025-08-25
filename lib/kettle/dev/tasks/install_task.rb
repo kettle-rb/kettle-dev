@@ -55,7 +55,7 @@ module Kettle
               puts "   Your .envrc already contains PATH_add bin."
             else
               puts "   Adding PATH_add bin to your project's .envrc is recommended to expose ./bin on PATH."
-              if helpers.ask("Add PATH_add bin to #{envrc_path}?", true)
+              if helpers.ask("Add PATH_add bin to #{envrc_path}?", false)
                 content = current.dup
                 insertion = "# Run any command in this project's bin/ without the bin/ prefix\nPATH_add bin\n"
                 if content.empty?
@@ -63,6 +63,8 @@ module Kettle
                 else
                   content = insertion + "\n" + content unless content.start_with?(insertion)
                 end
+                # Ensure a stale directory at .envrc is removed so the file can be written
+                FileUtils.rm_rf(envrc_path) if File.directory?(envrc_path)
                 File.open(envrc_path, "w") { |f| f.write(content) }
                 puts "   Updated #{envrc_path} with PATH_add bin"
                 updated_envrc_by_install = true
@@ -221,8 +223,11 @@ module Kettle
           end
 
           if defined?(updated_envrc_by_install) && updated_envrc_by_install
-            if ENV.fetch("allowed", "").to_s =~ /\A(1|true|y|yes)\z/i
-              puts "Proceeding after .envrc update because allowed=true."
+            allowed_truthy = ENV.fetch("allowed", "").to_s =~ /\A(1|true|y|yes)\z/i
+            force_truthy = ENV.fetch("force", "").to_s =~ /\A(1|true|y|yes)\z/i
+            if allowed_truthy || force_truthy
+              reason = allowed_truthy ? "allowed=true" : "force=true"
+              puts "Proceeding after .envrc update because #{reason}."
             else
               puts
               puts "IMPORTANT: .envrc was updated during kettle:dev:install."
