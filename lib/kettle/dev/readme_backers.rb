@@ -16,7 +16,20 @@ module Kettle
       README_OSC_TAG_DEFAULT = "OPENCOLLECTIVE"
       COMMIT_SUBJECT_DEFAULT = "💸 Thanks 🙏 to our new backers 🎒 and subscribers 📜"
 
-      Backer = Struct.new(:name, :image, :website, :profile, keyword_init: true)
+      # Ruby 2.3 compatibility: Struct keyword_init added in Ruby 2.5
+      # Switch to struct when dropping ruby < 2.5
+      # Backer = Struct.new(:name, :image, :website, :profile, keyword_init: true)
+      # Fallback for Ruby < 2.5 where Struct keyword_init is unsupported
+      class Backer
+        attr_accessor :name, :image, :website, :profile
+
+        def initialize(name: nil, image: nil, website: nil, profile: nil, **_ignored)
+          @name = name
+          @image = image
+          @website = website
+          @profile = profile
+        end
+      end
 
       def initialize(handle: nil, readme_path: README_PATH)
         @handle = handle || resolve_handle
