@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  Class: Kettle::Dev::ReadmeBackers
+  
+    &mdash; Documentation by YARD 0.9.37
+  
+</title>
+
+  <link rel="stylesheet" href="../../css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="../../css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "Kettle::Dev::ReadmeBackers";
+  relpath = '../../';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="../../class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="../../_index.html">Index (R)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span> &raquo; <span class='title'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span>
+     &raquo; 
+    <span class="title">ReadmeBackers</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../../class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><h1>Class: Kettle::Dev::ReadmeBackers
+  
+  
+  
+</h1>
+<div class="box_info">
+  
+  <dl>
+    <dt>Inherits:</dt>
+    <dd>
+      <span class="inheritName">Object</span>
+      
+        <ul class="fullTree">
+          <li>Object</li>
+          
+            <li class="next">Kettle::Dev::ReadmeBackers</li>
+          
+        </ul>
+        <a href="#" class="inheritanceTree">show all</a>
+      
+    </dd>
+  </dl>
+  
+
+  
+  
+  
+  
+  
+
+  
+
+  
+  <dl>
+    <dt>Defined in:</dt>
+    <dd>lib/kettle/dev/readme_backers.rb</dd>
+  </dl>
+  
+</div>
+
+<h2>Defined Under Namespace</h2>
+<p class="children">
+  
+    
+  
+    
+      <strong class="classes">Classes:</strong> <span class='object_link'><a href="ReadmeBackers/Backer.html" title="Kettle::Dev::ReadmeBackers::Backer (class)">Backer</a></span>
+    
+  
+</p>
+
+  
+    <h2>
+      Constant Summary
+      <small><a href="#" class="constants_summary_toggle">collapse</a></small>
+    </h2>
+
+    <dl class="constants">
+      
+        <dt id="DEFAULT_AVATAR-constant" class="">DEFAULT_AVATAR =
+          
+        </dt>
+        <dd><pre class="code"><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>https://opencollective.com/static/images/default-avatar.png</span><span class='tstring_end'>&quot;</span></span></pre></dd>
+      
+        <dt id="README_PATH-constant" class="">README_PATH =
+          
+        </dt>
+        <dd><pre class="code"><span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_expand_path'>expand_path</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>../../../../README.md</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid___dir__'>__dir__</span><span class='rparen'>)</span></pre></dd>
+      
+        <dt id="OC_YML_PATH-constant" class="">OC_YML_PATH =
+          
+        </dt>
+        <dd><pre class="code"><span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_expand_path'>expand_path</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>../../../../.opencollective.yml</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid___dir__'>__dir__</span><span class='rparen'>)</span></pre></dd>
+      
+        <dt id="README_OSC_TAG_DEFAULT-constant" class="">README_OSC_TAG_DEFAULT =
+          
+        </dt>
+        <dd><pre class="code"><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>OPENCOLLECTIVE</span><span class='tstring_end'>&quot;</span></span></pre></dd>
+      
+        <dt id="COMMIT_SUBJECT_DEFAULT-constant" class="">COMMIT_SUBJECT_DEFAULT =
+          
+        </dt>
+        <dd><pre class="code"><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>💸 Thanks 🙏 to our new backers 🎒 and subscribers 📜</span><span class='tstring_end'>&quot;</span></span></pre></dd>
+      
+    </dl>
+  
+
+
+
+
+
+
+
+  
+    <h2>
+      Instance Method Summary
+      <small><a href="#" class="summary_toggle">collapse</a></small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#initialize-instance_method" title="#initialize (instance method)">#<strong>initialize</strong>(handle: nil, readme_path: README_PATH)  &#x21d2; ReadmeBackers </a>
+    
+
+    
+  </span>
+  
+  
+    <span class="note title constructor">constructor</span>
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>A new instance of ReadmeBackers.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#run!-instance_method" title="#run! (instance method)">#<strong>run!</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+<div id="constructor_details" class="method_details_list">
+  <h2>Constructor Details</h2>
+  
+    <div class="method_details first">
+  <h3 class="signature first" id="initialize-instance_method">
+  
+    #<strong>initialize</strong>(handle: nil, readme_path: README_PATH)  &#x21d2; <tt><span class='object_link'><a href="" title="Kettle::Dev::ReadmeBackers (class)">ReadmeBackers</a></span></tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Returns a new instance of ReadmeBackers.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+43
+44
+45
+46</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/readme_backers.rb', line 43</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='label'>handle:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>readme_path:</span> <span class='const'><span class='object_link'><a href="#README_PATH-constant" title="Kettle::Dev::ReadmeBackers::README_PATH (constant)">README_PATH</a></span></span><span class='rparen'>)</span>
+  <span class='ivar'>@handle</span> <span class='op'>=</span> <span class='id identifier rubyid_handle'>handle</span> <span class='op'>||</span> <span class='id identifier rubyid_resolve_handle'>resolve_handle</span>
+  <span class='ivar'>@readme_path</span> <span class='op'>=</span> <span class='id identifier rubyid_readme_path'>readme_path</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+  
+</div>
+
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="run!-instance_method">
+  
+    #<strong>run!</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/readme_backers.rb', line 48</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_run!'>run!</span>
+  <span class='id identifier rubyid_readme'>readme</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='lparen'>(</span><span class='ivar'>@readme_path</span><span class='rparen'>)</span>
+
+  <span class='comment'># Identify previous entries for diffing/mentions
+</span>  <span class='id identifier rubyid_b_start'>b_start</span><span class='comma'>,</span> <span class='id identifier rubyid_b_end'>b_end</span> <span class='op'>=</span> <span class='id identifier rubyid_detect_backer_tags'>detect_backer_tags</span><span class='lparen'>(</span><span class='id identifier rubyid_readme'>readme</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_prev_backer_identities'>prev_backer_identities</span> <span class='op'>=</span> <span class='id identifier rubyid_extract_section_identities'>extract_section_identities</span><span class='lparen'>(</span><span class='id identifier rubyid_readme'>readme</span><span class='comma'>,</span> <span class='id identifier rubyid_b_start'>b_start</span><span class='comma'>,</span> <span class='id identifier rubyid_b_end'>b_end</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_s_start_prev'>s_start_prev</span><span class='comma'>,</span> <span class='id identifier rubyid_s_end_prev'>s_end_prev</span> <span class='op'>=</span> <span class='id identifier rubyid_detect_sponsor_tags'>detect_sponsor_tags</span><span class='lparen'>(</span><span class='id identifier rubyid_readme'>readme</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_prev_sponsor_identities'>prev_sponsor_identities</span> <span class='op'>=</span> <span class='id identifier rubyid_extract_section_identities'>extract_section_identities</span><span class='lparen'>(</span><span class='id identifier rubyid_readme'>readme</span><span class='comma'>,</span> <span class='id identifier rubyid_s_start_prev'>s_start_prev</span><span class='comma'>,</span> <span class='id identifier rubyid_s_end_prev'>s_end_prev</span><span class='rparen'>)</span>
+
+  <span class='comment'># Backers (individuals)
+</span>  <span class='id identifier rubyid_backers'>backers</span> <span class='op'>=</span> <span class='id identifier rubyid_fetch_members'>fetch_members</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>backers.json</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_backers_md'>backers_md</span> <span class='op'>=</span> <span class='id identifier rubyid_generate_markdown'>generate_markdown</span><span class='lparen'>(</span><span class='id identifier rubyid_backers'>backers</span><span class='comma'>,</span> <span class='label'>empty_message:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>No backers yet. Be the first!</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='label'>default_name:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Backer</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_updated'>updated</span> <span class='op'>=</span> <span class='id identifier rubyid_replace_between_tags'>replace_between_tags</span><span class='lparen'>(</span><span class='id identifier rubyid_readme'>readme</span><span class='comma'>,</span> <span class='id identifier rubyid_b_start'>b_start</span><span class='comma'>,</span> <span class='id identifier rubyid_b_end'>b_end</span><span class='comma'>,</span> <span class='id identifier rubyid_backers_md'>backers_md</span><span class='rparen'>)</span>
+  <span class='kw'>case</span> <span class='id identifier rubyid_updated'>updated</span>
+  <span class='kw'>when</span> <span class='symbol'>:not_found</span>
+    <span class='id identifier rubyid_updated_readme'>updated_readme</span> <span class='op'>=</span> <span class='id identifier rubyid_readme'>readme</span>
+    <span class='id identifier rubyid_backers_changed'>backers_changed</span> <span class='op'>=</span> <span class='kw'>false</span>
+    <span class='id identifier rubyid_new_backers'>new_backers</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+  <span class='kw'>when</span> <span class='symbol'>:no_change</span>
+    <span class='id identifier rubyid_updated_readme'>updated_readme</span> <span class='op'>=</span> <span class='id identifier rubyid_readme'>readme</span>
+    <span class='id identifier rubyid_backers_changed'>backers_changed</span> <span class='op'>=</span> <span class='kw'>false</span>
+    <span class='id identifier rubyid_new_backers'>new_backers</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_updated_readme'>updated_readme</span> <span class='op'>=</span> <span class='id identifier rubyid_updated'>updated</span>
+    <span class='id identifier rubyid_backers_changed'>backers_changed</span> <span class='op'>=</span> <span class='kw'>true</span>
+    <span class='id identifier rubyid_new_backers'>new_backers</span> <span class='op'>=</span> <span class='id identifier rubyid_compute_new_members'>compute_new_members</span><span class='lparen'>(</span><span class='id identifier rubyid_prev_backer_identities'>prev_backer_identities</span><span class='comma'>,</span> <span class='id identifier rubyid_backers'>backers</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Sponsors (organizations)
+</span>  <span class='id identifier rubyid_sponsors'>sponsors</span> <span class='op'>=</span> <span class='id identifier rubyid_fetch_members'>fetch_members</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>sponsors.json</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_sponsors_md'>sponsors_md</span> <span class='op'>=</span> <span class='id identifier rubyid_generate_markdown'>generate_markdown</span><span class='lparen'>(</span><span class='id identifier rubyid_sponsors'>sponsors</span><span class='comma'>,</span> <span class='label'>empty_message:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>No sponsors yet. Be the first!</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='label'>default_name:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Sponsor</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_s_start'>s_start</span><span class='comma'>,</span> <span class='id identifier rubyid_s_end'>s_end</span> <span class='op'>=</span> <span class='id identifier rubyid_detect_sponsor_tags'>detect_sponsor_tags</span><span class='lparen'>(</span><span class='id identifier rubyid_updated_readme'>updated_readme</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_updated2'>updated2</span> <span class='op'>=</span> <span class='id identifier rubyid_replace_between_tags'>replace_between_tags</span><span class='lparen'>(</span><span class='id identifier rubyid_updated_readme'>updated_readme</span><span class='comma'>,</span> <span class='id identifier rubyid_s_start'>s_start</span><span class='comma'>,</span> <span class='id identifier rubyid_s_end'>s_end</span><span class='comma'>,</span> <span class='id identifier rubyid_sponsors_md'>sponsors_md</span><span class='rparen'>)</span>
+  <span class='kw'>case</span> <span class='id identifier rubyid_updated2'>updated2</span>
+  <span class='kw'>when</span> <span class='symbol'>:not_found</span>
+    <span class='id identifier rubyid_sponsors_changed'>sponsors_changed</span> <span class='op'>=</span> <span class='kw'>false</span>
+    <span class='id identifier rubyid_final'>final</span> <span class='op'>=</span> <span class='id identifier rubyid_updated_readme'>updated_readme</span>
+    <span class='id identifier rubyid_new_sponsors'>new_sponsors</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+  <span class='kw'>when</span> <span class='symbol'>:no_change</span>
+    <span class='id identifier rubyid_sponsors_changed'>sponsors_changed</span> <span class='op'>=</span> <span class='kw'>false</span>
+    <span class='id identifier rubyid_final'>final</span> <span class='op'>=</span> <span class='id identifier rubyid_updated_readme'>updated_readme</span>
+    <span class='id identifier rubyid_new_sponsors'>new_sponsors</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_sponsors_changed'>sponsors_changed</span> <span class='op'>=</span> <span class='kw'>true</span>
+    <span class='id identifier rubyid_final'>final</span> <span class='op'>=</span> <span class='id identifier rubyid_updated2'>updated2</span>
+    <span class='id identifier rubyid_new_sponsors'>new_sponsors</span> <span class='op'>=</span> <span class='id identifier rubyid_compute_new_members'>compute_new_members</span><span class='lparen'>(</span><span class='id identifier rubyid_prev_sponsor_identities'>prev_sponsor_identities</span><span class='comma'>,</span> <span class='id identifier rubyid_sponsors'>sponsors</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='kw'>if</span> <span class='op'>!</span><span class='id identifier rubyid_backers_changed'>backers_changed</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_sponsors_changed'>sponsors_changed</span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_b_start'>b_start</span> <span class='op'>==</span> <span class='symbol'>:not_found</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_s_start'>s_start</span> <span class='op'>==</span> <span class='symbol'>:not_found</span>
+      <span class='id identifier rubyid_ts'>ts</span> <span class='op'>=</span> <span class='id identifier rubyid_tag_strings'>tag_strings</span>
+      <span class='id identifier rubyid_warn'>warn</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>No recognized Open Collective tags found in </span><span class='embexpr_beg'>#{</span><span class='ivar'>@readme_path</span><span class='embexpr_end'>}</span><span class='tstring_content'>. Expected one or more of: </span><span class='tstring_end'>&quot;</span></span> \
+        <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_ts'>ts</span><span class='lbracket'>[</span><span class='symbol'>:generic_start</span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_content'>/</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_ts'>ts</span><span class='lbracket'>[</span><span class='symbol'>:generic_end</span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_content'>, </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_ts'>ts</span><span class='lbracket'>[</span><span class='symbol'>:individuals_start</span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_content'>/</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_ts'>ts</span><span class='lbracket'>[</span><span class='symbol'>:individuals_end</span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_content'>, </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_ts'>ts</span><span class='lbracket'>[</span><span class='symbol'>:orgs_start</span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_content'>/</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_ts'>ts</span><span class='lbracket'>[</span><span class='symbol'>:orgs_end</span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_content'>.</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+      <span class='comment'># Do not exit the process during tests or library use; just return.
+</span>      <span class='kw'>return</span>
+    <span class='kw'>end</span>
+    <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>No changes to backers or sponsors sections in </span><span class='embexpr_beg'>#{</span><span class='ivar'>@readme_path</span><span class='embexpr_end'>}</span><span class='tstring_content'>.</span><span class='tstring_end'>&quot;</span></span>
+    <span class='kw'>return</span>
+  <span class='kw'>end</span>
+
+  <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_write'>write</span><span class='lparen'>(</span><span class='ivar'>@readme_path</span><span class='comma'>,</span> <span class='id identifier rubyid_final'>final</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_msgs'>msgs</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+  <span class='id identifier rubyid_msgs'>msgs</span> <span class='op'>&lt;&lt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>backers</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_backers_changed'>backers_changed</span>
+  <span class='id identifier rubyid_msgs'>msgs</span> <span class='op'>&lt;&lt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>sponsors</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_sponsors_changed'>sponsors_changed</span>
+  <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Updated </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_msgs'>msgs</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'> and </span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'> section</span><span class='embexpr_beg'>#{</span><span class='lbrace'>{</span><span class='kw'>true</span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>s</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='kw'>false</span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rbrace'>}</span><span class='lbracket'>[</span><span class='id identifier rubyid_msgs'>msgs</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span> <span class='op'>&gt;</span> <span class='int'>1</span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_content'> in </span><span class='embexpr_beg'>#{</span><span class='ivar'>@readme_path</span><span class='embexpr_end'>}</span><span class='tstring_content'>.</span><span class='tstring_end'>&quot;</span></span>
+
+  <span class='comment'># Compose and perform commit with mentions if in a git repo
+</span>  <span class='id identifier rubyid_perform_git_commit'>perform_git_commit</span><span class='lparen'>(</span><span class='id identifier rubyid_new_backers'>new_backers</span><span class='comma'>,</span> <span class='id identifier rubyid_new_sponsors'>new_sponsors</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='id identifier rubyid_git_repo?'>git_repo?</span> <span class='op'>&amp;&amp;</span> <span class='lparen'>(</span><span class='id identifier rubyid_backers_changed'>backers_changed</span> <span class='op'>||</span> <span class='id identifier rubyid_sponsors_changed'>sponsors_changed</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+      <div id="footer">
+  Generated on Mon Aug 25 23:52:52 2025 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.37 (ruby-3.4.5).
+</div>
+
+    </div>
+  </body>
+</html>

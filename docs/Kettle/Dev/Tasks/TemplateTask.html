@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  Module: Kettle::Dev::Tasks::TemplateTask
+  
+    &mdash; Documentation by YARD 0.9.37
+  
+</title>
+
+  <link rel="stylesheet" href="../../../css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="../../../css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "Kettle::Dev::Tasks::TemplateTask";
+  relpath = '../../../';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../../../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../../../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="../../../class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="../../../_index.html">Index (T)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../../../Kettle.html" title="Kettle (module)">Kettle</a></span></span> &raquo; <span class='title'><span class='object_link'><a href="../../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span> &raquo; <span class='title'><span class='object_link'><a href="../Tasks.html" title="Kettle::Dev::Tasks (module)">Tasks</a></span></span>
+     &raquo; 
+    <span class="title">TemplateTask</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../../../class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><h1>Module: Kettle::Dev::Tasks::TemplateTask
+  
+  
+  
+</h1>
+<div class="box_info">
+  
+
+  
+  
+  
+  
+  
+
+  
+
+  
+  <dl>
+    <dt>Defined in:</dt>
+    <dd>lib/kettle/dev/tasks/template_task.rb</dd>
+  </dl>
+  
+</div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    <p>Thin wrapper to expose the kettle:dev:template task logic as a callable API<br />
+for testability. The rake task should only call this method.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
+
+
+
+
+
+
+  
+    <h2>
+      Class Method Summary
+      <small><a href="#" class="summary_toggle">collapse</a></small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#run-class_method" title="run (class method)">.<strong>run</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Execute the template operation into the current project.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#task_abort-class_method" title="task_abort (class method)">.<strong>task_abort</strong>(msg)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Abort wrapper that avoids terminating the entire process during specs.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+
+  <div id="class_method_details" class="method_details_list">
+    <h2>Class Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="run-class_method">
+  
+    .<strong>run</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Execute the template operation into the current project.<br />
+All options/IO are controlled via TemplateHelpers and ENV.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390
+391
+392
+393
+394
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404
+405
+406
+407
+408
+409
+410
+411
+412
+413
+414
+415
+416
+417
+418
+419
+420
+421
+422
+423
+424
+425
+426
+427
+428
+429
+430
+431
+432
+433
+434
+435
+436
+437
+438
+439
+440
+441
+442
+443
+444
+445
+446
+447
+448
+449
+450
+451
+452
+453
+454
+455
+456
+457
+458
+459
+460
+461
+462
+463
+464
+465
+466
+467
+468
+469
+470
+471
+472
+473
+474
+475
+476
+477
+478
+479
+480
+481
+482
+483
+484
+485
+486
+487</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/tasks/template_task.rb', line 24</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_run'>run</span>
+  <span class='comment'># Inline the former rake task body, but using helpers directly.
+</span>  <span class='id identifier rubyid_helpers'>helpers</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../TemplateHelpers.html" title="Kettle::Dev::TemplateHelpers (module)">TemplateHelpers</a></span></span>
+
+  <span class='id identifier rubyid_project_root'>project_root</span> <span class='op'>=</span> <span class='id identifier rubyid_helpers'>helpers</span><span class='period'>.</span><span class='id identifier rubyid_project_root'>project_root</span>
+  <span class='id identifier rubyid_gem_checkout_root'>gem_checkout_root</span> <span class='op'>=</span> <span class='id identifier rubyid_helpers'>helpers</span><span class='period'>.</span><span class='id identifier rubyid_gem_checkout_root'>gem_checkout_root</span>
+
+  <span class='comment'># Ensure git working tree is clean before making changes (when run standalone)
+</span>  <span class='id identifier rubyid_helpers'>helpers</span><span class='period'>.</span><span class='id identifier rubyid_ensure_clean_git!'>ensure_clean_git!</span><span class='lparen'>(</span><span class='label'>root:</span> <span class='id identifier rubyid_project_root'>project_root</span><span class='comma'>,</span> <span class='label'>task_label:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>kettle:dev:template</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+
+  <span class='id identifier rubyid_meta'>meta</span> <span class='op'>=</span> <span class='id identifier rubyid_helpers'>helpers</span><span class='period'>.</span><span class='id identifier rubyid_gemspec_metadata'>gemspec_metadata</span><span class='lparen'>(</span><span class='id identifier rubyid_project_root'>project_root</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_gem_name'>gem_name</span> <span class='op'>=</span> <span class='id identifier rubyid_meta'>meta</span><span class='lbracket'>[</span><span class='symbol'>:gem_name</span><span class='rbracket'>]</span>
+  <span class='id identifier rubyid_min_ruby'>min_ruby</span> <span class='op'>=</span> <span class='id identifier rubyid_meta'>meta</span><span class='lbracket'>[</span><span class='symbol'>:min_ruby</span><span class='rbracket'>]</span>
+  <span class='id identifier rubyid_gh_org'>gh_org</span> <span class='op'>=</span> <span class='id identifier rubyid_meta'>meta</span><span class='lbracket'>[</span><span class='symbol'>:gh_org</span><span class='rbracket'>]</span>
+  <span class='id identifier rubyid_entrypoint_require'>entrypoint_require</span> <span class='op'>=</span> <span class='id identifier rubyid_meta'>meta</span><span class='lbracket'>[</span><span class='symbol'>:entrypoint_require</span><span class='rbracket'>]</span>
+  <span class='id identifier rubyid_namespace'>namespace</span> <span class='op'>=</span> <span class='id identifier rubyid_meta'>meta</span><span class='lbracket'>[</span><span class='symbol'>:namespace</span><span class='rbracket'>]</span>
+  <span class='id identifier rubyid_namespace_shield'>namespace_shield</span> <span class='op'>=</span> <span class='id identifier rubyid_meta'>meta</span><span class='lbracket'>[</span><span class='symbol'>:namespace_shield</span><span class='rbracket'>]</span>
+  <span class='id identifier rubyid_gem_shield'>gem_shield</span> <span class='op'>=</span> <span class='id identifier rubyid_meta'>meta</span><span class='lbracket'>[</span><span class='symbol'>:gem_shield</span><span class='rbracket'>]</span>
+
+  <span class='comment'># 1) .devcontainer directory
+</span>  <span class='id identifier rubyid_helpers'>helpers</span><span class='period'>.</span><span class='id identifier rubyid_copy_dir_with_prompt'>copy_dir_with_prompt</span><span class='lparen'>(</span><span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_gem_checkout_root'>gem_checkout_root</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>.devcontainer</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='comma'>,</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_project_root'>project_root</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>.devcontainer</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='rparen'>)</span>
+
+  <span class='comment'># 2) .github/**/*.yml with FUNDING.yml customizations
+</span>  <span class='id identifier rubyid_source_github_dir'>source_github_dir</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_gem_checkout_root'>gem_checkout_root</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>.github</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='kw'>if</span> <span class='const'>Dir</span><span class='period'>.</span><span class='id identifier rubyid_exist?'>exist?</span><span class='lparen'>(</span><span class='id identifier rubyid_source_github_dir'>source_github_dir</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_files'>files</span> <span class='op'>=</span> <span class='const'>Dir</span><span class='period'>.</span><span class='id identifier rubyid_glob'>glob</span><span class='lparen'>(</span><span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_source_github_dir'>source_github_dir</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>**</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>*.yml</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='rparen'>)</span> <span class='op'>+</span>
+      <span class='const'>Dir</span><span class='period'>.</span><span class='id identifier rubyid_glob'>glob</span><span class='lparen'>(</span><span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_source_github_dir'>source_github_dir</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>**</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>*.yml.example</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_files'>files</span><span class='period'>.</span><span class='id identifier rubyid_uniq'>uniq</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_orig_src'>orig_src</span><span class='op'>|</span>
+      <span class='id identifier rubyid_src'>src</span> <span class='op'>=</span> <span class='id identifier rubyid_helpers'>helpers</span><span class='period'>.</span><span class='id identifier rubyid_prefer_example'>prefer_example</span><span class='lparen'>(</span><span class='id identifier rubyid_orig_src'>orig_src</span><span class='rparen'>)</span>
+      <span class='comment'># Destination path should never include the .example suffix.
+</span>      <span class='id identifier rubyid_rel'>rel</span> <span class='op'>=</span> <span class='id identifier rubyid_orig_src'>orig_src</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^</span><span class='embexpr_beg'>#{</span><span class='const'>Regexp</span><span class='period'>.</span><span class='id identifier rubyid_escape'>escape</span><span class='lparen'>(</span><span class='id identifier rubyid_gem_checkout_root'>gem_checkout_root</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'>\/?</span><span class='regexp_end'>/</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\.example\z</span><span class='regexp_end'>/</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_dest'>dest</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_project_root'>project_root</span><span class='comma'>,</span> <span class='id identifier rubyid_rel'>rel</span><span class='rparen'>)</span>
+      <span class='kw'>if</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_basename'>basename</span><span class='lparen'>(</span><span class='id identifier rubyid_rel'>rel</span><span class='rparen'>)</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>FUNDING.yml</span><span class='tstring_end'>&quot;</span></span>
+        <span class='id identifier rubyid_helpers'>helpers</span><span class='period'>.</span><span class='id identifier rubyid_copy_file_with_prompt'>copy_file_with_prompt</span><span class='lparen'>(</span><span class='id identifier rubyid_src'>src</span><span class='comma'>,</span> <span class='id identifier rubyid_dest'>dest</span><span class='comma'>,</span> <span class='label'>allow_create:</span> <span class='kw'>true</span><span class='comma'>,</span> <span class='label'>allow_replace:</span> <span class='kw'>true</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_content'>content</span><span class='op'>|</span>
+          <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='id identifier rubyid_content'>content</span><span class='period'>.</span><span class='id identifier rubyid_dup'>dup</span>
+          <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^open_collective:\s+.*$</span><span class='regexp_end'>/i</span></span><span class='rparen'>)</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_line'>line</span><span class='op'>|</span> <span class='id identifier rubyid_gh_org'>gh_org</span> <span class='op'>?</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>open_collective: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_gh_org'>gh_org</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='op'>:</span> <span class='id identifier rubyid_line'>line</span> <span class='rbrace'>}</span>
+          <span class='kw'>if</span> <span class='id identifier rubyid_gem_name'>gem_name</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_gem_name'>gem_name</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+            <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^tidelift:\s+.*$</span><span class='regexp_end'>/i</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>tidelift: rubygems/</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_gem_name'>gem_name</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+          <span class='kw'>end</span>
+          <span class='comment'># Also apply common replacements for org/gem/namespace/shields
+</span>          <span class='id identifier rubyid_helpers'>helpers</span><span class='period'>.</span><span class='id identifier rubyid_apply_common_replacements'>apply_common_replacements</span><span class='lparen'>(</span>
+            <span class='id identifier rubyid_c'>c</span><span class='comma'>,</span>
+            <span class='label'>gh_org:</span> <span class='id identifier rubyid_gh_org'>gh_org</span><span class='comma'>,</span>
+            <span class='label'>gem_name:</span> <span class='id identifier rubyid_gem_name'>gem_name</span><span class='comma'>,</span>
+            <span class='label'>namespace:</span> <span class='id identifier rubyid_namespace'>namespace</span><span class='comma'>,</span>
+            <span class='label'>namespace_shield:</span> <span class='id identifier rubyid_namespace_shield'>namespace_shield</span><span class='comma'>,</span>
+            <span class='label'>gem_shield:</span> <span class='id identifier rubyid_gem_shield'>gem_shield</span><span class='comma'>,</span>
+          <span class='rparen'>)</span>
+        <span class='kw'>end</span>
+      <span class='kw'>else</span>
+        <span class='id identifier rubyid_helpers'>helpers</span><span class='period'>.</span><span class='id identifier rubyid_copy_file_with_prompt'>copy_file_with_prompt</span><span class='lparen'>(</span><span class='id identifier rubyid_src'>src</span><span class='comma'>,</span> <span class='id identifier rubyid_dest'>dest</span><span class='comma'>,</span> <span class='label'>allow_create:</span> <span class='kw'>true</span><span class='comma'>,</span> <span class='label'>allow_replace:</span> <span class='kw'>true</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_content'>content</span><span class='op'>|</span>
+          <span class='id identifier rubyid_helpers'>helpers</span><span class='period'>.</span><span class='id identifier rubyid_apply_common_replacements'>apply_common_replacements</span><span class='lparen'>(</span>
+            <span class='id identifier rubyid_content'>content</span><span class='comma'>,</span>
+            <span class='label'>gh_org:</span> <span class='id identifier rubyid_gh_org'>gh_org</span><span class='comma'>,</span>
+            <span class='label'>gem_name:</span> <span class='id identifier rubyid_gem_name'>gem_name</span><span class='comma'>,</span>
+            <span class='label'>namespace:</span> <span class='id identifier rubyid_namespace'>namespace</span><span class='comma'>,</span>
+            <span class='label'>namespace_shield:</span> <span class='id identifier rubyid_namespace_shield'>namespace_shield</span><span class='comma'>,</span>
+            <span class='label'>gem_shield:</span> <span class='id identifier rubyid_gem_shield'>gem_shield</span><span class='comma'>,</span>
+          <span class='rparen'>)</span>
+        <span class='kw'>end</span>
+      <span class='kw'>end</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># 3) .qlty/qlty.toml
+</span>  <span class='id identifier rubyid_helpers'>helpers</span><span class='period'>.</span><span class='id identifier rubyid_copy_file_with_prompt'>copy_file_with_prompt</span><span class='lparen'>(</span>
+    <span class='id identifier rubyid_helpers'>helpers</span><span class='period'>.</span><span class='id identifier rubyid_prefer_example'>prefer_example</span><span class='lparen'>(</span><span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_gem_checkout_root'>gem_checkout_root</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>.qlty/qlty.toml</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='rparen'>)</span><span class='comma'>,</span>
+    <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_project_root'>project_root</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>.qlty/qlty.toml</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='comma'>,</span>
+    <span class='label'>allow_create:</span> <span class='kw'>true</span><span class='comma'>,</span>
+    <span class='label'>allow_replace:</span> <span class='kw'>true</span><span class='comma'>,</span>
+  <span class='rparen'>)</span>
+
+  <span class='comment'># 4) gemfiles/modular/*.gemfile (from gem&#39;s gemfiles/modular)
+</span>  <span class='lbracket'>[</span><span class='qwords_beg'>%w[</span><span class='tstring_content'>coverage.gemfile</span><span class='tstring_end'>]</span></span><span class='comma'>,</span> <span class='qwords_beg'>%w[</span><span class='tstring_content'>documentation.gemfile</span><span class='tstring_end'>]</span></span><span class='comma'>,</span> <span class='qwords_beg'>%w[</span><span class='tstring_content'>style.gemfile</span><span class='tstring_end'>]</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_base'>base</span><span class='op'>|</span>
+    <span class='id identifier rubyid_src'>src</span> <span class='op'>=</span> <span class='id identifier rubyid_helpers'>helpers</span><span class='period'>.</span><span class='id identifier rubyid_prefer_example'>prefer_example</span><span class='lparen'>(</span><span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_gem_checkout_root'>gem_checkout_root</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>gemfiles/modular</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_base'>base</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_dest'>dest</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_project_root'>project_root</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>gemfiles/modular</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_base'>base</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+    <span class='kw'>if</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_basename'>basename</span><span class='lparen'>(</span><span class='id identifier rubyid_src'>src</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\.example\z</span><span class='regexp_end'>/</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>style.gemfile</span><span class='tstring_end'>&quot;</span></span>
+      <span class='id identifier rubyid_helpers'>helpers</span><span class='period'>.</span><span class='id identifier rubyid_copy_file_with_prompt'>copy_file_with_prompt</span><span class='lparen'>(</span><span class='id identifier rubyid_src'>src</span><span class='comma'>,</span> <span class='id identifier rubyid_dest'>dest</span><span class='comma'>,</span> <span class='label'>allow_create:</span> <span class='kw'>true</span><span class='comma'>,</span> <span class='label'>allow_replace:</span> <span class='kw'>true</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_content'>content</span><span class='op'>|</span>
+        <span class='comment'># Adjust rubocop-lts constraint based on min_ruby
+</span>        <span class='id identifier rubyid_version_map'>version_map</span> <span class='op'>=</span> <span class='lbracket'>[</span>
+          <span class='lbracket'>[</span><span class='const'>Gem</span><span class='op'>::</span><span class='const'>Version</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>1.8</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>~&gt; 0.0</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+          <span class='lbracket'>[</span><span class='const'>Gem</span><span class='op'>::</span><span class='const'>Version</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>1.9</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>~&gt; 2.0</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+          <span class='lbracket'>[</span><span class='const'>Gem</span><span class='op'>::</span><span class='const'>Version</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>2.0</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>~&gt; 4.0</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+          <span class='lbracket'>[</span><span class='const'>Gem</span><span class='op'>::</span><span class='const'>Version</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>2.1</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>~&gt; 6.0</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+          <span class='lbracket'>[</span><span class='const'>Gem</span><span class='op'>::</span><span class='const'>Version</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>2.2</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>~&gt; 8.0</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+          <span class='lbracket'>[</span><span class='const'>Gem</span><span class='op'>::</span><span class='const'>Version</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>2.3</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>~&gt; 10.0</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+          <span class='lbracket'>[</span><span class='const'>Gem</span><span class='op'>::</span><span class='const'>Version</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>2.4</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>~&gt; 12.0</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+          <span class='lbracket'>[</span><span class='const'>Gem</span><span class='op'>::</span><span class='const'>Version</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>2.5</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>~&gt; 14.0</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+          <span class='lbracket'>[</span><span class='const'>Gem</span><span class='op'>::</span><span class='const'>Version</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>2.6</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>~&gt; 16.0</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+          <span class='lbracket'>[</span><span class='const'>Gem</span><span class='op'>::</span><span class='const'>Version</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>2.7</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>~&gt; 18.0</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+          <span class='lbracket'>[</span><span class='const'>Gem</span><span class='op'>::</span><span class='const'>Version</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>3.0</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>~&gt; 20.0</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+          <span class='lbracket'>[</span><span class='const'>Gem</span><span class='op'>::</span><span class='const'>Version</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>3.1</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>~&gt; 22.0</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+          <span class='lbracket'>[</span><span class='const'>Gem</span><span class='op'>::</span><span class='const'>Version</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>3.2</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>~&gt; 24.0</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+          <span class='lbracket'>[</span><span class='const'>Gem</span><span class='op'>::</span><span class='const'>Version</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>3.3</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>~&gt; 26.0</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+          <span class='lbracket'>[</span><span class='const'>Gem</span><span class='op'>::</span><span class='const'>Version</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>3.4</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>~&gt; 28.0</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+        <span class='rbracket'>]</span>
+        <span class='id identifier rubyid_new_constraint'>new_constraint</span> <span class='op'>=</span> <span class='kw'>nil</span>
+        <span class='kw'>begin</span>
+          <span class='kw'>if</span> <span class='id identifier rubyid_min_ruby'>min_ruby</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_min_ruby'>min_ruby</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+            <span class='id identifier rubyid_v'>v</span> <span class='op'>=</span> <span class='const'>Gem</span><span class='op'>::</span><span class='const'>Version</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_min_ruby'>min_ruby</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>.</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='lbracket'>[</span><span class='int'>0</span><span class='comma'>,</span> <span class='int'>2</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>.</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='rparen'>)</span>
+            <span class='id identifier rubyid_version_map'>version_map</span><span class='period'>.</span><span class='id identifier rubyid_reverse_each'>reverse_each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_min'>min</span><span class='comma'>,</span> <span class='id identifier rubyid_req'>req</span><span class='op'>|</span>
+              <span class='kw'>if</span> <span class='id identifier rubyid_v'>v</span> <span class='op'>&gt;=</span> <span class='id identifier rubyid_min'>min</span>
+                <span class='id identifier rubyid_new_constraint'>new_constraint</span> <span class='op'>=</span> <span class='id identifier rubyid_req'>req</span>
+                <span class='kw'>break</span>
+              <span class='kw'>end</span>
+            <span class='kw'>end</span>
+          <span class='kw'>end</span>
+        <span class='kw'>rescue</span> <span class='const'>StandardError</span>
+          <span class='comment'># leave nil
+</span>        <span class='kw'>end</span>
+        <span class='kw'>if</span> <span class='id identifier rubyid_new_constraint'>new_constraint</span>
+          <span class='id identifier rubyid_content'>content</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^gem\s+&quot;rubocop-lts&quot;,\s*&quot;[^&quot;]+&quot;.*$</span><span class='regexp_end'>/</span></span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid__line'>_line</span><span class='op'>|</span>
+            <span class='comment'># Do not preserve whatever tail was there before
+</span>            <span class='tstring'><span class='tstring_beg'>%(</span><span class='tstring_content'>gem &quot;rubocop-lts&quot;, &quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_new_constraint'>new_constraint</span><span class='embexpr_end'>}</span><span class='tstring_content'>&quot;</span><span class='tstring_end'>)</span></span>
+          <span class='kw'>end</span>
+        <span class='kw'>else</span>
+          <span class='id identifier rubyid_content'>content</span>
+        <span class='kw'>end</span>
+      <span class='kw'>end</span>
+    <span class='kw'>else</span>
+      <span class='id identifier rubyid_helpers'>helpers</span><span class='period'>.</span><span class='id identifier rubyid_copy_file_with_prompt'>copy_file_with_prompt</span><span class='lparen'>(</span><span class='id identifier rubyid_src'>src</span><span class='comma'>,</span> <span class='id identifier rubyid_dest'>dest</span><span class='comma'>,</span> <span class='label'>allow_create:</span> <span class='kw'>true</span><span class='comma'>,</span> <span class='label'>allow_replace:</span> <span class='kw'>true</span><span class='rparen'>)</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># 5) spec/spec_helper.rb (no create)
+</span>  <span class='id identifier rubyid_dest_spec_helper'>dest_spec_helper</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_project_root'>project_root</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>spec/spec_helper.rb</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='kw'>if</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_file?'>file?</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_spec_helper'>dest_spec_helper</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_old'>old</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_spec_helper'>dest_spec_helper</span><span class='rparen'>)</span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_old'>old</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>require &quot;kettle/dev&quot;</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span> <span class='op'>||</span> <span class='id identifier rubyid_old'>old</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>require &#39;kettle/dev&#39;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_replacement'>replacement</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>%(</span><span class='tstring_content'>require &quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_entrypoint_require'>entrypoint_require</span><span class='embexpr_end'>}</span><span class='tstring_content'>&quot;</span><span class='tstring_end'>)</span></span>
+      <span class='id identifier rubyid_new_content'>new_content</span> <span class='op'>=</span> <span class='id identifier rubyid_old'>old</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>require\s+[&quot;&#39;]kettle\/dev[&quot;&#39;]</span><span class='regexp_end'>/</span></span><span class='comma'>,</span> <span class='id identifier rubyid_replacement'>replacement</span><span class='rparen'>)</span>
+      <span class='kw'>if</span> <span class='id identifier rubyid_new_content'>new_content</span> <span class='op'>!=</span> <span class='id identifier rubyid_old'>old</span>
+        <span class='kw'>if</span> <span class='id identifier rubyid_helpers'>helpers</span><span class='period'>.</span><span class='id identifier rubyid_ask'>ask</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Replace require \&quot;kettle/dev\&quot; in spec/spec_helper.rb with </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_replacement'>replacement</span><span class='embexpr_end'>}</span><span class='tstring_content'>?</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='kw'>true</span><span class='rparen'>)</span>
+          <span class='id identifier rubyid_helpers'>helpers</span><span class='period'>.</span><span class='id identifier rubyid_write_file'>write_file</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_spec_helper'>dest_spec_helper</span><span class='comma'>,</span> <span class='id identifier rubyid_new_content'>new_content</span><span class='rparen'>)</span>
+          <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Updated require in spec/spec_helper.rb</span><span class='tstring_end'>&quot;</span></span>
+        <span class='kw'>else</span>
+          <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Skipped modifying spec/spec_helper.rb</span><span class='tstring_end'>&quot;</span></span>
+        <span class='kw'>end</span>
+      <span class='kw'>end</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># 6) .env.local special case: never overwrite project .env.local; copy template as .env.local.example
+</span>  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_envlocal_src'>envlocal_src</span> <span class='op'>=</span> <span class='id identifier rubyid_helpers'>helpers</span><span class='period'>.</span><span class='id identifier rubyid_prefer_example'>prefer_example</span><span class='lparen'>(</span><span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_gem_checkout_root'>gem_checkout_root</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>.env.local</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_envlocal_dest'>envlocal_dest</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_project_root'>project_root</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>.env.local.example</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+    <span class='kw'>if</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_exist?'>exist?</span><span class='lparen'>(</span><span class='id identifier rubyid_envlocal_src'>envlocal_src</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_helpers'>helpers</span><span class='period'>.</span><span class='id identifier rubyid_copy_file_with_prompt'>copy_file_with_prompt</span><span class='lparen'>(</span><span class='id identifier rubyid_envlocal_src'>envlocal_src</span><span class='comma'>,</span> <span class='id identifier rubyid_envlocal_dest'>envlocal_dest</span><span class='comma'>,</span> <span class='label'>allow_create:</span> <span class='kw'>true</span><span class='comma'>,</span> <span class='label'>allow_replace:</span> <span class='kw'>true</span><span class='rparen'>)</span>
+    <span class='kw'>end</span>
+  <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>WARNING: Skipped .env.local example copy due to </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='embexpr_end'>}</span><span class='tstring_content'>: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># 7) Root and other files
+</span>  <span class='id identifier rubyid_files_to_copy'>files_to_copy</span> <span class='op'>=</span> <span class='qwords_beg'>%w[</span><span class='words_sep'>
+</span><span class='words_sep'>    </span><span class='tstring_content'>.envrc</span><span class='words_sep'>
+</span><span class='words_sep'>    </span><span class='tstring_content'>.gitignore</span><span class='words_sep'>
+</span><span class='words_sep'>    </span><span class='tstring_content'>.gitlab-ci.yml</span><span class='words_sep'>
+</span><span class='words_sep'>    </span><span class='tstring_content'>.rspec</span><span class='words_sep'>
+</span><span class='words_sep'>    </span><span class='tstring_content'>.rubocop.yml</span><span class='words_sep'>
+</span><span class='words_sep'>    </span><span class='tstring_content'>.simplecov</span><span class='words_sep'>
+</span><span class='words_sep'>    </span><span class='tstring_content'>.tool-versions</span><span class='words_sep'>
+</span><span class='words_sep'>    </span><span class='tstring_content'>.yard_gfm_support.rb</span><span class='words_sep'>
+</span><span class='words_sep'>    </span><span class='tstring_content'>.yardopts</span><span class='words_sep'>
+</span><span class='words_sep'>    </span><span class='tstring_content'>.opencollective.yml</span><span class='words_sep'>
+</span><span class='words_sep'>    </span><span class='tstring_content'>Appraisal.root.gemfile</span><span class='words_sep'>
+</span><span class='words_sep'>    </span><span class='tstring_content'>Appraisals</span><span class='words_sep'>
+</span><span class='words_sep'>    </span><span class='tstring_content'>CHANGELOG.md</span><span class='words_sep'>
+</span><span class='words_sep'>    </span><span class='tstring_content'>CITATION.cff</span><span class='words_sep'>
+</span><span class='words_sep'>    </span><span class='tstring_content'>CODE_OF_CONDUCT.md</span><span class='words_sep'>
+</span><span class='words_sep'>    </span><span class='tstring_content'>CONTRIBUTING.md</span><span class='words_sep'>
+</span><span class='words_sep'>    </span><span class='tstring_content'>Gemfile</span><span class='words_sep'>
+</span><span class='words_sep'>    </span><span class='tstring_content'>Rakefile</span><span class='words_sep'>
+</span><span class='words_sep'>    </span><span class='tstring_content'>README.md</span><span class='words_sep'>
+</span><span class='words_sep'>    </span><span class='tstring_content'>RUBOCOP.md</span><span class='words_sep'>
+</span><span class='words_sep'>    </span><span class='tstring_content'>SECURITY.md</span><span class='words_sep'>
+</span><span class='words_sep'>    </span><span class='tstring_content'>.junie/guidelines.md</span><span class='words_sep'>
+</span><span class='words_sep'>    </span><span class='tstring_content'>.junie/guidelines-rbs.md</span><span class='words_sep'>
+</span><span class='words_sep'>  </span><span class='tstring_end'>]</span></span>
+
+  <span class='id identifier rubyid_files_to_copy'>files_to_copy</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_rel'>rel</span><span class='op'>|</span>
+    <span class='id identifier rubyid_src'>src</span> <span class='op'>=</span> <span class='id identifier rubyid_helpers'>helpers</span><span class='period'>.</span><span class='id identifier rubyid_prefer_example'>prefer_example</span><span class='lparen'>(</span><span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_gem_checkout_root'>gem_checkout_root</span><span class='comma'>,</span> <span class='id identifier rubyid_rel'>rel</span><span class='rparen'>)</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_dest'>dest</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_project_root'>project_root</span><span class='comma'>,</span> <span class='id identifier rubyid_rel'>rel</span><span class='rparen'>)</span>
+    <span class='kw'>next</span> <span class='kw'>unless</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_exist?'>exist?</span><span class='lparen'>(</span><span class='id identifier rubyid_src'>src</span><span class='rparen'>)</span>
+    <span class='kw'>if</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_basename'>basename</span><span class='lparen'>(</span><span class='id identifier rubyid_rel'>rel</span><span class='rparen'>)</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>README.md</span><span class='tstring_end'>&quot;</span></span>
+      <span class='id identifier rubyid_helpers'>helpers</span><span class='period'>.</span><span class='id identifier rubyid_copy_file_with_prompt'>copy_file_with_prompt</span><span class='lparen'>(</span><span class='id identifier rubyid_src'>src</span><span class='comma'>,</span> <span class='id identifier rubyid_dest'>dest</span><span class='comma'>,</span> <span class='label'>allow_create:</span> <span class='kw'>true</span><span class='comma'>,</span> <span class='label'>allow_replace:</span> <span class='kw'>true</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_content'>content</span><span class='op'>|</span>
+        <span class='comment'># 1) Do token replacements on the template content (org/gem/namespace/shields)
+</span>        <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='id identifier rubyid_helpers'>helpers</span><span class='period'>.</span><span class='id identifier rubyid_apply_common_replacements'>apply_common_replacements</span><span class='lparen'>(</span>
+          <span class='id identifier rubyid_content'>content</span><span class='comma'>,</span>
+          <span class='label'>gh_org:</span> <span class='id identifier rubyid_gh_org'>gh_org</span><span class='comma'>,</span>
+          <span class='label'>gem_name:</span> <span class='id identifier rubyid_gem_name'>gem_name</span><span class='comma'>,</span>
+          <span class='label'>namespace:</span> <span class='id identifier rubyid_namespace'>namespace</span><span class='comma'>,</span>
+          <span class='label'>namespace_shield:</span> <span class='id identifier rubyid_namespace_shield'>namespace_shield</span><span class='comma'>,</span>
+          <span class='label'>gem_shield:</span> <span class='id identifier rubyid_gem_shield'>gem_shield</span><span class='comma'>,</span>
+        <span class='rparen'>)</span>
+
+        <span class='comment'># 2) Merge specific sections from destination README, if present
+</span>        <span class='kw'>begin</span>
+          <span class='id identifier rubyid_dest_existing'>dest_existing</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_exist?'>exist?</span><span class='lparen'>(</span><span class='id identifier rubyid_dest'>dest</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='lparen'>(</span><span class='id identifier rubyid_dest'>dest</span><span class='rparen'>)</span> <span class='op'>:</span> <span class='kw'>nil</span>
+
+          <span class='comment'># Helper to parse markdown sections at any heading level (#, ##, ###, ...)
+</span>          <span class='id identifier rubyid_parse_sections'>parse_sections</span> <span class='op'>=</span> <span class='id identifier rubyid_lambda'>lambda</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_md'>md</span><span class='op'>|</span>
+            <span class='id identifier rubyid_sections'>sections</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+            <span class='kw'>return</span> <span class='id identifier rubyid_sections'>sections</span> <span class='kw'>unless</span> <span class='id identifier rubyid_md'>md</span>
+            <span class='id identifier rubyid_lines'>lines</span> <span class='op'>=</span> <span class='id identifier rubyid_md'>md</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='op'>-</span><span class='int'>1</span><span class='rparen'>)</span> <span class='comment'># keep trailing empty lines
+</span>            <span class='id identifier rubyid_indices'>indices</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+            <span class='id identifier rubyid_lines'>lines</span><span class='period'>.</span><span class='id identifier rubyid_each_with_index'>each_with_index</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_ln'>ln</span><span class='comma'>,</span> <span class='id identifier rubyid_i'>i</span><span class='op'>|</span>
+              <span class='id identifier rubyid_indices'>indices</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_i'>i</span> <span class='kw'>if</span> <span class='id identifier rubyid_ln'>ln</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^#+\s+.+</span><span class='regexp_end'>/</span></span>
+            <span class='kw'>end</span>
+            <span class='id identifier rubyid_indices'>indices</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_lines'>lines</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span>
+            <span class='id identifier rubyid_indices'>indices</span><span class='period'>.</span><span class='id identifier rubyid_each_cons'>each_cons</span><span class='lparen'>(</span><span class='int'>2</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_start_i'>start_i</span><span class='comma'>,</span> <span class='id identifier rubyid_nxt'>nxt</span><span class='op'>|</span>
+              <span class='id identifier rubyid_heading'>heading</span> <span class='op'>=</span> <span class='id identifier rubyid_lines'>lines</span><span class='lbracket'>[</span><span class='id identifier rubyid_start_i'>start_i</span><span class='rbracket'>]</span>
+              <span class='id identifier rubyid_body_lines'>body_lines</span> <span class='op'>=</span> <span class='id identifier rubyid_lines'>lines</span><span class='lbracket'>[</span><span class='lparen'>(</span><span class='id identifier rubyid_start_i'>start_i</span> <span class='op'>+</span> <span class='int'>1</span><span class='rparen'>)</span><span class='op'>...</span><span class='id identifier rubyid_nxt'>nxt</span><span class='rbracket'>]</span> <span class='op'>||</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+              <span class='id identifier rubyid_title'>title</span> <span class='op'>=</span> <span class='id identifier rubyid_heading'>heading</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^#+\s+</span><span class='regexp_end'>/</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+              <span class='comment'># Normalize by removing leading emoji/non-alnum and extra spaces
+</span>              <span class='id identifier rubyid_base'>base</span> <span class='op'>=</span> <span class='id identifier rubyid_title'>title</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\A[^\p{Alnum}]+</span><span class='regexp_end'>/u</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_downcase'>downcase</span>
+              <span class='id identifier rubyid_sections'>sections</span> <span class='op'>&lt;&lt;</span> <span class='lbrace'>{</span><span class='label'>start:</span> <span class='id identifier rubyid_start_i'>start_i</span><span class='comma'>,</span> <span class='label'>stop:</span> <span class='id identifier rubyid_nxt'>nxt</span> <span class='op'>-</span> <span class='int'>1</span><span class='comma'>,</span> <span class='label'>heading:</span> <span class='id identifier rubyid_heading'>heading</span><span class='comma'>,</span> <span class='label'>body:</span> <span class='id identifier rubyid_body_lines'>body_lines</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='comma'>,</span> <span class='label'>base:</span> <span class='id identifier rubyid_base'>base</span><span class='rbrace'>}</span>
+            <span class='kw'>end</span>
+            <span class='lbrace'>{</span><span class='label'>lines:</span> <span class='id identifier rubyid_lines'>lines</span><span class='comma'>,</span> <span class='label'>sections:</span> <span class='id identifier rubyid_sections'>sections</span><span class='rbrace'>}</span>
+          <span class='kw'>end</span>
+
+          <span class='comment'># Parse src (c) and dest
+</span>          <span class='id identifier rubyid_src_parsed'>src_parsed</span> <span class='op'>=</span> <span class='id identifier rubyid_parse_sections'>parse_sections</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_c'>c</span><span class='rparen'>)</span>
+          <span class='id identifier rubyid_dest_parsed'>dest_parsed</span> <span class='op'>=</span> <span class='id identifier rubyid_parse_sections'>parse_sections</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_existing'>dest_existing</span><span class='rparen'>)</span>
+
+          <span class='comment'># Build lookup for destination sections by base title
+</span>          <span class='id identifier rubyid_dest_lookup'>dest_lookup</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
+          <span class='kw'>if</span> <span class='id identifier rubyid_dest_parsed'>dest_parsed</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_dest_parsed'>dest_parsed</span><span class='lbracket'>[</span><span class='symbol'>:sections</span><span class='rbracket'>]</span>
+            <span class='id identifier rubyid_dest_parsed'>dest_parsed</span><span class='lbracket'>[</span><span class='symbol'>:sections</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_s'>s</span><span class='op'>|</span>
+              <span class='id identifier rubyid_dest_lookup'>dest_lookup</span><span class='lbracket'>[</span><span class='id identifier rubyid_s'>s</span><span class='lbracket'>[</span><span class='symbol'>:base</span><span class='rbracket'>]</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_s'>s</span><span class='lbracket'>[</span><span class='symbol'>:body</span><span class='rbracket'>]</span>
+            <span class='kw'>end</span>
+          <span class='kw'>end</span>
+
+          <span class='comment'># Build targets to merge: existing curated list plus any NOTE sections at any level
+</span>          <span class='id identifier rubyid_note_bases'>note_bases</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+          <span class='kw'>if</span> <span class='id identifier rubyid_src_parsed'>src_parsed</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_src_parsed'>src_parsed</span><span class='lbracket'>[</span><span class='symbol'>:sections</span><span class='rbracket'>]</span>
+            <span class='id identifier rubyid_note_bases'>note_bases</span> <span class='op'>=</span> <span class='id identifier rubyid_src_parsed'>src_parsed</span><span class='lbracket'>[</span><span class='symbol'>:sections</span><span class='rbracket'>]</span>
+              <span class='period'>.</span><span class='id identifier rubyid_select'>select</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_s'>s</span><span class='op'>|</span> <span class='id identifier rubyid_s'>s</span><span class='lbracket'>[</span><span class='symbol'>:heading</span><span class='rbracket'>]</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^#+\s+note:.*</span><span class='regexp_end'>/i</span></span> <span class='rbrace'>}</span>
+              <span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_s'>s</span><span class='op'>|</span> <span class='id identifier rubyid_s'>s</span><span class='lbracket'>[</span><span class='symbol'>:base</span><span class='rbracket'>]</span> <span class='rbrace'>}</span>
+          <span class='kw'>end</span>
+          <span class='id identifier rubyid_targets'>targets</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>synopsis</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>configuration</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>basic usage</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>+</span> <span class='id identifier rubyid_note_bases'>note_bases</span>
+
+          <span class='comment'># Replace matching sections in src
+</span>          <span class='kw'>if</span> <span class='id identifier rubyid_src_parsed'>src_parsed</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_src_parsed'>src_parsed</span><span class='lbracket'>[</span><span class='symbol'>:sections</span><span class='rbracket'>]</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_src_parsed'>src_parsed</span><span class='lbracket'>[</span><span class='symbol'>:sections</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+            <span class='id identifier rubyid_lines'>lines</span> <span class='op'>=</span> <span class='id identifier rubyid_src_parsed'>src_parsed</span><span class='lbracket'>[</span><span class='symbol'>:lines</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_dup'>dup</span>
+            <span class='comment'># Iterate over src sections; when base is in targets, rewrite its body
+</span>            <span class='id identifier rubyid_src_parsed'>src_parsed</span><span class='lbracket'>[</span><span class='symbol'>:sections</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_reverse_each'>reverse_each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_sec'>sec</span><span class='op'>|</span>
+              <span class='kw'>next</span> <span class='kw'>unless</span> <span class='id identifier rubyid_targets'>targets</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_sec'>sec</span><span class='lbracket'>[</span><span class='symbol'>:base</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+              <span class='id identifier rubyid_new_body'>new_body</span> <span class='op'>=</span> <span class='id identifier rubyid_dest_lookup'>dest_lookup</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='id identifier rubyid_sec'>sec</span><span class='lbracket'>[</span><span class='symbol'>:base</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n\n</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+              <span class='id identifier rubyid_new_block'>new_block</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='id identifier rubyid_sec'>sec</span><span class='lbracket'>[</span><span class='symbol'>:heading</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_new_body'>new_body</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+              <span class='comment'># Replace the range from start+0 to stop with new_block lines
+</span>              <span class='id identifier rubyid_range_start'>range_start</span> <span class='op'>=</span> <span class='id identifier rubyid_sec'>sec</span><span class='lbracket'>[</span><span class='symbol'>:start</span><span class='rbracket'>]</span>
+              <span class='id identifier rubyid_range_end'>range_end</span> <span class='op'>=</span> <span class='id identifier rubyid_sec'>sec</span><span class='lbracket'>[</span><span class='symbol'>:stop</span><span class='rbracket'>]</span>
+              <span class='comment'># Remove old range
+</span>              <span class='id identifier rubyid_lines'>lines</span><span class='period'>.</span><span class='id identifier rubyid_slice!'>slice!</span><span class='lparen'>(</span><span class='id identifier rubyid_range_start'>range_start</span><span class='op'>..</span><span class='id identifier rubyid_range_end'>range_end</span><span class='rparen'>)</span>
+              <span class='comment'># Insert new block (split preserves potential empty tail)
+</span>              <span class='id identifier rubyid_insert_lines'>insert_lines</span> <span class='op'>=</span> <span class='id identifier rubyid_new_block'>new_block</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='op'>-</span><span class='int'>1</span><span class='rparen'>)</span>
+              <span class='id identifier rubyid_lines'>lines</span><span class='period'>.</span><span class='id identifier rubyid_insert'>insert</span><span class='lparen'>(</span><span class='id identifier rubyid_range_start'>range_start</span><span class='comma'>,</span> <span class='op'>*</span><span class='id identifier rubyid_insert_lines'>insert_lines</span><span class='rparen'>)</span>
+            <span class='kw'>end</span>
+            <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='id identifier rubyid_lines'>lines</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+          <span class='kw'>end</span>
+
+          <span class='comment'># 3) Preserve first H1 emojis from destination README, if any
+</span>          <span class='kw'>begin</span>
+            <span class='id identifier rubyid_emoji_re'>emoji_re</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../EmojiRegex.html" title="Kettle::EmojiRegex (module)">EmojiRegex</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../EmojiRegex.html#REGEX-constant" title="Kettle::EmojiRegex::REGEX (constant)">REGEX</a></span></span>
+
+            <span class='id identifier rubyid_dest_emojis'>dest_emojis</span> <span class='op'>=</span> <span class='kw'>nil</span>
+            <span class='kw'>if</span> <span class='id identifier rubyid_dest_existing'>dest_existing</span>
+              <span class='id identifier rubyid_first_h1_dest'>first_h1_dest</span> <span class='op'>=</span> <span class='id identifier rubyid_dest_existing'>dest_existing</span><span class='period'>.</span><span class='id identifier rubyid_lines'>lines</span><span class='period'>.</span><span class='id identifier rubyid_find'>find</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_ln'>ln</span><span class='op'>|</span> <span class='id identifier rubyid_ln'>ln</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^#\s+</span><span class='regexp_end'>/</span></span> <span class='rbrace'>}</span>
+              <span class='kw'>if</span> <span class='id identifier rubyid_first_h1_dest'>first_h1_dest</span>
+                <span class='id identifier rubyid_after'>after</span> <span class='op'>=</span> <span class='id identifier rubyid_first_h1_dest'>first_h1_dest</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^#\s+</span><span class='regexp_end'>/</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+                <span class='id identifier rubyid_emojis'>emojis</span> <span class='op'>=</span> <span class='op'>+</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span>
+                <span class='kw'>while</span> <span class='id identifier rubyid_after'>after</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\A</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_emoji_re'>emoji_re</span><span class='period'>.</span><span class='id identifier rubyid_source'>source</span><span class='embexpr_end'>}</span><span class='regexp_end'>/u</span></span>
+                  <span class='comment'># Capture the entire grapheme cluster for the emoji (handles VS16/ZWJ sequences)
+</span>                  <span class='id identifier rubyid_cluster'>cluster</span> <span class='op'>=</span> <span class='id identifier rubyid_after'>after</span><span class='lbracket'>[</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\A\X</span><span class='regexp_end'>/u</span></span><span class='rbracket'>]</span>
+                  <span class='id identifier rubyid_emojis'>emojis</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_cluster'>cluster</span>
+                  <span class='id identifier rubyid_after'>after</span> <span class='op'>=</span> <span class='id identifier rubyid_after'>after</span><span class='lbracket'>[</span><span class='id identifier rubyid_cluster'>cluster</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span><span class='op'>..</span><span class='op'>-</span><span class='int'>1</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
+                <span class='kw'>end</span>
+                <span class='id identifier rubyid_dest_emojis'>dest_emojis</span> <span class='op'>=</span> <span class='id identifier rubyid_emojis'>emojis</span> <span class='kw'>unless</span> <span class='id identifier rubyid_emojis'>emojis</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+              <span class='kw'>end</span>
+            <span class='kw'>end</span>
+
+            <span class='kw'>if</span> <span class='id identifier rubyid_dest_emojis'>dest_emojis</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_dest_emojis'>dest_emojis</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+              <span class='id identifier rubyid_lines_new'>lines_new</span> <span class='op'>=</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='op'>-</span><span class='int'>1</span><span class='rparen'>)</span>
+              <span class='id identifier rubyid_idx'>idx</span> <span class='op'>=</span> <span class='id identifier rubyid_lines_new'>lines_new</span><span class='period'>.</span><span class='id identifier rubyid_index'>index</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_ln'>ln</span><span class='op'>|</span> <span class='id identifier rubyid_ln'>ln</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^#\s+</span><span class='regexp_end'>/</span></span> <span class='rbrace'>}</span>
+              <span class='kw'>if</span> <span class='id identifier rubyid_idx'>idx</span>
+                <span class='id identifier rubyid_rest'>rest</span> <span class='op'>=</span> <span class='id identifier rubyid_lines_new'>lines_new</span><span class='lbracket'>[</span><span class='id identifier rubyid_idx'>idx</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^#\s+</span><span class='regexp_end'>/</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+                <span class='comment'># Remove any leading emojis from the H1 by peeling full grapheme clusters
+</span>                <span class='id identifier rubyid_rest_wo_emoji'>rest_wo_emoji</span> <span class='op'>=</span> <span class='kw'>begin</span>
+                  <span class='id identifier rubyid_tmp'>tmp</span> <span class='op'>=</span> <span class='id identifier rubyid_rest'>rest</span><span class='period'>.</span><span class='id identifier rubyid_dup'>dup</span>
+                  <span class='kw'>while</span> <span class='id identifier rubyid_tmp'>tmp</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\A</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_emoji_re'>emoji_re</span><span class='period'>.</span><span class='id identifier rubyid_source'>source</span><span class='embexpr_end'>}</span><span class='regexp_end'>/u</span></span>
+                    <span class='id identifier rubyid_cluster'>cluster</span> <span class='op'>=</span> <span class='id identifier rubyid_tmp'>tmp</span><span class='lbracket'>[</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\A\X</span><span class='regexp_end'>/u</span></span><span class='rbracket'>]</span>
+                    <span class='id identifier rubyid_tmp'>tmp</span> <span class='op'>=</span> <span class='id identifier rubyid_tmp'>tmp</span><span class='lbracket'>[</span><span class='id identifier rubyid_cluster'>cluster</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span><span class='op'>..</span><span class='op'>-</span><span class='int'>1</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
+                  <span class='kw'>end</span>
+                  <span class='id identifier rubyid_tmp'>tmp</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\A\s+</span><span class='regexp_end'>/</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+                <span class='kw'>end</span>
+                <span class='id identifier rubyid_lines_new'>lines_new</span><span class='lbracket'>[</span><span class='id identifier rubyid_idx'>idx</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>#</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_dest_emojis'>dest_emojis</span><span class='comma'>,</span> <span class='id identifier rubyid_rest_wo_emoji'>rest_wo_emoji</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'> </span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\s+</span><span class='regexp_end'>/</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'> </span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^#\s+</span><span class='regexp_end'>/</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'># </span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+                <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='id identifier rubyid_lines_new'>lines_new</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+              <span class='kw'>end</span>
+            <span class='kw'>end</span>
+          <span class='kw'>rescue</span> <span class='const'>StandardError</span>
+            <span class='comment'># ignore emoji preservation errors
+</span>          <span class='kw'>end</span>
+        <span class='kw'>rescue</span> <span class='const'>StandardError</span>
+          <span class='comment'># Best effort; if anything fails, keep c as-is
+</span>        <span class='kw'>end</span>
+
+        <span class='id identifier rubyid_c'>c</span>
+      <span class='kw'>end</span>
+    <span class='kw'>elsif</span> <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>CHANGELOG.md</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>CITATION.cff</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>CONTRIBUTING.md</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>.opencollective.yml</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>.junie/guidelines.md</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_rel'>rel</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_helpers'>helpers</span><span class='period'>.</span><span class='id identifier rubyid_copy_file_with_prompt'>copy_file_with_prompt</span><span class='lparen'>(</span><span class='id identifier rubyid_src'>src</span><span class='comma'>,</span> <span class='id identifier rubyid_dest'>dest</span><span class='comma'>,</span> <span class='label'>allow_create:</span> <span class='kw'>true</span><span class='comma'>,</span> <span class='label'>allow_replace:</span> <span class='kw'>true</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_content'>content</span><span class='op'>|</span>
+        <span class='id identifier rubyid_helpers'>helpers</span><span class='period'>.</span><span class='id identifier rubyid_apply_common_replacements'>apply_common_replacements</span><span class='lparen'>(</span>
+          <span class='id identifier rubyid_content'>content</span><span class='comma'>,</span>
+          <span class='label'>gh_org:</span> <span class='id identifier rubyid_gh_org'>gh_org</span><span class='comma'>,</span>
+          <span class='label'>gem_name:</span> <span class='id identifier rubyid_gem_name'>gem_name</span><span class='comma'>,</span>
+          <span class='label'>namespace:</span> <span class='id identifier rubyid_namespace'>namespace</span><span class='comma'>,</span>
+          <span class='label'>namespace_shield:</span> <span class='id identifier rubyid_namespace_shield'>namespace_shield</span><span class='comma'>,</span>
+          <span class='label'>gem_shield:</span> <span class='id identifier rubyid_gem_shield'>gem_shield</span><span class='comma'>,</span>
+        <span class='rparen'>)</span>
+      <span class='kw'>end</span>
+    <span class='kw'>else</span>
+      <span class='id identifier rubyid_helpers'>helpers</span><span class='period'>.</span><span class='id identifier rubyid_copy_file_with_prompt'>copy_file_with_prompt</span><span class='lparen'>(</span><span class='id identifier rubyid_src'>src</span><span class='comma'>,</span> <span class='id identifier rubyid_dest'>dest</span><span class='comma'>,</span> <span class='label'>allow_create:</span> <span class='kw'>true</span><span class='comma'>,</span> <span class='label'>allow_replace:</span> <span class='kw'>true</span><span class='rparen'>)</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># 7b) certs/pboling.pem
+</span>  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_cert_src'>cert_src</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_gem_checkout_root'>gem_checkout_root</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>certs</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>pboling.pem</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_cert_dest'>cert_dest</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_project_root'>project_root</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>certs</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>pboling.pem</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+    <span class='kw'>if</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_exist?'>exist?</span><span class='lparen'>(</span><span class='id identifier rubyid_cert_src'>cert_src</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_helpers'>helpers</span><span class='period'>.</span><span class='id identifier rubyid_copy_file_with_prompt'>copy_file_with_prompt</span><span class='lparen'>(</span><span class='id identifier rubyid_cert_src'>cert_src</span><span class='comma'>,</span> <span class='id identifier rubyid_cert_dest'>cert_dest</span><span class='comma'>,</span> <span class='label'>allow_create:</span> <span class='kw'>true</span><span class='comma'>,</span> <span class='label'>allow_replace:</span> <span class='kw'>true</span><span class='rparen'>)</span>
+    <span class='kw'>end</span>
+  <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>WARNING: Skipped copying certs/pboling.pem due to </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='embexpr_end'>}</span><span class='tstring_content'>: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># After creating or replacing .envrc or .env.local.example, require review and exit unless allowed
+</span>  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_envrc_path'>envrc_path</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_project_root'>project_root</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>.envrc</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_envlocal_example_path'>envlocal_example_path</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_project_root'>project_root</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>.env.local.example</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_changed_env_files'>changed_env_files</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+    <span class='id identifier rubyid_changed_env_files'>changed_env_files</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_envrc_path'>envrc_path</span> <span class='kw'>if</span> <span class='id identifier rubyid_helpers'>helpers</span><span class='period'>.</span><span class='id identifier rubyid_modified_by_template?'>modified_by_template?</span><span class='lparen'>(</span><span class='id identifier rubyid_envrc_path'>envrc_path</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_changed_env_files'>changed_env_files</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_envlocal_example_path'>envlocal_example_path</span> <span class='kw'>if</span> <span class='id identifier rubyid_helpers'>helpers</span><span class='period'>.</span><span class='id identifier rubyid_modified_by_template?'>modified_by_template?</span><span class='lparen'>(</span><span class='id identifier rubyid_envlocal_example_path'>envlocal_example_path</span><span class='rparen'>)</span>
+    <span class='kw'>if</span> <span class='op'>!</span><span class='id identifier rubyid_changed_env_files'>changed_env_files</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+      <span class='kw'>if</span> <span class='const'>ENV</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>allowed</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\A(1|true|y|yes)\z</span><span class='regexp_end'>/i</span></span>
+        <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Detected updates to </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_changed_env_files'>changed_env_files</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_p'>p</span><span class='op'>|</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_basename'>basename</span><span class='lparen'>(</span><span class='id identifier rubyid_p'>p</span><span class='rparen'>)</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'> and </span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'>. Proceeding because allowed=true.</span><span class='tstring_end'>&quot;</span></span>
+      <span class='kw'>else</span>
+        <span class='id identifier rubyid_puts'>puts</span>
+        <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>IMPORTANT: The following environment-related files were created/updated:</span><span class='tstring_end'>&quot;</span></span>
+        <span class='id identifier rubyid_changed_env_files'>changed_env_files</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_p'>p</span><span class='op'>|</span> <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>  - </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_p'>p</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='rbrace'>}</span>
+        <span class='id identifier rubyid_puts'>puts</span>
+        <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Please review these files. If .envrc changed, run:</span><span class='tstring_end'>&quot;</span></span>
+        <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>  direnv allow</span><span class='tstring_end'>&quot;</span></span>
+        <span class='id identifier rubyid_puts'>puts</span>
+        <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>After that, re-run to resume:</span><span class='tstring_end'>&quot;</span></span>
+        <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>  bundle exec rake kettle:dev:template allowed=true</span><span class='tstring_end'>&quot;</span></span>
+        <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>  # or to run the full install afterwards:</span><span class='tstring_end'>&quot;</span></span>
+        <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>  bundle exec rake kettle:dev:install allowed=true</span><span class='tstring_end'>&quot;</span></span>
+        <span class='id identifier rubyid_task_abort'>task_abort</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Aborting: review of environment files required before continuing.</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+      <span class='kw'>end</span>
+    <span class='kw'>end</span>
+  <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='comment'># Do not swallow intentional task aborts
+</span>    <span class='id identifier rubyid_raise'>raise</span> <span class='kw'>if</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="../../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Error.html" title="Kettle::Dev::Error (class)">Error</a></span></span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>WARNING: Could not determine env file changes: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='embexpr_end'>}</span><span class='tstring_content'>: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Handle .git-hooks files (see original rake task for details)
+</span>  <span class='id identifier rubyid_source_hooks_dir'>source_hooks_dir</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_gem_checkout_root'>gem_checkout_root</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>.git-hooks</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='kw'>if</span> <span class='const'>Dir</span><span class='period'>.</span><span class='id identifier rubyid_exist?'>exist?</span><span class='lparen'>(</span><span class='id identifier rubyid_source_hooks_dir'>source_hooks_dir</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_goalie_src'>goalie_src</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_source_hooks_dir'>source_hooks_dir</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>commit-subjects-goalie.txt</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_footer_src'>footer_src</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_source_hooks_dir'>source_hooks_dir</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>footer-template.erb.txt</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_hook_ruby_src'>hook_ruby_src</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_source_hooks_dir'>source_hooks_dir</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>commit-msg</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_hook_sh_src'>hook_sh_src</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_source_hooks_dir'>source_hooks_dir</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>prepare-commit-msg</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+
+    <span class='comment'># First: templates (.txt) — ask local/global/skip
+</span>    <span class='kw'>if</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_file?'>file?</span><span class='lparen'>(</span><span class='id identifier rubyid_goalie_src'>goalie_src</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_file?'>file?</span><span class='lparen'>(</span><span class='id identifier rubyid_footer_src'>footer_src</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_puts'>puts</span>
+      <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Git hooks templates found:</span><span class='tstring_end'>&quot;</span></span>
+      <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>  - </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_goalie_src'>goalie_src</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+      <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>  - </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_footer_src'>footer_src</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+      <span class='id identifier rubyid_puts'>puts</span>
+      <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>About these files:</span><span class='tstring_end'>&quot;</span></span>
+      <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>- commit-subjects-goalie.txt:</span><span class='tstring_end'>&quot;</span></span>
+      <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>  Lists commit subject prefixes to look for; if a commit subject starts with any listed prefix,</span><span class='tstring_end'>&quot;</span></span>
+      <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>  kettle-commit-msg will append a footer to the commit message (when GIT_HOOK_FOOTER_APPEND=true).</span><span class='tstring_end'>&quot;</span></span>
+      <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>  Defaults include release prep (🔖 Prepare release v) and checksum commits (🔒️ Checksums for v).</span><span class='tstring_end'>&quot;</span></span>
+      <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>- footer-template.erb.txt:</span><span class='tstring_end'>&quot;</span></span>
+      <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>  ERB template rendered to produce the footer. You can customize its contents and variables.</span><span class='tstring_end'>&quot;</span></span>
+      <span class='id identifier rubyid_puts'>puts</span>
+      <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Where would you like to install these two templates?</span><span class='tstring_end'>&quot;</span></span>
+      <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>  [l] Local to this project (</span><span class='embexpr_beg'>#{</span><span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_project_root'>project_root</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>.git-hooks</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'>)</span><span class='tstring_end'>&quot;</span></span>
+      <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>  [g] Global for this user (</span><span class='embexpr_beg'>#{</span><span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>HOME</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>.git-hooks</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'>)</span><span class='tstring_end'>&quot;</span></span>
+      <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>  [s] Skip copying</span><span class='tstring_end'>&quot;</span></span>
+      <span class='id identifier rubyid_print'>print</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Choose (l/g/s) [l]: </span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_choice'>choice</span> <span class='op'>=</span> <span class='gvar'>$stdin</span><span class='period'>.</span><span class='id identifier rubyid_gets'>gets</span><span class='op'>&amp;.</span><span class='id identifier rubyid_strip'>strip</span>
+      <span class='id identifier rubyid_choice'>choice</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>l</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_choice'>choice</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>||</span> <span class='id identifier rubyid_choice'>choice</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+      <span class='id identifier rubyid_dest_dir'>dest_dir</span> <span class='op'>=</span> <span class='kw'>case</span> <span class='id identifier rubyid_choice'>choice</span><span class='period'>.</span><span class='id identifier rubyid_downcase'>downcase</span>
+      <span class='kw'>when</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>g</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>global</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>then</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>HOME</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>.git-hooks</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+      <span class='kw'>when</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>s</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>skip</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>then</span> <span class='kw'>nil</span>
+      <span class='kw'>else</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_project_root'>project_root</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>.git-hooks</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+      <span class='kw'>end</span>
+
+      <span class='kw'>if</span> <span class='id identifier rubyid_dest_dir'>dest_dir</span>
+        <span class='const'>FileUtils</span><span class='period'>.</span><span class='id identifier rubyid_mkdir_p'>mkdir_p</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_dir'>dest_dir</span><span class='rparen'>)</span>
+        <span class='lbracket'>[</span><span class='lbracket'>[</span><span class='id identifier rubyid_goalie_src'>goalie_src</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>commit-subjects-goalie.txt</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='id identifier rubyid_footer_src'>footer_src</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>footer-template.erb.txt</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_src'>src</span><span class='comma'>,</span> <span class='id identifier rubyid_base'>base</span><span class='op'>|</span>
+          <span class='id identifier rubyid_dest'>dest</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_dir'>dest_dir</span><span class='comma'>,</span> <span class='id identifier rubyid_base'>base</span><span class='rparen'>)</span>
+          <span class='comment'># Allow create/replace prompts for these files (question applies to them)
+</span>          <span class='id identifier rubyid_helpers'>helpers</span><span class='period'>.</span><span class='id identifier rubyid_copy_file_with_prompt'>copy_file_with_prompt</span><span class='lparen'>(</span><span class='id identifier rubyid_src'>src</span><span class='comma'>,</span> <span class='id identifier rubyid_dest'>dest</span><span class='comma'>,</span> <span class='label'>allow_create:</span> <span class='kw'>true</span><span class='comma'>,</span> <span class='label'>allow_replace:</span> <span class='kw'>true</span><span class='rparen'>)</span>
+          <span class='comment'># Ensure readable (0644). These are data/templates, not executables.
+</span>          <span class='kw'>begin</span>
+            <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_chmod'>chmod</span><span class='lparen'>(</span><span class='int'>0o644</span><span class='comma'>,</span> <span class='id identifier rubyid_dest'>dest</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_exist?'>exist?</span><span class='lparen'>(</span><span class='id identifier rubyid_dest'>dest</span><span class='rparen'>)</span>
+          <span class='kw'>rescue</span> <span class='const'>StandardError</span>
+            <span class='comment'># ignore permission issues
+</span>          <span class='kw'>end</span>
+        <span class='kw'>end</span>
+      <span class='kw'>else</span>
+        <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Skipping copy of .git-hooks templates.</span><span class='tstring_end'>&quot;</span></span>
+      <span class='kw'>end</span>
+    <span class='kw'>end</span>
+
+    <span class='comment'># Second: hook scripts — copy only to local project; prompt only on overwrite
+</span>    <span class='id identifier rubyid_hook_dests'>hook_dests</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_project_root'>project_root</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>.git-hooks</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='rbracket'>]</span>
+    <span class='id identifier rubyid_hook_pairs'>hook_pairs</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='lbracket'>[</span><span class='id identifier rubyid_hook_ruby_src'>hook_ruby_src</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>commit-msg</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='int'>0o755</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='id identifier rubyid_hook_sh_src'>hook_sh_src</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>prepare-commit-msg</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='int'>0o755</span><span class='rbracket'>]</span><span class='rbracket'>]</span>
+    <span class='id identifier rubyid_hook_pairs'>hook_pairs</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_src'>src</span><span class='comma'>,</span> <span class='id identifier rubyid_base'>base</span><span class='comma'>,</span> <span class='id identifier rubyid_mode'>mode</span><span class='op'>|</span>
+      <span class='kw'>next</span> <span class='kw'>unless</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_file?'>file?</span><span class='lparen'>(</span><span class='id identifier rubyid_src'>src</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_hook_dests'>hook_dests</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_dstdir'>dstdir</span><span class='op'>|</span>
+        <span class='kw'>begin</span>
+          <span class='const'>FileUtils</span><span class='period'>.</span><span class='id identifier rubyid_mkdir_p'>mkdir_p</span><span class='lparen'>(</span><span class='id identifier rubyid_dstdir'>dstdir</span><span class='rparen'>)</span>
+          <span class='id identifier rubyid_dest'>dest</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_dstdir'>dstdir</span><span class='comma'>,</span> <span class='id identifier rubyid_base'>base</span><span class='rparen'>)</span>
+          <span class='comment'># Create without prompt if missing; if exists, ask to replace
+</span>          <span class='kw'>if</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_exist?'>exist?</span><span class='lparen'>(</span><span class='id identifier rubyid_dest'>dest</span><span class='rparen'>)</span>
+            <span class='kw'>if</span> <span class='id identifier rubyid_helpers'>helpers</span><span class='period'>.</span><span class='id identifier rubyid_ask'>ask</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Overwrite existing </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_dest'>dest</span><span class='embexpr_end'>}</span><span class='tstring_content'>?</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='kw'>true</span><span class='rparen'>)</span>
+              <span class='id identifier rubyid_content'>content</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='lparen'>(</span><span class='id identifier rubyid_src'>src</span><span class='rparen'>)</span>
+              <span class='id identifier rubyid_helpers'>helpers</span><span class='period'>.</span><span class='id identifier rubyid_write_file'>write_file</span><span class='lparen'>(</span><span class='id identifier rubyid_dest'>dest</span><span class='comma'>,</span> <span class='id identifier rubyid_content'>content</span><span class='rparen'>)</span>
+              <span class='kw'>begin</span>
+                <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_chmod'>chmod</span><span class='lparen'>(</span><span class='id identifier rubyid_mode'>mode</span><span class='comma'>,</span> <span class='id identifier rubyid_dest'>dest</span><span class='rparen'>)</span>
+              <span class='kw'>rescue</span> <span class='const'>StandardError</span>
+                <span class='comment'># ignore permission issues
+</span>              <span class='kw'>end</span>
+              <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Replaced </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_dest'>dest</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+            <span class='kw'>else</span>
+              <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Kept existing </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_dest'>dest</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+            <span class='kw'>end</span>
+          <span class='kw'>else</span>
+            <span class='id identifier rubyid_content'>content</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='lparen'>(</span><span class='id identifier rubyid_src'>src</span><span class='rparen'>)</span>
+            <span class='id identifier rubyid_helpers'>helpers</span><span class='period'>.</span><span class='id identifier rubyid_write_file'>write_file</span><span class='lparen'>(</span><span class='id identifier rubyid_dest'>dest</span><span class='comma'>,</span> <span class='id identifier rubyid_content'>content</span><span class='rparen'>)</span>
+            <span class='kw'>begin</span>
+              <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_chmod'>chmod</span><span class='lparen'>(</span><span class='id identifier rubyid_mode'>mode</span><span class='comma'>,</span> <span class='id identifier rubyid_dest'>dest</span><span class='rparen'>)</span>
+            <span class='kw'>rescue</span> <span class='const'>StandardError</span>
+              <span class='comment'># ignore permission issues
+</span>            <span class='kw'>end</span>
+            <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Installed </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_dest'>dest</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+          <span class='kw'>end</span>
+        <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+          <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>WARNING: Could not install hook </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_base'>base</span><span class='embexpr_end'>}</span><span class='tstring_content'> to </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_dstdir'>dstdir</span><span class='embexpr_end'>}</span><span class='tstring_content'>: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='embexpr_end'>}</span><span class='tstring_content'>: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+        <span class='kw'>end</span>
+      <span class='kw'>end</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Done
+</span>  <span class='kw'>nil</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="task_abort-class_method">
+  
+    .<strong>task_abort</strong>(msg)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Abort wrapper that avoids terminating the entire process during specs</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+14
+15
+16
+17
+18
+19
+20</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/tasks/template_task.rb', line 14</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_task_abort'>task_abort</span><span class='lparen'>(</span><span class='id identifier rubyid_msg'>msg</span><span class='rparen'>)</span>
+  <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='const'>RSpec</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Error.html" title="Kettle::Dev::Error (class)">Error</a></span></span><span class='comma'>,</span> <span class='id identifier rubyid_msg'>msg</span>
+  <span class='kw'>else</span>
+    <span class='const'><span class='object_link'><a href="../../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../ExitAdapter.html" title="Kettle::Dev::ExitAdapter (module)">ExitAdapter</a></span></span><span class='period'>.</span><span class='id identifier rubyid_abort'><span class='object_link'><a href="../ExitAdapter.html#abort-class_method" title="Kettle::Dev::ExitAdapter.abort (method)">abort</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_msg'>msg</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+      <div id="footer">
+  Generated on Mon Aug 25 23:52:52 2025 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.37 (ruby-3.4.5).
+</div>
+
+    </div>
+  </body>
+</html>
