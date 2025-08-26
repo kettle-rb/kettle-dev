@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 # External stdlib
+require "digest"
 require "open3"
 require "shellwords"
 require "time"
