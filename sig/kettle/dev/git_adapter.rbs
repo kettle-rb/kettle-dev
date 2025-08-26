@@ -3,6 +3,13 @@ module Kettle
     class GitAdapter
       def initialize: () -> void
       def push: (String?, String, force: bool) -> bool
+      def current_branch: () -> String?
+      def remotes: () -> Array[String]
+      def remotes_with_urls: () -> Hash[String, String]
+      def remote_url: (String) -> String?
+      def checkout: (String) -> bool
+      def pull: (String, String) -> bool
+      def fetch: (String, String?) -> bool
     end
   end
 end

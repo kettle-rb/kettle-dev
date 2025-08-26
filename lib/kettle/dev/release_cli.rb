@@ -430,40 +430,29 @@ module Kettle
       end
 
       def checkout!(branch)
-        run_cmd!("git checkout #{Shellwords.escape(branch)}")
+        ok = @git.checkout(branch)
+        abort("Failed to checkout #{branch}") unless ok
       end
 
       def pull!(branch)
-        run_cmd!("git pull origin #{Shellwords.escape(branch)}")
+        ok = @git.pull("origin", branch)
+        abort("Failed to pull origin #{branch}") unless ok
       end
 
       def current_branch
-        out, ok = git_output(["rev-parse", "--abbrev-ref", "HEAD"])
-        ok ? out : nil
+        @git.current_branch
       end
 
       def list_remotes
-        out, ok = git_output(["remote"])
-        ok ? out.split(/\s+/).reject(&:empty?) : []
+        @git.remotes
       end
 
       def remotes_with_urls
-        out, ok = git_output(["remote", "-v"])
-        return {} unless ok
-        urls = {}
-        out.each_line do |line|
-          if line =~ /(\S+)\s+(\S+)\s+\((fetch|push)\)/
-            name = Regexp.last_match(1)
-            url = Regexp.last_match(2)
-            kind = Regexp.last_match(3)
-            urls[name] = url if kind == "fetch" || !urls.key?(name)
-          end
-        end
-        urls
+        @git.remotes_with_urls
       end
 
       def remote_url(name)
-        remotes_with_urls[name]
+        @git.remote_url(name)
       end
 
       def github_remote_candidates

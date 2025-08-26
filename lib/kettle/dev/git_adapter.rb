@@ -9,7 +9,7 @@ module Kettle
     # This adapter requires the 'git' gem at runtime and does not shell out to
     # the system git. Specs should stub the git gem API to avoid real pushes.
     #
-    # Public API is intentionally tiny and only includes what we need right now.
+    # Public API is intentionally small and only includes what we need right now.
     class GitAdapter
       # Create a new adapter rooted at the current working directory.
       # @return [void]
@@ -42,6 +42,78 @@ module Kettle
         rescue StandardError
           false
         end
+      end
+
+      # @return [String, nil] current branch name, or nil on error
+      def current_branch
+        @git.current_branch
+      rescue StandardError
+        nil
+      end
+
+      # @return [Array<String>] list of remote names
+      def remotes
+        @git.remotes.map(&:name)
+      rescue StandardError
+        []
+      end
+
+      # @return [Hash{String=>String}] remote name => fetch URL
+      def remotes_with_urls
+        @git.remotes.each_with_object({}) do |r, h|
+          begin
+            h[r.name] = r.url
+          rescue StandardError
+            # ignore
+          end
+        end
+      rescue StandardError
+        {}
+      end
+
+      # @param name [String]
+      # @return [String, nil]
+      def remote_url(name)
+        r = @git.remotes.find { |x| x.name == name }
+        r&.url
+      rescue StandardError
+        nil
+      end
+
+      # Checkout the given branch
+      # @param branch [String]
+      # @return [Boolean]
+      def checkout(branch)
+        @git.checkout(branch)
+        true
+      rescue StandardError
+        false
+      end
+
+      # Pull from a remote/branch
+      # @param remote [String]
+      # @param branch [String]
+      # @return [Boolean]
+      def pull(remote, branch)
+        @git.pull(remote, branch)
+        true
+      rescue StandardError
+        false
+      end
+
+      # Fetch a ref from a remote (or everything if ref is nil)
+      # @param remote [String]
+      # @param ref [String, nil]
+      # @return [Boolean]
+      def fetch(remote, ref = nil)
+        if ref
+          @git.fetch(remote, ref)
+        else
+          @git.fetch(remote)
+        end
+        true
+      rescue StandardError
+        false
       end
     end
   end

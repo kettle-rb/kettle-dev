@@ -3,7 +3,7 @@
 require "kettle/dev/git_adapter"
 
 RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
-  describe "#push with git gem present" do
+  describe "git operations with git gem present" do
     let(:git_repo) { instance_double("Git::Base") }
 
     before do
@@ -24,10 +24,76 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
       expect(adapter.push(nil, "main", force: true)).to be true
     end
 
-    it "returns false on exceptions" do
+    it "returns false on exceptions in push" do
       expect(git_repo).to receive(:push).and_raise(StandardError)
       adapter = described_class.new
       expect(adapter.push("origin", "feat")).to be false
+    end
+
+    it "returns current_branch and handles error" do
+      allow(git_repo).to receive(:current_branch).and_return("main")
+      adapter = described_class.new
+      expect(adapter.current_branch).to eq("main")
+      allow(git_repo).to receive(:current_branch).and_raise(StandardError)
+      expect(adapter.current_branch).to be_nil
+    end
+
+    it "lists remotes and handles error" do
+      remote_a = instance_double("Git::Remote", name: "origin")
+      remote_b = instance_double("Git::Remote", name: "github")
+      allow(git_repo).to receive(:remotes).and_return([remote_a, remote_b])
+      adapter = described_class.new
+      expect(adapter.remotes).to eq(["origin", "github"])
+      allow(git_repo).to receive(:remotes).and_raise(StandardError)
+      expect(adapter.remotes).to eq([])
+    end
+
+    it "returns remotes_with_urls and handles error" do
+      remote_a = instance_double("Git::Remote", name: "origin", url: "git@github.com:me/repo.git")
+      remote_b = instance_double("Git::Remote", name: "github", url: "https://github.com/me/repo.git")
+      allow(git_repo).to receive(:remotes).and_return([remote_a, remote_b])
+      adapter = described_class.new
+      expect(adapter.remotes_with_urls).to eq({
+        "origin" => "git@github.com:me/repo.git",
+        "github" => "https://github.com/me/repo.git",
+      })
+      allow(git_repo).to receive(:remotes).and_raise(StandardError)
+      expect(adapter.remotes_with_urls).to eq({})
+    end
+
+    it "returns remote_url and handles error" do
+      remote_a = instance_double("Git::Remote", name: "origin", url: "git@github.com:me/repo.git")
+      allow(git_repo).to receive(:remotes).and_return([remote_a])
+      adapter = described_class.new
+      expect(adapter.remote_url("origin")).to include("github.com")
+      allow(git_repo).to receive(:remotes).and_raise(StandardError)
+      expect(adapter.remote_url("origin")).to be_nil
+    end
+
+    it "checks out a branch and returns false on error" do
+      expect(git_repo).to receive(:checkout).with("feat")
+      adapter = described_class.new
+      expect(adapter.checkout("feat")).to be true
+      allow(git_repo).to receive(:checkout).and_raise(StandardError)
+      expect(adapter.checkout("feat")).to be false
+    end
+
+    it "pulls and returns false on error" do
+      expect(git_repo).to receive(:pull).with("origin", "main")
+      adapter = described_class.new
+      expect(adapter.pull("origin", "main")).to be true
+      allow(git_repo).to receive(:pull).and_raise(StandardError)
+      expect(adapter.pull("origin", "main")).to be false
+    end
+
+    it "fetches with and without ref and returns false on error" do
+      expect(git_repo).to receive(:fetch).with("origin", "main")
+      adapter = described_class.new
+      expect(adapter.fetch("origin", "main")).to be true
+      expect(git_repo).to receive(:fetch).with("origin")
+      expect(adapter.fetch("origin")).to be true
+      allow(git_repo).to receive(:fetch).and_raise(StandardError)
+      expect(adapter.fetch("origin", "oops")).to be false
     end
   end
 

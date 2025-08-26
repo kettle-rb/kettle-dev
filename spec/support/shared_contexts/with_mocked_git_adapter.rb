@@ -20,6 +20,14 @@ RSpec.shared_context "with mocked git adapter" do
     # Create a fresh double per example to avoid cross-test leakage
     adapter_double = instance_double("Kettle::Dev::GitAdapter")
     allow(adapter_double).to receive(:push) { |_remote, _branch, **_opts| git_push_success }
+    # Safe defaults for other methods used by ReleaseCLI
+    allow(adapter_double).to receive(:current_branch).and_return("main")
+    allow(adapter_double).to receive(:remotes).and_return(["origin"])
+    allow(adapter_double).to receive(:remotes_with_urls).and_return({"origin" => "git@github.com:me/repo.git"})
+    allow(adapter_double).to receive(:remote_url) { |name| name == "origin" ? "git@github.com:me/repo.git" : nil }
+    allow(adapter_double).to receive(:checkout).and_return(true)
+    allow(adapter_double).to receive(:pull).and_return(true)
+    allow(adapter_double).to receive(:fetch).and_return(true)
 
     allow(Kettle::Dev::GitAdapter).to receive(:new).and_return(adapter_double)
   end

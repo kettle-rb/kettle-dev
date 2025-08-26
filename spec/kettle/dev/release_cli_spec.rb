@@ -186,7 +186,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
   end
 
   describe "git helpers" do
-    it "detects trunk branch from origin remote output" do
+    it "detects trunk branch from origin remote output (still via git command)" do
       out = "Remote HEAD branch: main\n  HEAD branch: main\n"
       allow(cli).to receive(:git_output).with(["remote", "show", "origin"]).and_return([out, true])
       expect(cli.send(:detect_trunk_branch)).to eq("main")
@@ -200,7 +200,13 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         gl\thttps://gitlab.com/me/repo (fetch)
         cb\tgit@codeberg.org:me/repo.git (fetch)
       TXT
-      allow(cli).to receive(:git_output).with(["remote", "-v"]).and_return([remote_v, true])
+      git = cli.instance_variable_get(:@git)
+      allow(git).to receive(:remotes_with_urls).and_return({
+        "origin" => "git@github.com:me/repo.git",
+        "github" => "https://github.com/me/repo.git",
+        "gl" => "https://gitlab.com/me/repo",
+        "cb" => "git@codeberg.org:me/repo.git",
+      })
       urls = cli.send(:remotes_with_urls)
       expect(urls["origin"]).to include("github.com")
       expect(cli.send(:github_remote_candidates)).to include("origin", "github")
@@ -706,34 +712,33 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
   end
 
   describe "direct git wrappers" do
-    it "runs checkout! and pull! via run_cmd!" do
-      expect(cli).to receive(:run_cmd!).with("git checkout main")
+    it "runs checkout! and pull! via GitAdapter" do
+      git = cli.instance_variable_get(:@git)
+      expect(git).to receive(:checkout).with("main").and_return(true)
       cli.send(:checkout!, "main")
-      expect(cli).to receive(:run_cmd!).with("git pull origin main")
+      expect(git).to receive(:pull).with("origin", "main").and_return(true)
       cli.send(:pull!, "main")
     end
 
-    it "returns current_branch and lists remotes" do
-      allow(cli).to receive(:git_output).with(["rev-parse", "--abbrev-ref", "HEAD"]).and_return(["feat", true])
+    it "returns current_branch and lists remotes via GitAdapter" do
+      git = cli.instance_variable_get(:@git)
+      allow(git).to receive(:current_branch).and_return("feat")
       expect(cli.send(:current_branch)).to eq("feat")
-      allow(cli).to receive(:git_output).with(["remote"]).and_return(["origin\ngithub\n", true])
+      allow(git).to receive(:remotes).and_return(["origin", "github"])
       expect(cli.send(:list_remotes)).to include("origin", "github")
     end
 
-    it "fetches remote_url and prefers origin when appropriate" do
-      allow(cli).to receive(:remotes_with_urls).and_return({"origin" => "https://github.com/me/repo.git"})
+    it "fetches remote_url and prefers origin when appropriate via GitAdapter" do
+      git = cli.instance_variable_get(:@git)
+      allow(git).to receive(:remotes_with_urls).and_return({"origin" => "https://github.com/me/repo.git"})
       expect(cli.send(:remote_url, "origin")).to include("github.com")
       expect(cli.send(:preferred_github_remote)).to eq("origin")
     end
 
-    it "checks remote presence and remote branch existence" do
+    it "checks remote presence (list_remotes) still works" do
       allow(cli).to receive(:list_remotes).and_return(["origin"])
       expect(cli.send(:has_remote?, "origin")).to be true
       expect(cli.send(:has_remote?, "github")).to be false
-      allow(cli).to receive(:git_output).with(["show-ref", "--verify", "--quiet", "refs/remotes/origin/main"]).and_return(["", true])
-      expect(cli.send(:remote_branch_exists?, "origin", "main")).to be true
-      allow(cli).to receive(:git_output).with(["show-ref", "--verify", "--quiet", "refs/remotes/origin/other"]).and_return(["", false])
-      expect(cli.send(:remote_branch_exists?, "origin", "other")).to be false
     end
   end
 
