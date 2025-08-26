@@ -193,13 +193,6 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     end
 
     it "parses remotes_with_urls and candidates" do
-      remote_v = <<~TXT
-        origin\tgit@github.com:me/repo.git (fetch)
-        origin\tgit@github.com:me/repo.git (push)
-        github\thttps://github.com/me/repo.git (fetch)
-        gl\thttps://gitlab.com/me/repo (fetch)
-        cb\tgit@codeberg.org:me/repo.git (fetch)
-      TXT
       git = cli.instance_variable_get(:@git)
       allow(git).to receive(:remotes_with_urls).and_return({
         "origin" => "git@github.com:me/repo.git",

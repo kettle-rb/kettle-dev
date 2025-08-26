@@ -6,15 +6,14 @@
 # - Prevents real SystemExit from terminating the spec process by raising
 #   MockSystemExit (a StandardError) instead.
 RSpec.shared_context "with mocked exit adapter" do
-  # StandardError subclass to avoid terminating the test process like SystemExit would
-  class MockSystemExit < StandardError; end
-
-  before(:each) do |example|
+  before do |example|
     # Allow opting out for specs that need the real implementation
     next if example.metadata[:real_exit_adapter]
 
     # Ensure the module is loaded so we can stub it
     require "kettle/dev/exit_adapter"
+    # Define non-leaky exception class via stub_const; auto-restored between examples
+    stub_const("MockSystemExit", Class.new(StandardError))
 
     # Stub out abort and exit to raise MockSystemExit with meaningful messages
     allow(Kettle::Dev::ExitAdapter).to receive(:abort) do |msg|

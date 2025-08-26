@@ -4,7 +4,7 @@ require "kettle/dev/git_adapter"
 
 RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
   describe "git operations with git gem present" do
-    let(:git_repo) { instance_double("Git::Base") }
+    let(:git_repo) { instance_double(Git::Base) }
 
     before do
       # Simulate git gem present by stubbing Git.open from the git gem
@@ -39,8 +39,8 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
     end
 
     it "lists remotes and handles error" do
-      remote_a = instance_double("Git::Remote", name: "origin")
-      remote_b = instance_double("Git::Remote", name: "github")
+      remote_a = instance_double(Git::Remote, name: "origin")
+      remote_b = instance_double(Git::Remote, name: "github")
       allow(git_repo).to receive(:remotes).and_return([remote_a, remote_b])
       adapter = described_class.new
       expect(adapter.remotes).to eq(["origin", "github"])
@@ -49,8 +49,8 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
     end
 
     it "returns remotes_with_urls and handles error" do
-      remote_a = instance_double("Git::Remote", name: "origin", url: "git@github.com:me/repo.git")
-      remote_b = instance_double("Git::Remote", name: "github", url: "https://github.com/me/repo.git")
+      remote_a = instance_double(Git::Remote, name: "origin", url: "git@github.com:me/repo.git")
+      remote_b = instance_double(Git::Remote, name: "github", url: "https://github.com/me/repo.git")
       allow(git_repo).to receive(:remotes).and_return([remote_a, remote_b])
       adapter = described_class.new
       expect(adapter.remotes_with_urls).to eq({
@@ -62,7 +62,7 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
     end
 
     it "returns remote_url and handles error" do
-      remote_a = instance_double("Git::Remote", name: "origin", url: "git@github.com:me/repo.git")
+      remote_a = instance_double(Git::Remote, name: "origin", url: "git@github.com:me/repo.git")
       allow(git_repo).to receive(:remotes).and_return([remote_a])
       adapter = described_class.new
       expect(adapter.remote_url("origin")).to include("github.com")
