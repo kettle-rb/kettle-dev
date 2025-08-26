@@ -15,7 +15,6 @@ module Kettle
       # The sentinel string that must be present to avoid duplicate footers
       # @return [String, nil]
       SENTINEL = ENV["GIT_HOOK_FOOTER_SENTINEL"]
-      raise "Set GIT_HOOK_FOOTER_SENTINEL=<footer sentinel> in .env.local (e.g., '⚡️ A message from a fellow meat-based-AI ⚡️')" if FOOTER_APPEND && (SENTINEL.nil? || SENTINEL.to_s.empty?)
 
       class << self
         # Resolve git repository top-level dir, or nil outside a repo.
@@ -67,8 +66,17 @@ module Kettle
         def render(*argv)
           commit_msg = File.read(argv[0])
           subject_line = commit_msg.lines.first.to_s
-          if GitCommitFooter::FOOTER_APPEND && goalie_allows_footer?(subject_line)
-            if commit_msg.include?(GitCommitFooter::SENTINEL)
+
+          # Evaluate configuration at runtime to respect ENV set during tests/CI
+          footer_append = ENV.fetch("GIT_HOOK_FOOTER_APPEND", "false").casecmp("true").zero?
+          sentinel = ENV["GIT_HOOK_FOOTER_SENTINEL"]
+
+          if footer_append && (sentinel.nil? || sentinel.to_s.empty?)
+            raise "Set GIT_HOOK_FOOTER_SENTINEL=<footer sentinel> in .env.local (e.g., '⚡️ A message from a fellow meat-based-AI ⚡️')"
+          end
+
+          if footer_append && goalie_allows_footer?(subject_line)
+            if commit_msg.include?(sentinel)
               exit(0)
             else
               footer_binding = GitCommitFooter.new
