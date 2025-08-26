@@ -16,7 +16,7 @@ module Kettle
       # @param path [String] path to commit message file (ARGV[0] from git)
       def enforce_branch_rule!(path)
         validate = ENV.fetch("GIT_HOOK_BRANCH_VALIDATE", "false")
-        branch_rule_type = (!validate.casecmp?("false") && validate) || nil
+        branch_rule_type = (!validate.casecmp("false").zero? && validate) || nil
         return unless branch_rule_type
         branch_rule = BRANCH_RULES[branch_rule_type]
         return unless branch_rule
