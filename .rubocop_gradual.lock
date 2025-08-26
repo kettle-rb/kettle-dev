@@ -20,25 +20,25 @@
     [145, 5, 47, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 45456806],
     [229, 5, 39, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 4038128320]
   ],
-  "spec/kettle/dev/git_adapter_spec.rb:2947560136": [
-    [15, 5, 44, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 2395005480],
-    [16, 27, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `git_repo` as a spy using `allow` or `instance_spy`.", 1384559950],
-    [21, 5, 48, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 3859365253],
-    [22, 27, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `git_repo` as a spy using `allow` or `instance_spy`.", 1384559950],
-    [27, 5, 40, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 2226014944],
-    [28, 7, 16, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 722749302],
-    [28, 27, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `git_repo` as a spy using `allow` or `instance_spy`.", 1384559950],
-    [33, 5, 45, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 2325715337],
-    [41, 5, 36, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 761591252],
-    [51, 5, 48, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 1730677446],
-    [64, 5, 41, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 497273307],
-    [73, 5, 51, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 3636420064],
-    [74, 27, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `git_repo` as a spy using `allow` or `instance_spy`.", 1384559950],
-    [81, 5, 37, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 4193763416],
-    [82, 27, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `git_repo` as a spy using `allow` or `instance_spy`.", 1384559950],
-    [89, 5, 60, "RSpec/MultipleExpectations: Example has too many expectations [5/1].", 2681505264],
-    [90, 27, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `git_repo` as a spy using `allow` or `instance_spy`.", 1384559950],
-    [93, 27, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `git_repo` as a spy using `allow` or `instance_spy`.", 1384559950]
+  "spec/kettle/dev/git_adapter_spec.rb:372044280": [
+    [16, 5, 44, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 2395005480],
+    [17, 27, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `git_repo` as a spy using `allow` or `instance_spy`.", 1384559950],
+    [22, 5, 48, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 3859365253],
+    [23, 27, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `git_repo` as a spy using `allow` or `instance_spy`.", 1384559950],
+    [28, 5, 40, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 2226014944],
+    [29, 7, 16, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 722749302],
+    [29, 27, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `git_repo` as a spy using `allow` or `instance_spy`.", 1384559950],
+    [34, 5, 45, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 2325715337],
+    [42, 5, 36, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 761591252],
+    [52, 5, 48, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 1730677446],
+    [65, 5, 41, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 497273307],
+    [74, 5, 51, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 3636420064],
+    [75, 27, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `git_repo` as a spy using `allow` or `instance_spy`.", 1384559950],
+    [82, 5, 37, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 4193763416],
+    [83, 27, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `git_repo` as a spy using `allow` or `instance_spy`.", 1384559950],
+    [90, 5, 60, "RSpec/MultipleExpectations: Example has too many expectations [5/1].", 2681505264],
+    [91, 27, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `git_repo` as a spy using `allow` or `instance_spy`.", 1384559950],
+    [94, 27, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `git_repo` as a spy using `allow` or `instance_spy`.", 1384559950]
   ],
   "spec/kettle/dev/tasks/ci_task_spec.rb:3083131066": [
     [303, 9, 28, "RSpec/AnyInstance: Avoid stubbing using `allow_any_instance_of`.", 4133203013],
@@ -75,12 +75,12 @@
     [3, 16, 25, "RSpec/DescribeClass: The first argument to describe should be the class or module being tested.", 3060513619],
     [4, 3, 34, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 724886528]
   ],
-  "spec/spec_helper.rb:426536835": [
-    [84, 5, 15, "Style/GlobalVars: Do not introduce global variables.", 2344169827],
-    [97, 25, 15, "Style/GlobalVars: Do not introduce global variables.", 2344169827],
-    [97, 45, 15, "Style/GlobalVars: Do not introduce global variables.", 2344169827],
-    [97, 64, 15, "Style/GlobalVars: Do not introduce global variables.", 2344169827],
-    [97, 82, 5, "Style/GlobalStdStream: Use `$stdin` instead of `STDIN`.", 231869441],
-    [98, 5, 15, "Style/GlobalVars: Do not introduce global variables.", 2344169827]
+  "spec/spec_helper.rb:3130373158": [
+    [86, 5, 15, "Style/GlobalVars: Do not introduce global variables.", 2344169827],
+    [99, 25, 15, "Style/GlobalVars: Do not introduce global variables.", 2344169827],
+    [99, 45, 15, "Style/GlobalVars: Do not introduce global variables.", 2344169827],
+    [99, 64, 15, "Style/GlobalVars: Do not introduce global variables.", 2344169827],
+    [99, 82, 5, "Style/GlobalStdStream: Use `$stdin` instead of `STDIN`.", 231869441],
+    [100, 5, 15, "Style/GlobalVars: Do not introduce global variables.", 2344169827]
   ]
 }
