@@ -130,12 +130,14 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
   describe "#commit_release_prep!" do
     it "returns false when no changes" do
+      allow(cli).to receive(:run_cmd!).with("git add -A")
       allow(cli).to receive(:git_output).with(["status", "--porcelain"]).and_return(["", true])
       expect(cli.send(:commit_release_prep!, "1.0.0")).to be false
     end
 
     it "commits and returns true when there are changes" do
       allow(cli).to receive(:git_output).with(["status", "--porcelain"]).and_return([" M file", true])
+      allow(cli).to receive(:run_cmd!).with("git add -A")
       expect(cli).to receive(:run_cmd!).with(/git commit -am/)
       expect(cli.send(:commit_release_prep!, "1.0.0")).to be true
     end

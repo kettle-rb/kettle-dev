@@ -373,6 +373,8 @@ module Kettle
 
       def commit_release_prep!(version)
         msg = "🔖 Prepare release v#{version}"
+        # Stage all changes (including new/untracked files) prior to committing
+        run_cmd!("git add -A")
         out, _ = git_output(["status", "--porcelain"])
         if out.empty?
           puts "No changes to commit for release prep (continuing)."

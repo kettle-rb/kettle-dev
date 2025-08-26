@@ -29,6 +29,8 @@ Please file a bug if you notice a violation of semantic versioning.
 - COVERAGE:  97.68% -- 1685/1725 lines in 17 files
 - BRANCH COVERAGE:  77.54% -- 618/797 branches in 17 files- 95.35% documented
 - 77.00% documented
+### Added
+- runs git add --all before git commit, to ensure all files are committed.
 ### Changed
 - This gem is now loaded via Ruby's standard `autoload` feature.
 - Bundler is always expected, and most things probably won't work without it.
