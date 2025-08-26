@@ -35,7 +35,7 @@ RSpec.configure do |config|
   # Auto-skip examples that require Bundler >= 2.7 (which implies Ruby >= 3.2)
   config.before(:each, :bundler_27_only) do
     # Skip on Ruby < 3.2 using rspec-pending_for's version matcher
-    pending_for(reason: "Requires Bundler >= 2.7 which is unavailable on Ruby < 3.2", ruby: Range.new(GemVersion.new("2.3"), GemVersion.new("3.2")), skip: true)
+    pending_for(reason: "Requires Bundler >= 2.7 which is unavailable on Ruby < 3.2", ruby: Range.new(Gem::Version.new("2.3"), Gem::Version.new("3.2")), skip: true)
   end
 end
 
@@ -45,6 +45,8 @@ require_relative "support/shared_contexts/with_rake"
 require_relative "support/shared_contexts/with_mocked_git_adapter"
 # Include the global mocked exit adapter context
 require_relative "support/shared_contexts/with_mocked_exit_adapter"
+# Include skip context for TruffleRuby 3.1..3.2 incompatibilities
+require_relative "support/shared_contexts/with_truffleruby_skip_31_32"
 
 # Global input machine to prevent blocking prompts during tests
 # Many tasks/executables read from $stdin directly (e.g., $stdin.gets).
