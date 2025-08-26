@@ -151,6 +151,7 @@ Gem::Specification.new do |spec|
   # Testing
   spec.add_dependency("appraisal2", "~> 3.0")                           # ruby >= 1.8.7, for testing against multiple versions of dependencies
   spec.add_dependency("kettle-test", "~> 1.0")                          # ruby >= 2.3
+  spec.add_dependency("rspec-pending_for")                                # ruby >= 2.3, used to skip specs on incompatible Rubies
 
   # Releasing
   spec.add_dependency("ruby-progressbar", "~> 1.13")                    # ruby >= 0

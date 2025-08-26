@@ -23,6 +23,18 @@ end
 # this library
 require "kettle-dev"
 
+# rspec-pending_for: enable skipping on incompatible Ruby versions
+require "rspec/pending_for"
+RSpec.configure do |config|
+  config.include Rspec::PendingFor
+
+  # Auto-skip examples that require Bundler >= 2.7 (which implies Ruby >= 3.2)
+  config.before(:each, :bundler_27_only) do
+    # Skip on Ruby < 3.2 using rspec-pending_for's version matcher
+    pending_for(reason: "Requires Bundler >= 2.7 which is unavailable on Ruby < 3.2", ruby: Range(GemVersion.new("2.3")..GemVersion.new("3.2")), skip: true)
+  end
+end
+
 # Internal RSpec & related config
 require_relative "support/shared_contexts/with_rake"
 
