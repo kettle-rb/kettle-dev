@@ -161,7 +161,7 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
 
     it "aborts when missing" do
       allow(File).to receive(:file?).with(described_class::OC_YML_PATH).and_return(false)
-      expect { described_class.new(readme_path: tmp_readme).send(:resolve_handle) }.to raise_error(SystemExit)
+      expect { described_class.new(readme_path: tmp_readme).send(:resolve_handle) }.to raise_error(MockSystemExit)
     end
   end
 

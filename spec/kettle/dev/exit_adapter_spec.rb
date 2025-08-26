@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe "::ExitAdapter" do
+RSpec.describe "::ExitAdapter", :real_exit_adapter do
   it "raises SystemExit with message via abort" do
     expect {
       Kettle::Dev::ExitAdapter.abort("boom")

@@ -41,38 +41,41 @@ module Kettle
         version = detect_version
         puts "Detected version: #{version.inspect}"
 
+        latest_overall = nil
+        latest_for_series = nil
         begin
           gem_name = detect_gem_name
           latest_overall, latest_for_series = latest_released_versions(gem_name, version)
-          if latest_overall
-            msg = "Latest released: #{latest_overall}"
-            if latest_for_series && latest_for_series != latest_overall
-              msg += " | Latest for series #{Gem::Version.new(version).segments[0, 2].join(".")}.x: #{latest_for_series}"
-            elsif latest_for_series
-              msg += " (matches current series)"
-            end
-            puts msg
-
-            cur = Gem::Version.new(version)
-            overall = Gem::Version.new(latest_overall)
-            cur_series = cur.segments[0, 2]
-            overall_series = overall.segments[0, 2]
-            target = if (cur_series <=> overall_series) == -1
-              latest_for_series
-            else
-              latest_overall
-            end
-            if target && Gem::Version.new(version) <= Gem::Version.new(target)
-              series = cur_series.join(".")
-              warn("version.rb (#{version}) must be greater than the latest released version for series #{series}. Latest for series: #{target}.")
-              warn("Tip: bump PATCH for a stable branch release, or bump MINOR/MAJOR when on trunk.")
-              abort("Aborting: version bump required.")
-            end
-          else
-            puts "Could not determine latest released version from RubyGems (offline?). Proceeding without sanity check."
-          end
         rescue StandardError => e
           warn("Warning: failed to check RubyGems for latest version (#{e.class}: #{e.message}). Proceeding.")
+        end
+
+        if latest_overall
+          msg = "Latest released: #{latest_overall}"
+          if latest_for_series && latest_for_series != latest_overall
+            msg += " | Latest for series #{Gem::Version.new(version).segments[0, 2].join(".")}.x: #{latest_for_series}"
+          elsif latest_for_series
+            msg += " (matches current series)"
+          end
+          puts msg
+
+          cur = Gem::Version.new(version)
+          overall = Gem::Version.new(latest_overall)
+          cur_series = cur.segments[0, 2]
+          overall_series = overall.segments[0, 2]
+          target = if (cur_series <=> overall_series) == -1
+            latest_for_series
+          else
+            latest_overall
+          end
+          if target && Gem::Version.new(version) <= Gem::Version.new(target)
+            series = cur_series.join(".")
+            warn("version.rb (#{version}) must be greater than the latest released version for series #{series}. Latest for series: #{target}.")
+            warn("Tip: bump PATCH for a stable branch release, or bump MINOR/MAJOR when on trunk.")
+            abort("Aborting: version bump required.")
+          end
+        else
+          puts "Could not determine latest released version from RubyGems (offline?). Proceeding without sanity check."
         end
 
         puts "Have you updated lib/**/version.rb and CHANGELOG.md for v#{version}? [y/N]"

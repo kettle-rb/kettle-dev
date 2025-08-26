@@ -74,13 +74,13 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     it "aborts when bundler is missing" do
       hide_const("Bundler") if defined?(Bundler)
       allow(cli).to receive(:require).with("bundler").and_raise(LoadError)
-      expect { cli.send(:ensure_bundler_2_7_plus!) }.to raise_error(SystemExit, /Bundler is required/)
+      expect { cli.send(:ensure_bundler_2_7_plus!) }.to raise_error(MockSystemExit, /Bundler is required/)
     end
 
     it "aborts when bundler version is too low" do
       stub_const("Bundler", Class.new)
       stub_const("Bundler::VERSION", "2.6.9")
-      expect { cli.send(:ensure_bundler_2_7_plus!) }.to raise_error(SystemExit, /requires Bundler >= 2.7.0/)
+      expect { cli.send(:ensure_bundler_2_7_plus!) }.to raise_error(MockSystemExit, /requires Bundler >= 2.7.0/)
     end
 
     it "passes when bundler meets minimum" do
@@ -144,7 +144,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
   describe "#push!" do
     it "aborts when branch is unknown" do
       allow(cli).to receive(:current_branch).and_return(nil)
-      expect { cli.send(:push!) }.to raise_error(SystemExit, /Could not determine current branch/)
+      expect { cli.send(:push!) }.to raise_error(MockSystemExit, /Could not determine current branch/)
     end
 
     it "pushes to 'all' and force-pushes on failure" do
@@ -243,7 +243,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       allow(cli).to receive(:ahead_behind_counts).with("main", "origin/main").and_return([0, 1])
       allow(cli).to receive(:remote_branch_exists?).with("github", "main").and_return(true)
       allow(cli).to receive(:ahead_behind_counts).with("main", "github/main").and_return([0, 0])
-      expect { cli.send(:ensure_trunk_synced_before_push!, "main", "feat") }.to raise_error(SystemExit, /missing commits present on: origin/)
+      expect { cli.send(:ensure_trunk_synced_before_push!, "main", "feat") }.to raise_error(MockSystemExit, /missing commits present on: origin/)
     end
 
     it "reports parity when all remotes are synced" do
@@ -325,7 +325,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         allow(ci_helpers).to receive(:project_root).and_return(root)
         other = described_class.new
         stub_env("SKIP_GEM_SIGNING" => nil, "GEM_CERT_USER" => "alice", "USER" => "bob")
-        expect { other.send(:ensure_signing_setup_or_skip!) }.to raise_error(SystemExit, /no public cert/)
+        expect { other.send(:ensure_signing_setup_or_skip!) }.to raise_error(MockSystemExit, /no public cert/)
       end
     end
 
@@ -356,7 +356,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         local_cli = described_class.new
         expect { local_cli.send(:validate_checksums!, "1.0.0", stage: "stage") }.not_to raise_error
         File.write(File.join(chks, "mygem-1.0.0.gem.sha256"), "deadbeef")
-        expect { local_cli.send(:validate_checksums!, "1.0.0", stage: "stage") }.to raise_error(SystemExit, /SHA256 mismatch/)
+        expect { local_cli.send(:validate_checksums!, "1.0.0", stage: "stage") }.to raise_error(MockSystemExit, /SHA256 mismatch/)
       end
     end
 
@@ -381,7 +381,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
     it "aborts when branch cannot be determined" do
       allow(ci_helpers).to receive(:current_branch).and_return(nil)
-      expect { cli.send(:monitor_workflows_after_push!) }.to raise_error(SystemExit, /Could not determine current branch/)
+      expect { cli.send(:monitor_workflows_after_push!) }.to raise_error(MockSystemExit, /Could not determine current branch/)
     end
 
     it "passes when GitHub workflows all succeed" do
@@ -404,7 +404,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       allow(ci_helpers).to receive(:latest_run).and_return(run)
       allow(ci_helpers).to receive(:success?).and_return(false)
       allow(ci_helpers).to receive(:failed?).and_return(true)
-      expect { cli.send(:monitor_workflows_after_push!) }.to raise_error(SystemExit, /Workflow failed/)
+      expect { cli.send(:monitor_workflows_after_push!) }.to raise_error(MockSystemExit, /Workflow failed/)
     end
 
     it "handles GitLab pipeline success" do
@@ -430,7 +430,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       allow(ci_helpers).to receive(:gitlab_success?).and_return(false)
       allow(ci_helpers).to receive(:gitlab_failed?).and_return(true)
       allow(cli).to receive(:gitlab_remote_candidates).and_return(["gitlab"])
-      expect { cli.send(:monitor_workflows_after_push!) }.to raise_error(SystemExit, /Pipeline failed/)
+      expect { cli.send(:monitor_workflows_after_push!) }.to raise_error(MockSystemExit, /Pipeline failed/)
     end
 
     it "aborts when no CI configured" do
@@ -438,7 +438,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       allow(File).to receive(:exist?).with(File.join(Dir.pwd, ".gitlab-ci.yml")).and_return(false)
       allow(cli).to receive(:preferred_github_remote).and_return(nil)
       allow(cli).to receive(:gitlab_remote_candidates).and_return([])
-      expect { cli.send(:monitor_workflows_after_push!) }.to raise_error(SystemExit, /CI configuration not detected/)
+      expect { cli.send(:monitor_workflows_after_push!) }.to raise_error(MockSystemExit, /CI configuration not detected/)
     end
   end
 
@@ -458,7 +458,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       allow(cli).to receive(:detect_gem_name).and_return("mygem")
       allow(cli).to receive(:latest_released_versions).and_return(["1.2.3", "1.2.3"]) # equal -> abort
       # First prompt will not be reached because we abort earlier
-      expect { cli.run }.to raise_error(SystemExit, /version bump required/)
+      expect { cli.run }.to raise_error(MockSystemExit, /version bump required/)
     end
 
     it "runs happy path when RubyGems is offline and Appraisals exist and SKIP_GEM_SIGNING is set" do
@@ -577,7 +577,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       allow(cli).to receive(:checkout!)
       allow(cli).to receive(:pull!)
 
-      expect { cli.run }.to raise_error(SystemExit, /SKIP_GEM_SIGNING=true/)
+      expect { cli.run }.to raise_error(MockSystemExit, /SKIP_GEM_SIGNING=true/)
     end
   end
 
@@ -627,7 +627,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       allow(cli).to receive(:ensure_bundler_2_7_plus!)
       allow(cli).to receive(:detect_version).and_return("1.2.3")
       allow(cli).to receive(:detect_gem_name).and_raise(StandardError.new("boom"))
-      expect { cli.run }.to raise_error(SystemExit, /please update version.rb/)
+      expect { cli.run }.to raise_error(MockSystemExit, /please update version.rb/)
     end
   end
 
@@ -641,7 +641,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     it "aborts when missing name or email" do
       allow(cli).to receive(:git_output).with(["config", "user.name"]).and_return(["", true])
       allow(cli).to receive(:git_output).with(["config", "user.email"]).and_return(["", false])
-      expect { cli.send(:ensure_git_user!) }.to raise_error(SystemExit, /Git user.name or user.email/)
+      expect { cli.send(:ensure_git_user!) }.to raise_error(MockSystemExit, /Git user.name or user.email/)
     end
   end
 
@@ -706,7 +706,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         allow(ci_helpers).to receive(:workflows_list).and_return(["ci.yml"])
         expect(cli).to receive(:system).with("act", "-W", file_path).and_return(false)
         expect(cli).to receive(:system).with("git", "reset", "--soft", "HEAD^")
-        expect { cli.send(:maybe_run_local_ci_before_push!, true) }.to raise_error(SystemExit, /local CI failure/)
+        expect { cli.send(:maybe_run_local_ci_before_push!, true) }.to raise_error(MockSystemExit, /local CI failure/)
       end
     end
   end
@@ -793,7 +793,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       expect(cli).to receive(:checkout!).with("main").at_least(:once)
       expect(cli).to receive(:run_cmd!).with("git pull --rebase origin main")
       $stdin = KettleTestInputMachine.new(default: "a")
-      expect { cli.send(:ensure_trunk_synced_before_push!, "main", "feat") }.to raise_error(SystemExit, /Aborted by user/)
+      expect { cli.send(:ensure_trunk_synced_before_push!, "main", "feat") }.to raise_error(MockSystemExit, /Aborted by user/)
     end
 
     it "returns early when origin and github trunks are in sync" do
@@ -810,7 +810,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
   describe "#validate_checksums! error cases" do
     it "aborts when built gem cannot be found" do
       allow(cli).to receive(:gem_file_for_version).with("0.0.1").and_return(nil)
-      expect { cli.send(:validate_checksums!, "0.0.1", stage: "stage") }.to raise_error(SystemExit, /Unable to locate built gem/)
+      expect { cli.send(:validate_checksums!, "0.0.1", stage: "stage") }.to raise_error(MockSystemExit, /Unable to locate built gem/)
     end
 
     it "aborts when checksum file is missing" do
@@ -822,7 +822,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         FileUtils.mkdir_p(pkg)
         gem_file = File.join(pkg, "mygem-0.1.0.gem")
         File.write(gem_file, "data")
-        expect { other.send(:validate_checksums!, "0.1.0", stage: "stage") }.to raise_error(SystemExit, /Expected checksum file not found/)
+        expect { other.send(:validate_checksums!, "0.1.0", stage: "stage") }.to raise_error(MockSystemExit, /Expected checksum file not found/)
       end
     end
   end

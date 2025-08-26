@@ -43,6 +43,8 @@ end
 require_relative "support/shared_contexts/with_rake"
 # Include the global mocked git adapter context
 require_relative "support/shared_contexts/with_mocked_git_adapter"
+# Include the global mocked exit adapter context
+require_relative "support/shared_contexts/with_mocked_exit_adapter"
 
 # Global input machine to prevent blocking prompts during tests
 # Many tasks/executables read from $stdin directly (e.g., $stdin.gets).
@@ -86,6 +88,9 @@ RSpec.configure do |config|
 
   # Include mocked git adapter for all examples; it will skip when :real_git_adapter is set
   config.include_context "with mocked git adapter"
+
+  # Include mocked exit adapter for all examples; it will skip when :real_exit_adapter is set
+  config.include_context "with mocked exit adapter"
 
   config.after(:suite) do
     # Always restore the real STDIN at the end of the suite, even if $original_stdin was overwritten
