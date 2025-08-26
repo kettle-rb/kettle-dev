@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 # External
+require "kettle/dev/exit_adapter"
 require "open3"
 require "net/http"
 require "json"
@@ -11,6 +12,12 @@ module Kettle
     module Tasks
       module CITask
         module_function
+
+        # Local abort indirection to enable mocking via ExitAdapter
+        def abort(msg)
+          Kettle::Dev::ExitAdapter.abort(msg)
+        end
+        module_function :abort
 
         # Runs `act` for a selected workflow. Option can be a short code or workflow basename.
         # Mirrors the behavior previously implemented in the ci:act rake task.

@@ -1,0 +1,8 @@
+module Kettle
+  module Dev
+    module ExitAdapter
+      def self.abort: (String msg) -> void
+      def self.exit: (?Integer status) -> void
+    end
+  end
+end

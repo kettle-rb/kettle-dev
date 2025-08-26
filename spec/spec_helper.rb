@@ -24,6 +24,8 @@ end
 require "kettle-dev"
 # Ensure GitAdapter constant is available for global stubbing
 require "kettle/dev/git_adapter"
+# Ensure ExitAdapter constant is available for potential stubbing
+require "kettle/dev/exit_adapter"
 
 # rspec-pending_for: enable skipping on incompatible Ruby versions
 require "rspec/pending_for"

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "kettle/dev/exit_adapter"
+
 module Kettle
   module Dev
     module Tasks
@@ -13,7 +15,7 @@ module Kettle
           if defined?(RSpec)
             raise Kettle::Dev::Error, msg
           else
-            abort(msg)
+            Kettle::Dev::ExitAdapter.abort(msg)
           end
         end
 

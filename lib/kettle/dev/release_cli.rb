@@ -15,10 +15,19 @@ require "ruby-progressbar"
 
 # Internal
 require "kettle/dev/git_adapter"
+require "kettle/dev/exit_adapter"
 
 module Kettle
   module Dev
     class ReleaseCLI
+      private
+
+      def abort(msg)
+        Kettle::Dev::ExitAdapter.abort(msg)
+      end
+
+      public
+
       def initialize
         @root = Kettle::Dev::CIHelpers.project_root
         @git = Kettle::Dev::GitAdapter.new

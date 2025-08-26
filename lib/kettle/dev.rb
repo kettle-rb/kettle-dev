@@ -118,6 +118,7 @@ module Kettle
     autoload :ReadmeBackers, "kettle/dev/readme_backers"
     autoload :ReleaseCLI, "kettle/dev/release_cli"
     autoload :TemplateHelpers, "kettle/dev/template_helpers"
+    autoload :ExitAdapter, "kettle/dev/exit_adapter"
     autoload :Version, "kettle/dev/version"
 
     # Nested tasks namespace with autoloaded task modules
