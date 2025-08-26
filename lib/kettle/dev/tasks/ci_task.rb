@@ -182,7 +182,10 @@ module Kettle
           input_thread = Thread.new do
             begin
               selected = $stdin.gets&.strip
-            rescue StandardError
+            rescue Exception => error
+              # Catch all exceptions in background thread, including SystemExit
+              # NOTE: look into refactoring to minimize potential SystemExit.
+              puts "Error in background thread: #{error.class}: #{error.message}" if Kettle::Dev::DEBUGGING
               selected = nil
             end
           end
@@ -232,12 +235,14 @@ module Kettle
                     else
                       status_q << [c, f, "fail #{res.code}"]
                     end
-                  rescue StandardError
+                  rescue Exception
+                    # Catch all exceptions to prevent crashing the process from a worker thread
                     status_q << [c, f, "err"]
                   end
                   sleep(poll_interval)
                 end
-              rescue StandardError
+              rescue Exception
+                # Catch all exceptions in the worker thread boundary, including SystemExit
                 status_q << [c, f, "err"]
               end
             end
