@@ -80,7 +80,7 @@ end
 
 appraise "ruby-3-1" do
   # git v4 is incompatible with truffleruby, syntactically.
-  gem "git", "< 4"
+  gem "git", "< 3"
   gem "erb"
   gem "mutex_m", "~> 0.2"
   gem "stringio", "~> 3.0"
@@ -88,7 +88,7 @@ end
 
 appraise "ruby-3-2" do
   # git v4 is incompatible with truffleruby, syntactically.
-  gem "git", "< 4"
+  gem "git", "< 3"
   gem "erb"
   gem "mutex_m", "~> 0.2"
   gem "stringio", "~> 3.0"
