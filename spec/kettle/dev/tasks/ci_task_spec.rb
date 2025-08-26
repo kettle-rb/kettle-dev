@@ -145,7 +145,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
     end
   end
 
-  describe "::act (interactive)", :ci_skip do
+  describe "::act (interactive)", :skip_ci do
     it "quits when user enters 'q'", :check_output do
       with_workflows(["ci.yml", "style.yaml"]) do |_root, _dir|
         allow($stdin).to receive(:gets).and_return("q\n")
@@ -198,7 +198,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
       end
     end
 
-    it "polls queued→in_progress→completed in worker loop (with TTY)", :check_output, :ci_skip do
+    it "polls queued→in_progress→completed in worker loop (with TTY)", :check_output, :skip_ci do
       stub_env("CI_ACT_POLL_INTERVAL" => "0")
       seq = [
         http_ok_with({"workflow_runs" => [{"status" => "queued"}]}),
@@ -216,7 +216,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
       end
     end
 
-    it "prints simple non-tty status lines before input arrives", :check_output, :ci_skip do
+    it "prints simple non-tty status lines before input arrives", :check_output, :skip_ci do
       # ensure non-tty
       allow($stdout).to receive(:tty?).and_return(false)
       with_workflows(["ci.yml"]) do |_root, _dir|
@@ -228,7 +228,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
       end
     end
 
-    it "handles Integer error for poll interval (outer rescue in worker)", :check_output, :ci_skip do
+    it "handles Integer error for poll interval (outer rescue in worker)", :check_output, :skip_ci do
       stub_env("CI_ACT_POLL_INTERVAL" => "oops")
       with_workflows(["ci.yml"]) do |_root, _dir|
         allow($stdin).to receive(:gets).and_return("q\n")
@@ -248,7 +248,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
     end
   end
 
-  describe "::act edge cases and interactive behaviors", :ci_skip do
+  describe "::act edge cases and interactive behaviors", :skip_ci do
     it "uses default emoji for unknown status in non-interactive fetch", :check_output do
       with_workflows(["ci.yml"]) do |_root, dir|
         seq = [
