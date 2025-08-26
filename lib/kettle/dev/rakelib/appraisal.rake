@@ -11,15 +11,19 @@ begin
     run_in_unbundled = proc do
       env = {"BUNDLE_GEMFILE" => "Appraisal.root.gemfile"}
 
-      # 1) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle
+      # 1) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle update --bundler
+      ok = system(env, bundle, "update", "--bundler")
+      abort("appraisal:update failed: bundle update --bundler under Appraisal.root.gemfile") unless ok
+
+      # 2) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle (install)
       ok = system(env, bundle)
       abort("appraisal:update failed: bundler install under Appraisal.root.gemfile") unless ok
 
-      # 2) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle exec appraisal update
+      # 3) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle exec appraisal update
       ok = system(env, bundle, "exec", "appraisal", "update")
       abort("appraisal:update failed: bundle exec appraisal update") unless ok
 
-      # 3) bundle exec rake rubocop_gradual:autocorrect
+      # 4) bundle exec rake rubocop_gradual:autocorrect
       ok = system(bundle, "exec", "rake", "rubocop_gradual:autocorrect")
       abort("appraisal:update failed: rubocop_gradual:autocorrect") unless ok
     end
