@@ -78,8 +78,8 @@
   
   <dl>
     <dt>Defined in:</dt>
-    <dd>lib/kettle/emoji_regex.rb<span class="defines">,<br />
-  lib/kettle/dev.rb,<br /> lib/kettle/dev/version.rb,<br /> lib/kettle/dev/ci_helpers.rb,<br /> lib/kettle/dev/template_helpers.rb</span>
+    <dd>lib/kettle/dev.rb<span class="defines">,<br />
+  lib/kettle/dev.rb,<br /> lib/kettle/dev/version.rb,<br /> lib/kettle/emoji_regex.rb,<br /> lib/kettle/dev/ci_helpers.rb,<br /> lib/kettle/dev/commit_msg.rb,<br /> lib/kettle/dev/git_adapter.rb,<br /> lib/kettle/dev/release_cli.rb,<br /> lib/kettle/dev/exit_adapter.rb,<br /> lib/kettle/dev/tasks/ci_task.rb,<br /> lib/kettle/dev/readme_backers.rb,<br /> lib/kettle/dev/template_helpers.rb,<br /> lib/kettle/dev/git_commit_footer.rb,<br /> lib/kettle/dev/tasks/install_task.rb,<br /> lib/kettle/dev/tasks/template_task.rb</span>
 </dd>
   </dl>
   
@@ -87,13 +87,7 @@
 
 <h2>Overview</h2><div class="docstring">
   <div class="discussion">
-    <p>Stolen lovingly from @ticky:<br />
-  https://github.com/ticky/ruby-emoji-regex/blob/develop/lib/emoji_regex.rb<br />
-  because that project is Ruby &gt;= 2.4, and this project is Ruby &gt;= 2.3.<br />
-That project is under the MIT license, same as this project:<br />
-  https://github.com/ticky/ruby-emoji-regex/blob/develop/LICENSE.md<br />
-If the minimum_ruby_version numbers align, will switch to a real dependency.<br />
-Wrapping it in a namespace to avoid collisions with the real emoji_regex.</p>
+    <p>Exposed from lib/ so that exe/kettle-commit-msg can be a minimal wrapper.</p>
 
 
   </div>
@@ -123,7 +117,7 @@ Wrapping it in a namespace to avoid collisions with the real emoji_regex.</p>
 </div>
 
       <div id="footer">
-  Generated on Sun Aug 24 22:34:42 2025 by
+  Generated on Mon Aug 25 23:52:51 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

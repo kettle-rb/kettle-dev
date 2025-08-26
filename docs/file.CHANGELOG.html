@@ -68,13 +68,40 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 and <a href="https://tom.preston-werner.com/2022/05/23/major-version-numbers-are-not-sacred.html">yes</a>, platform and engine support are part of the <a href="https://github.com/semver/semver/issues/716#issuecomment-869336139">public API</a>.<br>
 Please file a bug if you notice a violation of semantic versioning.</p>
 
-<h2 id="unreleased"><a href="https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.9...HEAD">Unreleased</a></h2>
+<h2 id="unreleased"><a href="https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.10...HEAD">Unreleased</a></h2>
 <h3 id="added">Added</h3>
 <h3 id="changed">Changed</h3>
 <h3 id="deprecated">Deprecated</h3>
 <h3 id="removed">Removed</h3>
 <h3 id="fixed">Fixed</h3>
 <h3 id="security">Security</h3>
+
+<h2 id="1010---2025-08-24">
+<a href="https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.9...v1.0.10">1.0.10</a> - 2025-08-24</h2>
+<ul>
+  <li>TAG: <a href="https://gitlab.com/kettle-rb/kettle-dev/-/tags/v1.0.10">v1.0.10</a>
+</li>
+  <li>COVERAGE:  97.68% – 1685/1725 lines in 17 files</li>
+  <li>BRANCH COVERAGE:  77.54% – 618/797 branches in 17 files- 95.35% documented</li>
+  <li>77.00% documented
+    <h3 id="changed-1">Changed</h3>
+  </li>
+  <li>This gem is now loaded via Ruby’s standard <code>autoload</code> feature.</li>
+  <li>Bundler is always expected, and most things probably won’t work without it.</li>
+  <li>exe/ scripts and rake tasks logic is all now moved into classes for testability, and is nearly fully covered by tests.</li>
+  <li>New Kettle::Dev::GitAdapter class is an adapter pattern wrapper for git commands</li>
+  <li>New Kettle::Dev::ExitAdapter class is an adapter pattern wrapper for Kernel.exit and Kernel.abort within this codebase.
+    <h3 id="removed-1">Removed</h3>
+  </li>
+  <li>attempts to make exe/* scripts work without bundler. Bundler is required.
+    <h3 id="fixed-1">Fixed</h3>
+  </li>
+  <li>
+<code>Kettle::Dev::ReleaseCLI#detect_version</code> handles gems with multiple VERSION constants</li>
+  <li>
+<code>kettle:dev:template</code> task was fixed to copy <code>.example</code> files with the destination filename lacking the <code>.example</code> extension, except for <code>.env.local.example</code>
+</li>
+</ul>
 
 <h2 id="109---2025-08-24">
 <a href="https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.8...v1.0.9">1.0.9</a> - 2025-08-24</h2>
@@ -104,7 +131,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 100.00% – 130/130 lines in 7 files</li>
   <li>BRANCH COVERAGE:  96.00% – 48/50 branches in 7 files</li>
   <li>95.35% documented
-    <h3 id="fixed-1">Fixed</h3>
+    <h3 id="fixed-2">Fixed</h3>
   </li>
   <li>Can’t add checksums to the gem package, because it changes the checksum (duh!)</li>
 </ul>
@@ -117,7 +144,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 100.00% – 130/130 lines in 7 files</li>
   <li>BRANCH COVERAGE:  96.00% – 48/50 branches in 7 files</li>
   <li>95.35% documented
-    <h3 id="fixed-2">Fixed</h3>
+    <h3 id="fixed-3">Fixed</h3>
   </li>
   <li>Reproducible builds, with consistent checksums, by <em>not</em> using SOURCE_DATE_EPOCH.
     <ul>
@@ -134,7 +161,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 100.00% – 130/130 lines in 7 files</li>
   <li>BRANCH COVERAGE:  96.00% – 48/50 branches in 7 files</li>
   <li>95.35% documented
-    <h3 id="fixed-3">Fixed</h3>
+    <h3 id="fixed-4">Fixed</h3>
   </li>
   <li>kettle-release: ensure SOURCE_DATE_EPOCH is applied within the same shell for both build and release by prefixing the commands with the env var (e.g., <code>SOURCE_DATE_EPOCH=$epoch bundle exec rake build</code> and <code>... rake release</code>); prevents losing the variable across shell boundaries and improves reproducible checksums.</li>
 </ul>
@@ -147,7 +174,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 100.00% – 130/130 lines in 7 files</li>
   <li>BRANCH COVERAGE:  96.00% – 48/50 branches in 7 files</li>
   <li>95.35% documented
-    <h3 id="fixed-4">Fixed</h3>
+    <h3 id="fixed-5">Fixed</h3>
   </li>
   <li>kettle-release: will run regardless of how it is invoked (i.e. works as binstub)</li>
 </ul>
@@ -164,7 +191,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   </li>
   <li>kettle-release: checks all remotes for a GitHub remote and syncs origin/trunk with it; prompts to rebase or –no-ff merge when histories diverge; pushes to both origin and the GitHub remote on merge; uses the GitHub remote for GitHub Actions CI checks, and also checks GitLab CI when a GitLab remote and .gitlab-ci.yml are present.</li>
   <li>kettle-release: push logic improved — if a remote named <code>all</code> exists, push the current branch to it (assumed to cover multiple push URLs). Otherwise push the current branch to <code>origin</code> and to any GitHub, GitLab, and Codeberg remotes (whatever their names are).
-    <h3 id="fixed-5">Fixed</h3>
+    <h3 id="fixed-6">Fixed</h3>
   </li>
   <li>kettle-release now validates SHA256 checksums of the built gem against the recorded checksums and aborts on mismatch; helps ensure reproducible artifacts (honoring SOURCE_DATE_EPOCH).</li>
   <li>kettle-release now enforces CI checks and aborts if CI cannot be verified; supports GitHub Actions and GitLab pipelines, including releases from trunk/main.</li>
@@ -182,7 +209,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
     <h3 id="added-3">Added</h3>
   </li>
   <li>template task now copies .git-hooks files necessary for git hooks to work
-    <h3 id="fixed-6">Fixed</h3>
+    <h3 id="fixed-7">Fixed</h3>
   </li>
   <li>kettle-release now uses the host project’s root, instead of this gem’s installed root.</li>
   <li>Added .git-hooks files necessary for git hooks to work</li>
@@ -196,7 +223,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 100.00% – 98/98 lines in 7 files</li>
   <li>BRANCH COVERAGE: 100.00% – 30/30 branches in 7 files</li>
   <li>94.59% documented
-    <h3 id="fixed-7">Fixed</h3>
+    <h3 id="fixed-8">Fixed</h3>
   </li>
   <li>Added files necessary for kettle:dev:template task to work</li>
   <li>.github/workflows/opencollective.yml working!</li>
@@ -280,7 +307,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Sun Aug 24 22:34:42 2025 by
+  Generated on Mon Aug 25 23:52:51 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

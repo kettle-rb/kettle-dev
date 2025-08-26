@@ -60,54 +60,45 @@
       <div id="content"><div id='filecontents'><p>module Kettle<br>
   module Dev<br>
     module CIHelpers<br>
-      def self.project_root: () -&gt; String</p>
+      # singleton (module) methods<br>
+      def self.project_root: () -&gt; String<br>
+      def self.repo_info: () -&gt; [String, String]?<br>
+      def self.current_branch: () -&gt; String?<br>
+      def self.workflows_list: (?String root) -&gt; Array[String]<br>
+      def self.exclusions: () -&gt; Array[String]</p>
 
-<pre class="code ruby"><code class="ruby">  def self.repo_info: () -&gt; [String, String]?
-
-  def self.current_branch: () -&gt; String?
-
-  def self.workflows_list: (?String root) -&gt; Array[String]
-
-  def self.exclusions: () -&gt; Array[String]
-
-  def self.latest_run: (
+<pre class="code ruby"><code class="ruby">  def self.latest_run: (
     owner: String,
     repo: String,
     workflow_file: String,
     ?branch: String?,
     ?token: String?
-  ) -&gt; { &quot;status&quot; =&gt; String?, &quot;conclusion&quot; =&gt; String?, &quot;html_url&quot; =&gt; String?, &quot;id&quot; =&gt; untyped }?
+  ) -&gt; { &quot;status&quot; =&gt; String, &quot;conclusion&quot; =&gt; String?, &quot;html_url&quot; =&gt; String, &quot;id&quot; =&gt; Integer }?
 
-  def self.success?: ({ &quot;status&quot; =&gt; String?, &quot;conclusion&quot; =&gt; String? } | nil run) -&gt; bool
-
-  def self.failed?: ({ &quot;status&quot; =&gt; String?, &quot;conclusion&quot; =&gt; String? } | nil run) -&gt; bool
+  def self.success?: ({ &quot;status&quot; =&gt; String, &quot;conclusion&quot; =&gt; String? }?) -&gt; bool
+  def self.failed?: ({ &quot;status&quot; =&gt; String, &quot;conclusion&quot; =&gt; String? }?) -&gt; bool
 
   def self.default_token: () -&gt; String?
 
-  # GitLab support
+  # GitLab
   def self.origin_url: () -&gt; String?
-
   def self.repo_info_gitlab: () -&gt; [String, String]?
-
   def self.default_gitlab_token: () -&gt; String?
-
   def self.gitlab_latest_pipeline: (
     owner: String,
     repo: String,
     ?branch: String?,
     ?host: String,
     ?token: String?
-  ) -&gt; { &quot;status&quot; =&gt; String?, &quot;web_url&quot; =&gt; String?, &quot;id&quot; =&gt; untyped }?
-
-  def self.gitlab_success?: ({ &quot;status&quot; =&gt; String? } | nil pipeline) -&gt; bool
-
-  def self.gitlab_failed?: ({ &quot;status&quot; =&gt; String? } | nil pipeline) -&gt; bool
+  ) -&gt; { &quot;status&quot; =&gt; String, &quot;web_url&quot; =&gt; String, &quot;id&quot; =&gt; Integer }?
+  def self.gitlab_success?: ({ &quot;status&quot; =&gt; String }?) -&gt; bool
+  def self.gitlab_failed?: ({ &quot;status&quot; =&gt; String }?) -&gt; bool
 end   end end
 </code></pre>
 </div></div>
 
       <div id="footer">
-  Generated on Sun Aug 24 22:34:42 2025 by
+  Generated on Mon Aug 25 23:52:51 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

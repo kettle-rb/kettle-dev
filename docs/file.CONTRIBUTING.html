@@ -109,6 +109,14 @@ They are created and updated with the commands:</p>
 <pre class="code language-console"><code class="language-console">bundle exec rake test
 </code></pre>
 
+<h3 id="spec-organization-required">Spec organization (required)</h3>
+
+<ul>
+  <li>For each class or module under <code>lib/</code>, keep all of its unit tests in a single spec file under <code>spec/</code> that mirrors the path and file name (e.g., specs for <code>lib/kettle/dev/release_cli.rb</code> live in <code>spec/kettle/dev/release_cli_spec.rb</code>).</li>
+  <li>Do not create ad-hoc “_more” or split spec files for the same class/module. Consolidate all unit tests into the main spec file for that class/module.</li>
+  <li>Only integration scenarios that intentionally span multiple classes belong in <code>spec/integration/</code>.</li>
+</ul>
+
 <h2 id="lint-it">Lint It</h2>
 
 <p>Run all the default tasks, which includes running the gradually autocorrecting linter, <code>rubocop-gradual</code>.</p>
@@ -220,7 +228,7 @@ push git commits and tags, and push the <code>.gem</code> file to <a href="https
 </div></div>
 
       <div id="footer">
-  Generated on Sun Aug 24 22:34:42 2025 by
+  Generated on Mon Aug 25 23:52:51 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

@@ -21,11 +21,25 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Changed
 ### Deprecated
 ### Removed
+### Fixed
+### Security
+
+## [1.0.10] - 2025-08-24
+- TAG: [v1.0.10][1.0.10t]
+- COVERAGE:  97.68% -- 1685/1725 lines in 17 files
+- BRANCH COVERAGE:  77.54% -- 618/797 branches in 17 files- 95.35% documented
+- 77.00% documented
+### Changed
+- This gem is now loaded via Ruby's standard `autoload` feature.
+- Bundler is always expected, and most things probably won't work without it.
+- exe/ scripts and rake tasks logic is all now moved into classes for testability, and is nearly fully covered by tests.
+- New Kettle::Dev::GitAdapter class is an adapter pattern wrapper for git commands
+- New Kettle::Dev::ExitAdapter class is an adapter pattern wrapper for Kernel.exit and Kernel.abort within this codebase.
+### Removed
 - attempts to make exe/* scripts work without bundler. Bundler is required.
 ### Fixed
 - `Kettle::Dev::ReleaseCLI#detect_version` handles gems with multiple VERSION constants
 - `kettle:dev:template` task was fixed to copy `.example` files with the destination filename lacking the `.example` extension, except for `.env.local.example`
-### Security
 
 ## [1.0.9] - 2025-08-24
 - TAG: [v1.0.9][1.0.9t]
@@ -143,7 +157,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.9...HEAD
+[Unreleased]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.10...HEAD
+[1.0.10]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.9...v1.0.10
+[1.0.10t]: https://gitlab.com/kettle-rb/kettle-dev/-/tags/v1.0.10
 [1.0.9]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.8...v1.0.9
 [1.0.9t]: https://gitlab.com/kettle-rb/kettle-dev/-/tags/v1.0.9
 [1.0.8]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.7...v1.0.8
