@@ -2,7 +2,7 @@
 
 require "kettle/dev/git_adapter"
 
-RSpec.describe Kettle::Dev::GitAdapter do
+RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
   describe "#push with git gem present" do
     let(:git_repo) { instance_double("Git::Base") }
 

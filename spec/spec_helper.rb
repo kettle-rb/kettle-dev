@@ -22,6 +22,8 @@ end
 
 # this library
 require "kettle-dev"
+# Ensure GitAdapter constant is available for global stubbing
+require "kettle/dev/git_adapter"
 
 # rspec-pending_for: enable skipping on incompatible Ruby versions
 require "rspec/pending_for"
@@ -37,6 +39,8 @@ end
 
 # Internal RSpec & related config
 require_relative "support/shared_contexts/with_rake"
+# Include the global mocked git adapter context
+require_relative "support/shared_contexts/with_mocked_git_adapter"
 
 # Global input machine to prevent blocking prompts during tests
 # Many tasks/executables read from $stdin directly (e.g., $stdin.gets).
@@ -77,6 +81,9 @@ RSpec.configure do |config|
     default = ENV["TEST_INPUT_DEFAULT"]
     $stdin = KettleTestInputMachine.new(default: ((default && !default.empty?) ? default : nil))
   end
+
+  # Include mocked git adapter for all examples; it will skip when :real_git_adapter is set
+  config.include_context "with mocked git adapter"
 
   config.after(:suite) do
     # Always restore the real STDIN at the end of the suite, even if $original_stdin was overwritten
