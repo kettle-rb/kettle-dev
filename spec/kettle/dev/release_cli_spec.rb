@@ -150,8 +150,9 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     it "pushes to 'all' and force-pushes on failure" do
       allow(cli).to receive(:current_branch).and_return("feat")
       allow(cli).to receive(:has_remote?).with("all").and_return(true)
-      expect(cli).to receive(:system).with("git push all feat").and_return(false)
-      expect(cli).to receive(:run_cmd!).with("git push -f all feat")
+      git = cli.instance_variable_get(:@git)
+      expect(git).to receive(:push).with("all", "feat").and_return(false)
+      expect(git).to receive(:push).with("all", "feat", force: true)
       cli.send(:push!)
     end
 
@@ -162,8 +163,9 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       allow(cli).to receive(:github_remote_candidates).and_return([])
       allow(cli).to receive(:gitlab_remote_candidates).and_return([])
       allow(cli).to receive(:codeberg_remote_candidates).and_return([])
-      expect(cli).to receive(:system).with("git push feat").and_return(false)
-      expect(cli).to receive(:run_cmd!).with("git push -f feat")
+      git = cli.instance_variable_get(:@git)
+      expect(git).to receive(:push).with(nil, "feat").and_return(false)
+      expect(git).to receive(:push).with(nil, "feat", force: true)
       cli.send(:push!)
     end
 
@@ -174,10 +176,11 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       allow(cli).to receive(:github_remote_candidates).and_return(["github"])
       allow(cli).to receive(:gitlab_remote_candidates).and_return(["gitlab"])
       allow(cli).to receive(:codeberg_remote_candidates).and_return([])
-      expect(cli).to receive(:system).with("git push origin feat").and_return(true)
-      expect(cli).to receive(:system).with("git push github feat").and_return(false)
-      expect(cli).to receive(:run_cmd!).with("git push -f github feat")
-      expect(cli).to receive(:system).with("git push gitlab feat").and_return(true)
+      git = cli.instance_variable_get(:@git)
+      expect(git).to receive(:push).with("origin", "feat").and_return(true)
+      expect(git).to receive(:push).with("github", "feat").and_return(false)
+      expect(git).to receive(:push).with("github", "feat", force: true)
+      expect(git).to receive(:push).with("gitlab", "feat").and_return(true)
       cli.send(:push!)
     end
   end

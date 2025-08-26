@@ -1,0 +1,8 @@
+module Kettle
+  module Dev
+    class GitAdapter
+      def initialize: () -> void
+      def push: (String?, String, force: bool) -> bool
+    end
+  end
+end

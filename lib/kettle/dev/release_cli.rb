@@ -13,11 +13,15 @@ require "uri"
 # External gems
 require "ruby-progressbar"
 
+# Internal
+require "kettle/dev/git_adapter"
+
 module Kettle
   module Dev
     class ReleaseCLI
       def initialize
         @root = Kettle::Dev::CIHelpers.project_root
+        @git = Kettle::Dev::GitAdapter.new
       end
 
       def run
@@ -373,10 +377,10 @@ module Kettle
 
         if has_remote?("all")
           puts "$ git push all #{branch}"
-          success = system("git push all #{Shellwords.escape(branch)}")
+          success = @git.push("all", branch)
           unless success
             warn("Normal push to 'all' failed; retrying with force push...")
-            run_cmd!("git push -f all #{Shellwords.escape(branch)}")
+            @git.push("all", branch, force: true)
           end
           return
         end
@@ -390,20 +394,20 @@ module Kettle
 
         if remotes.empty?
           puts "$ git push #{branch}"
-          success = system("git push #{Shellwords.escape(branch)}")
+          success = @git.push(nil, branch)
           unless success
             warn("Normal push failed; retrying with force push...")
-            run_cmd!("git push -f #{Shellwords.escape(branch)}")
+            @git.push(nil, branch, force: true)
           end
           return
         end
 
         remotes.each do |remote|
           puts "$ git push #{remote} #{branch}"
-          success = system("git push #{Shellwords.escape(remote)} #{Shellwords.escape(branch)}")
+          success = @git.push(remote, branch)
           unless success
             warn("Push to #{remote} failed; retrying with force push...")
-            run_cmd!("git push -f #{Shellwords.escape(remote)} #{Shellwords.escape(branch)}")
+            @git.push(remote, branch, force: true)
           end
         end
       end
