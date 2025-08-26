@@ -114,7 +114,7 @@ module Kettle
         pull!(trunk)
 
         # Strong reminder for local runs: skip signing when testing a release flow
-        unless ENV.key?("SKIP_GEM_SIGNING")
+        if ENV["SKIP_GEM_SIGNING"].to_s.strip == ""
           puts "TIP: For local dry-runs or testing the release workflow, set SKIP_GEM_SIGNING=true to avoid PEM password prompts."
           # Prompt on CI to allow an explicit abort when signing would otherwise hang
           if ENV.fetch("CI", "false").casecmp("true").zero?
@@ -604,7 +604,8 @@ module Kettle
       end
 
       def ensure_signing_setup_or_skip!
-        return if ENV.key?("SKIP_GEM_SIGNING")
+        # Treat any non-empty value as an explicit skip signal (more robust across Ruby versions and ENV adapters)
+        return if ENV["SKIP_GEM_SIGNING"].to_s.strip != ""
 
         user = ENV.fetch("GEM_CERT_USER", ENV["USER"])
         cert_path = File.join(@root, "certs", "#{user}.pem")
