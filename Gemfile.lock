@@ -23,7 +23,7 @@ PATH
       require_bench (~> 1.0, >= 1.0.4)
       rspec-pending_for
       ruby-progressbar (~> 1.13)
-      stone_checksums (~> 1.0)
+      stone_checksums (~> 1.0, >= 1.0.1)
       version_gem (~> 1.1, >= 1.1.8)
 
 GEM
@@ -184,7 +184,7 @@ GEM
       io-console (~> 0.5)
     require_bench (1.0.4)
       version_gem (>= 1.1.3, < 4)
-    rexml (3.4.1)
+    rexml (3.4.2)
     rspec (3.13.1)
       rspec-core (~> 3.13.0)
       rspec-expectations (~> 3.13.0)
@@ -305,8 +305,8 @@ GEM
       standard-custom (>= 1.0.2, < 2)
       standard-performance (>= 1.3.1, < 2)
       version_gem (>= 1.1.4, < 3)
-    stone_checksums (1.0.0)
-      version_gem (>= 1.1.5, < 3)
+    stone_checksums (1.0.1)
+      version_gem (~> 1.1, >= 1.1.8)
     stringio (3.1.7)
     terminal-table (4.0.0)
       unicode-display_width (>= 1.1.1, < 4)

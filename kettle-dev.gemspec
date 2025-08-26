@@ -155,7 +155,7 @@ Gem::Specification.new do |spec|
 
   # Releasing
   spec.add_dependency("ruby-progressbar", "~> 1.13")                    # ruby >= 0
-  spec.add_dependency("stone_checksums", "~> 1.0")                      # ruby >= 2.2.0
+  spec.add_dependency("stone_checksums", "~> 1.0", ">= 1.0.1")          # ruby >= 2.2.0
 
   # Git integration
   spec.add_dependency("git", ">= 1.19.1")                               # ruby >= 2.3
