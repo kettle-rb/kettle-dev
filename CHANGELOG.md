@@ -18,12 +18,16 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [Unreleased]
 ### Added
+- Add more .example templates
+  - .github/workflows/coverage.yml.example
+  - .gitlab-ci.yml
 ### Changed
 ### Deprecated
 ### Removed
 ### Fixed
 - Upgrade stone_checksums for release compatibility with bundler v2.7+
   - Retains compatibility with older bundler < v2.7
+- Ship all example templates with gem
 ### Security
 
 ## [1.0.10] - 2025-08-24
