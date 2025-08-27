@@ -262,6 +262,23 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
       end
     end
 
+    it "covers worker default emoji branch for unknown status before completion (TTY)", :check_output do
+      stub_env("CI_ACT_POLL_INTERVAL" => "0")
+      seq = [
+        http_ok_with({"workflow_runs" => [{"status" => "mystery"}]}),
+        http_ok_with({"workflow_runs" => [{"status" => "completed", "conclusion" => "success"}]}),
+      ]
+      allow(Net::HTTP).to receive(:start).and_return(*seq)
+      with_workflows(["ci.yml"]) do |_root, _dir|
+        allow($stdout).to receive(:tty?).and_return(true)
+        allow($stdin).to receive(:gets) {
+          sleep 0.15
+          "q\n"
+        }
+        expect { described_class.act(nil) }.not_to raise_error
+      end
+    end
+
     it "worker early-exits with n/a when repo or branch missing (pushes n/a)", :check_output do
       with_workflows(["ci.yml"]) do |_root, _dir|
         allow(Kettle::Dev::CIHelpers).to receive(:repo_info).and_return(nil)
@@ -290,6 +307,29 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
           sleep 0.25
           "q\n"
         }
+        expect { described_class.act(nil) }.not_to raise_error
+      end
+    end
+
+    it "prints idx.nil? branch when queue contains unknown code (TTY)", :check_output do
+      with_workflows(["ci.yml"]) do |_root, _dir|
+        allow($stdout).to receive(:tty?).and_return(true)
+        # Provide input after we injected a fake status update
+        allow($stdin).to receive(:gets) {
+          sleep 0.1
+          "q\n"
+        }
+        # Default behavior for other calls
+        allow_any_instance_of(Queue).to receive(:pop).and_call_original
+        injected = false
+        allow_any_instance_of(Queue).to receive(:pop).with(true) do |_q, *_args|
+          unless injected
+            injected = true
+            ["zzz", "fake.yml", "weird"]
+          else
+            raise ThreadError
+          end
+        end
         expect { described_class.act(nil) }.not_to raise_error
       end
     end

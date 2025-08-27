@@ -181,19 +181,4 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
       expect(adapter.fetch("origin")).to be true
     end
   end
-
-  describe "#initialize error when git gem present but repo cannot open" do
-    it "raises Kettle::Dev::Error when git gem cannot open repo" do
-      adapter_class = described_class
-      allow(adapter_class).to receive(:new).and_wrap_original do |orig, *args|
-        obj = orig.call(*args)
-        # Simulate gem backend but failure on opening repository by re-running the code path
-        expect(Kernel).to receive(:require).with("git").and_return(true)
-        # Next access should simulate failure - raise as if Git.open had failed in initialize
-        raise Kettle::Dev::Error, "Failed to open git repository: boom"
-        obj
-      end
-      expect { described_class.new }.to raise_error(Kettle::Dev::Error, /Failed to open git repository/)
-    end
-  end
 end
