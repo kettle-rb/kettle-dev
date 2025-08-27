@@ -160,6 +160,8 @@ Gem::Specification.new do |spec|
   # Git integration (optional)
   # The 'git' gem is optional; kettle-dev falls back to shelling out to `git` if it is not present.
   # The current release of the git gem depends on activesupport, which makes it too heavy to depend on directly
+  # Compatibility with the git gem is tested via appraisals instead.
+  # spec.add_dependency("git", ">= 1.19.1")                               # ruby >= 2.3
 
   # Development tasks
   # The cake is a lie. erb v2.2, the oldest release on RubyGems.org, was never compatible with Ruby 2.3.
