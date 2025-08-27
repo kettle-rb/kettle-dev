@@ -33,8 +33,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [1.0.10] - 2025-08-24
 - TAG: [v1.0.10][1.0.10t]
-- COVERAGE:  97.68% -- 1685/1725 lines in 17 files
-- BRANCH COVERAGE:  77.54% -- 618/797 branches in 17 files- 95.35% documented
+- COVERAGE: 97.68% -- 1685/1725 lines in 17 files
+- BRANCH COVERAGE: 77.54% -- 618/797 branches in 17 files- 95.35% documented
 - 77.00% documented
 ### Added
 - runs git add --all before git commit, to ensure all files are committed.
@@ -65,7 +65,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ## [1.0.8] - 2025-08-24
 - TAG: [v1.0.8][1.0.8t]
 - COVERAGE: 100.00% -- 130/130 lines in 7 files
-- BRANCH COVERAGE:  96.00% -- 48/50 branches in 7 files
+- BRANCH COVERAGE: 96.00% -- 48/50 branches in 7 files
 - 95.35% documented
 ### Fixed
 - Can't add checksums to the gem package, because it changes the checksum (duh!)
@@ -73,7 +73,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ## [1.0.7] - 2025-08-24
 - TAG: [v1.0.7][1.0.7t]
 - COVERAGE: 100.00% -- 130/130 lines in 7 files
-- BRANCH COVERAGE:  96.00% -- 48/50 branches in 7 files
+- BRANCH COVERAGE: 96.00% -- 48/50 branches in 7 files
 - 95.35% documented
 ### Fixed
 - Reproducible builds, with consistent checksums, by *not* using SOURCE_DATE_EPOCH.
@@ -82,7 +82,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ## [1.0.6] - 2025-08-24
 - TAG: [v1.0.6][1.0.6t]
 - COVERAGE: 100.00% -- 130/130 lines in 7 files
-- BRANCH COVERAGE:  96.00% -- 48/50 branches in 7 files
+- BRANCH COVERAGE: 96.00% -- 48/50 branches in 7 files
 - 95.35% documented
 ### Fixed
 - kettle-release: ensure SOURCE_DATE_EPOCH is applied within the same shell for both build and release by prefixing the commands with the env var (e.g., `SOURCE_DATE_EPOCH=$epoch bundle exec rake build` and `... rake release`); prevents losing the variable across shell boundaries and improves reproducible checksums.
@@ -90,7 +90,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ## [1.0.5] - 2025-08-24
 - TAG: [v1.0.5][1.0.5t]
 - COVERAGE: 100.00% -- 130/130 lines in 7 files
-- BRANCH COVERAGE:  96.00% -- 48/50 branches in 7 files
+- BRANCH COVERAGE: 96.00% -- 48/50 branches in 7 files
 - 95.35% documented
 ### Fixed
 - kettle-release: will run regardless of how it is invoked (i.e. works as binstub)
@@ -98,7 +98,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ## [1.0.4] - 2025-08-24
 - TAG: [v1.0.4][1.0.4t]
 - COVERAGE: 100.00% -- 130/130 lines in 7 files
-- BRANCH COVERAGE:  96.00% -- 48/50 branches in 7 files
+- BRANCH COVERAGE: 96.00% -- 48/50 branches in 7 files
 - 95.35% documented
 ### Added
 - kettle-release: checks all remotes for a GitHub remote and syncs origin/trunk with it; prompts to rebase or --no-ff merge when histories diverge; pushes to both origin and the GitHub remote on merge; uses the GitHub remote for GitHub Actions CI checks, and also checks GitLab CI when a GitLab remote and .gitlab-ci.yml are present.
