@@ -20,7 +20,7 @@
     [145, 5, 47, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 45456806],
     [229, 5, 39, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 4038128320]
   ],
-  "spec/kettle/dev/git_adapter_spec.rb:1507975222": [
+  "spec/kettle/dev/git_adapter_spec.rb:1291649739": [
     [8, 22, 19, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 3198354142],
     [10, 5, 44, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 2395005480],
     [11, 27, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `git_repo` as a spy using `allow` or `instance_spy`.", 1384559950],
@@ -75,15 +75,7 @@
     [178, 7, 15, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 3416856044],
     [178, 26, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `adapter` as a spy using `allow` or `instance_spy`.", 1384559950],
     [180, 7, 15, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 3416856044],
-    [180, 26, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `adapter` as a spy using `allow` or `instance_spy`.", 1384559950],
-    [186, 5, 60, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 3671665515],
-    [191, 9, 14, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2015897600],
-    [191, 27, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `Kernel` as a spy using `allow` or `instance_spy`.", 1384559950],
-    [194, 9, 3, "Lint/UnreachableCode: Unreachable code detected.", 193420290]
-  ],
-  "spec/kettle/dev/tasks/ci_task_spec.rb:3083131066": [
-    [303, 9, 28, "RSpec/AnyInstance: Avoid stubbing using `allow_any_instance_of`.", 4133203013],
-    [305, 9, 28, "RSpec/AnyInstance: Avoid stubbing using `allow_any_instance_of`.", 4133203013]
+    [180, 26, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `adapter` as a spy using `allow` or `instance_spy`.", 1384559950]
   ],
   "spec/kettle/dev/tasks/template_task_spec.rb:780678845": [
     [10, 1, 47, "RSpec/MultipleDescribes: Do not use multiple top-level example groups - try to nest them.", 1390613506],

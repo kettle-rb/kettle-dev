@@ -83,6 +83,11 @@
 <pre class="code language-ruby"><code class="language-ruby">require &quot;kettle/dev&quot;
 </code></pre>
 
+<p>Then run:</p>
+
+<pre class="code language-console"><code class="language-console">bundle exec rake kettle:dev:install
+</code></pre>
+
 <p>Now you have many powerful development and testing tools at your disposal, all fully <a href="#-configuration">documented</a> and tested.</p>
 
 <p>I expect the current release of this gem to be compatible with Ruby 2.3+,<br>
@@ -158,7 +163,7 @@ Alternatively:
     <tr>
       <td>Works with Truffle Ruby</td>
       <td>
-<img src="https://img.shields.io/badge/Truffle_Ruby-22.3_(%F0%9F%9A%ABCI)-AABBCC?style=for-the-badge&amp;logo=ruby&amp;logoColor=pink" alt="Truffle Ruby 22.3 Compat"> <br> <a href="https://github.com/kettle-rb/kettle-dev/actions/workflows/truffle.yml"><img src="https://img.shields.io/badge/Truffle_Ruby-23.0-34BCB1?style=for-the-badge&amp;logo=ruby&amp;logoColor=pink" alt="Truffle Ruby 23.0 Compat"></a> <a href="https://github.com/kettle-rb/kettle-dev/actions/workflows/truffle.yml"><img src="https://img.shields.io/badge/Truffle_Ruby-23.1-34BCB1?style=for-the-badge&amp;logo=ruby&amp;logoColor=pink" alt="Truffle Ruby 23.1 Compat"></a> <a href="https://github.com/kettle-rb/kettle-dev/actions/workflows/current.yml"><img src="https://img.shields.io/badge/Truffle_Ruby-current-34BCB1?style=for-the-badge&amp;logo=ruby&amp;logoColor=green" alt="Truffle Ruby 24.1 Compat"></a>
+<img src="https://img.shields.io/badge/Truffle_Ruby-22.3_(%F0%9F%9A%ABCI)-AABBCC?style=for-the-badge&amp;logo=ruby&amp;logoColor=pink" alt="Truffle Ruby 22.3 Compat"> <img src="https://img.shields.io/badge/Truffle_Ruby-23.0_(%F0%9F%9A%ABCI)-AABBCC?style=for-the-badge&amp;logo=ruby&amp;logoColor=pink" alt="Truffle Ruby 23.0 Compat"> <br> <a href="https://github.com/kettle-rb/kettle-dev/actions/workflows/truffle.yml"><img src="https://img.shields.io/badge/Truffle_Ruby-23.1-34BCB1?style=for-the-badge&amp;logo=ruby&amp;logoColor=pink" alt="Truffle Ruby 23.1 Compat"></a> <a href="https://github.com/kettle-rb/kettle-dev/actions/workflows/current.yml"><img src="https://img.shields.io/badge/Truffle_Ruby-current-34BCB1?style=for-the-badge&amp;logo=ruby&amp;logoColor=green" alt="Truffle Ruby 24.1 Compat"></a>
 </td>
     </tr>
     <tr>
@@ -286,7 +291,29 @@ NOTE: Be prepared to track down certs for signed gems and add them the same way 
 <pre class="code language-ruby"><code class="language-ruby">require &quot;kettle/dev&quot;
 </code></pre>
 
-<p>That’s it. When installed, kettle-dev:</p>
+<p>Then run:</p>
+
+<pre class="code language-console"><code class="language-console">bundle exec rake kettle:dev:install
+</code></pre>
+
+<p>If git status is not clean it will abort.<br>
+It may have some prompts, which can mostly be avoided by running with options:</p>
+
+<pre class="code language-console"><code class="language-console"># DANGER: options to reduce prompts will overwrite files without asking.
+bundle exec rake kettle:dev:install allowed=true force=true
+</code></pre>
+
+<p>Hopefully, all the files that get overwritten are tracked in git!<br>
+I wrote this for myself, and it fits my patterns of development.</p>
+
+<p>The install task will write a report at the end with:</p>
+<ol>
+  <li>A file list summary of the changes made.</li>
+  <li>Next steps for using the tools.</li>
+  <li>A warning about .env.local (DO NOT COMMIT IT, as it will likely have secrets added)</li>
+</ol>
+
+<p>That’s it. Once installed, kettle-dev:</p>
 <ul>
   <li>Registers RuboCop-LTS tasks and wires your default Rake task to run the gradual linter.
     <ul>
@@ -300,7 +327,7 @@ NOTE: Be prepared to track down certs for signed gems and add them the same way 
       <li>
 <code>ci:act</code> — interactive selector for running GitHub Actions workflows via <code>act</code>.</li>
       <li>
-<code>kettle:dev:install</code> — copies this repo’s .github automation and offers to install .git-hooks templates.
+<code>kettle:dev:install</code> — copies this repo’s .github automation, offers to install .git-hooks templates, and overwrites many files in your project.
         <ul>
           <li>option: force: When truthy (1, true, y, yes), treat all y/N prompts as Yes. Useful for non-interactive runs or to accept defaults quickly. Example: <code>bundle exec rake kettle:dev:template force=true</code>
 </li>
@@ -481,6 +508,20 @@ Tip: When running a single spec file locally, you may want <code>K_SOUP_COV_MIN_
       <li>Add to <code>.envrc</code>: <code>PATH_add bin</code> (so <code>bin/</code> tools run without the prefix)</li>
     </ul>
   </li>
+</ul>
+
+<h3 id="template-example-files-are-preferred">Template .example files are preferred</h3>
+
+<ul>
+  <li>The templating step dynamically prefers any <code>*.example</code> file present in this gem’s templates. When a <code>*.example</code> exists alongside the non-example template, the <code>.example</code> content is used, and the destination file is written without the <code>.example</code> suffix.</li>
+  <li>This applies across all templated files, including:
+    <ul>
+      <li>Root files like <code>.gitlab-ci.yml</code> (copied from <code>.gitlab-ci.yml.example</code> when present).</li>
+      <li>Nested files like <code>.github/workflows/coverage.yml</code> (copied from <code>.github/workflows/coverage.yml.example</code> when present).</li>
+    </ul>
+  </li>
+  <li>This behavior is automatic for any future <code>*.example</code> files added to the templates.</li>
+  <li>Exception: <code>.env.local</code> is handled specially for safety. Regardless of whether the template provides <code>.env.local</code> or <code>.env.local.example</code>, the installer copies it to <code>.env.local.example</code> in your project, and will never create or overwrite <code>.env.local</code>.</li>
 </ul>
 
 <p>Releasing (maintainers)</p>
@@ -760,7 +801,7 @@ Please consider sponsoring me or the project.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Tue Aug 26 16:29:08 2025 by
+  Generated on Wed Aug 27 00:26:03 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

@@ -319,17 +319,20 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
           sleep 0.1
           "q\n"
         }
-        # Default behavior for other calls
-        allow_any_instance_of(Queue).to receive(:pop).and_call_original
+        # Use a dedicated queue instance to avoid any_instance stubbing
+        q = Queue.new
         injected = false
-        allow_any_instance_of(Queue).to receive(:pop).with(true) do |_q, *_args|
-          unless injected
+        # Provide a default stub for pop without args to use real behavior
+        allow(q).to receive(:pop).and_call_original
+        allow(q).to receive(:pop).with(true) do |_arg|
+          if injected
+            raise ThreadError
+          else
             injected = true
             ["zzz", "fake.yml", "weird"]
-          else
-            raise ThreadError
           end
         end
+        allow(Queue).to receive(:new).and_return(q)
         expect { described_class.act(nil) }.not_to raise_error
       end
     end
@@ -339,10 +342,11 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
         # Provide input immediately to make queue non-empty soon
         allow($stdin).to receive(:gets).and_return("q\n")
         # Make the first Queue#pop(true) raise, then behave normally
-        # Provide a default stub for other arities (e.g., blocking pop with no args)
-        allow_any_instance_of(Queue).to receive(:pop).and_call_original
+        q = Queue.new
         cnt = 0
-        allow_any_instance_of(Queue).to receive(:pop).with(true) do |q, *_args|
+        # Provide a default stub for pop without args to use real behavior
+        allow(q).to receive(:pop).and_call_original
+        allow(q).to receive(:pop).with(true) do |_arg|
           cnt += 1
           if cnt == 1
             raise ThreadError
@@ -351,6 +355,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
             Queue.instance_method(:pop).bind(q).call(true)
           end
         end
+        allow(Queue).to receive(:new).and_return(q)
         expect { described_class.act(nil) }.not_to raise_error
       end
     end
