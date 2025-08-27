@@ -62,8 +62,6 @@ module Kettle
       # @return [void]
       def abort!(msg)
         Kettle::Dev::ExitAdapter.abort(msg)
-      rescue StandardError
-        Kernel.abort(msg)
       end
     end
   end

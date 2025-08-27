@@ -250,8 +250,10 @@ module Kettle
                   sleep(poll_interval)
                 end
               rescue Exception
+                # :nocov:
                 # Catch all exceptions in the worker thread boundary, including SystemExit
                 status_q << [c, f, "err"]
+                # :nocov:
               end
             end
           end
