@@ -17,6 +17,7 @@ require "ruby-progressbar"
 require "kettle/dev/git_adapter"
 require "kettle/dev/exit_adapter"
 require "kettle/dev/input_adapter"
+require "kettle/dev/versioning"
 
 module Kettle
   module Dev
@@ -39,7 +40,7 @@ module Kettle
 
         ensure_bundler_2_7_plus!
 
-        version = detect_version
+        version = Kettle::Dev::Versioning.detect_version(@root)
         puts "Detected version: #{version.inspect}"
 
         latest_overall = nil
@@ -69,11 +70,23 @@ module Kettle
           else
             latest_overall
           end
-          if target && Gem::Version.new(version) <= Gem::Version.new(target)
-            series = cur_series.join(".")
-            warn("version.rb (#{version}) must be greater than the latest released version for series #{series}. Latest for series: #{target}.")
-            warn("Tip: bump PATCH for a stable branch release, or bump MINOR/MAJOR when on trunk.")
-            abort("Aborting: version bump required.")
+          if target
+            bump = Kettle::Dev::Versioning.classify_bump(target, version)
+            case bump
+            when :same
+              series = cur_series.join(".")
+              warn("version.rb (#{version}) matches the latest released version for series #{series} (#{target}).")
+              abort("Aborting: version must be bumped (PATCH/MINOR/MAJOR/EPIC).")
+            when :downgrade
+              series = cur_series.join(".")
+              warn("version.rb (#{version}) is lower than the latest released version for series #{series} (#{target}).")
+              abort("Aborting: version must be bumped above #{target}.")
+            else
+              label = ({ epic: "EPIC", major: "MAJOR", minor: "MINOR", patch: "PATCH" }[bump] || bump.to_s.upcase)
+              puts "Proposed bump type: #{label} (from #{target} -> #{version})"
+            end
+          else
+            puts "Could not determine latest released version from RubyGems (offline?). Proceeding without sanity check."
           end
         else
           puts "Could not determine latest released version from RubyGems (offline?). Proceeding without sanity check."
@@ -330,17 +343,7 @@ module Kettle
       end
 
       def detect_version
-        candidates = Dir[File.join(@root, "lib", "**", "version.rb")]
-        abort("Could not find version.rb under lib/**.") if candidates.empty?
-        versions = candidates.map do |path|
-          content = File.read(path)
-          m = content.match(/VERSION\s*=\s*(["'])([^"']+)\1/)
-          next unless m
-          m[2]
-        end.compact
-        abort("VERSION constant not found in #{@root}/lib/**/version.rb") if versions.none?
-        abort("Multiple VERSION constants found to be out of sync (#{versions.inspect}) in #{@root}/lib/**/version.rb") unless versions.uniq.length == 1
-        versions.first
+        Kettle::Dev::Versioning.detect_version(@root)
       end
 
       def detect_gem_name

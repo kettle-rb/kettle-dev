@@ -18,6 +18,18 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [Unreleased]
 ### Added
+### Changed
+### Deprecated
+### Removed
+### Fixed
+### Security
+
+## [1.0.11] - 2025-08-27
+- TAG: [v1.0.11][1.0.11t]
+- COVERAGE: 98.14% -- 1741/1774 lines in 18 files
+- BRANCH COVERAGE: 79.30% -- 659/831 branches in 18 files
+- 78.70% documented
+### Added
 - Add more .example templates
   - .github/workflows/coverage.yml.example
   - .gitlab-ci.yml.example
@@ -25,14 +37,10 @@ Please file a bug if you notice a violation of semantic versioning.
 - Kettle::Dev::InputAdapter: Input indirection layer for safe interactive prompts in tests; provides gets and readline; documented with YARD and typed with RBS.
 ### Changed
 - Make 'git' gem dependency optional; fall back to raw `git` commands when the gem is not present (rescues LoadError). See Kettle::Dev::GitAdapter.
-### Deprecated
-### Removed
 ### Fixed
 - Upgrade stone_checksums for release compatibility with bundler v2.7+
   - Retains compatibility with older bundler < v2.7
 - Ship all example templates with gem
-### Security
-
 ## [1.0.10] - 2025-08-24
 - TAG: [v1.0.10][1.0.10t]
 - COVERAGE: 97.68% -- 1685/1725 lines in 17 files
@@ -168,26 +176,29 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.10...HEAD
-[1.0.10]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.9...v1.0.10
-[1.0.10t]: https://gitlab.com/kettle-rb/kettle-dev/-/tags/v1.0.10
-[1.0.9]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.8...v1.0.9
-[1.0.9t]: https://gitlab.com/kettle-rb/kettle-dev/-/tags/v1.0.9
-[1.0.8]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.7...v1.0.8
-[1.0.8t]: https://gitlab.com/kettle-rb/kettle-dev/-/tags/v1.0.8
-[1.0.7]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.6...v1.0.7
-[1.0.7t]: https://gitlab.com/kettle-rb/kettle-dev/-/tags/v1.0.7
-[1.0.6]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.5...v1.0.6
-[1.0.6t]: https://gitlab.com/kettle-rb/kettle-dev/-/tags/v1.0.6
-[1.0.5]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.4...v1.0.5
-[1.0.5t]: https://gitlab.com/kettle-rb/kettle-dev/-/tags/v1.0.5
-[1.0.4]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.3...v1.0.4
-[1.0.4t]: https://gitlab.com/kettle-rb/kettle-dev/-/tags/v1.0.4
-[1.0.3]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.2...v1.0.3
-[1.0.3t]: https://gitlab.com/kettle-rb/kettle-dev/-/tags/v1.0.3
-[1.0.2]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.1...v1.0.2
-[1.0.2t]: https://gitlab.com/kettle-rb/kettle-dev/-/tags/v1.0.2
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.11...HEAD
+[1.0.0]: https://github.com/kettle-rb/kettle-dev/compare/a427c302df09cfe4253a7c8d400333f9a4c1a208...v1.0.0
+[1.0.0t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.0
 [1.0.1]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.0...v1.0.1
-[1.0.1t]: https://gitlab.com/kettle-rb/kettle-dev/-/tags/v1.0.1
-[1.0.0]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/a427c302df09cfe4253a7c8d400333f9a4c1a208...v1.0.0
-[1.0.0t]: https://gitlab.com/kettle-rb/kettle-dev/-/tags/v1.0.0
+[1.0.1t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.1
+[1.0.2]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.1...v1.0.2
+[1.0.2t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.2
+[1.0.3]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.2...v1.0.3
+[1.0.3t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.3
+[1.0.4]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.3...v1.0.4
+[1.0.4t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.4
+[1.0.5]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.4...v1.0.5
+[1.0.5t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.5
+[1.0.6]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.5...v1.0.6
+[1.0.6t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.6
+[1.0.7]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.6...v1.0.7
+[1.0.7t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.7
+[1.0.8]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.7...v1.0.8
+[1.0.8t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.8
+[1.0.9]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.8...v1.0.9
+[1.0.9t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.9
+[1.0.10]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.9...v1.0.10
+[1.0.10t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.10
+[1.0.11]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.10...v1.0.11
+[1.0.11t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.11
+
