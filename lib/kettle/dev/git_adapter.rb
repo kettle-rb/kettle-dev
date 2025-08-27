@@ -1,13 +1,17 @@
 # frozen_string_literal: true
 
+require "open3"
+
 module Kettle
   module Dev
     # Minimal Git adapter used by kettle-dev to avoid invoking live shell commands
-    # directly from the library code. In tests, mock this adapter's methods to
-    # prevent any real network or repository mutations.
+    # directly from the higher-level library code. In tests, mock this adapter's
+    # methods to prevent any real network or repository mutations.
     #
-    # This adapter requires the 'git' gem at runtime and does not shell out to
-    # the system git. Specs should stub the git gem API to avoid real pushes.
+    # Behavior:
+    # - Prefer the 'git' gem when available.
+    # - If the 'git' gem is not present (LoadError), fall back to shelling out to
+    #   the system `git` executable for the small set of operations we need.
     #
     # Public API is intentionally small and only includes what we need right now.
     class GitAdapter
@@ -16,9 +20,11 @@ module Kettle
       def initialize
         begin
           require "git"
+          @backend = :gem
           @git = ::Git.open(Dir.pwd)
         rescue LoadError
-          raise Kettle::Dev::Error, "The 'git' gem is required at runtime. Please add it as a dependency."
+          # Optional dependency: fall back to CLI
+          @backend = :cli
         rescue StandardError => e
           raise Kettle::Dev::Error, "Failed to open git repository: #{e.message}"
         end
@@ -30,42 +36,73 @@ module Kettle
       # @param force [Boolean] whether to force push
       # @return [Boolean] true when the push is reported successful
       def push(remote, branch, force: false)
-        # git gem supports force: true option on push
-        begin
-          if remote
-            @git.push(remote, branch, force: force)
-          else
-            # Default remote according to repo config
-            @git.push(nil, branch, force: force)
+        if @backend == :gem
+          begin
+            if remote
+              @git.push(remote, branch, force: force)
+            else
+              # Default remote according to repo config
+              @git.push(nil, branch, force: force)
+            end
+            true
+          rescue StandardError
+            false
           end
-          true
-        rescue StandardError
-          false
+        else
+          args = ["git", "push"]
+          args << "--force" if force
+          if remote
+            args << remote.to_s << branch.to_s
+          end
+          system(*args)
         end
       end
 
       # @return [String, nil] current branch name, or nil on error
       def current_branch
-        @git.current_branch
+        if @backend == :gem
+          @git.current_branch
+        else
+          out, status = Open3.capture2("git", "rev-parse", "--abbrev-ref", "HEAD")
+          status.success? ? out.strip : nil
+        end
       rescue StandardError
         nil
       end
 
       # @return [Array<String>] list of remote names
       def remotes
-        @git.remotes.map(&:name)
+        if @backend == :gem
+          @git.remotes.map(&:name)
+        else
+          out, status = Open3.capture2("git", "remote")
+          status.success? ? out.split(/\r?\n/).map(&:strip).reject(&:empty?) : []
+        end
       rescue StandardError
         []
       end
 
       # @return [Hash{String=>String}] remote name => fetch URL
       def remotes_with_urls
-        @git.remotes.each_with_object({}) do |r, h|
-          begin
-            h[r.name] = r.url
-          rescue StandardError
-            # ignore
+        if @backend == :gem
+          @git.remotes.each_with_object({}) do |r, h|
+            begin
+              h[r.name] = r.url
+            rescue StandardError
+              # ignore
+            end
           end
+        else
+          out, status = Open3.capture2("git", "remote", "-v")
+          return {} unless status.success?
+          urls = {}
+          out.each_line do |line|
+            # Example: origin https://github.com/me/repo.git (fetch)
+            if line =~ /^(\S+)\s+(\S+)\s+\(fetch\)/
+              urls[Regexp.last_match(1)] = Regexp.last_match(2)
+            end
+          end
+          urls
         end
       rescue StandardError
         {}
@@ -74,8 +111,13 @@ module Kettle
       # @param name [String]
       # @return [String, nil]
       def remote_url(name)
-        r = @git.remotes.find { |x| x.name == name }
-        r&.url
+        if @backend == :gem
+          r = @git.remotes.find { |x| x.name == name }
+          r&.url
+        else
+          out, status = Open3.capture2("git", "config", "--get", "remote.#{name}.url")
+          status.success? ? out.strip : nil
+        end
       rescue StandardError
         nil
       end
@@ -84,8 +126,12 @@ module Kettle
       # @param branch [String]
       # @return [Boolean]
       def checkout(branch)
-        @git.checkout(branch)
-        true
+        if @backend == :gem
+          @git.checkout(branch)
+          true
+        else
+          system("git", "checkout", branch.to_s)
+        end
       rescue StandardError
         false
       end
@@ -95,8 +141,12 @@ module Kettle
       # @param branch [String]
       # @return [Boolean]
       def pull(remote, branch)
-        @git.pull(remote, branch)
-        true
+        if @backend == :gem
+          @git.pull(remote, branch)
+          true
+        else
+          system("git", "pull", remote.to_s, branch.to_s)
+        end
       rescue StandardError
         false
       end
@@ -106,12 +156,18 @@ module Kettle
       # @param ref [String, nil]
       # @return [Boolean]
       def fetch(remote, ref = nil)
-        if ref
-          @git.fetch(remote, ref)
+        if @backend == :gem
+          if ref
+            @git.fetch(remote, ref)
+          else
+            @git.fetch(remote)
+          end
+          true
+        elsif ref
+          system("git", "fetch", remote.to_s, ref.to_s)
         else
-          @git.fetch(remote)
+          system("git", "fetch", remote.to_s)
         end
-        true
       rescue StandardError
         false
       end

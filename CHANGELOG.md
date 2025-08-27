@@ -22,6 +22,7 @@ Please file a bug if you notice a violation of semantic versioning.
   - .github/workflows/coverage.yml.example
   - .gitlab-ci.yml
 ### Changed
+- Make 'git' gem dependency optional; fall back to raw `git` commands when the gem is not present (rescues LoadError). See Kettle::Dev::GitAdapter.
 ### Deprecated
 ### Removed
 ### Fixed
