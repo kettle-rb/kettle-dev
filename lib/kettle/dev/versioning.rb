@@ -39,11 +39,11 @@ module Kettle
 
         if cmaj > pmaj
           return :epic if cmaj && cmaj > 1000
-          return :major
+          :major
         elsif cmin > pmin
-          return :minor
+          :minor
         elsif cpatch > ppatch
-          return :patch
+          :patch
         else
           # Fallback; should be covered by :same above, but in case of weird segment shapes
           :same

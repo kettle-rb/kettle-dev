@@ -63,7 +63,7 @@ module Kettle
         changelog = File.read(@changelog_path)
 
         # If the detected version already exists in the changelog, abort to avoid duplicates
-        if changelog.match(/^## \[#{Regexp.escape(version)}\]/)
+        if changelog =~ /^## \[#{Regexp.escape(version)}\]/
           abort("CHANGELOG.md already has a section for version #{version}. Bump version.rb or remove the duplicate.")
         end
 
@@ -88,13 +88,13 @@ module Kettle
 
         # Reset the Unreleased section to empty category headings
         unreleased_reset = <<~MD
-        ## [Unreleased]
-        ### Added
-        ### Changed
-        ### Deprecated
-        ### Removed
-        ### Fixed
-        ### Security
+          ## [Unreleased]
+          ### Added
+          ### Changed
+          ### Deprecated
+          ### Removed
+          ### Fixed
+          ### Security
         MD
 
         updated = before + unreleased_reset + "\n" + new_section + after
@@ -219,8 +219,8 @@ module Kettle
             covered_branches += 1 if cov > 0
           end
         end
-        line_pct = total_lines > 0 ? ((covered_lines.to_f / total_lines) * 100.0) : 0.0
-        branch_pct = total_branches > 0 ? ((covered_branches.to_f / total_branches) * 100.0) : 0.0
+        line_pct = (total_lines > 0) ? ((covered_lines.to_f / total_lines) * 100.0) : 0.0
+        branch_pct = (total_branches > 0) ? ((covered_branches.to_f / total_branches) * 100.0) : 0.0
         line_str = format("COVERAGE: %.2f%% -- %d/%d lines in %d files", line_pct, covered_lines, total_lines, file_count)
         branch_str = format("BRANCH COVERAGE: %.2f%% -- %d/%d branches in %d files", branch_pct, covered_branches, total_branches, file_count)
         [line_str, branch_str]
@@ -233,9 +233,9 @@ module Kettle
         cmd = File.join(@root, "bin", "yard")
         unless File.executable?(cmd)
           warn("bin/yard not found or not executable; ensure yard is installed via bundler")
-          return nil
+          return
         end
-        out, status = Open3.capture2(cmd)
+        out, _ = Open3.capture2(cmd)
         # Look for a line containing e.g., "95.35% documented"
         line = out.lines.find { |l| l =~ /\d+(?:\.\d+)?%\s+documented/ }
         if line
@@ -384,7 +384,7 @@ begin
         - coverage/coverage.json present (run: K_SOUP_COV_FORMATTERS="json" bin/rspec)
         - yard installed and available via bin/yard
     USAGE
-    exit 0
+    exit(0)
   end
   Kettle::Dev::ChangelogCLI.new.run
 rescue SystemExit

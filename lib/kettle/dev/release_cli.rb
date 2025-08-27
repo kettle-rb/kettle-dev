@@ -40,7 +40,7 @@ module Kettle
 
         ensure_bundler_2_7_plus!
 
-        version = Kettle::Dev::Versioning.detect_version(@root)
+        version = detect_version
         puts "Detected version: #{version.inspect}"
 
         latest_overall = nil
@@ -76,13 +76,13 @@ module Kettle
             when :same
               series = cur_series.join(".")
               warn("version.rb (#{version}) matches the latest released version for series #{series} (#{target}).")
-              abort("Aborting: version must be bumped (PATCH/MINOR/MAJOR/EPIC).")
+              abort("Aborting: version bump required. Bump PATCH/MINOR/MAJOR/EPIC.")
             when :downgrade
               series = cur_series.join(".")
               warn("version.rb (#{version}) is lower than the latest released version for series #{series} (#{target}).")
               abort("Aborting: version must be bumped above #{target}.")
             else
-              label = ({ epic: "EPIC", major: "MAJOR", minor: "MINOR", patch: "PATCH" }[bump] || bump.to_s.upcase)
+              label = {epic: "EPIC", major: "MAJOR", minor: "MINOR", patch: "PATCH"}[bump] || bump.to_s.upcase
               puts "Proposed bump type: #{label} (from #{target} -> #{version})"
             end
           else

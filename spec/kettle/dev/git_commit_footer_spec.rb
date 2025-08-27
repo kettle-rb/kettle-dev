@@ -118,7 +118,7 @@ RSpec.describe Kettle::Dev::GitCommitFooter do
         file = File.join(dir, "COMMIT_EDITMSG")
         File.write(file, "feat: header\n\nbody\nSENT\n")
         allow(described_class).to receive(:goalie_allows_footer?).and_return(true)
-        expect { described_class.render(file) }.to raise_error(SystemExit)
+        expect { described_class.render(file) }.to raise_error(MockSystemExit)
       end
     end
 

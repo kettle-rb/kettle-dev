@@ -77,7 +77,7 @@ module Kettle
 
           if footer_append && goalie_allows_footer?(subject_line)
             if commit_msg.include?(sentinel)
-              exit(0)
+              Kettle::Dev::ExitAdapter.exit(0)
             else
               footer_binding = GitCommitFooter.new
               File.open(argv[0], "w") do |file|
