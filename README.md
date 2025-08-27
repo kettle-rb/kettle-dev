@@ -33,6 +33,12 @@ Then, add to your `Rakefile`:
 require "kettle/dev"
 ```
 
+Then run:
+
+```console
+bundle exec rake kettle:dev:install
+```
+
 Now you have many powerful development and testing tools at your disposal, all fully [documented](#-configuration) and tested.
 
 I expect the current release of this gem to be compatible with Ruby 2.3+,
@@ -157,14 +163,36 @@ Add to your `Rakefile`:
 require "kettle/dev"
 ```
 
-That’s it. When installed, kettle-dev:
+Then run:
+
+```console
+bundle exec rake kettle:dev:install
+```
+
+If git status is not clean it will abort.
+It may have some prompts, which can mostly be avoided by running with options:
+
+```console
+# DANGER: options to reduce prompts will overwrite files without asking.
+bundle exec rake kettle:dev:install allowed=true force=true
+```
+
+Hopefully, all the files that get overwritten are tracked in git!
+I wrote this for myself, and it fits my patterns of development.
+
+The install task will write a report at the end with:
+1. A file list summary of the changes made.
+2. Next steps for using the tools.
+3. A warning about .env.local (DO NOT COMMIT IT, as it will likely have secrets added)
+
+That’s it. Once installed, kettle-dev:
 - Registers RuboCop-LTS tasks and wires your default Rake task to run the gradual linter.
   - Locally: default task prefers `rubocop_gradual:autocorrect`.
   - On CI (`CI=true`): default task prefers `rubocop_gradual:check`.
 - Integrates optional coverage tasks via kettle-soup-cover (enabled locally when present).
 - Adds gem-shipped Rake tasks from `lib/kettle/dev/rakelib`, including:
   - `ci:act` — interactive selector for running GitHub Actions workflows via `act`.
-  - `kettle:dev:install` — copies this repo’s .github automation and offers to install .git-hooks templates.
+  - `kettle:dev:install` — copies this repo’s .github automation, offers to install .git-hooks templates, and overwrites many files in your project.
     - option: force: When truthy (1, true, y, yes), treat all y/N prompts as Yes. Useful for non-interactive runs or to accept defaults quickly. Example: `bundle exec rake kettle:dev:template force=true`
     - option: allowed: When truthy (1, true, y, yes), resume task after you have reviewed `.envrc`/`.env.local` and run `direnv allow`. If either file is created or updated, the task will abort with instructions unless `allowed=true` is present. Example: `bundle exec rake kettle:dev:install allowed=true`
   - `kettle:dev:template` — templates files from this gem into your project (e.g., .github workflows, .devcontainer, .qlty, modular Gemfiles, README/CONTRIBUTING stubs). You can run this independently to refresh templates without the extra install prompts.
@@ -260,6 +288,15 @@ Project automation bootstrap
 - After that, set up binstubs and direnv for convenience:
   - `bundle binstubs kettle-dev --path bin`
   - Add to `.envrc`: `PATH_add bin` (so `bin/` tools run without the prefix)
+
+### Template .example files are preferred
+
+- The templating step dynamically prefers any `*.example` file present in this gem’s templates. When a `*.example` exists alongside the non-example template, the `.example` content is used, and the destination file is written without the `.example` suffix.
+- This applies across all templated files, including:
+  - Root files like `.gitlab-ci.yml` (copied from `.gitlab-ci.yml.example` when present).
+  - Nested files like `.github/workflows/coverage.yml` (copied from `.github/workflows/coverage.yml.example` when present).
+- This behavior is automatic for any future `*.example` files added to the templates.
+- Exception: `.env.local` is handled specially for safety. Regardless of whether the template provides `.env.local` or `.env.local.example`, the installer copies it to `.env.local.example` in your project, and will never create or overwrite `.env.local`.
 
 Releasing (maintainers)
 - `exe/kettle-release` — guided release helper that:
