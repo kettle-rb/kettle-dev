@@ -80,6 +80,7 @@ end
 
 appraise "ruby-3-1" do
   # all versions of git gem are incompatible with truffleruby v23.0, syntactically.
+  # So tests relying on the git gem are skipped, to avoid loading it.
   gem "erb"
   gem "mutex_m", "~> 0.2"
   gem "stringio", "~> 3.0"
@@ -87,7 +88,7 @@ end
 
 appraise "ruby-3-2" do
   # all versions of git gem are incompatible with truffleruby v23.1, syntactically.
-  gem "git", "< 3"
+  # So tests relying on the git gem are skipped, to avoid loading it.
   gem "erb"
   gem "mutex_m", "~> 0.2"
   gem "stringio", "~> 3.0"
