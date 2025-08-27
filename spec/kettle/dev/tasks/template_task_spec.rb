@@ -371,14 +371,8 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
           # Global choice
           Dir.mktmpdir do |home|
             stub_env("HOME" => home)
-            input = StringIO.new("g\n")
-            begin
-              orig_stdin = $stdin
-              $stdin = input
-              described_class.run
-            ensure
-              $stdin = orig_stdin
-            end
+            allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("g\n")
+            described_class.run
             expect(File).to exist(File.join(home, ".git-hooks", "commit-subjects-goalie.txt"))
             expect(File).to exist(File.join(home, ".git-hooks", "footer-template.erb.txt"))
           end
@@ -386,14 +380,8 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
           # Skip choice
           Dir.mktmpdir do |home|
             stub_env("HOME" => home)
-            input = StringIO.new("s\n")
-            begin
-              orig_stdin = $stdin
-              $stdin = input
-              described_class.run
-            ensure
-              $stdin = orig_stdin
-            end
+            allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("s\n")
+            described_class.run
             expect(File).not_to exist(File.join(project_root, ".git-hooks", "commit-subjects-goalie.txt"))
             expect(File).not_to exist(File.join(home, ".git-hooks", "commit-subjects-goalie.txt"))
           end

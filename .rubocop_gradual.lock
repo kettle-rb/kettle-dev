@@ -5,12 +5,12 @@
   "lib/kettle/dev.rb:372647611": [
     [30, 17, 2, "ThreadSafety/MutableClassInstanceVariable: Freeze mutable objects assigned to class instance variables.", 5862883]
   ],
-  "lib/kettle/dev/tasks/ci_task.rb:4047237743": [
-    [189, 26, 10, "ThreadSafety/NewThread: Avoid starting new threads.", 3411682361],
-    [192, 13, 320, "Lint/RescueException: Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?", 508330984],
-    [205, 24, 60, "ThreadSafety/NewThread: Avoid starting new threads.", 1884163423],
-    [245, 19, 158, "Lint/RescueException: Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?", 3347980327],
-    [251, 15, 149, "Lint/RescueException: Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?", 4216618666]
+  "lib/kettle/dev/tasks/ci_task.rb:468958071": [
+    [190, 26, 10, "ThreadSafety/NewThread: Avoid starting new threads.", 3411682361],
+    [193, 13, 320, "Lint/RescueException: Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?", 508330984],
+    [206, 24, 60, "ThreadSafety/NewThread: Avoid starting new threads.", 1884163423],
+    [246, 19, 158, "Lint/RescueException: Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?", 3347980327],
+    [252, 15, 149, "Lint/RescueException: Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?", 4216618666]
   ],
   "spec/kettle/dev/ci_helpers_spec.rb:2267082683": [
     [38, 16, 42, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 465257938],
@@ -77,9 +77,9 @@
     [180, 7, 15, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 3416856044],
     [180, 26, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `adapter` as a spy using `allow` or `instance_spy`.", 1384559950]
   ],
-  "spec/kettle/dev/tasks/template_task_spec.rb:780678845": [
+  "spec/kettle/dev/tasks/template_task_spec.rb:3370158877": [
     [10, 1, 47, "RSpec/MultipleDescribes: Do not use multiple top-level example groups - try to nest them.", 1390613506],
-    [10, 1, 18028, "RSpec/RepeatedExampleGroupDescription: Repeated describe block description on line(s) [520, 828]", 643740631],
+    [10, 1, 17806, "RSpec/RepeatedExampleGroupDescription: Repeated describe block description on line(s) [508, 816]", 643740631],
     [28, 5, 106, "RSpec/MultipleExpectations: Example has too many expectations [6/1].", 1731744831],
     [77, 5, 61, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 3717141426],
     [103, 5, 67, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 1842133030],
@@ -88,18 +88,18 @@
     [209, 5, 72, "RSpec/MultipleExpectations: Example has too many expectations [5/1].", 730246015],
     [278, 5, 61, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 1279401844],
     [355, 5, 77, "RSpec/MultipleExpectations: Example has too many expectations [4/1].", 3540583434],
-    [404, 5, 86, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 1634411141],
-    [504, 20, 32, "RSpec/DescribedClass: Use `described_class` instead of `Kettle::Dev::Tasks::TemplateTask`.", 3673600918],
-    [520, 1, 10510, "RSpec/RepeatedExampleGroupDescription: Repeated describe block description on line(s) [10, 828]", 3263749651],
-    [538, 5, 106, "RSpec/MultipleExpectations: Example has too many expectations [6/1].", 1731744831],
-    [587, 5, 61, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 3717141426],
-    [613, 5, 67, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 1842133030],
-    [649, 5, 84, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 3162252021],
-    [682, 5, 83, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 3346006621],
-    [719, 5, 72, "RSpec/MultipleExpectations: Example has too many expectations [5/1].", 730246015],
-    [786, 5, 95, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 3532822662],
-    [828, 1, 1484, "RSpec/RepeatedExampleGroupDescription: Repeated describe block description on line(s) [10, 520]", 3537567722],
-    [838, 5, 95, "RSpec/MultipleExpectations: Example has too many expectations [4/1].", 3483868362]
+    [392, 5, 86, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 1634411141],
+    [492, 20, 32, "RSpec/DescribedClass: Use `described_class` instead of `Kettle::Dev::Tasks::TemplateTask`.", 3673600918],
+    [508, 1, 10510, "RSpec/RepeatedExampleGroupDescription: Repeated describe block description on line(s) [10, 816]", 3263749651],
+    [526, 5, 106, "RSpec/MultipleExpectations: Example has too many expectations [6/1].", 1731744831],
+    [575, 5, 61, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 3717141426],
+    [601, 5, 67, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 1842133030],
+    [637, 5, 84, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 3162252021],
+    [670, 5, 83, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 3346006621],
+    [707, 5, 72, "RSpec/MultipleExpectations: Example has too many expectations [5/1].", 730246015],
+    [774, 5, 95, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 3532822662],
+    [816, 1, 1484, "RSpec/RepeatedExampleGroupDescription: Repeated describe block description on line(s) [10, 508]", 3537567722],
+    [826, 5, 95, "RSpec/MultipleExpectations: Example has too many expectations [4/1].", 3483868362]
   ],
   "spec/kettle/dev/tasks_file_spec.rb:3588115248": [
     [9, 3, 55, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 493548809]
@@ -119,13 +119,5 @@
   "spec/kettle_dev_file_spec.rb:1811427211": [
     [3, 16, 25, "RSpec/DescribeClass: The first argument to describe should be the class or module being tested.", 3060513619],
     [4, 3, 34, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 724886528]
-  ],
-  "spec/spec_helper.rb:3130373158": [
-    [86, 5, 15, "Style/GlobalVars: Do not introduce global variables.", 2344169827],
-    [99, 25, 15, "Style/GlobalVars: Do not introduce global variables.", 2344169827],
-    [99, 45, 15, "Style/GlobalVars: Do not introduce global variables.", 2344169827],
-    [99, 64, 15, "Style/GlobalVars: Do not introduce global variables.", 2344169827],
-    [99, 82, 5, "Style/GlobalStdStream: Use `$stdin` instead of `STDIN`.", 231869441],
-    [100, 5, 15, "Style/GlobalVars: Do not introduce global variables.", 2344169827]
   ]
 }

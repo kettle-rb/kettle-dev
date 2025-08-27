@@ -178,12 +178,12 @@
       <pre class="lines">
 
 
-17
 18
-19</pre>
+19
+20</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/tasks/ci_task.rb', line 17</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/tasks/ci_task.rb', line 18</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_abort'>abort</span><span class='lparen'>(</span><span class='id identifier rubyid_msg'>msg</span><span class='rparen'>)</span>
   <span class='const'><span class='object_link'><a href="../../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../ExitAdapter.html" title="Kettle::Dev::ExitAdapter (module)">ExitAdapter</a></span></span><span class='period'>.</span><span class='id identifier rubyid_abort'><span class='object_link'><a href="../ExitAdapter.html#abort-class_method" title="Kettle::Dev::ExitAdapter.abort (method)">abort</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_msg'>msg</span><span class='rparen'>)</span>
@@ -236,7 +236,6 @@ Mirrors the behavior previously implemented in the ci:act rake task.</p>
       <pre class="lines">
 
 
-25
 26
 27
 28
@@ -541,10 +540,11 @@ Mirrors the behavior previously implemented in the ci:act rake task.</p>
 327
 328
 329
-330</pre>
+330
+331</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/tasks/ci_task.rb', line 25</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/tasks/ci_task.rb', line 26</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_act'>act</span><span class='lparen'>(</span><span class='id identifier rubyid_opt'>opt</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>io/console</span><span class='tstring_end'>&quot;</span></span>
@@ -712,7 +712,7 @@ Mirrors the behavior previously implemented in the ci:act rake task.</p>
   <span class='id identifier rubyid_selected'>selected</span> <span class='op'>=</span> <span class='kw'>nil</span>
   <span class='id identifier rubyid_input_thread'>input_thread</span> <span class='op'>=</span> <span class='const'>Thread</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span> <span class='kw'>do</span>
     <span class='kw'>begin</span>
-      <span class='id identifier rubyid_selected'>selected</span> <span class='op'>=</span> <span class='gvar'>$stdin</span><span class='period'>.</span><span class='id identifier rubyid_gets'>gets</span><span class='op'>&amp;.</span><span class='id identifier rubyid_strip'>strip</span>
+      <span class='id identifier rubyid_selected'>selected</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../InputAdapter.html" title="Kettle::Dev::InputAdapter (module)">InputAdapter</a></span></span><span class='period'>.</span><span class='id identifier rubyid_gets'><span class='object_link'><a href="../InputAdapter.html#gets-class_method" title="Kettle::Dev::InputAdapter.gets (method)">gets</a></span></span><span class='op'>&amp;.</span><span class='id identifier rubyid_strip'>strip</span>
     <span class='kw'>rescue</span> <span class='const'>Exception</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_error'>error</span>
       <span class='comment'># Catch all exceptions in background thread, including SystemExit
 </span>      <span class='comment'># NOTE: look into refactoring to minimize potential SystemExit.
@@ -862,7 +862,7 @@ Mirrors the behavior previously implemented in the ci:act rake task.</p>
 </div>
 
       <div id="footer">
-  Generated on Wed Aug 27 00:26:04 2025 by
+  Generated on Wed Aug 27 04:21:14 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

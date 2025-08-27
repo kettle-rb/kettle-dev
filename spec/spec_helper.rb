@@ -26,6 +26,8 @@ require "kettle-dev"
 require "kettle/dev/git_adapter"
 # Ensure ExitAdapter constant is available for potential stubbing
 require "kettle/dev/exit_adapter"
+# Ensure InputAdapter constant is available for stubbing
+require "kettle/dev/input_adapter"
 
 # rspec-pending_for: enable skipping on incompatible Ruby versions
 require "rspec/pending_for"
@@ -48,12 +50,11 @@ require_relative "support/shared_contexts/with_mocked_exit_adapter"
 # Include skip context for TruffleRuby 3.1..3.2 incompatibilities
 require_relative "support/shared_contexts/with_truffleruby_skip_31_32"
 
-# Global input machine to prevent blocking prompts during tests
-# Many tasks/executables read from $stdin directly (e.g., $stdin.gets).
-# Replace $stdin with a fake IO that returns an immediate answer.
+# Legacy helper used by some specs; no longer globally assigned to $stdin.
+# Specs that set $stdin = KettleTestInputMachine.new(default: ...) will be
+# respected by the mocked input adapter context for defaults.
 class KettleTestInputMachine
   def initialize(default: nil)
-    # default of nil => return "\n" to accept defaults like [Y/n] or [l]
     @default = default
   end
 
@@ -66,13 +67,11 @@ class KettleTestInputMachine
   end
 
   def read(*_args)
-    # Behave like non-interactive empty input
     ""
   end
 
   def each_line
     return enum_for(:each_line) unless block_given?
-    # No lines by default
     nil
   end
 
@@ -82,21 +81,13 @@ class KettleTestInputMachine
 end
 
 RSpec.configure do |config|
-  config.before(:suite) do
-    $original_stdin = $stdin
-    default = ENV["TEST_INPUT_DEFAULT"]
-    $stdin = KettleTestInputMachine.new(default: ((default && !default.empty?) ? default : nil))
-  end
-
   # Include mocked git adapter for all examples; it will skip when :real_git_adapter is set
   config.include_context "with mocked git adapter"
 
   # Include mocked exit adapter for all examples; it will skip when :real_exit_adapter is set
   config.include_context "with mocked exit adapter"
 
-  config.after(:suite) do
-    # Always restore the real STDIN at the end of the suite, even if $original_stdin was overwritten
-    $stdin = ((defined?($original_stdin) && $original_stdin) ? $original_stdin : STDIN)
-    $original_stdin = nil
-  end
+  # Include mocked input adapter for all examples; it will skip when :real_input_adapter is set
+  require_relative "support/shared_contexts/with_mocked_input_adapter"
+  config.include_context "with mocked input adapter"
 end

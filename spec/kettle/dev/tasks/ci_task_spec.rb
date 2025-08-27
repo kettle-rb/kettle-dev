@@ -148,7 +148,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
   describe "::act (interactive)", :skip_ci do
     it "quits when user enters 'q'", :check_output do
       with_workflows(["ci.yml", "style.yaml"]) do |_root, _dir|
-        allow($stdin).to receive(:gets).and_return("q\n")
+        allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("q\n")
         # Should not run system at all
         expect(described_class).not_to receive(:system)
         expect { described_class.act(nil) }.not_to raise_error
@@ -158,7 +158,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
     it "prints repo info even when branch missing", :check_output do
       allow(Kettle::Dev::CIHelpers).to receive(:current_branch).and_return(nil)
       with_workflows(["ci.yml"]) do |_root, _dir|
-        allow($stdin).to receive(:gets).and_return("q\n")
+        allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("q\n")
         expect { described_class.act(nil) }.not_to raise_error
       end
     end
@@ -166,7 +166,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
     it "prints repo n/a when repo info missing", :check_output do
       allow(Kettle::Dev::CIHelpers).to receive(:repo_info).and_return(nil)
       with_workflows(["ci.yml"]) do |_root, _dir|
-        allow($stdin).to receive(:gets).and_return("q\n")
+        allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("q\n")
         expect { described_class.act(nil) }.not_to raise_error
       end
     end
@@ -174,7 +174,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
     it "prints n/a for upstream and sha when git commands fail", :check_output do
       allow(Open3).to receive(:capture2).and_raise(StandardError)
       with_workflows(["ci.yml"]) do |_root, _dir|
-        allow($stdin).to receive(:gets).and_return("q\n")
+        allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("q\n")
         expect { described_class.act(nil) }.not_to raise_error
       end
     end
@@ -193,7 +193,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
         allow(Kettle::Dev::CIHelpers).to receive(:repo_info).and_return(["acme", "demo"]) # present
         allow(Kettle::Dev::CIHelpers).to receive(:current_branch).and_return("main") # present
         # Normal interactive, then choose to quit to end quickly
-        allow($stdin).to receive(:gets).and_return("q\n")
+        allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("q\n")
         expect { described_class.act(nil) }.not_to raise_error
       end
     end
@@ -208,7 +208,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
       allow(Net::HTTP).to receive(:start).and_return(*seq)
       with_workflows(["ci.yml"]) do |_root, _dir|
         allow($stdout).to receive(:tty?).and_return(true)
-        allow($stdin).to receive(:gets) {
+        allow(Kettle::Dev::InputAdapter).to receive(:gets) {
           sleep 0.1
           "q\n"
         }
@@ -220,7 +220,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
       # ensure non-tty
       allow($stdout).to receive(:tty?).and_return(false)
       with_workflows(["ci.yml"]) do |_root, _dir|
-        allow($stdin).to receive(:gets) {
+        allow(Kettle::Dev::InputAdapter).to receive(:gets) {
           sleep 0.05
           "q\n"
         }
@@ -231,7 +231,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
     it "handles Integer error for poll interval (outer rescue in worker)", :check_output, :skip_ci do
       stub_env("CI_ACT_POLL_INTERVAL" => "oops")
       with_workflows(["ci.yml"]) do |_root, _dir|
-        allow($stdin).to receive(:gets).and_return("q\n")
+        allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("q\n")
         expect { described_class.act(nil) }.not_to raise_error
       end
     end
@@ -242,7 +242,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
       Dir.mktmpdir do |root|
         # Do NOT create .github/workflows
         allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
-        allow($stdin).to receive(:gets).and_return("q\n")
+        allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("q\n")
         expect { described_class.act(nil) }.not_to raise_error
       end
     end
@@ -271,7 +271,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
       allow(Net::HTTP).to receive(:start).and_return(*seq)
       with_workflows(["ci.yml"]) do |_root, _dir|
         allow($stdout).to receive(:tty?).and_return(true)
-        allow($stdin).to receive(:gets) {
+        allow(Kettle::Dev::InputAdapter).to receive(:gets) {
           sleep 0.15
           "q\n"
         }
@@ -284,7 +284,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
         allow(Kettle::Dev::CIHelpers).to receive(:repo_info).and_return(nil)
         allow($stdout).to receive(:tty?).and_return(true)
         # Let the worker thread run before we quit
-        allow($stdin).to receive(:gets) {
+        allow(Kettle::Dev::InputAdapter).to receive(:gets) {
           sleep 0.15
           "q\n"
         }
@@ -303,7 +303,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
       with_workflows(["ci.yml"]) do |_root, _dir|
         allow($stdout).to receive(:tty?).and_return(true)
         # Delay input so worker can print at least one line in TTY branch
-        allow($stdin).to receive(:gets) {
+        allow(Kettle::Dev::InputAdapter).to receive(:gets) {
           sleep 0.25
           "q\n"
         }
@@ -315,7 +315,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
       with_workflows(["ci.yml"]) do |_root, _dir|
         allow($stdout).to receive(:tty?).and_return(true)
         # Provide input after we injected a fake status update
-        allow($stdin).to receive(:gets) {
+        allow(Kettle::Dev::InputAdapter).to receive(:gets) {
           sleep 0.1
           "q\n"
         }
@@ -340,7 +340,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
     it "recovers from ThreadError on first input pop and continues", :check_output do
       with_workflows(["ci.yml"]) do |_root, _dir|
         # Provide input immediately to make queue non-empty soon
-        allow($stdin).to receive(:gets).and_return("q\n")
+        allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("q\n")
         # Make the first Queue#pop(true) raise, then behave normally
         q = Queue.new
         cnt = 0
@@ -363,7 +363,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
     it "aborts on invalid numeric selection (too high)", :check_output do
       with_workflows(["ci.yml"]) do |_root, _dir|
         # Only 1 option + quit => entering 99 should abort
-        allow($stdin).to receive(:gets).and_return("99\n")
+        allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("99\n")
         expect { described_class.act(nil) }.to raise_error(MockSystemExit, /invalid selection/)
       end
     end
@@ -371,7 +371,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
     it "quits when numeric selection points to quit option", :check_output do
       with_workflows(["ci.yml"]) do |_root, _dir|
         # Menu has 2 items (1: workflow, 2: quit)
-        allow($stdin).to receive(:gets).and_return("2\n")
+        allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("2\n")
         expect(described_class).not_to receive(:system)
         expect { described_class.act(nil) }.not_to raise_error
       end
@@ -379,7 +379,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
 
     it "runs when numeric selection points to a valid option", :check_output do
       with_workflows(["ci.yml"]) do |_root, dir|
-        allow($stdin).to receive(:gets).and_return("1\n")
+        allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("1\n")
         file_path = File.join(dir, "ci.yml")
         expect(described_class).to receive(:system).with("act", "-W", file_path).and_return(true)
         expect { described_class.act(nil) }.not_to raise_error
@@ -388,14 +388,14 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
 
     it "aborts on unknown non-numeric code entry", :check_output do
       with_workflows(["ci.yml"]) do |_root, _dir|
-        allow($stdin).to receive(:gets).and_return("zzz\n")
+        allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("zzz\n")
         expect { described_class.act(nil) }.to raise_error(MockSystemExit, /unknown code/)
       end
     end
 
     it "aborts when chosen workflow file is missing at run time", :check_output do
       with_workflows(["ci.yml"]) do |_root, dir|
-        allow($stdin).to receive(:gets).and_return("1\n")
+        allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("1\n")
         file_path = File.join(dir, "ci.yml")
         # Pretend file is missing at the final check
         allow(File).to receive(:file?).and_call_original

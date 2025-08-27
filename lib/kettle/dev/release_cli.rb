@@ -16,6 +16,7 @@ require "ruby-progressbar"
 # Internal
 require "kettle/dev/git_adapter"
 require "kettle/dev/exit_adapter"
+require "kettle/dev/input_adapter"
 
 module Kettle
   module Dev
@@ -80,7 +81,7 @@ module Kettle
 
         puts "Have you updated lib/**/version.rb and CHANGELOG.md for v#{version}? [y/N]"
         print("> ")
-        ans = $stdin.gets&.strip
+        ans = Kettle::Dev::InputAdapter.gets&.strip
         abort("Aborted: please update version.rb and CHANGELOG.md, then re-run.") unless ans&.downcase&.start_with?("y")
 
         run_cmd!("bin/setup")
@@ -119,7 +120,7 @@ module Kettle
           # Prompt on CI to allow an explicit abort when signing would otherwise hang
           if ENV.fetch("CI", "false").casecmp("true").zero?
             print("Proceed with signing enabled? This may hang waiting for a PEM password. [y/N]: ")
-            ans = $stdin.gets&.strip
+            ans = Kettle::Dev::InputAdapter.gets&.strip
             unless ans&.downcase&.start_with?("y")
               abort("Aborted. Re-run with SKIP_GEM_SIGNING=true bundle exec kettle-release (or set it in your environment).")
             end
@@ -269,7 +270,7 @@ module Kettle
         when "true", "1", "yes", "y" then true
         when "ask"
           print("Run local CI with 'act' before pushing? [Y/n] ")
-          ans = $stdin.gets&.strip
+          ans = Kettle::Dev::InputAdapter.gets&.strip
           ans.nil? || ans.empty? || ans =~ /\Ay(es)?\z/i
         else
           false
@@ -571,7 +572,7 @@ module Kettle
             puts "  [m] Merge --no-ff #{gh_remote}/#{trunk} into #{trunk} (push to origin and #{gh_remote})"
             puts "  [a] Abort"
             print("> ")
-            choice = $stdin.gets&.strip&.downcase
+            choice = Kettle::Dev::InputAdapter.gets&.strip&.downcase
             case choice
             when "r"
               run_cmd!("git rebase #{Shellwords.escape("#{gh_remote}/#{trunk}")}")

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "kettle/dev/exit_adapter"
+require "kettle/dev/input_adapter"
 
 module Kettle
   module Dev
@@ -124,7 +125,7 @@ module Kettle
                   puts "Current spec.homepage appears #{interpolated ? "interpolated" : "invalid"}: #{assigned}"
                   puts "Suggested literal homepage: \"#{suggested}\""
                   print("Update #{File.basename(gemspec_path)} to use this homepage? [Y/n]: ")
-                  ans = $stdin.gets&.strip
+                  ans = Kettle::Dev::InputAdapter.gets&.strip
                   do_update = if ENV.fetch("force", "").to_s =~ /\A(1|true|y|yes)\z/i
                     true
                   else
@@ -266,7 +267,7 @@ module Kettle
               puts
               puts "Would you like to add '.env.local' to #{gitignore_path}?"
               print("Add to .gitignore now [Y/n]: ")
-              answer = $stdin.gets&.strip
+              answer = Kettle::Dev::InputAdapter.gets&.strip
               add_it = if ENV.fetch("force", "").to_s =~ /\A(1|true|y|yes)\z/i
                 true
               else

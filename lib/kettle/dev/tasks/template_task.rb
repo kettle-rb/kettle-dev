@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "kettle/dev/exit_adapter"
+require "kettle/dev/input_adapter"
 
 module Kettle
   module Dev
@@ -416,7 +417,7 @@ module Kettle
               puts "  [g] Global for this user (#{File.join(ENV["HOME"], ".git-hooks")})"
               puts "  [s] Skip copying"
               print("Choose (l/g/s) [l]: ")
-              choice = $stdin.gets&.strip
+              choice = Kettle::Dev::InputAdapter.gets&.strip
               choice = "l" if choice.nil? || choice.empty?
               dest_dir = case choice.downcase
               when "g", "global" then File.join(ENV["HOME"], ".git-hooks")

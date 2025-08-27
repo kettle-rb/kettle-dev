@@ -108,8 +108,8 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
           template_results: {},
         )
 
-        # Decline prompt; stub stdin for this example only
-        allow($stdin).to receive(:gets).and_return("n\n")
+        # Decline prompt; stub input adapter for this example only
+        allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("n\n")
 
         expect { described_class.run }.not_to raise_error
         gi = File.join(project_root, ".gitignore")
@@ -210,7 +210,7 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
           end
         G
         stub_env("force" => nil)
-        allow($stdin).to receive(:gets).and_return("n\n")
+        allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("n\n")
         described_class.run
         expect(File.read(gemspec)).to include("http://example.com/demo")
       end

@@ -457,8 +457,8 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     end
 
     it "runs happy path when RubyGems is offline and Appraisals exist and SKIP_GEM_SIGNING is set" do
-      # Make prompts auto-accept
-      $stdin = KettleTestInputMachine.new(default: "y")
+      # Make prompts auto-accept via input adapter
+      allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("y\n")
 
       stub_env("SKIP_GEM_SIGNING" => "true")
 
@@ -497,8 +497,8 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     end
 
     it "skips appraisal:update when Appraisals file missing" do
-      # Accept initial prompt
-      $stdin = KettleTestInputMachine.new(default: "y")
+      # Accept initial prompt via input adapter
+      allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("y\n")
 
       stub_env("SKIP_GEM_SIGNING" => "true")
 
@@ -540,16 +540,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
     it "aborts when signing enabled on CI and user declines prompt" do
       # Two prompts: first we answer 'y' to proceed, second we answer 'n' to abort signing
-      seq = Class.new do
-        def initialize(seq)
-          @seq = seq
-        end
-
-        def gets(*_args)
-          (@seq.shift || "\n") + "\n"
-        end
-      end
-      $stdin = seq.new(["y", "n"]) # yes to version/changelog, no to signing
+      allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("y\n", "n\n")
 
       stub_env("SKIP_GEM_SIGNING" => nil, "CI" => "true")
 
@@ -589,7 +580,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     end
 
     it "prints series info when latest overall is different series and continues" do
-      $stdin = KettleTestInputMachine.new(default: "y")
+      allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("y\n")
       allow(cli).to receive(:ensure_bundler_2_7_plus!)
       allow(cli).to receive(:detect_version).and_return("1.2.10")
       allow(cli).to receive(:detect_gem_name).and_return("mygem")
@@ -613,12 +604,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     end
 
     it "rescues failures from RubyGems check and proceeds to user prompt" do
-      seq = Class.new do
-        def gets(*)
-          "n\n"
-        end
-      end
-      $stdin = seq.new
+      allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("n\n")
       allow(cli).to receive(:ensure_bundler_2_7_plus!)
       allow(cli).to receive(:detect_version).and_return("1.2.3")
       allow(cli).to receive(:detect_gem_name).and_raise(StandardError.new("boom"))
@@ -756,7 +742,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       allow(cli).to receive(:ahead_behind_counts).with("origin/main", "github/main").and_return([1, 1])
       expect(cli).to receive(:checkout!).with("main").at_least(:once)
       expect(cli).to receive(:run_cmd!).with("git pull --rebase origin main")
-      $stdin = KettleTestInputMachine.new(default: "r")
+      allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("r\n")
       expect(cli).to receive(:run_cmd!).with("git rebase github/main")
       expect(cli).to receive(:run_cmd!).with("git push origin main")
       cli.send(:ensure_trunk_synced_before_push!, "main", "feat")
@@ -771,7 +757,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       allow(cli).to receive(:ahead_behind_counts).with("origin/main", "github/main").and_return([1, 1])
       expect(cli).to receive(:checkout!).with("main").at_least(:once)
       expect(cli).to receive(:run_cmd!).with("git pull --rebase origin main")
-      $stdin = KettleTestInputMachine.new(default: "m")
+      allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("m\n")
       expect(cli).to receive(:run_cmd!).with("git merge --no-ff github/main")
       expect(cli).to receive(:run_cmd!).with("git push origin main")
       expect(cli).to receive(:run_cmd!).with("git push github main")
@@ -787,7 +773,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       allow(cli).to receive(:ahead_behind_counts).with("origin/main", "github/main").and_return([1, 1])
       expect(cli).to receive(:checkout!).with("main").at_least(:once)
       expect(cli).to receive(:run_cmd!).with("git pull --rebase origin main")
-      $stdin = KettleTestInputMachine.new(default: "a")
+      allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("a\n")
       expect { cli.send(:ensure_trunk_synced_before_push!, "main", "feat") }.to raise_error(MockSystemExit, /Aborted by user/)
     end
 

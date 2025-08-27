@@ -35,7 +35,7 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
 
   describe "::ask" do
     def simulate_input(str)
-      allow($stdin).to receive(:gets).and_return(str)
+      allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return(str)
     end
 
     it "returns true on empty input when default is true" do

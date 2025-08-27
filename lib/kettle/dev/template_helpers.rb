@@ -2,6 +2,8 @@
 
 # External stdlibs
 require "find"
+# Internal
+require "kettle/dev/input_adapter"
 
 module Kettle
   module Dev
@@ -38,7 +40,7 @@ module Kettle
           return true
         end
         print("#{prompt} #{default ? "[Y/n]" : "[y/N]"}: ")
-        ans = $stdin.gets&.strip
+        ans = Kettle::Dev::InputAdapter.gets&.strip
         ans = "" if ans.nil?
         if default
           ans.empty? || ans =~ /\Ay(es)?\z/i

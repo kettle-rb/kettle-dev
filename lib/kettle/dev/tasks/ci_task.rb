@@ -2,6 +2,7 @@
 
 # External
 require "kettle/dev/exit_adapter"
+require "kettle/dev/input_adapter"
 require "open3"
 require "net/http"
 require "json"
@@ -188,7 +189,7 @@ module Kettle
           selected = nil
           input_thread = Thread.new do
             begin
-              selected = $stdin.gets&.strip
+              selected = Kettle::Dev::InputAdapter.gets&.strip
             rescue Exception => error
               # Catch all exceptions in background thread, including SystemExit
               # NOTE: look into refactoring to minimize potential SystemExit.

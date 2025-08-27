@@ -1,0 +1,8 @@
+module Kettle
+  module Dev
+    module InputAdapter
+      def self.gets: (*untyped args) -> String?
+      def self.readline: (*untyped args) -> String
+    end
+  end
+end
