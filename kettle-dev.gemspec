@@ -28,7 +28,7 @@ Gem::Specification.new do |spec|
     "Acts as a shim dependency, pulling in many other dependencies, to give you OOTB productivity with a RubyGem, or Ruby app project. " \
     "Configures a complete set of Rake tasks, for all the libraries is brings in, so they arrive ready to go. " \
     "Fund overlooked open source projects - bottom of stack, dev/test dependencies: floss-funding.dev"
-  spec.homepage = "https://github.com/galtzo-floss/kettle-dev"
+  spec.homepage = "https://github.com/kettle-rb/kettle-dev"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 2.3.0"
 
