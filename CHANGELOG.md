@@ -26,14 +26,14 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [1.0.11] - 2025-08-28
 - TAG: [v1.0.11][1.0.11t]
-- COVERAGE:  98.01% -- 1770/1806 lines in 19 files
-- BRANCH COVERAGE:  79.31% -- 671/846 branches in 19 files
+- COVERAGE: 97.90% -- 1959/2001 lines in 19 files
+- BRANCH COVERAGE: 79.98% -- 763/954 branches in 19 files
 - 78.70% documented
 ### Added
 - Add more .example templates
-  - .github/workflows/coverage.yml.example
-  - .gitlab-ci.yml.example
-  - Appraisals.example
+    - .github/workflows/coverage.yml.example
+    - .gitlab-ci.yml.example
+    - Appraisals.example
 - Kettle::Dev::InputAdapter: Input indirection layer for safe interactive prompts in tests; provides gets and readline; documented with YARD and typed with RBS.
 - install task README improvements
     - extracts emoji grapheme from H1 to apply to gemspec's summary and description
@@ -45,11 +45,11 @@ Please file a bug if you notice a violation of semantic versioning.
 - exe scripts now print their name and version as they start up
 ### Removed
 - dependency on git gem
-  - git gem is still supported if present and not bypassed by new ENV variable `KETTLE_DEV_DISABLE_GIT_GEM`
-  - no longer a direct dependency
+    - git gem is still supported if present and not bypassed by new ENV variable `KETTLE_DEV_DISABLE_GIT_GEM`
+    - no longer a direct dependency
 ### Fixed
 - Upgrade stone_checksums for release compatibility with bundler v2.7+
-  - Retains compatibility with older bundler < v2.7
+    - Retains compatibility with older bundler < v2.7
 - Ship all example templates with gem
 - install task README preservation
     - preserves H1 line, and specific H2 headed sections
