@@ -177,10 +177,29 @@ module Kettle
         data = JSON.parse(res.body)
         pipe = data&.first
         return unless pipe
+        # Attempt to enrich with failure_reason by querying the single pipeline endpoint
+        begin
+          if pipe["id"]
+            detail_uri = URI("https://#{host}/api/v4/projects/#{project}/pipelines/#{pipe["id"]}")
+            dreq = Net::HTTP::Get.new(detail_uri)
+            dreq["User-Agent"] = "kettle-dev/ci-helpers"
+            dreq["PRIVATE-TOKEN"] = token if token && !token.empty?
+            dres = Net::HTTP.start(detail_uri.hostname, detail_uri.port, use_ssl: true) { |http| http.request(dreq) }
+            if dres.is_a?(Net::HTTPSuccess)
+              det = JSON.parse(dres.body)
+              pipe["failure_reason"] = det["failure_reason"] if det.is_a?(Hash)
+              pipe["status"] = det["status"] if det["status"]
+              pipe["web_url"] = det["web_url"] if det["web_url"]
+            end
+          end
+        rescue StandardError
+          # ignore enrichment errors; fall back to basic fields
+        end
         {
           "status" => pipe["status"],
           "web_url" => pipe["web_url"],
           "id" => pipe["id"],
+          "failure_reason" => pipe["failure_reason"],
         }
       rescue StandardError
         nil

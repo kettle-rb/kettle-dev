@@ -25,9 +25,12 @@ require "kettle/dev"
 # Do not guard with __FILE__ == $PROGRAM_NAME because binstubs use Kernel.load.
 if ARGV.include?("-h") || ARGV.include?("--help")
   puts <<~USAGE
-    Usage: kettle-release
+    Usage: kettle-release [start_step=<number>]
 
     Automates the release flow for a Ruby gem in the host project:
+
+    Options:
+      start_step=<number>         # skip directly to the numbered step (e.g., 10 for CI validation)
       - Runs bin/setup and bin/rake sanity checks
       - Prompts to confirm version and changelog updates
       - Commits a release prep change
@@ -46,8 +49,11 @@ if ARGV.include?("-h") || ARGV.include?("--help")
 end
 
 puts "== kettle-release v#{Kettle::Dev::Version::VERSION} =="
+# Parse start_step=<n> from ARGV
+start_step_arg = ARGV.find { |a| a.start_with?("start_step=") }
+start_step = start_step_arg ? start_step_arg.split("=", 2)[1].to_i : 1
 begin
-  Kettle::Dev::ReleaseCLI.new.run
+  Kettle::Dev::ReleaseCLI.new(start_step: start_step).run
 rescue LoadError => e
   warn("kettle-release: could not load dependency: #{e.message}")
   warn(e.backtrace.join("\n")) if ENV["DEBUG"]

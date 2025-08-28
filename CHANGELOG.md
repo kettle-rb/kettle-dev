@@ -29,9 +29,22 @@ Please file a bug if you notice a violation of semantic versioning.
 - COVERAGE: 97.80% -- 1957/2001 lines in 19 files
 - BRANCH COVERAGE: 79.98% -- 763/954 branches in 19 files
 - 78.70% documented
+### Added
+- CIMonitor to consolidate workflow / pipeline monitoring logic for GH/GL across kettle-release and rake tasks, with handling for:
+  - minutes exhausted
+  - blocked
+  - not configured
+  - normal failures
+  - pending
+  - queued
+  - running
+  - success
+- Ability to restart kettle-release from any failed step, so manual fixed can be applied.
+  - Example (after intermittent failure of CI): `bundle exec kettle-release start_step=10`
 ### Fixed
 - added optional.gemfile.example, and handling for it in templating
 - kettle-changelog: ensure a blank line at end of file
+- add sleep(0.2) to ci:act to prevent race condition with stdout flushing
 
 ## [1.0.11] - 2025-08-28
 - TAG: [v1.0.11][1.0.11t]

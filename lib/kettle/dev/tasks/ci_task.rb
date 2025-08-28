@@ -132,6 +132,13 @@ module Kettle
             end
             fetch_and_print_status.call(file)
             run_act_for.call(file_path)
+            # After running locally, check upstream GitLab pipeline status if configured
+            begin
+              require "kettle/dev/ci_monitor"
+              Kettle::Dev::CIMonitor.monitor_gitlab!(restart_hint: "bundle exec rake ci:act")
+            rescue LoadError
+              # ignore if not available
+            end
             return
           end
 
@@ -185,6 +192,10 @@ module Kettle
           prompt = "Enter number or code (or 'q' to quit): "
           print(prompt)
           $stdout.flush
+
+          # We need to sleep a bit here to ensure the terminal is ready for both
+          #   input and writing status updates to each workflow's line
+          sleep(0.2) unless Kettle::Dev::IS_CI
 
           selected = nil
           input_thread = Thread.new do
@@ -330,6 +341,13 @@ module Kettle
           abort("ci:act aborted: workflow not found: #{file_path}") unless File.file?(file_path)
           fetch_and_print_status.call(chosen_file)
           run_act_for.call(file_path)
+          # After running locally, check upstream GitLab pipeline status if configured
+          begin
+            require "kettle/dev/ci_monitor"
+            Kettle::Dev::CIMonitor.monitor_gitlab!(restart_hint: "bundle exec rake ci:act")
+          rescue LoadError
+            # ignore if not available
+          end
         end
       end
     end

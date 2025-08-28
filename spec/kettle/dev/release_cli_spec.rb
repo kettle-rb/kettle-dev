@@ -2,6 +2,8 @@
 
 # rubocop:disable RSpec/MultipleExpectations, RSpec/MessageSpies, RSpec/StubbedMock, RSpec/ReceiveMessages
 
+require "kettle/dev/ci_monitor"
+
 RSpec.describe Kettle::Dev::ReleaseCLI do
   let(:ci_helpers) { Kettle::Dev::CIHelpers }
   let(:cli) { described_class.new }
@@ -368,8 +370,8 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     before do
       allow(ci_helpers).to receive(:project_root).and_return(Dir.pwd)
       allow(ci_helpers).to receive(:current_branch).and_return("feat")
-      allow(cli).to receive(:preferred_github_remote).and_return("origin")
-      allow(cli).to receive(:remote_url).with("origin").and_return("git@github.com:me/repo.git")
+      allow(Kettle::Dev::CIMonitor).to receive(:preferred_github_remote).and_return("origin")
+      allow(Kettle::Dev::CIMonitor).to receive(:remote_url).with("origin").and_return("git@github.com:me/repo.git")
     end
 
     it "aborts when branch cannot be determined" do
@@ -393,15 +395,16 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       allow(ci_helpers).to receive(:workflows_list).and_return(["ci.yml"])
       allow(File).to receive(:exist?).and_call_original
       allow(File).to receive(:exist?).with(File.join(Dir.pwd, ".gitlab-ci.yml")).and_return(false)
+      allow(Kettle::Dev::CIMonitor).to receive(:gitlab_remote_candidates).and_return([])
       run = {"html_url" => "http://example/ci"}
       allow(ci_helpers).to receive(:latest_run).and_return(run)
       allow(ci_helpers).to receive(:success?).and_return(false)
       allow(ci_helpers).to receive(:failed?).and_return(true)
-      expect { cli.send(:monitor_workflows_after_push!) }.to raise_error(MockSystemExit, /Workflow failed/)
+      expect { cli.send(:monitor_workflows_after_push!) }.to raise_error(MockSystemExit, /Workflow failed: .*start_step=10/)
     end
 
     it "handles GitLab pipeline success" do
-      allow(cli).to receive(:preferred_github_remote).and_return(nil)
+      allow(Kettle::Dev::CIMonitor).to receive(:preferred_github_remote).and_return(nil)
       allow(ci_helpers).to receive(:workflows_list).and_return([])
       allow(File).to receive(:exist?).with(File.join(Dir.pwd, ".gitlab-ci.yml")).and_return(true)
       allow(ci_helpers).to receive(:repo_info_gitlab).and_return(["me", "repo"])
@@ -409,12 +412,12 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       allow(ci_helpers).to receive(:gitlab_latest_pipeline).and_return(pipe)
       allow(ci_helpers).to receive(:gitlab_success?).and_return(true)
       allow(ci_helpers).to receive(:gitlab_failed?).and_return(false)
-      allow(cli).to receive(:gitlab_remote_candidates).and_return(["gitlab"])
+      allow(Kettle::Dev::CIMonitor).to receive(:gitlab_remote_candidates).and_return(["gitlab"])
       expect { cli.send(:monitor_workflows_after_push!) }.not_to raise_error
     end
 
     it "aborts when GitLab pipeline fails" do
-      allow(cli).to receive(:preferred_github_remote).and_return(nil)
+      allow(Kettle::Dev::CIMonitor).to receive(:preferred_github_remote).and_return(nil)
       allow(ci_helpers).to receive(:workflows_list).and_return([])
       allow(File).to receive(:exist?).with(File.join(Dir.pwd, ".gitlab-ci.yml")).and_return(true)
       allow(ci_helpers).to receive(:repo_info_gitlab).and_return(["me", "repo"])
@@ -422,15 +425,15 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       allow(ci_helpers).to receive(:gitlab_latest_pipeline).and_return(pipe)
       allow(ci_helpers).to receive(:gitlab_success?).and_return(false)
       allow(ci_helpers).to receive(:gitlab_failed?).and_return(true)
-      allow(cli).to receive(:gitlab_remote_candidates).and_return(["gitlab"])
-      expect { cli.send(:monitor_workflows_after_push!) }.to raise_error(MockSystemExit, /Pipeline failed/)
+      allow(Kettle::Dev::CIMonitor).to receive(:gitlab_remote_candidates).and_return(["gitlab"])
+      expect { cli.send(:monitor_workflows_after_push!) }.to raise_error(MockSystemExit, /Pipeline failed: .*start_step=10/)
     end
 
     it "aborts when no CI configured" do
       allow(ci_helpers).to receive(:workflows_list).and_return([])
       allow(File).to receive(:exist?).with(File.join(Dir.pwd, ".gitlab-ci.yml")).and_return(false)
-      allow(cli).to receive(:preferred_github_remote).and_return(nil)
-      allow(cli).to receive(:gitlab_remote_candidates).and_return([])
+      allow(Kettle::Dev::CIMonitor).to receive(:preferred_github_remote).and_return(nil)
+      allow(Kettle::Dev::CIMonitor).to receive(:gitlab_remote_candidates).and_return([])
       expect { cli.send(:monitor_workflows_after_push!) }.to raise_error(MockSystemExit, /CI configuration not detected/)
     end
   end
@@ -823,16 +826,40 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     it "sleeps when pipeline initially missing then proceeds" do
       allow(ci_helpers).to receive(:project_root).and_return(Dir.pwd)
       allow(ci_helpers).to receive(:current_branch).and_return("feat")
-      allow(cli).to receive(:preferred_github_remote).and_return(nil)
+      allow(Kettle::Dev::CIMonitor).to receive(:preferred_github_remote).and_return(nil)
       allow(ci_helpers).to receive(:workflows_list).and_return([])
       allow(File).to receive(:exist?).with(File.join(Dir.pwd, ".gitlab-ci.yml")).and_return(true)
-      allow(cli).to receive(:gitlab_remote_candidates).and_return(["gitlab"])
+      allow(Kettle::Dev::CIMonitor).to receive(:gitlab_remote_candidates).and_return(["gitlab"])
       allow(ci_helpers).to receive(:repo_info_gitlab).and_return(["me", "repo"])
       # first returns nil, then a success
       allow(ci_helpers).to receive(:gitlab_latest_pipeline).and_return(nil, {"web_url" => "http://gitlab/pipeline"})
       allow(ci_helpers).to receive(:gitlab_success?).and_return(true)
       allow(ci_helpers).to receive(:gitlab_failed?).and_return(false)
       expect { cli.send(:monitor_workflows_after_push!) }.not_to raise_error
+    end
+  end
+
+  describe "start_step skipping" do
+    it "skips initial steps when start_step is 10 (CI validation)" do
+      local_cli = described_class.new(start_step: 10)
+      allow(local_cli).to receive(:ensure_bundler_2_7_plus!)
+      # Spy on run_cmd! to ensure early commands are not invoked
+      allow(local_cli).to receive(:run_cmd!)
+      # Prevent later phases from doing real work
+      allow(local_cli).to receive(:monitor_workflows_after_push!)
+      allow(local_cli).to receive(:merge_feature_into_trunk_and_push!)
+      allow(local_cli).to receive(:checkout!)
+      allow(local_cli).to receive(:pull!)
+      allow(local_cli).to receive(:ensure_signing_setup_or_skip!)
+      allow(local_cli).to receive(:validate_checksums!)
+      allow(local_cli).to receive(:detect_trunk_branch).and_return("main")
+      allow(local_cli).to receive(:current_branch).and_return("feat")
+
+      expect { local_cli.run }.not_to raise_error
+
+      expect(local_cli).not_to have_received(:run_cmd!).with("bin/setup")
+      expect(local_cli).not_to have_received(:run_cmd!).with("bin/rake")
+      expect(local_cli).not_to have_received(:run_cmd!).with("bin/rake appraisal:update")
     end
   end
 end

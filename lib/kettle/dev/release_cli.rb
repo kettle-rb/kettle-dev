@@ -30,124 +30,172 @@ module Kettle
 
       public
 
-      def initialize
+      def initialize(start_step: 1)
         @root = Kettle::Dev::CIHelpers.project_root
         @git = Kettle::Dev::GitAdapter.new
+        @start_step = (start_step || 1).to_i
+        @start_step = 1 if @start_step < 1
       end
 
       def run
+        # 1. Ensure Bundler version ✓
         ensure_bundler_2_7_plus!
 
-        version = detect_version
-        puts "Detected version: #{version.inspect}"
+        version = nil
+        committed = nil
+        trunk = nil
+        feature = nil
 
-        latest_overall = nil
-        latest_for_series = nil
-        begin
-          gem_name = detect_gem_name
-          latest_overall, latest_for_series = latest_released_versions(gem_name, version)
-        rescue StandardError => e
-          warn("Warning: failed to check RubyGems for latest version (#{e.class}: #{e.message}). Proceeding.")
-        end
+        # 2. Version detection and sanity checks + prompt
+        if @start_step <= 2
+          version = detect_version
+          puts "Detected version: #{version.inspect}"
 
-        if latest_overall
-          msg = "Latest released: #{latest_overall}"
-          if latest_for_series && latest_for_series != latest_overall
-            msg += " | Latest for series #{Gem::Version.new(version).segments[0, 2].join(".")}.x: #{latest_for_series}"
-          elsif latest_for_series
-            msg += " (matches current series)"
+          latest_overall = nil
+          latest_for_series = nil
+          begin
+            gem_name = detect_gem_name
+            latest_overall, latest_for_series = latest_released_versions(gem_name, version)
+          rescue StandardError => e
+            warn("Warning: failed to check RubyGems for latest version (#{e.class}: #{e.message}). Proceeding.")
           end
-          puts msg
 
-          cur = Gem::Version.new(version)
-          overall = Gem::Version.new(latest_overall)
-          cur_series = cur.segments[0, 2]
-          overall_series = overall.segments[0, 2]
-          target = if (cur_series <=> overall_series) == -1
-            latest_for_series
-          else
-            latest_overall
-          end
-          if target
-            bump = Kettle::Dev::Versioning.classify_bump(target, version)
-            case bump
-            when :same
-              series = cur_series.join(".")
-              warn("version.rb (#{version}) matches the latest released version for series #{series} (#{target}).")
-              abort("Aborting: version bump required. Bump PATCH/MINOR/MAJOR/EPIC.")
-            when :downgrade
-              series = cur_series.join(".")
-              warn("version.rb (#{version}) is lower than the latest released version for series #{series} (#{target}).")
-              abort("Aborting: version must be bumped above #{target}.")
+          if latest_overall
+            msg = "Latest released: #{latest_overall}"
+            if latest_for_series && latest_for_series != latest_overall
+              msg += " | Latest for series #{Gem::Version.new(version).segments[0, 2].join(".")}.x: #{latest_for_series}"
+            elsif latest_for_series
+              msg += " (matches current series)"
+            end
+            puts msg
+
+            cur = Gem::Version.new(version)
+            overall = Gem::Version.new(latest_overall)
+            cur_series = cur.segments[0, 2]
+            overall_series = overall.segments[0, 2]
+            target = if (cur_series <=> overall_series) == -1
+              latest_for_series
             else
-              label = {epic: "EPIC", major: "MAJOR", minor: "MINOR", patch: "PATCH"}[bump] || bump.to_s.upcase
-              puts "Proposed bump type: #{label} (from #{target} -> #{version})"
+              latest_overall
+            end
+            if target
+              bump = Kettle::Dev::Versioning.classify_bump(target, version)
+              case bump
+              when :same
+                series = cur_series.join(".")
+                warn("version.rb (#{version}) matches the latest released version for series #{series} (#{target}).")
+                abort("Aborting: version bump required. Bump PATCH/MINOR/MAJOR/EPIC.")
+              when :downgrade
+                series = cur_series.join(".")
+                warn("version.rb (#{version}) is lower than the latest released version for series #{series} (#{target}).")
+                abort("Aborting: version must be bumped above #{target}.")
+              else
+                label = {epic: "EPIC", major: "MAJOR", minor: "MINOR", patch: "PATCH"}[bump] || bump.to_s.upcase
+                puts "Proposed bump type: #{label} (from #{target} -> #{version})"
+              end
+            else
+              puts "Could not determine latest released version from RubyGems (offline?). Proceeding without sanity check."
             end
           else
             puts "Could not determine latest released version from RubyGems (offline?). Proceeding without sanity check."
           end
-        else
-          puts "Could not determine latest released version from RubyGems (offline?). Proceeding without sanity check."
+
+          puts "Have you updated lib/**/version.rb and CHANGELOG.md for v#{version}? [y/N]"
+          print("> ")
+          ans = Kettle::Dev::InputAdapter.gets&.strip
+          abort("Aborted: please update version.rb and CHANGELOG.md, then re-run.") unless ans&.downcase&.start_with?("y")
         end
 
-        puts "Have you updated lib/**/version.rb and CHANGELOG.md for v#{version}? [y/N]"
-        print("> ")
-        ans = Kettle::Dev::InputAdapter.gets&.strip
-        abort("Aborted: please update version.rb and CHANGELOG.md, then re-run.") unless ans&.downcase&.start_with?("y")
+        # 3. bin/setup
+        run_cmd!("bin/setup") if @start_step <= 3
+        # 4. bin/rake
+        run_cmd!("bin/rake") if @start_step <= 4
 
-        run_cmd!("bin/setup")
-        run_cmd!("bin/rake")
-
-        appraisals_path = File.join(@root, "Appraisals")
-        if File.file?(appraisals_path)
-          puts "Appraisals detected at #{appraisals_path}. Running: bin/rake appraisal:update"
-          run_cmd!("bin/rake appraisal:update")
-        else
-          puts "No Appraisals file found; skipping appraisal:update"
-        end
-
-        ensure_git_user!
-        committed = commit_release_prep!(version)
-
-        maybe_run_local_ci_before_push!(committed)
-
-        trunk = detect_trunk_branch
-        feature = current_branch
-        puts "Trunk branch detected: #{trunk}"
-        ensure_trunk_synced_before_push!(trunk, feature)
-
-        push!
-
-        monitor_workflows_after_push!
-
-        merge_feature_into_trunk_and_push!(trunk, feature)
-
-        checkout!(trunk)
-        pull!(trunk)
-
-        # Strong reminder for local runs: skip signing when testing a release flow
-        if ENV["SKIP_GEM_SIGNING"].to_s.strip == ""
-          puts "TIP: For local dry-runs or testing the release workflow, set SKIP_GEM_SIGNING=true to avoid PEM password prompts."
-          # Prompt on CI to allow an explicit abort when signing would otherwise hang
-          if ENV.fetch("CI", "false").casecmp("true").zero?
-            print("Proceed with signing enabled? This may hang waiting for a PEM password. [y/N]: ")
-            ans = Kettle::Dev::InputAdapter.gets&.strip
-            unless ans&.downcase&.start_with?("y")
-              abort("Aborted. Re-run with SKIP_GEM_SIGNING=true bundle exec kettle-release (or set it in your environment).")
-            end
+        # 5. appraisal:update (optional)
+        if @start_step <= 5
+          appraisals_path = File.join(@root, "Appraisals")
+          if File.file?(appraisals_path)
+            puts "Appraisals detected at #{appraisals_path}. Running: bin/rake appraisal:update"
+            run_cmd!("bin/rake appraisal:update")
+          else
+            puts "No Appraisals file found; skipping appraisal:update"
           end
         end
 
-        ensure_signing_setup_or_skip!
-        puts "Running build (you may be prompted for the signing key password)..."
-        run_cmd!("bundle exec rake build")
+        # 6. git user + commit release prep
+        if @start_step <= 6
+          ensure_git_user!
+          version ||= detect_version
+          committed = commit_release_prep!(version)
+        end
 
-        run_cmd!("bin/gem_checksums")
-        validate_checksums!(version, stage: "after build + gem_checksums")
+        # 7. optional local CI via act
+        maybe_run_local_ci_before_push!(committed) if @start_step <= 7
 
-        puts "Running release (you may be prompted for signing key password and RubyGems MFA OTP)..."
-        run_cmd!("bundle exec rake release")
-        validate_checksums!(version, stage: "after release")
+        # 8. ensure trunk synced
+        if @start_step <= 8
+          trunk = detect_trunk_branch
+          feature = current_branch
+          puts "Trunk branch detected: #{trunk}"
+          ensure_trunk_synced_before_push!(trunk, feature)
+        end
+
+        # 9. push branches
+        push! if @start_step <= 9
+
+        # 10. monitor CI after push
+        monitor_workflows_after_push! if @start_step <= 10
+
+        # 11. merge feature into trunk and push
+        if @start_step <= 11
+          trunk ||= detect_trunk_branch
+          feature ||= current_branch
+          merge_feature_into_trunk_and_push!(trunk, feature)
+        end
+
+        # 12. checkout trunk and pull
+        if @start_step <= 12
+          trunk ||= detect_trunk_branch
+          checkout!(trunk)
+          pull!(trunk)
+        end
+
+        # 13. signing guidance and checks
+        if @start_step <= 13
+          if ENV["SKIP_GEM_SIGNING"].to_s.strip == ""
+            puts "TIP: For local dry-runs or testing the release workflow, set SKIP_GEM_SIGNING=true to avoid PEM password prompts."
+            if ENV.fetch("CI", "false").casecmp("true").zero?
+              print("Proceed with signing enabled? This may hang waiting for a PEM password. [y/N]: ")
+              ans = Kettle::Dev::InputAdapter.gets&.strip
+              unless ans&.downcase&.start_with?("y")
+                abort("Aborted. Re-run with SKIP_GEM_SIGNING=true bundle exec kettle-release (or set it in your environment).")
+              end
+            end
+          end
+
+          ensure_signing_setup_or_skip!
+        end
+
+        # 14. build
+        if @start_step <= 14
+          puts "Running build (you may be prompted for the signing key password)..."
+          run_cmd!("bundle exec rake build")
+        end
+
+        # 15. checksums validate
+        if @start_step <= 15
+          run_cmd!("bin/gem_checksums")
+          version ||= detect_version
+          validate_checksums!(version, stage: "after build + gem_checksums")
+        end
+
+        # 16. release and validate
+        if @start_step <= 16
+          puts "Running release (you may be prompted for signing key password and RubyGems MFA OTP)..."
+          run_cmd!("bundle exec rake release")
+          version ||= detect_version
+          validate_checksums!(version, stage: "after release")
+        end
 
         puts "\nRelease complete. Don't forget to push the checksums commit if needed."
       end
@@ -155,87 +203,9 @@ module Kettle
       private
 
       def monitor_workflows_after_push!
-        root = Kettle::Dev::CIHelpers.project_root
-        workflows = Kettle::Dev::CIHelpers.workflows_list(root)
-        gitlab_ci = File.exist?(File.join(root, ".gitlab-ci.yml"))
-
-        branch = Kettle::Dev::CIHelpers.current_branch
-        abort("Could not determine current branch for CI checks.") unless branch
-
-        gh_remote = preferred_github_remote
-        gh_owner = nil
-        gh_repo = nil
-        if gh_remote && !workflows.empty?
-          url = remote_url(gh_remote)
-          gh_owner, gh_repo = parse_github_owner_repo(url)
-        end
-
-        checks_any = false
-
-        if gh_owner && gh_repo && !workflows.empty?
-          checks_any = true
-          total = workflows.size
-          abort("No GitHub workflows found under .github/workflows; aborting.") if total.zero?
-
-          passed = {}
-          idx = 0
-          puts "Ensuring GitHub Actions workflows pass on #{branch} (#{gh_owner}/#{gh_repo}) via remote '#{gh_remote}'"
-          pbar = if defined?(ProgressBar)
-            ProgressBar.create(title: "CI", total: total, format: "%t %b %c/%C", length: 30)
-          end
-
-          loop do
-            wf = workflows[idx]
-            run = Kettle::Dev::CIHelpers.latest_run(owner: gh_owner, repo: gh_repo, workflow_file: wf, branch: branch)
-            if run
-              if Kettle::Dev::CIHelpers.success?(run)
-                unless passed[wf]
-                  passed[wf] = true
-                  pbar&.increment
-                end
-              elsif Kettle::Dev::CIHelpers.failed?(run)
-                puts
-                url = run["html_url"] || "https://github.com/#{gh_owner}/#{gh_repo}/actions/workflows/#{wf}"
-                abort("Workflow failed: #{wf} -> #{url}")
-              end
-            end
-            break if passed.size == total
-            idx = (idx + 1) % total
-            sleep(1)
-          end
-          pbar&.finish unless pbar&.finished?
-          puts "\nAll GitHub workflows passing (#{passed.size}/#{total})."
-        end
-
-        gl_remote = gitlab_remote_candidates.first
-        if gitlab_ci && gl_remote
-          owner, repo = Kettle::Dev::CIHelpers.repo_info_gitlab
-          if owner && repo
-            checks_any = true
-            puts "Ensuring GitLab pipeline passes on #{branch} (#{owner}/#{repo}) via remote '#{gl_remote}'"
-            pbar = if defined?(ProgressBar)
-              ProgressBar.create(title: "CI", total: 1, format: "%t %b %c/%C", length: 30)
-            end
-            loop do
-              pipe = Kettle::Dev::CIHelpers.gitlab_latest_pipeline(owner: owner, repo: repo, branch: branch)
-              if pipe
-                if Kettle::Dev::CIHelpers.gitlab_success?(pipe)
-                  pbar&.increment unless pbar&.finished?
-                  break
-                elsif Kettle::Dev::CIHelpers.gitlab_failed?(pipe)
-                  puts
-                  url = pipe["web_url"] || "https://gitlab.com/#{owner}/#{repo}/-/pipelines"
-                  abort("Pipeline failed: #{url}")
-                end
-              end
-              sleep(1)
-            end
-            pbar&.finish unless pbar&.finished?
-            puts "\nGitLab pipeline passing."
-          end
-        end
-
-        abort("CI configuration not detected (GitHub or GitLab). Ensure CI is configured and remotes point to the correct hosts.") unless checks_any
+        # Delegate to shared CI monitor to keep logic DRY across release flow and rake tasks
+        require "kettle/dev/ci_monitor"
+        Kettle::Dev::CIMonitor.monitor_all!(restart_hint: "bundle exec kettle-release start_step=10")
       end
 
       def run_cmd!(cmd)

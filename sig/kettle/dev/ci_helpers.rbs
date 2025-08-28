@@ -31,7 +31,7 @@ module Kettle
         ?branch: String?,
         ?host: String,
         ?token: String?
-      ) -> { "status" => String, "web_url" => String, "id" => Integer }?
+      ) -> { "status" => String, "web_url" => String, "id" => Integer, "failure_reason" => String? }?
       def self.gitlab_success?: ({ "status" => String }?) -> bool
       def self.gitlab_failed?: ({ "status" => String }?) -> bool
     end

@@ -12,9 +12,11 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
 
   before do
     # Default stubs for git/repo context used by the task
-    allow(Kettle::Dev::CIHelpers).to receive(:current_branch).and_return("main")
-    allow(Kettle::Dev::CIHelpers).to receive(:repo_info).and_return(["acme", "demo"])
-    allow(Kettle::Dev::CIHelpers).to receive(:default_token).and_return(nil)
+    allow(Kettle::Dev::CIHelpers).to receive_messages(
+      current_branch: "main",
+      repo_info: ["acme", "demo"],
+      default_token: nil,
+    )
 
     # Avoid dependence on tty rendering in tests
     allow($stdout).to receive(:tty?).and_return(false)

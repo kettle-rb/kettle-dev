@@ -1,0 +1,8 @@
+module Kettle
+  module Dev
+    module CIMonitor
+      def self.monitor_all!: (?restart_hint: String) -> void
+      def self.monitor_gitlab!: (?restart_hint: String) -> bool
+    end
+  end
+end

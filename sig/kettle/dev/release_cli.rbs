@@ -1,7 +1,7 @@
 module Kettle
   module Dev
     class ReleaseCLI
-      def initialize: () -> void
+      def initialize: (?start_step: Integer) -> void
       def run: () -> void
     end
   end

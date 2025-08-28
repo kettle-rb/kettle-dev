@@ -128,6 +128,7 @@ Notes
 - NEVER run vanilla rubocop, as it won't handle the linting config properly. Always run rubocop_gradual:autocorrect or rubocop_gradual.
 - Running only a subset of specs is supported but in order to bypass the hard failure due to coverage thresholds, you need to run with K_SOUP_COV_MIN_HARD=false.
 - When adding code that writes to STDOUT, remember most specs silence output unless tagged with :check_output or DEBUG=true.
+- Completion criteria after changes: Only consider your change “done” when the relevant examples pass, as verified by .rspec_status. Do not rely on STDOUT impressions; consult .rspec_status (and example IDs) to confirm green results for the affected files/examples. If you ran a subset, re-run the full suite before finalizing to restore coverage thresholds.
 - Coverage reports: NEVER review the HTML report. Use JSON (preferred), XML, LCOV, or RCOV. For this project, always run tests with K_SOUP_COV_FORMATTERS set to "json".
 - Do NOT modify .envrc in tasks; when running tests locally or in scripts, manually prefix each run, e.g.: K_SOUP_COV_FORMATTERS="json" bin/rspec
 - For all the kettle-soup-cover options, see .envrc and find the K_SOUP_COV_* env vars.
