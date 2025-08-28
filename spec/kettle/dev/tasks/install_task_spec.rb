@@ -599,8 +599,9 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
 
         edited = File.read(File.join(project_root, "README.md"))
         first_line = edited.lines.first.chomp
-        expect(first_line).to eq("# 🍕 Title   with   multiple   spaces")
-        expect(edited).to include("A  body   line    with     many      spaces.")
+        # With the new rule, only whitespace between word characters is squished
+        expect(first_line).to eq("# 🍕 Title with multiple spaces")
+        expect(edited).to include("A body line with many spaces.")
       end
     end
   end

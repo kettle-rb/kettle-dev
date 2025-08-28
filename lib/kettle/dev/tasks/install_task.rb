@@ -77,8 +77,16 @@ module Kettle
                     end
                   end
 
-                  # Clean up extra double spaces in non-table lines only (preserve Markdown table alignment)
-                  content = content.lines.map { |ln| ln.start_with?("|") ? ln : ln.gsub(/[ ]{2,}/, " ") }.join
+                  # Clean up extra repeated whitespace only when it appears between word characters, and only for non-table lines.
+                  # This preserves Markdown table alignment and spacing around punctuation/symbols.
+                  content = content.lines.map do |ln|
+                    if ln.start_with?("|")
+                      ln
+                    else
+                      # Squish only runs of spaces/tabs between word characters
+                      ln.gsub(/(\w)[ \t]{2,}(\w)/u, "\\1 \\2")
+                    end
+                  end.join
 
                   # Remove reference definitions for removed labels that are no longer used
                   unless removed_labels.empty?
@@ -216,6 +224,24 @@ module Kettle
             end
           rescue StandardError => e
             puts "WARNING: Skipped grapheme synchronization due to #{e.class}: #{e.message}"
+          end
+
+          # Perform final whitespace normalization for README: only squish whitespace between word characters (non-table lines)
+          begin
+            readme_path = File.join(project_root, "README.md")
+            if File.file?(readme_path)
+              content = File.read(readme_path)
+              content = content.lines.map do |ln|
+                if ln.start_with?("|")
+                  ln
+                else
+                  ln.gsub(/(\w)[ \t]{2,}(\w)/u, "\\1 \\2")
+                end
+              end.join
+              File.open(readme_path, "w") { |f| f.write(content) }
+            end
+          rescue StandardError
+            # ignore whitespace normalization errors
           end
 
           # Validate gemspec homepage points to GitHub and is a non-interpolated string
