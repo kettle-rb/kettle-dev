@@ -23,6 +23,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Removed
 ### Fixed
 - added optional.gemfile.example, and handling for it in templating
+- kettle-changelog: ensure a blank line at end of file
 ### Security
 
 ## [1.0.11] - 2025-08-28

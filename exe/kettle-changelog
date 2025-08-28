@@ -106,6 +106,9 @@ module Kettle
 
         updated = update_link_refs(updated, owner, repo, prev_version, version)
 
+        # Ensure exactly one trailing newline at EOF
+        updated = updated.rstrip + "\n"
+
         File.write(@changelog_path, updated)
         puts "CHANGELOG.md updated with v#{version} section."
       end
