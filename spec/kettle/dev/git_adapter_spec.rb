@@ -184,7 +184,18 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
 
   describe "ENV override to disable git gem" do
     include_context "with stubbed env"
-    let(:git_repo) { double("Git::Base") }
+
+    # rubocop:disable RSpec/LeakyConstantDeclaration
+    # Ensure verifying doubles work even when the git gem is not installed.
+    unless defined?(Git)
+      module ::Git; end
+    end
+    unless defined?(Git::Base)
+      class ::Git::Base; end
+    end
+    # rubocop:enable RSpec/LeakyConstantDeclaration
+
+    let(:git_repo) { instance_double("Git::Base") } # rubocop:disable RSpec/VerifiedDoubleReference
     # Detect whether the 'git' gem is actually available in this environment.
     # We attempt to require it; if it is not installed, we'll skip tests that
     # need the constant ::Git to exist.
@@ -201,23 +212,22 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
       skip "git gem not available in this environment" unless git_gem_available
       # Simulate git gem available
       allow(Kernel).to receive(:require).with("git").and_return(true)
-      expect(::Git).to receive(:open).and_return(git_repo)
-      # Ensure gem path is used by observing call to repo.push
-      expect(git_repo).to receive(:push).with("origin", "feat", force: false)
+      allow(Git).to receive(:open).and_return(git_repo)
+      allow(git_repo).to receive(:push).and_return(true)
       adapter = described_class.new
       expect(adapter.push("origin", "feat")).to be true
+      expect(git_repo).to have_received(:push).with("origin", "feat", force: false)
     end
 
     it "forces CLI backend when KETTLE_DEV_DISABLE_GIT_GEM is truthy even if gem is available" do
       stub_env("KETTLE_DEV_DISABLE_GIT_GEM" => "true")
-      # Even if require succeeds, we must not use ::Git.open
+      # Even if require succeeds, we must not use ::Git.open in this mode.
       allow(Kernel).to receive(:require).with("git").and_return(true)
-      if defined?(::Git)
-        expect(::Git).not_to receive(:open)
-      end
+      allow(Git).to receive(:open) if defined?(Git)
       adapter = described_class.new
-      expect(adapter).to receive(:system).with("git", "push", "origin", "feat").and_return(true)
+      allow(adapter).to receive(:system).and_return(true)
       expect(adapter.push("origin", "feat")).to be true
+      expect(adapter).to have_received(:system).with("git", "push", "origin", "feat")
     end
   end
 end

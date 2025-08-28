@@ -20,7 +20,7 @@
     [143, 5, 47, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 45456806],
     [225, 5, 39, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 4038128320]
   ],
-  "spec/kettle/dev/git_adapter_spec.rb:1291649739": [
+  "spec/kettle/dev/git_adapter_spec.rb:2753620283": [
     [8, 22, 19, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 3198354142],
     [10, 5, 44, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 2395005480],
     [11, 27, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `git_repo` as a spy using `allow` or `instance_spy`.", 1384559950],
@@ -61,7 +61,7 @@
     [145, 5, 36, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 501947734],
     [146, 7, 13, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2024371388],
     [146, 24, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `Open3` as a spy using `allow` or `instance_spy`.", 1384559950],
-    [151, 5, 50, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 2722023936],
+    [151, 5, 50, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 2722023936],
     [158, 7, 13, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2024371388],
     [158, 24, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `Open3` as a spy using `allow` or `instance_spy`.", 1384559950],
     [166, 5, 35, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 1782621539],
@@ -75,7 +75,9 @@
     [178, 7, 15, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 3416856044],
     [178, 26, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `adapter` as a spy using `allow` or `instance_spy`.", 1384559950],
     [180, 7, 15, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 3416856044],
-    [180, 26, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `adapter` as a spy using `allow` or `instance_spy`.", 1384559950]
+    [180, 26, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `adapter` as a spy using `allow` or `instance_spy`.", 1384559950],
+    [211, 5, 52, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 1013096336],
+    [222, 5, 90, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 4021461670]
   ],
   "spec/kettle/dev/tasks/template_task_spec.rb:391650881": [
     [41, 5, 106, "RSpec/MultipleExpectations: Example has too many expectations [6/1].", 1731744831],
