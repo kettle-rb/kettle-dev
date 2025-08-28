@@ -85,6 +85,9 @@ module Kettle
         new_section << "- #{branch_cov_line}\n" if branch_cov_line
         new_section << "- #{yard_line}\n" if yard_line
         new_section << filter_unreleased_sections(unreleased_block)
+        # Ensure exactly one blank line separates this new section from the next section
+        new_section.rstrip!
+        new_section << "\n\n"
 
         # Reset the Unreleased section to empty category headings
         unreleased_reset = <<~MD

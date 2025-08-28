@@ -26,8 +26,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [1.0.11] - 2025-08-27
 - TAG: [v1.0.11][1.0.11t]
-- COVERAGE: 98.14% -- 1741/1774 lines in 18 files
-- BRANCH COVERAGE: 79.30% -- 659/831 branches in 18 files
+- COVERAGE:  98.01% -- 1770/1806 lines in 19 files
+- BRANCH COVERAGE:  79.31% -- 671/846 branches in 19 files
 - 78.70% documented
 ### Added
 - Add more .example templates
@@ -41,6 +41,7 @@ Please file a bug if you notice a violation of semantic versioning.
 - Upgrade stone_checksums for release compatibility with bundler v2.7+
   - Retains compatibility with older bundler < v2.7
 - Ship all example templates with gem
+
 ## [1.0.10] - 2025-08-24
 - TAG: [v1.0.10][1.0.10t]
 - COVERAGE: 97.68% -- 1685/1725 lines in 17 files
