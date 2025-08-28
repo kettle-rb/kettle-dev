@@ -49,6 +49,8 @@ require_relative "support/shared_contexts/with_mocked_git_adapter"
 require_relative "support/shared_contexts/with_mocked_exit_adapter"
 # Include skip context for TruffleRuby 3.1..3.2 incompatibilities
 require_relative "support/shared_contexts/with_truffleruby_skip_31_32"
+# Include mocked input adapter for all examples; it will skip when :real_input_adapter is set
+require_relative "support/shared_contexts/with_mocked_input_adapter"
 
 # Legacy helper used by some specs; no longer globally assigned to $stdin.
 # Specs that set $stdin = KettleTestInputMachine.new(default: ...) will be
@@ -87,7 +89,5 @@ RSpec.configure do |config|
   # Include mocked exit adapter for all examples; it will skip when :real_exit_adapter is set
   config.include_context "with mocked exit adapter"
 
-  # Include mocked input adapter for all examples; it will skip when :real_input_adapter is set
-  require_relative "support/shared_contexts/with_mocked_input_adapter"
   config.include_context "with mocked input adapter"
 end

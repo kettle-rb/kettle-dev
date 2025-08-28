@@ -21,7 +21,9 @@ module Kettle
         begin
           # Allow users/CI to opt out of using the 'git' gem even when available.
           # Set KETTLE_DEV_DISABLE_GIT_GEM to a truthy value ("1", "true", "yes") to force CLI backend.
-          disable_gem = ENV["KETTLE_DEV_DISABLE_GIT_GEM"]&.match?(/\A(1|true|yes)\z/i)
+          env_val = ENV["KETTLE_DEV_DISABLE_GIT_GEM"]
+          # Ruby 2.3 compatibility: String#match? was added in 2.4; use Regexp#=== / =~ instead
+          disable_gem = env_val && !!(/\A(1|true|yes)\z/i =~ env_val)
           if disable_gem
             @backend = :cli
           else

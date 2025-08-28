@@ -380,6 +380,8 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
   end
 
   describe "::gemspec_metadata" do
+    include_context "with truffleruby 3.1..3.2 skip"
+
     it "keeps homepage string if slicing raises (covers rescue at 279)" do
       Dir.mktmpdir do |dir|
         gemspec_path = File.join(dir, "example.gemspec")
