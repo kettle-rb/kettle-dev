@@ -386,16 +386,34 @@ the system <code>git</code> executable for the small set of operations we need.<
 28
 29
 30
-31</pre>
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 20</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span>
   <span class='kw'>begin</span>
-    <span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>git</span><span class='tstring_end'>&quot;</span></span>
-    <span class='ivar'>@backend</span> <span class='op'>=</span> <span class='symbol'>:gem</span>
-    <span class='ivar'>@git</span> <span class='op'>=</span> <span class='op'>::</span><span class='const'>Git</span><span class='period'>.</span><span class='id identifier rubyid_open'>open</span><span class='lparen'>(</span><span class='const'>Dir</span><span class='period'>.</span><span class='id identifier rubyid_pwd'>pwd</span><span class='rparen'>)</span>
+    <span class='comment'># Allow users/CI to opt out of using the &#39;git&#39; gem even when available.
+</span>    <span class='comment'># Set KETTLE_DEV_DISABLE_GIT_GEM to a truthy value (&quot;1&quot;, &quot;true&quot;, &quot;yes&quot;) to force CLI backend.
+</span>    <span class='id identifier rubyid_env_val'>env_val</span> <span class='op'>=</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>KETTLE_DEV_DISABLE_GIT_GEM</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
+    <span class='comment'># Ruby 2.3 compatibility: String#match? was added in 2.4; use Regexp#=== / =~ instead
+</span>    <span class='id identifier rubyid_disable_gem'>disable_gem</span> <span class='op'>=</span> <span class='id identifier rubyid_env_val'>env_val</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='op'>!</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\A(1|true|yes)\z</span><span class='regexp_end'>/i</span></span> <span class='op'>=~</span> <span class='id identifier rubyid_env_val'>env_val</span><span class='rparen'>)</span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_disable_gem'>disable_gem</span>
+      <span class='ivar'>@backend</span> <span class='op'>=</span> <span class='symbol'>:cli</span>
+    <span class='kw'>else</span>
+      <span class='const'>Kernel</span><span class='period'>.</span><span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>git</span><span class='tstring_end'>&quot;</span></span>
+      <span class='ivar'>@backend</span> <span class='op'>=</span> <span class='symbol'>:gem</span>
+      <span class='ivar'>@git</span> <span class='op'>=</span> <span class='op'>::</span><span class='const'>Git</span><span class='period'>.</span><span class='id identifier rubyid_open'>open</span><span class='lparen'>(</span><span class='const'>Dir</span><span class='period'>.</span><span class='id identifier rubyid_pwd'>pwd</span><span class='rparen'>)</span>
+    <span class='kw'>end</span>
   <span class='kw'>rescue</span> <span class='const'>LoadError</span>
     <span class='comment'># Optional dependency: fall back to CLI
 </span>    <span class='ivar'>@backend</span> <span class='op'>=</span> <span class='symbol'>:cli</span>
@@ -468,19 +486,19 @@ the system <code>git</code> executable for the small set of operations we need.<
       <pre class="lines">
 
 
-128
-129
-130
-131
-132
-133
-134
-135
-136
-137</pre>
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 128</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 137</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_checkout'>checkout</span><span class='lparen'>(</span><span class='id identifier rubyid_branch'>branch</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='ivar'>@backend</span> <span class='op'>==</span> <span class='symbol'>:gem</span>
@@ -539,19 +557,19 @@ the system <code>git</code> executable for the small set of operations we need.<
       <pre class="lines">
 
 
-62
-63
-64
-65
-66
-67
-68
-69
-70
-71</pre>
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 62</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 71</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_current_branch'>current_branch</span>
   <span class='kw'>if</span> <span class='ivar'>@backend</span> <span class='op'>==</span> <span class='symbol'>:gem</span>
@@ -634,25 +652,25 @@ the system <code>git</code> executable for the small set of operations we need.<
       <pre class="lines">
 
 
-158
-159
-160
-161
-162
-163
-164
-165
-166
 167
 168
 169
 170
 171
 172
-173</pre>
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 158</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 167</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='id identifier rubyid_remote'>remote</span><span class='comma'>,</span> <span class='id identifier rubyid_ref'>ref</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='ivar'>@backend</span> <span class='op'>==</span> <span class='symbol'>:gem</span>
@@ -739,19 +757,19 @@ the system <code>git</code> executable for the small set of operations we need.<
       <pre class="lines">
 
 
-143
-144
-145
-146
-147
-148
-149
-150
-151
-152</pre>
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 143</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 152</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_pull'>pull</span><span class='lparen'>(</span><span class='id identifier rubyid_remote'>remote</span><span class='comma'>,</span> <span class='id identifier rubyid_branch'>branch</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='ivar'>@backend</span> <span class='op'>==</span> <span class='symbol'>:gem</span>
@@ -861,15 +879,6 @@ the system <code>git</code> executable for the small set of operations we need.<
       <pre class="lines">
 
 
-38
-39
-40
-41
-42
-43
-44
-45
-46
 47
 48
 49
@@ -882,10 +891,19 @@ the system <code>git</code> executable for the small set of operations we need.<
 56
 57
 58
-59</pre>
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 38</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 47</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_push'>push</span><span class='lparen'>(</span><span class='id identifier rubyid_remote'>remote</span><span class='comma'>,</span> <span class='id identifier rubyid_branch'>branch</span><span class='comma'>,</span> <span class='label'>force:</span> <span class='kw'>false</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='ivar'>@backend</span> <span class='op'>==</span> <span class='symbol'>:gem</span>
@@ -967,20 +985,20 @@ the system <code>git</code> executable for the small set of operations we need.<
       <pre class="lines">
 
 
-113
-114
-115
-116
-117
-118
-119
-120
-121
 122
-123</pre>
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 113</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 122</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_remote_url'>remote_url</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='ivar'>@backend</span> <span class='op'>==</span> <span class='symbol'>:gem</span>
@@ -1040,19 +1058,19 @@ the system <code>git</code> executable for the small set of operations we need.<
       <pre class="lines">
 
 
-74
-75
-76
-77
-78
-79
-80
-81
-82
-83</pre>
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 74</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 83</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_remotes'>remotes</span>
   <span class='kw'>if</span> <span class='ivar'>@backend</span> <span class='op'>==</span> <span class='symbol'>:gem</span>
@@ -1111,15 +1129,6 @@ the system <code>git</code> executable for the small set of operations we need.<
       <pre class="lines">
 
 
-86
-87
-88
-89
-90
-91
-92
-93
-94
 95
 96
 97
@@ -1134,10 +1143,19 @@ the system <code>git</code> executable for the small set of operations we need.<
 106
 107
 108
-109</pre>
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 86</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 95</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_remotes_with_urls'>remotes_with_urls</span>
   <span class='kw'>if</span> <span class='ivar'>@backend</span> <span class='op'>==</span> <span class='symbol'>:gem</span>
@@ -1173,7 +1191,7 @@ the system <code>git</code> executable for the small set of operations we need.<
 </div>
 
       <div id="footer">
-  Generated on Wed Aug 27 18:00:07 2025 by
+  Generated on Thu Aug 28 04:38:34 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

@@ -103,7 +103,7 @@
   # Apply common token replacements used when templating text files
   def self.apply_common_replacements: (
     String content,
-    gh_org: String?,
+    org: String?,
     gem_name: String,
     namespace: String,
     namespace_shield: String,
@@ -118,6 +118,8 @@
     min_ruby: String,
     homepage: String,
     gh_org: String?,
+    forge_org: String?,
+    funding_org: String?,
     gh_repo: String?,
     namespace: String,
     namespace_shield: String,
@@ -129,7 +131,7 @@ end   end end
 </div></div>
 
       <div id="footer">
-  Generated on Wed Aug 27 04:21:14 2025 by
+  Generated on Thu Aug 28 04:38:33 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

@@ -329,6 +329,7 @@ I wrote this for myself, and it fits my patterns of development.</p>
       <li>
 <code>kettle:dev:install</code> — copies this repo’s .github automation, offers to install .git-hooks templates, and overwrites many files in your project.
         <ul>
+          <li>Grapheme syncing: detects the grapheme (e.g., emoji) immediately following the first <code>#</code> H1 in README.md and ensures the same grapheme, followed by a single space, prefixes both <code>spec.summary</code> and <code>spec.description</code> in your gemspec. If the H1 has none, you’ll be prompted to enter one; tests use an input adapter, so runs never hang in CI.</li>
           <li>option: force: When truthy (1, true, y, yes), treat all y/N prompts as Yes. Useful for non-interactive runs or to accept defaults quickly. Example: <code>bundle exec rake kettle:dev:template force=true</code>
 </li>
           <li>option: allowed: When truthy (1, true, y, yes), resume task after you have reviewed <code>.envrc</code>/<code>.env.local</code> and run <code>direnv allow</code>. If either file is created or updated, the task will abort with instructions unless <code>allowed=true</code> is present. Example: <code>bundle exec rake kettle:dev:install allowed=true</code>
@@ -673,7 +674,7 @@ and <a href="https://tidelift.com/subscription/pkg/rubygems-kettle-dev?utm_sourc
 <h2 id="-contributing">🤝 Contributing</h2>
 
 <p>If you need some ideas of where to help, you could work on adding more code coverage,<br>
-or if it is already 💯 (see <a href="#code-coverage">below</a>) check <a href="REEK">reek</a>, <a href="https://github.com/kettle-rb/kettle-dev/issues">issues</a>, or <a href="https://github.com/kettle-rb/kettle-dev/pulls">PRs</a>,<br>
+or if it is already 💯 (see <a href="#code-coverage">below</a>) check <a href="file.REEK.html" title="reek">reek</a>, <a href="https://github.com/kettle-rb/kettle-dev/issues">issues</a>, or <a href="https://github.com/kettle-rb/kettle-dev/pulls">PRs</a>,<br>
 or use the gem and think about how it could be better.</p>
 
 <p>We <a href="https://keepachangelog.com/en/1.0.0/"><img src="https://img.shields.io/badge/keep--a--changelog-1.0.0-34495e.svg?style=flat" alt="Keep A Changelog"></a> so if you make changes, remember to update it.</p>
@@ -801,7 +802,7 @@ Please consider sponsoring me or the project.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Wed Aug 27 18:00:06 2025 by
+  Generated on Thu Aug 28 04:38:33 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>
