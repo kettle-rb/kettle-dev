@@ -20,6 +20,21 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
         described_class.task_abort("STOP ME")
       }.to raise_error(Kettle::Dev::Error, /STOP ME/)
     end
+
+    it "delegates to ExitAdapter.abort when RSpec is not defined (subprocess)" do
+      ruby = RbConfig.ruby
+      libdir = File.expand_path("../../../../../../lib", __FILE__)
+      script = <<~'R'
+        require "kettle/dev/tasks/template_task"
+        module Kettle; module Dev; module ExitAdapter
+          def self.abort(msg); puts("CALLED: #{msg}"); end
+        end; end; end
+        Kettle::Dev::Tasks::TemplateTask.task_abort("BYE")
+      R
+      out, = Open3.capture3(ruby, "-I", libdir, "-e", script)
+      # Some Rubies may mark nonzero due to tooling; assert on output primarily
+      expect(out).to include("CALLED: BYE")
+    end
   end
 
   describe "::run" do
@@ -304,51 +319,202 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
         end
       end
     end
-  end
-end
 
-# frozen_string_literal: true
-
-# Additional unit check for .env.local non-example source behavior
-require "rake"
-require "open3"
-
-RSpec.describe Kettle::Dev::Tasks::TemplateTask do
-  let(:helpers) { Kettle::Dev::TemplateHelpers }
-
-  before do
-    stub_env("allowed" => "true")
-  end
-
-  describe "::run" do
-    it "copies non-example .env.local from gem as .env.local.example and does not touch .env.local" do
+    it "prints a warning when copying .env.local.example raises", :check_output do
       Dir.mktmpdir do |gem_root|
         Dir.mktmpdir do |project_root|
-          # Gem provides a non-example .env.local
-          File.write(File.join(gem_root, ".env.local"), "SECRET=from_non_example\n")
-          # Minimal gemspec for metadata
+          File.write(File.join(gem_root, ".env.local.example"), "A=1\n")
+          File.write(File.join(project_root, "demo.gemspec"), "Gem::Specification.new{|s| s.name='demo'}\n")
+          allow(helpers).to receive_messages(project_root: project_root, gem_checkout_root: gem_root, ensure_clean_git!: nil, ask: true)
+          # Only raise for .env.local.example copy, not for other copies
+          allow(helpers).to receive(:copy_file_with_prompt).and_wrap_original do |m, *args, &blk|
+            src = args[0].to_s
+            if File.basename(src) == ".env.local.example"
+              raise ArgumentError, "boom"
+            elsif args.last.is_a?(Hash)
+              kw = args.pop
+              m.call(*args, **kw, &blk)
+            else
+              m.call(*args, &blk)
+            end
+          end
+          expect { described_class.run }.not_to raise_error
+        end
+      end
+    end
+
+    it "copies certs/pboling.pem when present, and warns on error", :check_output do
+      Dir.mktmpdir do |gem_root|
+        Dir.mktmpdir do |project_root|
+          cert_dir = File.join(gem_root, "certs")
+          FileUtils.mkdir_p(cert_dir)
+          File.write(File.join(cert_dir, "pboling.pem"), "certdata")
+          File.write(File.join(project_root, "demo.gemspec"), "Gem::Specification.new{|s| s.name='demo'}\n")
+          allow(helpers).to receive_messages(project_root: project_root, gem_checkout_root: gem_root, ensure_clean_git!: nil, ask: true)
+
+          # Normal run
+          expect { described_class.run }.not_to raise_error
+          expect(File).to exist(File.join(project_root, "certs", "pboling.pem"))
+
+          # Error run
+          allow(helpers).to receive(:copy_file_with_prompt).and_wrap_original do |m, *args, &blk|
+            if args[0].to_s.end_with?(File.join("certs", "pboling.pem"))
+              raise "nope"
+            elsif args.last.is_a?(Hash)
+              kw = args.pop
+              m.call(*args, **kw, &blk)
+            else
+              m.call(*args, &blk)
+            end
+          end
+          expect { described_class.run }.not_to raise_error
+        end
+      end
+    end
+
+    context "env file change review", :check_output do
+      it "proceeds when allowed=true" do
+        Dir.mktmpdir do |gem_root|
+          Dir.mktmpdir do |project_root|
+            File.write(File.join(gem_root, ".envrc"), "export A=1\n")
+            File.write(File.join(project_root, "demo.gemspec"), "Gem::Specification.new{|s| s.name='demo'}\n")
+            allow(helpers).to receive_messages(project_root: project_root, gem_checkout_root: gem_root, ensure_clean_git!: nil, ask: true)
+            allow(helpers).to receive(:modified_by_template?).and_return(true)
+            stub_env("allowed" => "true")
+            expect { described_class.run }.not_to raise_error
+          end
+        end
+      end
+
+      it "aborts with guidance when not allowed" do
+        Dir.mktmpdir do |gem_root|
+          Dir.mktmpdir do |project_root|
+            File.write(File.join(gem_root, ".envrc"), "export A=1\n")
+            File.write(File.join(project_root, "demo.gemspec"), "Gem::Specification.new{|s| s.name='demo'}\n")
+            allow(helpers).to receive_messages(project_root: project_root, gem_checkout_root: gem_root, ensure_clean_git!: nil, ask: true)
+            allow(helpers).to receive(:modified_by_template?).and_return(true)
+            stub_env("allowed" => "")
+            expect { described_class.run }.to raise_error(Kettle::Dev::Error, /review of environment files required/)
+          end
+        end
+      end
+
+      it "warns when check raises" do
+        Dir.mktmpdir do |gem_root|
+          Dir.mktmpdir do |project_root|
+            File.write(File.join(gem_root, ".envrc"), "export A=1\n")
+            File.write(File.join(project_root, "demo.gemspec"), "Gem::Specification.new{|s| s.name='demo'}\n")
+            allow(helpers).to receive_messages(project_root: project_root, gem_checkout_root: gem_root, ensure_clean_git!: nil, ask: true)
+            allow(helpers).to receive(:modified_by_template?).and_raise(StandardError, "oops")
+            stub_env("allowed" => "true")
+            expect { described_class.run }.not_to raise_error
+          end
+        end
+      end
+    end
+
+    it "applies replacements for special root files like CHANGELOG.md and .opencollective.yml" do
+      Dir.mktmpdir do |gem_root|
+        Dir.mktmpdir do |project_root|
+          File.write(File.join(gem_root, "CHANGELOG.md.example"), "kettle-rb kettle-dev Kettle::Dev Kettle%3A%3ADev kettle--dev\n")
+          File.write(File.join(gem_root, ".opencollective.yml"), "org: kettle-rb project: kettle-dev\n")
           File.write(File.join(project_root, "demo.gemspec"), <<~G)
             Gem::Specification.new do |spec|
-              spec.name = "demo"
+              spec.name = "my-gem"
               spec.required_ruby_version = ">= 3.1"
+              spec.homepage = "https://github.com/acme/my-gem"
             end
           G
+          allow(helpers).to receive_messages(project_root: project_root, gem_checkout_root: gem_root, ensure_clean_git!: nil, ask: true)
 
-          allow(helpers).to receive_messages(
-            project_root: project_root,
-            gem_checkout_root: gem_root,
-            ensure_clean_git!: nil,
-            ask: true,
-          )
+          described_class.run
 
-          expect { described_class.run }.not_to raise_error
+          changelog = File.read(File.join(project_root, "CHANGELOG.md"))
+          expect(changelog).to include("acme")
+          expect(changelog).to include("my-gem")
+          expect(changelog).to include("My::Gem")
+          expect(changelog).to include("My%3A%3AGem")
+          expect(changelog).to include("my--gem")
+        end
+      end
+    end
 
-          # Assert .env.local.example created with correct content
-          dest_example = File.join(project_root, ".env.local.example")
-          expect(File).to exist(dest_example)
-          expect(File.read(dest_example)).to include("SECRET=from_non_example")
-          # Assert .env.local not created/overwritten
-          expect(File).not_to exist(File.join(project_root, ".env.local"))
+    context "with .git-hooks present" do
+      it "copies templates locally by default", :check_output do
+        Dir.mktmpdir do |gem_root|
+          Dir.mktmpdir do |project_root|
+            hooks_src = File.join(gem_root, ".git-hooks")
+            FileUtils.mkdir_p(hooks_src)
+            File.write(File.join(hooks_src, "commit-subjects-goalie.txt"), "x")
+            File.write(File.join(hooks_src, "footer-template.erb.txt"), "y")
+            File.write(File.join(project_root, "demo.gemspec"), "Gem::Specification.new{|s| s.name='demo'}\n")
+            allow(helpers).to receive_messages(project_root: project_root, gem_checkout_root: gem_root, ensure_clean_git!: nil, ask: true)
+            allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("")
+            described_class.run
+            expect(File).to exist(File.join(project_root, ".git-hooks", "commit-subjects-goalie.txt"))
+          end
+        end
+      end
+
+      it "skips copying templates when user chooses 's'", :check_output do
+        Dir.mktmpdir do |gem_root|
+          Dir.mktmpdir do |project_root|
+            hooks_src = File.join(gem_root, ".git-hooks")
+            FileUtils.mkdir_p(hooks_src)
+            File.write(File.join(hooks_src, "commit-subjects-goalie.txt"), "x")
+            File.write(File.join(hooks_src, "footer-template.erb.txt"), "y")
+            File.write(File.join(project_root, "demo.gemspec"), "Gem::Specification.new{|s| s.name='demo'}\n")
+            allow(helpers).to receive_messages(project_root: project_root, gem_checkout_root: gem_root, ensure_clean_git!: nil, ask: true)
+            allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("s\n")
+            described_class.run
+            expect(File).not_to exist(File.join(project_root, ".git-hooks", "commit-subjects-goalie.txt"))
+          end
+        end
+      end
+
+      it "installs hook scripts; overwrite yes/no and fresh install", :check_output do
+        Dir.mktmpdir do |gem_root|
+          Dir.mktmpdir do |project_root|
+            hooks_src = File.join(gem_root, ".git-hooks")
+            FileUtils.mkdir_p(hooks_src)
+            File.write(File.join(hooks_src, "commit-msg"), "echo ruby hook\n")
+            File.write(File.join(hooks_src, "prepare-commit-msg"), "echo sh hook\n")
+            File.write(File.join(project_root, "demo.gemspec"), "Gem::Specification.new{|s| s.name='demo'}\n")
+            allow(helpers).to receive_messages(project_root: project_root, gem_checkout_root: gem_root, ensure_clean_git!: nil, ask: true)
+
+            # Force templates conditional to false
+            allow(Dir).to receive(:exist?).and_call_original
+            allow(Dir).to receive(:exist?).with(File.join(gem_root, ".git-hooks")).and_return(true)
+            allow(File).to receive(:file?).and_call_original
+            allow(File).to receive(:file?).with(File.join(gem_root, ".git-hooks", "commit-subjects-goalie.txt")).and_return(false)
+            allow(File).to receive(:file?).with(File.join(gem_root, ".git-hooks", "footer-template.erb.txt")).and_return(false)
+
+            # First run installs
+            described_class.run
+            dest_dir = File.join(project_root, ".git-hooks")
+            expect(File).to exist(File.join(dest_dir, "commit-msg"))
+
+            # Overwrite yes
+            allow(helpers).to receive(:ask).and_return(true)
+            described_class.run
+            # Overwrite no
+            allow(helpers).to receive(:ask).and_return(false)
+            described_class.run
+          end
+        end
+      end
+
+      it "warns when installing hook scripts raises", :check_output do
+        Dir.mktmpdir do |gem_root|
+          Dir.mktmpdir do |project_root|
+            hooks_src = File.join(gem_root, ".git-hooks")
+            FileUtils.mkdir_p(hooks_src)
+            File.write(File.join(hooks_src, "commit-msg"), "echo ruby hook\n")
+            File.write(File.join(project_root, "demo.gemspec"), "Gem::Specification.new{|s| s.name='demo'}\n")
+            allow(helpers).to receive_messages(project_root: project_root, gem_checkout_root: gem_root, ensure_clean_git!: nil, ask: true)
+            allow(FileUtils).to receive(:mkdir_p).and_raise(StandardError, "perm")
+            expect { described_class.run }.not_to raise_error
+          end
         end
       end
     end

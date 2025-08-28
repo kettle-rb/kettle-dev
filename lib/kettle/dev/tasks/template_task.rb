@@ -164,9 +164,9 @@ module Kettle
             end
           end
 
-          # 6) .env.local special case: never overwrite project .env.local; copy template as .env.local.example
+          # 6) .env.local special case: never read or touch .env.local from source; only copy .env.local.example to .env.local.example
           begin
-            envlocal_src = helpers.prefer_example(File.join(gem_checkout_root, ".env.local"))
+            envlocal_src = File.join(gem_checkout_root, ".env.local.example")
             envlocal_dest = File.join(project_root, ".env.local.example")
             if File.exist?(envlocal_src)
               helpers.copy_file_with_prompt(envlocal_src, envlocal_dest, allow_create: true, allow_replace: true)
