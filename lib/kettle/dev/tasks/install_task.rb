@@ -111,6 +111,112 @@ module Kettle
             puts "WARNING: Skipped trimming MRI Ruby badges in README.md due to #{e.class}: #{e.message}"
           end
 
+          # Synchronize leading grapheme (emoji) between README H1 and gemspec summary/description
+          begin
+            readme_path = File.join(project_root, "README.md")
+            gemspecs = Dir.glob(File.join(project_root, "*.gemspec"))
+            if File.file?(readme_path) && !gemspecs.empty?
+              gemspec_path = gemspecs.first
+              readme = File.read(readme_path)
+              first_h1_idx = readme.lines.index { |ln| ln =~ /^#\s+/ }
+              chosen_grapheme = nil
+              if first_h1_idx
+                lines = readme.split("\n", -1)
+                h1 = lines[first_h1_idx]
+                tail = h1.sub(/^#\s+/, "")
+                begin
+                  emoji_re = Kettle::EmojiRegex::REGEX
+                  # Extract first emoji grapheme cluster if present
+                  if tail =~ /\A#{emoji_re.source}/u
+                    cluster = tail[/\A\X/u]
+                    chosen_grapheme = cluster unless cluster.to_s.empty?
+                  end
+                rescue StandardError
+                  # Fallback: take first Unicode grapheme if any non-space char
+                  chosen_grapheme ||= tail[/\A\X/u]
+                end
+              end
+
+              # If no grapheme found in README H1, ask the user which to use
+              if chosen_grapheme.nil? || chosen_grapheme.empty?
+                puts "No grapheme found after README H1. Enter a grapheme (emoji/symbol) to use for README, summary, and description:"
+                print("Grapheme: ")
+                ans = Kettle::Dev::InputAdapter.gets&.strip.to_s
+                chosen_grapheme = ans[/\A\X/u].to_s
+                # If still empty, skip synchronization silently
+                chosen_grapheme = nil if chosen_grapheme.empty?
+              end
+
+              if chosen_grapheme
+                # 1) Normalize README H1 to exactly one grapheme + single space after '#'
+                begin
+                  lines = readme.split("\n", -1)
+                  idx = lines.index { |ln| ln =~ /^#\s+/ }
+                  if idx
+                    rest = lines[idx].sub(/^#\s+/, "")
+                    begin
+                      emoji_re = Kettle::EmojiRegex::REGEX
+                      # Remove any leading emojis from the H1 by peeling full grapheme clusters
+                      tmp = rest.dup
+                      while tmp =~ /\A#{emoji_re.source}/u
+                        cluster = tmp[/\A\X/u]
+                        tmp = tmp[cluster.length..-1].to_s
+                      end
+                      rest_wo_emoji = tmp.sub(/\A\s+/, "")
+                    rescue StandardError
+                      rest_wo_emoji = rest.sub(/\A\s+/, "")
+                    end
+                    new_line = ["#", chosen_grapheme, rest_wo_emoji].join(" ").gsub(/\s+/, " ").sub(/^#\s+/, "# ")
+                    lines[idx] = new_line
+                    new_readme = lines.join("\n")
+                    File.open(readme_path, "w") { |f| f.write(new_readme) }
+                  end
+                rescue StandardError
+                  # ignore README normalization errors
+                end
+
+                # 2) Update gemspec summary and description to start with grapheme + single space
+                begin
+                  gspec = File.read(gemspec_path)
+
+                  normalize_field = lambda do |text, field|
+                    # Match the assignment line and the first quoted string
+                    text.gsub(/(\b#{Regexp.escape(field)}\s*=\s*)(["'])([^\"']*)(\2)/) do
+                      pre = Regexp.last_match(1)
+                      q = Regexp.last_match(2)
+                      body = Regexp.last_match(3)
+                      # Strip existing leading emojis and spaces
+                      begin
+                        emoji_re = Kettle::EmojiRegex::REGEX
+                        tmp = body.dup
+                        tmp = tmp.sub(/\A\s+/, "")
+                        while tmp =~ /\A#{emoji_re.source}/u
+                          cluster = tmp[/\A\X/u]
+                          tmp = tmp[cluster.length..-1].to_s
+                        end
+                        tmp = tmp.sub(/\A\s+/, "")
+                        body_wo = tmp
+                      rescue StandardError
+                        body_wo = body.sub(/\A\s+/, "")
+                      end
+                      pre + q + ("#{chosen_grapheme} " + body_wo) + q
+                    end
+                  end
+
+                  gspec2 = normalize_field.call(gspec, "spec.summary")
+                  gspec3 = normalize_field.call(gspec2, "spec.description")
+                  if gspec3 != gspec
+                    File.open(gemspec_path, "w") { |f| f.write(gspec3) }
+                  end
+                rescue StandardError
+                  # ignore gemspec edits on error
+                end
+              end
+            end
+          rescue StandardError => e
+            puts "WARNING: Skipped grapheme synchronization due to #{e.class}: #{e.message}"
+          end
+
           # Validate gemspec homepage points to GitHub and is a non-interpolated string
           begin
             gemspecs = Dir.glob(File.join(project_root, "*.gemspec"))

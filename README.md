@@ -193,6 +193,7 @@ That’s it. Once installed, kettle-dev:
 - Adds gem-shipped Rake tasks from `lib/kettle/dev/rakelib`, including:
   - `ci:act` — interactive selector for running GitHub Actions workflows via `act`.
   - `kettle:dev:install` — copies this repo’s .github automation, offers to install .git-hooks templates, and overwrites many files in your project.
+    - Grapheme syncing: detects the grapheme (e.g., emoji) immediately following the first `#` H1 in README.md and ensures the same grapheme, followed by a single space, prefixes both `spec.summary` and `spec.description` in your gemspec. If the H1 has none, you’ll be prompted to enter one; tests use an input adapter, so runs never hang in CI.
     - option: force: When truthy (1, true, y, yes), treat all y/N prompts as Yes. Useful for non-interactive runs or to accept defaults quickly. Example: `bundle exec rake kettle:dev:template force=true`
     - option: allowed: When truthy (1, true, y, yes), resume task after you have reviewed `.envrc`/`.env.local` and run `direnv allow`. If either file is created or updated, the task will abort with instructions unless `allowed=true` is present. Example: `bundle exec rake kettle:dev:install allowed=true`
   - `kettle:dev:template` — templates files from this gem into your project (e.g., .github workflows, .devcontainer, .qlty, modular Gemfiles, README/CONTRIBUTING stubs). You can run this independently to refresh templates without the extra install prompts.

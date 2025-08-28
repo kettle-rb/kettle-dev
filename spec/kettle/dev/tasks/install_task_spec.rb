@@ -465,6 +465,94 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
         expect { described_class.run }.not_to raise_error
       end
     end
+
+    # New tests: grapheme synchronization between README H1 and gemspec
+    it "replaces mismatched grapheme and enforces single space in README and gemspec" do
+      Dir.mktmpdir do |project_root|
+        # README with a different emoji
+        File.write(File.join(project_root, "README.md"), "# 🍕  My Library\n\nText\n")
+        # Gemspec with different leading emoji and extra spaces
+        gemspec = File.join(project_root, "demo.gemspec")
+        File.write(gemspec, <<~G)
+          Gem::Specification.new do |spec|
+            spec.name = "demo"
+            spec.summary = "🍲  A tasty lib"
+            spec.description = "🍲  Delicious things" \
+              " and more"
+            spec.homepage = "https://github.com/acme/demo"
+          end
+        G
+        allow(helpers).to receive_messages(
+          project_root: project_root,
+          modified_by_template?: true,
+          template_results: {},
+        )
+        described_class.run
+        # README H1 normalized: single 🍕 and single space
+        readme = File.read(File.join(project_root, "README.md"))
+        expect(readme.lines.first).to eq("# 🍕 My Library\n")
+        # Gemspec summary/description start with 🍕 and single space
+        txt = File.read(gemspec)
+        expect(txt).to match(/spec.summary\s*=\s*"🍕 A tasty lib"/)
+        expect(txt).to match(/spec.description\s*=\s*"🍕 Delicious things"/)
+      end
+    end
+
+    it "inserts user-provided grapheme when README H1 has none" do
+      Dir.mktmpdir do |project_root|
+        File.write(File.join(project_root, "README.md"), "# My Library\n")
+        gemspec = File.join(project_root, "demo.gemspec")
+        File.write(gemspec, <<~G)
+          Gem::Specification.new do |spec|
+            spec.name = "demo"
+            spec.summary = "A lib"
+            spec.description = "Awesome" \
+              " stuff"
+            spec.homepage = "https://github.com/acme/demo"
+          end
+        G
+        allow(helpers).to receive_messages(
+          project_root: project_root,
+          modified_by_template?: true,
+          template_results: {},
+        )
+        allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("🚀\n")
+        described_class.run
+        readme = File.read(File.join(project_root, "README.md"))
+        expect(readme.lines.first).to eq("# 🚀 My Library\n")
+        txt = File.read(gemspec)
+        expect(txt).to match(/spec.summary\s*=\s*"🚀 A lib"/)
+        expect(txt).to match(/spec.description\s*=\s*"🚀 Awesome"/)
+      end
+    end
+
+    it "does nothing when user provides empty grapheme input" do
+      Dir.mktmpdir do |project_root|
+        File.write(File.join(project_root, "README.md"), "# Title\n")
+        gemspec = File.join(project_root, "demo.gemspec")
+        File.write(gemspec, <<~G)
+          Gem::Specification.new do |spec|
+            spec.name = "demo"
+            spec.summary = "Sum"
+            spec.description = "Desc" \
+              " tail"
+            spec.homepage = "https://github.com/acme/demo"
+          end
+        G
+        allow(helpers).to receive_messages(
+          project_root: project_root,
+          modified_by_template?: true,
+          template_results: {},
+        )
+        allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("\n")
+        described_class.run
+        # unchanged
+        expect(File.read(File.join(project_root, "README.md"))).to start_with("# Title\n")
+        t = File.read(gemspec)
+        expect(t).to include('spec.summary = "Sum"')
+        expect(t).to include('spec.description = "Desc"')
+      end
+    end
   end
 
   describe "::task_abort" do

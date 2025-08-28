@@ -19,9 +19,16 @@ module Kettle
       # @return [void]
       def initialize
         begin
-          require "git"
-          @backend = :gem
-          @git = ::Git.open(Dir.pwd)
+          # Allow users/CI to opt out of using the 'git' gem even when available.
+          # Set KETTLE_DEV_DISABLE_GIT_GEM to a truthy value ("1", "true", "yes") to force CLI backend.
+          disable_gem = ENV["KETTLE_DEV_DISABLE_GIT_GEM"]&.match?(/\A(1|true|yes)\z/i)
+          if disable_gem
+            @backend = :cli
+          else
+            Kernel.require "git"
+            @backend = :gem
+            @git = ::Git.open(Dir.pwd)
+          end
         rescue LoadError
           # Optional dependency: fall back to CLI
           @backend = :cli

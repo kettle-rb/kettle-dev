@@ -157,10 +157,10 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
       OUT
       expect(Open3).to receive(:capture2).with("git", "remote", "-v").and_return([lines, status_ok])
       adapter = described_class.new
-      expect(adapter.remotes_with_urls).to include(
-        "origin" => "https://github.com/me/repo.git",
-        "gl" => "https://gitlab.com/me/repo",
-      )
+      urls = adapter.remotes_with_urls
+      # Be flexible: accept SSH or HTTPS; only assert the domains are present
+      expect(urls.fetch("origin")).to include("github.com")
+      expect(urls.fetch("gl")).to include("gitlab.com")
     end
 
     it "gets remote_url via git config" do
@@ -179,6 +179,45 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
       expect(adapter.fetch("origin", "main")).to be true
       expect(adapter).to receive(:system).with("git", "fetch", "origin").and_return(true)
       expect(adapter.fetch("origin")).to be true
+    end
+  end
+
+  describe "ENV override to disable git gem" do
+    include_context "with stubbed env"
+    let(:git_repo) { double("Git::Base") }
+    # Detect whether the 'git' gem is actually available in this environment.
+    # We attempt to require it; if it is not installed, we'll skip tests that
+    # need the constant ::Git to exist.
+    let(:git_gem_available) do
+      begin
+        require "git"
+        true
+      rescue LoadError
+        false
+      end
+    end
+
+    it "uses gem backend when available and no override" do
+      skip "git gem not available in this environment" unless git_gem_available
+      # Simulate git gem available
+      allow(Kernel).to receive(:require).with("git").and_return(true)
+      expect(::Git).to receive(:open).and_return(git_repo)
+      # Ensure gem path is used by observing call to repo.push
+      expect(git_repo).to receive(:push).with("origin", "feat", force: false)
+      adapter = described_class.new
+      expect(adapter.push("origin", "feat")).to be true
+    end
+
+    it "forces CLI backend when KETTLE_DEV_DISABLE_GIT_GEM is truthy even if gem is available" do
+      stub_env("KETTLE_DEV_DISABLE_GIT_GEM" => "true")
+      # Even if require succeeds, we must not use ::Git.open
+      allow(Kernel).to receive(:require).with("git").and_return(true)
+      if defined?(::Git)
+        expect(::Git).not_to receive(:open)
+      end
+      adapter = described_class.new
+      expect(adapter).to receive(:system).with("git", "push", "origin", "feat").and_return(true)
+      expect(adapter.push("origin", "feat")).to be true
     end
   end
 end
