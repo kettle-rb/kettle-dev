@@ -101,8 +101,8 @@
     [394, 9, 29, "RSpec/AnyInstance: Avoid stubbing using `allow_any_instance_of`.", 835110177],
     [395, 9, 29, "RSpec/AnyInstance: Avoid stubbing using `allow_any_instance_of`.", 835110177]
   ],
-  "spec/kettle/dev/versioning_spec.rb:3851799453": [
-    [40, 7, 53, "RSpec/PredicateMatcher: Prefer using `be_epic_major` matcher over `epic_major?`.", 200417834]
+  "spec/kettle/dev/versioning_spec.rb:2114060059": [
+    [55, 7, 53, "RSpec/PredicateMatcher: Prefer using `be_epic_major` matcher over `epic_major?`.", 200417834]
   ],
   "spec/kettle/dev_private_spec.rb:2105232169": [
     [5, 5, 49, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 146084145],
