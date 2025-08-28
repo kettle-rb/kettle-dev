@@ -39,6 +39,74 @@ module Kettle
             end
           end
 
+          # Trim MRI Ruby version badges in README.md to >= required_ruby_version from gemspec
+          begin
+            readme_path = File.join(project_root, "README.md")
+            if File.file?(readme_path)
+              md = helpers.gemspec_metadata(project_root)
+              min_ruby = md[:min_ruby].to_s.strip
+              if !min_ruby.empty?
+                # Compare using Gem::Version on major.minor
+                require "rubygems"
+                min_ver = Gem::Version.new(min_ruby.sub(/\A(~>\s*|>=\s*)/, "")) rescue nil
+                if min_ver
+                  content = File.read(readme_path)
+
+                  # Detect all MRI ruby badge labels present
+                  removed_labels = []
+
+                  content.scan(/\[(?<label>💎ruby-(?<ver>\d+\.\d+)i)\]/) do |arr|
+                    label, ver_s = arr
+                    begin
+                      ver = Gem::Version.new(ver_s)
+                      if ver < min_ver
+                        # Remove occurrences of badges using this label
+                        label_re = Regexp.escape(label)
+                        # Linked form: [![...][label]][...]
+                        content = content.gsub(/\[!\[[^\]]*?\]\s*\[#{label_re}\]\s*\]\s*\[[^\]]+\]/, "")
+                        # Unlinked form: ![...][label]
+                        content = content.gsub(/!\[[^\]]*?\]\s*\[#{label_re}\]/, "")
+                        removed_labels << label
+                      end
+                    rescue StandardError
+                      # ignore
+                    end
+                  end
+
+                  # Clean up extra double spaces in lines (keep newlines intact)
+                  content = content.gsub(/[ ]{2,}/, " ")
+
+                  # Remove reference definitions for removed labels that are no longer used
+                  unless removed_labels.empty?
+                    # Unique
+                    removed_labels.uniq!
+                    # Determine which labels are still referenced after edits
+                    still_referenced = {}
+                    removed_labels.each do |lbl|
+                      lbl_re = Regexp.escape(lbl)
+                      # Consider a label referenced only when it appears not as a definition (i.e., not followed by colon)
+                      still_referenced[lbl] = !!(content =~ /\[#{lbl_re}\](?!:)/)
+                    end
+
+                    new_lines = content.lines.map do |line|
+                      if line =~ /^\[(?<lab>[^\]]+)\]:/ && removed_labels.include?(Regexp.last_match(:lab))
+                        # Only drop if not referenced anymore
+                        still_referenced[Regexp.last_match(:lab)] ? line : nil
+                      else
+                        line
+                      end
+                    end.compact
+                    content = new_lines.join
+                  end
+
+                  File.open(readme_path, "w") { |f| f.write(content) }
+                end
+              end
+            end
+          rescue StandardError => e
+            puts "WARNING: Skipped trimming MRI Ruby badges in README.md due to #{e.class}: #{e.message}"
+          end
+
           # Validate gemspec homepage points to GitHub and is a non-interpolated string
           begin
             gemspecs = Dir.glob(File.join(project_root, "*.gemspec"))

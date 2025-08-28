@@ -17,6 +17,67 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
   end
 
   describe "::run" do
+    it "trims MRI Ruby badges below gemspec required_ruby_version and removes unused link refs" do
+      Dir.mktmpdir do |project_root|
+        # Create a gemspec with required_ruby_version >= 2.3
+        File.write(File.join(project_root, "demo.gemspec"), <<~G)
+          Gem::Specification.new do |spec|
+            spec.name = "demo"
+            spec.required_ruby_version = ">= 2.3"
+            spec.homepage = "https://github.com/acme/demo"
+          end
+        G
+        # Minimal README with MRI rows and refs
+        readme = <<~MD
+          | Works with MRI Ruby 3   | [![Ruby 3.0 Compat][💎ruby-3.0i]][🚎4-lg-wf] [![Ruby 3.1 Compat][💎ruby-3.1i]][🚎6-s-wf] |
+          | Works with MRI Ruby 2   | ![Ruby 2.0 Compat][💎ruby-2.0i] ![Ruby 2.1 Compat][💎ruby-2.1i] [![Ruby 2.3 Compat][💎ruby-2.3i]][🚎1-an-wf] |
+          | Works with MRI Ruby 1   | ![Ruby 1.8 Compat][💎ruby-1.8i] ![Ruby 1.9 Compat][💎ruby-1.9i] |
+
+          [💎ruby-1.8i]: https://example/18
+          [💎ruby-1.9i]: https://example/19
+          [💎ruby-2.0i]: https://example/20
+          [💎ruby-2.1i]: https://example/21
+          [💎ruby-2.3i]: https://example/23
+          [💎ruby-3.0i]: https://example/30
+          [💎ruby-3.1i]: https://example/31
+          [🚎1-an-wf]: https://example/ancient
+          [🚎4-lg-wf]: https://example/legacy
+          [🚎6-s-wf]: https://example/supported
+        MD
+        File.write(File.join(project_root, "README.md"), readme)
+
+        allow(helpers).to receive_messages(
+          project_root: project_root,
+          modified_by_template?: true, # skip .envrc prompting path
+          template_results: {},
+        )
+        # Stubbing Rake template task already done in before
+
+        described_class.run
+
+        edited = File.read(File.join(project_root, "README.md"))
+        table = edited.lines.select { |l| l.start_with?("| Works with MRI") }.join
+        # Badges below 2.3 removed from table rows
+        expect(table).not_to include("ruby-1.8i")
+        expect(table).not_to include("ruby-1.9i")
+        expect(table).not_to include("ruby-2.0i")
+        expect(table).not_to include("ruby-2.1i")
+        # 2.3+ remain in table rows
+        expect(table).to include("ruby-2.3i")
+        expect(table).to include("ruby-3.0i")
+        expect(table).to include("ruby-3.1i")
+        # Link reference lines for removed versions are deleted
+        expect(edited).not_to match(/^\[💎ruby-1\.8i\]:/)
+        expect(edited).not_to match(/^\[💎ruby-1\.9i\]:/)
+        expect(edited).not_to match(/^\[💎ruby-2\.0i\]:/)
+        expect(edited).not_to match(/^\[💎ruby-2\.1i\]:/)
+        # Link refs used by remaining badges and workflows remain
+        expect(edited).to match(/^\[💎ruby-2\.3i\]:/)
+        expect(edited).to match(/^\[💎ruby-3\.0i\]:/)
+        expect(edited).to match(/^\[💎ruby-3\.1i\]:/)
+        expect(edited).to match(/^\[🚎6-s-wf\]:/)
+      end
+    end
     it "prints direnv notes when .envrc was modified by template" do
       Dir.mktmpdir do |project_root|
         allow(helpers).to receive_messages(

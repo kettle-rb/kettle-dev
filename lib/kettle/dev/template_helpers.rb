@@ -177,6 +177,21 @@ module Kettle
                 FileUtils.mkdir_p(target)
               else
                 FileUtils.mkdir_p(File.dirname(target))
+                if File.exist?(target)
+                  # Skip only if contents are identical. If source and target paths are the same,
+                  # avoid FileUtils.cp (which raises) and do an in-place rewrite to satisfy "copy".
+                  begin
+                    if FileUtils.compare_file(path, target)
+                      next
+                    elsif path == target
+                      data = File.binread(path)
+                      File.open(target, "wb") { |f| f.write(data) }
+                      next
+                    end
+                  rescue StandardError
+                    # ignore compare errors; fall through to copy
+                  end
+                end
                 FileUtils.cp(path, target)
               end
             end
@@ -196,6 +211,21 @@ module Kettle
               FileUtils.mkdir_p(target)
             else
               FileUtils.mkdir_p(File.dirname(target))
+              if File.exist?(target)
+                # Skip only if contents are identical. If source and target paths are the same,
+                # avoid FileUtils.cp (which raises) and do an in-place rewrite to satisfy "copy".
+                begin
+                  if FileUtils.compare_file(path, target)
+                    next
+                  elsif path == target
+                    data = File.binread(path)
+                    File.open(target, "wb") { |f| f.write(data) }
+                    next
+                  end
+                rescue StandardError
+                  # ignore compare errors; fall through to copy
+                end
+              end
               FileUtils.cp(path, target)
             end
           end

@@ -127,6 +127,20 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
   end
 
   describe "::copy_file_with_prompt" do
+    it "skips replacing existing file when replace not allowed (covers disallow branch)" do
+      Dir.mktmpdir do |dir|
+        src = File.join(dir, "src.txt")
+        File.write(src, "new")
+        dest = File.join(dir, "dest.txt")
+        File.write(dest, "old")
+        # allow_replace=false forces the 144-145 branch
+        helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: false)
+        # content unchanged and recorded as skip
+        expect(File.read(dest)).to eq("old")
+        rec = helpers.template_results[File.expand_path(dest)]
+        expect(rec[:action]).to eq(:skip)
+      end
+    end
     it "creates new file when allowed and confirmed" do
       Dir.mktmpdir do |dir|
         src = File.join(dir, "src.txt")
@@ -196,6 +210,73 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
   end
 
   describe "::copy_dir_with_prompt" do
+    it "executes in-place rewrite when dest exists and path==target (covers 187-189)" do
+      Dir.mktmpdir do |dir|
+        src_dir = File.join(dir, "same")
+        FileUtils.mkdir_p(src_dir)
+        f = File.join(src_dir, "x.txt")
+        File.write(f, "A")
+        allow(helpers).to receive(:ask).and_return(true)
+        allow(FileUtils).to receive(:compare_file).and_return(false)
+        expect { helpers.copy_dir_with_prompt(src_dir, src_dir) }.not_to raise_error
+        expect(File.read(f)).to eq("A")
+      end
+    end
+
+    it "executes in-place rewrite in create-branch when dest_dir is same as src (covers 218-223)" do
+      Dir.mktmpdir do |dir|
+        src_dir = File.join(dir, "same2")
+        FileUtils.mkdir_p(src_dir)
+        f = File.join(src_dir, "y.txt")
+        File.write(f, "B")
+        # Force code path: pretend dest_dir doesn't exist though it does
+        allow(Dir).to receive(:exist?).and_wrap_original do |orig, path|
+          if File.expand_path(path) == File.expand_path(src_dir)
+            false
+          else
+            orig.call(path)
+          end
+        end
+        allow(helpers).to receive(:ask).and_return(true)
+        allow(FileUtils).to receive(:compare_file).and_return(false)
+        expect { helpers.copy_dir_with_prompt(src_dir, src_dir) }.not_to raise_error
+        expect(File.read(f)).to eq("B")
+      end
+    end
+    it "handles same source and destination directory without raising (in-place rewrite)" do
+      Dir.mktmpdir do |dir|
+        src_dir = File.join(dir, "same")
+        FileUtils.mkdir_p(src_dir)
+        f = File.join(src_dir, "x.txt")
+        File.write(f, "A")
+        allow(helpers).to receive(:ask).and_return(true)
+        expect { helpers.copy_dir_with_prompt(src_dir, src_dir) }.not_to raise_error
+        expect(File.read(f)).to eq("A")
+      end
+    end
+
+    it "skips files whose contents are identical (does not modify mtime)" do
+      Dir.mktmpdir do |dir|
+        src_dir = File.join(dir, "src")
+        FileUtils.mkdir_p(File.join(src_dir, "sub"))
+        File.write(File.join(src_dir, "sub", "a.txt"), "SAME")
+
+        dest_dir = File.join(dir, "dest")
+        FileUtils.mkdir_p(File.join(dest_dir, "sub"))
+        dest_file = File.join(dest_dir, "sub", "a.txt")
+        File.write(dest_file, "SAME")
+        before_mtime = File.mtime(dest_file)
+        sleep 1 # ensure mtime would change if rewritten
+
+        allow(helpers).to receive(:ask).and_return(true)
+        helpers.copy_dir_with_prompt(src_dir, dest_dir)
+
+        after_mtime = File.mtime(dest_file)
+        expect(after_mtime).to eq(before_mtime)
+        expect(File.read(dest_file)).to eq("SAME")
+      end
+    end
+
     it "updates existing directory when confirmed" do
       Dir.mktmpdir do |dir|
         src_dir = File.join(dir, "src")
@@ -238,6 +319,16 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
   end
 
   describe "::ensure_clean_git!" do
+    it "treats system exceptions as not inside repo (covers line 110 rescue)" do
+      allow(helpers).to receive(:system).and_raise(StandardError)
+      expect { helpers.ensure_clean_git!(root: "/tmp/project", task_label: "kettle:dev:install") }.not_to raise_error
+    end
+
+    it "treats status read exceptions as clean (covers line 117 rescue)" do
+      allow(helpers).to receive(:system).and_return(true)
+      allow(IO).to receive(:popen).and_raise(StandardError)
+      expect { helpers.ensure_clean_git!(root: "/tmp/project", task_label: "kettle:dev:template") }.not_to raise_error
+    end
     it "does nothing when not inside a git repo" do
       allow(helpers).to receive(:system).and_return(false)
       expect { helpers.ensure_clean_git!(root: "/tmp/project", task_label: "kettle:dev:install") }.not_to raise_error
@@ -260,6 +351,24 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
   end
 
   describe "::gemspec_metadata" do
+    it "keeps homepage string if slicing raises (covers rescue at 279)" do
+      Dir.mktmpdir do |dir|
+        gemspec_path = File.join(dir, "example.gemspec")
+        File.write(gemspec_path, <<~G)
+          Gem::Specification.new do |spec|
+            spec.name = "sample-gem"
+            spec.minimum_ruby_version = ">= 3.1"
+            spec.homepage = "\"https://example.com/quoted\""
+          end
+        G
+        # Stub only the specific slice used at [1..-2]
+        allow_any_instance_of(String).to receive(:[]).and_call_original
+        allow_any_instance_of(String).to receive(:[]).with(1..-2).and_raise(StandardError)
+        meta = helpers.gemspec_metadata(dir)
+        # Ensure we still get a homepage string (with quotes preserved due to rescue)
+        expect(meta[:homepage]).to include("\"")
+      end
+    end
     it "parses gemspec and derives strings, falling back to git origin when needed" do
       Dir.mktmpdir do |dir|
         gemspec_path = File.join(dir, "example.gemspec")
