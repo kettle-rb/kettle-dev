@@ -166,7 +166,8 @@ module Kettle
                     rescue StandardError
                       rest_wo_emoji = rest.sub(/\A\s+/, "")
                     end
-                    new_line = ["#", chosen_grapheme, rest_wo_emoji].join(" ").gsub(/\s+/, " ").sub(/^#\s+/, "# ")
+                    # Build H1 with single spaces only around separators; preserve inner spacing in rest_wo_emoji
+                    new_line = ["#", chosen_grapheme, rest_wo_emoji].join(" ").sub(/^#\s+/, "# ")
                     lines[idx] = new_line
                     new_readme = lines.join("\n")
                     File.open(readme_path, "w") { |f| f.write(new_readme) }

@@ -319,7 +319,8 @@ module Kettle
                           end
                           tmp.sub(/\A\s+/, "")
                         end
-                        lines_new[idx] = ["#", dest_emojis, rest_wo_emoji].join(" ").gsub(/\s+/, " ").sub(/^#\s+/, "# ")
+                        # Build H1 with single spaces only around separators; preserve inner spacing in rest_wo_emoji
+                        lines_new[idx] = ["#", dest_emojis, rest_wo_emoji].join(" ").sub(/^#\s+/, "# ")
                         c = lines_new.join("\n")
                       end
                     end
@@ -334,14 +335,27 @@ module Kettle
               end
             elsif ["CHANGELOG.md", "CITATION.cff", "CONTRIBUTING.md", ".opencollective.yml", ".junie/guidelines.md"].include?(rel)
               helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true) do |content|
-                helpers.apply_common_replacements(
+                c = helpers.apply_common_replacements(
                   content,
-                  org: (File.basename(rel) == ".opencollective.yml" ? funding_org : forge_org),
+                  org: ((File.basename(rel) == ".opencollective.yml") ? funding_org : forge_org),
                   gem_name: gem_name,
                   namespace: namespace,
                   namespace_shield: namespace_shield,
                   gem_shield: gem_shield,
                 )
+                # Retain whitespace everywhere, except collapse repeated whitespace in CHANGELOG release headers only
+                if File.basename(rel) == "CHANGELOG.md"
+                  lines = c.split("\n", -1)
+                  lines.map! do |ln|
+                    if ln =~ /^##\s+\[.*\]/
+                      ln.gsub(/[ \t]+/, " ")
+                    else
+                      ln
+                    end
+                  end
+                  c = lines.join("\n")
+                end
+                c
               end
             else
               helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true)

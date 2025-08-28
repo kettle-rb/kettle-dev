@@ -1,5 +1,5 @@
 {
-  "kettle-dev.gemspec:2456081538": [
+  "kettle-dev.gemspec:1054250840": [
     [154, 3, 40, "Gemspec/DependencyVersion: Dependency version specification is required.", 1364274143]
   ],
   "lib/kettle/dev.rb:372647611": [
@@ -94,7 +94,7 @@
   "spec/kettle/dev/tasks_file_spec.rb:3588115248": [
     [9, 3, 55, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 493548809]
   ],
-  "spec/kettle/dev/template_helpers_spec.rb:1082485823": [
+  "spec/kettle/dev/template_helpers_spec.rb:2630692271": [
     [394, 9, 29, "RSpec/AnyInstance: Avoid stubbing using `allow_any_instance_of`.", 835110177],
     [395, 9, 29, "RSpec/AnyInstance: Avoid stubbing using `allow_any_instance_of`.", 835110177]
   ],
