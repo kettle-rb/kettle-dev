@@ -146,7 +146,7 @@ NOTE: To build without signing the gem you must set `SKIP_GEM_SIGNING` to some v
 
 #### Automated process
 
-Run `kettle-release`.
+Run `bundle exec kettle-release`.
 
 #### Manual process
 

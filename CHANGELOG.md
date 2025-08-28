@@ -24,7 +24,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Fixed
 ### Security
 
-## [1.0.11] - 2025-08-27
+## [1.0.11] - 2025-08-28
 - TAG: [v1.0.11][1.0.11t]
 - COVERAGE:  98.01% -- 1770/1806 lines in 19 files
 - BRANCH COVERAGE:  79.31% -- 671/846 branches in 19 files
@@ -35,12 +35,25 @@ Please file a bug if you notice a violation of semantic versioning.
   - .gitlab-ci.yml.example
   - Appraisals.example
 - Kettle::Dev::InputAdapter: Input indirection layer for safe interactive prompts in tests; provides gets and readline; documented with YARD and typed with RBS.
+- install task README improvements
+    - extracts emoji grapheme from H1 to apply to gemspec's summary and description
+    - removes badges for unsupported rubies, and major version MRI row if all badges removed
+- new exe script: kettle-changelog - transitions a changelog from unreleased to next release
 ### Changed
 - Make 'git' gem dependency optional; fall back to raw `git` commands when the gem is not present (rescues LoadError). See Kettle::Dev::GitAdapter.
+- upgraded to stone_checksums v1.0.2
+- exe scripts now print their name and version as they start up
+### Removed
+- dependency on git gem
+  - git gem is still supported if present and not bypassed by new ENV variable `KETTLE_DEV_DISABLE_GIT_GEM`
+  - no longer a direct dependency
 ### Fixed
 - Upgrade stone_checksums for release compatibility with bundler v2.7+
   - Retains compatibility with older bundler < v2.7
 - Ship all example templates with gem
+- install task README preservation
+    - preserves H1 line, and specific H2 headed sections
+    - preserve table alignment
 
 ## [1.0.10] - 2025-08-24
 - TAG: [v1.0.10][1.0.10t]

@@ -76,8 +76,8 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 <h3 id="fixed">Fixed</h3>
 <h3 id="security">Security</h3>
 
-<h2 id="1011---2025-08-27">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.0.10...v1.0.11">1.0.11</a> - 2025-08-27</h2>
+<h2 id="1011---2025-08-28">
+<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.0.10...v1.0.11">1.0.11</a> - 2025-08-28</h2>
 <ul>
   <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.11">v1.0.11</a>
 </li>
@@ -93,11 +93,29 @@ Please file a bug if you notice a violation of semantic versioning.</p>
       <li>Appraisals.example</li>
     </ul>
   </li>
-  <li>Kettle::Dev::InputAdapter: Input indirection layer for safe interactive prompts in tests; provides gets and readline; documented with YARD and typed with RBS.
+  <li>Kettle::Dev::InputAdapter: Input indirection layer for safe interactive prompts in tests; provides gets and readline; documented with YARD and typed with RBS.</li>
+  <li>install task README improvements
+    <ul>
+      <li>extracts emoji grapheme from H1 to apply to gemspec’s summary and description</li>
+      <li>removes badges for unsupported rubies, and major version MRI row if all badges removed</li>
+    </ul>
+  </li>
+  <li>new exe script: kettle-changelog - transitions a changelog from unreleased to next release
     <h3 id="changed-1">Changed</h3>
   </li>
-  <li>Make ‘git’ gem dependency optional; fall back to raw <code>git</code> commands when the gem is not present (rescues LoadError). See Kettle::Dev::GitAdapter.
-    <h3 id="fixed-1">Fixed</h3>
+  <li>Make ‘git’ gem dependency optional; fall back to raw <code>git</code> commands when the gem is not present (rescues LoadError). See Kettle::Dev::GitAdapter.</li>
+  <li>upgraded to stone_checksums v1.0.2</li>
+  <li>exe scripts now print their name and version as they start up
+    <h3 id="removed-1">Removed</h3>
+  </li>
+  <li>dependency on git gem
+    <ul>
+      <li>git gem is still supported if present and not bypassed by new ENV variable <code>KETTLE_DEV_DISABLE_GIT_GEM</code>
+</li>
+      <li>no longer a direct dependency
+        <h3 id="fixed-1">Fixed</h3>
+      </li>
+    </ul>
   </li>
   <li>Upgrade stone_checksums for release compatibility with bundler v2.7+
     <ul>
@@ -105,6 +123,12 @@ Please file a bug if you notice a violation of semantic versioning.</p>
     </ul>
   </li>
   <li>Ship all example templates with gem</li>
+  <li>install task README preservation
+    <ul>
+      <li>preserves H1 line, and specific H2 headed sections</li>
+      <li>preserve table alignment</li>
+    </ul>
+  </li>
 </ul>
 
 <h2 id="1010---2025-08-24">
@@ -125,7 +149,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>exe/ scripts and rake tasks logic is all now moved into classes for testability, and is nearly fully covered by tests.</li>
   <li>New Kettle::Dev::GitAdapter class is an adapter pattern wrapper for git commands</li>
   <li>New Kettle::Dev::ExitAdapter class is an adapter pattern wrapper for Kernel.exit and Kernel.abort within this codebase.
-    <h3 id="removed-1">Removed</h3>
+    <h3 id="removed-2">Removed</h3>
   </li>
   <li>attempts to make exe/* scripts work without bundler. Bundler is required.
     <h3 id="fixed-2">Fixed</h3>
@@ -341,7 +365,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Thu Aug 28 04:38:33 2025 by
+  Generated on Thu Aug 28 14:04:08 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>
