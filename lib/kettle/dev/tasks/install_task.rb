@@ -77,8 +77,8 @@ module Kettle
                     end
                   end
 
-                  # Clean up extra double spaces in lines (keep newlines intact)
-                  content = content.gsub(/[ ]{2,}/, " ")
+                  # Clean up extra double spaces in non-table lines only (preserve Markdown table alignment)
+                  content = content.lines.map { |ln| ln.start_with?("|") ? ln : ln.gsub(/[ ]{2,}/, " ") }.join
 
                   # Remove reference definitions for removed labels that are no longer used
                   unless removed_labels.empty?

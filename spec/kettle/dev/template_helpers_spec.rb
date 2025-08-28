@@ -538,5 +538,27 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
       end
     end
   end
+
+  it "prefers FUNDING_ORG env over forge_org" do
+    Dir.mktmpdir do |dir|
+      gemspec_path = File.join(dir, "example.gemspec")
+      File.write(gemspec_path, <<~G)
+        Gem::Specification.new do |spec|
+          spec.name = "another-gem"
+          spec.required_ruby_version = ">= 3.0"
+          # no homepage to allow forge_org to be inferred from git, but FUNDING_ORG should take precedence
+        end
+      G
+      # Stub git origin so forge_org would be present if used
+      origin = "https://github.com/acme/another-gem.git\n"
+      allow(IO).to receive(:popen).with(array_including("git", "-C", dir, "remote", "get-url", "origin"), any_args).and_return(origin)
+
+      stub_env("FUNDING_ORG" => "oc-org")
+
+      meta = helpers.gemspec_metadata(dir)
+      expect(meta[:forge_org]).to eq("acme")
+      expect(meta[:funding_org]).to eq("oc-org")
+    end
+  end
 end
 # rubocop:enable RSpec/MultipleExpectations, RSpec/ExampleLength, RSpec/StubbedMock, RSpec/MessageSpies

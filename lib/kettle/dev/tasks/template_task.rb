@@ -431,8 +431,15 @@ module Kettle
               puts "  [l] Local to this project (#{File.join(project_root, ".git-hooks")})"
               puts "  [g] Global for this user (#{File.join(ENV["HOME"], ".git-hooks")})"
               puts "  [s] Skip copying"
-              print("Choose (l/g/s) [l]: ")
-              choice = Kettle::Dev::InputAdapter.gets&.strip
+              # Allow non-interactive selection via environment
+              # Precedence: CLI switch (hook_templates) > KETTLE_DEV_HOOK_TEMPLATES > prompt
+              env_choice = ENV["hook_templates"]
+              env_choice = ENV["KETTLE_DEV_HOOK_TEMPLATES"] if env_choice.nil? || env_choice.strip.empty?
+              choice = env_choice&.strip
+              unless choice && !choice.empty?
+                print("Choose (l/g/s) [l]: ")
+                choice = Kettle::Dev::InputAdapter.gets&.strip
+              end
               choice = "l" if choice.nil? || choice.empty?
               dest_dir = case choice.downcase
               when "g", "global" then File.join(ENV["HOME"], ".git-hooks")

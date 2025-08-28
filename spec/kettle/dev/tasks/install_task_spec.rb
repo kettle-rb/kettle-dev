@@ -563,6 +563,94 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
       expect(status.success?).to be false
       expect(stdout + stderr).to include("boom")
     end
+
+    it "preserves repeated spaces in README during install (H1 and body)" do
+      Dir.mktmpdir do |project_root|
+        # Minimal gemspec so homepage checks do not abort
+        File.write(File.join(project_root, "demo.gemspec"), <<~G)
+          Gem::Specification.new do |spec|
+            spec.name = "demo"
+            spec.homepage = "https://github.com/acme/demo"
+          end
+        G
+        # README with repeated spaces in H1 tail and body
+        original = <<~MD
+          # Title   with   multiple   spaces
+
+          A  body   line    with     many      spaces.
+        MD
+        File.write(File.join(project_root, "README.md"), original)
+
+        allow(helpers).to receive_messages(
+          project_root: project_root,
+          modified_by_template?: false,
+          template_results: {},
+        )
+
+        # Provide a grapheme non-interactively to avoid prompt
+        allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("🍕")
+
+        stub_env(
+          "allowed" => "true",
+          "force" => "true",
+          "GIT_HOOK_TEMPLATES_CHOICE" => "s",
+        )
+        described_class.run
+
+        edited = File.read(File.join(project_root, "README.md"))
+        first_line = edited.lines.first.chomp
+        expect(first_line).to eq("# 🍕 Title   with   multiple   spaces")
+        expect(edited).to include("A  body   line    with     many      spaces.")
+      end
+    end
+  end
+
+  describe "integration via bin/rake" do
+    it "runs kettle:dev:install in a mock gem and preserves README table spacing from template" do
+      repo_root = Kettle::Dev::TemplateHelpers.gem_checkout_root
+      src_readme = File.join(repo_root, "README.md.example")
+      template_lines = File.readlines(src_readme)
+      # Line 38 (1-based) is index 37
+      src_line = template_lines[37]
+      expect(src_line).to start_with("| Support")
+      src_prefix = src_line[/^\|[^|]*\|/]
+      Dir.mktmpdir do |project_root|
+        # Minimal gemspec to satisfy homepage/GitHub checks
+        File.write(File.join(project_root, "demo.gemspec"), <<~G)
+          Gem::Specification.new do |spec|
+            spec.name = "demo"
+            spec.homepage = "https://github.com/acme/demo"
+          end
+        G
+        # Minimal Rakefile that loads kettle-dev tasks from this checkout
+        File.write(File.join(project_root, "Rakefile"), <<~RAKE)
+          $LOAD_PATH.unshift(File.expand_path("#{File.join(repo_root, "lib")}"))
+          require "kettle/dev"
+          load File.expand_path("#{File.join(repo_root, "lib/kettle/dev/rakelib/template.rake")}")
+          load File.expand_path("#{File.join(repo_root, "lib/kettle/dev/rakelib/install.rake")}")
+        RAKE
+        bin_rake = File.join(repo_root, "bin", "rake")
+        require "open3"
+        env = {
+          "allowed" => "true",
+          "force" => "true",
+          "hook_templates" => "l",
+          # Reduce noise and avoid coverage strictness for a subprocess run
+          "K_SOUP_COV_MIN_HARD" => "false",
+        }
+        env["BUNDLE_GEMFILE"] = File.join(repo_root, "Gemfile")
+        stdout, stderr, status = Open3.capture3(env, bin_rake, "kettle:dev:install", chdir: project_root)
+        unless status.success?
+          warn "bin/rake output:\n#{stdout}\n#{stderr}"
+        end
+        expect(status.success?).to be true
+        gen_readme = File.read(File.join(project_root, "README.md"))
+        line = gen_readme.lines.find { |l| l.start_with?("| Support") }
+        expect(line).not_to be_nil
+        gen_prefix = line[/^\|[^|]*\|/]
+        expect(gen_prefix).to eq(src_prefix)
+      end
+    end
   end
 end
 # rubocop:enable RSpec/MultipleExpectations, RSpec/VerifiedDoubles, RSpec/ReceiveMessages
