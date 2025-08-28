@@ -203,11 +203,54 @@ module Kettle
             .junie/guidelines-rbs.md
           ]
 
+          # Snapshot existing README content once (for H1 prefix preservation after write)
+          existing_readme_before = begin
+            path = File.join(project_root, "README.md")
+            File.file?(path) ? File.read(path) : nil
+          rescue StandardError
+            nil
+          end
+
           files_to_copy.each do |rel|
             src = helpers.prefer_example(File.join(gem_checkout_root, rel))
             dest = File.join(project_root, rel)
             next unless File.exist?(src)
             if File.basename(rel) == "README.md"
+              # Precompute destination README H1 prefix (emoji(s) or first grapheme) before any overwrite occurs
+              prev_readme = File.exist?(dest) ? File.read(dest) : nil
+              dest_preserve_prefix = nil
+              begin
+                if prev_readme
+                  first_h1_prev = prev_readme.lines.find { |ln| ln =~ /^#\s+/ }
+                  if first_h1_prev
+                    require 'kettle/emoji_regex'
+                    emoji_re = Kettle::EmojiRegex::REGEX
+                    tail = first_h1_prev.sub(/^#\s+/, "")
+                    # Extract consecutive leading emoji graphemes
+                    out = +""
+                    s = tail.dup
+                    loop do
+                      cluster = s[/\A\X/u]
+                      break if cluster.nil? || cluster.empty?
+                      if emoji_re.match?(cluster)
+                        out << cluster
+                        s = s[cluster.length..-1].to_s
+                      else
+                        break
+                      end
+                    end
+                    dest_preserve_prefix = if !out.empty?
+                      out
+                    else
+                      # Fallback to first grapheme
+                      tail[/\A\X/u]
+                    end
+                  end
+                end
+              rescue StandardError
+                # ignore, leave dest_preserve_prefix as nil
+              end
+
               helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true) do |content|
                 # 1) Do token replacements on the template content (org/gem/namespace/shields)
                 c = helpers.apply_common_replacements(
@@ -221,38 +264,76 @@ module Kettle
 
                 # 2) Merge specific sections from destination README, if present
                 begin
-                  dest_existing = File.exist?(dest) ? File.read(dest) : nil
+                  dest_existing = prev_readme
 
-                  # Helper to parse markdown sections at any heading level (#, ##, ###, ...)
-                  parse_sections = lambda do |md|
+                  # Parse Markdown headings while ignoring fenced code blocks (``` ... ```)
+                  build_sections = lambda do |md|
+                    return {lines: [], sections: [], line_count: 0} unless md
+                    lines = md.split("\n", -1)
+                    line_count = lines.length
+
                     sections = []
-                    return sections unless md
-                    lines = md.split("\n", -1) # keep trailing empty lines
-                    indices = []
+                    in_code = false
+                    fence_re = /^\s*```/ # start or end of fenced block
+
                     lines.each_with_index do |ln, i|
-                      indices << i if ln =~ /^#+\s+.+/
+                      if ln =~ fence_re
+                        in_code = !in_code
+                        next
+                      end
+                      next if in_code
+                      if (m = ln.match(/^(#+)\s+.+/))
+                        level = m[1].length
+                        title = ln.sub(/^#+\s+/, "")
+                        base = title.sub(/\A[^\p{Alnum}]+/u, '').strip.downcase
+                        sections << { start: i, level: level, heading: ln, base: base }
+                      end
                     end
-                    indices << lines.length
-                    indices.each_cons(2) do |start_i, nxt|
-                      heading = lines[start_i]
-                      body_lines = lines[(start_i + 1)...nxt] || []
-                      title = heading.sub(/^#+\s+/, "")
-                      # Normalize by removing leading emoji/non-alnum and extra spaces
-                      base = title.sub(/\A[^\p{Alnum}]+/u, "").strip.downcase
-                      sections << {start: start_i, stop: nxt - 1, heading: heading, body: body_lines.join("\n"), base: base}
+
+                    # Compute stop indices based on next heading of same or higher level
+                    sections.each_with_index do |sec, i|
+                      j = i + 1
+                      stop = line_count - 1
+                      while j < sections.length
+                        if sections[j][:level] <= sec[:level]
+                          stop = sections[j][:start] - 1
+                          break
+                        end
+                        j += 1
+                      end
+                      sec[:stop_to_next_any] = stop
+                      body_lines_any = lines[(sec[:start] + 1)..stop] || []
+                      sec[:body_to_next_any] = body_lines_any.join("\n")
                     end
-                    {lines: lines, sections: sections}
+
+                    {lines: lines, sections: sections, line_count: line_count}
                   end
 
-                  # Parse src (c) and dest
-                  src_parsed = parse_sections.call(c)
-                  dest_parsed = parse_sections.call(dest_existing)
+                  # Helper: Compute the branch end (inclusive) for a section at index i
+                  branch_end_index = lambda do |sections_arr, i, total_lines|
+                    current = sections_arr[i]
+                    j = i + 1
+                    while j < sections_arr.length
+                      return sections_arr[j][:start] - 1 if sections_arr[j][:level] <= current[:level]
+                      j += 1
+                    end
+                    total_lines - 1
+                  end
 
-                  # Build lookup for destination sections by base title
+                  # Parse src (c) and dest using kramdown
+                  src_parsed = build_sections.call(c)
+                  dest_parsed = build_sections.call(dest_existing)
+
+                  # Build lookup for destination sections by base title, using full branch body (to next heading of same or higher level)
                   dest_lookup = {}
                   if dest_parsed && dest_parsed[:sections]
-                    dest_parsed[:sections].each do |s|
-                      dest_lookup[s[:base]] = s[:body]
+                    dest_parsed[:sections].each_with_index do |s, idx|
+                      base = s[:base]
+                      # Only set once (first occurrence wins)
+                      next if dest_lookup.key?(base)
+                      be = branch_end_index.call(dest_parsed[:sections], idx, dest_parsed[:line_count])
+                      body_lines = dest_parsed[:lines][(s[:start] + 1)..be] || []
+                      dest_lookup[base] = { body_branch: body_lines.join("\n"), level: s[:level] }
                     end
                   end
 
@@ -265,17 +346,21 @@ module Kettle
                   end
                   targets = ["synopsis", "configuration", "basic usage"] + note_bases
 
-                  # Replace matching sections in src
+                  # Replace matching sections in src using full branch ranges
                   if src_parsed && src_parsed[:sections] && !src_parsed[:sections].empty?
                     lines = src_parsed[:lines].dup
-                    # Iterate over src sections; when base is in targets, rewrite its body
-                    src_parsed[:sections].reverse_each do |sec|
+                    # Iterate in reverse to keep indices valid
+                    src_parsed[:sections].reverse_each.with_index do |sec, rev_i|
                       next unless targets.include?(sec[:base])
-                      new_body = dest_lookup.fetch(sec[:base], "\n\n")
+                      # Determine branch range in src for this section
+                      # rev_i is reverse index; compute forward index
+                      i = src_parsed[:sections].length - 1 - rev_i
+                      src_end = branch_end_index.call(src_parsed[:sections], i, src_parsed[:line_count])
+                      dest_entry = dest_lookup[sec[:base]]
+                      new_body = dest_entry ? dest_entry[:body_branch] : "\n\n"
                       new_block = [sec[:heading], new_body].join("\n")
-                      # Replace the range from start+0 to stop with new_block lines
                       range_start = sec[:start]
-                      range_end = sec[:stop]
+                      range_end = src_end
                       # Remove old range
                       lines.slice!(range_start..range_end)
                       # Insert new block (split preserves potential empty tail)
@@ -285,47 +370,22 @@ module Kettle
                     c = lines.join("\n")
                   end
 
-                  # 3) Preserve first H1 emojis from destination README, if any
+                  # 3) Preserve entire H1 line from destination README, if any
                   begin
-                    emoji_re = Kettle::EmojiRegex::REGEX
-
-                    dest_emojis = nil
                     if dest_existing
-                      first_h1_dest = dest_existing.lines.find { |ln| ln =~ /^#\s+/ }
-                      if first_h1_dest
-                        after = first_h1_dest.sub(/^#\s+/, "")
-                        emojis = +""
-                        while after =~ /\A#{emoji_re.source}/u
-                          # Capture the entire grapheme cluster for the emoji (handles VS16/ZWJ sequences)
-                          cluster = after[/\A\X/u]
-                          emojis << cluster
-                          after = after[cluster.length..-1].to_s
+                      dest_h1 = dest_existing.lines.find { |ln| ln =~ /^#\s+/ }
+                      if dest_h1
+                        lines_new = c.split("\n", -1)
+                        src_h1_idx = lines_new.index { |ln| ln =~ /^#\s+/ }
+                        if src_h1_idx
+                          # Replace the entire H1 line with the destination's H1 exactly
+                          lines_new[src_h1_idx] = dest_h1.chomp
+                          c = lines_new.join("\n")
                         end
-                        dest_emojis = emojis unless emojis.empty?
-                      end
-                    end
-
-                    if dest_emojis && !dest_emojis.empty?
-                      lines_new = c.split("\n", -1)
-                      idx = lines_new.index { |ln| ln =~ /^#\s+/ }
-                      if idx
-                        rest = lines_new[idx].sub(/^#\s+/, "")
-                        # Remove any leading emojis from the H1 by peeling full grapheme clusters
-                        rest_wo_emoji = begin
-                          tmp = rest.dup
-                          while tmp =~ /\A#{emoji_re.source}/u
-                            cluster = tmp[/\A\X/u]
-                            tmp = tmp[cluster.length..-1].to_s
-                          end
-                          tmp.sub(/\A\s+/, "")
-                        end
-                        # Build H1 with single spaces only around separators; preserve inner spacing in rest_wo_emoji
-                        lines_new[idx] = ["#", dest_emojis, rest_wo_emoji].join(" ").sub(/^#\s+/, "# ")
-                        c = lines_new.join("\n")
                       end
                     end
                   rescue StandardError
-                    # ignore emoji preservation errors
+                    # ignore H1 preservation errors
                   end
                 rescue StandardError
                   # Best effort; if anything fails, keep c as-is
@@ -360,6 +420,27 @@ module Kettle
             else
               helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true)
             end
+          end
+
+          # Post-process README H1 preservation using snapshot (replace entire H1 line)
+          begin
+            if existing_readme_before
+              readme_path = File.join(project_root, "README.md")
+              if File.file?(readme_path)
+                prev = existing_readme_before
+                newc = File.read(readme_path)
+                prev_h1 = prev.lines.find { |ln| ln =~ /^#\s+/ }
+                lines = newc.split("\n", -1)
+                cur_h1_idx = lines.index { |ln| ln =~ /^#\s+/ }
+                if prev_h1 && cur_h1_idx
+                  # Replace the entire H1 line with the previous README's H1 exactly
+                  lines[cur_h1_idx] = prev_h1.chomp
+                  File.open(readme_path, "w") { |f| f.write(lines.join("\n")) }
+                end
+              end
+            end
+          rescue StandardError
+            # ignore post-processing errors
           end
 
           # 7b) certs/pboling.pem

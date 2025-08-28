@@ -275,9 +275,9 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
           # Exercise
           described_class.run
 
-          # Assert merge and emoji preservation
+          # Assert merge and H1 full-line preservation
           merged = File.read(File.join(project_root, "README.md"))
-          expect(merged.lines.first).to match(/^#\s+🎉\s+Template Title/)
+          expect(merged.lines.first).to match(/^#\s+🎉\s+Existing Title/)
           expect(merged).to include("Existing synopsis.")
           expect(merged).to include("Existing configuration.")
           expect(merged).to include("Existing usage.")
@@ -515,6 +515,144 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
             allow(FileUtils).to receive(:mkdir_p).and_raise(StandardError, "perm")
             expect { described_class.run }.not_to raise_error
           end
+        end
+      end
+    end
+
+    it "preserves nested subsections under preserved H2 sections during README merge" do
+      Dir.mktmpdir do |gem_root|
+        Dir.mktmpdir do |project_root|
+          template_readme = <<~MD
+            # 🚀 Template Title
+
+            ## Synopsis
+            Template synopsis.
+
+            ## Configuration
+            Template configuration.
+
+            ## Basic Usage
+            Template usage.
+          MD
+          File.write(File.join(gem_root, "README.md"), template_readme)
+
+          existing_readme = <<~MD
+            # 🎉 Existing Title
+
+            ## Synopsis
+            Existing synopsis intro.
+
+            ### Details
+            Keep this nested detail.
+
+            #### More
+            And this deeper detail.
+
+            ## Configuration
+            Existing configuration.
+
+            ## Basic Usage
+            Existing usage.
+          MD
+          File.write(File.join(project_root, "README.md"), existing_readme)
+
+          File.write(File.join(project_root, "demo.gemspec"), <<~G)
+            Gem::Specification.new do |spec|
+              spec.name = "demo"
+              spec.required_ruby_version = ">= 3.1"
+              spec.homepage = "https://github.com/acme/demo"
+            end
+          G
+
+          allow(helpers).to receive_messages(
+            project_root: project_root,
+            gem_checkout_root: gem_root,
+            ensure_clean_git!: nil,
+            ask: true,
+          )
+
+          described_class.run
+
+          merged = File.read(File.join(project_root, "README.md"))
+          # H1 emoji preserved
+          expect(merged.lines.first).to match(/^#\s+🎉\s+Existing Title/)
+          # Preserved H2 branch content
+          expect(merged).to include("Existing synopsis intro.")
+          expect(merged).to include("### Details")
+          expect(merged).to include("Keep this nested detail.")
+          expect(merged).to include("#### More")
+          expect(merged).to include("And this deeper detail.")
+          # Other targeted sections still merged
+          expect(merged).to include("Existing configuration.")
+          expect(merged).to include("Existing usage.")
+        end
+      end
+    end
+
+    it "does not treat # inside fenced code blocks as headings during README merge" do
+      Dir.mktmpdir do |gem_root|
+        Dir.mktmpdir do |project_root|
+          template_readme = <<~MD
+            # 🚀 Template Title
+
+            ## Synopsis
+            Template synopsis.
+
+            ## Configuration
+            Template configuration.
+
+            ## Basic Usage
+            Template usage.
+          MD
+          File.write(File.join(gem_root, "README.md"), template_readme)
+
+          existing_readme = <<~MD
+            # 🎉 Existing Title
+
+            ## Synopsis
+            Existing synopsis.
+
+            ```console
+            # DANGER: options to reduce prompts will overwrite files without asking.
+            bundle exec rake kettle:dev:install allowed=true force=true
+            ```
+
+            ## Configuration
+            Existing configuration.
+
+            ## Basic Usage
+            Existing usage.
+          MD
+          File.write(File.join(project_root, "README.md"), existing_readme)
+
+          File.write(File.join(project_root, "demo.gemspec"), <<~G)
+            Gem::Specification.new do |spec|
+              spec.name = "demo"
+              spec.required_ruby_version = ">= 3.1"
+              spec.homepage = "https://github.com/acme/demo"
+            end
+          G
+
+          allow(helpers).to receive_messages(
+            project_root: project_root,
+            gem_checkout_root: gem_root,
+            ensure_clean_git!: nil,
+            ask: true,
+          )
+
+          described_class.run
+
+          merged = File.read(File.join(project_root, "README.md"))
+          # H1 full-line preserved from existing README
+          expect(merged.lines.first).to match(/^#\s+🎉\s+Existing Title/)
+          # Ensure the code block remains intact and not split
+          expect(merged).to include("```console")
+          expect(merged).to include("# DANGER: options to reduce prompts will overwrite files without asking.")
+          expect(merged).to include("bundle exec rake kettle:dev:install allowed=true force=true")
+          # And targeted sections still merged with existing content
+          expect(merged).to include("Existing synopsis.")
+          expect(merged).to include("Existing configuration.")
+          expect(merged).to include("Existing usage.")
         end
       end
     end
