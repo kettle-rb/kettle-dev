@@ -639,6 +639,12 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
           "K_SOUP_COV_MIN_HARD" => "false",
         }
         env["BUNDLE_GEMFILE"] = File.join(repo_root, "Gemfile")
+        # Ensure the repository Gemfile has its dependencies installed before invoking bin/rake
+        bund_env = {"BUNDLE_GEMFILE" => env["BUNDLE_GEMFILE"]}
+        bund_out, bund_err, bund_status = Open3.capture3(bund_env, "bundle", "install", "--quiet")
+        unless bund_status.success?
+          warn "bundle install failed for repo Gemfile:\n#{bund_out}\n#{bund_err}"
+        end
         stdout, stderr, status = Open3.capture3(env, bin_rake, "kettle:dev:install", chdir: project_root)
         unless status.success?
           warn "bin/rake output:\n#{stdout}\n#{stderr}"
