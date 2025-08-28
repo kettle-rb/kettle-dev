@@ -6,7 +6,6 @@ require "tmpdir"
 require "fileutils"
 
 RSpec.describe Kettle::Dev::Tasks::CITask do
-  include_context "with stubbed env"
 
   def http_ok_with(body_hash)
     instance_double(Net::HTTPOK, is_a?: true, body: JSON.dump(body_hash), code: "200")

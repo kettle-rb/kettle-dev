@@ -39,6 +39,8 @@ end
 
 require "kettle/dev/versioning"
 
+puts "== kettle-changelog v#{Kettle::Dev::Version::VERSION} =="
+
 module Kettle
   module Dev
     class ChangelogCLI

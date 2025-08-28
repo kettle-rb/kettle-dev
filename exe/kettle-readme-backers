@@ -10,4 +10,6 @@ require "bundler/setup"
 
 require "kettle/dev"
 
+puts "== kettle-readme-backers v#{Kettle::Dev::Version::VERSION} =="
+
 Kettle::Dev::ReadmeBackers.new.run!

@@ -6,7 +6,6 @@ require "tmpdir"
 require "fileutils"
 
 RSpec.describe Kettle::Dev::GitCommitFooter do
-  include_context "with stubbed env"
 
   describe "::hooks_path_for and directories" do
     it "prefers local .git-hooks when file exists" do

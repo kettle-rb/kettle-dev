@@ -7,7 +7,6 @@
 require "rake"
 
 RSpec.describe Kettle::Dev::Tasks::InstallTask do
-  include_context "with stubbed env"
 
   let(:helpers) { Kettle::Dev::TemplateHelpers }
 

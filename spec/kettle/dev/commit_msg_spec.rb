@@ -6,7 +6,6 @@ require "tmpdir"
 require "fileutils"
 
 RSpec.describe Kettle::Dev::CommitMsg do
-  include_context "with stubbed env"
 
   let(:path) { File.join(Dir.mktmpdir, "COMMIT_EDITMSG") }
 

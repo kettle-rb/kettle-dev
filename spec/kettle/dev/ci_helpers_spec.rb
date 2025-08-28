@@ -4,7 +4,6 @@ require "tmpdir"
 require "fileutils"
 
 RSpec.describe Kettle::Dev::CIHelpers do
-  include_context "with stubbed env"
 
   describe "::<module_function> availability" do
     it "responds to expected methods" do
@@ -224,8 +223,7 @@ RSpec.describe Kettle::Dev::CIHelpers do
   end
 
   describe "::default_token" do
-    include_context "with stubbed env"
-
+  
     it "prefers GITHUB_TOKEN then GH_TOKEN" do
       stub_env("GITHUB_TOKEN" => "aaa", "GH_TOKEN" => "bbb")
       expect(described_class.default_token).to eq("aaa")

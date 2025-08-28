@@ -36,8 +36,6 @@ module Kettle
       end
 
       def run
-        puts "== kettle-release =="
-
         ensure_bundler_2_7_plus!
 
         version = detect_version

@@ -59,6 +59,32 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
       simulate_input("n\n")
       expect(helpers.ask("Proceed?", true)).to be_falsey
     end
+
+    context "when forcing" do
+      it "forces yes when ENV['force'] is truthy", :check_output do
+        stub_env("force" => "true")
+        expect {
+          result = helpers.ask("Proceed?", false)
+          expect(result).to be true
+        }.to output(/Proceed\? \[y\/N\]: Y \(forced\)/).to_stdout
+      end
+
+      it "capitalizes Y when default is true", :check_output do
+        stub_env("force" => "true")
+        expect {
+          result = helpers.ask("Proceed?", true)
+          expect(result).to be true
+        }.to output(/Proceed\? \[Y\/n\]: Y \(forced\)/).to_stdout
+      end
+    end
+
+    it "does not force when ENV['force'] is false", :check_output do
+      stub_env("force" => "false")
+      expect {
+        result = helpers.ask("Proceed?", false)
+        expect(result).to be nil
+      }.to output(/Proceed\? \[y\/N\]: /).to_stdout
+    end
   end
 
   describe "::write_file" do

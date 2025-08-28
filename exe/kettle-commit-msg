@@ -13,6 +13,8 @@ require "erb"
 
 require "kettle/dev"
 
+puts "== kettle-commit-msg v#{Kettle::Dev::Version::VERSION} =="
+
 # ENV variable control (set in .envrc, or .env.local)
 # BRANCH_RULE_TYPE = jira, or another type of branch rule validation, or false to disable
 # FOOTER_APPEND = true/false append commit message footer

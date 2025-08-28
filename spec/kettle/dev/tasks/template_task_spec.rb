@@ -8,7 +8,6 @@ require "rake"
 require "open3"
 
 RSpec.describe Kettle::Dev::Tasks::TemplateTask do
-  include_context "with stubbed env"
 
   let(:helpers) { Kettle::Dev::TemplateHelpers }
 
@@ -506,7 +505,6 @@ require "rake"
 require "open3"
 
 RSpec.describe Kettle::Dev::Tasks::TemplateTask do
-  include_context "with stubbed env"
 
   let(:helpers) { Kettle::Dev::TemplateHelpers }
 
@@ -814,7 +812,6 @@ require "rake"
 require "open3"
 
 RSpec.describe Kettle::Dev::Tasks::TemplateTask do
-  include_context "with stubbed env"
 
   let(:helpers) { Kettle::Dev::TemplateHelpers }
 

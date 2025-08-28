@@ -19,13 +19,7 @@ $stdout.sync = true
 # Depending library or project must be using bundler
 require "bundler/setup"
 
-begin
-  require "kettle/dev"
-rescue LoadError => e
-  warn("kettle/dev: failed to load: #{e.message}")
-  warn("Hint: Ensure the host project includes kettle-dev and run bundle install.")
-  exit(1)
-end
+require "kettle/dev"
 
 # Always execute when this file is loaded (e.g., via a Bundler binstub).
 # Do not guard with __FILE__ == $PROGRAM_NAME because binstubs use Kernel.load.
@@ -51,6 +45,7 @@ if ARGV.include?("-h") || ARGV.include?("--help")
   exit 0
 end
 
+puts "== kettle-release v#{Kettle::Dev::Version::VERSION} =="
 begin
   Kettle::Dev::ReleaseCLI.new.run
 rescue LoadError => e

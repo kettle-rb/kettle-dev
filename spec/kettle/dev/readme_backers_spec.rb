@@ -3,7 +3,6 @@
 # rubocop:disable RSpec/MultipleExpectations, RSpec/MessageSpies, RSpec/LeakyConstantDeclaration, ThreadSafety/ClassInstanceVariable, RSpec/InstanceVariable, RSpec/VerifiedDoubles
 
 RSpec.describe Kettle::Dev::ReadmeBackers do
-  include_context "with stubbed env"
 
   let(:tmp_readme) { File.join(Dir.mktmpdir, "README.md") }
   let(:instance) { described_class.new(handle: "test-oc", readme_path: tmp_readme) }
