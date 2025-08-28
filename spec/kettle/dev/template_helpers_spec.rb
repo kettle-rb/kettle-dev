@@ -82,7 +82,7 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
       stub_env("force" => "false")
       expect {
         result = helpers.ask("Proceed?", false)
-        expect(result).to be nil
+        expect(result).to be_nil
       }.to output(/Proceed\? \[y\/N\]: /).to_stdout
     end
   end
@@ -167,6 +167,7 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
         expect(rec[:action]).to eq(:skip)
       end
     end
+
     it "creates new file when allowed and confirmed" do
       Dir.mktmpdir do |dir|
         src = File.join(dir, "src.txt")
@@ -269,6 +270,7 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
         expect(File.read(f)).to eq("B")
       end
     end
+
     it "handles same source and destination directory without raising (in-place rewrite)" do
       Dir.mktmpdir do |dir|
         src_dir = File.join(dir, "same")
@@ -355,6 +357,7 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
       allow(IO).to receive(:popen).and_raise(StandardError)
       expect { helpers.ensure_clean_git!(root: "/tmp/project", task_label: "kettle:dev:template") }.not_to raise_error
     end
+
     it "does nothing when not inside a git repo" do
       allow(helpers).to receive(:system).and_return(false)
       expect { helpers.ensure_clean_git!(root: "/tmp/project", task_label: "kettle:dev:install") }.not_to raise_error
@@ -384,7 +387,7 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
           Gem::Specification.new do |spec|
             spec.name = "sample-gem"
             spec.minimum_ruby_version = ">= 3.1"
-            spec.homepage = "\"https://example.com/quoted\""
+            spec.homepage = ""https://example.com/quoted""
           end
         G
         # Stub only the specific slice used at [1..-2]
@@ -395,6 +398,7 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
         expect(meta[:homepage]).to include("\"")
       end
     end
+
     it "parses gemspec and derives strings, falling back to git origin when needed" do
       Dir.mktmpdir do |dir|
         gemspec_path = File.join(dir, "example.gemspec")

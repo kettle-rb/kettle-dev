@@ -9,3 +9,5 @@ gem "stringio", "~> 3.0"
 gemspec path: "../"
 
 eval_gemfile("modular/coverage.gemfile")
+
+eval_gemfile("modular/optional.gemfile")

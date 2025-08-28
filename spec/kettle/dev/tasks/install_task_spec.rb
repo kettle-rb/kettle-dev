@@ -7,7 +7,6 @@
 require "rake"
 
 RSpec.describe Kettle::Dev::Tasks::InstallTask do
-
   let(:helpers) { Kettle::Dev::TemplateHelpers }
 
   before do
@@ -77,6 +76,7 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
         expect(edited).to match(/^\[🚎6-s-wf\]:/)
       end
     end
+
     it "prints direnv notes when .envrc was modified by template" do
       Dir.mktmpdir do |project_root|
         allow(helpers).to receive_messages(

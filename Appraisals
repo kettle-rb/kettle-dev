@@ -113,6 +113,7 @@ appraise "coverage" do
   gem "mutex_m", "~> 0.2"
   gem "stringio", "~> 3.0"
   eval_gemfile "modular/coverage.gemfile"
+  eval_gemfile "modular/optional.gemfile"
 end
 
 # Only run linter on latest Ruby version (but, in support of oldest supported Ruby version)

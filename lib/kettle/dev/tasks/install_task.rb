@@ -48,7 +48,11 @@ module Kettle
               if !min_ruby.empty?
                 # Compare using Gem::Version on major.minor
                 require "rubygems"
-                min_ver = Gem::Version.new(min_ruby.sub(/\A(~>\s*|>=\s*)/, "")) rescue nil
+                min_ver = begin
+                  Gem::Version.new(min_ruby.sub(/\A(~>\s*|>=\s*)/, ""))
+                rescue
+                  nil
+                end
                 if min_ver
                   content = File.read(readme_path)
 

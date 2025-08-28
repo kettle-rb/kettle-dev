@@ -3,7 +3,6 @@
 # rubocop:disable RSpec/MultipleExpectations, RSpec/MessageSpies, RSpec/StubbedMock, RSpec/ReceiveMessages
 
 RSpec.describe Kettle::Dev::ReleaseCLI do
-
   let(:ci_helpers) { Kettle::Dev::CIHelpers }
   let(:cli) { described_class.new }
 
