@@ -622,6 +622,12 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
             spec.homepage = "https://github.com/acme/demo"
           end
         G
+        # Create a minimal Gemfile inside the fixture gem
+        File.write(File.join(project_root, "Gemfile"), <<~GEMFILE)
+          # frozen_string_literal: true
+          source "https://rubygems.org"
+          gem "kettle-dev", path: "#{repo_root}"
+        GEMFILE
         # Minimal Rakefile that loads kettle-dev tasks from this checkout
         File.write(File.join(project_root, "Rakefile"), <<~RAKE)
           $LOAD_PATH.unshift(File.expand_path("#{File.join(repo_root, "lib")}"))
@@ -638,14 +644,29 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
           # Reduce noise and avoid coverage strictness for a subprocess run
           "K_SOUP_COV_MIN_HARD" => "false",
         }
-        env["BUNDLE_GEMFILE"] = File.join(repo_root, "Gemfile")
-        # Ensure the repository Gemfile has its dependencies installed before invoking bin/rake
-        bund_env = {"BUNDLE_GEMFILE" => env["BUNDLE_GEMFILE"]}
-        bund_out, bund_err, bund_status = Open3.capture3(bund_env, "bundle", "install", "--quiet")
+        # 1) Install dependencies for the fixture gem using an unbundled environment
+        begin
+          require "bundler"
+          bundler_unbundled = Bundler.respond_to?(:with_unbundled_env)
+        rescue StandardError
+          bundler_unbundled = false
+        end
+        if bundler_unbundled
+          Bundler.with_unbundled_env do
+            _bout, _berr, _bstatus = Open3.capture3({"BUNDLE_GEMFILE" => File.join(project_root, "Gemfile")}, "bundle", "install", "--quiet", chdir: project_root)
+          end
+        else
+          # Fallback for very old bundler
+          _bout, _berr, _bstatus = Open3.capture3({"BUNDLE_GEMFILE" => File.join(project_root, "Gemfile")}, "bundle", "install", "--quiet", chdir: project_root)
+        end
+        # 2) Ensure the repository Gemfile has its dependencies installed before invoking bin/rake
+        repo_env = {"BUNDLE_GEMFILE" => File.join(repo_root, "Gemfile")}
+        bund_out, bund_err, bund_status = Open3.capture3(repo_env, "bundle", "install", "--quiet")
         unless bund_status.success?
           warn "bundle install failed for repo Gemfile:\n#{bund_out}\n#{bund_err}"
         end
-        stdout, stderr, status = Open3.capture3(env, bin_rake, "kettle:dev:install", chdir: project_root)
+        # 3) Run the task
+        stdout, stderr, status = Open3.capture3(env.merge("BUNDLE_GEMFILE" => File.join(project_root, "Gemfile")), bin_rake, "kettle:dev:install", chdir: project_root)
         unless status.success?
           warn "bin/rake output:\n#{stdout}\n#{stderr}"
         end
