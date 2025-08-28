@@ -96,7 +96,7 @@ module Kettle
           )
 
           # 4) gemfiles/modular/*.gemfile (from gem's gemfiles/modular)
-          [%w[coverage.gemfile], %w[documentation.gemfile], %w[style.gemfile]].each do |base|
+          [%w[coverage.gemfile], %w[documentation.gemfile], %w[style.gemfile], %w[optional.gemfile]].each do |base|
             src = helpers.prefer_example(File.join(gem_checkout_root, "gemfiles/modular", base[0]))
             dest = File.join(project_root, "gemfiles/modular", base[0])
             if File.basename(src).sub(/\.example\z/, "") == "style.gemfile"

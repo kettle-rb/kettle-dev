@@ -22,6 +22,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Deprecated
 ### Removed
 ### Fixed
+- added optional.gemfile.example, and handling for it in templating
 ### Security
 
 ## [1.0.11] - 2025-08-28
@@ -215,4 +216,3 @@ Please file a bug if you notice a violation of semantic versioning.
 [1.0.10t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.10
 [1.0.11]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.10...v1.0.11
 [1.0.11t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.11
-

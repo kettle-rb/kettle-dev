@@ -1,5 +1,1 @@
-# Optional dependencies are not dependended on directly, but will be used if present.
-# git gem is not a direct dependency for two reasons:
-# 1. it is incompatible with Truffleruby v23
-# 2. it depends on activesupport, which is too heavy
-gem "git", ">= 1.19.1"    # ruby >= 2.3
+# Optional dependencies are not dependended on directly, but may be used if present.
