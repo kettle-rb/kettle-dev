@@ -35,7 +35,8 @@ module Kettle
           meta = helpers.gemspec_metadata(project_root)
           gem_name = meta[:gem_name]
           min_ruby = meta[:min_ruby]
-          gh_org = meta[:gh_org]
+          forge_org = meta[:forge_org] || meta[:gh_org]
+          funding_org = meta[:funding_org] || forge_org
           entrypoint_require = meta[:entrypoint_require]
           namespace = meta[:namespace]
           namespace_shield = meta[:namespace_shield]
@@ -57,14 +58,14 @@ module Kettle
               if File.basename(rel) == "FUNDING.yml"
                 helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true) do |content|
                   c = content.dup
-                  c = c.gsub(/^open_collective:\s+.*$/i) { |line| gh_org ? "open_collective: #{gh_org}" : line }
+                  c = c.gsub(/^open_collective:\s+.*$/i) { |line| funding_org ? "open_collective: #{funding_org}" : line }
                   if gem_name && !gem_name.empty?
                     c = c.gsub(/^tidelift:\s+.*$/i, "tidelift: rubygems/#{gem_name}")
                   end
                   # Also apply common replacements for org/gem/namespace/shields
                   helpers.apply_common_replacements(
                     c,
-                    gh_org: gh_org,
+                    org: forge_org,
                     gem_name: gem_name,
                     namespace: namespace,
                     namespace_shield: namespace_shield,
@@ -75,7 +76,7 @@ module Kettle
                 helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true) do |content|
                   helpers.apply_common_replacements(
                     content,
-                    gh_org: gh_org,
+                    org: forge_org,
                     gem_name: gem_name,
                     namespace: namespace,
                     namespace_shield: namespace_shield,
@@ -211,7 +212,7 @@ module Kettle
                 # 1) Do token replacements on the template content (org/gem/namespace/shields)
                 c = helpers.apply_common_replacements(
                   content,
-                  gh_org: gh_org,
+                  org: forge_org,
                   gem_name: gem_name,
                   namespace: namespace,
                   namespace_shield: namespace_shield,
@@ -335,7 +336,7 @@ module Kettle
               helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true) do |content|
                 helpers.apply_common_replacements(
                   content,
-                  gh_org: gh_org,
+                  org: (File.basename(rel) == ".opencollective.yml" ? funding_org : forge_org),
                   gem_name: gem_name,
                   namespace: namespace,
                   namespace_shield: namespace_shield,

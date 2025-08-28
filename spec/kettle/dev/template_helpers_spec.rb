@@ -417,7 +417,7 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
         expect(meta[:gemspec_path]).to eq(gemspec_path)
         expect(meta[:gem_name]).to eq("my-gem_name")
         expect(meta[:min_ruby]).to eq("3.2")
-        expect(meta[:gh_org]).to eq("acme")
+        expect(meta[:forge_org]).to eq("acme")
         expect(meta[:gh_repo]).to eq("my-gem_name")
         expect(meta[:entrypoint_require]).to eq("my/gem_name")
         expect(meta[:namespace]).to eq("My::GemName")
@@ -438,7 +438,7 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
         G
         meta = helpers.gemspec_metadata(dir)
         expect(meta[:homepage]).to eq("https://github.com/org/widget")
-        expect(meta[:gh_org]).to eq("org")
+        expect(meta[:forge_org]).to eq("org")
         expect(meta[:gh_repo]).to eq("widget")
         expect(meta[:min_ruby]).to eq("2.7.6")
         expect(meta[:entrypoint_require]).to eq("widget")
@@ -450,7 +450,7 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
 
   describe "::apply_common_replacements" do
     let(:meta) do
-      {gh_org: "some-org", gem_name: "foo_bar", namespace: "FooBar", namespace_shield: "Foo%3A%3ABar", gem_shield: "foo__bar"}
+      {org: "some-org", gem_name: "foo_bar", namespace: "FooBar", namespace_shield: "Foo%3A%3ABar", gem_shield: "foo__bar"}
     end
 
     def rep(s)

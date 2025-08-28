@@ -44,7 +44,7 @@ module Kettle
       # Apply common token replacements used when templating text files
       def self.apply_common_replacements: (
         String content,
-        gh_org: String?,
+        org: String?,
         gem_name: String,
         namespace: String,
         namespace_shield: String,
@@ -59,6 +59,8 @@ module Kettle
         min_ruby: String,
         homepage: String,
         gh_org: String?,
+        forge_org: String?,
+        funding_org: String?,
         gh_repo: String?,
         namespace: String,
         namespace_shield: String,

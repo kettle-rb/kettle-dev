@@ -236,15 +236,15 @@ module Kettle
 
       # Apply common token replacements used when templating text files
       # @param content [String]
-      # @param gh_org [String, nil]
+      # @param org [String, nil]
       # @param gem_name [String]
       # @param namespace [String]
       # @param namespace_shield [String]
       # @param gem_shield [String]
       # @return [String]
-      def apply_common_replacements(content, gh_org:, gem_name:, namespace:, namespace_shield:, gem_shield:)
+      def apply_common_replacements(content, org:, gem_name:, namespace:, namespace_shield:, gem_shield:)
         c = content.dup
-        c = c.gsub("kettle-rb", gh_org.to_s) if gh_org && !gh_org.empty?
+        c = c.gsub("kettle-rb", org.to_s) if org && !org.empty?
         if gem_name && !gem_name.empty?
           # Replace occurrences of the template gem name in text, including inside
           # markdown reference labels like [🖼️kettle-dev] and identifiers like kettle-dev-i
@@ -280,15 +280,15 @@ module Kettle
           end
         end
         gh_match = homepage_val&.match(%r{github\.com/([^/]+)/([^/]+)}i)
-        gh_org = gh_match && gh_match[1]
+        forge_org = gh_match && gh_match[1]
         gh_repo = gh_match && gh_match[2]&.sub(/\.git\z/, "")
-        if gh_org.nil?
+        if forge_org.nil?
           begin
             origin_out = IO.popen(["git", "-C", root.to_s, "remote", "get-url", "origin"], &:read)
             origin_out = origin_out.read if origin_out.respond_to?(:read)
             origin_url = origin_out.to_s.strip
             if (m = origin_url.match(%r{github\.com[/:]([^/]+)/([^/]+)}i))
-              gh_org = m[1]
+              forge_org = m[1]
               gh_repo = m[2]&.sub(/\.git\z/, "")
             end
           rescue StandardError
@@ -304,12 +304,33 @@ module Kettle
         entrypoint_require = gem_name.to_s.tr("-", "/")
         gem_shield = gem_name.to_s.gsub("-", "--").gsub("_", "__")
 
+        # Determine funding_org independently of forge_org (GitHub org)
+        funding_org = ENV["FUNDING_ORG"].to_s.strip
+        funding_org = ENV["OPENCOLLECTIVE_ORG"].to_s.strip if funding_org.empty?
+        funding_org = ENV["OPENCOLLECTIVE_HANDLE"].to_s.strip if funding_org.empty?
+        if funding_org.empty?
+          begin
+            oc_path = File.join(root.to_s, ".opencollective.yml")
+            if File.file?(oc_path)
+              txt = File.read(oc_path)
+              if (m = txt.match(/\borg:\s*([\w\-]+)/i))
+                funding_org = m[1].to_s
+              end
+            end
+          rescue StandardError
+            # ignore
+          end
+        end
+        funding_org = forge_org.to_s if funding_org.to_s.empty?
+
         {
           gemspec_path: gemspec_path,
           gem_name: gem_name,
           min_ruby: min_ruby,
           homepage: homepage_val,
-          gh_org: gh_org,
+          gh_org: forge_org, # Backward compat: keep old key synonymous with forge_org
+          forge_org: forge_org,
+          funding_org: funding_org,
           gh_repo: gh_repo,
           namespace: namespace,
           namespace_shield: namespace_shield,
