@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 require "kettle/dev/versioning"
+require "kettle/dev/exit_adapter"
+require "tmpdir"
+require "fileutils"
 
 RSpec.describe Kettle::Dev::Versioning do
   describe "::classify_bump" do
@@ -24,6 +27,18 @@ RSpec.describe Kettle::Dev::Versioning do
       # 1.2.3 is greater than 1.2.3.a, but the MAJOR/MINOR/PATCH comparisons are equal,
       # exercising the fallback :same branch inside classify_bump
       expect(described_class.classify_bump("1.2.3.a", "1.2.3")).to eq(:same)
+    end
+  end
+
+  describe "::detect_version" do
+    it "aborts when no version.rb exists under lib/**", :real_exit_adapter do
+      Dir.mktmpdir do |dir|
+        # Ensure an empty project structure with no lib/**/version.rb
+        FileUtils.mkdir_p(File.join(dir, "lib"))
+        # ExitAdapter.abort is used by abort!; make it raise to observe behavior
+        allow(Kettle::Dev::ExitAdapter).to receive(:abort).and_raise(SystemExit.new(1))
+        expect { described_class.detect_version(dir) }.to raise_error(SystemExit)
+      end
     end
   end
 
