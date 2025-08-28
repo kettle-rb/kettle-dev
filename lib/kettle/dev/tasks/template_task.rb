@@ -218,12 +218,11 @@ module Kettle
             if File.basename(rel) == "README.md"
               # Precompute destination README H1 prefix (emoji(s) or first grapheme) before any overwrite occurs
               prev_readme = File.exist?(dest) ? File.read(dest) : nil
-              dest_preserve_prefix = nil
               begin
                 if prev_readme
                   first_h1_prev = prev_readme.lines.find { |ln| ln =~ /^#\s+/ }
                   if first_h1_prev
-                    require 'kettle/emoji_regex'
+                    require "kettle/emoji_regex"
                     emoji_re = Kettle::EmojiRegex::REGEX
                     tail = first_h1_prev.sub(/^#\s+/, "")
                     # Extract consecutive leading emoji graphemes
@@ -239,7 +238,7 @@ module Kettle
                         break
                       end
                     end
-                    dest_preserve_prefix = if !out.empty?
+                    if !out.empty?
                       out
                     else
                       # Fallback to first grapheme
@@ -285,8 +284,8 @@ module Kettle
                       if (m = ln.match(/^(#+)\s+.+/))
                         level = m[1].length
                         title = ln.sub(/^#+\s+/, "")
-                        base = title.sub(/\A[^\p{Alnum}]+/u, '').strip.downcase
-                        sections << { start: i, level: level, heading: ln, base: base }
+                        base = title.sub(/\A[^\p{Alnum}]+/u, "").strip.downcase
+                        sections << {start: i, level: level, heading: ln, base: base}
                       end
                     end
 
@@ -320,7 +319,6 @@ module Kettle
                     total_lines - 1
                   end
 
-                  # Parse src (c) and dest using kramdown
                   src_parsed = build_sections.call(c)
                   dest_parsed = build_sections.call(dest_existing)
 
@@ -333,7 +331,7 @@ module Kettle
                       next if dest_lookup.key?(base)
                       be = branch_end_index.call(dest_parsed[:sections], idx, dest_parsed[:line_count])
                       body_lines = dest_parsed[:lines][(s[:start] + 1)..be] || []
-                      dest_lookup[base] = { body_branch: body_lines.join("\n"), level: s[:level] }
+                      dest_lookup[base] = {body_branch: body_lines.join("\n"), level: s[:level]}
                     end
                   end
 

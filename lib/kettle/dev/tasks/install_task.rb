@@ -77,6 +77,18 @@ module Kettle
                     end
                   end
 
+                  # Remove any MRI Ruby rows that are left with no badges/links after trimming
+                  content = content.lines.reject { |ln|
+                    if ln.start_with?("| Works with MRI Ruby")
+                      cells = ln.split("|", -1)
+                      # cells[0] is empty (leading |), cells[1] = label cell, cells[2] = badges cell
+                      badge_cell = cells[2] || ""
+                      badge_cell.strip.empty?
+                    else
+                      false
+                    end
+                  }.join
+
                   # Clean up extra repeated whitespace only when it appears between word characters, and only for non-table lines.
                   # This preserves Markdown table alignment and spacing around punctuation/symbols.
                   content = content.lines.map do |ln|

@@ -77,6 +77,52 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
       end
     end
 
+    it "removes an MRI Ruby row when all badges in that row are trimmed" do
+      Dir.mktmpdir do |project_root|
+        # Require Ruby >= 3.5 so MRI 3.0/3.1/3.2/3.3/3.4 badges are also removed from the 3.x row
+        File.write(File.join(project_root, "demo.gemspec"), <<~G)
+          Gem::Specification.new do |spec|
+            spec.name = "demo"
+            spec.required_ruby_version = ">= 3.0"
+            spec.homepage = "https://github.com/acme/demo"
+          end
+        G
+        readme = <<~MD
+          | Works with MRI Ruby 3   | [![Ruby 3.0 Compat][💎ruby-3.0i]][🚎4-lg-wf] [![Ruby 3.1 Compat][💎ruby-3.1i]][🚎6-s-wf] [![Ruby 3.2 Compat][💎ruby-3.2i]][🚎6-s-wf] [![Ruby 3.3 Compat][💎ruby-3.3i]][🚎6-s-wf] [![Ruby 3.4 Compat][💎ruby-c-i]][🚎11-c-wf] |
+          | Works with MRI Ruby 2   | ![Ruby 2.0 Compat][💎ruby-2.0i] ![Ruby 2.1 Compat][💎ruby-2.1i] [![Ruby 2.3 Compat][💎ruby-2.3i]][🚎1-an-wf] |
+
+          [💎ruby-2.0i]: https://example/20
+          [💎ruby-2.1i]: https://example/21
+          [💎ruby-2.3i]: https://example/23
+          [💎ruby-3.0i]: https://example/30
+          [💎ruby-3.1i]: https://example/31
+          [💎ruby-3.2i]: https://example/32
+          [💎ruby-3.3i]: https://example/33
+          [💎ruby-c-i]: https://example/34
+          [🚎1-an-wf]: https://example/ancient
+          [🚎4-lg-wf]: https://example/legacy
+          [🚎6-s-wf]: https://example/supported
+          [🚎11-c-wf]: https://example/current
+        MD
+        File.write(File.join(project_root, "README.md"), readme)
+
+        allow(helpers).to receive_messages(
+          project_root: project_root,
+          modified_by_template?: true,
+          template_results: {},
+        )
+
+        described_class.run
+
+        edited = File.read(File.join(project_root, "README.md"))
+        table_lines = edited.lines.select { |l| l.start_with?("| Works with MRI Ruby") }
+        # The MRI 3 row should remain because it still has badges.
+        expect(table_lines.any? { |l| l.include?("Works with MRI Ruby 3") }).to be true
+        # The MRI 2 row should be trimmed because it has no badges
+        expect(table_lines.any? { |l| l.include?("Works with MRI Ruby 2") }).to be false
+      end
+    end
+
     it "prints direnv notes when .envrc was modified by template" do
       Dir.mktmpdir do |project_root|
         allow(helpers).to receive_messages(

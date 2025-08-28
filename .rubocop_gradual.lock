@@ -82,7 +82,7 @@
   "spec/kettle/dev/tasks/template_task_env_spec.rb:3333509415": [
     [8, 3, 89, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 1016089034]
   ],
-  "spec/kettle/dev/tasks/template_task_spec.rb:391650881": [
+  "spec/kettle/dev/tasks/template_task_spec.rb:1752877271": [
     [41, 5, 106, "RSpec/MultipleExpectations: Example has too many expectations [6/1].", 1731744831],
     [90, 5, 61, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 3717141426],
     [116, 5, 67, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 1842133030],
@@ -92,7 +92,9 @@
     [289, 5, 95, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 3532822662],
     [346, 5, 77, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 709693544],
     [375, 13, 24, "RSpec/ContextWording: Context description should match /^when\\b/, /^with\\b/, or /^without\\b/.", 196765058],
-    [416, 5, 90, "RSpec/MultipleExpectations: Example has too many expectations [5/1].", 3191742339]
+    [416, 5, 90, "RSpec/MultipleExpectations: Example has too many expectations [5/1].", 3191742339],
+    [522, 5, 81, "RSpec/MultipleExpectations: Example has too many expectations [8/1].", 174955413],
+    [592, 5, 79, "RSpec/MultipleExpectations: Example has too many expectations [7/1].", 1300947465]
   ],
   "spec/kettle/dev/tasks_file_spec.rb:3588115248": [
     [9, 3, 55, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 493548809]
