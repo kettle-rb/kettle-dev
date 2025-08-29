@@ -22,8 +22,15 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Deprecated
 ### Removed
 ### Fixed
-- default rake task must be defined before it can be enhanced
 ### Security
+
+## [1.0.16] - 2025-08-29
+- TAG: [v1.0.16][1.0.16t]
+- COVERAGE: 98.14% -- 2271/2314 lines in 20 files
+- BRANCH COVERAGE: 81.42% -- 916/1125 branches in 20 files
+- 76.23% documented
+### Fixed
+- default rake task must be defined before it can be enhanced
 
 ## [1.0.15] - 2025-08-29
 - TAG: [v1.0.15][1.0.15t]
@@ -258,7 +265,7 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.15...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.16...HEAD
 [1.0.0]: https://github.com/kettle-rb/kettle-dev/compare/a427c302df09cfe4253a7c8d400333f9a4c1a208...v1.0.0
 [1.0.0t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.0
 [1.0.1]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.0...v1.0.1
@@ -291,3 +298,5 @@ Please file a bug if you notice a violation of semantic versioning.
 [1.0.14t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.14
 [1.0.15]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.14...v1.0.15
 [1.0.15t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.15
+[1.0.16]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.15...v1.0.16
+[1.0.16t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.16
