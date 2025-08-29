@@ -77,6 +77,69 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
       end
     end
 
+    it "cleans a leading <br/> when no badges precede it and keeps the row" do
+      Dir.mktmpdir do |project_root|
+        File.write(File.join(project_root, "demo.gemspec"), <<~G)
+          Gem::Specification.new do |spec|
+            spec.name = "demo"
+            spec.required_ruby_version = ">= 2.3"
+            spec.homepage = "https://github.com/acme/demo"
+          end
+        G
+        readme = <<~MD
+          | Works with MRI Ruby 2   |   <br/> [![Ruby 2.3 Compat][💎ruby-2.3i]][🚎1-an-wf] |
+
+          [💎ruby-2.3i]: https://example/23
+          [🚎1-an-wf]: https://example/ancient
+        MD
+        File.write(File.join(project_root, "README.md"), readme)
+
+        allow(helpers).to receive_messages(
+          project_root: project_root,
+          modified_by_template?: true,
+          template_results: {},
+        )
+
+        described_class.run
+
+        edited = File.read(File.join(project_root, "README.md"))
+        line = edited.lines.find { |l| l.start_with?("| Works with MRI Ruby 2") }
+        expect(line).to include("ruby-2.3i")
+        expect(line).not_to match(/\|\s*<br\/>/) # no leading br in the badge cell
+      end
+    end
+
+    it "removes an MRI Ruby row that ends up with only a <br/> and no badges" do
+      Dir.mktmpdir do |project_root|
+        File.write(File.join(project_root, "demo.gemspec"), <<~G)
+          Gem::Specification.new do |spec|
+            spec.name = "demo"
+            spec.required_ruby_version = ">= 4.0"
+            spec.homepage = "https://github.com/acme/demo"
+          end
+        G
+        # Row has only a <br/> in the badge cell which should cause removal
+        readme = <<~MD
+          | Works with MRI Ruby 2   |   <br/> |
+
+          [💎ruby-2.3i]: https://example/23
+        MD
+        File.write(File.join(project_root, "README.md"), readme)
+
+        allow(helpers).to receive_messages(
+          project_root: project_root,
+          modified_by_template?: true,
+          template_results: {},
+        )
+
+        described_class.run
+
+        edited = File.read(File.join(project_root, "README.md"))
+        table_lines = edited.lines.select { |l| l.start_with?("| Works with MRI Ruby") }
+        expect(table_lines).to be_empty
+      end
+    end
+
     it "removes an MRI Ruby row when all badges in that row are trimmed" do
       Dir.mktmpdir do |project_root|
         # Require Ruby >= 3.5 so MRI 3.0/3.1/3.2/3.3/3.4 badges are also removed from the 3.x row

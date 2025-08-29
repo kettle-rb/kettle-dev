@@ -77,11 +77,31 @@ module Kettle
                     end
                   end
 
-                  # Remove any MRI Ruby rows that are left with no badges/links after trimming
-                  content = content.lines.reject { |ln|
+                  # Fix leading <br/> in MRI rows and remove rows that end up empty
+                  content = content.lines.map { |ln|
                     if ln.start_with?("| Works with MRI Ruby")
                       cells = ln.split("|", -1)
                       # cells[0] is empty (leading |), cells[1] = label cell, cells[2] = badges cell
+                      badge_cell = cells[2] || ""
+                      # If badge cell is only a <br/> (possibly with whitespace), treat as empty (row will be removed later)
+                      if badge_cell.strip == "<br/>"
+                        cells[2] = " "
+                        cells.join("|")
+                      elsif badge_cell =~ /\A\s*<br\/>/i
+                        # If badge cell starts with <br/> and there are no badges before it, strip the leading <br/>
+                        # We consider "no badges before" as any leading whitespace followed immediately by <br/>
+                        cleaned = badge_cell.sub(/\A\s*<br\/>\s*/i, "")
+                        cells[2] = cleaned
+                        cells.join("|")
+                      else
+                        ln
+                      end
+                    else
+                      ln
+                    end
+                  }.reject { |ln|
+                    if ln.start_with?("| Works with MRI Ruby")
+                      cells = ln.split("|", -1)
                       badge_cell = cells[2] || ""
                       badge_cell.strip.empty?
                     else
