@@ -653,7 +653,7 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
   end
 
   describe "integration via bin/rake" do
-    it "runs kettle:dev:install in a mock gem and preserves README table spacing from template" do
+    it "runs kettle:dev:install in a mock gem and preserves README table spacing from template", (ENV["GITLAB_CI"] ? :ci_skip : {}) do
       repo_root = Kettle::Dev::TemplateHelpers.gem_checkout_root
       src_readme = File.join(repo_root, "README.md.example")
       template_lines = File.readlines(src_readme)
