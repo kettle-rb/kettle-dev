@@ -15,10 +15,7 @@
   "spec/kettle/dev/ci_helpers_spec.rb:3936399163": [
     [36, 16, 42, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 465257938],
     [37, 28, 33, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 3247304381],
-    [40, 9, 19, "ThreadSafety/DirChdir: Avoid using `Dir.chdir` due to its process-wide effect.", 585207512],
-    [98, 5, 61, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 2945006178],
-    [143, 5, 47, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 45456806],
-    [225, 5, 39, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 4038128320]
+    [40, 9, 19, "ThreadSafety/DirChdir: Avoid using `Dir.chdir` due to its process-wide effect.", 585207512]
   ],
   "spec/kettle/dev/ci_monitor_spec.rb:1478408703": [
     [15, 7, 60, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [16, 22, 26, 27, 28].", 3901348706],
@@ -39,65 +36,43 @@
     [60, 7, 67, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [51, 52, 57, 61, 62].", 1891603964],
     [61, 7, 61, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [51, 52, 57, 60, 62].", 3527598679],
     [62, 7, 59, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [51, 52, 57, 60, 61].", 2768473756],
-    [82, 5, 57, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 1048908844],
-    [95, 5, 61, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 2668761428],
     [103, 7, 60, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [104, 109].", 3901348706],
     [104, 7, 57, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [103, 109].", 4167565767],
     [105, 7, 75, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [108].", 656584126],
     [108, 7, 75, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [105].", 3847887328],
     [109, 7, 61, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [103, 104].", 699226184]
   ],
-  "spec/kettle/dev/gemspec_spec.rb:282279342": [
-    [4, 3, 112, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 2266853980]
-  ],
   "spec/kettle/dev/git_adapter_spec.rb:2753620283": [
     [8, 22, 19, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 3198354142],
-    [10, 5, 44, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 2395005480],
     [11, 27, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `git_repo` as a spy using `allow` or `instance_spy`.", 1384559950],
-    [18, 5, 48, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 3859365253],
     [19, 27, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `git_repo` as a spy using `allow` or `instance_spy`.", 1384559950],
-    [26, 5, 40, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 2226014944],
     [27, 7, 16, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 722749302],
     [27, 27, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `git_repo` as a spy using `allow` or `instance_spy`.", 1384559950],
-    [34, 5, 45, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 2325715337],
-    [44, 5, 36, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 761591252],
     [45, 18, 37, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 2376854826],
     [46, 18, 37, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 3615709467],
-    [56, 5, 48, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 1730677446],
     [57, 18, 72, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 2627662438],
     [58, 18, 76, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 4194664841],
-    [71, 5, 41, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 497273307],
     [72, 18, 72, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 2627662438],
-    [82, 5, 51, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 3636420064],
     [83, 27, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `git_repo` as a spy using `allow` or `instance_spy`.", 1384559950],
-    [92, 5, 37, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 4193763416],
     [93, 27, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `git_repo` as a spy using `allow` or `instance_spy`.", 1384559950],
-    [102, 5, 60, "RSpec/MultipleExpectations: Example has too many expectations [5/1].", 2681505264],
     [103, 27, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `git_repo` as a spy using `allow` or `instance_spy`.", 1384559950],
     [108, 27, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `git_repo` as a spy using `allow` or `instance_spy`.", 1384559950],
-    [123, 5, 52, "RSpec/MultipleExpectations: Example has too many expectations [4/1].", 4152774280],
     [125, 7, 15, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 3416856044],
     [125, 26, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `adapter` as a spy using `allow` or `instance_spy`.", 1384559950],
     [127, 7, 15, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 3416856044],
     [127, 26, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `adapter` as a spy using `allow` or `instance_spy`.", 1384559950],
-    [131, 5, 39, "RSpec/MultipleExpectations: Example has too many expectations [4/1].", 2969083275],
     [133, 7, 15, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 3416856044],
     [133, 26, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `adapter` as a spy using `allow` or `instance_spy`.", 1384559950],
     [135, 7, 15, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 3416856044],
     [135, 26, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `adapter` as a spy using `allow` or `instance_spy`.", 1384559950],
-    [139, 5, 41, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 2515080507],
     [140, 7, 13, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2024371388],
     [140, 24, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `Open3` as a spy using `allow` or `instance_spy`.", 1384559950],
-    [145, 5, 36, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 501947734],
     [146, 7, 13, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2024371388],
     [146, 24, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `Open3` as a spy using `allow` or `instance_spy`.", 1384559950],
-    [151, 5, 50, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 2722023936],
     [158, 7, 13, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2024371388],
     [158, 24, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `Open3` as a spy using `allow` or `instance_spy`.", 1384559950],
-    [166, 5, 35, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 1782621539],
     [167, 7, 13, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2024371388],
     [167, 24, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `Open3` as a spy using `allow` or `instance_spy`.", 1384559950],
-    [172, 5, 39, "RSpec/MultipleExpectations: Example has too many expectations [8/1].", 1624240181],
     [174, 7, 15, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 3416856044],
     [174, 26, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `adapter` as a spy using `allow` or `instance_spy`.", 1384559950],
     [176, 7, 15, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 3416856044],
@@ -105,26 +80,21 @@
     [178, 7, 15, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 3416856044],
     [178, 26, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `adapter` as a spy using `allow` or `instance_spy`.", 1384559950],
     [180, 7, 15, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 3416856044],
-    [180, 26, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `adapter` as a spy using `allow` or `instance_spy`.", 1384559950],
-    [211, 5, 52, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 1013096336],
-    [222, 5, 90, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 4021461670]
+    [180, 26, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `adapter` as a spy using `allow` or `instance_spy`.", 1384559950]
   ],
   "spec/kettle/dev/release_cli_github_spec.rb:863640010": [
-    [25, 5, 76, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 1335859022],
     [53, 9, 51, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [54].", 1750577460],
     [54, 9, 58, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [53].", 3469329402],
     [57, 9, 12, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2883247235],
     [57, 25, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `http` as a spy using `allow` or `instance_spy`.", 1384559950],
     [59, 9, 17, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 4098408604],
     [59, 30, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `Net::HTTP` as a spy using `allow` or `instance_spy`.", 1384559950],
-    [65, 5, 41, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 1143493025],
     [86, 9, 47, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [87].", 2069515652],
     [87, 9, 88, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [86].", 2893453268],
     [90, 9, 12, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2883247235],
     [90, 25, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `http` as a spy using `allow` or `instance_spy`.", 1384559950],
     [91, 9, 17, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 4098408604],
     [91, 30, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `Net::HTTP` as a spy using `allow` or `instance_spy`.", 1384559950],
-    [97, 5, 45, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 2733620728],
     [118, 9, 51, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [119].", 1746946866],
     [119, 9, 52, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [118].", 2758612569],
     [121, 9, 12, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2883247235],
@@ -134,26 +104,8 @@
     [130, 7, 63, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [131].", 2196742208],
     [131, 7, 75, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [130].", 228897198]
   ],
-  "spec/kettle/dev/tasks/template_task_env_spec.rb:3333509415": [
-    [8, 3, 89, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 1016089034]
-  ],
   "spec/kettle/dev/tasks/template_task_spec.rb:2257665577": [
-    [41, 5, 106, "RSpec/MultipleExpectations: Example has too many expectations [6/1].", 1731744831],
-    [90, 5, 61, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 3717141426],
-    [116, 5, 67, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 1842133030],
-    [152, 5, 84, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 3162252021],
-    [186, 5, 59, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 3525512437],
-    [221, 5, 83, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 3346006621],
-    [258, 5, 72, "RSpec/MultipleExpectations: Example has too many expectations [5/1].", 730246015],
-    [325, 5, 95, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 3532822662],
-    [382, 5, 77, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 709693544],
-    [411, 13, 24, "RSpec/ContextWording: Context description should match /^when\\b/, /^with\\b/, or /^without\\b/.", 196765058],
-    [452, 5, 90, "RSpec/MultipleExpectations: Example has too many expectations [5/1].", 3191742339],
-    [558, 5, 81, "RSpec/MultipleExpectations: Example has too many expectations [8/1].", 174955413],
-    [628, 5, 79, "RSpec/MultipleExpectations: Example has too many expectations [7/1].", 1300947465]
-  ],
-  "spec/kettle/dev/tasks_file_spec.rb:3588115248": [
-    [9, 3, 55, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 493548809]
+    [411, 13, 24, "RSpec/ContextWording: Context description should match /^when\\b/, /^with\\b/, or /^without\\b/.", 196765058]
   ],
   "spec/kettle/dev/template_helpers_spec.rb:2149092737": [
     [396, 9, 29, "RSpec/AnyInstance: Avoid stubbing using `allow_any_instance_of`.", 835110177],
@@ -163,19 +115,15 @@
     [55, 7, 53, "RSpec/PredicateMatcher: Prefer using `be_epic_major` matcher over `epic_major?`.", 200417834]
   ],
   "spec/kettle/dev_private_spec.rb:2105232169": [
-    [5, 5, 49, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 146084145],
     [10, 7, 20, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 794029890],
     [10, 31, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `default_task` as a spy using `allow` or `instance_spy`.", 1384559950],
     [80, 9, 18, "RSpec/LeakyConstantDeclaration: Stub module constant instead of declaring explicitly.", 3236815244],
     [83, 41, 36, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 1790782556]
   ],
   "spec/kettle/entry_points_spec.rb:847894159": [
-    [3, 16, 14, "RSpec/DescribeClass: The first argument to describe should be the class or module being tested.", 3581131150],
-    [4, 3, 52, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 1117544902],
-    [10, 3, 52, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 3446197060]
+    [3, 16, 14, "RSpec/DescribeClass: The first argument to describe should be the class or module being tested.", 3581131150]
   ],
   "spec/kettle_dev_file_spec.rb:1811427211": [
-    [3, 16, 25, "RSpec/DescribeClass: The first argument to describe should be the class or module being tested.", 3060513619],
-    [4, 3, 34, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 724886528]
+    [3, 16, 25, "RSpec/DescribeClass: The first argument to describe should be the class or module being tested.", 3060513619]
   ]
 }

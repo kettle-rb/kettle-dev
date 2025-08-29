@@ -3,6 +3,16 @@ module Kettle
     class ReleaseCLI
       def initialize: (?start_step: Integer) -> void
       def run: () -> void
+
+      private
+
+      def update_readme_kloc_badge!: () -> void
+      def update_badge_number_in_file: (String path, String kloc_str) -> void
+      def validate_copyright_years!: () -> void
+      def extract_years_from_file: (String path) -> ::Set[Integer]
+      def collapse_years: (::_ToA[Integer] enum) -> String
+      def reformat_copyright_year_lines!: (String path) -> void
+      def inject_years_into_file!: (String path, ::Set[Integer] years_set) -> void
     end
   end
 end

@@ -18,6 +18,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [Unreleased]
 ### Added
+- kettle-release: early validation of identical set of copyright years in README.md and CHANGELOG.md, adds current year if missing, aborts on mismatch
+- kettle-release: update KLOC in README.md
 ### Changed
 - kettle-release: print package name and version released as final line
 ### Deprecated

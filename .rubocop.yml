@@ -11,3 +11,6 @@ Layout/IndentationConsistency:
 
 RSpec/ExampleLength:
   Enabled: false
+
+RSpec/MultipleExpectations:
+  Enabled: false

@@ -104,6 +104,16 @@ module Kettle
           print("> ")
           ans = Kettle::Dev::InputAdapter.gets&.strip
           abort("Aborted: please update version.rb and CHANGELOG.md, then re-run.") unless ans&.downcase&.start_with?("y")
+
+          # Initial validation: Ensure README.md and LICENSE.txt have identical sets of copyright years; also ensure current year present when matched
+          validate_copyright_years!
+
+          # Ensure README KLOC badge reflects current CHANGELOG coverage denominator
+          begin
+            update_readme_kloc_badge!
+          rescue StandardError => e
+            warn("Failed to update KLOC badge in README: #{e.class}: #{e.message}")
+          end
         end
 
         # 3. bin/setup
@@ -223,6 +233,195 @@ module Kettle
       end
 
       private
+
+      # Update the README KLOC badge number based on the denominator in the current version's COVERAGE line in CHANGELOG.md.
+      # - Parses the current version section of CHANGELOG.md
+      # - Finds a line matching: "- COVERAGE: ... -- <tested>/<total> lines ..."
+      # - Computes KLOC = total / 1000.0
+      # - Formats with three decimals (e.g., 0.076, 2.175, 10.123)
+      # - Rewrites the [🧮kloc-img] badge line in README.md (and README.md.example when present)
+      #   replacing only the numeric portion after "KLOC-" while preserving other URL params.
+      def update_readme_kloc_badge!
+        version = detect_version
+        # Extract only the current version's section
+        section, _compare_ref, _tag_ref = extract_changelog_for_version(version)
+        return unless section
+
+        # Example match: "- COVERAGE: 97.70% -- 2125/2175 lines in 20 files"
+        m = section.lines.find { |l| l =~ /-\s*COVERAGE:\s*.+--\s*\d+\/(\d+)\s+lines/i }
+        return unless m
+        denom = m.match(/-\s*COVERAGE:\s*.+--\s*\d+\/(\d+)\s+lines/i)[1].to_i
+        kloc = denom.to_f / 1000.0
+        kloc_str = format("%.3f", kloc)
+
+        update_badge_number_in_file(File.join(@root, "README.md"), kloc_str)
+        example_path = File.join(@root, "README.md.example")
+        update_badge_number_in_file(example_path, kloc_str) if File.file?(example_path)
+      end
+
+      # Helper to update the [🧮kloc-img] badge in the given file path.
+      # Replaces only the numeric portion after "KLOC-" keeping other URL parts intact.
+      def update_badge_number_in_file(path, kloc_str)
+        return unless File.file?(path)
+        content = File.read(path)
+        # Match the specific reference line, capture groups around the number
+        # Example: [🧮kloc-img]: https://img.shields.io/badge/KLOC-2.175-FFDD67.svg?style=...
+        new_content = content.gsub(/(\[🧮kloc-img\]:\s*https?:\/\/img\.shields\.io\/badge\/KLOC-)(\d+(?:\.\d+)?)(-[^\s]*)/, "\\1#{kloc_str}\\3")
+        if new_content != content
+          File.write(path, new_content)
+        end
+      end
+
+      # Validate that README.md and CHANGELOG.md contain identical sets of copyright years.
+      # This helps ensure docs are kept in sync when bumping the years.
+      # Aborts with a helpful message when they differ.
+      def validate_copyright_years!
+        require "set"
+        readme = File.join(@root, "README.md")
+        license = File.join(@root, "LICENSE.txt")
+        unless File.file?(readme) && File.file?(license)
+          # If either file is missing, skip this check silently (some projects might not have both initially)
+          return
+        end
+
+        # Normalize year formatting in both files before comparing
+        reformat_copyright_year_lines!(readme)
+        reformat_copyright_year_lines!(license)
+
+        r_years = extract_years_from_file(readme)
+        l_years = extract_years_from_file(license)
+        if r_years == l_years
+          # If they match, ensure the current year is present; if not, inject it into both files.
+          current_year = Time.now.year
+          unless r_years.include?(current_year)
+            # Update both files by appending current year to the set and rewriting the lines canonically
+            updated_years = r_years.dup
+            updated_years << current_year
+            # Write back to both files using canonical collapse formatting
+            inject_years_into_file!(readme, updated_years)
+            inject_years_into_file!(license, updated_years)
+          end
+          return
+        end
+
+        abort(<<~MSG)
+          Mismatched copyright years between README.md and LICENSE.txt.
+            README.md:   #{r_years.to_a.sort.join(", ")}
+            LICENSE.txt: #{l_years.to_a.sort.join(", ")}
+          Please update both files so they contain the identical set of years.
+        MSG
+      end
+
+      # Extract a Set of Integer years from the given file.
+      # It searches for lines containing the word "Copyright" (case-insensitive),
+      # then parses four-digit years and year ranges like "2012-2015" (hyphen or en dash).
+      # Returns Set[Integer].
+      def extract_years_from_file(path)
+        require "set"
+        years = Set.new
+        content = File.read(path)
+        # Only consider lines that look like copyright notices to reduce false positives
+        content.each_line do |line|
+          next unless line =~ /copyright/i
+
+          # Expand ranges first (supports hyphen-minus and en dash)
+          line.scan(/\b(19\d{2}|20\d{2})\s*[\-–]\s*(19\d{2}|20\d{2})\b/).each do |a, b|
+            s = a.to_i
+            e = b.to_i
+            if e < s
+              s, e = e, s
+            end
+            (s..e).each { |y| years << y }
+          end
+
+          # Then single standalone years
+          line.scan(/\b(19\d{2}|20\d{2})\b/).each do |y|
+            years << y[0].to_i
+          end
+        end
+        years
+      end
+
+      # Collapse a set/array of years into a canonical, comma-separated string, combining
+      # consecutive runs into ranges with a hyphen (YYYY-YYYY) and leaving gaps as commas.
+      def collapse_years(enum)
+        arr = enum.to_a.map(&:to_i).uniq.sort
+        return "" if arr.empty?
+        segments = []
+        start = arr.first
+        prev = start
+        arr[1..-1].to_a.each do |y|
+          if y == prev + 1
+            prev = y
+            next
+          else
+            segments << ((start == prev) ? start.to_s : "#{start}-#{prev}")
+            start = prev = y
+          end
+        end
+        segments << ((start == prev) ? start.to_s : "#{start}-#{prev}")
+        segments.join(", ")
+      end
+
+      # Inject the provided set of years into copyright lines, rewriting them in canonical form.
+      # - Finds lines containing 'copyright' (case-insensitive) and a years blob.
+      # - Replaces that blob with the canonical collapsed form of the union of existing years and given years.
+      # - If multiple copyright lines, updates each consistently.
+      def inject_years_into_file!(path, years_set)
+        content = File.read(path)
+        changed = false
+        canonical_all = collapse_years(years_set)
+        new_lines = content.each_line.map do |line|
+          unless line =~ /copyright/i
+            next line
+          end
+          m = line.match(/\A(?<pre>.*?copyright[^0-9]*)(?<years>(?:\b(?:19|20)\d{2}\b(?:\s*[\-–]\s*\b(?:19|20)\d{2}\b)?)(?:\s*,\s*\b(?:19|20)\d{2}\b(?:\s*[\-–]\s*\b(?:19|20)\d{2}\b)?)*)(?<post>.*)\z/i)
+          unless m
+            next line
+          end
+          new_line = "#{m[:pre]}#{canonical_all}#{m[:post]}"
+          changed ||= (new_line != line)
+          new_line
+        end
+        if changed
+          File.write(path, new_lines.join)
+        end
+      end
+
+      # Rewrite copyright lines in-place to collapse years into canonical ranges.
+      # Only modifies lines that contain the word "copyright" (case-insensitive).
+      def reformat_copyright_year_lines!(path)
+        content = File.read(path)
+        changed = false
+        new_lines = content.each_line.map do |line|
+          unless line =~ /copyright/i
+            next line
+          end
+          # Capture three parts: prefix up to first year, the year blob, and the rest
+          m = line.match(/\A(?<pre>.*?copyright[^0-9]*)(?<years>(?:\b(?:19|20)\d{2}\b(?:\s*[\-–]\s*\b(?:19|20)\d{2}\b)?)(?:\s*,\s*\b(?:19|20)\d{2}\b(?:\s*[\-–]\s*\b(?:19|20)\d{2}\b)?)*)(?<post>.*)\z/i)
+          unless m
+            # No parsable year sequence on this line; leave as-is
+            next line
+          end
+          years_blob = m[:years]
+          # Reuse extraction logic on just the years blob
+          years = []
+          years_blob.scan(/\b(19\d{2}|20\d{2})\s*[\-–]\s*(19\d{2}|20\d{2})\b/).each do |a, b|
+            s = a.to_i
+            e = b.to_i
+            s, e = e, s if e < s
+            (s..e).each { |y| years << y }
+          end
+          years_blob.scan(/\b(19\d{2}|20\d{2})\b/).each { |y| years << y[0].to_i }
+          canonical = collapse_years(years)
+          new_line = "#{m[:pre]}#{canonical}#{m[:post]}"
+          changed ||= (new_line != line)
+          new_line
+        end
+        if changed
+          File.write(path, new_lines.join)
+        end
+      end
 
       def monitor_workflows_after_push!
         # Delegate to shared CI monitor to keep logic DRY across release flow and rake tasks
