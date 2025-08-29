@@ -386,7 +386,7 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
       end
     end
 
-    it "rescues read error for .envrc and proceeds (line 60)" do
+    it "rescues read error for .envrc and proceeds" do
       Dir.mktmpdir do |project_root|
         envrc = File.join(project_root, ".envrc")
         File.write(envrc, "whatever")
@@ -410,7 +410,7 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
       end
     end
 
-    it "prepends PATH_add bin to non-empty .envrc content (line 73)" do
+    it "prepends PATH_add bin to non-empty .envrc content" do
       Dir.mktmpdir do |project_root|
         envrc = File.join(project_root, ".envrc")
         File.write(envrc, "export FOO=bar\n")
@@ -428,7 +428,7 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
       end
     end
 
-    it "rescues read error for .gitignore (line 98) and still proceeds" do
+    it "rescues read error for .gitignore and still proceeds" do
       Dir.mktmpdir do |project_root|
         gi = File.join(project_root, ".gitignore")
         File.write(gi, "")
@@ -450,7 +450,7 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
       end
     end
 
-    it "handles exception when reading git origin (line 194) and aborts due to missing GitHub" do
+    it "handles exception when reading git origin and aborts due to missing GitHub" do
       Dir.mktmpdir do |project_root|
         gemspec = File.join(project_root, "demo.gemspec")
         File.write(gemspec, <<~G)
@@ -469,7 +469,7 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
       end
     end
 
-    it "rescues unexpected error during gemspec homepage check and warns (line 235)" do
+    it "rescues unexpected error during gemspec homepage check and warns" do
       Dir.mktmpdir do |project_root|
         allow(helpers).to receive_messages(
           project_root: project_root,
@@ -481,7 +481,7 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
       end
     end
 
-    it "parses quoted literal GitHub homepage (line 173) without update" do
+    it "parses quoted literal GitHub homepage without update" do
       Dir.mktmpdir do |project_root|
         gemspec = File.join(project_root, "demo.gemspec")
         File.write(gemspec, <<~G)
@@ -500,7 +500,7 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
       end
     end
 
-    it "rescues when computing relative path during summary (line 279)" do
+    it "rescues when computing relative path during summary" do
       Dir.mktmpdir do |project_root|
         allow(helpers).to receive(:project_root).and_return(project_root)
         allow(helpers).to receive(:modified_by_template?).and_return(true)
@@ -602,7 +602,7 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
   end
 
   describe "::task_abort" do
-    it "aborts with SystemExit in a subprocess without RSpec loaded (line 14)" do
+    it "aborts with SystemExit in a subprocess without RSpec loaded" do
       require "open3"
       cmd = %(ruby -e "require './lib/kettle/dev/tasks/install_task'; Kettle::Dev::Tasks::InstallTask.task_abort('boom')")
       stdout, stderr, status = Open3.capture3(cmd)

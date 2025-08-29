@@ -187,7 +187,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     end
   end
 
-  describe "git helpers" do
+  describe "git and system helpers" do
     it "detects trunk branch from origin remote output (still via git command)" do
       out = "Remote HEAD branch: main\n  HEAD branch: main\n"
       allow(cli).to receive(:git_output).with(["remote", "show", "origin"]).and_return([out, true])
@@ -226,6 +226,81 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       allow(cli).to receive(:remote_branch_exists?).with("origin", "main").and_return(true)
       allow(cli).to receive(:ahead_behind_counts).with("main", "origin/main").and_return([0, 1])
       expect(cli.send(:trunk_behind_remote?, "main", "origin")).to be true
+    end
+
+    it "git_output trims and returns success flag" do
+      cli = described_class.new
+      status = instance_double(Process::Status, success?: true)
+      allow(Open3).to receive(:capture2).with("git", "rev-parse").and_return([" abc\n", status])
+      out, ok = cli.send(:git_output, ["rev-parse"])
+      expect(out).to eq("abc")
+      expect(ok).to be(true)
+    end
+
+    it "maybe_run_local_ci_before_push! handles missing act command", :check_output do
+      Dir.mktmpdir do |root|
+        allow(ci_helpers).to receive(:project_root).and_return(root)
+        FileUtils.mkdir_p(File.join(root, ".github", "workflows"))
+        # Enable run
+        cli = described_class.new
+        # Raise from system("act", "--version", ...)
+        allow(cli).to receive(:system).and_wrap_original do |orig, *args|
+          if args[0] == "act" && args[1] == "--version"
+            raise "no act"
+          else
+            orig.call(*args)
+          end
+        end
+        stub_env("K_RELEASE_LOCAL_CI" => "true")
+        expect { cli.send(:maybe_run_local_ci_before_push!, false) }.to output(/Skipping local CI: 'act' command not found/).to_stdout
+      end
+    end
+
+    it "selects workflow via ENV without extension (adds .yml) and prefers .yaml for locked_deps", :check_output do
+      Dir.mktmpdir do |root|
+        allow(ci_helpers).to receive(:project_root).and_return(root)
+        dir = File.join(root, ".github", "workflows")
+        FileUtils.mkdir_p(dir)
+        File.write(File.join(dir, "ci.yml"), "name: CI\n")
+        File.write(File.join(dir, "locked_deps.yaml"), "name: Lock\n")
+
+        cli = described_class.new
+        # Make "act --version" succeed and capture the -W <path> invocation
+        ran_paths = []
+        allow(cli).to receive(:system).and_wrap_original do |orig, *args|
+          if args[0] == "act" && args[1] == "--version"
+            true
+          elsif args[0] == "act" && args[1] == "-W"
+            ran_paths << args[2]
+            true # pretend local CI succeeded
+          else
+            orig.call(*args)
+          end
+        end
+
+        # Case 1: ENV chooses "ci" -> should append .yml
+        # Case 1: ENV chooses "ci" -> should append .yml
+        stub_env("K_RELEASE_LOCAL_CI" => "true", "K_RELEASE_LOCAL_CI_WORKFLOW" => "ci")
+        expect { cli.send(:maybe_run_local_ci_before_push!, false) }.not_to raise_error
+        expect(ran_paths.last).to end_with("/ci.yml")
+
+        # Case 2: No ENV, candidates include locked_deps.yaml -> choose .yaml variant
+        ran_paths.clear
+        stub_env("K_RELEASE_LOCAL_CI" => "true", "K_RELEASE_LOCAL_CI_WORKFLOW" => "")
+        expect { cli.send(:maybe_run_local_ci_before_push!, false) }.not_to raise_error
+        expect(ran_paths.last).to end_with("/locked_deps.yaml")
+      end
+    end
+
+    it "preferred_github_remote returns origin when present" do
+      cli = described_class.new
+      expect(cli.send(:preferred_github_remote)).to eq("origin")
+    end
+
+    it "remote_branch_exists? reflects git show-ref success flag" do
+      cli = described_class.new
+      allow(cli).to receive(:git_output).and_return(["", false])
+      expect(cli.send(:remote_branch_exists?, "origin", "main")).to be(false)
     end
   end
 
@@ -571,8 +646,6 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     end
   end
 
-  # Additional coverage for branches and helpers
-
   describe "#run version sanity messaging and rescue" do
     around do |ex|
       orig_stdin = $stdin
@@ -613,6 +686,62 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       allow(cli).to receive(:detect_version).and_return("1.2.3")
       allow(cli).to receive(:detect_gem_name).and_raise(StandardError.new("boom"))
       expect { cli.run }.to raise_error(MockSystemExit, /please update version.rb/)
+    end
+  end
+
+  describe "#run sanity-check branches" do
+    it "aborts on downgrade when latest target is higher", :check_output do
+      cli = described_class.new
+      allow(cli).to receive(:ensure_bundler_2_7_plus!)
+      allow(cli).to receive(:detect_version).and_return("1.2.3")
+      allow(cli).to receive(:detect_gem_name).and_return("kettle-dev")
+      # overall is higher than current series; no series-specific latest -> target=nil would skip, so provide same-series higher
+      allow(cli).to receive(:latest_released_versions).and_return(["1.2.4", "1.2.4"]) # [overall, for_series]
+      expect do
+        cli.run
+      end.to raise_error(MockSystemExit, /version must be bumped above 1.2.4/)
+    end
+
+    it "prints offline message when target cannot be determined even though overall present", :check_output do
+      cli = described_class.new
+      allow(cli).to receive(:ensure_bundler_2_7_plus!)
+      allow(cli).to receive(:detect_version).and_return("1.2.3")
+      allow(cli).to receive(:detect_gem_name).and_return("kettle-dev")
+      # Simulate overall from a newer series (2.0.0) but no latest for current series -> target=nil
+      allow(cli).to receive(:latest_released_versions).and_return(["2.0.0", nil])
+      # Proceed past the prompt and subsequent steps quickly
+      allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("y")
+      allow(cli).to receive(:validate_copyright_years!)
+      allow(cli).to receive(:update_readme_kloc_badge!)
+      allow(cli).to receive(:update_rakefile_example_header!)
+      # Skip remaining heavy steps
+      allow(cli).to receive(:run_cmd!)
+      allow(cli).to receive(:ensure_git_user!)
+      allow(cli).to receive(:detect_trunk_branch).and_return("main")
+      allow(cli).to receive(:current_branch).and_return("feature")
+      allow(cli).to receive(:monitor_workflows_after_push!)
+      allow(cli).to receive(:merge_feature_into_trunk_and_push!)
+      allow(cli).to receive(:checkout!)
+      allow(cli).to receive(:pull!)
+      allow(cli).to receive(:ensure_signing_setup_or_skip!)
+      allow(cli).to receive(:validate_checksums!)
+      allow(cli).to receive(:maybe_create_github_release!)
+      allow(cli).to receive(:push_tags!)
+      # Make final detection trivial
+      allow(cli).to receive(:detect_gem_name).and_return("kettle-dev")
+
+      # Ensure the offline message was printed during run
+      expect { cli.run }.to output(/Could not determine latest released version from RubyGems/).to_stdout
+    end
+
+    it "prints fallback final message when gem name detection fails", :check_output do
+      cli = described_class.new(start_step: 19)
+      allow(cli).to receive(:ensure_bundler_2_7_plus!)
+      allow(cli).to receive(:detect_version).and_return("3.2.1")
+      # Make detect_gem_name raise so rescue branch prints fallback line
+      allow(cli).to receive(:detect_gem_name).and_raise(StandardError, "boom")
+
+      expect { cli.run }.to output(/Release v3.2.1 Complete/).to_stdout
     end
   end
 
@@ -924,6 +1053,125 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         local_cli = described_class.new
         expect { local_cli.send(:update_rakefile_example_header!, "1.2.3") }.not_to raise_error
       end
+    end
+  end
+
+  describe "update_readme_kloc_badge! and helpers" do
+    it "updates README and README.example KLOC values based on CHANGELOG denominator", :check_output do
+      Dir.mktmpdir do |root|
+        # Prepare files
+        FileUtils.mkdir_p(File.join(root, ".github", "workflows"))
+        version = "9.9.9"
+        changelog = <<~MD
+          ## [#{version}] - 2025-08-28
+          - COVERAGE: 97.70% -- 2125/2175 lines in 20 files
+        MD
+        File.write(File.join(root, "CHANGELOG.md"), changelog)
+        readme = <<~MD
+          [🧮kloc-img]: https://img.shields.io/badge/KLOC-0.000-FFDD67.svg?style=flat
+        MD
+        File.write(File.join(root, "README.md"), readme)
+        File.write(File.join(root, "README.md.example"), readme)
+
+        allow(ci_helpers).to receive(:project_root).and_return(root)
+        cli = described_class.new
+        allow(cli).to receive(:detect_version).and_return(version)
+
+        expect { cli.send(:update_readme_kloc_badge!) }.not_to raise_error
+        updated = File.read(File.join(root, "README.md"))
+        updated_ex = File.read(File.join(root, "README.md.example"))
+        # 2175 / 1000.0 => 2.175
+        expect(updated).to include("KLOC-2.175-")
+        expect(updated_ex).to include("KLOC-2.175-")
+      end
+    end
+
+    it "skips when README.example missing and avoids rewriting when no change", :check_output do
+      Dir.mktmpdir do |root|
+        version = "9.9.8"
+        File.write(File.join(root, "CHANGELOG.md"), <<~MD)
+          ## [#{version}]
+          - COVERAGE: 10.00% -- 100/1000 lines in 2 files
+        MD
+        orig = "[🧮kloc-img]: https://img.shields.io/badge/KLOC-1.000-FFDD67.svg?style=flat\n"
+        File.write(File.join(root, "README.md"), orig)
+        # No README.md.example
+        allow(ci_helpers).to receive(:project_root).and_return(root)
+        cli = described_class.new
+        allow(cli).to receive(:detect_version).and_return(version)
+        cli.send(:update_readme_kloc_badge!)
+        # unchanged KLOC remains 1.000 so file should be untouched
+        expect(File.read(File.join(root, "README.md"))).to eq(orig)
+      end
+    end
+  end
+
+  describe "copyright helpers edge cases" do
+    it "extracts years from descending range by swapping endpoints" do
+      Dir.mktmpdir do |root|
+        path = File.join(root, "LICENSE.txt")
+        File.write(path, "Copyright 2025-2023 Example")
+        allow(ci_helpers).to receive(:project_root).and_return(root)
+        cli = described_class.new
+        years = cli.send(:extract_years_from_file, path)
+        expect(years.to_a).to include(2023, 2024, 2025)
+      end
+    end
+
+    it "collapses with trailing segment flush" do
+      cli = described_class.new
+      str = cli.send(:collapse_years, [2020, 2021, 2023])
+      expect(str).to eq("2020-2021, 2023")
+    end
+
+    it "injects nothing when no year blob present" do
+      Dir.mktmpdir do |root|
+        path = File.join(root, "README.md")
+        content = "Some text with Copyright notice but no years present."
+        File.write(path, content)
+        cli = described_class.new
+        expect { cli.send(:inject_years_into_file!, path, Set.new([2020, 2021])) }.not_to raise_error
+        expect(File.read(path)).to eq(content)
+      end
+    end
+
+    # NOTE: Additional edge coverage for reformat is exercised indirectly by other specs.
+  end
+
+
+
+  describe "CHANGELOG and GitHub release helpers" do
+    it "extract_changelog_for_version rescues parser errors" do
+      Dir.mktmpdir do |root|
+        allow(ci_helpers).to receive(:project_root).and_return(root)
+        path = File.join(root, "CHANGELOG.md")
+        File.write(path, "## [1.2.3]\n")
+        cli = described_class.new
+        # Force File.read to blow up to hit rescue
+        allow(File).to receive(:read).with(path).and_raise(ArgumentError, "boom")
+        section, a, b = cli.send(:extract_changelog_for_version, "1.2.3")
+        expect(section).to be_nil
+        expect(a).to be_nil
+        expect(b).to be_nil
+      end
+    end
+
+    it "github_create_release returns success on HTTPSuccess/Created and rescues exceptions" do
+      cli = described_class.new
+      # Success path
+      success_res = Net::HTTPCreated.new("1.1", "201", "Created")
+      http_double = instance_double(Net::HTTP)
+      allow(Net::HTTP).to receive(:start).and_yield(http_double)
+      allow(http_double).to receive(:request).and_return(success_res)
+      ok, msg = cli.send(:github_create_release, owner: "me", repo: "r", token: "t", tag: "v1.0.0", title: "v1.0.0", body: "hi")
+      expect(ok).to be(true)
+      expect(msg).to eq("created")
+
+      # Exception path
+      allow(Net::HTTP).to receive(:start).and_raise(Timeout::Error, "timeout")
+      ok2, msg2 = cli.send(:github_create_release, owner: "me", repo: "r", token: "t", tag: "v1.0.0", title: "v1.0.0", body: "hi")
+      expect(ok2).to be(false)
+      expect(msg2).to match(/Timeout::Error/)
     end
   end
 end
