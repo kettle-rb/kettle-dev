@@ -19,6 +19,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ## [Unreleased]
 ### Added
 ### Changed
+- kettle-release: print package name and version released as final line
 ### Deprecated
 ### Removed
 ### Fixed

@@ -211,7 +211,15 @@ module Kettle
         # 18. push tags to remotes (new final step)
         push_tags! if @start_step <= 18
 
-        puts "\nRelease complete. Don't forget to push the checksums commit if needed."
+        # Final success message
+        begin
+          version ||= detect_version
+          gem_name = detect_gem_name
+          puts "\n🚀 Release #{gem_name} v#{version} Complete 🚀"
+        rescue StandardError
+          # Fallback if detection fails for any reason
+          puts "\n🚀 Release v#{version || "unknown"} Complete 🚀"
+        end
       end
 
       private
