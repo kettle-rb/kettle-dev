@@ -320,6 +320,29 @@ Releasing (maintainers)
   - Ensures trunk sync and rebases feature as needed, pushes, monitors GitHub Actions with a progress bar, and merges feature to trunk on success.
   - Exports `SOURCE_DATE_EPOCH`, builds (optionally signed), creates gem checksums, and runs `bundle exec rake release` (prompts for signing key + RubyGems MFA OTP as needed).
 
+- start_step map (skip directly to a phase):
+  - 1: Ensure Bundler >= 2.7.0 and begin full flow
+  - 2: Version detection + sanity checks + prompt to confirm version.rb and CHANGELOG.md
+  - 3: Run bin/setup
+  - 4: Run bin/rake (default task)
+  - 5: Run appraisal:update when Appraisals exists (skip otherwise)
+  - 6: Verify git user.name/email and commit release prep "🔖 Prepare release vX.Y.Z"
+  - 7: Optionally run local CI with nektos/act before pushing (see K_RELEASE_LOCAL_CI, K_RELEASE_LOCAL_CI_WORKFLOW)
+  - 8: Ensure trunk is up-to-date and reconcile with GitHub remote if needed
+  - 9: Push current branch to configured remotes (or default), force-pushing on retry when needed
+  - 10: Monitor CI after push (GitHub Actions and/or GitLab pipelines); progress bar; aborts on failure
+  - 11: Merge feature branch into trunk and push
+  - 12: Checkout trunk and pull latest
+  - 13: Signing checks and guidance (abort when signing enabled but cert missing); respect SKIP_GEM_SIGNING
+  - 14: Build gem (honors SKIP_GEM_SIGNING via env prefix)
+  - 15: Generate and validate gem checksums (bin/gem_checksums)
+  - 16: Release via `bundle exec rake release` and validate checksums again
+  - 17: Create GitHub release from CHANGELOG when GITHUB_TOKEN present
+  - 18: Push git tags to remotes (to "all" remote only when present; otherwise to each remote)
+
+  Examples:
+  - After intermittent CI failure, restart from monitoring: `bundle exec kettle-release start_step=10`
+
 Tip: The commit message helper `exe/kettle-commit-msg` prefers project-local `.git-hooks` (then falls back to `~/.git-hooks`). The goalie file `commit-subjects-goalie.txt` controls when a footer is appended; customize `footer-template.erb.txt` as you like.
 
 ### Open Collective README updater

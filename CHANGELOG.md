@@ -31,6 +31,7 @@ Please file a bug if you notice a violation of semantic versioning.
 - 76.23% documented
 ### Added
 - kettle:dev:install can overwrite gemspec with example gemspec
+- documentation for start_step CLI option for kettle-release
 ### Fixed
 - kettle:dev:install remove "Works with MRI Ruby*" lines with no badges left
 

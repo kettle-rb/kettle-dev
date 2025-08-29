@@ -557,6 +557,34 @@ Tip: When running a single spec file locally, you may want <code>K_SOUP_COV_MIN_
       <li>Exports <code>SOURCE_DATE_EPOCH</code>, builds (optionally signed), creates gem checksums, and runs <code>bundle exec rake release</code> (prompts for signing key + RubyGems MFA OTP as needed).</li>
     </ul>
   </li>
+  <li>start_step map (skip directly to a phase):
+    <ul>
+      <li>1: Ensure Bundler &gt;= 2.7.0 and begin full flow</li>
+      <li>2: Version detection + sanity checks + prompt to confirm version.rb and CHANGELOG.md</li>
+      <li>3: Run bin/setup</li>
+      <li>4: Run bin/rake (default task)</li>
+      <li>5: Run appraisal:update when Appraisals exists (skip otherwise)</li>
+      <li>6: Verify git user.name/email and commit release prep “🔖 Prepare release vX.Y.Z”</li>
+      <li>7: Optionally run local CI with nektos/act before pushing (see K_RELEASE_LOCAL_CI, K_RELEASE_LOCAL_CI_WORKFLOW)</li>
+      <li>8: Ensure trunk is up-to-date and reconcile with GitHub remote if needed</li>
+      <li>9: Push current branch to configured remotes (or default), force-pushing on retry when needed</li>
+      <li>10: Monitor CI after push (GitHub Actions and/or GitLab pipelines); progress bar; aborts on failure</li>
+      <li>11: Merge feature branch into trunk and push</li>
+      <li>12: Checkout trunk and pull latest</li>
+      <li>13: Signing checks and guidance (abort when signing enabled but cert missing); respect SKIP_GEM_SIGNING</li>
+      <li>14: Build gem (honors SKIP_GEM_SIGNING via env prefix)</li>
+      <li>15: Generate and validate gem checksums (bin/gem_checksums)</li>
+      <li>16: Release via <code>bundle exec rake release</code> and validate checksums again</li>
+      <li>17: Create GitHub release from CHANGELOG when GITHUB_TOKEN present</li>
+      <li>18: Push git tags to remotes (to “all” remote only when present; otherwise to each remote)</li>
+    </ul>
+
+    <p>Examples:</p>
+    <ul>
+      <li>After intermittent CI failure, restart from monitoring: <code>bundle exec kettle-release start_step=10</code>
+</li>
+    </ul>
+  </li>
 </ul>
 
 <p>Tip: The commit message helper <code>exe/kettle-commit-msg</code> prefers project-local <code>.git-hooks</code> (then falls back to <code>~/.git-hooks</code>). The goalie file <code>commit-subjects-goalie.txt</code> controls when a footer is appended; customize <code>footer-template.erb.txt</code> as you like.</p>
@@ -689,7 +717,7 @@ and <a href="https://tidelift.com/subscription/pkg/rubygems-kettle-dev?utm_sourc
 <h2 id="-contributing">🤝 Contributing</h2>
 
 <p>If you need some ideas of where to help, you could work on adding more code coverage,<br>
-or if it is already 💯 (see <a href="#code-coverage">below</a>) check <a href="file.REEK.html" title="reek">reek</a>, <a href="https://github.com/kettle-rb/kettle-dev/issues">issues</a>, or <a href="https://github.com/kettle-rb/kettle-dev/pulls">PRs</a>,<br>
+or if it is already 💯 (see <a href="#code-coverage">below</a>) check <a href="REEK">reek</a>, <a href="https://github.com/kettle-rb/kettle-dev/issues">issues</a>, or <a href="https://github.com/kettle-rb/kettle-dev/pulls">PRs</a>,<br>
 or use the gem and think about how it could be better.</p>
 
 <p>We <a href="https://keepachangelog.com/en/1.0.0/"><img src="https://img.shields.io/badge/keep--a--changelog-1.0.0-34495e.svg?style=flat" alt="Keep A Changelog"></a> so if you make changes, remember to update it.</p>
@@ -817,7 +845,7 @@ Please consider sponsoring me or the project.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Fri Aug 29 16:18:37 2025 by
+  Generated on Fri Aug 29 17:15:04 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>
