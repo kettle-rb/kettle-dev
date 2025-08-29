@@ -10,6 +10,7 @@ module Kettle
       def checkout: (String) -> bool
       def pull: (String, String) -> bool
       def fetch: (String, String?) -> bool
+      def capture: (Array[String]) -> [String, bool]
     end
   end
 end

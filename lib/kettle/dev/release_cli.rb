@@ -478,8 +478,9 @@ module Kettle
       end
 
       def git_output(args)
-        out, status = Open3.capture2("git", *args)
-        [out.strip, status.success?]
+        # Route all git interactions through the GitAdapter so tests can safely mock them
+        out, ok = @git.capture(args)
+        [out.to_s.strip, !!ok]
       end
 
       def ensure_git_user!

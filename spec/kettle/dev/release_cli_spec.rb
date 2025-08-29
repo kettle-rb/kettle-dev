@@ -249,9 +249,11 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     end
 
     it "git_output trims and returns success flag" do
+      # Ensure GitAdapter is used and its output is trimmed
+      adapter = instance_double(Kettle::Dev::GitAdapter)
+      allow(Kettle::Dev::GitAdapter).to receive(:new).and_return(adapter)
+      allow(adapter).to receive(:capture).with(["rev-parse"]).and_return([" abc\n", true])
       cli = described_class.new
-      status = instance_double(Process::Status, success?: true)
-      allow(Open3).to receive(:capture2).with("git", "rev-parse").and_return([" abc\n", status])
       out, ok = cli.send(:git_output, ["rev-parse"])
       expect(out).to eq("abc")
       expect(ok).to be(true)

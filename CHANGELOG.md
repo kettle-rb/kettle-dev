@@ -35,6 +35,7 @@ Please file a bug if you notice a violation of semantic versioning.
 - kettle-release: update Rakefile.example with version and date
 ### Changed
 - kettle-release: print package name and version released as final line
+- use git adapter to wrap more git commands to make tests easier to build
 ### Fixed
 - include gemfiles/modular/*gemfile.example with packaged gem
 

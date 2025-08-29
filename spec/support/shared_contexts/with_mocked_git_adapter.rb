@@ -31,6 +31,18 @@ RSpec.shared_context "with mocked git adapter" do
     )
     allow(adapter_double).to receive(:remote_url) { |name| (name == "origin") ? "git@github.com:me/repo.git" : nil }
 
+    # Default behavior for generic capture used by ReleaseCLI#git_output
+    allow(adapter_double).to receive(:capture) do |args|
+      case args.map(&:to_s)
+      when ["config", "user.name"]
+        ["CI", true]
+      when ["config", "user.email"]
+        ["ci@example.com", true]
+      else
+        ["", true]
+      end
+    end
+
     allow(Kettle::Dev::GitAdapter).to receive(:new).and_return(adapter_double)
   end
 end

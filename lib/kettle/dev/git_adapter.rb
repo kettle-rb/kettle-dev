@@ -15,6 +15,19 @@ module Kettle
     #
     # Public API is intentionally small and only includes what we need right now.
     class GitAdapter
+      # Execute a git command and capture its stdout and success flag.
+      # This is a generic escape hatch used by higher-level code for read-only
+      # queries that aren't covered by the explicit adapter API. Tests can stub
+      # this method to avoid shelling out.
+      # @param args [Array<String>]
+      # @return [Array<(String, Boolean)>] [output, success]
+      def capture(args)
+        out, status = Open3.capture2("git", *args)
+        [out.strip, status.success?]
+      rescue StandardError
+        ["", false]
+      end
+
       # Create a new adapter rooted at the current working directory.
       # @return [void]
       def initialize
