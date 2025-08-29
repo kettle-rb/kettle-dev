@@ -7,7 +7,8 @@ class KettleTestInputMachine
   end
 
   def gets(*_args)
-    (@default.nil? ? "\n" : @default.to_s) + ("\n" unless @default&.to_s&.end_with?("\n")).to_s
+    base = @default.nil? ? "" : @default.to_s
+    base.end_with?("\n") ? base : (base + "\n")
   end
 
   def readline(*_args)
