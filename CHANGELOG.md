@@ -22,6 +22,8 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Deprecated
 ### Removed
 ### Fixed
+- Removed README badges for unsupported old Ruby versions
+- Minor inconsistencies in template files
 ### Security
 
 ## [1.0.13] - 2025-08-28
