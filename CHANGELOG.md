@@ -36,6 +36,8 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Changed
 - kettle-release: print package name and version released as final line
 - use git adapter to wrap more git commands to make tests easier to build
+- stop testing Ruby 2.4 on CI due to a strange issue with VCR.
+  - still testing Ruby 2.3
 ### Fixed
 - include gemfiles/modular/*gemfile.example with packaged gem
 - CI workflow result polling logic revised:
