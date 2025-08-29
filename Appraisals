@@ -47,6 +47,7 @@ appraise "current" do
 end
 
 appraise "ruby-2-3" do
+  gem "vcr", "~> 5.0"
   # The cake is a lie. erb v2.2, the oldest release on RubyGems.org, was never compatible with Ruby 2.3.
   # This means we have no choice but to use the erb that shipped with Ruby 2.3
   # /opt/hostedtoolcache/Ruby/2.3.8/x64/lib/ruby/gems/2.3.0/gems/erb-2.2.2/lib/erb.rb:670:in `prepare_trim_mode': undefined method `match?' for "-":String (NoMethodError)
@@ -54,6 +55,7 @@ appraise "ruby-2-3" do
 end
 
 appraise "ruby-2-4" do
+  gem "vcr", "~> 5.0"
   gem "erb"
 end
 

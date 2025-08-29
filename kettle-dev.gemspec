@@ -185,6 +185,6 @@ Gem::Specification.new do |spec|
   #       Development dependencies that require strictly newer Ruby versions should be in a "gemfile",
   #       and preferably a modular one (see gemfiles/modular/*.gemfile).
   # HTTP recording for deterministic specs
-  spec.add_development_dependency("vcr", "~> 6.0")                      # Last version to support ruby >= 2.3
-  spec.add_development_dependency("webmock", ">= 3.18.1")               # Last version to support ruby >= 2.3
+  spec.add_development_dependency("vcr", ">= 5")                      # 6.0 claims to support ruby >= 2.3, but fails on ruby 2.4
+  spec.add_development_dependency("webmock", ">= 3")               # Last version to support ruby >= 2.3
 end
