@@ -61,14 +61,24 @@
   module Dev<br>
     class ReleaseCLI<br>
       def initialize: (?start_step: Integer) -&gt; void<br>
-      def run: () -&gt; void<br>
-    end<br>
-  end<br>
-end</p>
+      def run: () -&gt; void</p>
+
+<pre class="code ruby"><code class="ruby">  private
+
+  def update_readme_kloc_badge!: () -&gt; void
+  def update_badge_number_in_file: (String path, String kloc_str) -&gt; void
+  def update_rakefile_example_header!: (String version) -&gt; void
+  def validate_copyright_years!: () -&gt; void
+  def extract_years_from_file: (String path) -&gt; ::Set[Integer]
+  def collapse_years: (::_ToA[Integer] enum) -&gt; String
+  def reformat_copyright_year_lines!: (String path) -&gt; void
+  def inject_years_into_file!: (String path, ::Set[Integer] years_set) -&gt; void
+end   end end
+</code></pre>
 </div></div>
 
       <div id="footer">
-  Generated on Thu Aug 28 23:39:17 2025 by
+  Generated on Fri Aug 29 03:57:16 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

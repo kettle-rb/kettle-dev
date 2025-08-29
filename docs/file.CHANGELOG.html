@@ -70,11 +70,21 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 
 <h2 id="unreleased"><a href="https://github.com/kettle-rb/kettle-dev/compare/v1.0.14...HEAD">Unreleased</a></h2>
 <h3 id="added">Added</h3>
-<h3 id="changed">Changed</h3>
-<h3 id="deprecated">Deprecated</h3>
-<h3 id="removed">Removed</h3>
-<h3 id="fixed">Fixed</h3>
-<h3 id="security">Security</h3>
+<ul>
+  <li>kettle-release: early validation of identical set of copyright years in README.md and CHANGELOG.md, adds current year if missing, aborts on mismatch</li>
+  <li>kettle-release: update KLOC in README.md</li>
+  <li>kettle-release: update Rakefile.example with version and date
+    <h3 id="changed">Changed</h3>
+  </li>
+  <li>kettle-release: print package name and version released as final line
+    <h3 id="deprecated">Deprecated</h3>
+    <h3 id="removed">Removed</h3>
+    <h3 id="fixed">Fixed</h3>
+  </li>
+  <li>include gemfiles/modular/*gemfile.example with packaged gem
+    <h3 id="security">Security</h3>
+  </li>
+</ul>
 
 <h2 id="1014---2025-08-28">
 <a href="https://github.com/kettle-rb/kettle-dev/compare/v1.0.13...v1.0.14">1.0.14</a> - 2025-08-28</h2>
@@ -438,7 +448,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Thu Aug 28 23:42:00 2025 by
+  Generated on Fri Aug 29 03:57:16 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

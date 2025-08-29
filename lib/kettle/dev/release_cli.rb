@@ -73,12 +73,26 @@ module Kettle
             overall = Gem::Version.new(latest_overall)
             cur_series = cur.segments[0, 2]
             overall_series = overall.segments[0, 2]
+            # Ensure latest_for_series actually matches our current series; ignore otherwise.
+            if latest_for_series
+              lfs_series = Gem::Version.new(latest_for_series).segments[0, 2]
+              latest_for_series = nil unless lfs_series == cur_series
+            end
+            # Determine the sanity-check target correctly for the current series.
+            # If RubyGems has a newer overall series than our current series, only compare
+            # against the latest published in our current series. If that cannot be determined
+            # (e.g., offline), skip the sanity check rather than treating the overall as target.
             target = if (cur_series <=> overall_series) == -1
               latest_for_series
             else
               latest_overall
             end
-            if target
+            # IMPORTANT: Never treat a higher different-series "latest_overall" as a downgrade target.
+            # If our current series is behind overall and RubyGems does not report a latest_for_series,
+            # then we cannot determine the correct target for this series and should skip the check.
+            if (cur_series <=> overall_series) == -1 && target.nil?
+              puts "Could not determine latest released version from RubyGems (offline?). Proceeding without sanity check."
+            elsif target
               bump = Kettle::Dev::Versioning.classify_bump(target, version)
               case bump
               when :same
@@ -570,6 +584,7 @@ module Kettle
         uri = URI("https://rubygems.org/api/v1/versions/#{gem_name}.json")
         res = Net::HTTP.get_response(uri)
         return [nil, nil] unless res.is_a?(Net::HTTPSuccess)
+
         data = JSON.parse(res.body)
         versions = data.map { |h| h["number"] }.compact
         versions.reject! { |v| v.to_s.include?("-pre") || v.to_s.include?(".pre") || v.to_s =~ /[a-zA-Z]/ }

@@ -128,6 +128,26 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     end
   end
 
+  describe "latest_released_versions (integration with RubyGems via VCR)" do
+    it "fetches real versions for kettle-dev and does not report a 1.2.x series", :check_output do
+      # Use VCR to record once then replay. We avoid making any strong assertion on the exact
+      # version numbers to keep the test resilient, but we do assert no 1.2.x appears for this gem.
+      cassette = "rubygems_versions_kettle_dev"
+      overall, series = nil, nil
+      # Ensure any previous stubs on Net::HTTP from unit tests do not apply here; we want a real HTTP call (recorded by VCR)
+      allow(Net::HTTP).to receive(:get_response).and_call_original
+      VCR.use_cassette(cassette) do
+        overall, series = cli.send(:latest_released_versions, "kettle-dev", "1.0.0")
+      end
+      # Basic sanity
+      expect(overall).to be_a(String).or be_nil
+      expect(series).to be_a(String).or be_nil
+      # The reported bug was seeing a 1.2.x. Assert that does not occur for this gem.
+      expect(overall&.start_with?("1.2.")).to be(false)
+      expect(series&.start_with?("1.2.")).to be(false)
+    end
+  end
+
   describe "#commit_release_prep!" do
     it "returns false when no changes" do
       allow(cli).to receive(:run_cmd!).with("git add -A")
@@ -542,6 +562,9 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       allow(cli).to receive(:detect_version).and_return("9.9.9")
       allow(cli).to receive(:detect_gem_name).and_return("mygem")
       allow(cli).to receive(:latest_released_versions).and_return([nil, nil])
+      allow(cli).to receive(:validate_copyright_years!)
+      allow(cli).to receive(:update_readme_kloc_badge!)
+      allow(cli).to receive(:update_rakefile_example_header!)
 
       # Stub commands that would actually run
       allow(cli).to receive(:run_cmd!).and_return(true)
@@ -583,7 +606,9 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       allow(cli).to receive(:detect_version).and_return("9.9.9")
       allow(cli).to receive(:detect_gem_name).and_return("mygem")
       allow(cli).to receive(:latest_released_versions).and_return([nil, nil])
-
+      allow(cli).to receive(:validate_copyright_years!)
+      allow(cli).to receive(:update_readme_kloc_badge!)
+      allow(cli).to receive(:update_rakefile_example_header!)
       allow(cli).to receive(:run_cmd!).and_return(true)
       allow(cli).to receive(:ensure_git_user!)
       allow(cli).to receive(:commit_release_prep!).and_return(false)
@@ -627,6 +652,9 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       allow(cli).to receive(:detect_version).and_return("9.9.9")
       allow(cli).to receive(:detect_gem_name).and_return("mygem")
       allow(cli).to receive(:latest_released_versions).and_return([nil, nil])
+      allow(cli).to receive(:validate_copyright_years!)
+      allow(cli).to receive(:update_readme_kloc_badge!)
+      allow(cli).to receive(:update_rakefile_example_header!)
 
       # Stub through to the signing gate
       allow(cli).to receive(:run_cmd!).and_return(true)
@@ -662,6 +690,9 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       allow(cli).to receive(:detect_version).and_return("1.2.10")
       allow(cli).to receive(:detect_gem_name).and_return("mygem")
       allow(cli).to receive(:latest_released_versions).and_return(["1.3.0", "1.2.9"]) # triggers line 36 and 47 branch
+      allow(cli).to receive(:validate_copyright_years!)
+      allow(cli).to receive(:update_readme_kloc_badge!)
+      allow(cli).to receive(:update_rakefile_example_header!)
       allow(cli).to receive(:run_cmd!).and_return(true)
       allow(cli).to receive(:ensure_git_user!)
       allow(cli).to receive(:commit_release_prep!).and_return(false)
@@ -1056,6 +1087,54 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     end
   end
 
+  describe "regression: Rakefile.example header uses version.rb even if RubyGems has higher overall" do
+    it "injects the version from version.rb (e.g., 1.0.15) and not a higher 1.2.x from RubyGems", freeze: Time.new(2015, 12, 28, 13, 14, 15) do
+      Dir.mktmpdir do |root|
+        # Prepare a Rakefile.example with an outdated header
+        File.write(File.join(root, "Rakefile.example"), <<~RB)
+          # frozen_string_literal: true
+
+          # kettle-dev Rakefile v0.0.0 - 2000-01-01
+          puts "Hello"
+        RB
+
+        allow(ci_helpers).to receive(:project_root).and_return(root)
+        cli = described_class.new(start_step: 2)
+
+        # Force detect_version to desired next version and make RubyGems suggest a higher overall
+        allow(cli).to receive(:detect_version).and_return("1.0.15")
+        allow(cli).to receive(:detect_gem_name).and_return("kettle-dev")
+        allow(cli).to receive(:latest_released_versions).and_return(["1.2.10", "1.2.10"]) # overall and series
+        allow(cli).to receive(:validate_copyright_years!)
+        allow(cli).to receive(:update_readme_kloc_badge!)
+
+        # Auto-confirm the prompt
+        allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("y\n")
+
+        # Stub out subsequent steps so we only execute step 2
+        allow(cli).to receive(:run_cmd!)
+        allow(cli).to receive(:validate_checksums!)
+        allow(cli).to receive(:maybe_run_local_ci_before_push!)
+        allow(cli).to receive(:ensure_bundler_2_7_plus!)
+        allow(cli).to receive(:monitor_workflows_after_push!)
+        allow(cli).to receive(:merge_feature_into_trunk_and_push!)
+        allow(cli).to receive(:checkout!)
+        allow(cli).to receive(:pull!)
+        allow(cli).to receive(:ensure_signing_setup_or_skip!)
+        allow(cli).to receive(:push_tags!)
+        allow(cli).to receive(:detect_trunk_branch).and_return("main")
+        allow(cli).to receive(:current_branch).and_return("feat")
+
+        # Execute run starting at step 2 to cover header update path
+        expect { cli.run }.not_to raise_error
+
+        updated = File.read(File.join(root, "Rakefile.example"))
+        expect(updated).to include("# kettle-dev Rakefile v1.0.15 - 2015-12-28")
+        expect(updated).to include("puts \"Hello\"")
+      end
+    end
+  end
+
   describe "update_readme_kloc_badge! and helpers" do
     it "updates README and README.example KLOC values based on CHANGELOG denominator", :check_output do
       Dir.mktmpdir do |root|
@@ -1076,6 +1155,8 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         allow(ci_helpers).to receive(:project_root).and_return(root)
         cli = described_class.new
         allow(cli).to receive(:detect_version).and_return(version)
+        allow(cli).to receive(:validate_copyright_years!)
+        allow(cli).to receive(:update_rakefile_example_header!)
 
         expect { cli.send(:update_readme_kloc_badge!) }.not_to raise_error
         updated = File.read(File.join(root, "README.md"))
@@ -1137,8 +1218,6 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
     # NOTE: Additional edge coverage for reformat is exercised indirectly by other specs.
   end
-
-
 
   describe "CHANGELOG and GitHub release helpers" do
     it "extract_changelog_for_version rescues parser errors" do

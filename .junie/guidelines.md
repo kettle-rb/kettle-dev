@@ -57,7 +57,8 @@ This document captures project-specific knowledge to streamline setup, testing, 
     - When adding new code or modifying existing code always add tests to cover the updated behavior, including branches, and different types of expected and unexpected inputs.
   - Additional test utilities:
     - rspec-stubbed_env: Use stub_env to control ENV safely within examples.
-    - timecop-rspec: Time manipulation available, see lib/kettle/test/config/int/rspec/timecop_rspec.
+    - timecop-rspec: Time manipulation is available, and is setup by kettle-test.
+      - To freeze time use `freeze: Time.new(*args)` tag on an example or group
 - Running tests (verified)
   - Full suite (recommended to satisfy coverage thresholds):
     - bin/rspec
