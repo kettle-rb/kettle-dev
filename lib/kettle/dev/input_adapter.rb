@@ -25,6 +25,10 @@ module Kettle
         $stdin.gets(*args)
       end
 
+      def tty?
+        $stdin.tty?
+      end
+
       # Read one line from standard input, raising EOFError on end-of-file.
       # Provided for convenience symmetry with IO#readline when needed.
       #

@@ -310,7 +310,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
   end
 
   describe "#ensure_signing_setup_or_skip!" do
-    it "returns early when SKIP_GEM_SIGNING is set" do
+    it "returns early when SKIP_GEM_SIGNING is set to true" do
       stub_env("SKIP_GEM_SIGNING" => "true")
       expect(cli.send(:ensure_signing_setup_or_skip!)).to be_nil
     end
@@ -319,7 +319,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       Dir.mktmpdir do |root|
         allow(ci_helpers).to receive(:project_root).and_return(root)
         other = described_class.new
-        stub_env("SKIP_GEM_SIGNING" => nil, "GEM_CERT_USER" => "alice", "USER" => "bob")
+        stub_env("SKIP_GEM_SIGNING" => "false", "GEM_CERT_USER" => "alice", "USER" => "bob")
         expect { other.send(:ensure_signing_setup_or_skip!) }.to raise_error(MockSystemExit, /no public cert/)
       end
     end
@@ -841,6 +841,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
   describe "start_step skipping" do
     it "skips initial steps when start_step is 10 (CI validation)" do
+      allow(Kettle::Dev::InputAdapter).to receive(:tty?).and_return(false)
       local_cli = described_class.new(start_step: 10)
       allow(local_cli).to receive(:ensure_bundler_2_7_plus!)
       # Spy on run_cmd! to ensure early commands are not invoked

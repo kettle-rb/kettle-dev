@@ -162,14 +162,19 @@ module Kettle
 
         # 13. signing guidance and checks
         if @start_step <= 13
-          if ENV["SKIP_GEM_SIGNING"].to_s.strip == ""
+          unless ENV.fetch("SKIP_GEM_SIGNING", "").casecmp("true").zero?
             puts "TIP: For local dry-runs or testing the release workflow, set SKIP_GEM_SIGNING=true to avoid PEM password prompts."
-            if ENV.fetch("CI", "false").casecmp("true").zero?
+            if Kettle::Dev::InputAdapter.tty?
+              # In CI, avoid interactive prompts when no TTY is present (e.g., act or GitHub Actions "CI validation").
+              # Non-interactive CI runs should not abort here; later signing checks are either stubbed in tests
+              # or will be handled explicitly by ensure_signing_setup_or_skip!.
               print("Proceed with signing enabled? This may hang waiting for a PEM password. [y/N]: ")
               ans = Kettle::Dev::InputAdapter.gets&.strip
               unless ans&.downcase&.start_with?("y")
                 abort("Aborted. Re-run with SKIP_GEM_SIGNING=true bundle exec kettle-release (or set it in your environment).")
               end
+            else
+              warn("Non-interactive shell detected (non-TTY); skipping interactive signing confirmation.")
             end
           end
 
@@ -578,8 +583,8 @@ module Kettle
       end
 
       def ensure_signing_setup_or_skip!
-        # Treat any non-empty value as an explicit skip signal (more robust across Ruby versions and ENV adapters)
-        return if ENV["SKIP_GEM_SIGNING"].to_s.strip != ""
+        # Treat any non-/true/i value as an explicit skip signal
+        return if ENV.fetch("SKIP_GEM_SIGNING", "").casecmp("true").zero?
 
         user = ENV.fetch("GEM_CERT_USER", ENV["USER"])
         cert_path = File.join(@root, "certs", "#{user}.pem")

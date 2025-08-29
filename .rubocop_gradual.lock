@@ -5,12 +5,16 @@
   "lib/kettle/dev.rb:372647611": [
     [30, 17, 2, "ThreadSafety/MutableClassInstanceVariable: Freeze mutable objects assigned to class instance variables.", 5862883]
   ],
-  "lib/kettle/dev/tasks/ci_task.rb:643480759": [
-    [190, 26, 10, "ThreadSafety/NewThread: Avoid starting new threads.", 3411682361],
-    [193, 13, 320, "Lint/RescueException: Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?", 508330984],
-    [206, 24, 60, "ThreadSafety/NewThread: Avoid starting new threads.", 1884163423],
-    [246, 19, 158, "Lint/RescueException: Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?", 3347980327],
-    [252, 15, 175, "Lint/RescueException: Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?", 1705470978]
+  "lib/kettle/dev/release_cli.rb:3578916554": [
+    [165, 11, 1109, "Style/InvertibleUnlessCondition: Prefer `if ENV.fetch(\"SKIP_GEM_SIGNING\", \"\").casecmp(\"true\").nonzero?` over `unless ENV.fetch(\"SKIP_GEM_SIGNING\", \"\").casecmp(\"true\").zero?`.", 1577243827],
+    [587, 9, 69, "Style/InvertibleUnlessCondition: Prefer `if ENV.fetch(\"SKIP_GEM_SIGNING\", \"\").casecmp(\"true\").nonzero?` over `unless ENV.fetch(\"SKIP_GEM_SIGNING\", \"\").casecmp(\"true\").zero?`.", 3275809506]
+  ],
+  "lib/kettle/dev/tasks/ci_task.rb:2124351161": [
+    [201, 26, 10, "ThreadSafety/NewThread: Avoid starting new threads.", 3411682361],
+    [204, 13, 320, "Lint/RescueException: Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?", 508330984],
+    [217, 24, 60, "ThreadSafety/NewThread: Avoid starting new threads.", 1884163423],
+    [257, 19, 158, "Lint/RescueException: Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?", 3347980327],
+    [263, 15, 175, "Lint/RescueException: Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?", 1705470978]
   ],
   "spec/kettle/dev/ci_helpers_spec.rb:3936399163": [
     [36, 16, 42, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 465257938],
@@ -19,6 +23,33 @@
     [98, 5, 61, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 2945006178],
     [143, 5, 47, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 45456806],
     [225, 5, 39, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 4038128320]
+  ],
+  "spec/kettle/dev/ci_monitor_spec.rb:1478408703": [
+    [15, 7, 60, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [16, 22, 26, 27, 28].", 3901348706],
+    [16, 7, 61, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [15, 22, 26, 27, 28].", 699226184],
+    [22, 7, 71, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [15, 16, 26, 27, 28].", 3905906821],
+    [26, 7, 67, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [15, 16, 22, 27, 28].", 1891603964],
+    [27, 7, 61, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [15, 16, 22, 26, 28].", 3527598679],
+    [28, 7, 59, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [15, 16, 22, 26, 27].", 2768473756],
+    [34, 7, 60, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [35, 40, 43, 44, 45].", 3901348706],
+    [35, 7, 61, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [34, 40, 43, 44, 45].", 699226184],
+    [40, 7, 71, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [34, 35, 43, 44, 45].", 3905906821],
+    [43, 7, 67, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [34, 35, 40, 44, 45].", 1891603964],
+    [44, 7, 61, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [34, 35, 40, 43, 45].", 3527598679],
+    [45, 7, 60, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [34, 35, 40, 43, 44].", 326783895],
+    [51, 7, 60, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [52, 57, 60, 61, 62].", 3901348706],
+    [52, 7, 61, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [51, 57, 60, 61, 62].", 699226184],
+    [57, 7, 71, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [51, 52, 60, 61, 62].", 3905906821],
+    [60, 7, 67, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [51, 52, 57, 61, 62].", 1891603964],
+    [61, 7, 61, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [51, 52, 57, 60, 62].", 3527598679],
+    [62, 7, 59, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [51, 52, 57, 60, 61].", 2768473756],
+    [82, 5, 57, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 1048908844],
+    [95, 5, 61, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 2668761428],
+    [103, 7, 60, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [104, 109].", 3901348706],
+    [104, 7, 57, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [103, 109].", 4167565767],
+    [105, 7, 75, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [108].", 656584126],
+    [108, 7, 75, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [105].", 3847887328],
+    [109, 7, 61, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [103, 104].", 699226184]
   ],
   "spec/kettle/dev/git_adapter_spec.rb:2753620283": [
     [8, 22, 19, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 3198354142],

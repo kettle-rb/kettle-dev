@@ -45,6 +45,8 @@ Please file a bug if you notice a violation of semantic versioning.
 - added optional.gemfile.example, and handling for it in templating
 - kettle-changelog: ensure a blank line at end of file
 - add sleep(0.2) to ci:act to prevent race condition with stdout flushing
+- kettle-release: ensure SKIP_GEM_SIGNING works as expected with values of "true" or "false"
+  - ensure it doesn't abort the process in CI
 
 ## [1.0.11] - 2025-08-28
 - TAG: [v1.0.11][1.0.11t]
