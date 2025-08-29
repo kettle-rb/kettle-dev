@@ -162,7 +162,7 @@ module Kettle
 
         # 13. signing guidance and checks
         if @start_step <= 13
-          unless ENV.fetch("SKIP_GEM_SIGNING", "").casecmp("true").zero?
+          if ENV.fetch("SKIP_GEM_SIGNING", "false").casecmp("false").zero?
             puts "TIP: For local dry-runs or testing the release workflow, set SKIP_GEM_SIGNING=true to avoid PEM password prompts."
             if Kettle::Dev::InputAdapter.tty?
               # In CI, avoid interactive prompts when no TTY is present (e.g., act or GitHub Actions "CI validation").

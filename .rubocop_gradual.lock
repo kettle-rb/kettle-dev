@@ -5,10 +5,6 @@
   "lib/kettle/dev.rb:372647611": [
     [30, 17, 2, "ThreadSafety/MutableClassInstanceVariable: Freeze mutable objects assigned to class instance variables.", 5862883]
   ],
-  "lib/kettle/dev/release_cli.rb:3578916554": [
-    [165, 11, 1109, "Style/InvertibleUnlessCondition: Prefer `if ENV.fetch(\"SKIP_GEM_SIGNING\", \"\").casecmp(\"true\").nonzero?` over `unless ENV.fetch(\"SKIP_GEM_SIGNING\", \"\").casecmp(\"true\").zero?`.", 1577243827],
-    [587, 9, 69, "Style/InvertibleUnlessCondition: Prefer `if ENV.fetch(\"SKIP_GEM_SIGNING\", \"\").casecmp(\"true\").nonzero?` over `unless ENV.fetch(\"SKIP_GEM_SIGNING\", \"\").casecmp(\"true\").zero?`.", 3275809506]
-  ],
   "lib/kettle/dev/tasks/ci_task.rb:2124351161": [
     [201, 26, 10, "ThreadSafety/NewThread: Avoid starting new threads.", 3411682361],
     [204, 13, 320, "Lint/RescueException: Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?", 508330984],
