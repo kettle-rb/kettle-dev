@@ -22,6 +22,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Deprecated
 ### Removed
 ### Fixed
+- kettle-changelog added to exe files so packaged with released gem
 ### Security
 
 ## [1.0.16] - 2025-08-29

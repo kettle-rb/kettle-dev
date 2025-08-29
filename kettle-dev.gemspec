@@ -132,6 +132,7 @@ Gem::Specification.new do |spec|
   spec.bindir = "exe"
   # files listed are relative paths from bindir above.
   spec.executables = [
+    "kettle-changelog",
     "kettle-commit-msg",
     "kettle-readme-backers",
     "kettle-release",
