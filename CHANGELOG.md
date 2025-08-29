@@ -18,16 +18,25 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [Unreleased]
 ### Added
+### Changed
+### Deprecated
+### Removed
+### Fixed
+### Security
+
+## [1.0.14] - 2025-08-28
+- TAG: [v1.0.14][1.0.14t]
+- COVERAGE: 97.70% -- 2125/2175 lines in 20 files
+- BRANCH COVERAGE: 78.77% -- 842/1069 branches in 20 files
+- 76.03% documented
+### Added
 - kettle-release: Push tags to additional remotes after release
 ### Changed
 - Improve .gitlab-ci.yml pipeline
-### Deprecated
-### Removed
 ### Fixed
 - Removed README badges for unsupported old Ruby versions
 - Minor inconsistencies in template files
 - git added as a dependency to optional.gemfile instead of the example template
-### Security
 
 ## [1.0.13] - 2025-08-28
 - TAG: [v1.0.13][1.0.13t]
@@ -227,7 +236,7 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.13...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.14...HEAD
 [1.0.0]: https://github.com/kettle-rb/kettle-dev/compare/a427c302df09cfe4253a7c8d400333f9a4c1a208...v1.0.0
 [1.0.0t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.0
 [1.0.1]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.0...v1.0.1
@@ -256,3 +265,5 @@ Please file a bug if you notice a violation of semantic versioning.
 [1.0.12t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.12
 [1.0.13]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.12...v1.0.13
 [1.0.13t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.13
+[1.0.14]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.13...v1.0.14
+[1.0.14t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.14
