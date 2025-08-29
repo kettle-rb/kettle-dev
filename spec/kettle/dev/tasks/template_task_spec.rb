@@ -587,6 +587,47 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
     end
 
     context "with .git-hooks present" do
+      it "honors only filter by skipping .git-hooks when not selected" do
+        Dir.mktmpdir do |gem_root|
+          Dir.mktmpdir do |project_root|
+            # Arrange .git-hooks in template checkout
+            hooks_src = File.join(gem_root, ".git-hooks")
+            FileUtils.mkdir_p(hooks_src)
+            File.write(File.join(hooks_src, "commit-subjects-goalie.txt"), "x")
+            File.write(File.join(hooks_src, "footer-template.erb.txt"), "y")
+            File.write(File.join(project_root, "demo.gemspec"), "Gem::Specification.new{|s| s.name='demo'}\n")
+            allow(helpers).to receive_messages(project_root: project_root, gem_checkout_root: gem_root, ensure_clean_git!: nil, ask: true)
+
+            # Set only to README.md, which should exclude .git-hooks completely
+            stub_env("only" => "README.md")
+            # If code ignores only for hooks, it would prompt; ensure no blocking by pre-answering
+            allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("")
+
+            described_class.run
+            expect(File).not_to exist(File.join(project_root, ".git-hooks", "commit-subjects-goalie.txt"))
+            expect(File).not_to exist(File.join(project_root, ".git-hooks", "footer-template.erb.txt"))
+          end
+        end
+      end
+
+      it "copies templates when only includes .git-hooks/**", :check_output do
+        Dir.mktmpdir do |gem_root|
+          Dir.mktmpdir do |project_root|
+            hooks_src = File.join(gem_root, ".git-hooks")
+            FileUtils.mkdir_p(hooks_src)
+            File.write(File.join(hooks_src, "commit-subjects-goalie.txt"), "x")
+            File.write(File.join(hooks_src, "footer-template.erb.txt"), "y")
+            File.write(File.join(project_root, "demo.gemspec"), "Gem::Specification.new{|s| s.name='demo'}\n")
+            allow(helpers).to receive_messages(project_root: project_root, gem_checkout_root: gem_root, ensure_clean_git!: nil, ask: true)
+            stub_env("only" => ".git-hooks/**")
+            allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("")
+            described_class.run
+            expect(File).to exist(File.join(project_root, ".git-hooks", "commit-subjects-goalie.txt"))
+            expect(File).to exist(File.join(project_root, ".git-hooks", "footer-template.erb.txt"))
+          end
+        end
+      end
+
       it "copies templates locally by default", :check_output do
         Dir.mktmpdir do |gem_root|
           Dir.mktmpdir do |project_root|

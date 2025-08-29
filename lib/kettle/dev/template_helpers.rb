@@ -135,6 +135,39 @@ module Kettle
       # @return [void]
       def copy_file_with_prompt(src_path, dest_path, allow_create: true, allow_replace: true)
         return unless File.exist?(src_path)
+
+        # Apply optional inclusion filter via ENV["only"] (comma-separated glob patterns relative to project root)
+        begin
+          only_raw = ENV["only"].to_s
+          if !only_raw.empty?
+            patterns = only_raw.split(",").map { |s| s.strip }.reject(&:empty?)
+            if !patterns.empty?
+              proj = project_root.to_s
+              rel_dest = dest_path.to_s
+              if rel_dest.start_with?(proj + "/")
+                rel_dest = rel_dest[(proj.length + 1)..-1]
+              elsif rel_dest == proj
+                rel_dest = ""
+              end
+              matched = patterns.any? do |pat|
+                if pat.end_with?("/**")
+                  base = pat[0..-4]
+                  rel_dest == base || rel_dest.start_with?(base + "/")
+                else
+                  File.fnmatch?(pat, rel_dest, File::FNM_PATHNAME | File::FNM_EXTGLOB | File::FNM_DOTMATCH)
+                end
+              end
+              unless matched
+                record_template_result(dest_path, :skip)
+                puts "Skipping #{dest_path} (excluded by only filter)"
+                return
+              end
+            end
+          end
+        rescue StandardError
+          # If anything goes wrong parsing/matching, ignore the filter and proceed.
+        end
+
         dest_exists = File.exist?(dest_path)
         action = nil
         if dest_exists
@@ -166,6 +199,59 @@ module Kettle
       # @return [void]
       def copy_dir_with_prompt(src_dir, dest_dir)
         return unless Dir.exist?(src_dir)
+
+        # Build a matcher for ENV["only"], relative to project root, that can be reused within this method
+        only_raw = ENV["only"].to_s
+        patterns = only_raw.split(",").map { |s| s.strip }.reject(&:empty?) unless only_raw.nil?
+        patterns ||= []
+        proj_root = project_root.to_s
+        matches_only = lambda do |abs_dest|
+          return true if patterns.empty?
+          begin
+            rel_dest = abs_dest.to_s
+            if rel_dest.start_with?(proj_root + "/")
+              rel_dest = rel_dest[(proj_root.length + 1)..-1]
+            elsif rel_dest == proj_root
+              rel_dest = ""
+            end
+            patterns.any? do |pat|
+              if pat.end_with?("/**")
+                base = pat[0..-4]
+                rel_dest == base || rel_dest.start_with?(base + "/")
+              else
+                File.fnmatch?(pat, rel_dest, File::FNM_PATHNAME | File::FNM_EXTGLOB | File::FNM_DOTMATCH)
+              end
+            end
+          rescue StandardError
+            # On any error, do not filter out (act as matched)
+            true
+          end
+        end
+
+        # Early exit: if an only filter is present and no files inside this directory would match,
+        # do not prompt to create/replace this directory at all.
+        begin
+          if !patterns.empty?
+            any_match = false
+            Find.find(src_dir) do |path|
+              rel = path.sub(/^#{Regexp.escape(src_dir)}\/?/, "")
+              next if rel.empty?
+              next if File.directory?(path)
+              target = File.join(dest_dir, rel)
+              if matches_only.call(target)
+                any_match = true
+                break
+              end
+            end
+            unless any_match
+              record_template_result(dest_dir, :skip)
+              return
+            end
+          end
+        rescue StandardError
+          # If determining matches fails, fall through to prompting logic
+        end
+
         dest_exists = Dir.exist?(dest_dir)
         if dest_exists
           if ask("Replace directory #{dest_dir} (will overwrite files)?", true)
@@ -176,8 +262,12 @@ module Kettle
               if File.directory?(path)
                 FileUtils.mkdir_p(target)
               else
+                # Per-file inclusion filter
+                next unless matches_only.call(target)
+
                 FileUtils.mkdir_p(File.dirname(target))
                 if File.exist?(target)
+
                   # Skip only if contents are identical. If source and target paths are the same,
                   # avoid FileUtils.cp (which raises) and do an in-place rewrite to satisfy "copy".
                   begin
@@ -210,6 +300,9 @@ module Kettle
             if File.directory?(path)
               FileUtils.mkdir_p(target)
             else
+              # Per-file inclusion filter
+              next unless matches_only.call(target)
+
               FileUtils.mkdir_p(File.dirname(target))
               if File.exist?(target)
                 # Skip only if contents are identical. If source and target paths are the same,

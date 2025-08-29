@@ -207,9 +207,11 @@ That’s it. Once installed, kettle-dev:
     - Grapheme syncing: detects the grapheme (e.g., emoji) immediately following the first `#` H1 in README.md and ensures the same grapheme, followed by a single space, prefixes both `spec.summary` and `spec.description` in your gemspec. If the H1 has none, you’ll be prompted to enter one; tests use an input adapter, so runs never hang in CI.
     - option: force: When truthy (1, true, y, yes), treat all y/N prompts as Yes. Useful for non-interactive runs or to accept defaults quickly. Example: `bundle exec rake kettle:dev:template force=true`
     - option: allowed: When truthy (1, true, y, yes), resume task after you have reviewed `.envrc`/`.env.local` and run `direnv allow`. If either file is created or updated, the task will abort with instructions unless `allowed=true` is present. Example: `bundle exec rake kettle:dev:install allowed=true`
+    - option: only: A comma-separated list of glob patterns to include in templating. Any destination file whose path+filename does not match one of the patterns is excluded. Patterns are matched relative to your project root. Examples: `only="README.md,.github/**"`, `only="docs/**,lib/**/*.rb"`.
   - `kettle:dev:template` — templates files from this gem into your project (e.g., .github workflows, .devcontainer, .qlty, modular Gemfiles, README/CONTRIBUTING stubs). You can run this independently to refresh templates without the extra install prompts.
     - option: force: When truthy (1, true, y, yes), treat all y/N prompts as Yes. Useful for non-interactive runs or to accept defaults quickly. Example: `bundle exec rake kettle:dev:template force=true`
     - option: allowed: When truthy (1, true, y, yes), resume task after you have reviewed `.envrc`/`.env.local` and run `direnv allow`. If either file is created or updated, the task will abort with instructions unless `allowed=true` is present. Example: `bundle exec rake kettle:dev:template allowed=true`
+    - option: only: Same as for install; limits which destination files are written based on glob patterns relative to the project root.
 
 Recommended one-time setup in your project:
 - Install binstubs so kettle-dev executables are available under `./bin`:

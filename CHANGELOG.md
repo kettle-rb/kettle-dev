@@ -24,6 +24,10 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Fixed
 ### Security
 
+## [Unreleased]
+### Added
+- kettle:dev:install and kettle:dev:template support `only=` option: comma-separated glob patterns matched against destination paths relative to project root; non-matching files are excluded from templating.
+
 ## [1.0.18] - 2025-08-29
 - TAG: [v1.0.18][1.0.18t]
 - COVERAGE: 71.70% -- 456/636 lines in 9 files
@@ -32,6 +36,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Added
 - kettle:dev:install can overwrite gemspec with example gemspec
 - documentation for start_step CLI option for kettle-release
+- kettle:dev:install add `only=` option for glob filtering.
 ### Fixed
 - kettle:dev:install remove "Works with MRI Ruby*" lines with no badges left
 

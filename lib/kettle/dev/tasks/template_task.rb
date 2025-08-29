@@ -520,6 +520,35 @@ module Kettle
           # Handle .git-hooks files (see original rake task for details)
           source_hooks_dir = File.join(gem_checkout_root, ".git-hooks")
           if Dir.exist?(source_hooks_dir)
+            # Honor ENV["only"]: skip entire .git-hooks handling unless patterns include .git-hooks
+            begin
+              only_raw = ENV["only"].to_s
+              if !only_raw.empty?
+                patterns = only_raw.split(",").map { |s| s.strip }.reject(&:empty?)
+                if !patterns.empty?
+                  proj = helpers.project_root.to_s
+                  target_dir = File.join(proj, ".git-hooks")
+                  # Determine if any pattern would match either the directory itself (with /** semantics) or files within it
+                  matches = patterns.any? do |pat|
+                    if pat.end_with?("/**")
+                      base = pat[0..-4]
+                      base == ".git-hooks" || base == target_dir.sub(/^#{Regexp.escape(proj)}\/?/, "")
+                    else
+                      # Check for explicit .git-hooks or subpaths
+                      File.fnmatch?(pat, ".git-hooks", File::FNM_PATHNAME | File::FNM_EXTGLOB | File::FNM_DOTMATCH) ||
+                        File.fnmatch?(pat, ".git-hooks/*", File::FNM_PATHNAME | File::FNM_EXTGLOB | File::FNM_DOTMATCH)
+                    end
+                  end
+                  unless matches
+                    # No interest in .git-hooks => skip prompts and copies for hooks entirely
+                    # Note: we intentionally do not record template_results for hooks
+                    return
+                  end
+                end
+              end
+            rescue StandardError
+              # If filter parsing fails, proceed as before
+            end
             goalie_src = File.join(source_hooks_dir, "commit-subjects-goalie.txt")
             footer_src = File.join(source_hooks_dir, "footer-template.erb.txt")
             hook_ruby_src = File.join(source_hooks_dir, "commit-msg")
