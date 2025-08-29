@@ -24,6 +24,14 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Fixed
 ### Security
 
+## [1.0.13] - 2025-08-28
+- TAG: [v1.0.13][1.0.13t]
+- COVERAGE: 41.94% -- 65/155 lines in 6 files
+- BRANCH COVERAGE: 1.92% -- 1/52 branches in 6 files
+- 76.03% documented
+### Added
+- kettle-release: Create GitHub release from tag & changelog entry
+
 ## [1.0.12] - 2025-08-28
 - TAG: [v1.0.12][1.0.12t]
 - COVERAGE: 97.80% -- 1957/2001 lines in 19 files
@@ -214,7 +222,7 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.12...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.13...HEAD
 [1.0.0]: https://github.com/kettle-rb/kettle-dev/compare/a427c302df09cfe4253a7c8d400333f9a4c1a208...v1.0.0
 [1.0.0t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.0
 [1.0.1]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.0...v1.0.1
@@ -241,3 +249,5 @@ Please file a bug if you notice a violation of semantic versioning.
 [1.0.11t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.11
 [1.0.12]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.11...v1.0.12
 [1.0.12t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.12
+[1.0.13]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.12...v1.0.13
+[1.0.13t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.13
