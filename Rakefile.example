@@ -62,8 +62,6 @@ end
 # Setup stone_checksums
 begin
   require "stone_checksums"
-
-  GemChecksums.install_tasks
 rescue LoadError
   desc("(stub) build:generate_checksums is unavailable")
   task("build:generate_checksums") do
