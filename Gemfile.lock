@@ -360,7 +360,7 @@ DEPENDENCIES
   rubocop-rspec (~> 3.6)
   rubocop-ruby2_3 (~> 2.0, >= 2.0.5)
   standard (>= 1.50)
-  vcr (>= 5)
+  vcr (>= 4)
   webmock (>= 3)
   yard (~> 0.9, >= 0.9.37)
   yard-junk (~> 0.0, >= 0.0.10)!
