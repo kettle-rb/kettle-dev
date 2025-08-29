@@ -208,6 +208,9 @@ module Kettle
           maybe_create_github_release!(version)
         end
 
+        # 18. push tags to remotes (new final step)
+        push_tags! if @start_step <= 18
+
         puts "\nRelease complete. Don't forget to push the checksums commit if needed."
       end
 
@@ -405,6 +408,27 @@ module Kettle
           unless success
             warn("Push to #{remote} failed; retrying with force push...")
             @git.push(remote, branch, force: true)
+          end
+        end
+      end
+
+      def push_tags!
+        # After release, push tags to remotes according to policy:
+        # 1) If a remote named "all" exists, push tags only to it.
+        # 2) Otherwise, if other remotes exist, push tags to each of them.
+        # 3) If no remotes are configured, push tags using default remote.
+        if has_remote?("all")
+          run_cmd!("git push all --tags")
+          return
+        end
+
+        remotes = list_remotes
+        remotes -= ["all"] if remotes
+        if remotes.nil? || remotes.empty?
+          run_cmd!("git push --tags")
+        else
+          remotes.each do |remote|
+            run_cmd!("git push #{Shellwords.escape(remote)} --tags")
           end
         end
       end

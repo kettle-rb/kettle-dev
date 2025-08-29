@@ -18,7 +18,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [Unreleased]
 ### Added
+- kettle-release: Push tags to additional remotes after release
 ### Changed
+- Improve .gitlab-ci.yml pipeline
 ### Deprecated
 ### Removed
 ### Fixed

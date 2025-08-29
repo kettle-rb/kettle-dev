@@ -12,7 +12,7 @@ variables:
   K_SOUP_COV_MIN_BRANCH: 75
   K_SOUP_COV_MIN_LINE: 90
   K_SOUP_COV_VERBOSE: true
-  K_SOUP_COV_FORMATTERS: "html,xml,rcov,lcov,json,tty"
+  K_SOUP_COV_FORMATTERS: "tty"
   K_SOUP_COV_MULTI_FORMATTERS: true
   K_SOUP_COV_COMMAND_NAME: "RSpec Coverage"
 
@@ -29,10 +29,27 @@ workflow:
   image: ruby:${RUBY_VERSION}
   stage: test
   script:
-    - gem update --system > /dev/null 2>&1
-    - bundle config --local path vendor
-    - bundle
-    - bundle exec rake
+    # || true so we don't fail here, because it'll probably work even if the gem update fails
+    - gem update --system > /dev/null 2>&1 || true
+    - mkdir -p vendor/bundle
+    - bundle config set path 'vendor/bundle'
+    - chmod +t -R vendor/bundle
+    - chmod o-w -R vendor/bundle
+    # Setup appraisal2
+    - export BUNDLE_GEMFILE=Appraisal.root.gemfile
+    - bundle install --quiet --jobs 2 --retry 3
+    # Bundle a specific appraisal
+    - bundle exec appraisal unlocked_deps bundle install --quiet --jobs 2 --retry 3
+    # Light smoke test
+    - bundle exec appraisal unlocked_deps bin/rake --tasks
+    # Run tests, skipping those that won't work in CI
+    - >
+      bundle exec appraisal unlocked_deps \
+        bin/rspec spec \
+          --tag \~ci_skip \
+          --format progress \
+          --format RspecJunitFormatter
+
   cache:
     key: ${CI_JOB_IMAGE}
     paths:

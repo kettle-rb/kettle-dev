@@ -4,7 +4,7 @@ default:
 variables:
   BUNDLE_INSTALL_FLAGS: "--quiet --jobs=$(nproc) --retry=3"
   BUNDLE_FROZEN: "false" # No lockfile!
-  BUNDLE_GEMFILE: gemfiles/current.gemfile
+  BUNDLE_GEMFILE: Appraisal.root.gemfile
   K_SOUP_COV_DEBUG: true
   K_SOUP_COV_DO: true
   K_SOUP_COV_HARD: true
@@ -28,10 +28,26 @@ workflow:
   image: ruby:${RUBY_VERSION}
   stage: test
   script:
-    - gem update --system > /dev/null 2>&1
-    - bundle config --local path vendor
-    - bundle
-    - bundle exec rake
+    # || true so we don't fail here, because it'll probably work even if the gem update fails
+    - gem update --system > /dev/null 2>&1 || true
+    - mkdir -p vendor/bundle
+    - bundle config set path 'vendor/bundle'
+    - chmod +t -R vendor/bundle
+    - chmod o-w -R vendor/bundle
+    # Setup appraisal2
+    - bundle install
+    # Bundle a specific appraisal
+    - bundle exec appraisal unlocked_deps bundle install
+    # Light smoke test
+    - bundle exec appraisal unlocked_deps bin/rake --tasks
+    # Run tests, skipping those that won't work in CI
+    - >
+      bundle exec appraisal unlocked_deps \
+        bin/rspec spec \
+          --tag \~ci_skip \
+          --format progress \
+          --format RspecJunitFormatter
+
   cache:
     key: ${CI_JOB_IMAGE}
     paths:

@@ -408,7 +408,10 @@
 209
 210
 211
-212</pre>
+212
+213
+214
+215</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 40</span>
@@ -584,6 +587,9 @@
     <span class='id identifier rubyid_maybe_create_github_release!'>maybe_create_github_release!</span><span class='lparen'>(</span><span class='id identifier rubyid_version'>version</span><span class='rparen'>)</span>
   <span class='kw'>end</span>
 
+  <span class='comment'># 18. push tags to remotes (new final step)
+</span>  <span class='id identifier rubyid_push_tags!'>push_tags!</span> <span class='kw'>if</span> <span class='ivar'>@start_step</span> <span class='op'>&lt;=</span> <span class='int'>18</span>
+
   <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\nRelease complete. Don&#39;t forget to push the checksums commit if needed.</span><span class='tstring_end'>&quot;</span></span>
 <span class='kw'>end</span></pre>
     </td>
@@ -596,7 +602,7 @@
 </div>
 
       <div id="footer">
-  Generated on Thu Aug 28 22:12:27 2025 by
+  Generated on Thu Aug 28 22:52:34 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

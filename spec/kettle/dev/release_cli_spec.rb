@@ -482,6 +482,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       allow(cli).to receive(:checkout!)
       allow(cli).to receive(:pull!)
       allow(cli).to receive(:ensure_signing_setup_or_skip!)
+      allow(cli).to receive(:push_tags!)
       expect(cli).to receive(:validate_checksums!).with("9.9.9", stage: "after build + gem_checksums")
       expect(cli).to receive(:validate_checksums!).with("9.9.9", stage: "after release")
 
@@ -521,6 +522,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       allow(cli).to receive(:checkout!)
       allow(cli).to receive(:pull!)
       allow(cli).to receive(:ensure_signing_setup_or_skip!)
+      allow(cli).to receive(:push_tags!)
       allow(cli).to receive(:validate_checksums!)
 
       # Force File.file?(Appraisals) false just for that path
@@ -694,6 +696,29 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     end
   end
 
+  describe "push_tags!" do
+    it "pushes tags only to 'all' when present" do
+      allow(cli).to receive(:has_remote?).with("all").and_return(true)
+      expect(cli).to receive(:run_cmd!).with("git push all --tags")
+      cli.send(:push_tags!)
+    end
+
+    it "pushes tags to each remote when 'all' missing" do
+      allow(cli).to receive(:has_remote?).with("all").and_return(false)
+      allow(cli).to receive(:list_remotes).and_return(["origin", "github"]) # includes two remotes
+      expect(cli).to receive(:run_cmd!).with("git push origin --tags")
+      expect(cli).to receive(:run_cmd!).with("git push github --tags")
+      cli.send(:push_tags!)
+    end
+
+    it "pushes tags without specifying remote when no remotes configured" do
+      allow(cli).to receive(:has_remote?).with("all").and_return(false)
+      allow(cli).to receive(:list_remotes).and_return([])
+      expect(cli).to receive(:run_cmd!).with("git push --tags")
+      cli.send(:push_tags!)
+    end
+  end
+
   describe "direct git wrappers" do
     it "runs checkout! and pull! via GitAdapter" do
       git = cli.instance_variable_get(:@git)
@@ -854,6 +879,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       allow(local_cli).to receive(:pull!)
       allow(local_cli).to receive(:ensure_signing_setup_or_skip!)
       allow(local_cli).to receive(:validate_checksums!)
+      allow(local_cli).to receive(:push_tags!)
       allow(local_cli).to receive(:detect_trunk_branch).and_return("main")
       allow(local_cli).to receive(:current_branch).and_return("feat")
 
