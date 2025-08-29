@@ -18,12 +18,19 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [Unreleased]
 ### Added
-- kettle:dev:install can overwrite gemspec with example gemspec
 ### Changed
 ### Deprecated
 ### Removed
 ### Fixed
 ### Security
+
+## [1.0.18] - 2025-08-29
+- TAG: [v1.0.18][1.0.18t]
+- COVERAGE: 71.70% -- 456/636 lines in 9 files
+- BRANCH COVERAGE: 51.17% -- 153/299 branches in 9 files
+- 76.23% documented
+### Added
+- kettle:dev:install can overwrite gemspec with example gemspec
 
 ## [1.0.17] - 2025-08-29
 - TAG: [v1.0.17][1.0.17t]
@@ -274,7 +281,7 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.17...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.18...HEAD
 [1.0.0]: https://github.com/kettle-rb/kettle-dev/compare/a427c302df09cfe4253a7c8d400333f9a4c1a208...v1.0.0
 [1.0.0t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.0
 [1.0.1]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.0...v1.0.1
@@ -311,3 +318,5 @@ Please file a bug if you notice a violation of semantic versioning.
 [1.0.16t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.16
 [1.0.17]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.16...v1.0.17
 [1.0.17t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.17
+[1.0.18]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.17...v1.0.18
+[1.0.18t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.18
