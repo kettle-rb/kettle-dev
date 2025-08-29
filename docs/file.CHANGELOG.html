@@ -84,10 +84,35 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 97.80% – 1957/2001 lines in 19 files</li>
   <li>BRANCH COVERAGE: 79.98% – 763/954 branches in 19 files</li>
   <li>78.70% documented
-    <h3 id="fixed-1">Fixed</h3>
+    <h3 id="added-1">Added</h3>
+  </li>
+  <li>CIMonitor to consolidate workflow / pipeline monitoring logic for GH/GL across kettle-release and rake tasks, with handling for:
+    <ul>
+      <li>minutes exhausted</li>
+      <li>blocked</li>
+      <li>not configured</li>
+      <li>normal failures</li>
+      <li>pending</li>
+      <li>queued</li>
+      <li>running</li>
+      <li>success</li>
+    </ul>
+  </li>
+  <li>Ability to restart kettle-release from any failed step, so manual fixed can be applied.
+    <ul>
+      <li>Example (after intermittent failure of CI): <code>bundle exec kettle-release start_step=10</code>
+        <h3 id="fixed-1">Fixed</h3>
+      </li>
+    </ul>
   </li>
   <li>added optional.gemfile.example, and handling for it in templating</li>
   <li>kettle-changelog: ensure a blank line at end of file</li>
+  <li>add sleep(0.2) to ci:act to prevent race condition with stdout flushing</li>
+  <li>kettle-release: ensure SKIP_GEM_SIGNING works as expected with values of “true” or “false”
+    <ul>
+      <li>ensure it doesn’t abort the process in CI</li>
+    </ul>
+  </li>
 </ul>
 
 <h2 id="1011---2025-08-28">
@@ -98,7 +123,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 97.90% – 1959/2001 lines in 19 files</li>
   <li>BRANCH COVERAGE: 79.98% – 763/954 branches in 19 files</li>
   <li>78.70% documented
-    <h3 id="added-1">Added</h3>
+    <h3 id="added-2">Added</h3>
   </li>
   <li>Add more .example templates
     <ul>
@@ -153,7 +178,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 97.68% – 1685/1725 lines in 17 files</li>
   <li>BRANCH COVERAGE: 77.54% – 618/797 branches in 17 files- 95.35% documented</li>
   <li>77.00% documented
-    <h3 id="added-2">Added</h3>
+    <h3 id="added-3">Added</h3>
   </li>
   <li>runs git add –all before git commit, to ensure all files are committed.
     <h3 id="changed-2">Changed</h3>
@@ -183,7 +208,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 100.00% – 130/130 lines in 7 files</li>
   <li>BRANCH COVERAGE:  96.00% – 48/50 branches in 7 files</li>
   <li>95.35% documented
-    <h3 id="added-3">Added</h3>
+    <h3 id="added-4">Added</h3>
   </li>
   <li>kettle-release: Add a sanity check for the latest released version of the gem being released, and display it during the confirmation with user that CHANGELOG.md and version.rb have been updated, so they can compare the value in version.rb with the value of the latest released version.
     <ul>
@@ -259,7 +284,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 100.00% – 130/130 lines in 7 files</li>
   <li>BRANCH COVERAGE: 96.00% – 48/50 branches in 7 files</li>
   <li>95.35% documented
-    <h3 id="added-4">Added</h3>
+    <h3 id="added-5">Added</h3>
   </li>
   <li>kettle-release: checks all remotes for a GitHub remote and syncs origin/trunk with it; prompts to rebase or –no-ff merge when histories diverge; pushes to both origin and the GitHub remote on merge; uses the GitHub remote for GitHub Actions CI checks, and also checks GitLab CI when a GitLab remote and .gitlab-ci.yml are present.</li>
   <li>kettle-release: push logic improved — if a remote named <code>all</code> exists, push the current branch to it (assumed to cover multiple push URLs). Otherwise push the current branch to <code>origin</code> and to any GitHub, GitLab, and Codeberg remotes (whatever their names are).
@@ -278,7 +303,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 100.00% – 98/98 lines in 7 files</li>
   <li>BRANCH COVERAGE: 100.00% – 30/30 branches in 7 files</li>
   <li>94.59% documented
-    <h3 id="added-5">Added</h3>
+    <h3 id="added-6">Added</h3>
   </li>
   <li>template task now copies .git-hooks files necessary for git hooks to work
     <h3 id="fixed-9">Fixed</h3>
@@ -309,7 +334,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 100.00% – 98/98 lines in 7 files</li>
   <li>BRANCH COVERAGE: 100.00% – 30/30 branches in 7 files</li>
   <li>94.59% documented
-    <h3 id="added-6">Added</h3>
+    <h3 id="added-7">Added</h3>
   </li>
   <li>These were documented but not yet released:
     <ul>
@@ -337,7 +362,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 100.00% – 98/98 lines in 7 files</li>
   <li>BRANCH COVERAGE: 100.00% – 30/30 branches in 7 files</li>
   <li>94.59% documented
-    <h3 id="added-7">Added</h3>
+    <h3 id="added-8">Added</h3>
   </li>
   <li>initial release, with auto-config support for:
     <ul>
@@ -379,7 +404,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Thu Aug 28 15:17:03 2025 by
+  Generated on Thu Aug 28 19:36:10 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

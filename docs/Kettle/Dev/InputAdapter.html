@@ -164,6 +164,29 @@ global IO.</p>
 </li>
 
       
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#tty%3F-class_method" title="tty? (class method)">.<strong>tty?</strong>  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+</div></span>
+  
+</li>
+
+      
     </ul>
   
 
@@ -313,14 +336,14 @@ Provided for convenience symmetry with IO#readline when needed.</p>
       <pre class="lines">
 
 
-33
-34
-35
-36
-37</pre>
+37
+38
+39
+40
+41</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/input_adapter.rb', line 33</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/input_adapter.rb', line 37</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_readline'>readline</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_line'>line</span> <span class='op'>=</span> <span class='id identifier rubyid_gets'>gets</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
@@ -332,12 +355,65 @@ Provided for convenience symmetry with IO#readline when needed.</p>
 </table>
 </div>
     
+      <div class="method_details ">
+  <h3 class="signature " id="tty?-class_method">
+  
+    .<strong>tty?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+28
+29
+30</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/input_adapter.rb', line 28</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_tty?'>tty?</span>
+  <span class='gvar'>$stdin</span><span class='period'>.</span><span class='id identifier rubyid_tty?'>tty?</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
   </div>
 
 </div>
 
       <div id="footer">
-  Generated on Thu Aug 28 15:17:03 2025 by
+  Generated on Thu Aug 28 19:36:11 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>
