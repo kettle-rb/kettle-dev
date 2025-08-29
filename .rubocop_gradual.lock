@@ -106,6 +106,31 @@
     [211, 5, 52, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 1013096336],
     [222, 5, 90, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 4021461670]
   ],
+  "spec/kettle/dev/release_cli_github_spec.rb:863640010": [
+    [25, 5, 76, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 1335859022],
+    [53, 9, 51, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [54].", 1750577460],
+    [54, 9, 58, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [53].", 3469329402],
+    [57, 9, 12, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2883247235],
+    [57, 25, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `http` as a spy using `allow` or `instance_spy`.", 1384559950],
+    [59, 9, 17, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 4098408604],
+    [59, 30, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `Net::HTTP` as a spy using `allow` or `instance_spy`.", 1384559950],
+    [65, 5, 41, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 1143493025],
+    [86, 9, 47, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [87].", 2069515652],
+    [87, 9, 88, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [86].", 2893453268],
+    [90, 9, 12, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2883247235],
+    [90, 25, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `http` as a spy using `allow` or `instance_spy`.", 1384559950],
+    [91, 9, 17, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 4098408604],
+    [91, 30, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `Net::HTTP` as a spy using `allow` or `instance_spy`.", 1384559950],
+    [97, 5, 45, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 2733620728],
+    [118, 9, 51, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [119].", 1746946866],
+    [119, 9, 52, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [118].", 2758612569],
+    [121, 9, 12, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2883247235],
+    [121, 25, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `http` as a spy using `allow` or `instance_spy`.", 1384559950],
+    [122, 9, 17, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 4098408604],
+    [122, 30, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `Net::HTTP` as a spy using `allow` or `instance_spy`.", 1384559950],
+    [130, 7, 63, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [131].", 2196742208],
+    [131, 7, 75, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [130].", 228897198]
+  ],
   "spec/kettle/dev/tasks/template_task_env_spec.rb:3333509415": [
     [8, 3, 89, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 1016089034]
   ],

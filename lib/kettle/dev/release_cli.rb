@@ -202,6 +202,12 @@ module Kettle
           validate_checksums!(version, stage: "after release")
         end
 
+        # 17. create GitHub release (optional)
+        if @start_step <= 17
+          version ||= detect_version
+          maybe_create_github_release!(version)
+        end
+
         puts "\nRelease complete. Don't forget to push the checksums commit if needed."
       end
 
@@ -643,6 +649,107 @@ module Kettle
           require "digest"
           Digest::SHA256.file(path).hexdigest
         end
+      end
+
+      # If GITHUB_TOKEN is present, create a GitHub release for the given version tag.
+      # Title: v<version>
+      # Body: the CHANGELOG section for this version, followed by the two link references for this version.
+      def maybe_create_github_release!(version)
+        token = ENV.fetch("GITHUB_TOKEN", "").to_s
+        return if token.strip.empty?
+
+        gh_remote = preferred_github_remote
+        url = remote_url(gh_remote || "origin")
+        owner, repo = parse_github_owner_repo(url)
+        unless owner && repo
+          warn("GITHUB_TOKEN present but could not determine GitHub owner/repo from remotes. Skipping release creation.")
+          return
+        end
+
+        section, compare_ref, tag_ref = extract_changelog_for_version(version)
+        unless section
+          warn("CHANGELOG.md does not contain a section for #{version}. Skipping GitHub release creation.")
+          return
+        end
+
+        body = +""
+        body << section.rstrip
+        body << "\n\n"
+        body << compare_ref if compare_ref
+        body << tag_ref if tag_ref
+
+        tag = "v#{version}"
+        puts "Creating GitHub release #{owner}/#{repo} #{tag}..."
+        ok, msg = github_create_release(owner: owner, repo: repo, token: token, tag: tag, title: tag, body: body)
+        if ok
+          puts "GitHub release created for #{tag}."
+        else
+          warn("GitHub release creation skipped/failed: #{msg}")
+        end
+      end
+
+      # Returns [section_text, compare_ref_line, tag_ref_line]
+      def extract_changelog_for_version(version)
+        path = File.join(@root, "CHANGELOG.md")
+        return [nil, nil, nil] unless File.file?(path)
+        content = File.read(path)
+        lines = content.lines
+
+        # Find section start
+        start_idx = lines.index { |l| l.start_with?("## [#{version}]") }
+        return [nil, nil, nil] unless start_idx
+        i = start_idx + 1
+        # Find next section heading or EOF
+        while i < lines.length && !lines[i].start_with?("## [")
+          i += 1
+        end
+        section = lines[start_idx...(i)].join
+
+        # Find link refs (anywhere after Unreleased or at end; simple global scan acceptable)
+        compare_ref = lines.find { |l| l.start_with?("[#{version}]: ") }
+        tag_ref = lines.find { |l| l.start_with?("[#{version}t]: ") }
+        # Ensure newline termination
+        compare_ref = compare_ref&.end_with?("\n") ? compare_ref : (compare_ref && compare_ref + "\n")
+        tag_ref = tag_ref&.end_with?("\n") ? tag_ref : (tag_ref && tag_ref + "\n")
+        [section, compare_ref, tag_ref]
+      rescue StandardError => e
+        warn("Failed to parse CHANGELOG.md: #{e.class}: #{e.message}")
+        [nil, nil, nil]
+      end
+
+      # POST to GitHub Releases API
+      # Returns [ok(Boolean), message(String)]
+      def github_create_release(owner:, repo:, token:, tag:, title:, body:)
+        uri = URI("https://api.github.com/repos/#{owner}/#{repo}/releases")
+        req = Net::HTTP::Post.new(uri)
+        req["Accept"] = "application/vnd.github+json"
+        req["Authorization"] = "token #{token}"
+        req["User-Agent"] = "kettle-dev-release-cli"
+        req.body = JSON.dump({
+          tag_name: tag,
+          name: title,
+          body: body,
+          draft: false,
+          prerelease: false,
+        })
+
+        res = Net::HTTP.start(uri.host, uri.port, use_ssl: true) do |http|
+          http.request(req)
+        end
+
+        case res
+        when Net::HTTPSuccess, Net::HTTPCreated
+          [true, "created"]
+        else
+          # If release already exists, treat as non-fatal
+          if res.code.to_s == "422" && res.body.to_s.include?("already_exists")
+            [true, "already exists"]
+          else
+            [false, "HTTP #{res.code}: #{res.body}"]
+          end
+        end
+      rescue StandardError => e
+        [false, "#{e.class}: #{e.message}"]
       end
     end
   end
