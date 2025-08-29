@@ -1,1 +1,1 @@
-# Optional dependencies are not depended on directly, but will be used if present.
+# Optional dependencies are not depended on directly, but may be used if present.

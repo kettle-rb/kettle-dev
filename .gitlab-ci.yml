@@ -4,7 +4,7 @@ default:
 variables:
   BUNDLE_INSTALL_FLAGS: "--quiet --jobs=$(nproc) --retry=3"
   BUNDLE_FROZEN: "false" # No lockfile!
-  BUNDLE_GEMFILE: gemfiles/current.gemfile
+  BUNDLE_GEMFILE: Appraisal.root.gemfile
   K_SOUP_COV_DEBUG: true
   K_SOUP_COV_DO: true
   K_SOUP_COV_HARD: true
@@ -36,10 +36,9 @@ workflow:
     - chmod +t -R vendor/bundle
     - chmod o-w -R vendor/bundle
     # Setup appraisal2
-    - export BUNDLE_GEMFILE=Appraisal.root.gemfile
-    - bundle install --quiet --jobs 2 --retry 3
+    - bundle install
     # Bundle a specific appraisal
-    - bundle exec appraisal unlocked_deps bundle install --quiet --jobs 2 --retry 3
+    - bundle exec appraisal unlocked_deps bundle install
     # Light smoke test
     - bundle exec appraisal unlocked_deps bin/rake --tasks
     # Run tests, skipping those that won't work in CI
