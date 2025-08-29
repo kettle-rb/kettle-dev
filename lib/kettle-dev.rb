@@ -7,7 +7,6 @@
 # In your `Rakefile` file:
 #
 #   require "kettle/dev"
-#   Kettle::Dev.install_tasks
 #
 
 # For technical reasons, if we move to Zeitwerk, this cannot be require_relative.

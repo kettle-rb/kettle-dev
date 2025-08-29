@@ -58,8 +58,6 @@ task :default do
   puts "Default task complete."
 end
 
-Kettle::Dev.install_tasks
-
 ### RELEASE TASKS
 # Setup stone_checksums
 begin
