@@ -8,3 +8,5 @@ gem "stringio", ">= 3.0"
 gem "benchmark", "~> 0.4", ">= 0.4.1"
 
 gemspec path: "../"
+
+eval_gemfile("modular/recording/r3/recording.gemfile")

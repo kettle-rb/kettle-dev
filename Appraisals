@@ -27,6 +27,7 @@ appraise "unlocked_deps" do
   eval_gemfile "modular/documentation.gemfile"
   eval_gemfile "modular/style.gemfile"
   eval_gemfile "modular/optional.gemfile"
+  eval_gemfile "modular/recording/r3/recording.gemfile"
 end
 
 # Used for head (nightly) releases of ruby, truffleruby, and jruby.
@@ -36,6 +37,7 @@ appraise "head" do
   gem "mutex_m", ">= 0.2"
   gem "stringio", ">= 3.0"
   gem "benchmark", "~> 0.4", ">= 0.4.1"
+  eval_gemfile "modular/recording/r3/recording.gemfile"
 end
 
 # Used for current releases of ruby, truffleruby, and jruby.
@@ -44,41 +46,46 @@ appraise "current" do
   gem "erb"
   gem "mutex_m", ">= 0.2"
   gem "stringio", ">= 3.0"
+  eval_gemfile "modular/recording/r3/recording.gemfile"
 end
 
 appraise "ruby-2-3" do
-  gem "vcr", "~> 4.0"
   # The cake is a lie. erb v2.2, the oldest release on RubyGems.org, was never compatible with Ruby 2.3.
   # This means we have no choice but to use the erb that shipped with Ruby 2.3
   # /opt/hostedtoolcache/Ruby/2.3.8/x64/lib/ruby/gems/2.3.0/gems/erb-2.2.2/lib/erb.rb:670:in `prepare_trim_mode': undefined method `match?' for "-":String (NoMethodError)
   # spec.add_development_dependency("erb", ">= 2.2")                                  # ruby >= 2.3.0, not SemVer, old rubies get dropped in a patch.
+  eval_gemfile "modular/recording/r2.3/recording.gemfile"
 end
 
 appraise "ruby-2-4" do
-  gem "vcr", "~> 4.0"
   gem "erb"
+  eval_gemfile "modular/recording/r2.4/recording.gemfile"
 end
 
 appraise "ruby-2-5" do
   gem "erb"
+  eval_gemfile "modular/recording/r2.5/recording.gemfile"
 end
 
 appraise "ruby-2-6" do
   gem "erb"
   gem "mutex_m", "~> 0.2"
   gem "stringio", "~> 3.0"
+  eval_gemfile "modular/recording/r2.5/recording.gemfile"
 end
 
 appraise "ruby-2-7" do
   gem "erb"
   gem "mutex_m", "~> 0.2"
   gem "stringio", "~> 3.0"
+  eval_gemfile "modular/recording/r2.5/recording.gemfile"
 end
 
 appraise "ruby-3-0" do
   gem "erb"
   gem "mutex_m", "~> 0.2"
   gem "stringio", "~> 3.0"
+  eval_gemfile "modular/recording/r3/recording.gemfile"
 end
 
 appraise "ruby-3-1" do
@@ -87,6 +94,7 @@ appraise "ruby-3-1" do
   gem "erb"
   gem "mutex_m", "~> 0.2"
   gem "stringio", "~> 3.0"
+  eval_gemfile "modular/recording/r3/recording.gemfile"
 end
 
 appraise "ruby-3-2" do
@@ -95,9 +103,11 @@ appraise "ruby-3-2" do
   gem "erb"
   gem "mutex_m", "~> 0.2"
   gem "stringio", "~> 3.0"
+  eval_gemfile "modular/recording/r3/recording.gemfile"
 end
 
 appraise "ruby-3-3" do
+  eval_gemfile "modular/recording/r3/recording.gemfile"
   gem "erb"
   gem "mutex_m", "~> 0.2"
   gem "stringio", "~> 3.0"
@@ -117,6 +127,7 @@ appraise "coverage" do
   gem "stringio", "~> 3.0"
   eval_gemfile "modular/coverage.gemfile"
   eval_gemfile "modular/optional.gemfile"
+  eval_gemfile "modular/recording/r3/recording.gemfile"
 end
 
 # Only run linter on latest Ruby version (but, in support of oldest supported Ruby version)

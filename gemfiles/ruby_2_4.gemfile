@@ -2,7 +2,8 @@
 
 source "https://rubygems.org"
 
-gem "vcr", "~> 4.0"
 gem "erb"
 
 gemspec path: "../"
+
+eval_gemfile("modular/recording/r2.4/recording.gemfile")

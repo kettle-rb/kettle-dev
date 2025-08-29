@@ -11,3 +11,5 @@ gemspec path: "../"
 eval_gemfile("modular/coverage.gemfile")
 
 eval_gemfile("modular/optional.gemfile")
+
+eval_gemfile("modular/recording/r3/recording.gemfile")

@@ -25,6 +25,9 @@ end
 # Code Coverage
 eval_gemfile "gemfiles/modular/coverage.gemfile"
 
+# Test HTTP Interaction Recording
+eval_gemfile "gemfiles/modular/recording/r3/recording.gemfile"
+
 # Linting
 eval_gemfile "gemfiles/modular/style.gemfile"
 

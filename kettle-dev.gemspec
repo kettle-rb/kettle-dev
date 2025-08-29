@@ -184,7 +184,20 @@ Gem::Specification.new do |spec|
   #
   #       Development dependencies that require strictly newer Ruby versions should be in a "gemfile",
   #       and preferably a modular one (see gemfiles/modular/*.gemfile).
+
   # HTTP recording for deterministic specs
-  spec.add_development_dependency("vcr", ">= 4")                      # 6.0 claims to support ruby >= 2.3, but fails on ruby 2.4
-  spec.add_development_dependency("webmock", ">= 3")               # Last version to support ruby >= 2.3
+  # It seems that somehow just having a newer version of appraisal installed breaks
+  #   Ruby 2.3 and 2.4 even if their bundle specifies an older version,
+  #   and as a result it can only be a dependency in the appraisals.
+  # | An error occurred while loading spec_helper.
+  # | Failure/Error: require "vcr"
+  # |
+  # | NoMethodError:
+  # |   undefined method `delete_prefix' for "CONTENT_LENGTH":String
+  # | # ./spec/config/vcr.rb:3:in `require'
+  # | # ./spec/config/vcr.rb:3:in `<top (required)>'
+  # | # ./spec/spec_helper.rb:8:in `require_relative'
+  # | # ./spec/spec_helper.rb:8:in `<top (required)>'
+  # spec.add_development_dependency("vcr", ">= 4")                      # 6.0 claims to support ruby >= 2.3, but fails on ruby 2.4
+  # spec.add_development_dependency("webmock", ">= 3")               # Last version to support ruby >= 2.3
 end
