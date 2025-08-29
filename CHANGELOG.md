@@ -24,6 +24,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Fixed
 - Removed README badges for unsupported old Ruby versions
 - Minor inconsistencies in template files
+- git added as a dependency to optional.gemfile instead of the example template
 ### Security
 
 ## [1.0.13] - 2025-08-28
