@@ -38,6 +38,10 @@ Please file a bug if you notice a violation of semantic versioning.
 - use git adapter to wrap more git commands to make tests easier to build
 ### Fixed
 - include gemfiles/modular/*gemfile.example with packaged gem
+- CI workflow result polling logic revised:
+  - includes a delay
+  - scopes queries to specific commit SHA
+  - prevents false failures from previous runs
 
 ## [1.0.14] - 2025-08-28
 - TAG: [v1.0.14][1.0.14t]

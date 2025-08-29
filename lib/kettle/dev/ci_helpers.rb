@@ -90,14 +90,24 @@ module Kettle
         return unless owner && repo
         b = branch || current_branch
         return unless b
-        uri = URI("https://api.github.com/repos/#{owner}/#{repo}/actions/workflows/#{workflow_file}/runs?branch=#{URI.encode_www_form_component(b)}&per_page=1")
+        # Scope to the exact commit SHA when available to avoid picking up a previous run on the same branch.
+        sha_out, status = Open3.capture2("git", "rev-parse", "HEAD")
+        sha = status.success? ? sha_out.strip : nil
+        base_url = "https://api.github.com/repos/#{owner}/#{repo}/actions/workflows/#{workflow_file}/runs?branch=#{URI.encode_www_form_component(b)}&per_page=5"
+        uri = URI(base_url)
         req = Net::HTTP::Get.new(uri)
         req["User-Agent"] = "kettle-dev/ci-helpers"
         req["Authorization"] = "token #{token}" if token && !token.empty?
         res = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) { |http| http.request(req) }
         return unless res.is_a?(Net::HTTPSuccess)
         data = JSON.parse(res.body)
-        run = data["workflow_runs"]&.first
+        runs = Array(data["workflow_runs"]) || []
+        # Try to match by head_sha first; fall back to first run (branch-scoped) if none matches yet.
+        run = if sha
+          runs.find { |r| r["head_sha"] == sha } || runs.first
+        else
+          runs.first
+        end
         return unless run
         {
           "status" => run["status"],

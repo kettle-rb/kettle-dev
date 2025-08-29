@@ -6,7 +6,7 @@ RSpec.describe Kettle::Dev::CIMonitor do
   let(:helpers) { Kettle::Dev::CIHelpers }
 
   before do
-    # Speed up loops inside monitor
+    # Speed up loops inside monitor (we still assert on the initial sleep with a specific value in dedicated examples)
     allow(described_class).to receive(:sleep)
   end
 
@@ -74,6 +74,29 @@ RSpec.describe Kettle::Dev::CIMonitor do
   end
 
   describe "github helper branches" do
+    include_context "with stubbed env"
+
+    it "waits initial seconds before polling GitHub (configurable via K_RELEASE_CI_INITIAL_SLEEP)", :check_output do
+      # Arrange a minimal GitHub setup
+      allow(helpers).to receive_messages(
+        project_root: Dir.pwd,
+        workflows_list: ["ci.yml"],
+        current_branch: "main",
+        latest_run: {"status" => "completed", "conclusion" => "success", "html_url" => "https://github.com/me/repo/actions/runs/1", "id" => 1},
+      )
+      allow(described_class).to receive_messages(
+        preferred_github_remote: "origin",
+        remote_url: "https://github.com/me/repo.git",
+      )
+
+      # Expect initial sleep to be called with our configured value, then allow other sleeps (loop) to be stubbed
+      stub_env("K_RELEASE_CI_INITIAL_SLEEP" => "5")
+      allow(described_class).to receive(:sleep)
+
+      expect { described_class.monitor_all!(restart_hint: "hint") }.not_to raise_error
+      expect(described_class).to have_received(:sleep).with(5)
+    end
+
     it "preferred_github_remote returns nil when no candidates" do
       allow(described_class).to receive(:remotes_with_urls).and_return({})
       expect(described_class.preferred_github_remote).to be_nil

@@ -12,12 +12,12 @@
     [257, 19, 158, "Lint/RescueException: Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?", 3347980327],
     [263, 15, 175, "Lint/RescueException: Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?", 1705470978]
   ],
-  "spec/kettle/dev/ci_helpers_spec.rb:3936399163": [
+  "spec/kettle/dev/ci_helpers_spec.rb:3105013959": [
     [36, 16, 42, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 465257938],
     [37, 28, 33, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 3247304381],
     [40, 9, 19, "ThreadSafety/DirChdir: Avoid using `Dir.chdir` due to its process-wide effect.", 585207512]
   ],
-  "spec/kettle/dev/ci_monitor_spec.rb:1478408703": [
+  "spec/kettle/dev/ci_monitor_spec.rb:717513817": [
     [15, 7, 60, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [16, 22, 26, 27, 28].", 3901348706],
     [16, 7, 61, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [15, 22, 26, 27, 28].", 699226184],
     [22, 7, 71, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [15, 16, 26, 27, 28].", 3905906821],
@@ -36,11 +36,11 @@
     [60, 7, 67, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [51, 52, 57, 61, 62].", 1891603964],
     [61, 7, 61, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [51, 52, 57, 60, 62].", 3527598679],
     [62, 7, 59, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [51, 52, 57, 60, 61].", 2768473756],
-    [103, 7, 60, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [104, 109].", 3901348706],
-    [104, 7, 57, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [103, 109].", 4167565767],
-    [105, 7, 75, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [108].", 656584126],
-    [108, 7, 75, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [105].", 3847887328],
-    [109, 7, 61, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [103, 104].", 699226184]
+    [126, 7, 60, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [127, 132].", 3901348706],
+    [127, 7, 57, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [126, 132].", 4167565767],
+    [128, 7, 75, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [131].", 656584126],
+    [131, 7, 75, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [128].", 3847887328],
+    [132, 7, 61, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [126, 127].", 699226184]
   ],
   "spec/kettle/dev/git_adapter_spec.rb:2753620283": [
     [8, 22, 19, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 3198354142],

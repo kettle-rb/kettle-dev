@@ -395,4 +395,55 @@ RSpec.describe Kettle::Dev::CIHelpers do
       end
     end
   end
+
+  describe "::latest_run head_sha filtering" do
+    it "falls back to first run when HEAD sha is unavailable" do
+      allow(described_class).to receive(:current_branch).and_return("main")
+      # Simulate failure to read HEAD sha
+      allow(Open3).to receive(:capture2).with("git", "rev-parse", "HEAD").and_return(["", instance_double(Process::Status, success?: false)])
+
+      body = {
+        "workflow_runs" => [
+          {"id" => 10, "status" => "completed", "conclusion" => "success", "html_url" => "https://x/first", "head_sha" => "zzz"},
+          {"id" => 20, "status" => "completed", "conclusion" => "success", "html_url" => "https://x/second", "head_sha" => "abc"},
+        ],
+      }.to_json
+
+      response = instance_double(Net::HTTPSuccess, body: body)
+      allow(response).to receive(:is_a?).with(Net::HTTPSuccess).and_return(true)
+      http = instance_double(Net::HTTP)
+      allow(http).to receive(:request).with(instance_of(Net::HTTP::Get)).and_return(response)
+      allow(Net::HTTP).to receive(:start).with("api.github.com", 443, use_ssl: true).and_yield(http)
+
+      run = described_class.latest_run(owner: "me", repo: "repo", workflow_file: "ci.yml", branch: "main", token: nil)
+      expect(run).to include("id" => 10, "html_url" => "https://x/first")
+    end
+
+    it "prefers the run matching HEAD sha over older runs on the same branch" do
+      # Stub current branch and HEAD sha
+      allow(described_class).to receive(:current_branch).and_return("main")
+      # Simulate `git rev-parse HEAD`
+      allow(Open3).to receive(:capture2).with("git", "rev-parse", "HEAD").and_return(["abc123\n", instance_double(Process::Status, success?: true)])
+
+      # Build a fake GitHub API response with two runs: first is older (different sha), second matches HEAD
+      body = {
+        "workflow_runs" => [
+          {"id" => 100, "status" => "completed", "conclusion" => "failure", "html_url" => "https://x/older", "head_sha" => "zzz999"},
+          {"id" => 200, "status" => "completed", "conclusion" => "success", "html_url" => "https://x/newer", "head_sha" => "abc123"},
+        ],
+      }.to_json
+
+      response = instance_double(Net::HTTPSuccess, body: body)
+      allow(response).to receive(:is_a?).with(Net::HTTPSuccess).and_return(true)
+
+      http = instance_double(Net::HTTP)
+      # Stub a GET request
+      allow(http).to receive(:request).with(instance_of(Net::HTTP::Get)).and_return(response)
+
+      allow(Net::HTTP).to receive(:start).with("api.github.com", 443, use_ssl: true).and_yield(http)
+
+      run = described_class.latest_run(owner: "me", repo: "repo", workflow_file: "ci.yml", branch: "main", token: nil)
+      expect(run).to include("id" => 200, "html_url" => "https://x/newer")
+    end
+  end
 end
