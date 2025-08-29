@@ -539,7 +539,8 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       expect(cli).not_to have_received(:run_cmd!).with("bin/rake appraisal:update")
     end
 
-    it "aborts when signing enabled on CI and user declines prompt" do
+    it "aborts when signing enabled on tty and user declines prompt" do
+      allow(Kettle::Dev::InputAdapter).to receive(:tty?).and_return(true)
       # Two prompts: first we answer 'y' to proceed, second we answer 'n' to abort signing
       allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("y\n", "n\n")
 
