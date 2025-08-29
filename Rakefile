@@ -49,14 +49,14 @@
 
 require "bundler/gem_tasks" if !Dir[File.join(__dir__, "*.gemspec")].empty?
 
-# External gems - add here!
-require "kettle/dev"
-
 # Define a base default task early so other files can enhance it.
 desc "Default tasks aggregator"
 task :default do
   puts "Default task complete."
 end
+
+# External gems - add here!
+require "kettle/dev"
 
 ### RELEASE TASKS
 # Setup stone_checksums

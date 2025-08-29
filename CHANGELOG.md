@@ -22,6 +22,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Deprecated
 ### Removed
 ### Fixed
+- default rake task must be defined before it can be enhanced
 ### Security
 
 ## [1.0.15] - 2025-08-29
