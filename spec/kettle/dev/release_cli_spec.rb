@@ -890,6 +890,42 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       expect(local_cli).not_to have_received(:run_cmd!).with("bin/rake appraisal:update")
     end
   end
+
+  describe "#update_rakefile_example_header!" do
+    it "updates header line to current version and date when file exists" do
+      Dir.mktmpdir do |root|
+        # Arrange Rakefile.example with an older header and some content
+        body = <<~RB
+          # frozen_string_literal: true
+
+          # kettle-dev Rakefile v0.9.0 - 2024-12-31
+          puts "Hello"
+        RB
+        File.write(File.join(root, "Rakefile.example"), body)
+        allow(ci_helpers).to receive(:project_root).and_return(root)
+        local_cli = described_class.new
+
+        # Freeze time for deterministic date
+        t = Time.local(2025, 8, 29)
+        allow(Time).to receive(:now).and_return(t)
+
+        local_cli.send(:update_rakefile_example_header!, "1.2.3")
+
+        updated = File.read(File.join(root, "Rakefile.example"))
+        expect(updated).to include("# kettle-dev Rakefile v1.2.3 - 2025-08-29")
+        expect(updated).to include("# frozen_string_literal: true")
+        expect(updated).to include("puts \"Hello\"")
+      end
+    end
+
+    it "is a no-op when file is missing" do
+      Dir.mktmpdir do |root|
+        allow(ci_helpers).to receive(:project_root).and_return(root)
+        local_cli = described_class.new
+        expect { local_cli.send(:update_rakefile_example_header!, "1.2.3") }.not_to raise_error
+      end
+    end
+  end
 end
 
 # rubocop:enable RSpec/MultipleExpectations, RSpec/MessageSpies, RSpec/StubbedMock, RSpec/ReceiveMessages

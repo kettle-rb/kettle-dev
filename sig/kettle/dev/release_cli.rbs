@@ -8,6 +8,7 @@ module Kettle
 
       def update_readme_kloc_badge!: () -> void
       def update_badge_number_in_file: (String path, String kloc_str) -> void
+      def update_rakefile_example_header!: (String version) -> void
       def validate_copyright_years!: () -> void
       def extract_years_from_file: (String path) -> ::Set[Integer]
       def collapse_years: (::_ToA[Integer] enum) -> String

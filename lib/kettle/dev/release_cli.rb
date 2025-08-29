@@ -114,6 +114,13 @@ module Kettle
           rescue StandardError => e
             warn("Failed to update KLOC badge in README: #{e.class}: #{e.message}")
           end
+
+          # Update Rakefile.example header banner with current version and date
+          begin
+            update_rakefile_example_header!(version)
+          rescue StandardError => e
+            warn("Failed to update Rakefile.example header: #{e.class}: #{e.message}")
+          end
         end
 
         # 3. bin/setup
@@ -267,6 +274,20 @@ module Kettle
         # Match the specific reference line, capture groups around the number
         # Example: [🧮kloc-img]: https://img.shields.io/badge/KLOC-2.175-FFDD67.svg?style=...
         new_content = content.gsub(/(\[🧮kloc-img\]:\s*https?:\/\/img\.shields\.io\/badge\/KLOC-)(\d+(?:\.\d+)?)(-[^\s]*)/, "\\1#{kloc_str}\\3")
+        if new_content != content
+          File.write(path, new_content)
+        end
+      end
+
+      # Update Rakefile.example banner to include current gem version and current date.
+      # Looks for a line starting with "# kettle-dev Rakefile v" and replaces version/date.
+      def update_rakefile_example_header!(version)
+        path = File.join(@root, "Rakefile.example")
+        return unless File.file?(path)
+        content = File.read(path)
+        today = Time.now.strftime("%Y-%m-%d")
+        new_line = "# kettle-dev Rakefile v#{version} - #{today}"
+        new_content = content.gsub(/^# kettle-dev Rakefile v.*$/, new_line)
         if new_content != content
           File.write(path, new_content)
         end
