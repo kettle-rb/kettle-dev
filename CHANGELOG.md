@@ -22,6 +22,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Deprecated
 ### Removed
 ### Fixed
+- include gemfiles/modular/*gemfile.example with packaged gem
 ### Security
 
 ## [1.0.14] - 2025-08-28

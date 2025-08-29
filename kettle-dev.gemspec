@@ -78,6 +78,7 @@ Gem::Specification.new do |spec|
     "gemfiles/modular/*.gemfile",
     # Example templates
     "*.example",
+    "gemfiles/modular/*.gemfile.example",
     "lib/**/*.example",
     # Root files used by template tasks
     ".envrc",

@@ -182,6 +182,42 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
       end
     end
 
+    # Regression: optional.gemfile should prefer the .example version when both exist
+    it "prefers optional.gemfile.example over optional.gemfile" do
+      Dir.mktmpdir do |gem_root|
+        Dir.mktmpdir do |project_root|
+          dir = File.join(gem_root, "gemfiles", "modular")
+          FileUtils.mkdir_p(dir)
+          File.write(File.join(dir, "optional.gemfile"), "# REAL\nreal\n")
+          File.write(File.join(dir, "optional.gemfile.example"), "# EXAMPLE\nexample\n")
+
+          # Minimal gemspec so metadata scan works
+          File.write(File.join(project_root, "demo.gemspec"), <<~G)
+            Gem::Specification.new do |spec|
+              spec.name = "demo"
+              spec.required_ruby_version = ">= 3.1"
+              spec.homepage = "https://github.com/acme/demo"
+            end
+          G
+
+          allow(helpers).to receive_messages(
+            project_root: project_root,
+            gem_checkout_root: gem_root,
+            ensure_clean_git!: nil,
+            ask: true,
+          )
+
+          described_class.run
+
+          dest = File.join(project_root, "gemfiles", "modular", "optional.gemfile")
+          expect(File).to exist(dest)
+          content = File.read(dest)
+          expect(content).to include("EXAMPLE")
+          expect(content).not_to include("REAL")
+        end
+      end
+    end
+
     it "replaces require in spec/spec_helper.rb when confirmed, or skips when declined" do
       Dir.mktmpdir do |gem_root|
         Dir.mktmpdir do |project_root|

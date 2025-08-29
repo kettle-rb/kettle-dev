@@ -1,6 +1,6 @@
 {
-  "kettle-dev.gemspec:1054250840": [
-    [154, 3, 40, "Gemspec/DependencyVersion: Dependency version specification is required.", 1364274143]
+  "kettle-dev.gemspec:3031129027": [
+    [155, 3, 40, "Gemspec/DependencyVersion: Dependency version specification is required.", 1364274143]
   ],
   "lib/kettle/dev.rb:372647611": [
     [30, 17, 2, "ThreadSafety/MutableClassInstanceVariable: Freeze mutable objects assigned to class instance variables.", 5862883]
@@ -46,6 +46,9 @@
     [105, 7, 75, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [108].", 656584126],
     [108, 7, 75, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [105].", 3847887328],
     [109, 7, 61, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [103, 104].", 699226184]
+  ],
+  "spec/kettle/dev/gemspec_spec.rb:282279342": [
+    [4, 3, 112, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 2266853980]
   ],
   "spec/kettle/dev/git_adapter_spec.rb:2753620283": [
     [8, 22, 19, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 3198354142],
@@ -134,19 +137,20 @@
   "spec/kettle/dev/tasks/template_task_env_spec.rb:3333509415": [
     [8, 3, 89, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 1016089034]
   ],
-  "spec/kettle/dev/tasks/template_task_spec.rb:1752877271": [
+  "spec/kettle/dev/tasks/template_task_spec.rb:2257665577": [
     [41, 5, 106, "RSpec/MultipleExpectations: Example has too many expectations [6/1].", 1731744831],
     [90, 5, 61, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 3717141426],
     [116, 5, 67, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 1842133030],
     [152, 5, 84, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 3162252021],
-    [185, 5, 83, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 3346006621],
-    [222, 5, 72, "RSpec/MultipleExpectations: Example has too many expectations [5/1].", 730246015],
-    [289, 5, 95, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 3532822662],
-    [346, 5, 77, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 709693544],
-    [375, 13, 24, "RSpec/ContextWording: Context description should match /^when\\b/, /^with\\b/, or /^without\\b/.", 196765058],
-    [416, 5, 90, "RSpec/MultipleExpectations: Example has too many expectations [5/1].", 3191742339],
-    [522, 5, 81, "RSpec/MultipleExpectations: Example has too many expectations [8/1].", 174955413],
-    [592, 5, 79, "RSpec/MultipleExpectations: Example has too many expectations [7/1].", 1300947465]
+    [186, 5, 59, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 3525512437],
+    [221, 5, 83, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 3346006621],
+    [258, 5, 72, "RSpec/MultipleExpectations: Example has too many expectations [5/1].", 730246015],
+    [325, 5, 95, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 3532822662],
+    [382, 5, 77, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 709693544],
+    [411, 13, 24, "RSpec/ContextWording: Context description should match /^when\\b/, /^with\\b/, or /^without\\b/.", 196765058],
+    [452, 5, 90, "RSpec/MultipleExpectations: Example has too many expectations [5/1].", 3191742339],
+    [558, 5, 81, "RSpec/MultipleExpectations: Example has too many expectations [8/1].", 174955413],
+    [628, 5, 79, "RSpec/MultipleExpectations: Example has too many expectations [7/1].", 1300947465]
   ],
   "spec/kettle/dev/tasks_file_spec.rb:3588115248": [
     [9, 3, 55, "RSpec/MultipleExpectations: Example has too many expectations [2/1].", 493548809]
