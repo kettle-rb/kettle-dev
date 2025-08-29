@@ -18,6 +18,7 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [Unreleased]
 ### Added
+- kettle:dev:install can overwrite gemspec with example gemspec
 ### Changed
 ### Deprecated
 ### Removed

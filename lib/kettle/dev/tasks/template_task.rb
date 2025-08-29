@@ -177,6 +177,40 @@ module Kettle
           end
 
           # 7) Root and other files
+          # 7a) Special-case: gemspec example must be renamed to destination gem's name
+          begin
+            # Prefer the .example variant when present
+            gemspec_template_src = helpers.prefer_example(File.join(gem_checkout_root, "kettle-dev.gemspec"))
+            if File.exist?(gemspec_template_src)
+              dest_gemspec = if gem_name && !gem_name.to_s.empty?
+                File.join(project_root, "#{gem_name}.gemspec")
+              else
+                # Fallback rules:
+                # 1) Prefer any existing gemspec in the destination project
+                existing = Dir.glob(File.join(project_root, "*.gemspec")).sort.first
+                if existing
+                  existing
+                else
+                  # 2) If none, use the example file's name with ".example" removed
+                  fallback_name = File.basename(gemspec_template_src).sub(/\.example\z/, "")
+                  File.join(project_root, fallback_name)
+                end
+              end
+              helpers.copy_file_with_prompt(gemspec_template_src, dest_gemspec, allow_create: true, allow_replace: true) do |content|
+                helpers.apply_common_replacements(
+                  content,
+                  org: forge_org,
+                  gem_name: gem_name,
+                  namespace: namespace,
+                  namespace_shield: namespace_shield,
+                  gem_shield: gem_shield,
+                )
+              end
+            end
+          rescue StandardError
+            # Do not fail the entire template task if gemspec copy has issues
+          end
+
           files_to_copy = %w[
             .envrc
             .gitignore

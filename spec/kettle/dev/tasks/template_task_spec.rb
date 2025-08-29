@@ -322,6 +322,117 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
       end
     end
 
+    it "copies kettle-dev.gemspec.example to <gem_name>.gemspec with substitutions" do
+      Dir.mktmpdir do |gem_root|
+        Dir.mktmpdir do |project_root|
+          # Provide a kettle-dev.gemspec.example with tokens to be replaced
+          File.write(File.join(gem_root, "kettle-dev.gemspec.example"), <<~G)
+            Gem::Specification.new do |spec|
+              spec.name = "kettle-dev"
+              # Namespace token example
+              Kettle::Dev
+            end
+          G
+
+          # Destination project gemspec to derive gem_name and org/homepage
+          File.write(File.join(project_root, "my-gem.gemspec"), <<~G)
+            Gem::Specification.new do |spec|
+              spec.name = "my-gem"
+              spec.required_ruby_version = ">= 3.1"
+              spec.homepage = "https://github.com/acme/my-gem"
+            end
+          G
+
+          allow(helpers).to receive_messages(
+            project_root: project_root,
+            gem_checkout_root: gem_root,
+            ensure_clean_git!: nil,
+            ask: true,
+          )
+
+          described_class.run
+
+          dest = File.join(project_root, "my-gem.gemspec")
+          expect(File).to exist(dest)
+          txt = File.read(dest)
+          expect(txt).to include("spec.name = \"my-gem\"")
+          expect(txt).to include("My::Gem")
+        end
+      end
+    end
+
+    it "when gem_name is missing, falls back to first existing *.gemspec in project" do
+      Dir.mktmpdir do |gem_root|
+        Dir.mktmpdir do |project_root|
+          # Provide template gemspec example
+          File.write(File.join(gem_root, "kettle-dev.gemspec.example"), <<~G)
+            Gem::Specification.new do |spec|
+              spec.name = "kettle-dev"
+              Kettle::Dev
+            end
+          G
+
+          # Destination already has a different gemspec; note: no name set elsewhere to derive gem_name
+          File.write(File.join(project_root, "existing.gemspec"), <<~G)
+            Gem::Specification.new do |spec|
+              spec.name = "existing"
+              spec.homepage = "https://github.com/acme/existing"
+            end
+          G
+
+          # project has no other gemspec affecting gem_name discovery (no spec.name parsing needed beyond existing)
+          allow(helpers).to receive_messages(
+            project_root: project_root,
+            gem_checkout_root: gem_root,
+            ensure_clean_git!: nil,
+            ask: true,
+          )
+
+          described_class.run
+
+          # Should have used existing.gemspec as destination
+          dest = File.join(project_root, "existing.gemspec")
+          expect(File).to exist(dest)
+          txt = File.read(dest)
+          # Replacements applied (namespace, org, etc.). With no gem_name, namespace remains derived from empty -> should still replace Kettle::Dev
+          expect(txt).to include("existing")
+          expect(txt).not_to include("kettle-dev")
+        end
+      end
+    end
+
+    it "when gem_name is missing and no gemspec exists, uses example basename without .example" do
+      Dir.mktmpdir do |gem_root|
+        Dir.mktmpdir do |project_root|
+          # Provide template example only
+          File.write(File.join(gem_root, "kettle-dev.gemspec.example"), <<~G)
+            Gem::Specification.new do |spec|
+              spec.name = "kettle-dev"
+              Kettle::Dev
+            end
+          G
+
+          # No destination gemspecs present
+          allow(helpers).to receive_messages(
+            project_root: project_root,
+            gem_checkout_root: gem_root,
+            ensure_clean_git!: nil,
+            ask: true,
+          )
+
+          described_class.run
+
+          # Should write kettle-dev.gemspec (no .example)
+          dest = File.join(project_root, "kettle-dev.gemspec")
+          expect(File).to exist(dest)
+          txt = File.read(dest)
+          expect(txt).not_to include("kettle-dev.gemspec.example")
+          # Note: when gem_name is unknown, namespace/gem replacements depending on gem_name may not occur.
+          # This test verifies the destination file name logic only.
+        end
+      end
+    end
+
     it "prefers .gitlab-ci.yml.example over .gitlab-ci.yml and writes destination without .example" do
       Dir.mktmpdir do |gem_root|
         Dir.mktmpdir do |project_root|
