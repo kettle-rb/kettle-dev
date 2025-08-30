@@ -18,6 +18,7 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [Unreleased]
 ### Added
+- improved documentation
 ### Changed
 ### Deprecated
 ### Removed

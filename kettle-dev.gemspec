@@ -15,6 +15,9 @@ gem_version =
     $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
     require "kettle/dev/version"
     Kettle::Dev::Version::VERSION
+    # NOTE: Use require_relative after dropping ruby < 2.2 support:
+    # require_relative "lib/kettle/dev/version"
+    # Kettle::Dev::Version::VERSION
   end
 
 Gem::Specification.new do |spec|
@@ -34,7 +37,7 @@ Gem::Specification.new do |spec|
 
   # Linux distros often package gems and securely certify them independent
   #   of the official RubyGem certification process. Allowed via ENV["SKIP_GEM_SIGNING"]
-  # Ref: https://gitlab.com/oauth-xx/version_gem/-/issues/3
+  # Ref: https://gitlab.com/ruby-oauth/version_gem/-/issues/3
   # Hence, only enable signing if `SKIP_GEM_SIGNING` is not set in ENV.
   # See CONTRIBUTING.md
   unless ENV.include?("SKIP_GEM_SIGNING")
