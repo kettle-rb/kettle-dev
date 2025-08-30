@@ -67,8 +67,8 @@ Gem::Specification.new do |spec|
     # Signatures
     "sig/**/*.rbs",
   ]
-  # Automatically included with gem package, normally no need to list again in files.
-  # But this gem acts as a pseudo-template, so we include some in both places.
+
+  # Automatically included with gem package, no need to list again in files.
   spec.extra_rdoc_files = Dir[
     # Files (alphabetical)
     "CHANGELOG.md",
