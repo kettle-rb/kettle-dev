@@ -24,13 +24,13 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
     it "delegates to ExitAdapter.abort when RSpec is not defined (subprocess)" do
       ruby = RbConfig.ruby
       libdir = File.expand_path("../../../../../../lib", __FILE__)
-      script = <<~'R'
+      script = <<~'FILE'
         require "kettle/dev/tasks/template_task"
         module Kettle; module Dev; module ExitAdapter
           def self.abort(msg); puts("CALLED: #{msg}"); end
         end; end; end
         Kettle::Dev::Tasks::TemplateTask.task_abort("BYE")
-      R
+      FILE
       out, = Open3.capture3(ruby, "-I", libdir, "-e", script)
       # Some Rubies may mark nonzero due to tooling; assert on output primarily
       expect(out).to include("CALLED: BYE")
@@ -47,19 +47,19 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
           File.write(File.join(gh_src, "ci.yml"), "name: REAL\n")
           File.write(File.join(gh_src, "ci.yml.example"), "name: EXAMPLE\n")
           # FUNDING.yml example with placeholders
-          File.write(File.join(gem_root, ".github", "FUNDING.yml.example"), <<~Y)
+          File.write(File.join(gem_root, ".github", "FUNDING.yml.example"), <<~YAML)
             open_collective: placeholder
             tidelift: rubygems/placeholder
-          Y
+          YAML
 
           # Provide gemspec in project to satisfy metadata scanner
-          File.write(File.join(project_root, "demo.gemspec"), <<~G)
+          File.write(File.join(project_root, "demo.gemspec"), <<~GEMSPEC)
             Gem::Specification.new do |spec|
               spec.name = "demo"
               spec.required_ruby_version = ">= 3.1"
               spec.homepage = "https://github.com/acme/demo"
             end
-          G
+          GEMSPEC
 
           # Stub helpers used by the task
           allow(helpers).to receive_messages(
@@ -91,12 +91,12 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
       Dir.mktmpdir do |gem_root|
         Dir.mktmpdir do |project_root|
           File.write(File.join(gem_root, ".env.local.example"), "SECRET=1\n")
-          File.write(File.join(project_root, "demo.gemspec"), <<~G)
+          File.write(File.join(project_root, "demo.gemspec"), <<~GEMSPEC)
             Gem::Specification.new do |spec|
               spec.name = "demo"
               spec.required_ruby_version = ">= 3.1"
             end
-          G
+          GEMSPEC
 
           allow(helpers).to receive_messages(
             project_root: project_root,
@@ -119,18 +119,26 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
           # style.gemfile template with placeholder constraint
           style_dir = File.join(gem_root, "gemfiles", "modular")
           FileUtils.mkdir_p(style_dir)
-          File.write(File.join(style_dir, "style.gemfile.example"), <<~G)
-            source "https://rubygems.org"
-            gem "rubocop-lts", "~> 10.0"
-          G
+          File.write(File.join(style_dir, "style.gemfile.example"), <<~GEMFILE)
+            if ENV.fetch("RUBOCOP_LTS_LOCAL", "false").casecmp("true").zero?
+              gem "rubocop-lts", path: "src/rubocop-lts/rubocop-lts"
+              gem "rubocop-lts-rspec", path: "src/rubocop-lts/rubocop-lts-rspec"
+              gem "{RUBOCOP|RUBY|GEM}", path: "src/rubocop-lts/{RUBOCOP|RUBY|GEM}"
+              gem "standard-rubocop-lts", path: "src/rubocop-lts/standard-rubocop-lts"
+            else
+              gem "rubocop-lts", "{RUBOCOP|LTS|CONSTRAINT}"
+              gem "{RUBOCOP|RUBY|GEM}"
+              gem "rubocop-rspec", "~> 3.6"
+            end
+          GEMFILE
           # gemspec declares min_ruby 3.2 -> map to "~> 24.0"
-          File.write(File.join(project_root, "demo.gemspec"), <<~G)
+          File.write(File.join(project_root, "demo.gemspec"), <<~GEMSPEC)
             Gem::Specification.new do |spec|
               spec.name = "demo"
               spec.minimum_ruby_version = ">= 3.2"
               spec.homepage = "https://github.com/acme/demo"
             end
-          G
+          GEMSPEC
 
           allow(helpers).to receive_messages(
             project_root: project_root,
@@ -145,6 +153,7 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
           expect(File).to exist(dest)
           txt = File.read(dest)
           expect(txt).to include("gem \"rubocop-lts\", \"~> 24.0\"")
+          expect(txt).to include("gem \"rubocop-ruby3_2\"")
         end
       end
     end
@@ -154,16 +163,24 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
         Dir.mktmpdir do |project_root|
           style_dir = File.join(gem_root, "gemfiles", "modular")
           FileUtils.mkdir_p(style_dir)
-          File.write(File.join(style_dir, "style.gemfile.example"), <<~G)
-            source "https://rubygems.org"
-            gem "rubocop-lts", "~> 10.0"
-          G
+          File.write(File.join(style_dir, "style.gemfile.example"), <<~GEMFILE)
+            if ENV.fetch("RUBOCOP_LTS_LOCAL", "false").casecmp("true").zero?
+              gem "rubocop-lts", path: "src/rubocop-lts/rubocop-lts"
+              gem "rubocop-lts-rspec", path: "src/rubocop-lts/rubocop-lts-rspec"
+              gem "{RUBOCOP|RUBY|GEM}", path: "src/rubocop-lts/{RUBOCOP|RUBY|GEM}"
+              gem "standard-rubocop-lts", path: "src/rubocop-lts/standard-rubocop-lts"
+            else
+              gem "rubocop-lts", "{RUBOCOP|LTS|CONSTRAINT}"
+              gem "{RUBOCOP|RUBY|GEM}"
+              gem "rubocop-rspec", "~> 3.6"
+            end
+          GEMFILE
           # gemspec without any min ruby declaration
-          File.write(File.join(project_root, "demo.gemspec"), <<~G)
+          File.write(File.join(project_root, "demo.gemspec"), <<~GEMSPEC)
             Gem::Specification.new do |spec|
               spec.name = "demo"
             end
-          G
+          GEMSPEC
 
           allow(helpers).to receive_messages(
             project_root: project_root,
@@ -177,7 +194,8 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
           dest = File.join(project_root, "gemfiles", "modular", "style.gemfile")
           expect(File).to exist(dest)
           txt = File.read(dest)
-          expect(txt).to include("gem \"rubocop-lts\", \"~> 10.0\"")
+          expect(txt).to include("gem \"rubocop-lts\", \"~> 0.1\"")
+          expect(txt).to include("gem \"rubocop-ruby1_8\"")
         end
       end
     end
@@ -192,13 +210,13 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
           File.write(File.join(dir, "optional.gemfile.example"), "# EXAMPLE\nexample\n")
 
           # Minimal gemspec so metadata scan works
-          File.write(File.join(project_root, "demo.gemspec"), <<~G)
+          File.write(File.join(project_root, "demo.gemspec"), <<~GEMSPEC)
             Gem::Specification.new do |spec|
               spec.name = "demo"
               spec.required_ruby_version = ">= 3.1"
               spec.homepage = "https://github.com/acme/demo"
             end
-          G
+          GEMSPEC
 
           allow(helpers).to receive_messages(
             project_root: project_root,
@@ -226,12 +244,12 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
           FileUtils.mkdir_p(spec_dir)
           File.write(File.join(spec_dir, "spec_helper.rb"), "require 'kettle/dev'\n")
           # gemspec
-          File.write(File.join(project_root, "demo.gemspec"), <<~G)
+          File.write(File.join(project_root, "demo.gemspec"), <<~GEMSPEC)
             Gem::Specification.new do |spec|
               spec.name = "demo"
               spec.required_ruby_version = ">= 3.1"
             end
-          G
+          GEMSPEC
 
           allow(helpers).to receive_messages(
             project_root: project_root,
@@ -293,13 +311,13 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
           MD
           File.write(File.join(project_root, "README.md"), existing_readme)
 
-          File.write(File.join(project_root, "demo.gemspec"), <<~G)
+          File.write(File.join(project_root, "demo.gemspec"), <<~GEMSPEC)
             Gem::Specification.new do |spec|
               spec.name = "demo"
               spec.required_ruby_version = ">= 3.1"
               spec.homepage = "https://github.com/acme/demo"
             end
-          G
+          GEMSPEC
 
           allow(helpers).to receive_messages(
             project_root: project_root,
@@ -326,22 +344,22 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
       Dir.mktmpdir do |gem_root|
         Dir.mktmpdir do |project_root|
           # Provide a kettle-dev.gemspec.example with tokens to be replaced
-          File.write(File.join(gem_root, "kettle-dev.gemspec.example"), <<~G)
+          File.write(File.join(gem_root, "kettle-dev.gemspec.example"), <<~GEMSPEC)
             Gem::Specification.new do |spec|
               spec.name = "kettle-dev"
               # Namespace token example
               Kettle::Dev
             end
-          G
+          GEMSPEC
 
           # Destination project gemspec to derive gem_name and org/homepage
-          File.write(File.join(project_root, "my-gem.gemspec"), <<~G)
+          File.write(File.join(project_root, "my-gem.gemspec"), <<~GEMSPEC)
             Gem::Specification.new do |spec|
               spec.name = "my-gem"
               spec.required_ruby_version = ">= 3.1"
               spec.homepage = "https://github.com/acme/my-gem"
             end
-          G
+          GEMSPEC
 
           allow(helpers).to receive_messages(
             project_root: project_root,
@@ -365,20 +383,20 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
       Dir.mktmpdir do |gem_root|
         Dir.mktmpdir do |project_root|
           # Provide template gemspec example
-          File.write(File.join(gem_root, "kettle-dev.gemspec.example"), <<~G)
+          File.write(File.join(gem_root, "kettle-dev.gemspec.example"), <<~GEMSPEC)
             Gem::Specification.new do |spec|
               spec.name = "kettle-dev"
               Kettle::Dev
             end
-          G
+          GEMSPEC
 
           # Destination already has a different gemspec; note: no name set elsewhere to derive gem_name
-          File.write(File.join(project_root, "existing.gemspec"), <<~G)
+          File.write(File.join(project_root, "existing.gemspec"), <<~GEMSPEC)
             Gem::Specification.new do |spec|
               spec.name = "existing"
               spec.homepage = "https://github.com/acme/existing"
             end
-          G
+          GEMSPEC
 
           # project has no other gemspec affecting gem_name discovery (no spec.name parsing needed beyond existing)
           allow(helpers).to receive_messages(
@@ -405,12 +423,12 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
       Dir.mktmpdir do |gem_root|
         Dir.mktmpdir do |project_root|
           # Provide template example only
-          File.write(File.join(gem_root, "kettle-dev.gemspec.example"), <<~G)
+          File.write(File.join(gem_root, "kettle-dev.gemspec.example"), <<~GEMSPEC)
             Gem::Specification.new do |spec|
               spec.name = "kettle-dev"
               Kettle::Dev
             end
-          G
+          GEMSPEC
 
           # No destination gemspecs present
           allow(helpers).to receive_messages(
@@ -441,13 +459,13 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
           File.write(File.join(gem_root, ".gitlab-ci.yml.example"), "from: EXAMPLE\n")
 
           # Minimal gemspec so metadata scan works
-          File.write(File.join(project_root, "demo.gemspec"), <<~G)
+          File.write(File.join(project_root, "demo.gemspec"), <<~GEMSPEC)
             Gem::Specification.new do |spec|
               spec.name = "demo"
               spec.required_ruby_version = ">= 3.1"
               spec.homepage = "https://github.com/acme/demo"
             end
-          G
+          GEMSPEC
 
           allow(helpers).to receive_messages(
             project_root: project_root,
@@ -567,13 +585,13 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
           File.write(File.join(gem_root, ".opencollective.yml"), "org: kettle-rb project: kettle-dev\n")
           # FUNDING with org placeholder to be replaced
           File.write(File.join(gem_root, "FUNDING.md"), "Support org kettle-rb and project kettle-dev\n")
-          File.write(File.join(project_root, "demo.gemspec"), <<~G)
+          File.write(File.join(project_root, "demo.gemspec"), <<~GEMSPEC)
             Gem::Specification.new do |spec|
               spec.name = "my-gem"
               spec.required_ruby_version = ">= 3.1"
               spec.homepage = "https://github.com/acme/my-gem"
             end
-          G
+          GEMSPEC
           allow(helpers).to receive_messages(project_root: project_root, gem_checkout_root: gem_root, ensure_clean_git!: nil, ask: true)
 
           described_class.run
@@ -751,13 +769,13 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
           MD
           File.write(File.join(project_root, "README.md"), existing_readme)
 
-          File.write(File.join(project_root, "demo.gemspec"), <<~G)
+          File.write(File.join(project_root, "demo.gemspec"), <<~GEMSPEC)
             Gem::Specification.new do |spec|
               spec.name = "demo"
               spec.required_ruby_version = ">= 3.1"
               spec.homepage = "https://github.com/acme/demo"
             end
-          G
+          GEMSPEC
 
           allow(helpers).to receive_messages(
             project_root: project_root,
@@ -820,13 +838,13 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
           MD
           File.write(File.join(project_root, "README.md"), existing_readme)
 
-          File.write(File.join(project_root, "demo.gemspec"), <<~G)
+          File.write(File.join(project_root, "demo.gemspec"), <<~GEMSPEC)
             Gem::Specification.new do |spec|
               spec.name = "demo"
               spec.required_ruby_version = ">= 3.1"
               spec.homepage = "https://github.com/acme/demo"
             end
-          G
+          GEMSPEC
 
           allow(helpers).to receive_messages(
             project_root: project_root,
@@ -856,7 +874,7 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
       Dir.mktmpdir do |gem_root|
         Dir.mktmpdir do |project_root|
           # Template gemspec example contains both normal tokens and the special token
-          File.write(File.join(gem_root, "kettle-dev.gemspec.example"), <<~G)
+          File.write(File.join(gem_root, "kettle-dev.gemspec.example"), <<~GEMSPEC)
             Gem::Specification.new do |spec|
               spec.name = "kettle-dev"
               # This should become the actual destination gem name via normal replacement
@@ -864,16 +882,16 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
               # This token should be replaced AFTER normal replacements with the literal string
               spec.add_development_dependency("{KETTLE|DEV|GEM}", "~> 1.0.0")
             end
-          G
+          GEMSPEC
 
           # Destination project gemspec defines gem_name and org so replacements occur
-          File.write(File.join(project_root, "my-gem.gemspec"), <<~G)
+          File.write(File.join(project_root, "my-gem.gemspec"), <<~GEMSPEC)
             Gem::Specification.new do |spec|
               spec.name = "my-gem"
               spec.required_ruby_version = ">= 3.1"
               spec.homepage = "https://github.com/acme/my-gem"
             end
-          G
+          GEMSPEC
 
           allow(helpers).to receive_messages(
             project_root: project_root,

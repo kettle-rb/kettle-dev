@@ -103,7 +103,7 @@ module Kettle
               helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true) do |content|
                 # Adjust rubocop-lts constraint based on min_ruby
                 version_map = [
-                  [Gem::Version.new("1.8"), "~> 0.0"],
+                  [Gem::Version.new("1.8"), "~> 0.1"],
                   [Gem::Version.new("1.9"), "~> 2.0"],
                   [Gem::Version.new("2.0"), "~> 4.0"],
                   [Gem::Version.new("2.1"), "~> 6.0"],
@@ -121,6 +121,7 @@ module Kettle
                 ]
                 new_constraint = nil
                 rubocop_ruby_gem_version = nil
+                ruby1_8 = version_map.first
                 begin
                   if min_ruby && !min_ruby.empty?
                     v = Gem::Version.new(min_ruby.split(".")[0, 2].join("."))
@@ -132,8 +133,16 @@ module Kettle
                       end
                     end
                   end
+                  if !new_constraint || !rubocop_ruby_gem_version
+                    # A gem with no declared minimum ruby is effectively >= 1.8.7
+                    new_constraint = ruby1_8[1]
+                    rubocop_ruby_gem_version = ruby1_8[0].segments.join("_")
+                  end
                 rescue StandardError
-                  # leave nil
+                  # ignore, use default
+                ensure
+                  new_constraint ||= ruby1_8[1]
+                  rubocop_ruby_gem_version ||= ruby1_8[0].segments.join("_")
                 end
                 if new_constraint && rubocop_ruby_gem_version
                   token = "{RUBOCOP|LTS|CONSTRAINT}"
