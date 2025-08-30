@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>
-  File: exit_adapter
+  File: gem_spec_reader
   
     &mdash; Documentation by YARD 0.9.37
   
@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="css/common.css" type="text/css" />
 
 <script type="text/javascript">
-  pathId = "exit_adapter";
+  pathId = "gem_spec_reader";
   relpath = '';
 </script>
 
@@ -37,7 +37,7 @@
         <div id="menu">
   
     <a href="_index.html">Index</a> &raquo; 
-    <span class="title">File: exit_adapter</span>
+    <span class="title">File: gem_spec_reader</span>
   
 </div>
 
@@ -59,9 +59,31 @@
 
       <div id="content"><div id='filecontents'><p>module Kettle<br>
   module Dev<br>
-    module ExitAdapter<br>
-      def self.abort: (String msg) -&gt; void<br>
-      def self.exit: (?Integer status) -&gt; void<br>
+    class GemSpecReader<br>
+      def self.load: (String root) -&gt; {<br>
+        gemspec_path: String?,<br>
+        gem_name: String,<br>
+        min_ruby: String,<br>
+        homepage: String,<br>
+        gh_org: String?,<br>
+        forge_org: String?,<br>
+        funding_org: String?,<br>
+        gh_repo: String?,<br>
+        namespace: String,<br>
+        namespace_shield: String,<br>
+        entrypoint_require: String,<br>
+        gem_shield: String,<br>
+        authors: Array[String],<br>
+        email: Array[String],<br>
+        summary: String,<br>
+        description: String,<br>
+        license: String,<br>
+        licenses: Array[String],<br>
+        required_ruby_version: String,<br>
+        require_paths: Array[String],<br>
+        bindir: String,<br>
+        executables: Array[String],<br>
+      }<br>
     end<br>
   end<br>
 end</p>

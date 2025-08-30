@@ -18,16 +18,24 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [Unreleased]
 ### Added
-- Carryover important fields from the original gemspec during templating
-  - refactor gemspec parsing
-  - normalize template gemspec data
 ### Changed
 ### Deprecated
 ### Removed
 ### Fixed
+### Security
+
+## [1.0.23] - 2025-08-30
+- TAG: [v1.0.23][1.0.23t]
+- COVERAGE: 97.75% -- 2428/2484 lines in 21 files
+- BRANCH COVERAGE: 81.76% -- 1013/1239 branches in 21 files
+- 76.00% documented
+### Added
+- Carryover important fields from the original gemspec during templating
+  - refactor gemspec parsing
+  - normalize template gemspec data
+### Fixed
 - include FUNDING.md in the released gem package
 - typo of required_ruby_version
-### Security
 
 ## [1.0.22] - 2025-08-30
 - TAG: [v1.0.22][1.0.22t]
@@ -343,7 +351,7 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.22...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.23...HEAD
 [1.0.0]: https://github.com/kettle-rb/kettle-dev/compare/a427c302df09cfe4253a7c8d400333f9a4c1a208...v1.0.0
 [1.0.0t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.0
 [1.0.1]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.0...v1.0.1
@@ -390,3 +398,5 @@ Please file a bug if you notice a violation of semantic versioning.
 [1.0.21t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.21
 [1.0.22]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.21...v1.0.22
 [1.0.22t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.22
+[1.0.23]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.22...v1.0.23
+[1.0.23t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.23
