@@ -23,6 +23,7 @@ Please file a bug if you notice a violation of semantic versioning.
   - <!-- RELEASE-NOTES-FOOTER-END -->
 - truffle workflow: Repeat attempts for bundle install and appraisal bundle before failure
 ### Changed
+- dependabot: ignore rubocop-lts for updates
 ### Deprecated
 ### Removed
 ### Fixed
