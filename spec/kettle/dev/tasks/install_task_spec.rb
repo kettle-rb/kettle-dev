@@ -717,7 +717,7 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
 
   describe "integration via bin/rake" do
     # ci_skip because this test is too flaky to run in CI. It seems to fail randomly.
-    it "runs kettle:dev:install in a mock gem and preserves README table spacing from template", :ci_skip do
+    it "runs kettle:dev:install in a mock gem and preserves README table spacing from template", :skip_ci do
       repo_root = Kettle::Dev::TemplateHelpers.gem_checkout_root
       src_readme = File.join(repo_root, "README.md.example")
       template_lines = File.readlines(src_readme)
