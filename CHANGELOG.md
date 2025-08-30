@@ -19,11 +19,19 @@ Please file a bug if you notice a violation of semantic versioning.
 ## [Unreleased]
 ### Added
 ### Changed
-- Use example version of ancient.yml workflow since local version has been customized
 ### Deprecated
 ### Removed
 ### Fixed
 ### Security
+
+## [1.0.20] - 2025-08-29
+- TAG: [v1.0.20][1.0.20t]
+- COVERAGE: 14.01% -- 96/685 lines in 8 files
+- BRANCH COVERAGE: 0.30% -- 1/338 branches in 8 files
+- 76.23% documented
+### Changed
+- Use example version of ancient.yml workflow since local version has been customized
+- Use example version of jruby.yml workflow since local version has been customized
 
 ## [1.0.19] - 2025-08-29
 - TAG: [v1.0.19][1.0.19t]
@@ -299,7 +307,7 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.19...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.20...HEAD
 [1.0.0]: https://github.com/kettle-rb/kettle-dev/compare/a427c302df09cfe4253a7c8d400333f9a4c1a208...v1.0.0
 [1.0.0t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.0
 [1.0.1]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.0...v1.0.1
@@ -340,3 +348,5 @@ Please file a bug if you notice a violation of semantic versioning.
 [1.0.18t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.18
 [1.0.19]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.18...v1.0.19
 [1.0.19t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.19
+[1.0.20]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.19...v1.0.20
+[1.0.20t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.20
