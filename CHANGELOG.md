@@ -19,6 +19,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ## [Unreleased]
 ### Added
 ### Changed
+- Use example version of ancient.yml workflow since local version has been customized
 ### Deprecated
 ### Removed
 ### Fixed
