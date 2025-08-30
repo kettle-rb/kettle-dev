@@ -68,13 +68,27 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 and <a href="https://tom.preston-werner.com/2022/05/23/major-version-numbers-are-not-sacred.html">yes</a>, platform and engine support are part of the <a href="https://github.com/semver/semver/issues/716#issuecomment-869336139">public API</a>.<br>
 Please file a bug if you notice a violation of semantic versioning.</p>
 
-<h2 id="unreleased"><a href="https://github.com/kettle-rb/kettle-dev/compare/v1.0.19...HEAD">Unreleased</a></h2>
+<h2 id="unreleased"><a href="https://github.com/kettle-rb/kettle-dev/compare/v1.0.20...HEAD">Unreleased</a></h2>
 <h3 id="added">Added</h3>
 <h3 id="changed">Changed</h3>
 <h3 id="deprecated">Deprecated</h3>
 <h3 id="removed">Removed</h3>
 <h3 id="fixed">Fixed</h3>
 <h3 id="security">Security</h3>
+
+<h2 id="1020---2025-08-29">
+<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.0.19...v1.0.20">1.0.20</a> - 2025-08-29</h2>
+<ul>
+  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.20">v1.0.20</a>
+</li>
+  <li>COVERAGE: 14.01% – 96/685 lines in 8 files</li>
+  <li>BRANCH COVERAGE: 0.30% – 1/338 branches in 8 files</li>
+  <li>76.23% documented
+    <h3 id="changed-1">Changed</h3>
+  </li>
+  <li>Use example version of ancient.yml workflow since local version has been customized</li>
+  <li>Use example version of jruby.yml workflow since local version has been customized</li>
+</ul>
 
 <h2 id="1019---2025-08-29">
 <a href="https://github.com/kettle-rb/kettle-dev/compare/v1.0.18...v1.0.19">1.0.19</a> - 2025-08-29</h2>
@@ -89,7 +103,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>replacement logic handles a dashed gem-name which maps onto a nested path structure</li>
 </ul>
 
-<h2 id="unreleased-1"><a href="https://github.com/kettle-rb/kettle-dev/compare/v1.0.19...HEAD">Unreleased</a></h2>
+<h2 id="unreleased-1"><a href="https://github.com/kettle-rb/kettle-dev/compare/v1.0.20...HEAD">Unreleased</a></h2>
 <h3 id="added-1">Added</h3>
 <ul>
   <li>kettle:dev:install and kettle:dev:template support <code>only=</code> option: comma-separated glob patterns matched against destination paths relative to project root; non-matching files are excluded from templating.</li>
@@ -153,7 +167,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>kettle-release: early validation of identical set of copyright years in README.md and CHANGELOG.md, adds current year if missing, aborts on mismatch</li>
   <li>kettle-release: update KLOC in README.md</li>
   <li>kettle-release: update Rakefile.example with version and date
-    <h3 id="changed-1">Changed</h3>
+    <h3 id="changed-2">Changed</h3>
   </li>
   <li>kettle-release: print package name and version released as final line</li>
   <li>use git adapter to wrap more git commands to make tests easier to build</li>
@@ -185,7 +199,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
     <h3 id="added-4">Added</h3>
   </li>
   <li>kettle-release: Push tags to additional remotes after release
-    <h3 id="changed-2">Changed</h3>
+    <h3 id="changed-3">Changed</h3>
   </li>
   <li>Improve .gitlab-ci.yml pipeline
     <h3 id="fixed-6">Fixed</h3>
@@ -272,7 +286,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
     </ul>
   </li>
   <li>new exe script: kettle-changelog - transitions a changelog from unreleased to next release
-    <h3 id="changed-3">Changed</h3>
+    <h3 id="changed-4">Changed</h3>
   </li>
   <li>Make ‘git’ gem dependency optional; fall back to raw <code>git</code> commands when the gem is not present (rescues LoadError). See Kettle::Dev::GitAdapter.</li>
   <li>upgraded to stone_checksums v1.0.2</li>
@@ -313,7 +327,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
     <h3 id="added-8">Added</h3>
   </li>
   <li>runs git add –all before git commit, to ensure all files are committed.
-    <h3 id="changed-4">Changed</h3>
+    <h3 id="changed-5">Changed</h3>
   </li>
   <li>This gem is now loaded via Ruby’s standard <code>autoload</code> feature.</li>
   <li>Bundler is always expected, and most things probably won’t work without it.</li>
@@ -536,7 +550,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Fri Aug 29 20:13:59 2025 by
+  Generated on Fri Aug 29 21:33:17 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>
