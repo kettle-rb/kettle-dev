@@ -560,11 +560,13 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
       end
     end
 
-    it "applies replacements for special root files like CHANGELOG.md and .opencollective.yml" do
+    it "applies replacements for special root files like CHANGELOG.md and .opencollective.yml and FUNDING.md" do
       Dir.mktmpdir do |gem_root|
         Dir.mktmpdir do |project_root|
           File.write(File.join(gem_root, "CHANGELOG.md.example"), "kettle-rb kettle-dev Kettle::Dev Kettle%3A%3ADev kettle--dev\n")
           File.write(File.join(gem_root, ".opencollective.yml"), "org: kettle-rb project: kettle-dev\n")
+          # FUNDING with org placeholder to be replaced
+          File.write(File.join(gem_root, "FUNDING.md"), "Support org kettle-rb and project kettle-dev\n")
           File.write(File.join(project_root, "demo.gemspec"), <<~G)
             Gem::Specification.new do |spec|
               spec.name = "my-gem"
@@ -582,6 +584,11 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
           expect(changelog).to include("My::Gem")
           expect(changelog).to include("My%3A%3AGem")
           expect(changelog).to include("my--gem")
+
+          # FUNDING.md should be copied and have org replaced with funding org (acme)
+          funding = File.read(File.join(project_root, "FUNDING.md"))
+          expect(funding).to include("acme")
+          expect(funding).not_to include("kettle-rb")
         end
       end
     end

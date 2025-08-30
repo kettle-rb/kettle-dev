@@ -945,6 +945,9 @@ module Kettle
         body << "\n\n"
         body << compare_ref if compare_ref
         body << tag_ref if tag_ref
+        # Append funding footer from FUNDING.md if present
+        footer = extract_release_notes_footer
+        body << "\n" << footer if footer && !footer.strip.empty?
 
         tag = "v#{version}"
         puts "Creating GitHub release #{owner}/#{repo} #{tag}..."
@@ -983,6 +986,24 @@ module Kettle
       rescue StandardError => e
         warn("Failed to parse CHANGELOG.md: #{e.class}: #{e.message}")
         [nil, nil, nil]
+      end
+
+      def extract_release_notes_footer
+        path = File.join(@root, "FUNDING.md")
+        return unless File.file?(path)
+        content = File.read(path)
+        start_tag = "<!-- RELEASE-NOTES-FOOTER-START -->"
+        end_tag = "<!-- RELEASE-NOTES-FOOTER-END -->"
+        s = content.index(start_tag)
+        e = content.index(end_tag)
+        return unless s && e && e > s
+        # Extract between tags, excluding the tags themselves
+        block = content[(s + start_tag.length)...e]
+        # Normalize: trim trailing whitespace but keep internal formatting
+        block = block.lstrip # drop leading newline/space
+        block.rstrip
+      rescue StandardError
+        nil
       end
 
       # POST to GitHub Releases API

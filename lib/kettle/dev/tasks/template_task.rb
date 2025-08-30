@@ -228,6 +228,7 @@ module Kettle
             CITATION.cff
             CODE_OF_CONDUCT.md
             CONTRIBUTING.md
+            FUNDING.md
             Gemfile
             Rakefile
             README.md
@@ -425,11 +426,11 @@ module Kettle
 
                 c
               end
-            elsif ["CHANGELOG.md", "CITATION.cff", "CONTRIBUTING.md", ".opencollective.yml", ".junie/guidelines.md"].include?(rel)
+            elsif ["CHANGELOG.md", "CITATION.cff", "CONTRIBUTING.md", ".opencollective.yml", "FUNDING.md", ".junie/guidelines.md"].include?(rel)
               helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true) do |content|
                 c = helpers.apply_common_replacements(
                   content,
-                  org: ((File.basename(rel) == ".opencollective.yml") ? funding_org : forge_org),
+                  org: ((File.basename(rel) == ".opencollective.yml" || File.basename(rel) == "FUNDING.md") ? funding_org : forge_org),
                   gem_name: gem_name,
                   namespace: namespace,
                   namespace_shield: namespace_shield,

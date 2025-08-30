@@ -18,6 +18,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [Unreleased]
 ### Added
+- FUNDING.md in support of a funding footer on release notes
+  - <!-- RELEASE-NOTES-FOOTER-START -->
+  - <!-- RELEASE-NOTES-FOOTER-END -->
 ### Changed
 ### Deprecated
 ### Removed
