@@ -22,6 +22,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Deprecated
 ### Removed
 ### Fixed
+- include FUNDING.md in the released gem package
 ### Security
 
 ## [1.0.22] - 2025-08-30

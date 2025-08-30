@@ -75,6 +75,7 @@ Gem::Specification.new do |spec|
     "CITATION.cff",
     "CODE_OF_CONDUCT.md",
     "CONTRIBUTING.md",
+    "FUNDING.md",
     "LICENSE.txt",
     "README.md",
     "REEK",
