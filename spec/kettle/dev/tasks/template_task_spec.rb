@@ -851,5 +851,48 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
         end
       end
     end
+
+    it "replaces {KETTLE|DEV|GEM} token after normal replacements" do
+      Dir.mktmpdir do |gem_root|
+        Dir.mktmpdir do |project_root|
+          # Template gemspec example contains both normal tokens and the special token
+          File.write(File.join(gem_root, "kettle-dev.gemspec.example"), <<~G)
+            Gem::Specification.new do |spec|
+              spec.name = "kettle-dev"
+              # This should become the actual destination gem name via normal replacement
+              spec.summary = "kettle-dev summary"
+              # This token should be replaced AFTER normal replacements with the literal string
+              spec.add_development_dependency("{KETTLE|DEV|GEM}", "~> 1.0.0")
+            end
+          G
+
+          # Destination project gemspec defines gem_name and org so replacements occur
+          File.write(File.join(project_root, "my-gem.gemspec"), <<~G)
+            Gem::Specification.new do |spec|
+              spec.name = "my-gem"
+              spec.required_ruby_version = ">= 3.1"
+              spec.homepage = "https://github.com/acme/my-gem"
+            end
+          G
+
+          allow(helpers).to receive_messages(
+            project_root: project_root,
+            gem_checkout_root: gem_root,
+            ensure_clean_git!: nil,
+            ask: true,
+          )
+
+          described_class.run
+
+          dest = File.join(project_root, "my-gem.gemspec")
+          expect(File).to exist(dest)
+          txt = File.read(dest)
+          # Normal replacement happened: occurrences of kettle-dev became my-gem
+          expect(txt).to include('spec.summary = "my-gem summary"')
+          # Special token replacement happened AFTER, yielding literal kettle-dev
+          expect(txt).to include('spec.add_development_dependency("kettle-dev", "~> 1.0.0")')
+        end
+      end
+    end
   end
 end

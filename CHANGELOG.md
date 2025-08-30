@@ -22,6 +22,10 @@ Please file a bug if you notice a violation of semantic versioning.
   - <!-- RELEASE-NOTES-FOOTER-START -->
   - <!-- RELEASE-NOTES-FOOTER-END -->
 - truffle workflow: Repeat attempts for bundle install and appraisal bundle before failure
+- global token replacement during kettle:dev:install
+  - {KETTLE|DEV|GEM} => kettle-dev
+  - {RUBOCOP|LTS|CONSTRAINT} => dynamic
+  - {RUBOCOP|RUBY|GEM} => dynamic
 ### Changed
 - dependabot: ignore rubocop-lts for updates
 ### Deprecated

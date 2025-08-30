@@ -190,6 +190,13 @@ module Kettle
 
         content = File.read(src_path)
         content = yield(content) if block_given?
+        # Final global replacements that must occur AFTER normal replacements
+        begin
+          token = "{KETTLE|DEV|GEM}"
+          content = content.gsub(token, "kettle-dev") if content.include?(token)
+        rescue StandardError
+          # If replacement fails unexpectedly, proceed with content as-is
+        end
         write_file(dest_path, content)
         record_template_result(dest_path, dest_exists ? :replace : :create)
         puts "Wrote #{dest_path}"

@@ -120,12 +120,14 @@ module Kettle
                   [Gem::Version.new("3.4"), "~> 28.0"],
                 ]
                 new_constraint = nil
+                rubocop_ruby_gem_version = nil
                 begin
                   if min_ruby && !min_ruby.empty?
                     v = Gem::Version.new(min_ruby.split(".")[0, 2].join("."))
                     version_map.reverse_each do |min, req|
                       if v >= min
                         new_constraint = req
+                        rubocop_ruby_gem_version = min.segments.join("_")
                         break
                       end
                     end
@@ -133,11 +135,12 @@ module Kettle
                 rescue StandardError
                   # leave nil
                 end
-                if new_constraint
-                  content.gsub(/^gem\s+"rubocop-lts",\s*"[^"]+".*$/) do |_line|
-                    # Do not preserve whatever tail was there before
-                    %(gem "rubocop-lts", "#{new_constraint}")
-                  end
+                if new_constraint && rubocop_ruby_gem_version
+                  token = "{RUBOCOP|LTS|CONSTRAINT}"
+                  content = content.gsub(token, new_constraint) if content.include?(token)
+                  token = "{RUBOCOP|RUBY|GEM}"
+                  content = content.gsub(token, "rubocop-ruby#{rubocop_ruby_gem_version}") if content.include?(token)
+                  content
                 else
                   content
                 end

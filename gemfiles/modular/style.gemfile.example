@@ -16,10 +16,10 @@ if ENV.fetch("RUBOCOP_LTS_LOCAL", "false").casecmp("true").zero?
   home = ENV["HOME"]
   gem "rubocop-lts", path: "#{home}/src/rubocop-lts/rubocop-lts"
   gem "rubocop-lts-rspec", path: "#{home}/src/rubocop-lts/rubocop-lts-rspec"
-  gem "rubocop-ruby2_3", path: "#{home}/src/rubocop-lts/rubocop-ruby2_3"
+  gem "{RUBOCOP|RUBY|GEM}", path: "#{home}/src/rubocop-lts/{RUBOCOP|RUBY|GEM}"
   gem "standard-rubocop-lts", path: "#{home}/src/rubocop-lts/standard-rubocop-lts"
 else
-  gem "rubocop-lts", "~> 10.0"
-  gem "rubocop-ruby2_3", "~> 2.0"
+  gem "rubocop-lts", "{RUBOCOP|LTS|CONSTRAINT}"
+  gem "{RUBOCOP|RUBY|GEM}"
   gem "rubocop-rspec", "~> 3.6"
 end
