@@ -32,6 +32,8 @@ end
 # Split into discrete appraisals if one of them needs a dependency locked discretely.
 appraise "head" do
   gem "erb"
+  # See: https://github.com/vcr/vcr/issues/1057
+  gem "cgi", ">= 0.5"
   gem "mutex_m", ">= 0.2"
   gem "stringio", ">= 3.0"
   gem "benchmark", "~> 0.4", ">= 0.4.1"
