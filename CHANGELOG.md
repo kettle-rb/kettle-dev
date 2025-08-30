@@ -28,6 +28,7 @@ Please file a bug if you notice a violation of semantic versioning.
   - {RUBOCOP|RUBY|GEM} => dynamic
   - default to rubocop-ruby1_8 if no minimum ruby specified
 - template supports local development of RuboCop-LTS suite of gems
+- improved documentation
 ### Changed
 - dependabot: ignore rubocop-lts for updates
 - template configures RSpec to run tests in random order

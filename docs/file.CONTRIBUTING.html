@@ -59,13 +59,13 @@
 
       <div id="content"><div id='filecontents'><h1 id="contributing">Contributing</h1>
 
-<p>Bug reports and pull requests are welcome on GitHub, CodeBerg, or <a href="https://gitlab.com/kettle-rb/kettle-dev">GitLab</a>.<br>
+<p>Bug reports and pull requests are welcome on <a href="https://codeberg.org/kettle-rb/kettle-dev">CodeBerg</a>, <a href="https://gitlab.com/kettle-rb/kettle-dev/">GitLab</a>, or <a href="https://github.com/kettle-rb/kettle-dev">GitHub</a>.<br>
 This project should be a safe, welcoming space for collaboration, so contributors agree to adhere to<br>
 the <a href="https://gitlab.com/kettle-rb/kettle-dev/-/blob/main/CODE_OF_CONDUCT.md">code of conduct</a>.</p>
 
 <p>To submit a patch, please fork the project, create a patch with tests, and send a pull request.</p>
 
-<p>Remember to <a href="https://keepachangelog.com/en/1.0.0/"><img src="https://img.shields.io/badge/keep--a--changelog-1.0.0-FFDD67.svg?style=flat" alt="Keep A Changelog"></a>.</p>
+<p>Remember to <a href="https://keepachangelog.com/en/1.0.0/"><img src="https://img.shields.io/badge/keep--a--changelog-1.0.0-FFDD67.svg?style=flat" alt="Keep A Changelog"></a> if you make changes.</p>
 
 <h2 id="help-out">Help out!</h2>
 
@@ -131,13 +131,13 @@ Tip: When running a single spec file locally, you may want <code>K_SOUP_COV_MIN_
 
 <h2 id="appraisals">Appraisals</h2>
 
-<p>From time to time the Appraisal2 gemfiles in <code>gemfiles/</code> will need to be updated.<br>
+<p>From time to time the <a href="https://github.com/appraisal-rb/appraisal2">appraisal2</a> gemfiles in <code>gemfiles/</code> will need to be updated.<br>
 They are created and updated with the commands:</p>
 
 <pre class="code language-console"><code class="language-console">bin/rake appraisal:update
 </code></pre>
 
-<p>When adding an appraisal to CI check the <a href="https://github.com/ruby/ruby-builder/releases/tag/toolcache">runner tool cache</a> to see which runner to use.</p>
+<p>When adding an appraisal to CI, check the <a href="https://github.com/ruby/ruby-builder/releases/tag/toolcache">runner tool cache</a> to see which runner to use.</p>
 
 <h2 id="the-reek-list">The Reek List</h2>
 
@@ -209,13 +209,13 @@ They are created and updated with the commands:</p>
 
 <h3 id="one-time-per-maintainer-setup">One-time, Per-maintainer, Setup</h3>
 
-<p><strong>IMPORTANT</strong>: If you want to sign the build you create,<br>
-your public key for signing gems will need to be picked up by the line in the<br>
+<p><strong>IMPORTANT</strong>: To sign a build,<br>
+a public key for signing gems will need to be picked up by the line in the<br>
 <code>gemspec</code> defining the <code>spec.cert_chain</code> (check the relevant ENV variables there).<br>
-All releases to RubyGems.org will be signed.<br>
+All releases to RubyGems.org are signed releases.<br>
 See: <a href="https://guides.rubygems.org/security/#building-gems">RubyGems Security Guide</a></p>
 
-<p>NOTE: To build without signing the gem you must set <code>SKIP_GEM_SIGNING</code> to some value in your environment.</p>
+<p>NOTE: To build without signing the gem set <code>SKIP_GEM_SIGNING</code> to any value in the environment.</p>
 
 <h3 id="to-release-a-new-version">To release a new version:</h3>
 
@@ -274,7 +274,7 @@ push git commits and tags, and push the <code>.gem</code> file to <a href="https
 </div></div>
 
       <div id="footer">
-  Generated on Fri Aug 29 23:11:26 2025 by
+  Generated on Sat Aug 30 00:40:08 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

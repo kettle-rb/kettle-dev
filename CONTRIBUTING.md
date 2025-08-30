@@ -1,12 +1,12 @@
 # Contributing
 
-Bug reports and pull requests are welcome on GitHub, CodeBerg, or [GitLab][🚎src-main].
+Bug reports and pull requests are welcome on [CodeBerg][📜src-cb], [GitLab][📜src-gl], or [GitHub][📜src-gh].
 This project should be a safe, welcoming space for collaboration, so contributors agree to adhere to
 the [code of conduct][🤝conduct].
 
 To submit a patch, please fork the project, create a patch with tests, and send a pull request.
 
-Remember to [![Keep A Changelog][📗keep-changelog-img]][📗keep-changelog].
+Remember to [![Keep A Changelog][📗keep-changelog-img]][📗keep-changelog] if you make changes.
 
 ## Help out!
 
@@ -60,14 +60,14 @@ For a quick starting point, this repository’s `.envrc` shows sane defaults, an
 
 ## Appraisals
 
-From time to time the Appraisal2 gemfiles in `gemfiles/` will need to be updated.
+From time to time the [appraisal2][🚎appraisal2] gemfiles in `gemfiles/` will need to be updated.
 They are created and updated with the commands:
 
 ```console
 bin/rake appraisal:update
 ```
 
-When adding an appraisal to CI check the [runner tool cache][🏃‍♂️runner-tool-cache] to see which runner to use.
+When adding an appraisal to CI, check the [runner tool cache][🏃‍♂️runner-tool-cache] to see which runner to use.
 
 ## The Reek List
 
@@ -134,13 +134,13 @@ Also see GitLab Contributors: [https://gitlab.com/kettle-rb/kettle-dev/-/graphs/
 
 ### One-time, Per-maintainer, Setup
 
-**IMPORTANT**: If you want to sign the build you create,
-your public key for signing gems will need to be picked up by the line in the
+**IMPORTANT**: To sign a build,
+a public key for signing gems will need to be picked up by the line in the
 `gemspec` defining the `spec.cert_chain` (check the relevant ENV variables there).
-All releases to RubyGems.org will be signed.
+All releases to RubyGems.org are signed releases.
 See: [RubyGems Security Guide][🔒️rubygems-security-guide]
 
-NOTE: To build without signing the gem you must set `SKIP_GEM_SIGNING` to some value in your environment.
+NOTE: To build without signing the gem set `SKIP_GEM_SIGNING` to any value in the environment.
 
 ### To release a new version:
 
@@ -175,7 +175,9 @@ Run `bundle exec kettle-release`.
 13. Run `bundle exec rake release` which will create a git tag for the version,
     push git commits and tags, and push the `.gem` file to [rubygems.org][💎rubygems]
 
-[🚎src-main]: https://gitlab.com/kettle-rb/kettle-dev
+[📜src-gl]: https://gitlab.com/kettle-rb/kettle-dev/
+[📜src-cb]: https://codeberg.org/kettle-rb/kettle-dev
+[📜src-gh]: https://github.com/kettle-rb/kettle-dev
 [🧪build]: https://github.com/kettle-rb/kettle-dev/actions
 [🤝conduct]: https://gitlab.com/kettle-rb/kettle-dev/-/blob/main/CODE_OF_CONDUCT.md
 [🖐contrib-rocks]: https://contrib.rocks
@@ -191,4 +193,5 @@ Run `bundle exec kettle-release`.
 [📗keep-changelog-img]: https://img.shields.io/badge/keep--a--changelog-1.0.0-FFDD67.svg?style=flat
 [📌semver-breaking]: https://github.com/semver/semver/issues/716#issuecomment-869336139
 [📌major-versions-not-sacred]: https://tom.preston-werner.com/2022/05/23/major-version-numbers-are-not-sacred.html
+[🚎appraisal2]: https://github.com/appraisal-rb/appraisal2
 [🏃‍♂️runner-tool-cache]: https://github.com/ruby/ruby-builder/releases/tag/toolcache

@@ -552,13 +552,6 @@ Values: Hash with keys: :action (Symbol, one of :create, :replace, :skip, :dir_c
       <pre class="lines">
 
 
-338
-339
-340
-341
-342
-343
-344
 345
 346
 347
@@ -566,10 +559,17 @@ Values: Hash with keys: :action (Symbol, one of :create, :replace, :skip, :dir_c
 349
 350
 351
-352</pre>
+352
+353
+354
+355
+356
+357
+358
+359</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 338</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 345</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_apply_common_replacements'>apply_common_replacements</span><span class='lparen'>(</span><span class='id identifier rubyid_content'>content</span><span class='comma'>,</span> <span class='label'>org:</span><span class='comma'>,</span> <span class='label'>gem_name:</span><span class='comma'>,</span> <span class='label'>namespace:</span><span class='comma'>,</span> <span class='label'>namespace_shield:</span><span class='comma'>,</span> <span class='label'>gem_shield:</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='id identifier rubyid_content'>content</span><span class='period'>.</span><span class='id identifier rubyid_dup'>dup</span>
@@ -719,13 +719,6 @@ Values: Hash with keys: :action (Symbol, one of :create, :replace, :skip, :dir_c
       <pre class="lines">
 
 
-200
-201
-202
-203
-204
-205
-206
 207
 208
 209
@@ -847,10 +840,17 @@ Values: Hash with keys: :action (Symbol, one of :create, :replace, :skip, :dir_c
 325
 326
 327
-328</pre>
+328
+329
+330
+331
+332
+333
+334
+335</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 200</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 207</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_copy_dir_with_prompt'>copy_dir_with_prompt</span><span class='lparen'>(</span><span class='id identifier rubyid_src_dir'>src_dir</span><span class='comma'>,</span> <span class='id identifier rubyid_dest_dir'>dest_dir</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='const'>Dir</span><span class='period'>.</span><span class='id identifier rubyid_exist?'>exist?</span><span class='lparen'>(</span><span class='id identifier rubyid_src_dir'>src_dir</span><span class='rparen'>)</span>
@@ -1072,7 +1072,14 @@ Yields content for transformation when block given.</p>
 193
 194
 195
-196</pre>
+196
+197
+198
+199
+200
+201
+202
+203</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 136</span>
@@ -1134,6 +1141,13 @@ Yields content for transformation when block given.</p>
 
   <span class='id identifier rubyid_content'>content</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='lparen'>(</span><span class='id identifier rubyid_src_path'>src_path</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_content'>content</span> <span class='op'>=</span> <span class='kw'>yield</span><span class='lparen'>(</span><span class='id identifier rubyid_content'>content</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='id identifier rubyid_block_given?'>block_given?</span>
+  <span class='comment'># Final global replacements that must occur AFTER normal replacements
+</span>  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_token'>token</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>{KETTLE|DEV|GEM}</span><span class='tstring_end'>&quot;</span></span>
+    <span class='id identifier rubyid_content'>content</span> <span class='op'>=</span> <span class='id identifier rubyid_content'>content</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='id identifier rubyid_token'>token</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>kettle-dev</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='id identifier rubyid_content'>content</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
+  <span class='kw'>rescue</span> <span class='const'>StandardError</span>
+    <span class='comment'># If replacement fails unexpectedly, proceed with content as-is
+</span>  <span class='kw'>end</span>
   <span class='id identifier rubyid_write_file'>write_file</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_path'>dest_path</span><span class='comma'>,</span> <span class='id identifier rubyid_content'>content</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_record_template_result'>record_template_result</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_path'>dest_path</span><span class='comma'>,</span> <span class='id identifier rubyid_dest_exists'>dest_exists</span> <span class='op'>?</span> <span class='symbol'>:replace</span> <span class='op'>:</span> <span class='symbol'>:create</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Wrote </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_dest_path'>dest_path</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
@@ -1390,13 +1404,6 @@ Calculated relative to lib/kettle/dev/</p>
       <pre class="lines">
 
 
-357
-358
-359
-360
-361
-362
-363
 364
 365
 366
@@ -1468,10 +1475,17 @@ Calculated relative to lib/kettle/dev/</p>
 432
 433
 434
-435</pre>
+435
+436
+437
+438
+439
+440
+441
+442</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 357</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 364</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_gemspec_metadata'>gemspec_metadata</span><span class='lparen'>(</span><span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span> <span class='op'>=</span> <span class='id identifier rubyid_project_root'>project_root</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_gemspecs'>gemspecs</span> <span class='op'>=</span> <span class='const'>Dir</span><span class='period'>.</span><span class='id identifier rubyid_glob'>glob</span><span class='lparen'>(</span><span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>*.gemspec</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='rparen'>)</span>
@@ -1963,7 +1977,7 @@ If the given path already ends with .example, it is returned as-is.</p>
 </div>
 
       <div id="footer">
-  Generated on Fri Aug 29 23:11:26 2025 by
+  Generated on Sat Aug 30 00:40:08 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>
