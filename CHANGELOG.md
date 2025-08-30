@@ -19,6 +19,8 @@ Please file a bug if you notice a violation of semantic versioning.
 ## [Unreleased]
 ### Added
 - improved documentation
+- example version of heads workflow
+  - give heads two attempts to succeed
 ### Changed
 ### Deprecated
 ### Removed
