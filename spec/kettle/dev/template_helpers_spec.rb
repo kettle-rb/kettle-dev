@@ -466,6 +466,15 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
     it "replaces kettle-dev inside suffixed identifiers like -i without touching suffix" do
       expect(rep("[🖼️kettle-dev-i]")).to eq("[🖼️foo_bar-i]")
     end
+
+    it "replaces require-like paths kettle/dev with entrypoint path using gem_name with underscores unchanged" do
+      expect(rep("require 'kettle/dev'\n# path: kettle/dev/something")).to eq("require 'foo_bar'\n# path: foo_bar/something")
+    end
+
+    it "replaces require-like paths kettle/dev with entrypoint path using gem_name hyphen converted to slash" do
+      meta2 = meta.merge(gem_name: "food-bar", namespace: "Food::Bar", namespace_shield: "Food%3A%3ABar", gem_shield: "food--bar")
+      expect(helpers.apply_common_replacements("require 'kettle/dev'\n# path: kettle/dev/something", **meta2)).to eq("require 'food/bar'\n# path: food/bar/something")
+    end
   end
 
   context "when running kettle:dev:template" do

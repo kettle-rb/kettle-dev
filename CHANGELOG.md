@@ -22,6 +22,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Deprecated
 ### Removed
 ### Fixed
+- replacement logic handles a dashed gem-name which maps onto a nested path structure
 ### Security
 
 ## [Unreleased]

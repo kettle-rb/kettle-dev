@@ -107,7 +107,7 @@
   "spec/kettle/dev/tasks/template_task_spec.rb:595744284": [
     [522, 13, 24, "RSpec/ContextWording: Context description should match /^when\\b/, /^with\\b/, or /^without\\b/.", 196765058]
   ],
-  "spec/kettle/dev/template_helpers_spec.rb:2149092737": [
+  "spec/kettle/dev/template_helpers_spec.rb:2143487683": [
     [396, 9, 29, "RSpec/AnyInstance: Avoid stubbing using `allow_any_instance_of`.", 835110177],
     [397, 9, 29, "RSpec/AnyInstance: Avoid stubbing using `allow_any_instance_of`.", 835110177]
   ],
