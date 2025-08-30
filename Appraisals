@@ -111,14 +111,14 @@ appraise "ruby-3-3" do
   gem "stringio", "~> 3.0"
 end
 
-# Only run security audit on latest Ruby version
+# Only run security audit on the latest version of Ruby
 appraise "audit" do
   gem "erb"
   gem "mutex_m", "~> 0.2"
   gem "stringio", "~> 3.0"
 end
 
-# Only run coverage on latest Ruby version
+# Only run coverage on the latest version of Ruby
 appraise "coverage" do
   gem "erb"
   gem "mutex_m", "~> 0.2"
@@ -128,7 +128,7 @@ appraise "coverage" do
   eval_gemfile "modular/recording/r3/recording.gemfile"
 end
 
-# Only run linter on latest Ruby version (but, in support of oldest supported Ruby version)
+# Only run linter on the latest version of Ruby (but, in support of oldest supported Ruby version)
 appraise "style" do
   gem "erb"
   gem "mutex_m", "~> 0.2"
