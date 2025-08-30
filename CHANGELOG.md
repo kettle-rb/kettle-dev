@@ -18,6 +18,18 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [Unreleased]
 ### Added
+### Changed
+### Deprecated
+### Removed
+### Fixed
+### Security
+
+## [1.0.21] - 2025-08-30
+- TAG: [v1.0.21][1.0.21t]
+- COVERAGE: 97.82% -- 2375/2428 lines in 20 files
+- BRANCH COVERAGE: 81.34% -- 972/1195 branches in 20 files
+- 76.23% documented
+### Added
 - FUNDING.md in support of a funding footer on release notes
   - <!-- RELEASE-NOTES-FOOTER-START -->
   - <!-- RELEASE-NOTES-FOOTER-END -->
@@ -32,10 +44,6 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Changed
 - dependabot: ignore rubocop-lts for updates
 - template configures RSpec to run tests in random order
-### Deprecated
-### Removed
-### Fixed
-### Security
 
 ## [1.0.20] - 2025-08-29
 - TAG: [v1.0.20][1.0.20t]
@@ -320,7 +328,7 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.20...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.21...HEAD
 [1.0.0]: https://github.com/kettle-rb/kettle-dev/compare/a427c302df09cfe4253a7c8d400333f9a4c1a208...v1.0.0
 [1.0.0t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.0
 [1.0.1]: https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.0...v1.0.1
@@ -363,3 +371,5 @@ Please file a bug if you notice a violation of semantic versioning.
 [1.0.19t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.19
 [1.0.20]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.19...v1.0.20
 [1.0.20t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.20
+[1.0.21]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.20...v1.0.21
+[1.0.21t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.21
