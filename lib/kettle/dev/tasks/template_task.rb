@@ -123,10 +123,9 @@ module Kettle
                 rubocop_ruby_gem_version = nil
                 ruby1_8 = version_map.first
                 begin
-                  if min_ruby && !min_ruby.empty?
-                    v = Gem::Version.new(min_ruby.split(".")[0, 2].join("."))
+                  if min_ruby
                     version_map.reverse_each do |min, req|
-                      if v >= min
+                      if min_ruby >= min
                         new_constraint = req
                         rubocop_ruby_gem_version = min.segments.join("_")
                         break
@@ -205,8 +204,20 @@ module Kettle
                   File.join(project_root, fallback_name)
                 end
               end
+
+              # If a destination gemspec already exists, get metadata from GemSpecReader via helpers
+              orig_meta = nil
+              if File.exist?(dest_gemspec)
+                begin
+                  orig_meta = helpers.gemspec_metadata(File.dirname(dest_gemspec))
+                rescue StandardError
+                  orig_meta = nil
+                end
+              end
+
               helpers.copy_file_with_prompt(gemspec_template_src, dest_gemspec, allow_create: true, allow_replace: true) do |content|
-                helpers.apply_common_replacements(
+                # First apply standard replacements from the template example
+                c = helpers.apply_common_replacements(
                   content,
                   org: forge_org,
                   gem_name: gem_name,
@@ -214,6 +225,93 @@ module Kettle
                   namespace_shield: namespace_shield,
                   gem_shield: gem_shield,
                 )
+
+                if orig_meta
+                  # Replace a scalar string assignment like: spec.field = "..."
+                  replace_string_field = lambda do |txt, field, value|
+                    v = value.to_s
+                    txt.gsub(/(\bspec\.#{Regexp.escape(field)}\s*=\s*)(["']).*?(\2)/) do
+                      pre = Regexp.last_match(1)
+                      q = '"'
+                      pre + q + v.gsub('"', '\\"') + q
+                    end
+                  end
+
+                  # Replace an array assignment like: spec.field = ["a", "b"]
+                  replace_array_field = lambda do |txt, field, ary|
+                    ary = Array(ary).compact.map(&:to_s).reject(&:empty?).uniq
+                    # literal = "[" + arr.map { |e| '"' + e.gsub('"', '\\"') + '"' }.join(", ") + "]"
+                    literal = ary.inspect
+                    if txt =~ /(\bspec\.#{Regexp.escape(field)}\s*=\s*)\[[^\]]*\]/
+                      txt.gsub(/(\bspec\.#{Regexp.escape(field)}\s*=\s*)\[[^\]]*\]/, "\\1#{literal}")
+                    else
+                      # If no existing assignment, insert a new line after spec.version if possible
+                      insert_after = (txt =~ /^\s*spec\.version\s*=.*$/) ? :version : nil
+                      if insert_after == :version
+                        txt.sub(/^(\s*spec\.version\s*=.*$)/) { |line| line + "\n  spec.#{field} = #{literal}" }
+                      else
+                        txt + "\n  spec.#{field} = #{literal}\n"
+                      end
+                    end
+                  end
+
+                  begin
+                    # 1. spec.name — retain original
+                    if (name = orig_meta[:gem_name]) && !name.to_s.empty?
+                      c = replace_string_field.call(c, "name", name)
+                    end
+
+                    # 2. spec.authors — retain original, normalize to array
+                    orig_auth = orig_meta[:authors]
+                    c = replace_array_field.call(c, "authors", orig_auth)
+
+                    # 3. spec.email — retain original, normalize to array
+                    orig_email = orig_meta[:email]
+                    c = replace_array_field.call(c, "email", orig_email)
+
+                    # 4. spec.summary — retain original; grapheme emoji prefix handled by "install" task
+                    if (sum = orig_meta[:summary]) && !sum.to_s.empty?
+                      c = replace_string_field.call(c, "summary", sum)
+                    end
+
+                    # 5. spec.description — retain original; grapheme emoji prefix handled by "install" task
+                    if (desc = orig_meta[:description]) && !desc.to_s.empty?
+                      c = replace_string_field.call(c, "description", desc)
+                    end
+
+                    # 6. spec.licenses — retain original, normalize to array
+                    lic = orig_meta[:licenses]
+                    if lic && !lic.empty?
+                      c = replace_array_field.call(c, "licenses", lic)
+                    end
+
+                    # 7. spec.required_ruby_version — retain original
+                    if (rrv = orig_meta[:required_ruby_version].to_s) && !rrv.empty?
+                      c = replace_string_field.call(c, "required_ruby_version", rrv)
+                    end
+
+                    # 8. spec.require_paths — retain original, normalize to array
+                    req_paths = orig_meta[:require_paths]
+                    unless req_paths.empty?
+                      c = replace_array_field.call(c, "require_paths", req_paths)
+                    end
+
+                    # 9. spec.bindir — retain original
+                    if (bd = orig_meta[:bindir]) && !bd.to_s.empty?
+                      c = replace_string_field.call(c, "bindir", bd)
+                    end
+
+                    # 10. spec.executables — retain original, normalize to array
+                    exes = orig_meta[:executables]
+                    unless exes.empty?
+                      c = replace_array_field.call(c, "executables", exes)
+                    end
+                  rescue StandardError
+                    # Best-effort carry-over; ignore any individual failure
+                  end
+                end
+
+                c
               end
             end
           rescue StandardError
@@ -266,7 +364,6 @@ module Kettle
                 if prev_readme
                   first_h1_prev = prev_readme.lines.find { |ln| ln =~ /^#\s+/ }
                   if first_h1_prev
-                    require "kettle/emoji_regex"
                     emoji_re = Kettle::EmojiRegex::REGEX
                     tail = first_h1_prev.sub(/^#\s+/, "")
                     # Extract consecutive leading emoji graphemes

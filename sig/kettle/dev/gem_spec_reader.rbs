@@ -1,0 +1,30 @@
+module Kettle
+  module Dev
+    class GemSpecReader
+      def self.load: (String root) -> {
+        gemspec_path: String?,
+        gem_name: String,
+        min_ruby: String,
+        homepage: String,
+        gh_org: String?,
+        forge_org: String?,
+        funding_org: String?,
+        gh_repo: String?,
+        namespace: String,
+        namespace_shield: String,
+        entrypoint_require: String,
+        gem_shield: String,
+        authors: Array[String],
+        email: Array[String],
+        summary: String,
+        description: String,
+        license: String,
+        licenses: Array[String],
+        required_ruby_version: String,
+        require_paths: Array[String],
+        bindir: String,
+        executables: Array[String],
+      }
+    end
+  end
+end

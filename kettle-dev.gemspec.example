@@ -26,7 +26,7 @@ Gem::Specification.new do |spec|
   spec.summary = "🍲 "
   spec.description = "🍲 "
   spec.homepage = "https://github.com/kettle-rb/kettle-dev"
-  spec.license = "MIT"
+  spec.licenses = ["MIT"]
   spec.required_ruby_version = ">= 2.3.0"
 
   # Linux distros often package gems and securely certify them independent

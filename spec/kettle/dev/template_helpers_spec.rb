@@ -382,32 +382,13 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
   describe "::gemspec_metadata" do
     include_context "with truffleruby 3.1..3.2 skip"
 
-    it "keeps homepage string if slicing raises (covers rescue at 279)" do
-      Dir.mktmpdir do |dir|
-        gemspec_path = File.join(dir, "example.gemspec")
-        File.write(gemspec_path, <<~G)
-          Gem::Specification.new do |spec|
-            spec.name = "sample-gem"
-            spec.minimum_ruby_version = ">= 3.1"
-            spec.homepage = ""https://example.com/quoted""
-          end
-        G
-        # Stub only the specific slice used at [1..-2]
-        allow_any_instance_of(String).to receive(:[]).and_call_original
-        allow_any_instance_of(String).to receive(:[]).with(1..-2).and_raise(StandardError)
-        meta = helpers.gemspec_metadata(dir)
-        # Ensure we still get a homepage string (with quotes preserved due to rescue)
-        expect(meta[:homepage]).to include("\"")
-      end
-    end
-
     it "parses gemspec and derives strings, falling back to git origin when needed" do
       Dir.mktmpdir do |dir|
         gemspec_path = File.join(dir, "example.gemspec")
         File.write(gemspec_path, <<~G)
           Gem::Specification.new do |spec|
             spec.name = "my-gem_name"
-            spec.minimum_ruby_version = ">= 3.2"
+            spec.required_ruby_version = ">= 3.2"
             # no homepage specified here to trigger fallback
           end
         G
@@ -442,7 +423,7 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
         expect(meta[:homepage]).to eq("https://github.com/org/widget")
         expect(meta[:forge_org]).to eq("org")
         expect(meta[:gh_repo]).to eq("widget")
-        expect(meta[:min_ruby]).to eq("2.7.6")
+        expect(meta[:min_ruby]).to eq(Gem::Version.new("2.7.6"))
         expect(meta[:entrypoint_require]).to eq("widget")
         expect(meta[:namespace]).to eq("Widget")
         expect(meta[:gem_shield]).to eq("widget")

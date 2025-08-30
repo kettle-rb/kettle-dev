@@ -3,7 +3,7 @@
 #   because that project is Ruby >= 2.4, and this project is Ruby >= 2.3.
 # That project is under the MIT license, same as this project:
 #   https://github.com/ticky/ruby-emoji-regex/blob/develop/LICENSE.md
-# If the minimum_ruby_version numbers align, will switch to a real dependency.
+# If the required_ruby_version numbers align, will switch to a real dependency.
 # Wrapping it in a namespace to avoid collisions with the real emoji_regex.
 module Kettle
   module EmojiRegex

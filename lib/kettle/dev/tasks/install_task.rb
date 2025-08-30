@@ -44,107 +44,98 @@ module Kettle
             readme_path = File.join(project_root, "README.md")
             if File.file?(readme_path)
               md = helpers.gemspec_metadata(project_root)
-              min_ruby = md[:min_ruby].to_s.strip
-              if !min_ruby.empty?
-                # Compare using Gem::Version on major.minor
-                require "rubygems"
-                min_ver = begin
-                  Gem::Version.new(min_ruby.sub(/\A(~>\s*|>=\s*)/, ""))
-                rescue
-                  nil
-                end
-                if min_ver
-                  content = File.read(readme_path)
+              min_ruby = md[:min_ruby] # an instance of Gem::Version
+              if min_ruby
+                content = File.read(readme_path)
 
-                  # Detect all MRI ruby badge labels present
-                  removed_labels = []
+                # Detect all MRI ruby badge labels present
+                removed_labels = []
 
-                  content.scan(/\[(?<label>💎ruby-(?<ver>\d+\.\d+)i)\]/) do |arr|
-                    label, ver_s = arr
-                    begin
-                      ver = Gem::Version.new(ver_s)
-                      if ver < min_ver
-                        # Remove occurrences of badges using this label
-                        label_re = Regexp.escape(label)
-                        # Linked form: [![...][label]][...]
-                        content = content.gsub(/\[!\[[^\]]*?\]\s*\[#{label_re}\]\s*\]\s*\[[^\]]+\]/, "")
-                        # Unlinked form: ![...][label]
-                        content = content.gsub(/!\[[^\]]*?\]\s*\[#{label_re}\]/, "")
-                        removed_labels << label
-                      end
-                    rescue StandardError
-                      # ignore
+                content.scan(/\[(?<label>💎ruby-(?<ver>\d+\.\d+)i)\]/) do |arr|
+                  label, ver_s = arr
+                  begin
+                    ver = Gem::Version.new(ver_s)
+                    if ver < min_ruby
+                      # Remove occurrences of badges using this label
+                      label_re = Regexp.escape(label)
+                      # Linked form: [![...][label]][...]
+                      content = content.gsub(/\[!\[[^\]]*?\]\s*\[#{label_re}\]\s*\]\s*\[[^\]]+\]/, "")
+                      # Unlinked form: ![...][label]
+                      content = content.gsub(/!\[[^\]]*?\]\s*\[#{label_re}\]/, "")
+                      removed_labels << label
                     end
+                  rescue StandardError
+                    # ignore
                   end
+                end
 
-                  # Fix leading <br/> in MRI rows and remove rows that end up empty
-                  content = content.lines.map { |ln|
-                    if ln.start_with?("| Works with MRI Ruby")
-                      cells = ln.split("|", -1)
-                      # cells[0] is empty (leading |), cells[1] = label cell, cells[2] = badges cell
-                      badge_cell = cells[2] || ""
-                      # If badge cell is only a <br/> (possibly with whitespace), treat as empty (row will be removed later)
-                      if badge_cell.strip == "<br/>"
-                        cells[2] = " "
-                        cells.join("|")
-                      elsif badge_cell =~ /\A\s*<br\/>/i
-                        # If badge cell starts with <br/> and there are no badges before it, strip the leading <br/>
-                        # We consider "no badges before" as any leading whitespace followed immediately by <br/>
-                        cleaned = badge_cell.sub(/\A\s*<br\/>\s*/i, "")
-                        cells[2] = " #{cleaned}" # prefix with a single space
-                        cells.join("|")
-                      else
-                        ln
-                      end
+                # Fix leading <br/> in MRI rows and remove rows that end up empty
+                content = content.lines.map { |ln|
+                  if ln.start_with?("| Works with MRI Ruby")
+                    cells = ln.split("|", -1)
+                    # cells[0] is empty (leading |), cells[1] = label cell, cells[2] = badges cell
+                    badge_cell = cells[2] || ""
+                    # If badge cell is only a <br/> (possibly with whitespace), treat as empty (row will be removed later)
+                    if badge_cell.strip == "<br/>"
+                      cells[2] = " "
+                      cells.join("|")
+                    elsif badge_cell =~ /\A\s*<br\/>/i
+                      # If badge cell starts with <br/> and there are no badges before it, strip the leading <br/>
+                      # We consider "no badges before" as any leading whitespace followed immediately by <br/>
+                      cleaned = badge_cell.sub(/\A\s*<br\/>\s*/i, "")
+                      cells[2] = " #{cleaned}" # prefix with a single space
+                      cells.join("|")
                     else
                       ln
                     end
-                  }.reject { |ln|
-                    if ln.start_with?("| Works with MRI Ruby")
-                      cells = ln.split("|", -1)
-                      badge_cell = cells[2] || ""
-                      badge_cell.strip.empty?
-                    else
-                      false
-                    end
-                  }.join
+                  else
+                    ln
+                  end
+                }.reject { |ln|
+                  if ln.start_with?("| Works with MRI Ruby")
+                    cells = ln.split("|", -1)
+                    badge_cell = cells[2] || ""
+                    badge_cell.strip.empty?
+                  else
+                    false
+                  end
+                }.join
 
-                  # Clean up extra repeated whitespace only when it appears between word characters, and only for non-table lines.
-                  # This preserves Markdown table alignment and spacing around punctuation/symbols.
-                  content = content.lines.map do |ln|
-                    if ln.start_with?("|")
-                      ln
-                    else
-                      # Squish only runs of spaces/tabs between word characters
-                      ln.gsub(/(\w)[ \t]{2,}(\w)/u, "\\1 \\2")
-                    end
-                  end.join
+                # Clean up extra repeated whitespace only when it appears between word characters, and only for non-table lines.
+                # This preserves Markdown table alignment and spacing around punctuation/symbols.
+                content = content.lines.map do |ln|
+                  if ln.start_with?("|")
+                    ln
+                  else
+                    # Squish only runs of spaces/tabs between word characters
+                    ln.gsub(/(\w)[ \t]{2,}(\w)/u, "\\1 \\2")
+                  end
+                end.join
 
-                  # Remove reference definitions for removed labels that are no longer used
-                  unless removed_labels.empty?
-                    # Unique
-                    removed_labels.uniq!
-                    # Determine which labels are still referenced after edits
-                    still_referenced = {}
-                    removed_labels.each do |lbl|
-                      lbl_re = Regexp.escape(lbl)
-                      # Consider a label referenced only when it appears not as a definition (i.e., not followed by colon)
-                      still_referenced[lbl] = !!(content =~ /\[#{lbl_re}\](?!:)/)
-                    end
-
-                    new_lines = content.lines.map do |line|
-                      if line =~ /^\[(?<lab>[^\]]+)\]:/ && removed_labels.include?(Regexp.last_match(:lab))
-                        # Only drop if not referenced anymore
-                        still_referenced[Regexp.last_match(:lab)] ? line : nil
-                      else
-                        line
-                      end
-                    end.compact
-                    content = new_lines.join
+                # Remove reference definitions for removed labels that are no longer used
+                unless removed_labels.empty?
+                  # Unique
+                  removed_labels.uniq!
+                  # Determine which labels are still referenced after edits
+                  still_referenced = {}
+                  removed_labels.each do |lbl|
+                    lbl_re = Regexp.escape(lbl)
+                    # Consider a label referenced only when it appears not as a definition (i.e., not followed by colon)
+                    still_referenced[lbl] = !!(content =~ /\[#{lbl_re}\](?!:)/)
                   end
 
-                  File.open(readme_path, "w") { |f| f.write(content) }
+                  new_lines = content.lines.map do |line|
+                    if line =~ /^\[(?<lab>[^\]]+)\]:/ && removed_labels.include?(Regexp.last_match(:lab))
+                      # Only drop if not referenced anymore
+                      still_referenced[Regexp.last_match(:lab)] ? line : nil
+                    else
+                      line
+                    end
+                  end.compact
+                  content = new_lines.join
                 end
+
+                File.open(readme_path, "w") { |f| f.write(content) }
               end
             end
           rescue StandardError => e

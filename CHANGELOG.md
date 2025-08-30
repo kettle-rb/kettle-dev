@@ -18,11 +18,15 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [Unreleased]
 ### Added
+- Carryover important fields from the original gemspec during templating
+  - refactor gemspec parsing
+  - normalize template gemspec data
 ### Changed
 ### Deprecated
 ### Removed
 ### Fixed
 - include FUNDING.md in the released gem package
+- typo of required_ruby_version
 ### Security
 
 ## [1.0.22] - 2025-08-30

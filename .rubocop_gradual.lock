@@ -1,8 +1,8 @@
 {
-  "kettle-dev.gemspec:4124176351": [
-    [159, 3, 40, "Gemspec/DependencyVersion: Dependency version specification is required.", 1364274143]
+  "kettle-dev.gemspec:1797616927": [
+    [161, 3, 40, "Gemspec/DependencyVersion: Dependency version specification is required.", 1364274143]
   ],
-  "lib/kettle/dev.rb:372647611": [
+  "lib/kettle/dev.rb:4272178718": [
     [30, 17, 2, "ThreadSafety/MutableClassInstanceVariable: Freeze mutable objects assigned to class instance variables.", 5862883]
   ],
   "lib/kettle/dev/tasks/ci_task.rb:2124351161": [
@@ -104,12 +104,8 @@
     [130, 7, 63, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [131].", 2196742208],
     [131, 7, 75, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [130].", 228897198]
   ],
-  "spec/kettle/dev/tasks/template_task_spec.rb:3175255355": [
+  "spec/kettle/dev/tasks/template_task_spec.rb:4289316020": [
     [540, 13, 24, "RSpec/ContextWording: Context description should match /^when\\b/, /^with\\b/, or /^without\\b/.", 196765058]
-  ],
-  "spec/kettle/dev/template_helpers_spec.rb:2143487683": [
-    [396, 9, 29, "RSpec/AnyInstance: Avoid stubbing using `allow_any_instance_of`.", 835110177],
-    [397, 9, 29, "RSpec/AnyInstance: Avoid stubbing using `allow_any_instance_of`.", 835110177]
   ],
   "spec/kettle/dev/versioning_spec.rb:2114060059": [
     [55, 7, 53, "RSpec/PredicateMatcher: Prefer using `be_epic_major` matcher over `epic_major?`.", 200417834]

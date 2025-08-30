@@ -114,6 +114,7 @@ module Kettle
   module Dev
     autoload :CIHelpers, "kettle/dev/ci_helpers"
     autoload :CommitMsg, "kettle/dev/commit_msg"
+    autoload :GemSpecReader, "kettle/dev/gem_spec_reader"
     autoload :GitCommitFooter, "kettle/dev/git_commit_footer"
     autoload :ReadmeBackers, "kettle/dev/readme_backers"
     autoload :ReleaseCLI, "kettle/dev/release_cli"

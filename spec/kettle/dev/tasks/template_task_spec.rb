@@ -113,7 +113,7 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
       end
     end
 
-    it "updates style.gemfile rubocop-lts constraint based on min_ruby" do
+    it "updates style.gemfile rubocop-lts constraint based on min_ruby", :check_output do
       Dir.mktmpdir do |gem_root|
         Dir.mktmpdir do |project_root|
           # style.gemfile template with placeholder constraint
@@ -135,7 +135,7 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
           File.write(File.join(project_root, "demo.gemspec"), <<~GEMSPEC)
             Gem::Specification.new do |spec|
               spec.name = "demo"
-              spec.minimum_ruby_version = ">= 3.2"
+              spec.required_ruby_version = ">= 3.2"
               spec.homepage = "https://github.com/acme/demo"
             end
           GEMSPEC
