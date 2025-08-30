@@ -19,10 +19,12 @@ Please file a bug if you notice a violation of semantic versioning.
 ## [Unreleased]
 ### Added
 - improved documentation
+- more badges in README (gem & template)
 ### Changed
 ### Deprecated
 ### Removed
 ### Fixed
+- typos in README for gem & template
 ### Security
 
 ## [1.0.23] - 2025-08-30
