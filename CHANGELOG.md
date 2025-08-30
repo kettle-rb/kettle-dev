@@ -21,6 +21,7 @@ Please file a bug if you notice a violation of semantic versioning.
 - FUNDING.md in support of a funding footer on release notes
   - <!-- RELEASE-NOTES-FOOTER-START -->
   - <!-- RELEASE-NOTES-FOOTER-END -->
+- truffle workflow: Repeat attempts for bundle install and appraisal bundle before failure
 ### Changed
 ### Deprecated
 ### Removed
