@@ -91,7 +91,7 @@ module Kettle
                         # If badge cell starts with <br/> and there are no badges before it, strip the leading <br/>
                         # We consider "no badges before" as any leading whitespace followed immediately by <br/>
                         cleaned = badge_cell.sub(/\A\s*<br\/>\s*/i, "")
-                        cells[2] = cleaned
+                        cells[2] = " #{cleaned}" # prefix with a single space
                         cells.join("|")
                       else
                         ln
