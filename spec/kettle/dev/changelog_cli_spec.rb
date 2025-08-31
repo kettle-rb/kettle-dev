@@ -2,7 +2,7 @@
 
 require "json"
 
-RSpec.describe "kettle-changelog integration", :check_output do
+RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
   include_context "with mocked git adapter"
   include_context "with mocked exit adapter"
 
