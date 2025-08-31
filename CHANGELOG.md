@@ -21,6 +21,7 @@ Please file a bug if you notice a violation of semantic versioning.
 - improved documentation
 - more badges in README (gem & template)
 ### Changed
+- add output to error handling related to release creation on GitHub
 ### Deprecated
 ### Removed
 ### Fixed

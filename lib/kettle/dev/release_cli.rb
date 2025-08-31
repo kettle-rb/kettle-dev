@@ -57,7 +57,9 @@ module Kettle
             gem_name = detect_gem_name
             latest_overall, latest_for_series = latest_released_versions(gem_name, version)
           rescue StandardError => e
-            warn("Warning: failed to check RubyGems for latest version (#{e.class}: #{e.message}). Proceeding.")
+            warn("[kettle-release] RubyGems check failed: #{e.class}: #{e.message}")
+            warn(e.backtrace.first(3).map { |l| "  " + l }.join("\n")) if ENV["DEBUG"]
+            warn("Proceeding without RubyGems latest version info.")
           end
 
           if latest_overall
@@ -923,8 +925,11 @@ module Kettle
       # Title: v<version>
       # Body: the CHANGELOG section for this version, followed by the two link references for this version.
       def maybe_create_github_release!(version)
-        token = ENV.fetch("GITHUB_TOKEN", "").to_s
-        return if token.strip.empty?
+        token = ENV.fetch("GITHUB_TOKEN", "").strip.to_s
+        if token.empty?
+          warn("GITHUB_TOKEN not set; skipping GitHub release creation. Set GITHUB_TOKEN with repo:public_repo (classic) or contents:write scope.")
+          return
+        end
 
         gh_remote = preferred_github_remote
         url = remote_url(gh_remote || "origin")
@@ -1002,7 +1007,8 @@ module Kettle
         # Normalize: trim trailing whitespace but keep internal formatting
         block = block.lstrip # drop leading newline/space
         block.rstrip
-      rescue StandardError
+      rescue StandardError => e
+        warn("[kettle-release] Failed to extract release notes footer from FUNDING.md: #{e.class}: #{e.message}")
         nil
       end
 
