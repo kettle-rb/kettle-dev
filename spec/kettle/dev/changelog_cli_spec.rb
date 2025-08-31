@@ -204,21 +204,21 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
                 "branches" => [
                   {"coverage" => 1},
                   {"coverage" => 0},
-                  {"coverage" => "n/a"}
-                ]
+                  {"coverage" => "n/a"},
+                ],
               },
               "lib/b.rb" => {
                 "lines" => [0, 0, 2],
                 "branches" => [
                   {"coverage" => 0},
-                  {"coverage" => 0}
-                ]
+                  {"coverage" => 0},
+                ],
               },
               "lib/c.rb" => {
                 "lines" => [nil, nil],
-                "branches" => []
-              }
-            }
+                "branches" => [],
+              },
+            },
           }
           File.write(File.join(root, "coverage", "coverage.json"), JSON.pretty_generate(data))
           cli = described_class.new
@@ -243,10 +243,10 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
                   123,                   # skipped: not a Hash (line 202)
                   {"coverage" => "n/a"}, # skipped: non-Numeric (line 204)
                   {"coverage" => 0},     # counts in total, not covered (205-206)
-                  {"coverage" => 2}      # counts in total and covered (205-206)
-                ]
-              }
-            }
+                  {"coverage" => 2},      # counts in total and covered (205-206)
+                ],
+              },
+            },
           }
           File.write(File.join(root, "coverage", "coverage.json"), JSON.pretty_generate(data))
           cli = described_class.new
