@@ -391,6 +391,156 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
       expect(instance.send(:git_repo?)).to be true
     end
   end
+
+  describe "additional run! scenarios" do
+    it "updates only backers section and uses singular 'section' message", :check_output do
+      # README with both tags; backers will change, sponsors unchanged
+      instance_tags = instance.send(:tag_strings)
+      initial_backers = [
+        Kettle::Dev::ReadmeBackers::Backer.new(name: "Old", image: nil, website: nil, profile: nil),
+      ]
+      initial_backers_md = instance.send(:generate_markdown, initial_backers, empty_message: "No backers yet. Be the first!", default_name: "Backer")
+      initial_sponsors = [
+        Kettle::Dev::ReadmeBackers::Backer.new(name: "Org", image: nil, website: "https://org.example", profile: nil),
+      ]
+      initial_sponsors_md = instance.send(:generate_markdown, initial_sponsors, empty_message: "No sponsors yet. Be the first!", default_name: "Sponsor")
+      File.write(tmp_readme, [
+        instance_tags[:generic_start],
+        initial_backers_md,
+        instance_tags[:generic_end],
+        instance_tags[:orgs_start],
+        initial_sponsors_md,
+        instance_tags[:orgs_end],
+      ].join("\n"))
+
+      # New backers different; sponsors same so no change for sponsors
+      new_backers = [Kettle::Dev::ReadmeBackers::Backer.new(name: "Alice", image: nil, website: nil, profile: "https://github.com/alice")]
+      allow(instance).to receive(:fetch_members).with("backers.json").and_return(new_backers)
+      allow(instance).to receive(:fetch_members).with("sponsors.json").and_return(initial_sponsors)
+      allow(instance).to receive(:git_repo?).and_return(true)
+      allow(instance).to receive(:perform_git_commit)
+
+      expect { instance.run! }.to output(a_string_matching(/Updated backers section in/)).to_stdout
+      expect(File.read(tmp_readme)).to include("[![Alice]")
+      expect(instance).to have_received(:perform_git_commit)
+    end
+
+    it "updates only sponsors section and uses singular 'section' message", :check_output do
+      instance_tags = instance.send(:tag_strings)
+      initial_backers = [Kettle::Dev::ReadmeBackers::Backer.new(name: "Old", image: nil, website: nil, profile: nil)]
+      initial_backers_md = instance.send(:generate_markdown, initial_backers, empty_message: "No backers yet. Be the first!", default_name: "Backer")
+      File.write(tmp_readme, [
+        instance_tags[:generic_start],
+        initial_backers_md,
+        instance_tags[:generic_end],
+        instance_tags[:orgs_start],
+        "old sponsors",
+        instance_tags[:orgs_end],
+      ].join("\n"))
+
+      allow(instance).to receive(:fetch_members).with("backers.json").and_return(initial_backers) # unchanged
+      new_sponsors = [Kettle::Dev::ReadmeBackers::Backer.new(name: "Acme", image: nil, website: "https://acme.example", profile: nil)]
+      allow(instance).to receive(:fetch_members).with("sponsors.json").and_return(new_sponsors)
+      allow(instance).to receive(:git_repo?).and_return(true)
+      allow(instance).to receive(:perform_git_commit)
+
+      expect { instance.run! }.to output(a_string_matching(/Updated sponsors section in/)).to_stdout
+      expect(File.read(tmp_readme)).to include("[![Acme]")
+      expect(instance).to have_received(:perform_git_commit)
+    end
+
+    it "does not commit when not in a git repo even if content changes", :check_output do
+      instance_tags = instance.send(:tag_strings)
+      File.write(tmp_readme, [
+        instance_tags[:generic_start],
+        "old",
+        instance_tags[:generic_end],
+      ].join("\n"))
+      allow(instance).to receive(:fetch_members).with("backers.json").and_return([Kettle::Dev::ReadmeBackers::Backer.new(name: "A", image: nil, website: nil, profile: nil)])
+      allow(instance).to receive(:fetch_members).with("sponsors.json").and_return([])
+      allow(instance).to receive(:git_repo?).and_return(false)
+      expect(instance).not_to receive(:perform_git_commit)
+      instance.run!
+    end
+
+    it "handles when only one tag pair exists (backers) and sponsors tag missing", :check_output do
+      instance_tags = instance.send(:tag_strings)
+      File.write(tmp_readme, [
+        instance_tags[:generic_start],
+        "old",
+        instance_tags[:generic_end],
+      ].join("\n"))
+      allow(instance).to receive(:fetch_members).with("backers.json").and_return([Kettle::Dev::ReadmeBackers::Backer.new(name: "A", image: nil, website: nil, profile: nil)])
+      allow(instance).to receive(:fetch_members).with("sponsors.json").and_return([])
+      allow(instance).to receive(:git_repo?).and_return(true)
+      allow(instance).to receive(:perform_git_commit)
+      expect { instance.run! }.to output(a_string_matching(/Updated backers section in/)).to_stdout
+      expect(instance).to have_received(:perform_git_commit)
+    end
+  end
+
+  describe "edge cases for helpers" do
+    it "replace_between_tags returns :not_found when end before start" do
+      start_tag = "<!-- S:START -->"
+      end_tag = "<!-- S:END -->"
+      # Force indices such that end appears before start
+      content = "#{end_tag} middle #{start_tag}"
+      expect(instance.send(:replace_between_tags, content, start_tag, end_tag, "X")).to eq(:not_found)
+    end
+
+    it "extract_section_identities returns empty set when tags not found" do
+      ids = instance.send(:extract_section_identities, "content", :not_found, :not_found)
+      expect(ids).to be_a(Set)
+      expect(ids).to be_empty
+    end
+
+    it "readme_osc_tag rescues YAML errors and falls back to default" do
+      yml_path = described_class::OC_YML_PATH
+      allow(File).to receive(:file?).with(yml_path).and_return(true)
+      allow(File).to receive(:read).with(yml_path).and_raise(StandardError.new("fail"))
+      expect(instance.send(:readme_osc_tag)).to eq(described_class::README_OSC_TAG_DEFAULT)
+    end
+
+    it "commit_subject rescues YAML errors and falls back to default" do
+      yml_path = described_class::OC_YML_PATH
+      allow(File).to receive(:file?).with(yml_path).and_return(true)
+      allow(File).to receive(:read).with(yml_path).and_raise(StandardError.new("fail"))
+      expect(instance.send(:commit_subject)).to eq(described_class::COMMIT_SUBJECT_DEFAULT)
+    end
+
+    it "generate_markdown prefers website over profile and uses default avatar" do
+      m = Kettle::Dev::ReadmeBackers::Backer.new(name: "Name", image: nil, website: "https://web", profile: "https://profile")
+      md = instance.send(:generate_markdown, [m], empty_message: "none", default_name: "X")
+      expect(md).to include("(https://web)")
+      expect(md).to include(Kettle::Dev::ReadmeBackers::DEFAULT_AVATAR)
+    end
+  end
+
+  describe "perform_git_commit message composition" do
+    it "includes only Backers line when only backers are present" do
+      allow(instance).to receive(:commit_subject).and_return("Title")
+      allow(instance).to receive(:system).with("git", "add", tmp_readme).and_return(true)
+      allow(instance).to receive(:system).with("git", "diff", "--cached", "--quiet").and_return(false)
+      allow(instance).to receive(:system).with("git", "commit", "-m", a_string_including("Backers:")).and_return(true)
+      allow(instance).to receive(:system).with("git", "commit", "-m", a_string_including("Subscribers:")).and_return(true)
+      backer = Kettle::Dev::ReadmeBackers::Backer.new(name: "X", image: nil, website: "https://github.com/x", profile: nil)
+      instance.send(:perform_git_commit, [backer], [])
+      expect(instance).to have_received(:system).with("git", "commit", "-m", a_string_including("Backers:"))
+      expect(instance).not_to have_received(:system).with("git", "commit", "-m", a_string_including("Subscribers:"))
+    end
+
+    it "includes only Subscribers line when only sponsors are present" do
+      allow(instance).to receive(:commit_subject).and_return("Title")
+      allow(instance).to receive(:system).with("git", "add", tmp_readme).and_return(true)
+      allow(instance).to receive(:system).with("git", "diff", "--cached", "--quiet").and_return(false)
+      allow(instance).to receive(:system).with("git", "commit", "-m", a_string_including("Subscribers:")).and_return(true)
+      allow(instance).to receive(:system).with("git", "commit", "-m", a_string_including("Backers:")).and_return(true)
+      sponsor = Kettle::Dev::ReadmeBackers::Backer.new(name: "S", image: nil, website: "https://github.com/s", profile: nil)
+      instance.send(:perform_git_commit, [], [sponsor])
+      expect(instance).to have_received(:system).with("git", "commit", "-m", a_string_including("Subscribers:"))
+      expect(instance).not_to have_received(:system).with("git", "commit", "-m", a_string_including("Backers:"))
+    end
+  end
 end
 
 # rubocop:enable RSpec/MultipleExpectations, RSpec/MessageSpies, RSpec/LeakyConstantDeclaration, ThreadSafety/ClassInstanceVariable, RSpec/InstanceVariable, RSpec/VerifiedDoubles
