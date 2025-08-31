@@ -24,6 +24,9 @@ Please file a bug if you notice a violation of semantic versioning.
 - integration test for kettle-changelog using KEEP_A_CHANGELOG.md.
 ### Changed
 - add output to error handling related to release creation on GitHub
+- refactored Kettle::Dev::Tasks::CITask.abort => task_abort
+  - Avoids method name clash with ExitAdapter
+  - follows the pattern of other Kettle::Dev::Tasks modules
 ### Deprecated
 ### Removed
 ### Fixed

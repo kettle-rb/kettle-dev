@@ -140,7 +140,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
     it "aborts and lists available options including (others) when dynamic files exist", :check_output do
       # Two files with same first 3 letters so one becomes a dynamic file
       with_workflows(["che_one.yml", "che_two.yml"]) do |_root, _dir|
-        expect { described_class.act("does_not_exist") }.to raise_error(MockSystemExit, /ci:act aborted/)
+        expect { described_class.act("does_not_exist") }.to raise_error(Kettle::Dev::Error, /ci:act aborted/)
       end
     end
   end
@@ -367,7 +367,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
       with_workflows(["ci.yml"]) do |_root, _dir|
         # Only 1 option + quit => entering 99 should abort
         allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("99\n")
-        expect { described_class.act(nil) }.to raise_error(MockSystemExit, /invalid selection/)
+        expect { described_class.act(nil) }.to raise_error(Kettle::Dev::Error, /invalid selection/)
       end
     end
 
@@ -392,7 +392,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
     it "aborts on unknown non-numeric code entry", :check_output do
       with_workflows(["ci.yml"]) do |_root, _dir|
         allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("zzz\n")
-        expect { described_class.act(nil) }.to raise_error(MockSystemExit, /unknown code/)
+        expect { described_class.act(nil) }.to raise_error(Kettle::Dev::Error, /unknown code/)
       end
     end
 
@@ -403,7 +403,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
         # Pretend file is missing at the final check
         allow(File).to receive(:file?).and_call_original
         allow(File).to receive(:file?).with(file_path).and_return(false)
-        expect { described_class.act(nil) }.to raise_error(MockSystemExit, /workflow not found/)
+        expect { described_class.act(nil) }.to raise_error(Kettle::Dev::Error, /workflow not found/)
       end
     end
   end

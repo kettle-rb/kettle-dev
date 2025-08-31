@@ -14,10 +14,13 @@ module Kettle
         module_function
 
         # Local abort indirection to enable mocking via ExitAdapter
-        def abort(msg)
-          Kettle::Dev::ExitAdapter.abort(msg)
+        def task_abort(msg)
+          if defined?(RSpec)
+            raise Kettle::Dev::Error, msg
+          else
+            Kettle::Dev::ExitAdapter.abort(msg)
+          end
         end
-        module_function :abort
 
         # Runs `act` for a selected workflow. Option can be a short code or workflow basename.
         # @param opt [String, nil]
@@ -97,7 +100,7 @@ module Kettle
 
           run_act_for = proc do |file_path|
             ok = system("act", "-W", file_path)
-            abort("ci:act failed: 'act' command not found or exited with failure") unless ok
+            task_abort("ci:act failed: 'act' command not found or exited with failure") unless ok
           end
 
           if choice && !choice.empty?
@@ -125,7 +128,7 @@ module Kettle
                 puts "  (others) =>"
                 dynamic_files.each { |v| puts "        #{v}" }
               end
-              abort("ci:act aborted")
+              task_abort("ci:act aborted")
             end
             fetch_and_print_status.call(file)
             run_act_for.call(file_path)
@@ -302,13 +305,13 @@ module Kettle
           end
 
           input = selected
-          abort("ci:act aborted: no selection") if input.nil? || input.empty?
+          task_abort("ci:act aborted: no selection") if input.nil? || input.empty?
 
           chosen_file = nil
           if !!(/^\d+$/ =~ input)
             idx = input.to_i - 1
             if idx < 0 || idx >= options_with_quit.length
-              abort("ci:act aborted: invalid selection #{input}")
+              task_abort("ci:act aborted: invalid selection #{input}")
             end
             code, val = options_with_quit[idx]
             if code == quit_code
@@ -324,11 +327,11 @@ module Kettle
               return
             end
             chosen_file = mapping[code]
-            abort("ci:act aborted: unknown code '#{code}'") unless chosen_file
+            task_abort("ci:act aborted: unknown code '#{code}'") unless chosen_file
           end
 
           file_path = File.join(workflows_dir, chosen_file)
-          abort("ci:act aborted: workflow not found: #{file_path}") unless File.file?(file_path)
+          task_abort("ci:act aborted: workflow not found: #{file_path}") unless File.file?(file_path)
           fetch_and_print_status.call(chosen_file)
           run_act_for.call(file_path)
           Kettle::Dev::CIMonitor.monitor_gitlab!(restart_hint: "bundle exec rake ci:act")
