@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
-# HOW TO UPDATE APPRAISALS:
-#   BUNDLE_GEMFILE=Appraisal.root.gemfile bundle
-#   BUNDLE_GEMFILE=Appraisal.root.gemfile bundle exec appraisal update
-#   bundle exec rake rubocop_gradual:autocorrect
+# HOW TO UPDATE APPRAISALS (will run rubocop_gradual's autocorrect afterward):
+#   bin/rake appraisals:update
 
 # Lock/Unlock Deps Pattern
 #

@@ -19,6 +19,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ## [Unreleased]
 ### Added
 ### Changed
+- update Appraisals.example template's instructions for updating appraisals
 ### Deprecated
 ### Removed
 ### Fixed
