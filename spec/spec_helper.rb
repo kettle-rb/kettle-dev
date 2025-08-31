@@ -23,12 +23,9 @@ end
 
 # this library
 require "kettle-dev"
-# Ensure GitAdapter constant is available for global stubbing
-require "kettle/dev/git_adapter"
-# Ensure ExitAdapter constant is available for potential stubbing
-require "kettle/dev/exit_adapter"
-# Ensure InputAdapter constant is available for stubbing
-require "kettle/dev/input_adapter"
+# Dog food autoload setup and ensure GitAdapter constant is available for global stubbing
+# Dog food autoload setup and ensure ExitAdapter constant is available for potential stubbing
+# Dog food autoload setup and ensure InputAdapter constant is available for stubbing
 
 # rspec-pending_for: enable skipping on incompatible Ruby versions
 require "rspec/pending_for"

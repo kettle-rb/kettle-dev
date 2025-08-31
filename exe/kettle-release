@@ -19,7 +19,16 @@ $stdout.sync = true
 # Depending library or project must be using bundler
 require "bundler/setup"
 
-require "kettle/dev"
+script_basename = File.basename(__FILE__)
+
+begin
+  require "kettle/dev"
+  puts "== #{script_basename} v#{Kettle::Dev::Version::VERSION} =="
+rescue LoadError => e
+  warn("#{script_basename}: could not load dependency: #{e.class}: #{e.message}")
+  warn("Hint: Ensure the host project has kettle-dev as a dependency and run bundle install.")
+  exit(1)
+end
 
 # Always execute when this file is loaded (e.g., via a Bundler binstub).
 # Do not guard with __FILE__ == $PROGRAM_NAME because binstubs use Kernel.load.
@@ -48,22 +57,22 @@ if ARGV.include?("-h") || ARGV.include?("--help")
   exit 0
 end
 
-puts "== kettle-release v#{Kettle::Dev::Version::VERSION} =="
 # Parse start_step=<n> from ARGV
 start_step_arg = ARGV.find { |a| a.start_with?("start_step=") }
 start_step = start_step_arg ? start_step_arg.split("=", 2)[1].to_i : 1
+
 begin
   Kettle::Dev::ReleaseCLI.new(start_step: start_step).run
 rescue LoadError => e
-  warn("kettle-release: could not load dependency: #{e.message}")
+  warn("#{script_basename}: could not load dependency: #{e.class}: #{e.message}")
   warn(e.backtrace.join("\n")) if ENV["DEBUG"]
   exit(1)
 rescue SystemExit => e
   # Preserve exit status, but ensure at least a newline so shells don't show an empty line only.
-  warn("kettle-release exited (status=#{e.status})") if e.status != 0
+  warn("#{script_basename}: exited (status=#{e.status}, msg=#{e.message})") if e.status != 0
   raise
 rescue StandardError => e
-  warn("kettle-release: unexpected error: #{e.class}: #{e.message}")
+  warn("#{script_basename}: unexpected error: #{e.class}: #{e.message}")
   warn(e.backtrace.join("\n"))
   exit(1)
 end

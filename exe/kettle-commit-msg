@@ -8,12 +8,19 @@ $stdout.sync = true
 # Depending library or project must be using bundler
 require "bundler/setup"
 
-# Standard library
-require "erb"
+script_basename = File.basename(__FILE__)
 
-require "kettle/dev"
+begin
+  # Standard library
+  require "erb"
 
-puts "== kettle-commit-msg v#{Kettle::Dev::Version::VERSION} =="
+  require "kettle/dev"
+  puts "== #{script_basename} v#{Kettle::Dev::Version::VERSION} =="
+rescue LoadError => e
+  warn("#{script_basename}: could not load dependency: #{e.class}: #{e.message}")
+  warn("Hint: Ensure the host project has kettle-dev as a dependency and run bundle install.")
+  exit(1)
+end
 
 # ENV variable control (set in .envrc, or .env.local)
 # BRANCH_RULE_TYPE = jira, or another type of branch rule validation, or false to disable
@@ -52,4 +59,18 @@ else
   # puts "No branch rule configured (set GIT_HOOK_BRANCH_VALIDATE=jira to enforce rules for jira style branch names)"
 end
 
-Kettle::Dev::GitCommitFooter.render(*ARGV)
+begin
+  Kettle::Dev::GitCommitFooter.render(*ARGV)
+rescue LoadError => e
+  warn("#{script_basename}: could not load dependency: #{e.class}: #{e.message}")
+  warn(e.backtrace.join("\n")) if ENV["DEBUG"]
+  exit(1)
+rescue SystemExit => e
+  # Preserve exit status, but ensure at least a newline so shells don't show an empty line only.
+  warn("#{script_basename}: exited (status=#{e.status}, msg=#{e.message})") if e.status != 0
+  raise
+rescue StandardError => e
+  warn("#{script_basename}: unexpected error: #{e.class}: #{e.message}")
+  warn(e.backtrace.join("\n"))
+  exit(1)
+end

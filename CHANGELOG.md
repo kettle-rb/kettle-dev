@@ -20,12 +20,17 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Added
 - improved documentation
 - more badges in README (gem & template)
+- integration test for kettle-changelog using CHANGELOG.md.
+- integration test for kettle-changelog using KEEP_A_CHANGELOG.md.
 ### Changed
 - add output to error handling related to release creation on GitHub
 ### Deprecated
 ### Removed
 ### Fixed
 - typos in README for gem & template
+- kettle-changelog: more robust in retention of version chunks, and markdown link refs, that are not relevant to the chunk being added
+- Rearrange footer links in changelog by order, newest first, oldest last
+- Kettle::Dev::Tasks::CITask::act returns properly when running non-interactively
 ### Security
 
 ## [1.0.23] - 2025-08-30

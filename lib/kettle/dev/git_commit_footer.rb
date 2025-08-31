@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-# Exposed from lib/ so that exe/kettle-commit-msg can be a minimal wrapper.
-
 module Kettle
   module Dev
     class GitCommitFooter

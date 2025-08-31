@@ -5,11 +5,32 @@
 
 # Immediate, unbuffered output
 $stdout.sync = true
-# Ensure bundler is set up by the host project
+# Depending library or project must be using bundler
 require "bundler/setup"
 
-require "kettle/dev"
+script_basename = File.basename(__FILE__)
 
-puts "== kettle-readme-backers v#{Kettle::Dev::Version::VERSION} =="
+begin
+  require "kettle/dev"
+  puts "== #{script_basename} v#{Kettle::Dev::Version::VERSION} =="
+rescue LoadError => e
+  warn("kettle/dev: failed to load: #{e.message}")
+  warn("Hint: Ensure the host project has kettle-dev as a dependency and run bundle install.")
+  exit(1)
+end
 
-Kettle::Dev::ReadmeBackers.new.run!
+begin
+  Kettle::Dev::ReadmeBackers.new.run!
+rescue LoadError => e
+  warn("#{script_basename}: could not load dependency: #{e.class}: #{e.message}")
+  warn(e.backtrace.join("\n")) if ENV["DEBUG"]
+  exit(1)
+rescue SystemExit => e
+  # Preserve exit status, but ensure at least a newline so shells don't show an empty line only.
+  warn("#{script_basename}: exited (status=#{e.status}, msg=#{e.message})") if e.status != 0
+  raise
+rescue StandardError => e
+  warn("#{script_basename}: unexpected error: #{e.class}: #{e.message}")
+  warn(e.backtrace.join("\n"))
+  exit(1)
+end

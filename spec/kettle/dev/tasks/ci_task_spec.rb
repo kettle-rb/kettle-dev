@@ -257,8 +257,11 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
         ]
         allow(Net::HTTP).to receive(:start).and_return(*seq)
         file_path = File.join(dir, "ci.yml")
-        expect(described_class).to receive(:system).with("act", "-W", file_path).and_return(true)
+        # Spy on system first, then assert after the call; ensure only this exact call occurs
+        allow(described_class).to receive(:system).with("act", "-W", file_path).and_return(true)
         expect { described_class.act("ci") }.not_to raise_error
+        expect(described_class).to have_received(:system).with("act", "-W", file_path).once
+        expect(described_class).to have_received(:system).exactly(1).time
       end
     end
 

@@ -5,11 +5,6 @@ require "uri"
 require "json"
 require "net/http"
 
-# Internal
-require "kettle/dev/ci_helpers"
-require "kettle/dev/exit_adapter"
-require "kettle/dev/git_adapter"
-
 module Kettle
   module Dev
     # CIMonitor centralizes CI monitoring logic (GitHub Actions and GitLab pipelines)

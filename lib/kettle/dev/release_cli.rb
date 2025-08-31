@@ -13,12 +13,6 @@ require "uri"
 # External gems
 require "ruby-progressbar"
 
-# Internal
-require "kettle/dev/git_adapter"
-require "kettle/dev/exit_adapter"
-require "kettle/dev/input_adapter"
-require "kettle/dev/versioning"
-
 module Kettle
   module Dev
     class ReleaseCLI
@@ -462,7 +456,6 @@ module Kettle
 
       def monitor_workflows_after_push!
         # Delegate to shared CI monitor to keep logic DRY across release flow and rake tasks
-        require "kettle/dev/ci_monitor"
         Kettle::Dev::CIMonitor.monitor_all!(restart_hint: "bundle exec kettle-release start_step=10")
       end
 

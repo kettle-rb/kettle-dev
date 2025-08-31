@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 # External stdlib
-require "kettle/dev/exit_adapter"
 require "yaml"
 require "json"
 require "uri"

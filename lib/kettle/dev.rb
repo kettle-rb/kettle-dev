@@ -112,21 +112,26 @@ end
 module Kettle
   autoload :EmojiRegex, "kettle/emoji_regex"
   module Dev
+    autoload :ChangelogCLI, "kettle/dev/changelog_cli"
     autoload :CIHelpers, "kettle/dev/ci_helpers"
+    autoload :CIMonitor, "kettle/dev/ci_monitor"
     autoload :CommitMsg, "kettle/dev/commit_msg"
+    autoload :ExitAdapter, "kettle/dev/exit_adapter"
     autoload :GemSpecReader, "kettle/dev/gem_spec_reader"
+    autoload :GitAdapter, "kettle/dev/git_adapter"
     autoload :GitCommitFooter, "kettle/dev/git_commit_footer"
+    autoload :InputAdapter, "kettle/dev/input_adapter"
     autoload :ReadmeBackers, "kettle/dev/readme_backers"
     autoload :ReleaseCLI, "kettle/dev/release_cli"
     autoload :TemplateHelpers, "kettle/dev/template_helpers"
-    autoload :ExitAdapter, "kettle/dev/exit_adapter"
     autoload :Version, "kettle/dev/version"
+    autoload :Versioning, "kettle/dev/versioning"
 
     # Nested tasks namespace with autoloaded task modules
     module Tasks
-      autoload :TemplateTask, "kettle/dev/tasks/template_task"
-      autoload :InstallTask, "kettle/dev/tasks/install_task"
       autoload :CITask, "kettle/dev/tasks/ci_task"
+      autoload :InstallTask, "kettle/dev/tasks/install_task"
+      autoload :TemplateTask, "kettle/dev/tasks/template_task"
     end
   end
 end

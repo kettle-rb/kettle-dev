@@ -1,12 +1,11 @@
 # frozen_string_literal: true
 
 # External
-require "kettle/dev/exit_adapter"
-require "kettle/dev/input_adapter"
 require "open3"
 require "net/http"
 require "json"
 require "uri"
+require "io/console"
 
 module Kettle
   module Dev
@@ -21,10 +20,8 @@ module Kettle
         module_function :abort
 
         # Runs `act` for a selected workflow. Option can be a short code or workflow basename.
-        # Mirrors the behavior previously implemented in the ci:act rake task.
         # @param opt [String, nil]
         def act(opt = nil)
-          require "io/console"
           choice = opt&.strip
 
           root_dir = Kettle::Dev::CIHelpers.project_root
@@ -132,13 +129,6 @@ module Kettle
             end
             fetch_and_print_status.call(file)
             run_act_for.call(file_path)
-            # After running locally, check upstream GitLab pipeline status if configured
-            begin
-              require "kettle/dev/ci_monitor"
-              Kettle::Dev::CIMonitor.monitor_gitlab!(restart_hint: "bundle exec rake ci:act")
-            rescue LoadError
-              # ignore if not available
-            end
             return
           end
 
@@ -341,13 +331,7 @@ module Kettle
           abort("ci:act aborted: workflow not found: #{file_path}") unless File.file?(file_path)
           fetch_and_print_status.call(chosen_file)
           run_act_for.call(file_path)
-          # After running locally, check upstream GitLab pipeline status if configured
-          begin
-            require "kettle/dev/ci_monitor"
-            Kettle::Dev::CIMonitor.monitor_gitlab!(restart_hint: "bundle exec rake ci:act")
-          rescue LoadError
-            # ignore if not available
-          end
+          Kettle::Dev::CIMonitor.monitor_gitlab!(restart_hint: "bundle exec rake ci:act")
         end
       end
     end

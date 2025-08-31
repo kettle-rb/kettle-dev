@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "kettle/dev/versioning"
-require "kettle/dev/exit_adapter"
 require "tmpdir"
 require "fileutils"
 

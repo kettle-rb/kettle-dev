@@ -2,8 +2,6 @@
 
 # External stdlibs
 require "find"
-# Internal
-require "kettle/dev/input_adapter"
 
 module Kettle
   module Dev

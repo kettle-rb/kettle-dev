@@ -14,9 +14,6 @@ RSpec.shared_context "with mocked git adapter" do
     # Allow opting out for specs that need the real implementation
     next if example.metadata[:real_git_adapter]
 
-    # Ensure the class is loaded so we can stub it
-    require "kettle/dev/git_adapter"
-
     # Create a fresh double per example to avoid cross-test leakage
     adapter_double = instance_double(Kettle::Dev::GitAdapter)
     allow(adapter_double).to receive(:push) { |_remote, _branch, **_opts| git_push_success }

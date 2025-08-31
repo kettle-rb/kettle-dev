@@ -10,8 +10,6 @@ RSpec.shared_context "with mocked exit adapter" do
     # Allow opting out for specs that need the real implementation
     next if example.metadata[:real_exit_adapter]
 
-    # Ensure the module is loaded so we can stub it
-    require "kettle/dev/exit_adapter"
     # Define non-leaky exception class via stub_const; auto-restored between examples
     stub_const("MockSystemExit", Class.new(StandardError))
 

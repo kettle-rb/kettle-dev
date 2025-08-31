@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "kettle/dev/ci_monitor"
-
 RSpec.describe Kettle::Dev::CIMonitor do
   let(:helpers) { Kettle::Dev::CIHelpers }
 

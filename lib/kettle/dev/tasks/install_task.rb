@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require "kettle/dev/exit_adapter"
-require "kettle/dev/input_adapter"
-
 module Kettle
   module Dev
     module Tasks

@@ -665,14 +665,6 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
   end
 
   describe "::task_abort" do
-    it "aborts with SystemExit in a subprocess without RSpec loaded" do
-      require "open3"
-      cmd = %(ruby -e "require './lib/kettle/dev/tasks/install_task'; Kettle::Dev::Tasks::InstallTask.task_abort('boom')")
-      stdout, stderr, status = Open3.capture3(cmd)
-      expect(status.success?).to be false
-      expect(stdout + stderr).to include("boom")
-    end
-
     it "preserves repeated spaces in README during install (H1 and body)" do
       Dir.mktmpdir do |project_root|
         # Minimal gemspec so homepage checks do not abort

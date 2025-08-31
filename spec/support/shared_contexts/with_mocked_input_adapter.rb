@@ -10,7 +10,6 @@
 RSpec.shared_context "with mocked input adapter" do
   before do |example|
     next if example.metadata[:real_input_adapter]
-    require "kettle/dev/input_adapter"
 
     default = ENV["TEST_INPUT_DEFAULT"]
 
