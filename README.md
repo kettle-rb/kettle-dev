@@ -41,13 +41,6 @@ bundle exec rake kettle:dev:install
 
 Now you have many powerful development and testing tools at your disposal, all fully [documented](#-configuration) and tested.
 
-I expect the current release of this gem to be compatible with Ruby 2.3+,
-and concordant releases of JRuby, and TruffleRuby.
-
-| 🚚 _Amazing_ test matrix was brought to you by | 🔎 appraisal2 🔎                                                                    |
-|------------------------------------------------|-------------------------------------------------------------------------------------|
-| 👟 Check it out!                               | ✨ [github.com/appraisal-rb/appraisal2][💎appraisal2] ✨ |
-
 ## 💡 Info you can shake a stick at
 
 | Tokens to Remember      | [![Gem name][⛳️name-img]][⛳️gem-name] [![Gem namespace][⛳️namespace-img]][⛳️gem-namespace]                                                                                                                                                                                                                     |
@@ -66,7 +59,7 @@ and concordant releases of JRuby, and TruffleRuby.
 
 ### Compatibility
 
-Compatible with Ruby 2.3+, and concordant releases of JRuby, and TruffleRuby.
+Compatible with MRI Ruby 2.3+, and concordant releases of JRuby, and TruffleRuby.
 
 | 🚚 _Amazing_ test matrix was brought to you by | 🔎 appraisal2 🔎                                                                    |
 |------------------------------------------------|-------------------------------------------------------------------------------------|
@@ -90,8 +83,12 @@ Compatible with Ruby 2.3+, and concordant releases of JRuby, and TruffleRuby.
 
 ### Enterprise Support [![Tidelift](https://tidelift.com/badges/package/rubygems/kettle-dev)](https://tidelift.com/subscription/pkg/rubygems-kettle-dev?utm_source=rubygems-kettle-dev&utm_medium=referral&utm_campaign=readme)
 
+Available as part of the Tidelift Subscription.
+
 <details>
   <summary>Need enterprise-level guarantees?</summary>
+
+The maintainers of this and thousands of other packages are working with Tidelift to deliver commercial support and maintenance for the open source packages you use to build your applications. Save time, reduce risk, and improve code health, while paying the maintainers of the exact packages you use.
 
 [![Get help from me on Tidelift][🏙️entsup-tidelift-img]][🏙️entsup-tidelift]
 
