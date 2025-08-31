@@ -344,6 +344,15 @@ module Kettle
         c = content.dup
         c = c.gsub("kettle-rb", org.to_s) if org && !org.empty?
         if gem_name && !gem_name.empty?
+          # Special-case: yard-head link uses the gem name as a subdomain and must be dashes-only.
+          # Apply this BEFORE other generic replacements so it isn't altered incorrectly.
+          begin
+            dashed = gem_name.tr("_", "-")
+            c = c.gsub("[🚎yard-head]: https://kettle-dev.galtzo.com", "[🚎yard-head]: https://#{dashed}.galtzo.com")
+          rescue StandardError
+            # ignore
+          end
+
           # Replace occurrences of the template gem name in text, including inside
           # markdown reference labels like [🖼️kettle-dev] and identifiers like kettle-dev-i
           c = c.gsub("kettle-dev", gem_name)

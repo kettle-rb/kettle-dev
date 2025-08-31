@@ -29,8 +29,9 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Fixed
 - typos in README for gem & template
 - kettle-changelog: more robust in retention of version chunks, and markdown link refs, that are not relevant to the chunk being added
-- Rearrange footer links in changelog by order, newest first, oldest last
-- Kettle::Dev::Tasks::CITask::act returns properly when running non-interactively
+- rearrange footer links in changelog by order, newest first, oldest last
+- `Kettle::Dev::Tasks::CITask.act` returns properly when running non-interactively
+- Replace Underscores with Dashes in Gem Names for [🚎yard-head] link
 ### Security
 
 ## [1.0.23] - 2025-08-30

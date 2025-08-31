@@ -456,6 +456,11 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
       meta2 = meta.merge(gem_name: "food-bar", namespace: "Food::Bar", namespace_shield: "Food%3A%3ABar", gem_shield: "food--bar")
       expect(helpers.apply_common_replacements("require 'kettle/dev'\n# path: kettle/dev/something", **meta2)).to eq("require 'food/bar'\n# path: food/bar/something")
     end
+
+    it "uses dashed gem name in yard-head link reference and runs before other replacements" do
+      input = "[🚎yard-head]: https://kettle-dev.galtzo.com"
+      expect(rep(input)).to eq("[🚎yard-head]: https://foo-bar.galtzo.com")
+    end
   end
 
   context "when running kettle:dev:template" do
