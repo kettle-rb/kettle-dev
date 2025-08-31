@@ -191,6 +191,73 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
         expect(branch_cov).to be_nil
       end
     end
+
+    context "when success aggregation" do
+      it "computes line and branch coverage across files" do
+        mkproj do |root|
+          allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
+          FileUtils.mkdir_p(File.join(root, "coverage"))
+          data = {
+            "coverage" => {
+              "lib/a.rb" => {
+                "lines" => [1, 0, nil, "x"],
+                "branches" => [
+                  {"coverage" => 1},
+                  {"coverage" => 0},
+                  {"coverage" => "n/a"}
+                ]
+              },
+              "lib/b.rb" => {
+                "lines" => [0, 0, 2],
+                "branches" => [
+                  {"coverage" => 0},
+                  {"coverage" => 0}
+                ]
+              },
+              "lib/c.rb" => {
+                "lines" => [nil, nil],
+                "branches" => []
+              }
+            }
+          }
+          File.write(File.join(root, "coverage", "coverage.json"), JSON.pretty_generate(data))
+          cli = described_class.new
+          line_cov, branch_cov = cli.send(:coverage_lines)
+          expect(line_cov).to eq("COVERAGE: 40.00% -- 2/5 lines in 2 files")
+          expect(branch_cov).to eq("BRANCH COVERAGE: 25.00% -- 1/4 branches in 2 files")
+        end
+      end
+    end
+
+    context "when branch filtering" do
+      it "counts only Hash entries with Numeric coverage and increments covered only for > 0" do
+        Dir.mktmpdir do |root|
+          allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
+          FileUtils.mkdir_p(File.join(root, "coverage"))
+          data = {
+            "coverage" => {
+              "lib/a.rb" => {
+                "lines" => [1],
+                "branches" => [
+                  "string",             # skipped: not a Hash (line 202)
+                  123,                   # skipped: not a Hash (line 202)
+                  {"coverage" => "n/a"}, # skipped: non-Numeric (line 204)
+                  {"coverage" => 0},     # counts in total, not covered (205-206)
+                  {"coverage" => 2}      # counts in total and covered (205-206)
+                ]
+              }
+            }
+          }
+          File.write(File.join(root, "coverage", "coverage.json"), JSON.pretty_generate(data))
+          cli = described_class.new
+          line_cov, branch_cov = cli.send(:coverage_lines)
+          # lines: 1 relevant, 1 covered, 1 file
+          expect(line_cov).to eq("COVERAGE: 100.00% -- 1/1 lines in 1 files")
+          # branches considered: only the two Hash+Numeric ones => total 2, covered 1
+          expect(branch_cov).to eq("BRANCH COVERAGE: 50.00% -- 1/2 branches in 1 files")
+        end
+      end
+    end
   end
 
   describe "#yard_percent_documented" do
@@ -264,6 +331,30 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       expect(out).to include("[Unreleased]: https://github.com/acme/x/compare/v1.1.0...HEAD")
       expect(out).to include("[1.1.0]: https://github.com/acme/x/compare/v1.0.0...v1.1.0")
       expect(out).to include("[1.1.0t]: https://github.com/acme/x/releases/tag/v1.1.0")
+    end
+  end
+
+  describe "#update_link_refs GitLab compare owner override and multiple entries" do
+    it "uses provided owner/repo instead of captured ones when present (compare links)" do
+      cli = described_class.new
+      input = <<~TXT
+        [1.2.3]: https://gitlab.com/foo/bar/-/compare/deadbeef...v1.2.3
+      TXT
+      out = cli.send(:update_link_refs, input, "acme", "widget", "1.2.2", "1.2.3")
+      expect(out).to include("https://github.com/acme/widget/compare/deadbeef...v1.2.3")
+      # Ensure old GitLab URL no longer present
+      expect(out).not_to include("gitlab.com/foo/bar/-/compare/deadbeef...v1.2.3")
+    end
+
+    it "converts multiple GitLab compare links using captured groups when owner/repo are nil" do
+      cli = described_class.new
+      input = <<~TXT
+        [0.9.0]: https://gitlab.com/one/repo/-/compare/abc123...v0.9.0
+        [1.0.0]: https://gitlab.com/two/other/-/compare/def456...v1.0.0
+      TXT
+      out = cli.send(:update_link_refs, input, nil, nil, "0.9.0", "1.0.1")
+      expect(out).to include("https://github.com/one/repo/compare/abc123...v0.9.0")
+      expect(out).to include("https://github.com/two/other/compare/def456...v1.0.0")
     end
   end
 
@@ -443,43 +534,6 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       expect(updated).to include("[Unreleased]: ")
       expect(updated).to include("[9.9.9]: https://github.com/acme/my-gem/compare/")
       expect(updated).to include("[9.9.9t]: https://github.com/acme/my-gem/releases/tag/v9.9.9")
-    end
-  end
-
-  describe "#coverage_lines success aggregation" do
-    it "computes line and branch coverage across files" do
-      mkproj do |root|
-        allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
-        FileUtils.mkdir_p(File.join(root, "coverage"))
-        data = {
-          "coverage" => {
-            "lib/a.rb" => {
-              "lines" => [1, 0, nil, "x"],
-              "branches" => [
-                {"coverage" => 1},
-                {"coverage" => 0},
-                {"coverage" => "n/a"}
-              ]
-            },
-            "lib/b.rb" => {
-              "lines" => [0, 0, 2],
-              "branches" => [
-                {"coverage" => 0},
-                {"coverage" => 0}
-              ]
-            },
-            "lib/c.rb" => {
-              "lines" => [nil, nil],
-              "branches" => []
-            }
-          }
-        }
-        File.write(File.join(root, "coverage", "coverage.json"), JSON.pretty_generate(data))
-        cli = described_class.new
-        line_cov, branch_cov = cli.send(:coverage_lines)
-        expect(line_cov).to eq("COVERAGE: 40.00% -- 2/5 lines in 2 files")
-        expect(branch_cov).to eq("BRANCH COVERAGE: 25.00% -- 1/4 branches in 2 files")
-      end
     end
   end
 
