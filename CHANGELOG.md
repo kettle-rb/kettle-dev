@@ -18,13 +18,21 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [Unreleased]
 ### Added
-- test that .env.local.example is copied by install / template tasks
 ### Changed
-- update Appraisals.example template's instructions for updating appraisals
 ### Deprecated
 ### Removed
 ### Fixed
 ### Security
+
+## [1.0.25] - 2025-08-31
+- TAG: [v1.0.25][1.0.25t]
+- COVERAGE: 97.81% -- 2630/2689 lines in 22 files
+- BRANCH COVERAGE: 82.40% -- 1100/1335 branches in 22 files
+- 75.00% documented
+### Added
+- test that .env.local.example is copied by install / template tasks
+### Changed
+- update Appraisals.example template's instructions for updating appraisals
 
 ## [1.0.24] - 2025-08-31
 - TAG: [v1.0.24][1.0.24t]
@@ -376,7 +384,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.24...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.25...HEAD
+[1.0.25]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.24...v1.0.25
+[1.0.25t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.25
 [1.0.24]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.23...v1.0.24
 [1.0.24t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.24
 [1.0.23]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.22...v1.0.23
