@@ -18,6 +18,7 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [Unreleased]
 ### Added
+- test that .env.local.example is copied by install / template tasks
 ### Changed
 - update Appraisals.example template's instructions for updating appraisals
 ### Deprecated

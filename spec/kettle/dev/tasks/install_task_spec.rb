@@ -779,6 +779,9 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
         expect(line).not_to be_nil
         gen_prefix = line[/^\|[^|]*\|/]
         expect(gen_prefix).to eq(src_prefix)
+
+        # ensure .env.local.example is copied during full install
+        expect(File).to exist(File.join(project_root, ".env.local.example"))
       end
     end
   end
