@@ -350,20 +350,3 @@ module Kettle
     end
   end
 end
-
-begin
-  if ARGV.include?("-h") || ARGV.include?("--help")
-    puts <<~USAGE
-      Usage: kettle-changelog
-
-      Generates a new CHANGELOG.md entry for the current version detected from lib/**/version.rb.
-      Moves entries from [Unreleased] into the new section, adds coverage and documentation stats,
-      and updates bottom link references to GitHub style, adding new compare/tag links.
-
-      Prerequisites:
-        - coverage/coverage.json present (run: K_SOUP_COV_FORMATTERS="json" bin/rspec)
-        - yard installed and available via bin/yard
-    USAGE
-    exit(0)
-  end
-end

@@ -375,19 +375,6 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
     end
   end
 
-  describe "CLI help banner (file-level)" do
-    it "prints usage and exits when -h is present" do
-      file = File.expand_path("../../../lib/kettle/dev/changelog_cli.rb", __dir__)
-      begin
-        orig_argv = ARGV.dup
-        ARGV.replace(["-h"]) # trigger the usage
-        expect { load file }.to raise_error(SystemExit)
-      ensure
-        ARGV.replace(orig_argv)
-      end
-    end
-  end
-
   it "lists Unreleased first, then newest to oldest versions in footer" do
     Dir.mktmpdir do |root|
       FileUtils.mkdir_p(File.join(root, "lib", "my", "gem"))
