@@ -12,17 +12,17 @@
     [250, 19, 158, "Lint/RescueException: Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?", 3347980327],
     [256, 15, 175, "Lint/RescueException: Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?", 1705470978]
   ],
-  "spec/kettle/dev/changelog_cli_spec.rb:5213365": [
+  "spec/kettle/dev/changelog_cli_spec.rb:4255812141": [
     [39, 9, 72, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [40].", 1904128172],
     [40, 9, 75, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [39].", 2496915125],
     [284, 85, 12, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 4264369714],
-    [461, 7, 60, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [462].", 1941286627],
-    [462, 7, 71, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [461].", 3274330758],
-    [469, 13, 25, "RSpec/DescribedClass: Use `described_class` instead of `Kettle::Dev::ChangelogCLI`.", 320529073],
-    [511, 7, 60, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [512].", 1941286627],
-    [512, 7, 71, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [511].", 3274330758],
-    [518, 13, 25, "RSpec/DescribedClass: Use `described_class` instead of `Kettle::Dev::ChangelogCLI`.", 320529073],
-    [551, 103, 12, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 4264369714]
+    [448, 7, 60, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [449].", 1941286627],
+    [449, 7, 71, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [448].", 3274330758],
+    [456, 13, 25, "RSpec/DescribedClass: Use `described_class` instead of `Kettle::Dev::ChangelogCLI`.", 320529073],
+    [498, 7, 60, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [499].", 1941286627],
+    [499, 7, 71, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [498].", 3274330758],
+    [505, 13, 25, "RSpec/DescribedClass: Use `described_class` instead of `Kettle::Dev::ChangelogCLI`.", 320529073],
+    [538, 103, 12, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 4264369714]
   ],
   "spec/kettle/dev/ci_helpers_spec.rb:3105013959": [
     [36, 16, 42, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 465257938],

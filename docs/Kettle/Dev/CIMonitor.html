@@ -399,12 +399,12 @@ via CIHelpers, matching the behavior historically implemented in ReleaseCLI.</p>
       <pre class="lines">
 
 
-24
-25
-26</pre>
+19
+20
+21</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 24</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 19</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_abort'>abort</span><span class='lparen'>(</span><span class='id identifier rubyid_msg'>msg</span><span class='rparen'>)</span>
   <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="ExitAdapter.html" title="Kettle::Dev::ExitAdapter (module)">ExitAdapter</a></span></span><span class='period'>.</span><span class='id identifier rubyid_abort'><span class='object_link'><a href="ExitAdapter.html#abort-class_method" title="Kettle::Dev::ExitAdapter.abort (method)">abort</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_msg'>msg</span><span class='rparen'>)</span>
@@ -429,12 +429,12 @@ via CIHelpers, matching the behavior historically implemented in ReleaseCLI.</p>
       <pre class="lines">
 
 
-169
-170
-171</pre>
+164
+165
+166</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 169</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 164</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_github_remote_candidates'>github_remote_candidates</span>
   <span class='id identifier rubyid_remotes_with_urls'>remotes_with_urls</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_n'>n</span><span class='comma'>,</span> <span class='id identifier rubyid_u'>u</span><span class='op'>|</span> <span class='id identifier rubyid_u'>u</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>github.com</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_keys'>keys</span>
@@ -459,12 +459,12 @@ via CIHelpers, matching the behavior historically implemented in ReleaseCLI.</p>
       <pre class="lines">
 
 
-174
-175
-176</pre>
+169
+170
+171</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 174</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 169</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_gitlab_remote_candidates'>gitlab_remote_candidates</span>
   <span class='id identifier rubyid_remotes_with_urls'>remotes_with_urls</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_n'>n</span><span class='comma'>,</span> <span class='id identifier rubyid_u'>u</span><span class='op'>|</span> <span class='id identifier rubyid_u'>u</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>gitlab.com</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_keys'>keys</span>
@@ -521,15 +521,15 @@ This mirrors ReleaseCLI behavior.</p>
       <pre class="lines">
 
 
-34
-35
-36
-37
-38
-39</pre>
+29
+30
+31
+32
+33
+34</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 34</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 29</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_monitor_all!'>monitor_all!</span><span class='lparen'>(</span><span class='label'>restart_hint:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>bundle exec kettle-release start_step=10</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
   <span class='id identifier rubyid_checks_any'>checks_any</span> <span class='op'>=</span> <span class='kw'>false</span>
@@ -567,6 +567,11 @@ This mirrors ReleaseCLI behavior.</p>
       <pre class="lines">
 
 
+47
+48
+49
+50
+51
 52
 53
 54
@@ -616,15 +621,10 @@ This mirrors ReleaseCLI behavior.</p>
 98
 99
 100
-101
-102
-103
-104
-105
-106</pre>
+101</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 52</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 47</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_monitor_github_internal!'>monitor_github_internal!</span><span class='lparen'>(</span><span class='label'>restart_hint:</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="CIHelpers.html" title="Kettle::Dev::CIHelpers (module)">CIHelpers</a></span></span><span class='period'>.</span><span class='id identifier rubyid_project_root'><span class='object_link'><a href="CIHelpers.html#project_root-class_method" title="Kettle::Dev::CIHelpers.project_root (method)">project_root</a></span></span>
@@ -750,12 +750,12 @@ Used by ci:act after running ‘act’.</p>
       <pre class="lines">
 
 
-46
-47
-48</pre>
+41
+42
+43</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 46</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 41</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_monitor_gitlab!'>monitor_gitlab!</span><span class='lparen'>(</span><span class='label'>restart_hint:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>bundle exec rake ci:act</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
   <span class='id identifier rubyid_monitor_gitlab_internal!'>monitor_gitlab_internal!</span><span class='lparen'>(</span><span class='label'>restart_hint:</span> <span class='id identifier rubyid_restart_hint'>restart_hint</span><span class='rparen'>)</span>
@@ -780,6 +780,11 @@ Used by ci:act after running ‘act’.</p>
       <pre class="lines">
 
 
+104
+105
+106
+107
+108
 109
 110
 111
@@ -821,15 +826,10 @@ Used by ci:act after running ‘act’.</p>
 147
 148
 149
-150
-151
-152
-153
-154
-155</pre>
+150</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 109</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 104</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_monitor_gitlab_internal!'>monitor_gitlab_internal!</span><span class='lparen'>(</span><span class='label'>restart_hint:</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="CIHelpers.html" title="Kettle::Dev::CIHelpers (module)">CIHelpers</a></span></span><span class='period'>.</span><span class='id identifier rubyid_project_root'><span class='object_link'><a href="CIHelpers.html#project_root-class_method" title="Kettle::Dev::CIHelpers.project_root (method)">project_root</a></span></span>
@@ -898,19 +898,19 @@ Used by ci:act after running ‘act’.</p>
       <pre class="lines">
 
 
+184
+185
+186
+187
+188
 189
 190
 191
 192
-193
-194
-195
-196
-197
-198</pre>
+193</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 189</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 184</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_parse_github_owner_repo'>parse_github_owner_repo</span><span class='lparen'>(</span><span class='id identifier rubyid_url'>url</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='lbracket'>[</span><span class='kw'>nil</span><span class='comma'>,</span> <span class='kw'>nil</span><span class='rbracket'>]</span> <span class='kw'>unless</span> <span class='id identifier rubyid_url'>url</span>
@@ -942,17 +942,17 @@ Used by ci:act after running ‘act’.</p>
       <pre class="lines">
 
 
+174
+175
+176
+177
+178
 179
 180
-181
-182
-183
-184
-185
-186</pre>
+181</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 179</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 174</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_preferred_github_remote'>preferred_github_remote</span>
   <span class='id identifier rubyid_cands'>cands</span> <span class='op'>=</span> <span class='id identifier rubyid_github_remote_candidates'>github_remote_candidates</span>
@@ -982,12 +982,12 @@ Used by ci:act after running ‘act’.</p>
       <pre class="lines">
 
 
-164
-165
-166</pre>
+159
+160
+161</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 164</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 159</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_remote_url'>remote_url</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
   <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="GitAdapter.html" title="Kettle::Dev::GitAdapter (class)">GitAdapter</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="GitAdapter.html#initialize-instance_method" title="Kettle::Dev::GitAdapter#initialize (method)">new</a></span></span><span class='period'>.</span><span class='id identifier rubyid_remote_url'>remote_url</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
@@ -1022,12 +1022,12 @@ Used by ci:act after running ‘act’.</p>
       <pre class="lines">
 
 
-159
-160
-161</pre>
+154
+155
+156</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 159</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 154</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_remotes_with_urls'>remotes_with_urls</span>
   <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="GitAdapter.html" title="Kettle::Dev::GitAdapter (class)">GitAdapter</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="GitAdapter.html#initialize-instance_method" title="Kettle::Dev::GitAdapter#initialize (method)">new</a></span></span><span class='period'>.</span><span class='id identifier rubyid_remotes_with_urls'>remotes_with_urls</span>
@@ -1042,7 +1042,7 @@ Used by ci:act after running ‘act’.</p>
 </div>
 
       <div id="footer">
-  Generated on Sat Aug 30 22:29:52 2025 by
+  Generated on Sun Aug 31 03:10:07 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>
