@@ -6,10 +6,11 @@ module Kettle
     module Version
       # The gem version.
       # @return [String]
-      VERSION = "1.0.26"
+      VERSION = "1.0.27"
 
       module_function
 
+      # rubocop:disable ThreadSafety/ClassInstanceVariable
       # A Gem::Version for this version string
       #
       # Useful when you need to compare versions or pass a Gem::Version instance
@@ -86,6 +87,7 @@ module Kettle
       def _to_a
         @_to_a = self::VERSION.split(".")
       end
+      # rubocop:enable ThreadSafety/ClassInstanceVariable
     end
   end
 end
