@@ -19,6 +19,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ## [Unreleased]
 ### Added
 ### Changed
+- Use semver version dependency (~> 1.0) on kettle-dev when templating
 ### Deprecated
 ### Removed
 ### Fixed
