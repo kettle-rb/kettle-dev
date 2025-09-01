@@ -1,6 +1,6 @@
 {
-  "kettle-dev.gemspec:1797616927": [
-    [161, 3, 40, "Gemspec/DependencyVersion: Dependency version specification is required.", 1364274143]
+  "kettle-dev.gemspec:38190565": [
+    [164, 3, 40, "Gemspec/DependencyVersion: Dependency version specification is required.", 1364274143]
   ],
   "lib/kettle/dev.rb:3163007771": [
     [30, 17, 2, "ThreadSafety/MutableClassInstanceVariable: Freeze mutable objects assigned to class instance variables.", 5862883]
