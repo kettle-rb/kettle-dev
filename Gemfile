@@ -36,3 +36,6 @@ eval_gemfile "gemfiles/modular/documentation.gemfile"
 
 # Optional
 eval_gemfile "gemfiles/modular/optional.gemfile"
+
+# Dependencies injected by the kettle-dev-install script & kettle:dev:install rake task
+# eval_gemfile "gemfiles/modular/injected.gemfile"
