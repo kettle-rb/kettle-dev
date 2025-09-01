@@ -81,6 +81,9 @@ Gem::Specification.new do |spec|
     "gemfiles/modular/*.gemfile",
     # Example templates
     "*.example",
+    # NOTE: Dir globs do not match dotfiles unless the pattern starts with a dot.
+    # This will include to .env.local.example so it is packaged and available to template.
+    ".*.example",
     "gemfiles/modular/*.gemfile.example",
     "lib/**/*.example",
     # Root files used by template tasks

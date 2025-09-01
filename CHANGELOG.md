@@ -22,6 +22,8 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Deprecated
 ### Removed
 ### Fixed
+- .env.local.example is now included in the packaged gem
+  - making the copy by install / template tasks possible
 ### Security
 
 ## [1.0.25] - 2025-08-31
