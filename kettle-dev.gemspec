@@ -146,9 +146,6 @@ Gem::Specification.new do |spec|
     "kettle-release",
   ]
 
-  # Utilities
-  spec.add_dependency("version_gem", "~> 1.1", ">= 1.1.8")              # ruby >= 2.2.0
-
   # Security
   spec.add_dependency("bundler-audit", "~> 0.9.2")                      # ruby >= 2.0.0
 

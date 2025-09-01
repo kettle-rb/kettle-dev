@@ -5,7 +5,6 @@
 # :nocov:
 require "require_bench" if ENV.fetch("REQUIRE_BENCH", "false").casecmp("true").zero?
 # :nocov:
-require "version_gem"
 
 module Kettle
   module Dev
@@ -134,10 +133,6 @@ module Kettle
       autoload :TemplateTask, "kettle/dev/tasks/template_task"
     end
   end
-end
-
-Kettle::Dev::Version.class_eval do
-  extend VersionGem::Basic
 end
 
 Kettle::Dev.install_tasks if Kettle::Dev::RUNNING_AS == "rake"
