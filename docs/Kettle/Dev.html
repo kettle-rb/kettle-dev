@@ -363,12 +363,12 @@ Normally they would be loaded in the project’s Rakefile,<br />
       <pre class="lines">
 
 
+45
 46
-47
-48</pre>
+47</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 46</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 45</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_defaults'>defaults</span>
   <span class='ivar'>@defaults</span>
@@ -413,14 +413,14 @@ gem-shipped rakelib directory so host projects get tasks from this gem.</p>
       <pre class="lines">
 
 
+37
 38
 39
 40
-41
-42</pre>
+41</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 38</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 37</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_install_tasks'>install_tasks</span>
   <span class='id identifier rubyid_linting_tasks'>linting_tasks</span>
@@ -490,6 +490,7 @@ Also enhances the :default task immediately if it exists.</p>
       <pre class="lines">
 
 
+51
 52
 53
 54
@@ -502,11 +503,10 @@ Also enhances the :default task immediately if it exists.</p>
 61
 62
 63
-64
-65</pre>
+64</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 52</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 51</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_register_default'>register_default</span><span class='lparen'>(</span><span class='id identifier rubyid_task_name'>task_name</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_task_name'>task_name</span> <span class='op'>=</span> <span class='id identifier rubyid_task_name'>task_name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
@@ -532,7 +532,7 @@ Also enhances the :default task immediately if it exists.</p>
 </div>
 
       <div id="footer">
-  Generated on Mon Sep  1 00:53:41 2025 by
+  Generated on Mon Sep  1 04:23:08 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

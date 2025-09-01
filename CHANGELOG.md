@@ -19,11 +19,20 @@ Please file a bug if you notice a violation of semantic versioning.
 ## [Unreleased]
 ### Added
 ### Changed
-- Use semver version dependency (~> 1.0) on kettle-dev when templating
 ### Deprecated
 ### Removed
 ### Fixed
 ### Security
+
+## [1.0.27] - 2025-09-01
+- TAG: [v1.0.27][1.0.27t]
+- COVERAGE: 97.77% -- 2629/2689 lines in 22 files
+- BRANCH COVERAGE: 82.40% -- 1100/1335 branches in 22 files
+- 76.47% documented
+### Changed
+- Use semver version dependency (~> 1.0) on kettle-dev when templating
+### Removed
+- dependency on version_gem (backwards compatible change)
 
 ## [1.0.26] - 2025-09-01
 - TAG: [v1.0.26][1.0.26t]
@@ -394,7 +403,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.26...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.27...HEAD
+[1.0.27]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.26...v1.0.27
+[1.0.27t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.27
 [1.0.26]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.25...v1.0.26
 [1.0.26t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.26
 [1.0.25]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.24...v1.0.25
