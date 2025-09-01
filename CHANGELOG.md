@@ -22,9 +22,16 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Deprecated
 ### Removed
 ### Fixed
+### Security
+
+## [1.0.26] - 2025-09-01
+- TAG: [v1.0.26][1.0.26t]
+- COVERAGE: 97.81% -- 2630/2689 lines in 22 files
+- BRANCH COVERAGE: 82.40% -- 1100/1335 branches in 22 files
+- 75.00% documented
+### Fixed
 - .env.local.example is now included in the packaged gem
   - making the copy by install / template tasks possible
-### Security
 
 ## [1.0.25] - 2025-08-31
 - TAG: [v1.0.25][1.0.25t]
@@ -386,7 +393,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.25...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.26...HEAD
+[1.0.26]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.25...v1.0.26
+[1.0.26t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.26
 [1.0.25]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.24...v1.0.25
 [1.0.25t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.25
 [1.0.24]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.23...v1.0.24
