@@ -26,6 +26,8 @@ appraise "unlocked_deps" do
   eval_gemfile "modular/style.gemfile"
   eval_gemfile "modular/optional.gemfile"
   eval_gemfile "modular/recording/r3/recording.gemfile"
+  # Dependencies injected by the kettle-dev-install script & kettle:dev:install rake task
+  #  eval_gemfile "modular/injected.gemfile"
 end
 
 # Used for head (nightly) releases of ruby, truffleruby, and jruby.
@@ -38,6 +40,8 @@ appraise "head" do
   gem "stringio", ">= 3.0"
   gem "benchmark", "~> 0.4", ">= 0.4.1"
   eval_gemfile "modular/recording/r3/recording.gemfile"
+  # Dependencies injected by the kettle-dev-install script & kettle:dev:install rake task
+  #  eval_gemfile "modular/injected.gemfile"
 end
 
 # Used for current releases of ruby, truffleruby, and jruby.
@@ -47,6 +51,8 @@ appraise "current" do
   gem "mutex_m", ">= 0.2"
   gem "stringio", ">= 3.0"
   eval_gemfile "modular/recording/r3/recording.gemfile"
+  # Dependencies injected by the kettle-dev-install script & kettle:dev:install rake task
+  #  eval_gemfile "modular/injected.gemfile"
 end
 
 appraise "ruby-2-3" do
@@ -55,16 +61,22 @@ appraise "ruby-2-3" do
   # /opt/hostedtoolcache/Ruby/2.3.8/x64/lib/ruby/gems/2.3.0/gems/erb-2.2.2/lib/erb.rb:670:in `prepare_trim_mode': undefined method `match?' for "-":String (NoMethodError)
   # spec.add_development_dependency("erb", ">= 2.2")                                  # ruby >= 2.3.0, not SemVer, old rubies get dropped in a patch.
   eval_gemfile "modular/recording/r2.3/recording.gemfile"
+  # Dependencies injected by the kettle-dev-install script & kettle:dev:install rake task
+  #  eval_gemfile "modular/injected.gemfile"
 end
 
 appraise "ruby-2-4" do
   gem "erb"
   eval_gemfile "modular/recording/r2.4/recording.gemfile"
+  # Dependencies injected by the kettle-dev-install script & kettle:dev:install rake task
+  #  eval_gemfile "modular/injected.gemfile"
 end
 
 appraise "ruby-2-5" do
   gem "erb"
   eval_gemfile "modular/recording/r2.5/recording.gemfile"
+  # Dependencies injected by the kettle-dev-install script & kettle:dev:install rake task
+  #  eval_gemfile "modular/injected.gemfile"
 end
 
 appraise "ruby-2-6" do
@@ -72,6 +84,8 @@ appraise "ruby-2-6" do
   gem "mutex_m", "~> 0.2"
   gem "stringio", "~> 3.0"
   eval_gemfile "modular/recording/r2.5/recording.gemfile"
+  # Dependencies injected by the kettle-dev-install script & kettle:dev:install rake task
+  #  eval_gemfile "modular/injected.gemfile"
 end
 
 appraise "ruby-2-7" do
@@ -79,6 +93,8 @@ appraise "ruby-2-7" do
   gem "mutex_m", "~> 0.2"
   gem "stringio", "~> 3.0"
   eval_gemfile "modular/recording/r2.5/recording.gemfile"
+  # Dependencies injected by the kettle-dev-install script & kettle:dev:install rake task
+  #  eval_gemfile "modular/injected.gemfile"
 end
 
 appraise "ruby-3-0" do
@@ -86,6 +102,8 @@ appraise "ruby-3-0" do
   gem "mutex_m", "~> 0.2"
   gem "stringio", "~> 3.0"
   eval_gemfile "modular/recording/r3/recording.gemfile"
+  # Dependencies injected by the kettle-dev-install script & kettle:dev:install rake task
+  #  eval_gemfile "modular/injected.gemfile"
 end
 
 appraise "ruby-3-1" do
@@ -95,6 +113,8 @@ appraise "ruby-3-1" do
   gem "mutex_m", "~> 0.2"
   gem "stringio", "~> 3.0"
   eval_gemfile "modular/recording/r3/recording.gemfile"
+  # Dependencies injected by the kettle-dev-install script & kettle:dev:install rake task
+  #  eval_gemfile "modular/injected.gemfile"
 end
 
 appraise "ruby-3-2" do
@@ -104,6 +124,8 @@ appraise "ruby-3-2" do
   gem "mutex_m", "~> 0.2"
   gem "stringio", "~> 3.0"
   eval_gemfile "modular/recording/r3/recording.gemfile"
+  # Dependencies injected by the kettle-dev-install script & kettle:dev:install rake task
+  #  eval_gemfile "modular/injected.gemfile"
 end
 
 appraise "ruby-3-3" do
@@ -111,6 +133,8 @@ appraise "ruby-3-3" do
   gem "erb"
   gem "mutex_m", "~> 0.2"
   gem "stringio", "~> 3.0"
+  # Dependencies injected by the kettle-dev-install script & kettle:dev:install rake task
+  #  eval_gemfile "modular/injected.gemfile"
 end
 
 # Only run security audit on the latest version of Ruby
@@ -118,6 +142,8 @@ appraise "audit" do
   gem "erb"
   gem "mutex_m", "~> 0.2"
   gem "stringio", "~> 3.0"
+  # Dependencies injected by the kettle-dev-install script & kettle:dev:install rake task
+  #  eval_gemfile "modular/injected.gemfile"
 end
 
 # Only run coverage on the latest version of Ruby
@@ -128,6 +154,8 @@ appraise "coverage" do
   eval_gemfile "modular/coverage.gemfile"
   eval_gemfile "modular/optional.gemfile"
   eval_gemfile "modular/recording/r3/recording.gemfile"
+  # Dependencies injected by the kettle-dev-install script & kettle:dev:install rake task
+  #  eval_gemfile "modular/injected.gemfile"
 end
 
 # Only run linter on the latest version of Ruby (but, in support of oldest supported Ruby version)
@@ -136,4 +164,6 @@ appraise "style" do
   gem "mutex_m", "~> 0.2"
   gem "stringio", "~> 3.0"
   eval_gemfile "modular/style.gemfile"
+  # Dependencies injected by the kettle-dev-install script & kettle:dev:install rake task
+  #  eval_gemfile "modular/injected.gemfile"
 end

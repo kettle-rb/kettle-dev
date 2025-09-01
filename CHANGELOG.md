@@ -21,6 +21,10 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Changed
 ### Deprecated
 ### Removed
+- all runtime deps
+  - dependencies haven't really changed; will be injected into the gemspec of the including gem
+  - **almost** a breaking change; but this gem re-templates other gems
+  - so non-breaking via re-templating.
 ### Fixed
 ### Security
 
