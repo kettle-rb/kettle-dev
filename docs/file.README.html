@@ -73,22 +73,26 @@
 
 <h2 id="-synopsis">🌻 Synopsis</h2>
 
+<p>Run the one-time project bootstrapper:</p>
+
+<pre class="code language-console"><code class="language-console">kettle-dev-setup
+</code></pre>
+
 <p>This gem integrates tightly with <a href="https://github.com/kettle-rb/kettle-test">kettle-test</a>.</p>
+
+<p>Add this to your <code>spec/spec_helper.rb</code>:</p>
 
 <pre class="code language-ruby"><code class="language-ruby">require &quot;kettle/test/rspec&quot;
 </code></pre>
 
-<p>Then, add to your <code>Rakefile</code>:</p>
+<p>Now you have many powerful development and testing tools at your disposal, all fully <a href="#-configuration">documented</a> and tested.</p>
 
-<pre class="code language-ruby"><code class="language-ruby">require &quot;kettle/dev&quot;
-</code></pre>
-
-<p>Then run:</p>
+<p>If you need to top-up an old setup to get the latest goodies, just re-template:</p>
 
 <pre class="code language-console"><code class="language-console">bundle exec rake kettle:dev:install
 </code></pre>
 
-<p>Now you have many powerful development and testing tools at your disposal, all fully <a href="#-configuration">documented</a> and tested.</p>
+<p>Making sure to review the changes, and retain overwritten bits that matter.</p>
 
 <h2 id="-info-you-can-shake-a-stick-at">💡 Info you can shake a stick at</h2>
 
@@ -292,7 +296,14 @@ NOTE: Be prepared to track down certs for signed gems and add them the same way 
 <pre class="code language-ruby"><code class="language-ruby">require &quot;kettle/dev&quot;
 </code></pre>
 
-<p>Then run:</p>
+<p>Then run the one-time project bootstrapper:</p>
+
+<pre class="code language-console"><code class="language-console">kettle-dev-setup
+</code></pre>
+
+<p>After bootstrapping you may want to update the template.</p>
+
+<p>Invoke the rake task directly:</p>
 
 <pre class="code language-console"><code class="language-console">bundle exec rake kettle:dev:install
 </code></pre>
@@ -833,7 +844,7 @@ Please consider sponsoring me or the project.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Mon Sep  1 14:13:12 2025 by
+  Generated on Mon Sep  1 17:25:06 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

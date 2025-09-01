@@ -21,25 +21,29 @@ OTOH, if `ci_badges.map(&:color).all? { it == "green"}` 👇️ send money so I 
 
 ## 🌻 Synopsis
 
+Run the one-time project bootstrapper:
+
+```console
+kettle-dev-setup
+```
+
 This gem integrates tightly with [kettle-test](https://github.com/kettle-rb/kettle-test).
+
+Add this to your `spec/spec_helper.rb`:
 
 ```ruby
 require "kettle/test/rspec"
 ```
 
-Then, add to your `Rakefile`:
+Now you have many powerful development and testing tools at your disposal, all fully [documented](#-configuration) and tested.
 
-```ruby
-require "kettle/dev"
-```
-
-Then run:
+If you need to top-up an old setup to get the latest goodies, just re-template:
 
 ```console
 bundle exec rake kettle:dev:install
 ```
 
-Now you have many powerful development and testing tools at your disposal, all fully [documented](#-configuration) and tested.
+Making sure to review the changes, and retain overwritten bits that matter.
 
 ## 💡 Info you can shake a stick at
 
@@ -171,7 +175,15 @@ Add to your `Rakefile`:
 require "kettle/dev"
 ```
 
-Then run:
+Then run the one-time project bootstrapper:
+
+```console
+kettle-dev-setup
+```
+
+After bootstrapping you may want to update the template.
+
+Invoke the rake task directly:
 
 ```console
 bundle exec rake kettle:dev:install

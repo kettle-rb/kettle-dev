@@ -104,22 +104,45 @@ module Kettle
       def ensure_clean_git!(root:, task_label:)
         inside_repo = begin
           system("git", "-C", root.to_s, "rev-parse", "--is-inside-work-tree", out: File::NULL, err: File::NULL)
-        rescue StandardError
+        rescue StandardError => e
+          Kettle::Dev.debug_error(e, __method__)
           false
         end
         return unless inside_repo
 
-        status_output = begin
-          IO.popen(["git", "-C", root.to_s, "status", "--porcelain"], &:read).to_s
-        rescue StandardError
-          ""
+        # Prefer GitAdapter for cleanliness check; fallback to porcelain output
+        clean = begin
+          Dir.chdir(root.to_s) { Kettle::Dev::GitAdapter.new.clean? }
+        rescue StandardError => e
+          Kettle::Dev.debug_error(e, __method__)
+          nil
         end
-        return if status_output.strip.empty?
+
+        if clean.nil?
+          # Fallback to shelling out to get both status and preview
+          status_output = begin
+            IO.popen(["git", "-C", root.to_s, "status", "--porcelain"], &:read).to_s
+          rescue StandardError => e
+            Kettle::Dev.debug_error(e, __method__)
+            ""
+          end
+          return if status_output.strip.empty?
+          preview = status_output.lines.take(10).map(&:rstrip)
+        else
+          return if clean
+          # For messaging, provide a small preview via porcelain even when using the adapter
+          status_output = begin
+            IO.popen(["git", "-C", root.to_s, "status", "--porcelain"], &:read).to_s
+          rescue StandardError => e
+            Kettle::Dev.debug_error(e, __method__)
+            ""
+          end
+          preview = status_output.lines.take(10).map(&:rstrip)
+        end
 
         puts "ERROR: Your git working tree has uncommitted changes."
         puts "#{task_label} may modify files (e.g., .github/, .gitignore, *.gemspec)."
         puts "Please commit or stash your changes, then re-run: rake #{task_label}"
-        preview = status_output.lines.take(10).map(&:rstrip)
         unless preview.empty?
           puts "Detected changes:"
           preview.each { |l| puts "  #{l}" }
@@ -162,7 +185,8 @@ module Kettle
               end
             end
           end
-        rescue StandardError
+        rescue StandardError => e
+          Kettle::Dev.debug_error(e, __method__)
           # If anything goes wrong parsing/matching, ignore the filter and proceed.
         end
 
@@ -192,7 +216,8 @@ module Kettle
         begin
           token = "{KETTLE|DEV|GEM}"
           content = content.gsub(token, "kettle-dev") if content.include?(token)
-        rescue StandardError
+        rescue StandardError => e
+          Kettle::Dev.debug_error(e, __method__)
           # If replacement fails unexpectedly, proceed with content as-is
         end
         write_file(dest_path, content)
@@ -227,7 +252,8 @@ module Kettle
                 File.fnmatch?(pat, rel_dest, File::FNM_PATHNAME | File::FNM_EXTGLOB | File::FNM_DOTMATCH)
               end
             end
-          rescue StandardError
+          rescue StandardError => e
+            Kettle::Dev.debug_error(e, __method__)
             # On any error, do not filter out (act as matched)
             true
           end
@@ -253,7 +279,8 @@ module Kettle
               return
             end
           end
-        rescue StandardError
+        rescue StandardError => e
+          Kettle::Dev.debug_error(e, __method__)
           # If determining matches fails, fall through to prompting logic
         end
 
@@ -283,7 +310,8 @@ module Kettle
                       File.open(target, "wb") { |f| f.write(data) }
                       next
                     end
-                  rescue StandardError
+                  rescue StandardError => e
+                    Kettle::Dev.debug_error(e, __method__)
                     # ignore compare errors; fall through to copy
                   end
                 end
@@ -320,7 +348,8 @@ module Kettle
                     File.open(target, "wb") { |f| f.write(data) }
                     next
                   end
-                rescue StandardError
+                rescue StandardError => e
+                  Kettle::Dev.debug_error(e, __method__)
                   # ignore compare errors; fall through to copy
                 end
               end

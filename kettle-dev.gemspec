@@ -142,9 +142,13 @@ Gem::Specification.new do |spec|
   spec.executables = [
     "kettle-changelog",
     "kettle-commit-msg",
+    "kettle-dev-setup",
     "kettle-readme-backers",
     "kettle-release",
   ]
+
+  # Tasks
+  spec.add_dependency("rake", "~> 13.0")                                # ruby >= 2.2.0
 
   # NOTE: It is preferable to list development dependencies in the gemspec due to increased
   #       visibility and discoverability on RubyGems.org.
@@ -167,9 +171,6 @@ Gem::Specification.new do |spec|
 
   # Security
   spec.add_development_dependency("bundler-audit", "~> 0.9.2")                      # ruby >= 2.0.0
-
-  # Tasks
-  spec.add_development_dependency("rake", "~> 13.0")                                # ruby >= 2.2.0
 
   # Debugging
   spec.add_development_dependency("require_bench", "~> 1.0", ">= 1.0.4")            # ruby >= 2.2.0

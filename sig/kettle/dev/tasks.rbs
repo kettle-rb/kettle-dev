@@ -1,0 +1,7 @@
+module Kettle
+  module Dev
+    module Tasks
+      # Namespace module for task-related classes and Rake task loaders.
+    end
+  end
+end
