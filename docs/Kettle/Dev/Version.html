@@ -164,7 +164,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'><p>A Gem::Version for this version string.</p>
+    <span class="summary_desc"><div class='inline'><p>rubocop:disable ThreadSafety/ClassInstanceVariable A Gem::Version for this version string.</p>
 </div></span>
   
 </li>
@@ -351,7 +351,8 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>A Gem::Version for this version string</p>
+    <p>rubocop:disable ThreadSafety/ClassInstanceVariable<br />
+A Gem::Version for this version string</p>
 
 <p>Useful when you need to compare versions or pass a Gem::Version instance<br />
 to APIs that expect it. This is equivalent to <code>Gem::Version.new(to_s)</code>.</p>
@@ -381,12 +382,12 @@ to APIs that expect it. This is equivalent to <code>Gem::Version.new(to_s)</code
       <pre class="lines">
 
 
-19
 20
-21</pre>
+21
+22</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/version.rb', line 19</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/version.rb', line 20</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_gem_version'>gem_version</span>
   <span class='ivar'>@gem_version</span> <span class='op'>||=</span> <span class='op'>::</span><span class='const'>Gem</span><span class='op'>::</span><span class='const'>Version</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span>
@@ -434,12 +435,12 @@ to APIs that expect it. This is equivalent to <code>Gem::Version.new(to_s)</code
       <pre class="lines">
 
 
-35
 36
-37</pre>
+37
+38</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/version.rb', line 35</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/version.rb', line 36</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_major'>major</span>
   <span class='ivar'>@major</span> <span class='op'>||=</span> <span class='id identifier rubyid__to_a'>_to_a</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_i'>to_i</span>
@@ -487,12 +488,12 @@ to APIs that expect it. This is equivalent to <code>Gem::Version.new(to_s)</code
       <pre class="lines">
 
 
-42
 43
-44</pre>
+44
+45</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/version.rb', line 42</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/version.rb', line 43</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_minor'>minor</span>
   <span class='ivar'>@minor</span> <span class='op'>||=</span> <span class='id identifier rubyid__to_a'>_to_a</span><span class='lbracket'>[</span><span class='int'>1</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_i'>to_i</span>
@@ -540,12 +541,12 @@ to APIs that expect it. This is equivalent to <code>Gem::Version.new(to_s)</code
       <pre class="lines">
 
 
-49
 50
-51</pre>
+51
+52</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/version.rb', line 49</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/version.rb', line 50</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_patch'>patch</span>
   <span class='ivar'>@patch</span> <span class='op'>||=</span> <span class='id identifier rubyid__to_a'>_to_a</span><span class='lbracket'>[</span><span class='int'>2</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_i'>to_i</span>
@@ -593,12 +594,12 @@ to APIs that expect it. This is equivalent to <code>Gem::Version.new(to_s)</code
       <pre class="lines">
 
 
-56
 57
-58</pre>
+58
+59</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/version.rb', line 56</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/version.rb', line 57</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_pre'>pre</span>
   <span class='ivar'>@pre</span> <span class='op'>||=</span> <span class='id identifier rubyid__to_a'>_to_a</span><span class='lbracket'>[</span><span class='int'>3</span><span class='rbracket'>]</span>
@@ -646,12 +647,12 @@ to APIs that expect it. This is equivalent to <code>Gem::Version.new(to_s)</code
       <pre class="lines">
 
 
-75
 76
-77</pre>
+77
+78</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/version.rb', line 75</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/version.rb', line 76</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_to_a'>to_a</span>
   <span class='ivar'>@to_a</span> <span class='op'>||=</span> <span class='lbracket'>[</span><span class='id identifier rubyid_major'>major</span><span class='comma'>,</span> <span class='id identifier rubyid_minor'>minor</span><span class='comma'>,</span> <span class='id identifier rubyid_patch'>patch</span><span class='comma'>,</span> <span class='id identifier rubyid_pre'>pre</span><span class='rbracket'>]</span>
@@ -699,17 +700,17 @@ to APIs that expect it. This is equivalent to <code>Gem::Version.new(to_s)</code
       <pre class="lines">
 
 
-63
 64
 65
 66
 67
 68
 69
-70</pre>
+70
+71</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/version.rb', line 63</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/version.rb', line 64</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_to_h'>to_h</span>
   <span class='ivar'>@to_h</span> <span class='op'>||=</span> <span class='lbrace'>{</span>
@@ -764,12 +765,12 @@ The version number as a string</p>
       <pre class="lines">
 
 
-28
 29
-30</pre>
+30
+31</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/version.rb', line 28</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/version.rb', line 29</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_to_s'>to_s</span>
   <span class='kw'>self</span><span class='op'>::</span><span class='const'>VERSION</span>
@@ -784,7 +785,7 @@ The version number as a string</p>
 </div>
 
       <div id="footer">
-  Generated on Mon Sep  1 04:19:38 2025 by
+  Generated on Mon Sep  1 04:23:08 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>
