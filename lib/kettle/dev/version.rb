@@ -11,6 +11,10 @@ module Kettle
       module_function
 
       # rubocop:disable ThreadSafety/ClassInstanceVariable
+      #
+      # The logic below, through the end of the file, comes from version_gem.
+      # Extracted because version_gem depends on this gem, and circular dependencies are bad.
+      #
       # A Gem::Version for this version string
       #
       # Useful when you need to compare versions or pass a Gem::Version instance
@@ -21,8 +25,6 @@ module Kettle
         @gem_version ||= ::Gem::Version.new(to_s)
       end
 
-      # The remainder of this file was stolen from version_gem,
-      #   because version_gem depends on this gem, and circular dependencies are bad.
       # The version number as a string
       #
       # @return [String]
