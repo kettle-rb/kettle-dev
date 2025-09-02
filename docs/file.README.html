@@ -202,6 +202,70 @@ bin/kettle-release
 
 <h3 id="federated-dvcs">Federated DVCS</h3>
 
+<h4 id="kettle-dvcs-normalize-multi-forge-remotes">kettle-dvcs (normalize multi-forge remotes)</h4>
+
+<ul>
+  <li>Script: <code>exe/kettle-dvcs</code> (install binstubs for convenience: <code>bundle binstubs kettle-dev --path bin</code>)</li>
+  <li>Purpose: Normalize git remotes across GitHub, GitLab, and Codeberg, and create an <code>all</code> remote that pushes to all and fetches only from your chosen origin.</li>
+  <li>Assumptions: org and repo names are identical across forges.</li>
+</ul>
+
+<p>Usage:</p>
+
+<pre class="code language-console"><code class="language-console">kettle-dvcs [options] [ORG] [REPO]
+</code></pre>
+
+<p>Options:</p>
+<ul>
+  <li>
+<code>--origin [github|gitlab|codeberg]</code> Which forge to use as <code>origin</code> (default: github)</li>
+  <li>
+<code>--protocol [ssh|https]</code> URL style (default: ssh)</li>
+  <li>
+<code>--github-name NAME</code> Remote name for GitHub when not origin (default: gh)</li>
+  <li>
+<code>--gitlab-name NAME</code> Remote name for GitLab (default: gl)</li>
+  <li>
+<code>--codeberg-name NAME</code> Remote name for Codeberg (default: cb)</li>
+  <li>
+<code>--force</code> Non-interactive; accept defaults, and do not prompt for ORG/REPO</li>
+</ul>
+
+<p>Examples:</p>
+<ul>
+  <li>Default, interactive (infers ORG/REPO from an existing remote when possible):
+    <pre class="code language-console"><code class="language-console">kettle-dvcs
+</code></pre>
+  </li>
+  <li>Non-interactive with explicit org/repo:
+    <pre class="code language-console"><code class="language-console">kettle-dvcs --force my-org my-repo
+</code></pre>
+  </li>
+  <li>Use GitLab as origin and HTTPS URLs:
+    <pre class="code language-console"><code class="language-console">kettle-dvcs --origin gitlab --protocol https my-org my-repo
+</code></pre>
+  </li>
+</ul>
+
+<p>What it does:</p>
+<ul>
+  <li>Ensures remotes exist and have consistent URLs for each forge.</li>
+  <li>Renames existing remotes when their URL already matches the desired target but their name does not (e.g., <code>gitlab</code> -&gt; <code>gl</code>).</li>
+  <li>Creates/refreshes an <code>all</code> remote that:
+    <ul>
+      <li>fetches only from your chosen <code>origin</code> forge.</li>
+      <li>has pushurls configured for all three forges so <code>git push all &lt;branch&gt;</code> updates all mirrors.</li>
+    </ul>
+  </li>
+  <li>Prints <code>git remote -v</code> at the end.</li>
+  <li>Attempts to <code>git fetch</code> each forge remote to check availability:
+    <ul>
+      <li>If all succeed, the README’s federated DVCS summary line has “(Coming soon!)” removed.</li>
+      <li>If any fail, the script prints import links to help you create a mirror on that forge.</li>
+    </ul>
+  </li>
+</ul>
+
 <details>
   <summary>Find this repo on other forges (Coming soon!)</summary>
 
@@ -849,7 +913,7 @@ Please consider sponsoring me or the project.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Tue Sep  2 01:41:20 2025 by
+  Generated on Tue Sep  2 04:43:28 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

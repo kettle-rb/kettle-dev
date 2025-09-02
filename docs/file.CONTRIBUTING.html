@@ -158,9 +158,10 @@ They are created and updated with the commands:</p>
 <h3 id="spec-organization-required">Spec organization (required)</h3>
 
 <ul>
-  <li>For each class or module under <code>lib/</code>, keep all of its unit tests in a single spec file under <code>spec/</code> that mirrors the path and file name (e.g., specs for <code>lib/kettle/dev/release_cli.rb</code> live in <code>spec/kettle/dev/release_cli_spec.rb</code>).</li>
-  <li>Do not create ad-hoc “_more” or split spec files for the same class/module. Consolidate all unit tests into the main spec file for that class/module.</li>
-  <li>Only integration scenarios that intentionally span multiple classes belong in <code>spec/integration/</code>.</li>
+  <li>One spec file per class/module. For each class or module under <code>lib/</code>, keep all of its unit tests in a single spec file under <code>spec/</code> that mirrors the path and file name exactly: <code>lib/kettle/dev/release_cli.rb</code> -&gt; <code>spec/kettle/dev/release_cli_spec.rb</code>.</li>
+  <li>Never add a second spec file for the same class/module. Examples of disallowed names: <code>*_more_spec.rb</code>, <code>*_extra_spec.rb</code>, <code>*_status_spec.rb</code>, or any other suffix that still targets the same class. If you find yourself wanting a second file, merge those examples into the canonical spec file for that class/module.</li>
+  <li>Exception: Integration specs that intentionally span multiple classes. Place these under <code>spec/integration/</code> (or a clearly named integration folder), and do not directly mirror a single class. Name them after the scenario, not a class.</li>
+  <li>Migration note: If a duplicate spec file exists, move all examples into the canonical file and delete the duplicate. Do not leave stubs or empty files behind.</li>
 </ul>
 
 <h2 id="lint-it">Lint It</h2>
@@ -278,7 +279,7 @@ push git commits and tags, and push the <code>.gem</code> file to <a href="https
 </div></div>
 
       <div id="footer">
-  Generated on Tue Sep  2 01:41:20 2025 by
+  Generated on Tue Sep  2 04:43:28 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

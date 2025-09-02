@@ -19,6 +19,8 @@ Please file a bug if you notice a violation of semantic versioning.
 ## [Unreleased]
 ### Added
 - .gitlab-ci.yml documentation (in example)
+- kettle-dvcs script for setting up DVCS, and checking status of remotes
+  - https://railsbling.com/posts/dvcs/put_the_d_in_dvcs/
 - Document kettle-dvcs CLI in README (usage, options, examples)
 - RBS types for Kettle::Dev::DvcsCLI and inline YARD docs on CLI
 - Specs for DvcsCLI covering remote normalization, fetch outcomes, and README updates

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>
-  File: git_adapter
+  File: dvcscli
   
     &mdash; Documentation by YARD 0.9.37
   
@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="css/common.css" type="text/css" />
 
 <script type="text/javascript">
-  pathId = "git_adapter";
+  pathId = "dvcscli";
   relpath = '';
 </script>
 
@@ -37,7 +37,7 @@
         <div id="menu">
   
     <a href="_index.html">Index</a> &raquo; 
-    <span class="title">File: git_adapter</span>
+    <span class="title">File: dvcscli</span>
   
 </div>
 
@@ -59,18 +59,9 @@
 
       <div id="content"><div id='filecontents'><p>module Kettle<br>
   module Dev<br>
-    class GitAdapter<br>
-      def initialize: () -&gt; void<br>
-      def capture: (Array[String] args) -&gt; [String, bool]<br>
-      def push: (String? remote, String branch, force: bool) -&gt; bool<br>
-      def current_branch: () -&gt; String?<br>
-      def remotes: () -&gt; Array[String]<br>
-      def remotes_with_urls: () -&gt; Hash[String, String]<br>
-      def remote_url: (String name) -&gt; String?<br>
-      def checkout: (String branch) -&gt; bool<br>
-      def pull: (String remote, String branch) -&gt; bool<br>
-      def fetch: (String remote, String? ref) -&gt; bool<br>
-      def clean?: () -&gt; bool<br>
+    class DvcsCLI<br>
+      def initialize: (Array[String] argv) -&gt; void<br>
+      def run!: () -&gt; Integer<br>
     end<br>
   end<br>
 end</p>

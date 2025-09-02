@@ -15,6 +15,7 @@ module Kettle
     autoload :CIHelpers, "kettle/dev/ci_helpers"
     autoload :CIMonitor, "kettle/dev/ci_monitor"
     autoload :CommitMsg, "kettle/dev/commit_msg"
+    autoload :DvcsCLI, "kettle/dev/dvcs_cli"
     autoload :ExitAdapter, "kettle/dev/exit_adapter"
     autoload :GemSpecReader, "kettle/dev/gem_spec_reader"
     autoload :GitAdapter, "kettle/dev/git_adapter"
