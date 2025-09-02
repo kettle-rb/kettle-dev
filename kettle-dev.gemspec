@@ -145,6 +145,7 @@ Gem::Specification.new do |spec|
     "kettle-dev-setup",
     "kettle-readme-backers",
     "kettle-release",
+    "kettle-dvcs",
   ]
 
   # Tasks
