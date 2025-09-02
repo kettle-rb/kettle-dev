@@ -22,6 +22,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Deprecated
 ### Removed
 ### Fixed
+- documentation of rake tasks from this gem no longer includes standard gem tasks
 ### Security
 
 ## [1.1.3] - 2025-09-02
