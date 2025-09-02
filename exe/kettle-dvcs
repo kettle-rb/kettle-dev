@@ -39,6 +39,7 @@ if ARGV.include?("-h") || ARGV.include?("--help")
       --github-name NAME                  Remote name for GitHub when not origin (default: gh)
       --gitlab-name NAME                  Remote name for GitLab (default: gl)
       --codeberg-name NAME                Remote name for Codeberg (default: cb)
+      --status                            Fetch remotes; show ahead/behind vs origin/main
       --force                             Non-interactive; accept defaults
 
     Behavior:

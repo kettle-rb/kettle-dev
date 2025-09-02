@@ -35,6 +35,7 @@ module Kettle
         gl_name: "gl",
         cb_name: "cb",
         force: false,
+        status: false,
       }.freeze
 
       # Create the CLI with argv-like arguments
@@ -51,6 +52,24 @@ module Kettle
       def run!
         parse!
         git = ensure_git_adapter!
+
+        if @opts[:status]
+          # Status mode: no working tree mutation beyond fetch. Don't require clean tree.
+          _, _ = resolve_org_repo(git)
+          names = remote_names
+          branch = detect_default_branch!(git)
+          say("Fetching all remotes for status...")
+          # Fetch origin first to ensure origin/<branch> is up to date
+          git.fetch(names[:origin]) if names[:origin]
+          %i[github gitlab codeberg].each do |forge|
+            r = names[forge]
+            next unless r && r != names[:origin]
+            git.fetch(r)
+          end
+          show_status!(git, names, branch)
+          return 0
+        end
+
         abort!("Working tree is not clean; commit or stash changes before proceeding") unless git.clean?
 
         org, repo = resolve_org_repo(git)
@@ -76,6 +95,47 @@ module Kettle
 
       private
 
+      # Determine default branch to compare against. Prefer 'main', fallback to 'master'.
+      # Uses origin to check existence.
+      def detect_default_branch!(git)
+        _out, ok = git.capture(["rev-parse", "--verify", "origin/main"])
+        return "main" if ok
+        _out2, ok2 = git.capture(["rev-parse", "--verify", "origin/master"])
+        return "master" if ok2
+        # Default to main if neither verifies
+        "main"
+      end
+
+      # Show ahead/behind status for each configured forge remote relative to origin/<branch>
+      def show_status!(git, names, branch)
+        base = "origin/#{branch}"
+        say("\nRemote status relative to #{base}:")
+        {
+          github: names[:github],
+          gitlab: names[:gitlab],
+          codeberg: names[:codeberg],
+        }.each do |forge, remote|
+          next unless remote
+          next if remote == names[:origin]
+          ref = "#{remote}/#{branch}"
+          out, ok = git.capture(["rev-list", "--left-right", "--count", "#{base}...#{ref}"])
+          if ok && !out.strip.empty?
+            parts = out.strip.split(/\s+/)
+            left = parts[0].to_i
+            right = parts[1].to_i
+            # left = commits only in base (origin) => remote is behind by left
+            # right = commits only in remote => remote is ahead by right
+            if left.zero? && right.zero?
+              say("  - #{forge} (#{remote}): in sync")
+            else
+              say("  - #{forge} (#{remote}): ahead by #{right}, behind by #{left}")
+            end
+          else
+            say("  - #{forge} (#{remote}): no data (branch missing?)")
+          end
+        end
+      end
+
       def parse!
         parser = OptionParser.new do |o|
           o.banner = "Usage: kettle-dvcs [options] [ORG] [REPO]"
@@ -84,6 +144,7 @@ module Kettle
           o.on("--github-name NAME", "Remote name for GitHub when not origin (default: gh)") { |v| @opts[:gh_name] = v }
           o.on("--gitlab-name NAME", "Remote name for GitLab (default: gl)") { |v| @opts[:gl_name] = v }
           o.on("--codeberg-name NAME", "Remote name for Codeberg (default: cb)") { |v| @opts[:cb_name] = v }
+          o.on("--status", "Fetch remotes and show ahead/behind relative to origin/main") { @opts[:status] = true }
           o.on("--force", "Accept defaults; non-interactive") { @opts[:force] = true }
           o.on("-h", "--help", "Show help") {
             puts o
