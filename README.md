@@ -77,6 +77,51 @@ Compatible with MRI Ruby 2.3+, and concordant releases of JRuby, and TruffleRuby
 
 ### Federated DVCS
 
+#### kettle-dvcs (normalize multi-forge remotes)
+
+- Script: `exe/kettle-dvcs` (install binstubs for convenience: `bundle binstubs kettle-dev --path bin`)
+- Purpose: Normalize git remotes across GitHub, GitLab, and Codeberg, and create an `all` remote that pushes to all and fetches only from your chosen origin.
+- Assumptions: org and repo names are identical across forges.
+
+Usage:
+
+```console
+kettle-dvcs [options] [ORG] [REPO]
+```
+
+Options:
+- `--origin [github|gitlab|codeberg]` Which forge to use as `origin` (default: github)
+- `--protocol [ssh|https]` URL style (default: ssh)
+- `--github-name NAME` Remote name for GitHub when not origin (default: gh)
+- `--gitlab-name NAME` Remote name for GitLab (default: gl)
+- `--codeberg-name NAME` Remote name for Codeberg (default: cb)
+- `--force` Non-interactive; accept defaults, and do not prompt for ORG/REPO
+
+Examples:
+- Default, interactive (infers ORG/REPO from an existing remote when possible):
+  ```console
+  kettle-dvcs
+  ```
+- Non-interactive with explicit org/repo:
+  ```console
+  kettle-dvcs --force my-org my-repo
+  ```
+- Use GitLab as origin and HTTPS URLs:
+  ```console
+  kettle-dvcs --origin gitlab --protocol https my-org my-repo
+  ```
+
+What it does:
+- Ensures remotes exist and have consistent URLs for each forge.
+- Renames existing remotes when their URL already matches the desired target but their name does not (e.g., `gitlab` -> `gl`).
+- Creates/refreshes an `all` remote that:
+  - fetches only from your chosen `origin` forge.
+  - has pushurls configured for all three forges so `git push all <branch>` updates all mirrors.
+- Prints `git remote -v` at the end.
+- Attempts to `git fetch` each forge remote to check availability:
+  - If all succeed, the README’s federated DVCS summary line has “(Coming soon!)” removed.
+  - If any fail, the script prints import links to help you create a mirror on that forge.
+
 <details>
   <summary>Find this repo on other forges (Coming soon!)</summary>
 

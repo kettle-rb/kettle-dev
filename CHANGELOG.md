@@ -19,6 +19,9 @@ Please file a bug if you notice a violation of semantic versioning.
 ## [Unreleased]
 ### Added
 - .gitlab-ci.yml documentation (in example)
+- Document kettle-dvcs CLI in README (usage, options, examples)
+- RBS types for Kettle::Dev::DvcsCLI and inline YARD docs on CLI
+- Specs for DvcsCLI covering remote normalization, fetch outcomes, and README updates
 ### Changed
 ### Deprecated
 ### Removed
