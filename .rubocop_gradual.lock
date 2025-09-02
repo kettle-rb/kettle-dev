@@ -3,9 +3,9 @@
     [62, 9, 63, "Style/InvertibleUnlessCondition: Prefer `if ENV.fetch(\"DEBUG\", \"false\").casecmp(\"true\").nonzero?` over `unless ENV.fetch(\"DEBUG\", \"false\").casecmp(\"true\").zero?`.", 1934394995],
     [293, 3, 196, "Lint/RescueException: Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?", 1142934825]
   ],
-  "lib/kettle/dev.rb:1516550814": [
-    [59, 17, 2, "ThreadSafety/MutableClassInstanceVariable: Freeze mutable objects assigned to class instance variables.", 5862883],
-    [70, 7, 16, "Lint/RescueException: Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?", 2127134117]
+  "lib/kettle/dev.rb:3636742107": [
+    [58, 17, 2, "ThreadSafety/MutableClassInstanceVariable: Freeze mutable objects assigned to class instance variables.", 5862883],
+    [69, 7, 16, "Lint/RescueException: Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?", 2127134117]
   ],
   "lib/kettle/dev/tasks/ci_task.rb:3806600277": [
     [194, 26, 10, "ThreadSafety/NewThread: Avoid starting new threads.", 3411682361],

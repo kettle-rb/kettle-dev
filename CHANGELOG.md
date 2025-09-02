@@ -22,6 +22,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Deprecated
 ### Removed
 ### Fixed
+- Stop double defining DEBUGGING constant
 ### Security
 
 ## [1.1.2] - 2025-09-02

@@ -38,10 +38,9 @@ module Kettle
     class Error < StandardError; end
 
     # Whether debug logging is enabled for kettle-dev internals.
+    # KETTLE_DEV_DEBUG overrides DEBUG.
     # @return [Boolean]
-    DEBUGGING = ENV.fetch("DEBUG", "false").casecmp("true").zero?
-    # Backwards-compat for kettle-dev specific debug variable
-    DEBUGGING ||= ENV.fetch("KETTLE_DEV_DEBUG", "false").casecmp("true").zero?
+    DEBUGGING = ENV.fetch("KETTLE_DEV_DEBUG", ENV.fetch("DEBUG", "false")).casecmp("true").zero?
     # Whether we are running on CI.
     # @return [Boolean]
     IS_CI = ENV.fetch("CI", "false").casecmp("true") == 0
