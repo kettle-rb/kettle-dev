@@ -69,6 +69,7 @@ Gem::Specification.new do |spec|
   spec.files = Dir[
     # Executables and tasks
     "exe/*",
+    "bin/setup",
     "lib/**/*.rb",
     "lib/**/*.rake",
     # Signatures
