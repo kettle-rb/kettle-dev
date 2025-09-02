@@ -144,4 +144,40 @@ RSpec.describe Kettle::Dev::DvcsCLI do
       end
     end
   end
+
+  it "prints ahead/behind status for each remote relative to origin/main" do
+    Dir.mktmpdir do |_dir|
+      adapter = instance_double(Kettle::Dev::GitAdapter)
+      allow(Kettle::Dev::GitAdapter).to receive(:new).and_return(adapter)
+
+      # Status mode should not require clean working tree, but clean? may be called in other flows
+      allow(adapter).to receive(:clean?).and_return(true)
+
+      # Simulate default origin=github and expected lookups
+      allow(adapter).to receive_messages(
+                          remotes: ["origin", "gl", "cb"],
+                          remotes_with_urls: {"origin" => "git@github.com:org/repo.git"},
+                          remote_url: nil,
+                          )
+
+      # detect_default_branch!: first try origin/main ok
+      allow(adapter).to receive(:capture).with(["rev-parse", "--verify", "origin/main"]).and_return(["", true])
+
+      # fetches for status
+      allow(adapter).to receive(:fetch).with("origin").and_return(true)
+      allow(adapter).to receive(:fetch).with("gl").and_return(true)
+      allow(adapter).to receive(:fetch).with("cb").and_return(true)
+
+      # Show ahead/behind for gl and cb vs origin/main
+      # Use output format "<left>\t<right>" or space – we split on whitespace
+      allow(adapter).to receive(:capture).with(["rev-list", "--left-right", "--count", "origin/main...gl/main"]).and_return(["3\t1", true])
+      allow(adapter).to receive(:capture).with(["rev-list", "--left-right", "--count", "origin/main...cb/main"]).and_return(["0\t0", true])
+
+      result = nil
+      expect {
+        result = described_class.new(["--force", "--status", "org", "repo"]).run!
+      }.to output(/Remote status relative to origin\/main:.*- gitlab \(gl\): ahead by 1, behind by 3.*- codeberg \(cb\): in sync/m).to_stdout_from_any_process
+      expect(result).to eq(0)
+    end
+  end
 end

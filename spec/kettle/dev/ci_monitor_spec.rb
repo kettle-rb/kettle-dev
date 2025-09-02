@@ -132,3 +132,15 @@ RSpec.describe Kettle::Dev::CIMonitor do
     end
   end
 end
+
+
+# Consolidated from ci_helpers_extra_spec.rb: positive parsing cases
+RSpec.describe Kettle::Dev::CIMonitor do
+  describe "::parse_github_owner_repo positive cases" do
+    it "parses SSH and HTTPS URLs" do
+      mod = Kettle::Dev::CIMonitor
+      expect(mod.parse_github_owner_repo("git@github.com:me/repo.git")).to eq(["me", "repo"])
+      expect(mod.parse_github_owner_repo("https://github.com/me/repo")).to eq(["me", "repo"])
+    end
+  end
+end

@@ -1256,3 +1256,279 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 end
 
 # rubocop:enable RSpec/MultipleExpectations, RSpec/MessageSpies, RSpec/StubbedMock, RSpec/ReceiveMessages
+
+
+# Consolidated from release_cli_github_spec.rb and release_cli_github_footer_spec.rb and release_cli_copyright_spec.rb
+RSpec.describe Kettle::Dev::ReleaseCLI do
+  let(:ci_helpers) { Kettle::Dev::CIHelpers }
+
+  describe "GitHub release creation" do
+    it "skips when token present but CHANGELOG has no matching section" do
+      Dir.mktmpdir do |root|
+        File.write(File.join(root, "CHANGELOG.md"), "# Changelog\n\n## [Unreleased]\n\n")
+        allow(ci_helpers).to receive(:project_root).and_return(root)
+        local_cli = described_class.new
+        allow(local_cli).to receive(:preferred_github_remote).and_return("origin")
+        allow(local_cli).to receive(:remote_url).with("origin").and_return("git@github.com:me/repo.git")
+        stub_env("GITHUB_TOKEN" => "tok")
+        expect { local_cli.send(:maybe_create_github_release!, "9.9.9") }.not_to raise_error
+      end
+    end
+
+    it "skips when GITHUB_TOKEN is missing" do
+      stub_env("GITHUB_TOKEN" => nil)
+      expect { described_class.new.send(:maybe_create_github_release!, "1.2.3") }.not_to raise_error
+    end
+
+    it "creates a release with title and body from CHANGELOG when token present" do
+      Dir.mktmpdir do |root|
+        # Minimal CHANGELOG with a section and links
+        File.write(File.join(root, "CHANGELOG.md"), <<~MD)
+          # Changelog
+
+          ## [Unreleased]
+
+          ## [1.2.3] - 2025-08-28
+          - TAG: [v1.2.3][1.2.3t]
+          - Added
+            - Feature X
+
+          [Unreleased]: https://github.com/me/repo/compare/v1.2.3...HEAD
+          [1.2.3]: https://github.com/me/repo/compare/v1.2.2...v1.2.3
+          [1.2.3t]: https://github.com/me/repo/releases/tag/v1.2.3
+        MD
+        allow(ci_helpers).to receive(:project_root).and_return(root)
+        local_cli = described_class.new
+
+        # Simulate GitHub remote
+        allow(local_cli).to receive(:preferred_github_remote).and_return("origin")
+        allow(local_cli).to receive(:remote_url).with("origin").and_return("https://github.com/me/repo.git")
+
+        # Stub env and Net::HTTP
+        stub_env("GITHUB_TOKEN" => "token123")
+
+        response = instance_double(Net::HTTPCreated)
+        allow(response).to receive(:code).and_return("201")
+        allow(response).to receive(:body).and_return("{\"id\":1}")
+
+        http = instance_double(Net::HTTP)
+        expect(http).to receive(:request).with(instance_of(Net::HTTP::Post)).and_return(response)
+
+        expect(Net::HTTP).to receive(:start).with("api.github.com", 443, use_ssl: true).and_yield(http)
+
+        expect { local_cli.send(:maybe_create_github_release!, "1.2.3") }.not_to raise_error
+      end
+    end
+
+    it "treats 422 already_exists as success" do
+      Dir.mktmpdir do |root|
+        File.write(File.join(root, "CHANGELOG.md"), <<~MD)
+          # Changelog
+
+          ## [Unreleased]
+
+          ## [2.0.0] - 2025-08-28
+          - TAG: [v2.0.0][2.0.0t]
+
+          [Unreleased]: https://github.com/me/repo/compare/v2.0.0...HEAD
+          [2.0.0]: https://github.com/me/repo/compare/v1.9.9...v2.0.0
+          [2.0.0t]: https://github.com/me/repo/releases/tag/v2.0.0
+        MD
+        allow(ci_helpers).to receive(:project_root).and_return(root)
+        local_cli = described_class.new
+        allow(local_cli).to receive(:preferred_github_remote).and_return("origin")
+        allow(local_cli).to receive(:remote_url).with("origin").and_return("https://github.com/me/repo")
+        stub_env("GITHUB_TOKEN" => "token123")
+
+        resp = instance_double(Net::HTTPUnprocessableEntity)
+        allow(resp).to receive(:code).and_return("422")
+        allow(resp).to receive(:body).and_return("{\"errors\":[{\"code\":\"already_exists\"}]}")
+
+        http = instance_double(Net::HTTP)
+        expect(http).to receive(:request).with(instance_of(Net::HTTP::Post)).and_return(resp)
+        expect(Net::HTTP).to receive(:start).with("api.github.com", 443, use_ssl: true).and_yield(http)
+
+        expect { local_cli.send(:maybe_create_github_release!, "2.0.0") }.not_to raise_error
+      end
+    end
+
+    it "uses origin when preferred remote is nil" do
+      Dir.mktmpdir do |root|
+        File.write(File.join(root, "CHANGELOG.md"), <<~MD)
+          # Changelog
+
+          ## [Unreleased]
+
+          ## [3.0.0] - 2025-08-28
+          - TAG: [v3.0.0][3.0.0t]
+
+          [Unreleased]: https://github.com/me/repo/compare/v3.0.0...HEAD
+          [3.0.0]: https://github.com/me/repo/compare/v2.9.9...v3.0.0
+          [3.0.0t]: https://github.com/me/repo/releases/tag/v3.0.0
+        MD
+        allow(ci_helpers).to receive(:project_root).and_return(root)
+        local_cli = described_class.new
+        allow(local_cli).to receive(:preferred_github_remote).and_return(nil)
+        allow(local_cli).to receive(:remote_url).with("origin").and_return("git@github.com:me/repo.git")
+        stub_env("GITHUB_TOKEN" => "tok")
+
+        response = instance_double(Net::HTTPInternalServerError)
+        allow(response).to receive(:code).and_return("500")
+        allow(response).to receive(:body).and_return("oops")
+        http = instance_double(Net::HTTP)
+        expect(http).to receive(:request).with(instance_of(Net::HTTP::Post)).and_return(response)
+        expect(Net::HTTP).to receive(:start).with("api.github.com", 443, use_ssl: true).and_yield(http)
+
+        expect { local_cli.send(:maybe_create_github_release!, "3.0.0") }.not_to raise_error
+      end
+    end
+
+    it "warns and skips when owner/repo cannot be determined" do
+      stub_env("GITHUB_TOKEN" => "secret")
+      cli = described_class.new
+      allow(cli).to receive(:preferred_github_remote).and_return(nil)
+      allow(cli).to receive(:remote_url).and_return("ssh://gitlab.com/user/repo")
+      expect { cli.send(:maybe_create_github_release!, "1.0.0") }.not_to raise_error
+    end
+  end
+
+  describe "release notes footer from FUNDING.md" do
+    it "appends footer from FUNDING.md between tags with a leading blank line" do
+      Dir.mktmpdir do |root|
+        # CHANGELOG with basic section and links
+        File.write(File.join(root, "CHANGELOG.md"), <<~MD)
+          # Changelog
+
+          ## [1.0.0] - 2025-08-29
+          - TAG: [v1.0.0][1.0.0t]
+
+          [1.0.0]: https://github.com/me/repo/compare/v0.9.9...v1.0.0
+          [1.0.0t]: https://github.com/me/repo/releases/tag/v1.0.0
+        MD
+
+        # FUNDING with markers
+        File.write(File.join(root, "FUNDING.md"), <<~MD)
+          <!-- RELEASE-NOTES-FOOTER-START -->
+
+          Support the project ❤️
+
+          [Sponsor](https://github.com/sponsors/me)
+          <!-- RELEASE-NOTES-FOOTER-END -->
+        MD
+
+        allow(ci_helpers).to receive(:project_root).and_return(root)
+        cli = described_class.new
+        allow(cli).to receive(:preferred_github_remote).and_return("origin")
+        allow(cli).to receive(:remote_url).with("origin").and_return("https://github.com/me/repo")
+        stub_env("GITHUB_TOKEN" => "tok")
+
+        # Capture the body sent to GitHub
+        captured_body = nil
+        http = instance_double(Net::HTTP)
+        allow(Net::HTTP).to receive(:start).with("api.github.com", 443, use_ssl: true).and_yield(http)
+        allow(http).to receive(:request) do |req|
+          payload = JSON.parse(req.body)
+          captured_body = payload["body"]
+          instance_double(Net::HTTPCreated, code: "201", body: "{}")
+        end
+
+        expect { cli.send(:maybe_create_github_release!, "1.0.0") }.not_to raise_error
+
+        # Verify footer appended and preceded by a single blank line
+        expect(captured_body).to include("[1.0.0t]: https://github.com/me/repo/releases/tag/v1.0.0")
+        expect(captured_body).to match(/\n\n\[1.0.0\]: .*\n\[1.0.0t\]: .*\n\nSupport the project/m)
+        # Ensure the footer content itself does not include the HTML markers
+        expect(captured_body).not_to include("RELEASE-NOTES-FOOTER-START")
+        expect(captured_body).not_to include("RELEASE-NOTES-FOOTER-END")
+      end
+    end
+
+    it "handles missing FUNDING.md gracefully" do
+      Dir.mktmpdir do |root|
+        File.write(File.join(root, "CHANGELOG.md"), <<~MD)
+          ## [1.2.3]
+          [1.2.3]: url
+          [1.2.3t]: url
+        MD
+        allow(ci_helpers).to receive(:project_root).and_return(root)
+        cli = described_class.new
+        allow(cli).to receive(:preferred_github_remote).and_return("origin")
+        allow(cli).to receive(:remote_url).with("origin").and_return("https://github.com/me/repo")
+        stub_env("GITHUB_TOKEN" => "tok")
+
+        http = instance_double(Net::HTTP)
+        allow(Net::HTTP).to receive(:start).with("api.github.com", 443, use_ssl: true).and_yield(http)
+        allow(http).to receive(:request).and_return(instance_double(Net::HTTPCreated, code: "201", body: "{}"))
+
+        expect { cli.send(:maybe_create_github_release!, "1.2.3") }.not_to raise_error
+      end
+    end
+  end
+
+  describe "copyright years validation" do
+    it "passes when README.md and LICENSE.txt have identical year sets and include current year" do
+      Dir.mktmpdir do |root|
+        File.write(File.join(root, "README.md"), <<~MD)
+          # Title
+
+          ### © Copyright
+
+          Copyright (c) 2023-2025 Example
+        MD
+        File.write(File.join(root, "LICENSE.txt"), <<~MD)
+          The MIT License (MIT)
+
+          Copyright (c) 2023, 2024, 2025 Example
+        MD
+        allow(ci_helpers).to receive(:project_root).and_return(root)
+        cli = described_class.new
+        expect { cli.send(:validate_copyright_years!) }.not_to raise_error
+      end
+    end
+
+    it "rewrites consecutive years into a range in both files" do
+      Dir.mktmpdir do |root|
+        File.write(File.join(root, "README.md"), "Copyright (c) 2023, 2024, 2025 Example")
+        File.write(File.join(root, "LICENSE.txt"), "The MIT License (MIT)\nCopyright (c) 2023, 2024, 2025 Example")
+        allow(ci_helpers).to receive(:project_root).and_return(root)
+        cli = described_class.new
+        expect { cli.send(:validate_copyright_years!) }.not_to raise_error
+        expect(File.read(File.join(root, "README.md"))).to include("2023-2025")
+        expect(File.read(File.join(root, "LICENSE.txt"))).to include("2023-2025")
+      end
+    end
+
+    it "aborts when sets differ (mismatch)" do
+      Dir.mktmpdir do |root|
+        File.write(File.join(root, "README.md"), "Copyright (c) 2023, 2025 Example\n")
+        File.write(File.join(root, "LICENSE.txt"), "The MIT License (MIT)\nCopyright 2023-2024 Example\n")
+        allow(ci_helpers).to receive(:project_root).and_return(root)
+        cli = described_class.new
+        expect { cli.send(:validate_copyright_years!) }.to raise_error(MockSystemExit, /Mismatched copyright years/)
+      end
+    end
+
+    it "is skipped silently if either file is missing" do
+      Dir.mktmpdir do |root|
+        File.write(File.join(root, "README.md"), "Copyright (c) 2024")
+        allow(ci_helpers).to receive(:project_root).and_return(root)
+        cli = described_class.new
+        expect { cli.send(:validate_copyright_years!) }.not_to raise_error
+      end
+    end
+
+    it "injects current year into both files when missing and sets match" do
+      Dir.mktmpdir do |root|
+        current_year = Time.now.year
+        last_year = current_year - 1
+        File.write(File.join(root, "README.md"), "Copyright (c) #{last_year} Example")
+        File.write(File.join(root, "LICENSE.txt"), "The MIT License (MIT)\nCopyright (c) #{last_year} Example")
+        allow(ci_helpers).to receive(:project_root).and_return(root)
+        cli = described_class.new
+        expect { cli.send(:validate_copyright_years!) }.not_to raise_error
+        expect(File.read(File.join(root, "README.md"))).to include("#{last_year}-#{current_year}")
+        expect(File.read(File.join(root, "LICENSE.txt"))).to include("#{last_year}-#{current_year}")
+      end
+    end
+  end
+end

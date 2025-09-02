@@ -447,3 +447,43 @@ RSpec.describe Kettle::Dev::CIHelpers do
     end
   end
 end
+
+
+# Consolidated from ci_helpers_extra_spec.rb: enrich details from GitLab
+RSpec.describe Kettle::Dev::CIHelpers do
+  describe "::gitlab_latest_pipeline enrichment" do
+    it "enriches pipeline with detail fields when available" do
+      # First call returns list with one pipeline id
+      list_body = [{"id" => 42, "status" => "running"}].to_json
+      list_resp = instance_double(Net::HTTPSuccess, body: list_body)
+      allow(list_resp).to receive(:is_a?).with(Net::HTTPSuccess).and_return(true)
+
+      # Second call returns detail with failure_reason, status, and web_url
+      det_body = {"id" => 42, "status" => "failed", "web_url" => "https://gitlab.com/me/repo/-/pipelines/42", "failure_reason" => "script_failure"}.to_json
+      det_resp = instance_double(Net::HTTPSuccess, body: det_body)
+      allow(det_resp).to receive(:is_a?).with(Net::HTTPSuccess).and_return(true)
+
+      # Net::HTTP.start is called twice; first returns list, second returns detail
+      http = instance_double(Net::HTTP)
+      allow(http).to receive(:request).with(instance_of(Net::HTTP::Get)).and_return(list_resp)
+      http2 = instance_double(Net::HTTP)
+      allow(http2).to receive(:request).with(instance_of(Net::HTTP::Get)).and_return(det_resp)
+
+      calls = 0
+      allow(Net::HTTP).to receive(:start) do |*_args, **_kwargs, &blk|
+        obj = calls.zero? ? http : http2
+        calls += 1
+        blk.call(obj)
+      end
+
+      allow(described_class).to receive(:current_branch).and_return("main")
+      result = described_class.gitlab_latest_pipeline(owner: "me", repo: "repo")
+      expect(result).to include(
+        "id" => 42,
+        "status" => "failed",
+        "web_url" => "https://gitlab.com/me/repo/-/pipelines/42",
+        "failure_reason" => "script_failure",
+      )
+    end
+  end
+end

@@ -914,3 +914,117 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
     end
   end
 end
+
+
+# Consolidated from template_task_carryover_spec.rb and template_task_env_spec.rb
+RSpec.describe Kettle::Dev::Tasks::TemplateTask do
+  let(:helpers) { Kettle::Dev::TemplateHelpers }
+
+  describe "carryover of gemspec fields" do
+    before { stub_env("allowed" => "true") }
+
+    it "carries over key fields from original gemspec when overwriting with example (after replacements)" do
+      Dir.mktmpdir do |gem_root|
+        Dir.mktmpdir do |project_root|
+          File.write(File.join(gem_root, "kettle-dev.gemspec.example"), <<~GEMSPEC)
+            Gem::Specification.new do |spec|
+              spec.name = "kettle-dev"
+              spec.version = "1.0.0"
+              spec.authors = ["Template Author"]
+              spec.email = ["template@example.com"]
+              spec.summary = "🍲 Template summary"
+              spec.description = "🍲 Template description"
+              spec.license = "MIT"
+              spec.required_ruby_version = ">= 2.3.0"
+              spec.require_paths = ["lib"]
+              spec.bindir = "exe"
+              spec.executables = ["templ"]
+              Kettle::Dev
+            end
+          GEMSPEC
+
+          File.write(File.join(project_root, "my-gem.gemspec"), <<~GEMSPEC)
+            Gem::Specification.new do |spec|
+              spec.name = "my-gem"
+              spec.version = "0.1.0"
+              spec.authors = ["Alice", "Bob"]
+              spec.email = ["alice@example.com"]
+              spec.summary = "Original summary"
+              spec.description = "Original description more text"
+              spec.license = "Apache-2.0"
+              spec.required_ruby_version = ">= 3.2"
+              spec.require_paths = ["lib", "ext"]
+              spec.bindir = "bin"
+              spec.executables = ["mygem", "mg"]
+              spec.homepage = "https://github.com/acme/my-gem"
+            end
+          GEMSPEC
+
+          allow(helpers).to receive_messages(project_root: project_root, gem_checkout_root: gem_root, ensure_clean_git!: nil, ask: true)
+
+          described_class.run
+
+          dest = File.join(project_root, "my-gem.gemspec")
+          txt = File.read(dest)
+          expect(txt).to include('spec.name = "my-gem"')
+          expect(txt).to include('spec.authors = ["Alice", "Bob"]').or include('spec.authors = ["Bob", "Alice"]')
+          expect(txt).not_to match(/spec.email\s*=\s*\[[^\]]*"template@example.com"[^\]]*\]/)
+          expect(txt).to match(/spec.email\s*=\s*\[[^\]]*"alice@example.com"[^\]]*\]/)
+          expect(txt).to include('spec.summary = "Original summary"')
+          expect(txt).to include('spec.description = "Original description more text"')
+          expect(txt).to include('spec.licenses = ["Apache-2.0"]')
+          expect(txt).to include('spec.required_ruby_version = ">= 3.2"')
+          expect(txt).to include('spec.require_paths = ["lib", "ext"]')
+          expect(txt).to include('spec.bindir = "bin"')
+          expect(txt).to include('spec.executables = ["mygem", "mg"]')
+        end
+      end
+    end
+  end
+
+  describe "env preference for hook templates" do
+    it "prefers hook_templates over KETTLE_DEV_HOOK_TEMPLATES for .git-hooks template choice" do
+      Dir.mktmpdir do |project_root|
+        allow(helpers).to receive_messages(
+          project_root: project_root,
+          gem_checkout_root: project_root,
+          ensure_clean_git!: nil,
+          gemspec_metadata: {
+            gem_name: "demo",
+            min_ruby: "3.1",
+            forge_org: "acme",
+            gh_org: "acme",
+            funding_org: "acme",
+            entrypoint_require: "kettle/dev",
+            namespace: "Demo",
+            namespace_shield: "demo",
+            gem_shield: "demo",
+          },
+        )
+
+        hooks_dir = File.join(project_root, ".git-hooks")
+        FileUtils.mkdir_p(hooks_dir)
+        File.write(File.join(hooks_dir, "commit-subjects-goalie.txt"), "x")
+        File.write(File.join(hooks_dir, "footer-template.erb.txt"), "x")
+
+        dest_hooks_dir = File.join(project_root, ".git-hooks")
+        FileUtils.mkdir_p(dest_hooks_dir)
+
+        copied = []
+        allow(helpers).to receive(:copy_file_with_prompt) do |src, dest, *_args|
+          copied << [src, dest]
+        end
+
+        stub_env(
+          "hook_templates" => "s",
+          "KETTLE_DEV_HOOK_TEMPLATES" => "g",
+          "allowed" => "true",
+        )
+        expect { described_class.run }.not_to raise_error
+
+        expect(copied).to not_include(a_string_matching(/footer-template\.erb\.txt/)) &
+          not_include(a_string_matching(/commit-subjects-goalie\.txt/))
+      end
+    end
+  end
+end
