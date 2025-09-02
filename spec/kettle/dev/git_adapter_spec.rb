@@ -295,4 +295,3 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
     end
   end
 end
-

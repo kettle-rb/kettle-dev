@@ -149,12 +149,12 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
   describe "#commit_release_prep!" do
     it "returns false when no changes" do
       allow(cli).to receive(:run_cmd!).with("git add -A")
-      allow(cli).to receive(:git_output).with(["status", "--porcelain"]).and_return(["", true])
+      allow(cli).to receive(:git_output).with(%w[status --porcelain]).and_return(["", true])
       expect(cli.send(:commit_release_prep!, "1.0.0")).to be false
     end
 
     it "commits and returns true when there are changes" do
-      allow(cli).to receive(:git_output).with(["status", "--porcelain"]).and_return([" M file", true])
+      allow(cli).to receive(:git_output).with(%w[status --porcelain]).and_return([" M file", true])
       allow(cli).to receive(:run_cmd!).with("git add -A")
       expect(cli).to receive(:run_cmd!).with(/git commit -am/)
       expect(cli.send(:commit_release_prep!, "1.0.0")).to be true
@@ -208,7 +208,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
   describe "git and system helpers" do
     it "detects trunk branch from origin remote output (still via git command)" do
       out = "Remote HEAD branch: main\n  HEAD branch: main\n"
-      allow(cli).to receive(:git_output).with(["remote", "show", "origin"]).and_return([out, true])
+      allow(cli).to receive(:git_output).with(%w[remote show origin]).and_return([out, true])
       expect(cli.send(:detect_trunk_branch)).to eq("main")
     end
 
@@ -229,8 +229,8 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     end
 
     it "parses github owner/repo from ssh and https and fails otherwise" do
-      expect(cli.send(:parse_github_owner_repo, "git@github.com:user/repo.git")).to eq(["user", "repo"])
-      expect(cli.send(:parse_github_owner_repo, "https://github.com/user/repo")).to eq(["user", "repo"])
+      expect(cli.send(:parse_github_owner_repo, "git@github.com:user/repo.git")).to eq(%w[user repo])
+      expect(cli.send(:parse_github_owner_repo, "https://github.com/user/repo")).to eq(%w[user repo])
       expect(cli.send(:parse_github_owner_repo, "ssh://gitlab.com/user/repo")).to eq([nil, nil])
     end
 
@@ -328,7 +328,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     it "enforces strict parity when remote 'all' is present and aborts if missing commits" do
       allow(cli).to receive(:has_remote?).with("all").and_return(true)
       expect(cli).to receive(:run_cmd!).with("git fetch --all")
-      allow(cli).to receive(:list_remotes).and_return(["all", "origin", "github"])
+      allow(cli).to receive(:list_remotes).and_return(%w[all origin github])
       allow(cli).to receive(:remote_branch_exists?).with("origin", "main").and_return(true)
       allow(cli).to receive(:ahead_behind_counts).with("main", "origin/main").and_return([0, 1])
       allow(cli).to receive(:remote_branch_exists?).with("github", "main").and_return(true)
@@ -339,7 +339,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     it "reports parity when all remotes are synced" do
       allow(cli).to receive(:has_remote?).with("all").and_return(true)
       expect(cli).to receive(:run_cmd!).with("git fetch --all")
-      allow(cli).to receive(:list_remotes).and_return(["all", "origin"])
+      allow(cli).to receive(:list_remotes).and_return(%w[all origin])
       allow(cli).to receive(:remote_branch_exists?).with("origin", "main").and_return(true)
       allow(cli).to receive(:ahead_behind_counts).with("main", "origin/main").and_return([0, 0])
       expect { cli.send(:ensure_trunk_synced_before_push!, "main", "feat") }.not_to raise_error
@@ -475,7 +475,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     end
 
     it "passes when GitHub workflows all succeed" do
-      allow(ci_helpers).to receive(:workflows_list).and_return(["ci.yml", "lint.yml"])
+      allow(ci_helpers).to receive(:workflows_list).and_return(%w[ci.yml lint.yml])
       allow(File).to receive(:exist?).and_call_original
       allow(File).to receive(:exist?).with(File.join(Dir.pwd, ".gitlab-ci.yml")).and_return(false)
       run1 = {"html_url" => "http://example/1"}
@@ -502,7 +502,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       allow(Kettle::Dev::CIMonitor).to receive(:preferred_github_remote).and_return(nil)
       allow(ci_helpers).to receive(:workflows_list).and_return([])
       allow(File).to receive(:exist?).with(File.join(Dir.pwd, ".gitlab-ci.yml")).and_return(true)
-      allow(ci_helpers).to receive(:repo_info_gitlab).and_return(["me", "repo"])
+      allow(ci_helpers).to receive(:repo_info_gitlab).and_return(%w[me repo])
       pipe = {"web_url" => "http://gitlab/pipeline"}
       allow(ci_helpers).to receive(:gitlab_latest_pipeline).and_return(pipe)
       allow(ci_helpers).to receive(:gitlab_success?).and_return(true)
@@ -515,7 +515,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       allow(Kettle::Dev::CIMonitor).to receive(:preferred_github_remote).and_return(nil)
       allow(ci_helpers).to receive(:workflows_list).and_return([])
       allow(File).to receive(:exist?).with(File.join(Dir.pwd, ".gitlab-ci.yml")).and_return(true)
-      allow(ci_helpers).to receive(:repo_info_gitlab).and_return(["me", "repo"])
+      allow(ci_helpers).to receive(:repo_info_gitlab).and_return(%w[me repo])
       pipe = {"web_url" => "http://gitlab/pipeline"}
       allow(ci_helpers).to receive(:gitlab_latest_pipeline).and_return(pipe)
       allow(ci_helpers).to receive(:gitlab_success?).and_return(false)
@@ -547,7 +547,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       allow(cli).to receive(:ensure_bundler_2_7_plus!) # skip real check
       allow(cli).to receive(:detect_version).and_return("1.2.3")
       allow(cli).to receive(:detect_gem_name).and_return("mygem")
-      allow(cli).to receive(:latest_released_versions).and_return(["1.2.3", "1.2.3"]) # equal -> abort
+      allow(cli).to receive(:latest_released_versions).and_return(%w[1.2.3 1.2.3]) # equal -> abort
       # First prompt will not be reached because we abort earlier
       expect { cli.run }.to raise_error(MockSystemExit, /version bump required/)
     end
@@ -689,7 +689,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       allow(cli).to receive(:ensure_bundler_2_7_plus!)
       allow(cli).to receive(:detect_version).and_return("1.2.10")
       allow(cli).to receive(:detect_gem_name).and_return("mygem")
-      allow(cli).to receive(:latest_released_versions).and_return(["1.3.0", "1.2.9"]) # triggers line 36 and 47 branch
+      allow(cli).to receive(:latest_released_versions).and_return(%w[1.3.0 1.2.9]) # triggers line 36 and 47 branch
       allow(cli).to receive(:validate_copyright_years!)
       allow(cli).to receive(:update_readme_kloc_badge!)
       allow(cli).to receive(:update_rakefile_example_header!)
@@ -727,7 +727,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       allow(cli).to receive(:detect_version).and_return("1.2.3")
       allow(cli).to receive(:detect_gem_name).and_return("kettle-dev")
       # overall is higher than current series; no series-specific latest -> target=nil would skip, so provide same-series higher
-      allow(cli).to receive(:latest_released_versions).and_return(["1.2.4", "1.2.4"]) # [overall, for_series]
+      allow(cli).to receive(:latest_released_versions).and_return(%w[1.2.4 1.2.4]) # [overall, for_series]
       expect do
         cli.run
       end.to raise_error(MockSystemExit, /version must be bumped above 1.2.4/)
@@ -778,14 +778,14 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
   describe "#ensure_git_user!" do
     it "passes when name and email are configured" do
-      allow(cli).to receive(:git_output).with(["config", "user.name"]).and_return(["Alice", true])
-      allow(cli).to receive(:git_output).with(["config", "user.email"]).and_return(["alice@example.com", true])
+      allow(cli).to receive(:git_output).with(%w[config user.name]).and_return(["Alice", true])
+      allow(cli).to receive(:git_output).with(%w[config user.email]).and_return(["alice@example.com", true])
       expect { cli.send(:ensure_git_user!) }.not_to raise_error
     end
 
     it "aborts when missing name or email" do
-      allow(cli).to receive(:git_output).with(["config", "user.name"]).and_return(["", true])
-      allow(cli).to receive(:git_output).with(["config", "user.email"]).and_return(["", false])
+      allow(cli).to receive(:git_output).with(%w[config user.name]).and_return(["", true])
+      allow(cli).to receive(:git_output).with(%w[config user.email]).and_return(["", false])
       expect { cli.send(:ensure_git_user!) }.to raise_error(MockSystemExit, /Git user.name or user.email/)
     end
   end
@@ -865,7 +865,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
     it "pushes tags to each remote when 'all' missing" do
       allow(cli).to receive(:has_remote?).with("all").and_return(false)
-      allow(cli).to receive(:list_remotes).and_return(["origin", "github"]) # includes two remotes
+      allow(cli).to receive(:list_remotes).and_return(%w[origin github]) # includes two remotes
       expect(cli).to receive(:run_cmd!).with("git push origin --tags")
       expect(cli).to receive(:run_cmd!).with("git push github --tags")
       cli.send(:push_tags!)
@@ -892,7 +892,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       git = cli.instance_variable_get(:@git)
       allow(git).to receive(:current_branch).and_return("feat")
       expect(cli.send(:current_branch)).to eq("feat")
-      allow(git).to receive(:remotes).and_return(["origin", "github"])
+      allow(git).to receive(:remotes).and_return(%w[origin github])
       expect(cli.send(:list_remotes)).to include("origin", "github")
     end
 
@@ -1016,7 +1016,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       allow(ci_helpers).to receive(:workflows_list).and_return([])
       allow(File).to receive(:exist?).with(File.join(Dir.pwd, ".gitlab-ci.yml")).and_return(true)
       allow(Kettle::Dev::CIMonitor).to receive(:gitlab_remote_candidates).and_return(["gitlab"])
-      allow(ci_helpers).to receive(:repo_info_gitlab).and_return(["me", "repo"])
+      allow(ci_helpers).to receive(:repo_info_gitlab).and_return(%w[me repo])
       # first returns nil, then a success
       allow(ci_helpers).to receive(:gitlab_latest_pipeline).and_return(nil, {"web_url" => "http://gitlab/pipeline"})
       allow(ci_helpers).to receive(:gitlab_success?).and_return(true)
@@ -1104,7 +1104,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         # Force detect_version to desired next version and make RubyGems suggest a higher overall
         allow(cli).to receive(:detect_version).and_return("1.0.15")
         allow(cli).to receive(:detect_gem_name).and_return("kettle-dev")
-        allow(cli).to receive(:latest_released_versions).and_return(["1.2.10", "1.2.10"]) # overall and series
+        allow(cli).to receive(:latest_released_versions).and_return(%w[1.2.10 1.2.10]) # overall and series
         allow(cli).to receive(:validate_copyright_years!)
         allow(cli).to receive(:update_readme_kloc_badge!)
 

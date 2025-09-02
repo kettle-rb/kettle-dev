@@ -148,7 +148,7 @@ module Kettle
           o.on("--force", "Accept defaults; non-interactive") { @opts[:force] = true }
           o.on("-h", "--help", "Show help") {
             puts o
-            exit(0)
+            Kettle::Dev::ExitAdapter.exit(0)
           }
         end
         rest = parser.parse(@argv)
@@ -362,7 +362,7 @@ module Kettle
 
       def abort!(msg)
         warn(msg)
-        exit(1)
+        Kettle::Dev::ExitAdapter.exit(1)
       end
     end
   end
