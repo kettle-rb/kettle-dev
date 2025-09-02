@@ -18,6 +18,7 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [Unreleased]
 ### Added
+- .simplecov.example - keeps it generic
 ### Changed
 ### Deprecated
 ### Removed
