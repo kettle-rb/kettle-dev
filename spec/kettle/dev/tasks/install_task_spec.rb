@@ -784,6 +784,50 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
         expect(File).to exist(File.join(project_root, ".env.local.example"))
       end
     end
+    it "does not add extra leading spaces at the start of the MRI badge cell" do
+      Dir.mktmpdir do |project_root|
+        # Keep 2.2 and newer; remove nothing below 2.2 to simulate user's scenario
+        File.write(File.join(project_root, "demo.gemspec"), <<~G)
+          Gem::Specification.new do |spec|
+            spec.name = "demo"
+            spec.required_ruby_version = ">= 2.2"
+            spec.homepage = "https://github.com/acme/demo"
+          end
+        G
+
+        # Row mirrors the user's example: a single space before the first badge, then a <br/> and more badges
+        readme = <<~MD
+          | Works with MRI Ruby 2   | ![Ruby 2.2 Compat][💎ruby-2.2i] <br/> [![Ruby 2.3 Compat][💎ruby-2.3i]][🚎1-an-wf] [![Ruby 2.4 Compat][💎ruby-2.4i]][🚎1-an-wf] [![Ruby 2.5 Compat][💎ruby-2.5i]][🚎1-an-wf] [![Ruby 2.6 Compat][💎ruby-2.6i]][🚎7-us-wf] [![Ruby 2.7 Compat][💎ruby-2.7i]][🚎7-us-wf] |
+
+          [💎ruby-2.2i]: https://example/22
+          [💎ruby-2.3i]: https://example/23
+          [💎ruby-2.4i]: https://example/24
+          [💎ruby-2.5i]: https://example/25
+          [💎ruby-2.6i]: https://example/26
+          [💎ruby-2.7i]: https://example/27
+          [🚎1-an-wf]: https://example/ancient
+          [🚎7-us-wf]: https://example/unsupported
+        MD
+        File.write(File.join(project_root, "README.md"), readme)
+
+        allow(helpers).to receive_messages(
+          project_root: project_root,
+          modified_by_template?: true,
+          template_results: {},
+        )
+
+        described_class.run
+
+        edited = File.read(File.join(project_root, "README.md"))
+        line = edited.lines.find { |l| l.start_with?("| Works with MRI Ruby 2") }
+        expect(line).not_to be_nil
+        cells = line.split("|", -1)
+        badge_cell = cells[2] || ""
+        # Exactly one leading space before the first badge
+        expect(badge_cell.start_with?(" ")).to be true
+        expect(badge_cell.start_with?("  ")).to be false
+      end
+    end
   end
 end
 # rubocop:enable RSpec/MultipleExpectations, RSpec/VerifiedDoubles, RSpec/ReceiveMessages

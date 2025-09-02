@@ -66,7 +66,7 @@ module Kettle
                   end
                 end
 
-                # Fix leading <br/> in MRI rows and remove rows that end up empty
+                # Fix leading <br/> in MRI rows and remove rows that end up empty. Also normalize leading whitespace in badge cell to a single space.
                 content = content.lines.map { |ln|
                   if ln.start_with?("| Works with MRI Ruby")
                     cells = ln.split("|", -1)
@@ -82,8 +82,18 @@ module Kettle
                       cleaned = badge_cell.sub(/\A\s*<br\/>\s*/i, "")
                       cells[2] = " #{cleaned}" # prefix with a single space
                       cells.join("|")
+                    elsif badge_cell =~ /\A[ \t]{2,}\S/
+                      # Collapse multiple leading spaces/tabs to exactly one
+                      cells[2] = " " + badge_cell.lstrip
+                      cells.join("|")
                     else
-                      ln
+                      # If there is any leading whitespace at all, normalize it to exactly one space
+                      if badge_cell =~ /\A[ \t]+\S/
+                        cells[2] = " " + badge_cell.lstrip
+                        cells.join("|")
+                      else
+                        ln
+                      end
                     end
                   else
                     ln
