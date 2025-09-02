@@ -23,6 +23,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Deprecated
 ### Removed
 ### Fixed
+- (linting) rspec-pending_for 0.0.17+ (example gemspec)
 ### Security
 
 ## [1.1.1] - 2025-09-02
