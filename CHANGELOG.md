@@ -22,10 +22,17 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Deprecated
 ### Removed
 ### Fixed
+### Security
+
+## [1.1.4] - 2025-09-02
+- TAG: [v1.1.4][1.1.4t]
+- COVERAGE: 67.64% -- 554/819 lines in 9 files
+- BRANCH COVERAGE: 53.25% -- 221/415 branches in 9 files
+- 76.22% documented
+### Fixed
 - documentation of rake tasks from this gem no longer includes standard gem tasks
 - kettle-dev-setup: package bin/setup so setup can copy it
 - kettle_dev_install task: set executable flag for .git-hooks script when installing
-### Security
 
 ## [1.1.3] - 2025-09-02
 - TAG: [v1.1.3][1.1.3t]
@@ -461,7 +468,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.3...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.4...HEAD
+[1.1.4]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.3...v1.1.4
+[1.1.4t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.4
 [1.1.3]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.2...v1.1.3
 [1.1.3t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.3
 [1.1.2]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.1...v1.1.2

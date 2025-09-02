@@ -326,8 +326,8 @@ module Kettle
                 FileUtils.cp(path, target)
                 begin
                   # Ensure executable bit for git hook scripts when copying under .git-hooks
-                  if target.end_with?("/.git-hooks/commit-msg") || target.end_with?("/.git-hooks/prepare-commit-msg") ||
-                     target.match?(%r{[\\/]\.git-hooks[\\/](commit-msg|prepare-commit-msg)\z})
+                  if target.end_with?("/.git-hooks/commit-msg", "/.git-hooks/prepare-commit-msg") ||
+                      target.match?(%r{[\\/]\.git-hooks[\\/](commit-msg|prepare-commit-msg)\z})
                     File.chmod(0o755, target)
                   end
                 rescue StandardError
@@ -373,8 +373,8 @@ module Kettle
               FileUtils.cp(path, target)
               begin
                 # Ensure executable bit for git hook scripts when copying under .git-hooks
-                if target.end_with?("/.git-hooks/commit-msg") || target.end_with?("/.git-hooks/prepare-commit-msg") ||
-                   target.match?(%r{[\\/]\.git-hooks[\\/](commit-msg|prepare-commit-msg)\z})
+                if target.end_with?("/.git-hooks/commit-msg", "/.git-hooks/prepare-commit-msg") ||
+                    target.match?(%r{[\\/]\.git-hooks[\\/](commit-msg|prepare-commit-msg)\z})
                   File.chmod(0o755, target)
                 end
               rescue StandardError
