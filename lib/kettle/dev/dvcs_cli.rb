@@ -128,7 +128,8 @@ module Kettle
             if left.zero? && right.zero?
               say("  - #{forge} (#{remote}): in sync")
             else
-              say("  - #{forge} (#{remote}): ahead by #{right}, behind by #{left}")
+              ahead_emoji = right.zero? ? "✅️" : "🔴"
+              say("  - #{forge} (#{remote}): #{ahead_emoji} ahead by #{right}, behind by #{left}")
             end
           else
             say("  - #{forge} (#{remote}): no data (branch missing?)")
