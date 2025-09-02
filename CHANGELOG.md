@@ -23,6 +23,7 @@ Please file a bug if you notice a violation of semantic versioning.
 - RBS types for Kettle::Dev::DvcsCLI and inline YARD docs on CLI
 - Specs for DvcsCLI covering remote normalization, fetch outcomes, and README updates
 ### Changed
+- major spec refactoring
 ### Deprecated
 ### Removed
 ### Fixed
