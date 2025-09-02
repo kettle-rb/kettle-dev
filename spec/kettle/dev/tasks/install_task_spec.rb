@@ -784,6 +784,7 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
         expect(File).to exist(File.join(project_root, ".env.local.example"))
       end
     end
+
     it "does not add extra leading spaces at the start of the MRI badge cell" do
       Dir.mktmpdir do |project_root|
         # Keep 2.2 and newer; remove nothing below 2.2 to simulate user's scenario

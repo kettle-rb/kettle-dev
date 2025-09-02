@@ -18,15 +18,23 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [Unreleased]
 ### Added
-- .simplecov.example - keeps it generic
-- improved documentation on automatic release script
-- .gitlab-ci.yml documentation
 ### Changed
 ### Deprecated
 ### Removed
 ### Fixed
-- reduce extra leading whitespace in info table column 2
 ### Security
+
+## [1.1.1] - 2025-09-02
+- TAG: [v1.1.1][1.1.1t]
+- COVERAGE: 97.04% -- 2655/2736 lines in 21 files
+- BRANCH COVERAGE: 82.21% -- 1109/1349 branches in 21 files
+- 76.81% documented
+### Added
+- .simplecov.example - keeps it generic
+- improved documentation on automatic release script
+- .gitlab-ci.yml documentation
+### Fixed
+- reduce extra leading whitespace in info table column 2
 
 ## [1.1.0] - 2025-09-02
 - TAG: [v1.1.0][1.1.0t]
@@ -420,7 +428,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.0...v1.1.1
+[1.1.1t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.1
 [1.1.0]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.27...v1.1.0
 [1.1.0t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.0
 [1.0.27]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.26...v1.0.27

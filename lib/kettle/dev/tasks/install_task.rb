@@ -86,14 +86,12 @@ module Kettle
                       # Collapse multiple leading spaces/tabs to exactly one
                       cells[2] = " " + badge_cell.lstrip
                       cells.join("|")
-                    else
+                    elsif badge_cell =~ /\A[ \t]+\S/
                       # If there is any leading whitespace at all, normalize it to exactly one space
-                      if badge_cell =~ /\A[ \t]+\S/
-                        cells[2] = " " + badge_cell.lstrip
-                        cells.join("|")
-                      else
-                        ln
-                      end
+                      cells[2] = " " + badge_cell.lstrip
+                      cells.join("|")
+                    else
+                      ln
                     end
                   else
                     ln
