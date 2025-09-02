@@ -19,6 +19,8 @@ Please file a bug if you notice a violation of semantic versioning.
 ## [Unreleased]
 ### Added
 ### Changed
+- URL for migrating repo to CodeBerg:
+  - https://codeberg.org/repo/migrate
 ### Deprecated
 ### Removed
 ### Fixed

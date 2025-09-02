@@ -37,6 +37,11 @@ module Kettle
         force: false,
         status: false,
       }.freeze
+      FORGE_MIGRATION_TOOLS = {
+        github: "https://github.com/new/import",
+        gitlab: "https://gitlab.com/projects/new#import_project",
+        codeberg: "https://codeberg.org/repo/migrate",
+      }.freeze
 
       # Create the CLI with argv-like arguments
       # @param argv [Array<String>] the command-line arguments (without program name)
@@ -369,14 +374,9 @@ module Kettle
         # Print import links for any failed forge
         unless all_ok
           say("\nSome forges are not yet available. Use these import links to create mirrors:")
-          import_links = {
-            github: "https://github.com/new/import",
-            gitlab: "https://gitlab.com/projects/new#import_project",
-            codeberg: "https://codeberg.org/repo/create?scm=git&name=#{repo}&migration=true",
-          }
           [:github, :gitlab, :codeberg].each do |forge|
             next if results[forge]
-            say("  - #{forge.capitalize} import: #{import_links[forge]}")
+            say("  - #{forge.capitalize} import: #{FORGE_MIGRATION_TOOLS[forge]}")
           end
         end
       rescue StandardError => e
