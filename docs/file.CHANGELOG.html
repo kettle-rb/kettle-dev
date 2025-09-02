@@ -68,23 +68,33 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 and <a href="https://tom.preston-werner.com/2022/05/23/major-version-numbers-are-not-sacred.html">yes</a>, platform and engine support are part of the <a href="https://github.com/semver/semver/issues/716#issuecomment-869336139">public API</a>.<br>
 Please file a bug if you notice a violation of semantic versioning.</p>
 
-<h2 id="unreleased"><a href="https://github.com/kettle-rb/kettle-dev/compare/v1.0.27...HEAD">Unreleased</a></h2>
+<h2 id="unreleased"><a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.0...HEAD">Unreleased</a></h2>
 <h3 id="added">Added</h3>
+<h3 id="changed">Changed</h3>
+<h3 id="deprecated">Deprecated</h3>
+<h3 id="removed">Removed</h3>
+<h3 id="fixed">Fixed</h3>
+<h3 id="security">Security</h3>
+
+<h2 id="110---2025-09-02">
+<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.0.27...v1.1.0">1.1.0</a> - 2025-09-02</h2>
 <ul>
+  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.0">v1.1.0</a>
+</li>
+  <li>COVERAGE: 97.03% – 2649/2730 lines in 21 files</li>
+  <li>BRANCH COVERAGE: 82.16% – 1105/1345 branches in 21 files</li>
+  <li>76.81% documented
+    <h3 id="added-1">Added</h3>
+  </li>
   <li>exe/kettle-dev-setup - bootstrap templating in any RubyGem
-    <h3 id="changed">Changed</h3>
-    <h3 id="deprecated">Deprecated</h3>
-    <h3 id="removed">Removed</h3>
+    <h3 id="removed-1">Removed</h3>
   </li>
   <li>all runtime deps
     <ul>
       <li>dependencies haven’t really changed; will be injected into the gemspec of the including gem</li>
       <li>
 <strong>almost</strong> a breaking change; but this gem re-templates other gems</li>
-      <li>so non-breaking via re-templating.
-        <h3 id="fixed">Fixed</h3>
-        <h3 id="security">Security</h3>
-      </li>
+      <li>so non-breaking via re-templating.</li>
     </ul>
   </li>
 </ul>
@@ -100,7 +110,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
     <h3 id="changed-1">Changed</h3>
   </li>
   <li>Use semver version dependency (~&gt; 1.0) on kettle-dev when templating
-    <h3 id="removed-1">Removed</h3>
+    <h3 id="removed-2">Removed</h3>
   </li>
   <li>dependency on version_gem (backwards compatible change)</li>
 </ul>
@@ -130,7 +140,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 97.81% – 2630/2689 lines in 22 files</li>
   <li>BRANCH COVERAGE: 82.40% – 1100/1335 branches in 22 files</li>
   <li>75.00% documented
-    <h3 id="added-1">Added</h3>
+    <h3 id="added-2">Added</h3>
   </li>
   <li>test that .env.local.example is copied by install / template tasks
     <h3 id="changed-2">Changed</h3>
@@ -146,7 +156,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 97.51% – 2625/2692 lines in 22 files</li>
   <li>BRANCH COVERAGE: 81.97% – 1096/1337 branches in 22 files</li>
   <li>75.00% documented
-    <h3 id="added-2">Added</h3>
+    <h3 id="added-3">Added</h3>
   </li>
   <li>improved documentation</li>
   <li>more badges in README (gem &amp; template)</li>
@@ -180,7 +190,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 97.75% – 2428/2484 lines in 21 files</li>
   <li>BRANCH COVERAGE: 81.76% – 1013/1239 branches in 21 files</li>
   <li>76.00% documented
-    <h3 id="added-3">Added</h3>
+    <h3 id="added-4">Added</h3>
   </li>
   <li>Carryover important fields from the original gemspec during templating
     <ul>
@@ -202,7 +212,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 97.82% – 2375/2428 lines in 20 files</li>
   <li>BRANCH COVERAGE: 81.34% – 972/1195 branches in 20 files</li>
   <li>76.23% documented
-    <h3 id="added-4">Added</h3>
+    <h3 id="added-5">Added</h3>
   </li>
   <li>improved documentation</li>
   <li>example version of heads workflow
@@ -220,7 +230,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 97.82% – 2375/2428 lines in 20 files</li>
   <li>BRANCH COVERAGE: 81.34% – 972/1195 branches in 20 files</li>
   <li>76.23% documented
-    <h3 id="added-5">Added</h3>
+    <h3 id="added-6">Added</h3>
   </li>
   <li>FUNDING.md in support of a funding footer on release notes
     <ul>
@@ -303,8 +313,8 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>replacement logic handles a dashed gem-name which maps onto a nested path structure</li>
 </ul>
 
-<h2 id="unreleased-1"><a href="https://github.com/kettle-rb/kettle-dev/compare/v1.0.27...HEAD">Unreleased</a></h2>
-<h3 id="added-6">Added</h3>
+<h2 id="unreleased-1"><a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.0...HEAD">Unreleased</a></h2>
+<h3 id="added-7">Added</h3>
 <ul>
   <li>kettle:dev:install and kettle:dev:template support <code>only=</code> option: comma-separated glob patterns matched against destination paths relative to project root; non-matching files are excluded from templating.</li>
 </ul>
@@ -317,7 +327,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 71.70% – 456/636 lines in 9 files</li>
   <li>BRANCH COVERAGE: 51.17% – 153/299 branches in 9 files</li>
   <li>76.23% documented
-    <h3 id="added-7">Added</h3>
+    <h3 id="added-8">Added</h3>
   </li>
   <li>kettle:dev:install can overwrite gemspec with example gemspec</li>
   <li>documentation for the start_step CLI option for kettle-release</li>
@@ -362,7 +372,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 98.17% – 2259/2301 lines in 20 files</li>
   <li>BRANCH COVERAGE: 81.00% – 908/1121 branches in 20 files</li>
   <li>76.03% documented
-    <h3 id="added-8">Added</h3>
+    <h3 id="added-9">Added</h3>
   </li>
   <li>kettle-release: early validation of identical set of copyright years in README.md and CHANGELOG.md, adds current year if missing, aborts on mismatch</li>
   <li>kettle-release: update KLOC in README.md</li>
@@ -396,7 +406,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 97.70% – 2125/2175 lines in 20 files</li>
   <li>BRANCH COVERAGE: 78.77% – 842/1069 branches in 20 files</li>
   <li>76.03% documented
-    <h3 id="added-9">Added</h3>
+    <h3 id="added-10">Added</h3>
   </li>
   <li>kettle-release: Push tags to additional remotes after release
     <h3 id="changed-7">Changed</h3>
@@ -417,7 +427,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 41.94% – 65/155 lines in 6 files</li>
   <li>BRANCH COVERAGE: 1.92% – 1/52 branches in 6 files</li>
   <li>76.03% documented
-    <h3 id="added-10">Added</h3>
+    <h3 id="added-11">Added</h3>
   </li>
   <li>kettle-release: Create GitHub release from tag &amp; changelog entry</li>
 </ul>
@@ -430,7 +440,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 97.80% – 1957/2001 lines in 19 files</li>
   <li>BRANCH COVERAGE: 79.98% – 763/954 branches in 19 files</li>
   <li>78.70% documented
-    <h3 id="added-11">Added</h3>
+    <h3 id="added-12">Added</h3>
   </li>
   <li>CIMonitor to consolidate workflow / pipeline monitoring logic for GH/GL across kettle-release and rake tasks, with handling for:
     <ul>
@@ -469,7 +479,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 97.90% – 1959/2001 lines in 19 files</li>
   <li>BRANCH COVERAGE: 79.98% – 763/954 branches in 19 files</li>
   <li>78.70% documented
-    <h3 id="added-12">Added</h3>
+    <h3 id="added-13">Added</h3>
   </li>
   <li>Add more .example templates
     <ul>
@@ -491,7 +501,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>Make ‘git’ gem dependency optional; fall back to raw <code>git</code> commands when the gem is not present (rescues LoadError). See Kettle::Dev::GitAdapter.</li>
   <li>upgraded to stone_checksums v1.0.2</li>
   <li>exe scripts now print their name and version as they start up
-    <h3 id="removed-2">Removed</h3>
+    <h3 id="removed-3">Removed</h3>
   </li>
   <li>dependency on git gem
     <ul>
@@ -524,7 +534,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 97.68% – 1685/1725 lines in 17 files</li>
   <li>BRANCH COVERAGE: 77.54% – 618/797 branches in 17 files- 95.35% documented</li>
   <li>77.00% documented
-    <h3 id="added-13">Added</h3>
+    <h3 id="added-14">Added</h3>
   </li>
   <li>runs git add –all before git commit, to ensure all files are committed.
     <h3 id="changed-9">Changed</h3>
@@ -534,7 +544,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>exe/ scripts and rake tasks logic is all now moved into classes for testability, and is nearly fully covered by tests.</li>
   <li>New Kettle::Dev::GitAdapter class is an adapter pattern wrapper for git commands</li>
   <li>New Kettle::Dev::ExitAdapter class is an adapter pattern wrapper for Kernel.exit and Kernel.abort within this codebase.
-    <h3 id="removed-3">Removed</h3>
+    <h3 id="removed-4">Removed</h3>
   </li>
   <li>attempts to make exe/* scripts work without bundler. Bundler is required.
     <h3 id="fixed-12">Fixed</h3>
@@ -554,7 +564,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 100.00% – 130/130 lines in 7 files</li>
   <li>BRANCH COVERAGE:  96.00% – 48/50 branches in 7 files</li>
   <li>95.35% documented
-    <h3 id="added-14">Added</h3>
+    <h3 id="added-15">Added</h3>
   </li>
   <li>kettle-release: Add a sanity check for the latest released version of the gem being released, and display it during the confirmation with user that CHANGELOG.md and version.rb have been updated, so they can compare the value in version.rb with the value of the latest released version.
     <ul>
@@ -630,7 +640,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 100.00% – 130/130 lines in 7 files</li>
   <li>BRANCH COVERAGE: 96.00% – 48/50 branches in 7 files</li>
   <li>95.35% documented
-    <h3 id="added-15">Added</h3>
+    <h3 id="added-16">Added</h3>
   </li>
   <li>kettle-release: checks all remotes for a GitHub remote and syncs origin/trunk with it; prompts to rebase or –no-ff merge when histories diverge; pushes to both origin and the GitHub remote on merge; uses the GitHub remote for GitHub Actions CI checks, and also checks GitLab CI when a GitLab remote and .gitlab-ci.yml are present.</li>
   <li>kettle-release: push logic improved — if a remote named <code>all</code> exists, push the current branch to it (assumed to cover multiple push URLs). Otherwise push the current branch to <code>origin</code> and to any GitHub, GitLab, and Codeberg remotes (whatever their names are).
@@ -649,7 +659,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 100.00% – 98/98 lines in 7 files</li>
   <li>BRANCH COVERAGE: 100.00% – 30/30 branches in 7 files</li>
   <li>94.59% documented
-    <h3 id="added-16">Added</h3>
+    <h3 id="added-17">Added</h3>
   </li>
   <li>template task now copies .git-hooks files necessary for git hooks to work
     <h3 id="fixed-18">Fixed</h3>
@@ -680,7 +690,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 100.00% – 98/98 lines in 7 files</li>
   <li>BRANCH COVERAGE: 100.00% – 30/30 branches in 7 files</li>
   <li>94.59% documented
-    <h3 id="added-17">Added</h3>
+    <h3 id="added-18">Added</h3>
   </li>
   <li>These were documented but not yet released:
     <ul>
@@ -708,7 +718,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 100.00% – 98/98 lines in 7 files</li>
   <li>BRANCH COVERAGE: 100.00% – 30/30 branches in 7 files</li>
   <li>94.59% documented
-    <h3 id="added-18">Added</h3>
+    <h3 id="added-19">Added</h3>
   </li>
   <li>initial release, with auto-config support for:
     <ul>
@@ -750,7 +760,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Mon Sep  1 23:52:22 2025 by
+  Generated on Tue Sep  2 00:13:29 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

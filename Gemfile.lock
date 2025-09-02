@@ -13,7 +13,7 @@ GIT
 PATH
   remote: .
   specs:
-    kettle-dev (1.0.27)
+    kettle-dev (1.1.0)
       rake (~> 13.0)
 
 GEM

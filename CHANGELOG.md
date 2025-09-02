@@ -18,16 +18,24 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [Unreleased]
 ### Added
-- exe/kettle-dev-setup - bootstrap templating in any RubyGem
 ### Changed
 ### Deprecated
+### Removed
+### Fixed
+### Security
+
+## [1.1.0] - 2025-09-02
+- TAG: [v1.1.0][1.1.0t]
+- COVERAGE: 97.03% -- 2649/2730 lines in 21 files
+- BRANCH COVERAGE: 82.16% -- 1105/1345 branches in 21 files
+- 76.81% documented
+### Added
+- exe/kettle-dev-setup - bootstrap templating in any RubyGem
 ### Removed
 - all runtime deps
   - dependencies haven't really changed; will be injected into the gemspec of the including gem
   - **almost** a breaking change; but this gem re-templates other gems
   - so non-breaking via re-templating.
-### Fixed
-### Security
 
 ## [1.0.27] - 2025-09-01
 - TAG: [v1.0.27][1.0.27t]
@@ -408,7 +416,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.27...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.27...v1.1.0
+[1.1.0t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.0
 [1.0.27]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.26...v1.0.27
 [1.0.27t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.27
 [1.0.26]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.25...v1.0.26
