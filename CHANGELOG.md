@@ -18,6 +18,18 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [Unreleased]
 ### Added
+### Changed
+### Deprecated
+### Removed
+### Fixed
+### Security
+
+## [1.1.2] - 2025-09-02
+- TAG: [v1.1.2][1.1.2t]
+- COVERAGE: 97.14% -- 2858/2942 lines in 22 files
+- BRANCH COVERAGE: 82.29% -- 1194/1451 branches in 22 files
+- 76.76% documented
+### Added
 - .gitlab-ci.yml documentation (in example)
 - kettle-dvcs script for setting up DVCS, and checking status of remotes
   - https://railsbling.com/posts/dvcs/put_the_d_in_dvcs/
@@ -28,11 +40,8 @@ Please file a bug if you notice a violation of semantic versioning.
 - Specs for DvcsCLI covering remote normalization, fetch outcomes, and README updates
 ### Changed
 - major spec refactoring
-### Deprecated
-### Removed
 ### Fixed
 - (linting) rspec-pending_for 0.0.17+ (example gemspec)
-### Security
 
 ## [1.1.1] - 2025-09-02
 - TAG: [v1.1.1][1.1.1t]
@@ -438,7 +447,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.2...HEAD
+[1.1.2]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.1...v1.1.2
+[1.1.2t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.2
 [1.1.1]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.0...v1.1.1
 [1.1.1t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.1
 [1.1.0]: https://github.com/kettle-rb/kettle-dev/compare/v1.0.27...v1.1.0

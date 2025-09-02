@@ -388,12 +388,12 @@ auto-install tasks when invoked via the rake executable.</p>
       <pre class="lines">
 
 
-86
 87
-88</pre>
+88
+89</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 86</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 87</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_defaults'>defaults</span>
   <span class='ivar'>@defaults</span>
@@ -467,16 +467,16 @@ auto-install tasks when invoked via the rake executable.</p>
       <pre class="lines">
 
 
-65
 66
 67
 68
 69
 70
-71</pre>
+71
+72</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 65</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 66</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_debug_error'>debug_error</span><span class='lparen'>(</span><span class='id identifier rubyid_error'>error</span><span class='comma'>,</span> <span class='id identifier rubyid_context'>context</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='const'><span class='object_link'><a href="#DEBUGGING-constant" title="Kettle::Dev::DEBUGGING (constant)">DEBUGGING</a></span></span>
@@ -518,14 +518,14 @@ gem-shipped rakelib directory so host projects get tasks from this gem.</p>
       <pre class="lines">
 
 
-78
 79
 80
 81
-82</pre>
+82
+83</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 78</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 79</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_install_tasks'>install_tasks</span>
   <span class='id identifier rubyid_linting_tasks'>linting_tasks</span>
@@ -595,7 +595,6 @@ Also enhances the :default task immediately if it exists.</p>
       <pre class="lines">
 
 
-92
 93
 94
 95
@@ -608,10 +607,11 @@ Also enhances the :default task immediately if it exists.</p>
 102
 103
 104
-105</pre>
+105
+106</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 92</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 93</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_register_default'>register_default</span><span class='lparen'>(</span><span class='id identifier rubyid_task_name'>task_name</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_task_name'>task_name</span> <span class='op'>=</span> <span class='id identifier rubyid_task_name'>task_name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
@@ -637,7 +637,7 @@ Also enhances the :default task immediately if it exists.</p>
 </div>
 
       <div id="footer">
-  Generated on Tue Sep  2 04:43:28 2025 by
+  Generated on Tue Sep  2 05:36:46 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>
