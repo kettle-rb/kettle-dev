@@ -67,6 +67,7 @@ module Kettle
             git.fetch(r)
           end
           show_status!(git, names, branch)
+          show_local_vs_origin!(git, branch)
           return 0
         end
 
@@ -134,6 +135,29 @@ module Kettle
           else
             say("  - #{forge} (#{remote}): no data (branch missing?)")
           end
+        end
+      end
+
+      # Show local working copy status relative to origin/<branch>
+      def show_local_vs_origin!(git, branch)
+        base = "origin/#{branch}"
+        # Compare local HEAD to origin/<branch>
+        out, ok = git.capture(["rev-list", "--left-right", "--count", "HEAD...#{base}"])
+        say("\nLocal status relative to #{base}:")
+        if ok && !out.to_s.strip.empty?
+          parts = out.strip.split(/\s+/)
+          left = parts[0].to_i
+          right = parts[1].to_i
+          # left = commits only in HEAD => local ahead by left
+          # right = commits only in origin => local behind by right
+          if left.zero? && right.zero?
+            say("  - local (HEAD): in sync")
+          else
+            ahead_emoji = left.zero? ? "✅️" : "🔴"
+            say("  - local (HEAD): #{ahead_emoji} ahead by #{left}, behind by #{right}")
+          end
+        else
+          say("  - local (HEAD): no data (branch missing?)")
         end
       end
 

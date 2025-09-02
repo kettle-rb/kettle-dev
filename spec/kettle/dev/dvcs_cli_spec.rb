@@ -181,7 +181,7 @@ RSpec.describe Kettle::Dev::DvcsCLI do
     end
   end
 
-  it "prefixes ✅️ when ahead by 0 and shows 🔴 when ahead > 0", :check_output do
+  it "prefixes ✅️ when ahead by 0 and shows 🔴 when ahead > 0 (remote vs origin)", :check_output do
     adapter = instance_double(Kettle::Dev::GitAdapter)
     allow(Kettle::Dev::GitAdapter).to receive(:new).and_return(adapter)
     allow(adapter).to receive(:clean?).and_return(true)
@@ -411,5 +411,23 @@ RSpec.describe Kettle::Dev::DvcsCLI do
     expect { cli.send(:abort!, "nope") }.to raise_error(SystemExit) do |e|
       expect(e.status).to eq(1)
     end
+  end
+  it "shows local vs origin status section and emoji on ahead phrase", :check_output do
+    adapter = instance_double(Kettle::Dev::GitAdapter)
+    allow(Kettle::Dev::GitAdapter).to receive(:new).and_return(adapter)
+    allow(adapter).to receive(:clean?).and_return(true)
+    allow(adapter).to receive_messages(remotes: ["origin", "gl"], remotes_with_urls: {"origin" => "git@github.com:o/r.git"})
+    allow(adapter).to receive(:fetch).and_return(true)
+    # detect_default_branch! ok on main
+    allow(adapter).to receive(:capture).with(["rev-parse", "--verify", "origin/main"]).and_return(["", true])
+    # remote gl status data (doesn't matter here)
+    allow(adapter).to receive(:capture).with(["rev-list", "--left-right", "--count", "origin/main...gl/main"]).and_return(["0\t0", true])
+    # local vs origin: local ahead 2, behind 1
+    allow(adapter).to receive(:capture).with(["rev-list", "--left-right", "--count", "HEAD...origin/main"]).and_return(["2\t1", true])
+    allow(adapter).to receive(:remote_url).and_return(nil)
+
+    expect {
+      described_class.new(["--status", "o", "r"]).run!
+    }.to output(/Local status relative to origin\/main:\n  - local \(HEAD\): 🔴 ahead by 2, behind by 1/).to_stdout_from_any_process
   end
 end
