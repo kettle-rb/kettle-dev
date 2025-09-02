@@ -15,6 +15,27 @@ module Kettle
     #
     # Public API is intentionally small and only includes what we need right now.
     class GitAdapter
+      # Determine whether the working tree is clean (no unstaged, staged, or untracked changes).
+      # @return [Boolean] true if clean, false if any changes or on error
+      def clean?
+        if @backend == :gem
+          begin
+            status = @git.status
+            # git gem's Status responds to changed, added, deleted, untracked, etc.
+            status.changed.empty? && status.added.empty? && status.deleted.empty? && status.untracked.empty?
+          rescue StandardError => e
+            Kettle::Dev.debug_error(e, __method__)
+            false
+          end
+        else
+          out, st = Open3.capture2("git", "status", "--porcelain")
+          st.success? && out.strip.empty?
+        end
+      rescue StandardError => e
+        Kettle::Dev.debug_error(e, __method__)
+        false
+      end
+
       # Execute a git command and capture its stdout and success flag.
       # This is a generic escape hatch used by higher-level code for read-only
       # queries that aren't covered by the explicit adapter API. Tests can stub
@@ -24,7 +45,8 @@ module Kettle
       def capture(args)
         out, status = Open3.capture2("git", *args)
         [out.strip, status.success?]
-      rescue StandardError
+      rescue StandardError => e
+        Kettle::Dev.debug_error(e, __method__)
         ["", false]
       end
 
@@ -44,7 +66,8 @@ module Kettle
             @backend = :gem
             @git = ::Git.open(Dir.pwd)
           end
-        rescue LoadError
+        rescue LoadError => e
+          Kettle::Dev.debug_error(e, __method__)
           # Optional dependency: fall back to CLI
           @backend = :cli
         rescue StandardError => e
@@ -67,7 +90,8 @@ module Kettle
               @git.push(nil, branch, force: force)
             end
             true
-          rescue StandardError
+          rescue StandardError => e
+            Kettle::Dev.debug_error(e, __method__)
             false
           end
         else
@@ -88,7 +112,8 @@ module Kettle
           out, status = Open3.capture2("git", "rev-parse", "--abbrev-ref", "HEAD")
           status.success? ? out.strip : nil
         end
-      rescue StandardError
+      rescue StandardError => e
+        Kettle::Dev.debug_error(e, __method__)
         nil
       end
 
@@ -100,7 +125,8 @@ module Kettle
           out, status = Open3.capture2("git", "remote")
           status.success? ? out.split(/\r?\n/).map(&:strip).reject(&:empty?) : []
         end
-      rescue StandardError
+      rescue StandardError => e
+        Kettle::Dev.debug_error(e, __method__)
         []
       end
 
@@ -110,7 +136,8 @@ module Kettle
           @git.remotes.each_with_object({}) do |r, h|
             begin
               h[r.name] = r.url
-            rescue StandardError
+            rescue StandardError => e
+              Kettle::Dev.debug_error(e, __method__)
               # ignore
             end
           end
@@ -126,7 +153,8 @@ module Kettle
           end
           urls
         end
-      rescue StandardError
+      rescue StandardError => e
+        Kettle::Dev.debug_error(e, __method__)
         {}
       end
 
@@ -140,7 +168,8 @@ module Kettle
           out, status = Open3.capture2("git", "config", "--get", "remote.#{name}.url")
           status.success? ? out.strip : nil
         end
-      rescue StandardError
+      rescue StandardError => e
+        Kettle::Dev.debug_error(e, __method__)
         nil
       end
 

@@ -134,7 +134,8 @@ module Kettle
                     new_constraint = ruby1_8[1]
                     rubocop_ruby_gem_version = ruby1_8[0].segments.join("_")
                   end
-                rescue StandardError
+                rescue StandardError => e
+                  Kettle::Dev.debug_error(e, __method__)
                   # ignore, use default
                 ensure
                   new_constraint ||= ruby1_8[1]
@@ -178,6 +179,7 @@ module Kettle
               helpers.copy_file_with_prompt(envlocal_src, envlocal_dest, allow_create: true, allow_replace: true)
             end
           rescue StandardError => e
+            Kettle::Dev.debug_error(e, __method__)
             puts "WARNING: Skipped .env.local example copy due to #{e.class}: #{e.message}"
           end
 
@@ -303,7 +305,8 @@ module Kettle
                     unless exes.empty?
                       c = replace_array_field.call(c, "executables", exes)
                     end
-                  rescue StandardError
+                  rescue StandardError => e
+                    Kettle::Dev.debug_error(e, __method__)
                     # Best-effort carry-over; ignore any individual failure
                   end
                 end
@@ -384,7 +387,8 @@ module Kettle
                     end
                   end
                 end
-              rescue StandardError
+              rescue StandardError => e
+                Kettle::Dev.debug_error(e, __method__)
                 # ignore, leave dest_preserve_prefix as nil
               end
 
@@ -520,10 +524,12 @@ module Kettle
                         end
                       end
                     end
-                  rescue StandardError
+                  rescue StandardError => e
+                    Kettle::Dev.debug_error(e, __method__)
                     # ignore H1 preservation errors
                   end
-                rescue StandardError
+                rescue StandardError => e
+                  Kettle::Dev.debug_error(e, __method__)
                   # Best effort; if anything fails, keep c as-is
                 end
 

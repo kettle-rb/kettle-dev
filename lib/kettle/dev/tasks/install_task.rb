@@ -136,6 +136,7 @@ module Kettle
               end
             end
           rescue StandardError => e
+            Kettle::Dev.debug_error(e, __method__)
             puts "WARNING: Skipped trimming MRI Ruby badges in README.md due to #{e.class}: #{e.message}"
           end
 
@@ -159,7 +160,8 @@ module Kettle
                     cluster = tail[/\A\X/u]
                     chosen_grapheme = cluster unless cluster.to_s.empty?
                   end
-                rescue StandardError
+                rescue StandardError => e
+                  Kettle::Dev.debug_error(e, __method__)
                   # Fallback: take first Unicode grapheme if any non-space char
                   chosen_grapheme ||= tail[/\A\X/u]
                 end
@@ -200,7 +202,8 @@ module Kettle
                     new_readme = lines.join("\n")
                     File.open(readme_path, "w") { |f| f.write(new_readme) }
                   end
-                rescue StandardError
+                rescue StandardError => e
+                  Kettle::Dev.debug_error(e, __method__)
                   # ignore README normalization errors
                 end
 
@@ -237,7 +240,8 @@ module Kettle
                   if gspec3 != gspec
                     File.open(gemspec_path, "w") { |f| f.write(gspec3) }
                   end
-                rescue StandardError
+                rescue StandardError => e
+                  Kettle::Dev.debug_error(e, __method__)
                   # ignore gemspec edits on error
                 end
               end

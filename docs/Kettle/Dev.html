@@ -79,7 +79,7 @@
   <dl>
     <dt>Defined in:</dt>
     <dd>lib/kettle/dev.rb<span class="defines">,<br />
-  lib/kettle/dev.rb,<br /> lib/kettle/dev/version.rb,<br /> lib/kettle/dev/ci_helpers.rb,<br /> lib/kettle/dev/ci_monitor.rb,<br /> lib/kettle/dev/commit_msg.rb,<br /> lib/kettle/dev/versioning.rb,<br /> lib/kettle/dev/git_adapter.rb,<br /> lib/kettle/dev/release_cli.rb,<br /> lib/kettle/dev/exit_adapter.rb,<br /> lib/kettle/dev/changelog_cli.rb,<br /> lib/kettle/dev/input_adapter.rb,<br /> lib/kettle/dev/tasks/ci_task.rb,<br /> lib/kettle/dev/readme_backers.rb,<br /> lib/kettle/dev/gem_spec_reader.rb,<br /> lib/kettle/dev/template_helpers.rb,<br /> lib/kettle/dev/git_commit_footer.rb,<br /> lib/kettle/dev/tasks/install_task.rb,<br /> lib/kettle/dev/tasks/template_task.rb</span>
+  lib/kettle/dev/version.rb,<br /> lib/kettle/dev/ci_helpers.rb,<br /> lib/kettle/dev/ci_monitor.rb,<br /> lib/kettle/dev/commit_msg.rb,<br /> lib/kettle/dev/versioning.rb,<br /> lib/kettle/dev/git_adapter.rb,<br /> lib/kettle/dev/release_cli.rb,<br /> lib/kettle/dev/exit_adapter.rb,<br /> lib/kettle/dev/changelog_cli.rb,<br /> lib/kettle/dev/input_adapter.rb,<br /> lib/kettle/dev/tasks/ci_task.rb,<br /> lib/kettle/dev/readme_backers.rb,<br /> lib/kettle/dev/gem_spec_reader.rb,<br /> lib/kettle/dev/template_helpers.rb,<br /> lib/kettle/dev/git_commit_footer.rb,<br /> lib/kettle/dev/tasks/install_task.rb,<br /> lib/kettle/dev/tasks/template_task.rb</span>
 </dd>
   </dl>
   
@@ -193,9 +193,11 @@
         <dt id="RUNNING_AS-constant" class="">RUNNING_AS =
           <div class="docstring">
   <div class="discussion">
-    <p>Whether to load rake tasks at the bottom of this file.<br />
-Normally they would be loaded in the project’s Rakefile,<br />
-  but if we do that in this project then we can’t get accurate code coverage.</p>
+    <p>The current program name (e.g., “rake”, “rspec”).<br />
+Used to decide whether to auto-load rake tasks at the bottom of this file.<br />
+Normally tasks are loaded in the host project’s Rakefile, but when running<br />
+under this gem’s own test suite we need precise coverage; so we only<br />
+auto-install tasks when invoked via the rake executable.</p>
 
 
   </div>
@@ -208,7 +210,7 @@ Normally they would be loaded in the project’s Rakefile,<br />
     <li>
       
       
-        <span class='type'>(<tt>Boolean</tt>)</span>
+        <span class='type'>(<tt>String</tt>)</span>
       
       
       
@@ -363,12 +365,12 @@ Normally they would be loaded in the project’s Rakefile,<br />
       <pre class="lines">
 
 
-45
-46
-47</pre>
+72
+73
+74</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 45</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 72</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_defaults'>defaults</span>
   <span class='ivar'>@defaults</span>
@@ -413,14 +415,14 @@ gem-shipped rakelib directory so host projects get tasks from this gem.</p>
       <pre class="lines">
 
 
-37
-38
-39
-40
-41</pre>
+64
+65
+66
+67
+68</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 37</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 64</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_install_tasks'>install_tasks</span>
   <span class='id identifier rubyid_linting_tasks'>linting_tasks</span>
@@ -490,23 +492,23 @@ Also enhances the :default task immediately if it exists.</p>
       <pre class="lines">
 
 
-51
-52
-53
-54
-55
-56
-57
-58
-59
-60
-61
-62
-63
-64</pre>
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 51</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 78</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_register_default'>register_default</span><span class='lparen'>(</span><span class='id identifier rubyid_task_name'>task_name</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_task_name'>task_name</span> <span class='op'>=</span> <span class='id identifier rubyid_task_name'>task_name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
@@ -532,7 +534,7 @@ Also enhances the :default task immediately if it exists.</p>
 </div>
 
       <div id="footer">
-  Generated on Mon Sep  1 14:13:13 2025 by
+  Generated on Mon Sep  1 17:25:07 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

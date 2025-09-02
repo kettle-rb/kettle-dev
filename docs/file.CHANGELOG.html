@@ -70,11 +70,24 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 
 <h2 id="unreleased"><a href="https://github.com/kettle-rb/kettle-dev/compare/v1.0.27...HEAD">Unreleased</a></h2>
 <h3 id="added">Added</h3>
-<h3 id="changed">Changed</h3>
-<h3 id="deprecated">Deprecated</h3>
-<h3 id="removed">Removed</h3>
-<h3 id="fixed">Fixed</h3>
-<h3 id="security">Security</h3>
+<ul>
+  <li>exe/kettle-dev-setup - bootstrap templating in any RubyGem
+    <h3 id="changed">Changed</h3>
+    <h3 id="deprecated">Deprecated</h3>
+    <h3 id="removed">Removed</h3>
+  </li>
+  <li>all runtime deps
+    <ul>
+      <li>dependencies haven’t really changed; will be injected into the gemspec of the including gem</li>
+      <li>
+<strong>almost</strong> a breaking change; but this gem re-templates other gems</li>
+      <li>so non-breaking via re-templating.
+        <h3 id="fixed">Fixed</h3>
+        <h3 id="security">Security</h3>
+      </li>
+    </ul>
+  </li>
+</ul>
 
 <h2 id="1027---2025-09-01">
 <a href="https://github.com/kettle-rb/kettle-dev/compare/v1.0.26...v1.0.27">1.0.27</a> - 2025-09-01</h2>
@@ -737,7 +750,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Mon Sep  1 14:13:12 2025 by
+  Generated on Mon Sep  1 17:25:06 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

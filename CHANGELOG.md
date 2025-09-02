@@ -18,6 +18,7 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [Unreleased]
 ### Added
+- exe/kettle-dev-setup - bootstrap templating in any RubyGem
 ### Changed
 ### Deprecated
 ### Removed

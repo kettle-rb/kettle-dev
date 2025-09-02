@@ -6,29 +6,70 @@
 require "require_bench" if ENV.fetch("REQUIRE_BENCH", "false").casecmp("true").zero?
 # :nocov:
 
+# Autoload public CLI/APIs so requiring "kettle-dev" exposes them lazily
+# for tests and executables. Files will be loaded on first constant access.
 module Kettle
+  autoload :EmojiRegex, "kettle/emoji_regex"
   module Dev
+    autoload :ChangelogCLI, "kettle/dev/changelog_cli"
+    autoload :CIHelpers, "kettle/dev/ci_helpers"
+    autoload :CIMonitor, "kettle/dev/ci_monitor"
+    autoload :CommitMsg, "kettle/dev/commit_msg"
+    autoload :ExitAdapter, "kettle/dev/exit_adapter"
+    autoload :GemSpecReader, "kettle/dev/gem_spec_reader"
+    autoload :GitAdapter, "kettle/dev/git_adapter"
+    autoload :GitCommitFooter, "kettle/dev/git_commit_footer"
+    autoload :InputAdapter, "kettle/dev/input_adapter"
+    autoload :ReadmeBackers, "kettle/dev/readme_backers"
+    autoload :ReleaseCLI, "kettle/dev/release_cli"
+    autoload :TemplateHelpers, "kettle/dev/template_helpers"
+    autoload :Version, "kettle/dev/version"
+    autoload :Versioning, "kettle/dev/versioning"
+
+    # Nested tasks namespace with autoloaded task modules
+    module Tasks
+      autoload :CITask, "kettle/dev/tasks/ci_task"
+      autoload :InstallTask, "kettle/dev/tasks/install_task"
+      autoload :TemplateTask, "kettle/dev/tasks/template_task"
+    end
+
     # Base error type for kettle-dev.
     class Error < StandardError; end
 
     # Whether debug logging is enabled for kettle-dev internals.
     # @return [Boolean]
     DEBUGGING = ENV.fetch("DEBUG", "false").casecmp("true").zero?
+    # Backwards-compat for kettle-dev specific debug variable
+    DEBUGGING ||= ENV.fetch("KETTLE_DEV_DEBUG", "false").casecmp("true").zero?
     # Whether we are running on CI.
     # @return [Boolean]
     IS_CI = ENV.fetch("CI", "false").casecmp("true") == 0
     # Whether to benchmark requires with require_bench.
     # @return [Boolean]
     REQUIRE_BENCH = ENV.fetch("REQUIRE_BENCH", "false").casecmp("true").zero?
-    # Whether to load rake tasks at the bottom of this file.
-    # Normally they would be loaded in the project's Rakefile,
-    #   but if we do that in this project then we can't get accurate code coverage.
-    # @return [Boolean]
+    # The current program name (e.g., "rake", "rspec").
+    # Used to decide whether to auto-load rake tasks at the bottom of this file.
+    # Normally tasks are loaded in the host project's Rakefile, but when running
+    # under this gem's own test suite we need precise coverage; so we only
+    # auto-install tasks when invoked via the rake executable.
+    # @return [String]
     RUNNING_AS = File.basename($PROGRAM_NAME)
 
     @defaults = []
 
     class << self
+      # Emit a debug warning for rescued errors when DEBUG=true.
+      # @param error [Exception]
+      # @param context [String, Symbol, nil] optional label, often __method__
+      # @return [void]
+      def debug_error(error, context = nil)
+        return unless DEBUGGING
+        ctx = context ? context.to_s : "rescue"
+        Kernel.warn("[#{ctx}] #{error.class}: #{error.message}")
+      rescue Exception
+        # never raise from debug logging
+      end
+
       # Install Rake tasks useful for development and tests.
       #
       # Adds RuboCop-LTS tasks, coverage tasks, and loads the
@@ -102,35 +143,6 @@ module Kettle
           # OK, no soup for you.
         end
       end
-    end
-  end
-end
-
-# Autoload public CLI/APIs so requiring "kettle-dev" exposes them lazily
-# for tests and executables. Files will be loaded on first constant access.
-module Kettle
-  autoload :EmojiRegex, "kettle/emoji_regex"
-  module Dev
-    autoload :ChangelogCLI, "kettle/dev/changelog_cli"
-    autoload :CIHelpers, "kettle/dev/ci_helpers"
-    autoload :CIMonitor, "kettle/dev/ci_monitor"
-    autoload :CommitMsg, "kettle/dev/commit_msg"
-    autoload :ExitAdapter, "kettle/dev/exit_adapter"
-    autoload :GemSpecReader, "kettle/dev/gem_spec_reader"
-    autoload :GitAdapter, "kettle/dev/git_adapter"
-    autoload :GitCommitFooter, "kettle/dev/git_commit_footer"
-    autoload :InputAdapter, "kettle/dev/input_adapter"
-    autoload :ReadmeBackers, "kettle/dev/readme_backers"
-    autoload :ReleaseCLI, "kettle/dev/release_cli"
-    autoload :TemplateHelpers, "kettle/dev/template_helpers"
-    autoload :Version, "kettle/dev/version"
-    autoload :Versioning, "kettle/dev/versioning"
-
-    # Nested tasks namespace with autoloaded task modules
-    module Tasks
-      autoload :CITask, "kettle/dev/tasks/ci_task"
-      autoload :InstallTask, "kettle/dev/tasks/install_task"
-      autoload :TemplateTask, "kettle/dev/tasks/template_task"
     end
   end
 end

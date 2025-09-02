@@ -2,15 +2,16 @@ module Kettle
   module Dev
     class GitAdapter
       def initialize: () -> void
-      def push: (String?, String, force: bool) -> bool
+      def capture: (Array[String] args) -> [String, bool]
+      def push: (String? remote, String branch, force: bool) -> bool
       def current_branch: () -> String?
       def remotes: () -> Array[String]
       def remotes_with_urls: () -> Hash[String, String]
-      def remote_url: (String) -> String?
-      def checkout: (String) -> bool
-      def pull: (String, String) -> bool
-      def fetch: (String, String?) -> bool
-      def capture: (Array[String]) -> [String, bool]
+      def remote_url: (String name) -> String?
+      def checkout: (String branch) -> bool
+      def pull: (String remote, String branch) -> bool
+      def fetch: (String remote, String? ref) -> bool
+      def clean?: () -> bool
     end
   end
 end
