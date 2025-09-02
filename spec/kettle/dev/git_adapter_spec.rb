@@ -228,11 +228,8 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
       expect(adapter).to have_received(:system).with("git", "push", "origin", "feat")
     end
   end
-end
 
-
-# Consolidated from git_adapter_clean_spec.rb: clean? behavior
-RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
+  # Consolidated from git_adapter_clean_spec.rb: clean? behavior
   describe "#clean?" do
     context "when using git gem backend" do
       let(:git_repo) { double("Git::Base") }
@@ -298,3 +295,4 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
     end
   end
 end
+

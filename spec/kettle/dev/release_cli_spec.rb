@@ -1257,7 +1257,6 @@ end
 
 # rubocop:enable RSpec/MultipleExpectations, RSpec/MessageSpies, RSpec/StubbedMock, RSpec/ReceiveMessages
 
-
 # Consolidated from release_cli_github_spec.rb and release_cli_github_footer_spec.rb and release_cli_copyright_spec.rb
 RSpec.describe Kettle::Dev::ReleaseCLI do
   let(:ci_helpers) { Kettle::Dev::CIHelpers }

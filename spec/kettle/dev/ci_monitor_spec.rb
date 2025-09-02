@@ -117,6 +117,11 @@ RSpec.describe Kettle::Dev::CIMonitor do
       expect(described_class.parse_github_owner_repo(nil)).to eq([nil, nil])
       expect(described_class.parse_github_owner_repo("ssh://gitlab.com/u/r")).to eq([nil, nil])
     end
+
+    it "parses SSH and HTTPS URLs" do
+      expect(described_class.parse_github_owner_repo("git@github.com:me/repo.git")).to eq(["me", "repo"])
+      expect(described_class.parse_github_owner_repo("https://github.com/me/repo")).to eq(["me", "repo"])
+    end
   end
 
   describe "::monitor_all! no CI configured" do
@@ -129,18 +134,6 @@ RSpec.describe Kettle::Dev::CIMonitor do
       allow(described_class).to receive(:gitlab_remote_candidates).and_return([])
       allow(helpers).to receive(:current_branch).and_return("feat")
       expect { described_class.monitor_all!(restart_hint: "hint") }.to raise_error(MockSystemExit, /CI configuration not detected/)
-    end
-  end
-end
-
-
-# Consolidated from ci_helpers_extra_spec.rb: positive parsing cases
-RSpec.describe Kettle::Dev::CIMonitor do
-  describe "::parse_github_owner_repo positive cases" do
-    it "parses SSH and HTTPS URLs" do
-      mod = Kettle::Dev::CIMonitor
-      expect(mod.parse_github_owner_repo("git@github.com:me/repo.git")).to eq(["me", "repo"])
-      expect(mod.parse_github_owner_repo("https://github.com/me/repo")).to eq(["me", "repo"])
     end
   end
 end

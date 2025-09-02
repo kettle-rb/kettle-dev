@@ -446,11 +446,8 @@ RSpec.describe Kettle::Dev::CIHelpers do
       expect(run).to include("id" => 200, "html_url" => "https://x/newer")
     end
   end
-end
 
-
-# Consolidated from ci_helpers_extra_spec.rb: enrich details from GitLab
-RSpec.describe Kettle::Dev::CIHelpers do
+  # Consolidated from ci_helpers_extra_spec.rb: enrich details from GitLab
   describe "::gitlab_latest_pipeline enrichment" do
     it "enriches pipeline with detail fields when available" do
       # First call returns list with one pipeline id

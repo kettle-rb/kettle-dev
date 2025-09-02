@@ -155,10 +155,10 @@ RSpec.describe Kettle::Dev::DvcsCLI do
 
       # Simulate default origin=github and expected lookups
       allow(adapter).to receive_messages(
-                          remotes: ["origin", "gl", "cb"],
-                          remotes_with_urls: {"origin" => "git@github.com:org/repo.git"},
-                          remote_url: nil,
-                          )
+        remotes: ["origin", "gl", "cb"],
+        remotes_with_urls: {"origin" => "git@github.com:org/repo.git"},
+        remote_url: nil,
+      )
 
       # detect_default_branch!: first try origin/main ok
       allow(adapter).to receive(:capture).with(["rev-parse", "--verify", "origin/main"]).and_return(["", true])
