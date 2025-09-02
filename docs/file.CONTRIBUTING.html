@@ -221,7 +221,11 @@ See: <a href="https://guides.rubygems.org/security/#building-gems">RubyGems Secu
 
 <h4 id="automated-process">Automated process</h4>
 
-<p>Run <code>bundle exec kettle-release</code>.</p>
+<ol>
+  <li>Update version.rb to contian the correct version-to-be-released.</li>
+  <li>Run <code>bundle exec kettle-changelog</code>.</li>
+  <li>Run <code>bundle exec kettle-release</code>.</li>
+</ol>
 
 <h4 id="manual-process">Manual process</h4>
 
@@ -274,7 +278,7 @@ push git commits and tags, and push the <code>.gem</code> file to <a href="https
 </div></div>
 
       <div id="footer">
-  Generated on Tue Sep  2 00:13:29 2025 by
+  Generated on Tue Sep  2 01:01:57 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>
