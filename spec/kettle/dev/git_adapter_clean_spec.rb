@@ -15,7 +15,7 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
       end
 
       it "returns false when there are any changes" do
-        dirty_status = double("Git::Status", changed: {"a"=>"M"}, added: {}, deleted: {}, untracked: {})
+        dirty_status = double("Git::Status", changed: {"a" => "M"}, added: {}, deleted: {}, untracked: {})
         adapter = described_class.new
         adapter.instance_variable_set(:@backend, :gem)
         adapter.instance_variable_set(:@git, git_repo)

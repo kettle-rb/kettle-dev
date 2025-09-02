@@ -45,6 +45,12 @@ bundle exec rake kettle:dev:install
 
 Making sure to review the changes, and retain overwritten bits that matter.
 
+Later, when ready to release:
+```console
+bin/kettle-changelog
+bin/kettle-release
+```
+
 ## 💡 Info you can shake a stick at
 
 | Tokens to Remember      | [![Gem name][⛳️name-img]][⛳️gem-name] [![Gem namespace][⛳️namespace-img]][⛳️gem-namespace]                                                                                                                                                                                                                     |

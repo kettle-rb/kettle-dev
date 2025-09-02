@@ -61,22 +61,23 @@
   module Dev<br>
     class GitAdapter<br>
       def initialize: () -&gt; void<br>
-      def push: (String?, String, force: bool) -&gt; bool<br>
+      def capture: (Array[String] args) -&gt; [String, bool]<br>
+      def push: (String? remote, String branch, force: bool) -&gt; bool<br>
       def current_branch: () -&gt; String?<br>
       def remotes: () -&gt; Array[String]<br>
       def remotes_with_urls: () -&gt; Hash[String, String]<br>
-      def remote_url: (String) -&gt; String?<br>
-      def checkout: (String) -&gt; bool<br>
-      def pull: (String, String) -&gt; bool<br>
-      def fetch: (String, String?) -&gt; bool<br>
-      def capture: (Array[String]) -&gt; [String, bool]<br>
+      def remote_url: (String name) -&gt; String?<br>
+      def checkout: (String branch) -&gt; bool<br>
+      def pull: (String remote, String branch) -&gt; bool<br>
+      def fetch: (String remote, String? ref) -&gt; bool<br>
+      def clean?: () -&gt; bool<br>
     end<br>
   end<br>
 end</p>
 </div></div>
 
       <div id="footer">
-  Generated on Mon Sep  1 17:25:06 2025 by
+  Generated on Mon Sep  1 23:52:23 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

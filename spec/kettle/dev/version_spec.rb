@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 RSpec.describe Kettle::Dev::Version do
-  it_behaves_like "a Version module", described_class
-
   before do
     stub_const("Kettle::Dev::Version::VERSION", "12.34.56.pre-78")
   end
+
+  it_behaves_like "a Version module", described_class
 
   it "is greater than 0.1.0" do
     expect(Gem::Version.new(described_class) > Gem::Version.new("0.1.0")).to(be(true))

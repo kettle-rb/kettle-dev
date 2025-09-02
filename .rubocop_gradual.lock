@@ -61,6 +61,23 @@
     [129, 7, 75, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [126].", 3847887328],
     [130, 7, 61, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [124, 125].", 699226184]
   ],
+  "spec/kettle/dev/git_adapter_clean_spec.rb:140573530": [
+    [6, 24, 19, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 3198354142],
+    [7, 26, 73, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 1163148245],
+    [13, 9, 16, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 722749302],
+    [13, 29, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `git_repo` as a spy using `allow` or `instance_spy`.", 1384559950],
+    [18, 24, 83, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 2467801370],
+    [22, 9, 16, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 722749302],
+    [22, 29, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `git_repo` as a spy using `allow` or `instance_spy`.", 1384559950],
+    [44, 9, 13, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2024371388],
+    [44, 26, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `Open3` as a spy using `allow` or `instance_spy`.", 1384559950],
+    [50, 9, 13, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2024371388],
+    [50, 26, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `Open3` as a spy using `allow` or `instance_spy`.", 1384559950],
+    [56, 9, 13, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2024371388],
+    [56, 26, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `Open3` as a spy using `allow` or `instance_spy`.", 1384559950],
+    [62, 9, 13, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2024371388],
+    [62, 26, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `Open3` as a spy using `allow` or `instance_spy`.", 1384559950]
+  ],
   "spec/kettle/dev/git_adapter_spec.rb:1302533652": [
     [6, 22, 19, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 3198354142],
     [9, 27, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `git_repo` as a spy using `allow` or `instance_spy`.", 1384559950],
