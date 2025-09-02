@@ -8,4 +8,9 @@ SimpleCov.start do
   track_files "lib/**/*.rb"
   track_files "lib/**/*.rake"
   track_files "exe/*.rb"
+
+  # Version *is* tested (see spec/kettle/dev/version_spec.rb).
+  # Due to early loading, the Version class can't be tracked by SimpleCov.
+  # So we disable coverage here.
+  add_filter "lib/kettle/dev/version.rb"
 end
