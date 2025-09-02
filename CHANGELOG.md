@@ -20,6 +20,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Added
 - .simplecov.example - keeps it generic
 - improved documentation on automatic release script
+- .gitlab-ci.yml documentation
 ### Changed
 ### Deprecated
 ### Removed
