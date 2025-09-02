@@ -19,13 +19,21 @@ Please file a bug if you notice a violation of semantic versioning.
 ## [Unreleased]
 ### Added
 ### Changed
-- URL for migrating repo to CodeBerg:
-  - https://codeberg.org/repo/migrate
 ### Deprecated
 ### Removed
 ### Fixed
-- Stop double defining DEBUGGING constant
 ### Security
+
+## [1.1.3] - 2025-09-02
+- TAG: [v1.1.3][1.1.3t]
+- COVERAGE: 97.14% -- 2857/2941 lines in 22 files
+- BRANCH COVERAGE: 82.29% -- 1194/1451 branches in 22 files
+- 76.22% documented
+### Changed
+- URL for migrating repo to CodeBerg:
+  - https://codeberg.org/repo/migrate
+### Fixed
+- Stop double defining DEBUGGING constant
 
 ## [1.1.2] - 2025-09-02
 - TAG: [v1.1.2][1.1.2t]
@@ -450,7 +458,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.2...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.3...HEAD
+[1.1.3]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.2...v1.1.3
+[1.1.3t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.3
 [1.1.2]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.1...v1.1.2
 [1.1.2t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.2
 [1.1.1]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.0...v1.1.1
