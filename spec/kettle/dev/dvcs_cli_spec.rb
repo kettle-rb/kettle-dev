@@ -172,6 +172,7 @@ RSpec.describe Kettle::Dev::DvcsCLI do
       # Use output format "<left>\t<right>" or space – we split on whitespace
       allow(adapter).to receive(:capture).with(["rev-list", "--left-right", "--count", "origin/main...gl/main"]).and_return(["3\t1", true])
       allow(adapter).to receive(:capture).with(["rev-list", "--left-right", "--count", "origin/main...cb/main"]).and_return(["0\t0", true])
+      allow(adapter).to receive(:capture).with(["rev-list", "--left-right", "--count", "HEAD...origin/main"]).and_return(["", false])
 
       result = nil
       expect {
@@ -190,6 +191,7 @@ RSpec.describe Kettle::Dev::DvcsCLI do
     allow(adapter).to receive(:capture).with(["rev-parse", "--verify", "origin/main"]).and_return(["", true])
     # gl ahead 0, behind 2
     allow(adapter).to receive(:capture).with(["rev-list", "--left-right", "--count", "origin/main...gl/main"]).and_return(["2\t0", true])
+    allow(adapter).to receive(:capture).with(["rev-list", "--left-right", "--count", "HEAD...origin/main"]).and_return(["", false])
     allow(adapter).to receive(:remote_url).and_return(nil)
     expect {
       described_class.new(["--status", "o", "r"]).run!
@@ -209,6 +211,7 @@ RSpec.describe Kettle::Dev::DvcsCLI do
       # status rev-list returns empty to hit "no data" path for non-origin remotes
       allow(adapter).to receive(:capture).with(["rev-list", "--left-right", "--count", "origin/master...gl/master"]).and_return(["", false])
       allow(adapter).to receive(:capture).with(["rev-list", "--left-right", "--count", "origin/master...cb/master"]).and_return(["", false])
+      allow(adapter).to receive(:capture).with(["rev-list", "--left-right", "--count", "HEAD...origin/master"]).and_return(["", false])
       # Use status mode; provide inferred names
       allow(adapter).to receive(:remote_url).and_return(nil)
       # Names set so that github remote equals origin (so loop skips) and others nil
@@ -230,6 +233,7 @@ RSpec.describe Kettle::Dev::DvcsCLI do
       # Then show_status! should use origin/main as base; provide rev-list data
       allow(adapter).to receive(:capture).with(["rev-list", "--left-right", "--count", "origin/main...gl/main"]).and_return([" ", false])
       allow(adapter).to receive(:capture).with(["rev-list", "--left-right", "--count", "origin/main...cb/main"]).and_return([" ", false])
+      allow(adapter).to receive(:capture).with(["rev-list", "--left-right", "--count", "HEAD...origin/main"]).and_return(["", false])
       allow(adapter).to receive(:remote_url).and_return(nil)
       expect(
         described_class.new(["--status", "o", "r"]).run!,
@@ -246,6 +250,7 @@ RSpec.describe Kettle::Dev::DvcsCLI do
     allow(adapter).to receive(:capture).with(["rev-parse", "--verify", "origin/main"]).and_return(["", true])
     allow(adapter).to receive(:capture).with(["rev-list", "--left-right", "--count", "origin/main...gl/main"]).and_return(["", false])
     allow(adapter).to receive(:capture).with(["rev-list", "--left-right", "--count", "origin/main...cb/main"]).and_return(["", false])
+    allow(adapter).to receive(:capture).with(["rev-list", "--left-right", "--count", "HEAD...origin/main"]).and_return(["", false])
     allow(adapter).to receive(:remote_url).and_return(nil)
     expect {
       described_class.new(["--status", "o", "r"]).run!
@@ -412,6 +417,7 @@ RSpec.describe Kettle::Dev::DvcsCLI do
       expect(e.status).to eq(1)
     end
   end
+
   it "shows local vs origin status section and emoji on ahead phrase", :check_output do
     adapter = instance_double(Kettle::Dev::GitAdapter)
     allow(Kettle::Dev::GitAdapter).to receive(:new).and_return(adapter)

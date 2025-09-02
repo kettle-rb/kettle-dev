@@ -111,6 +111,7 @@ module Kettle
       def show_status!(git, names, branch)
         base = "origin/#{branch}"
         say("\nRemote status relative to #{base}:")
+        existing = Array(git.remotes)
         {
           github: names[:github],
           gitlab: names[:gitlab],
@@ -118,9 +119,10 @@ module Kettle
         }.each do |forge, remote|
           next unless remote
           next if remote == names[:origin]
+          next unless existing.include?(remote)
           ref = "#{remote}/#{branch}"
           out, ok = git.capture(["rev-list", "--left-right", "--count", "#{base}...#{ref}"])
-          if ok && !out.strip.empty?
+          if ok && !out.to_s.strip.empty?
             parts = out.strip.split(/\s+/)
             left = parts[0].to_i
             right = parts[1].to_i
