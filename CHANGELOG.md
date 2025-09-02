@@ -24,6 +24,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Fixed
 - documentation of rake tasks from this gem no longer includes standard gem tasks
 - kettle-dev-setup: package bin/setup so setup can copy it
+- kettle_dev_install task: set executable flag for .git-hooks script when installing
 ### Security
 
 ## [1.1.3] - 2025-09-02

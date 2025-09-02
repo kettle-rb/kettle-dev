@@ -706,14 +706,23 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
               # First run installs
               described_class.run
               dest_dir = File.join(project_root, ".git-hooks")
-              expect(File).to exist(File.join(dest_dir, "commit-msg"))
+              commit_hook = File.join(dest_dir, "commit-msg")
+              prepare_hook = File.join(dest_dir, "prepare-commit-msg")
+              expect(File).to exist(commit_hook)
+              expect(File).to exist(prepare_hook)
+              expect(File.executable?(commit_hook)).to be(true)
+              expect(File.executable?(prepare_hook)).to be(true)
 
               # Overwrite yes
               allow(helpers).to receive(:ask).and_return(true)
               described_class.run
+              expect(File.executable?(commit_hook)).to be(true)
+              expect(File.executable?(prepare_hook)).to be(true)
               # Overwrite no
               allow(helpers).to receive(:ask).and_return(false)
               described_class.run
+              expect(File.executable?(commit_hook)).to be(true)
+              expect(File.executable?(prepare_hook)).to be(true)
             end
           end
         end

@@ -221,6 +221,14 @@ module Kettle
           # If replacement fails unexpectedly, proceed with content as-is
         end
         write_file(dest_path, content)
+        begin
+          # Ensure executable bit for git hook scripts when writing under .git-hooks
+          if dest_path.to_s.match?(%r{[\\/]\.git-hooks[\\/](commit-msg|prepare-commit-msg)\z})
+            File.chmod(0o755, dest_path) if File.exist?(dest_path)
+          end
+        rescue StandardError
+          # ignore permission issues
+        end
         record_template_result(dest_path, dest_exists ? :replace : :create)
         puts "Wrote #{dest_path}"
       end
@@ -316,6 +324,15 @@ module Kettle
                   end
                 end
                 FileUtils.cp(path, target)
+                begin
+                  # Ensure executable bit for git hook scripts when copying under .git-hooks
+                  if target.end_with?("/.git-hooks/commit-msg") || target.end_with?("/.git-hooks/prepare-commit-msg") ||
+                     target.match?(%r{[\\/]\.git-hooks[\\/](commit-msg|prepare-commit-msg)\z})
+                    File.chmod(0o755, target)
+                  end
+                rescue StandardError
+                  # ignore permission issues
+                end
               end
             end
             puts "Updated #{dest_dir}"
@@ -354,6 +371,15 @@ module Kettle
                 end
               end
               FileUtils.cp(path, target)
+              begin
+                # Ensure executable bit for git hook scripts when copying under .git-hooks
+                if target.end_with?("/.git-hooks/commit-msg") || target.end_with?("/.git-hooks/prepare-commit-msg") ||
+                   target.match?(%r{[\\/]\.git-hooks[\\/](commit-msg|prepare-commit-msg)\z})
+                  File.chmod(0o755, target)
+                end
+              rescue StandardError
+                # ignore permission issues
+              end
             end
           end
           puts "Created #{dest_dir}"
