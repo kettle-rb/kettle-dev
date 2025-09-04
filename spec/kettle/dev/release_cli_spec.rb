@@ -1029,6 +1029,8 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     describe "start_step skipping" do
       it "skips initial steps when start_step is 10 (CI validation)" do
         allow(Kettle::Dev::InputAdapter).to receive(:tty?).and_return(false)
+        # Ensure optional GitHub release (step 17) is a no-op to avoid real HTTP
+        stub_env("GITHUB_TOKEN" => nil)
         local_cli = described_class.new(start_step: 10)
         allow(local_cli).to receive(:ensure_bundler_2_7_plus!)
         # Spy on run_cmd! to ensure early commands are not invoked

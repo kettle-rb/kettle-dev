@@ -575,5 +575,150 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
       expect(meta[:funding_org]).to eq("oc-org")
     end
   end
+  describe "::prefer_example" do
+    it "returns .example variant when present" do
+      Dir.mktmpdir do |dir|
+        src = File.join(dir, "Rakefile")
+        ex = src + ".example"
+        File.write(ex, "# example")
+        expect(helpers.prefer_example(src)).to eq(ex)
+      end
+    end
+
+    it "returns original when .example is not present" do
+      Dir.mktmpdir do |dir|
+        src = File.join(dir, "Rakefile")
+        expect(helpers.prefer_example(src)).to eq(src)
+      end
+    end
+
+    it "returns the same path when already ends with .example" do
+      Dir.mktmpdir do |dir|
+        ex = File.join(dir, "README.md.example")
+        expect(helpers.prefer_example(ex)).to eq(ex)
+      end
+    end
+  end
+
+  describe "::modified_by_template? (negative cases)" do
+    it "returns false when nothing recorded for path" do
+      Dir.mktmpdir do |dir|
+        dest = File.join(dir, "x.txt")
+        expect(helpers.modified_by_template?(dest)).to be(false)
+      end
+    end
+
+    it "returns false when only :skip action was recorded" do
+      Dir.mktmpdir do |dir|
+        src = File.join(dir, "s.txt")
+        File.write(src, "a")
+        dest = File.join(dir, "d.txt")
+        helpers.copy_file_with_prompt(src, dest, allow_create: false, allow_replace: true)
+        expect(helpers.modified_by_template?(dest)).to be(false)
+      end
+    end
+  end
+
+  describe "ENV[\"only\"] filtering" do
+    include_context "with stubbed env"
+
+    it "skips copy_file_with_prompt when dest does not match any pattern and records :skip", :check_output do
+      Dir.mktmpdir do |project_root|
+        Dir.mktmpdir do |src_root|
+          src = File.join(src_root, "a.txt"); File.write(src, "A")
+          dest = File.join(project_root, "other", "a.txt")
+          allow(helpers).to receive(:project_root).and_return(project_root)
+          stub_env("only" => "lib/**")
+          expect {
+            helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true)
+          }.to output(/Skipping .* \(excluded by only filter\)/).to_stdout
+          rec = helpers.template_results[File.expand_path(dest)]
+          expect(rec[:action]).to eq(:skip)
+          expect(File).not_to exist(dest)
+        end
+      end
+    end
+
+    it "proceeds with copy_file_with_prompt if matching, and also proceeds when File.fnmatch? raises (rescue path)" do
+      Dir.mktmpdir do |project_root|
+        Dir.mktmpdir do |src_root|
+          src = File.join(src_root, "a.txt"); File.write(src, "A")
+          dest = File.join(project_root, "lib", "a.txt")
+          allow(helpers).to receive(:project_root).and_return(project_root)
+          stub_env("only" => "lib/**")
+          allow(helpers).to receive(:ask).and_return(true)
+          helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true)
+          expect(File).to exist(dest)
+
+          # Now force fnmatch? to raise; code should rescue and proceed (ignore filter)
+          dest2 = File.join(project_root, "lib", "b.txt")
+          allow(File).to receive(:fnmatch?).and_raise(StandardError.new("boom"))
+          helpers.copy_file_with_prompt(src, dest2, allow_create: true, allow_replace: true)
+          expect(File).to exist(dest2)
+        end
+      end
+    end
+
+    it "copy_dir_with_prompt: early exit when only filter present and no files match (records :skip)" do
+      Dir.mktmpdir do |project_root|
+        Dir.mktmpdir do |src_root|
+          src_dir = File.join(src_root, "tmpl"); FileUtils.mkdir_p(File.join(src_dir, "a"))
+          File.write(File.join(src_dir, "a", "x.txt"), "X")
+          dest_dir = File.join(project_root, "out")
+          allow(helpers).to receive(:project_root).and_return(project_root)
+          stub_env("only" => "lib/**")
+          helpers.copy_dir_with_prompt(src_dir, dest_dir)
+          rec = helpers.template_results[File.expand_path(dest_dir)]
+          expect(rec[:action]).to eq(:skip)
+          expect(Dir).not_to exist(dest_dir)
+        end
+      end
+    end
+
+    it "copy_dir_with_prompt: per-file inclusion filter applies and copies only matching files" do
+      Dir.mktmpdir do |project_root|
+        Dir.mktmpdir do |src_root|
+          src_dir = File.join(src_root, "tmpl"); FileUtils.mkdir_p(File.join(src_dir, ".github", "workflows"))
+          File.write(File.join(src_dir, ".github", "workflows", "ci.yml"), "CI")
+          FileUtils.mkdir_p(File.join(src_dir, "lib"))
+          File.write(File.join(src_dir, "lib", "x.rb"), "puts :x")
+          dest_dir = File.join(project_root, "out")
+          allow(helpers).to receive(:project_root).and_return(project_root)
+          stub_env("only" => "out/.github/**")
+          allow(helpers).to receive(:ask).and_return(true)
+          helpers.copy_dir_with_prompt(src_dir, dest_dir)
+          expect(File).to exist(File.join(dest_dir, ".github", "workflows", "ci.yml"))
+          expect(File).not_to exist(File.join(dest_dir, "lib", "x.rb"))
+        end
+      end
+    end
+  end
+
+  describe "chmod behavior for .git-hooks" do
+    it "sets executable bit when copying a single hook file via copy_file_with_prompt" do
+      Dir.mktmpdir do |dir|
+        src = File.join(dir, "commit-msg.src"); File.write(src, "#!/bin/sh\n")
+        dest_dir = File.join(dir, ".git-hooks"); FileUtils.mkdir_p(dest_dir)
+        dest = File.join(dest_dir, "commit-msg")
+        allow(helpers).to receive(:ask).and_return(true)
+        helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true)
+        mode = File.stat(dest).mode
+        expect(mode & 0o111).not_to eq(0)
+      end
+    end
+
+    it "sets executable bit when copying hook files via copy_dir_with_prompt" do
+      Dir.mktmpdir do |dir|
+        src_dir = File.join(dir, "src"); FileUtils.mkdir_p(File.join(src_dir, ".git-hooks"))
+        hook = File.join(src_dir, ".git-hooks", "prepare-commit-msg"); File.write(hook, "#!/bin/sh\n")
+        dest_dir = File.join(dir, "dest")
+        allow(helpers).to receive(:ask).and_return(true)
+        helpers.copy_dir_with_prompt(src_dir, dest_dir)
+        dest_hook = File.join(dest_dir, ".git-hooks", "prepare-commit-msg")
+        mode = File.stat(dest_hook).mode
+        expect(mode & 0o111).not_to eq(0)
+      end
+    end
+  end
 end
 # rubocop:enable RSpec/MultipleExpectations, RSpec/ExampleLength, RSpec/StubbedMock, RSpec/MessageSpies
