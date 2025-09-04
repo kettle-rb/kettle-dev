@@ -18,18 +18,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [Unreleased]
 ### Added
-### Changed
-### Deprecated
-### Removed
-### Fixed
-### Security
-
-## [1.1.5] - 2025-09-04
-- TAG: [v1.1.5][1.1.5t]
-- COVERAGE: 97.11% -- 3019/3109 lines in 23 files
-- BRANCH COVERAGE: 82.20% -- 1233/1500 branches in 23 files
-- 76.58% documented
-### Added
 - kettle-pre-release: run re-release checks on a library
   - validate URLs of image assets in Markdown files
 - honor ENV["FUNDING_FORGE"] set to "false" as intentional disabling of funding-related logic.
@@ -39,6 +27,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Removed
 - defensive NameError handling in ChangelogCLI.abort method
 ### Fixed
+- prefer .example version of .git-hooks
 - kettle-commit-msg now runs via rubygems (not bundler) so it will work via a system gem
 - fixed logic for handling derivation of forge and funding URLs
 - allow commits to succeed if dependencies are missing or broken

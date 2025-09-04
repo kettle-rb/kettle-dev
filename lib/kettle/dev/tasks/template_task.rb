@@ -665,10 +665,11 @@ module Kettle
             rescue StandardError
               # If filter parsing fails, proceed as before
             end
-            goalie_src = File.join(source_hooks_dir, "commit-subjects-goalie.txt")
-            footer_src = File.join(source_hooks_dir, "footer-template.erb.txt")
-            hook_ruby_src = File.join(source_hooks_dir, "commit-msg")
-            hook_sh_src = File.join(source_hooks_dir, "prepare-commit-msg")
+            # Prefer .example variant when present for .git-hooks
+            goalie_src = helpers.prefer_example(File.join(source_hooks_dir, "commit-subjects-goalie.txt"))
+            footer_src = helpers.prefer_example(File.join(source_hooks_dir, "footer-template.erb.txt"))
+            hook_ruby_src = helpers.prefer_example(File.join(source_hooks_dir, "commit-msg"))
+            hook_sh_src = helpers.prefer_example(File.join(source_hooks_dir, "prepare-commit-msg"))
 
             # First: templates (.txt) — ask local/global/skip
             if File.file?(goalie_src) && File.file?(footer_src)

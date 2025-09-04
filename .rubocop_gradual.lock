@@ -221,7 +221,7 @@
     [1491, 7, 58, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 1054286736],
     [1522, 7, 69, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 2519740787]
   ],
-  "spec/kettle/dev/tasks/template_task_spec.rb:1410196951": [
+  "spec/kettle/dev/tasks/template_task_spec.rb:754437050": [
     [542, 15, 24, "RSpec/ContextWording: Context description should match /^when\\b/, /^with\\b/, or /^without\\b/.", 196765058]
   ],
   "spec/kettle/dev/template_helpers_spec.rb:1684204112": [

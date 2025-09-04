@@ -728,6 +728,38 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
           end
         end
 
+        it "prefers prepare-commit-msg.example over prepare-commit-msg when both exist" do
+          Dir.mktmpdir do |gem_root|
+            Dir.mktmpdir do |project_root|
+              hooks_src = File.join(gem_root, ".git-hooks")
+              FileUtils.mkdir_p(hooks_src)
+              # Provide both real and example; example should be preferred
+              File.write(File.join(hooks_src, "prepare-commit-msg"), "REAL\n")
+              File.write(File.join(hooks_src, "prepare-commit-msg.example"), "EXAMPLE\n")
+              # Commit hook presence isn't required for this behavior, but include to mirror typical state
+              File.write(File.join(hooks_src, "commit-msg"), "ruby hook\n")
+
+              # Minimal gemspec in project for metadata
+              File.write(File.join(project_root, "demo.gemspec"), "Gem::Specification.new{|s| s.name='demo'; s.homepage='https://github.com/acme/demo'}\n")
+
+              allow(helpers).to receive_messages(project_root: project_root, gem_checkout_root: gem_root, ensure_clean_git!: nil, ask: true)
+
+              # Ensure the templates (.txt) branch does not trigger prompts/copies, to keep test focused
+              allow(File).to receive(:file?).and_call_original
+              allow(File).to receive(:file?).with(File.join(gem_root, ".git-hooks", "commit-subjects-goalie.txt")).and_return(false)
+              allow(File).to receive(:file?).with(File.join(gem_root, ".git-hooks", "footer-template.erb.txt")).and_return(false)
+
+              described_class.run
+
+              dest = File.join(project_root, ".git-hooks", "prepare-commit-msg")
+              expect(File).to exist(dest)
+              content = File.read(dest)
+              expect(content).to include("EXAMPLE")
+              expect(content).not_to include("REAL")
+            end
+          end
+        end
+
         it "warns when installing hook scripts raises", :check_output do
           Dir.mktmpdir do |gem_root|
             Dir.mktmpdir do |project_root|
