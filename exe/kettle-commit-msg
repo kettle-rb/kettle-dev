@@ -5,8 +5,15 @@
 
 # Immediate, unbuffered output
 $stdout.sync = true
-# Depending library or project must be using bundler
-require "bundler/setup"
+$stderr.sync = true
+
+# Do not rely on Bundler; allow running in repos that do not depend on kettle-dev
+# Ensure RubyGems is available for 'require' lookups
+begin
+  require "rubygems"
+rescue LoadError
+  # Older Rubies always have rubygems; continue anyway
+end
 
 script_basename = File.basename(__FILE__)
 
@@ -18,7 +25,7 @@ begin
   puts "== #{script_basename} v#{Kettle::Dev::Version::VERSION} =="
 rescue LoadError => e
   warn("#{script_basename}: could not load dependency: #{e.class}: #{e.message}")
-  warn("Hint: Ensure the host project has kettle-dev as a dependency and run bundle install.")
+  warn("Hint: Install the kettle-dev gem (`gem install kettle-dev`) or add it to your Gemfile. Bundler is not required for this script.")
   exit(1)
 end
 

@@ -28,6 +28,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Removed
 - defensive NameError handling in ChangelogCLI.abort method
 ### Fixed
+- kettle-commit-msg now runs via rubygems (not bundler) so it will work via a system gem
 - fixed logic for handling derivation of forge and funding URLs
 - allow commits to succeed if dependencies are missing or broken
 ### Security

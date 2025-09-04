@@ -135,6 +135,7 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
       expect { cli.run }.not_to raise_error
     end
   end
+
   describe "more edge cases for coverage" do
     describe Kettle::Dev::PreReleaseCLI::HTTP do
       it "falls back to URI.parse when Addressable::URI is not defined" do
