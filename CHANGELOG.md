@@ -18,21 +18,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [Unreleased]
 ### Added
-### Changed
-### Deprecated
-### Removed
-### Fixed
-### Security
-
-## [1.1.5] - 2025-09-04
-- TAG: [v1.1.5][1.1.5t]
-- COVERAGE: 96.41% -- 3035/3148 lines in 23 files
-- BRANCH COVERAGE: 82.18% -- 1231/1498 branches in 23 files
-- 76.10% documented
-### Added
 - kettle-pre-release: run re-release checks on a library
   - validate URLs of image assets in Markdown files
 - honor ENV["FUNDING_FORGE"] set to "false" as intentional disabling of funding-related logic.
+- Add CLI Option --only passthrough from kettle-dev-setup to Installation Task
 ### Changed
 - expanded use of adapter patterns (Exit, Git, and Input)
 - refactored and improved structure of code, more resilient
