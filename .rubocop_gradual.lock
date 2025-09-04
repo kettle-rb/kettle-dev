@@ -224,7 +224,7 @@
   "spec/kettle/dev/tasks/template_task_spec.rb:1410196951": [
     [542, 15, 24, "RSpec/ContextWording: Context description should match /^when\\b/, /^with\\b/, or /^without\\b/.", 196765058]
   ],
-  "spec/kettle/dev/template_helpers_spec.rb:3248406852": [
+  "spec/kettle/dev/template_helpers_spec.rb:1684204112": [
     [650, 11, 65, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [652].", 3890449948],
     [652, 11, 48, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [650].", 1824268915],
     [691, 11, 65, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [693].", 3890449948],
