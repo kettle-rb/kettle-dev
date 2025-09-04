@@ -135,4 +135,132 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
       expect { cli.run }.not_to raise_error
     end
   end
+  describe "more edge cases for coverage" do
+    describe Kettle::Dev::PreReleaseCLI::HTTP do
+      it "falls back to URI.parse when Addressable::URI is not defined" do
+        url = "http://example.com/x"
+        # Temporarily hide Addressable::URI constant if present
+        if defined?(Addressable::URI)
+          hide_const("Addressable::URI")
+        end
+        uri = described_class.parse_http_uri(url)
+        expect(uri).to be_a(URI::HTTP)
+      end
+
+      # rubocop:disable RSpec/VerifiedDoubles
+      it "returns false when redirection has no location header" do
+        redir = double("Redirection")
+        allow(redir).to receive(:is_a?) { |k| k == Net::HTTPRedirection }
+        allow(redir).to receive(:[]).with("location").and_return(nil)
+
+        http = double("HTTP")
+        allow(http).to receive(:use_ssl=)
+        allow(http).to receive(:read_timeout=)
+        allow(http).to receive(:open_timeout=)
+        allow(http).to receive(:ssl_timeout=)
+        allow(http).to receive(:verify_mode=)
+        allow(http).to receive(:use_ssl?).and_return(true)
+        allow(http).to receive(:start).and_yield(http)
+        allow(http).to receive(:request).and_return(redir)
+
+        allow(Net::HTTP).to receive(:new).and_return(http)
+
+        expect(described_class.head_ok?("https://example.com/start")).to be(false)
+      end
+
+      it "returns false for non-success, non-redirection, non-method-not-allowed responses" do
+        failure = double("Failure")
+        allow(failure).to receive(:is_a?).with(Net::HTTPMethodNotAllowed).and_return(false)
+
+        http = double("HTTP")
+        allow(http).to receive(:use_ssl=)
+        allow(http).to receive(:read_timeout=)
+        allow(http).to receive(:open_timeout=)
+        allow(http).to receive(:ssl_timeout=)
+        allow(http).to receive(:verify_mode=)
+        allow(http).to receive(:use_ssl?).and_return(true)
+        allow(http).to receive(:start).and_yield(http)
+        allow(http).to receive(:request).and_return(failure)
+
+        allow(Net::HTTP).to receive(:new).and_return(http)
+
+        expect(described_class.head_ok?("https://example.org/x")).to be(false)
+      end
+
+      it "rescues network errors and returns false" do
+        http = double("HTTP")
+        allow(http).to receive(:use_ssl=)
+        allow(http).to receive(:read_timeout=)
+        allow(http).to receive(:open_timeout=)
+        allow(http).to receive(:ssl_timeout=)
+        allow(http).to receive(:verify_mode=)
+        allow(http).to receive(:use_ssl?).and_return(true)
+        allow(http).to receive(:start).and_raise(Timeout::Error)
+
+        allow(Net::HTTP).to receive(:new).and_return(http)
+
+        expect(described_class.head_ok?("https://example.org/x")).to be(false)
+      end
+      # rubocop:enable RSpec/VerifiedDoubles
+
+      it "raises on too many redirects (limit <= 0)" do
+        # No Net::HTTP stubbing needed; the error is raised before any network
+        expect {
+          described_class.head_ok?("https://example.org/x", limit: 0)
+        }.to raise_error(ArgumentError, /too many redirects/)
+      end
+    end
+
+    describe Kettle::Dev::PreReleaseCLI::Markdown do
+      it "handles file read errors gracefully and still returns unique urls" do
+        Dir.mktmpdir do |root|
+          bad = File.join(root, "bad.md")
+          File.write(bad, "![x](https://e.com/a.png)\n")
+          glob = File.join(root, "*.md")
+          allow(File).to receive(:read).and_call_original
+          allow(File).to receive(:read).with(bad).and_raise(Errno::EACCES)
+
+          urls = described_class.extract_image_urls_from_files(glob)
+          expect(urls).to eq([])
+        end
+      end
+    end
+
+    describe "check 1 error handling" do
+      it "skips files that cannot be read" do
+        Dir.mktmpdir do |root|
+          good = File.join(root, "good.md")
+          bad = File.join(root, "bad.md")
+          File.write(good, "# Title\n")
+          File.write(bad, "# Bad\n")
+          # rubocop:disable ThreadSafety/DirChdir
+          Dir.chdir(root) do
+            cli = Kettle::Dev::PreReleaseCLI.new(check_num: 1)
+            allow(File).to receive(:read).and_call_original
+            allow(File).to receive(:read).with(bad).and_raise(Errno::EACCES)
+            expect { cli.run }.not_to raise_error
+          end
+          # rubocop:enable ThreadSafety/DirChdir
+        end
+      end
+
+      it "warns but continues when write fails for a modified file" do
+        Dir.mktmpdir do |root|
+          file = File.join(root, "README.md")
+          url = "https://img.shields.io/badge/buy_me_a_coffee-\u2713-a51611.svg?style=flat"
+          File.write(file, "![x](#{url})\n")
+          # rubocop:disable ThreadSafety/DirChdir
+          Dir.chdir(root) do
+            cli = Kettle::Dev::PreReleaseCLI.new(check_num: 1)
+            allow(File).to receive(:write).and_call_original
+            allow(File).to receive(:write).with(file, kind_of(String)).and_raise(Errno::EACCES)
+            # Avoid running check 2 by stubbing out URLs discovery
+            allow(Kettle::Dev::PreReleaseCLI::Markdown).to receive(:extract_image_urls_from_files).and_return([])
+            expect { cli.run }.not_to raise_error
+          end
+          # rubocop:enable ThreadSafety/DirChdir
+        end
+      end
+    end
+  end
 end
