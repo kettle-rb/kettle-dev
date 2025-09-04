@@ -1,0 +1,61 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# vim: set syntax=ruby
+
+# kettle-pre-release: Run pre-release checks to catch avoidable mistakes.
+# - Structured as a sequence of checks that can be resumed via check_num
+# - Initial check: validate all image URLs referenced by Markdown files resolve (HTTP HEAD)
+
+require "optparse"
+
+# Immediate, unbuffered output
+$stdout.sync = true
+$stderr.sync = true
+
+# Depending library or project must be using bundler
+require "bundler/setup"
+
+script_basename = File.basename(__FILE__)
+
+begin
+  require "kettle/dev"
+  puts "== #{script_basename} v#{Kettle::Dev::Version::VERSION} =="
+rescue StandardError => e
+  warn("#{script_basename}: could not load dependency: #{e.class}: #{e.message}")
+  warn("Hint: Ensure the host project has kettle-dev as a dependency and run bundle install.")
+  exit(1)
+end
+
+# Option parsing
+options = {
+  check_num: 1,
+}
+
+parser = OptionParser.new do |opts|
+  opts.banner = "Usage: kettle-pre-release [options]"
+  opts.on("--check-num N", Integer, "Start from check number N (1-based)") { |v| options[:check_num] = v }
+  opts.on("-cN", Integer, "Alias for --check-num N") { |v| options[:check_num] = v }
+  opts.on("-h", "--help", "Show this help") do
+    puts opts
+    puts
+    puts "Checks:"
+    puts "  1) Validate Markdown image links (HTTP HEAD)"
+    exit(0)
+  end
+end
+
+begin
+  parser.parse!(ARGV)
+rescue OptionParser::ParseError => e
+  warn("#{script_basename}: #{e.message}")
+  puts parser
+  exit(2)
+end
+
+# Execute
+# Build and run CLI in the same style as kettle-release
+cli = Kettle::Dev::PreReleaseCLI.new(check_num: options[:check_num])
+cli.run
+
+puts "== #{script_basename} complete =="

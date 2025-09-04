@@ -11,6 +11,7 @@ module Kettle
     IS_CI: bool
     REQUIRE_BENCH: bool
     RUNNING_AS: String
+    ENV_TRUE_RE: Regexp
 
     # Singleton methods
     def self.install_tasks: () -> void

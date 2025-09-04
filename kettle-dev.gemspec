@@ -144,6 +144,7 @@ Gem::Specification.new do |spec|
     "kettle-changelog",
     "kettle-commit-msg",
     "kettle-dev-setup",
+    "kettle-pre-release",
     "kettle-readme-backers",
     "kettle-release",
     "kettle-dvcs",

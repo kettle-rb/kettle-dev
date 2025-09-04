@@ -565,7 +565,6 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
         end
       G
       # Stub git origin so forge_org would be present if used
-      origin = "https://github.com/acme/another-gem.git\n"
       fake_git = instance_double(Kettle::Dev::GitAdapter, remote_url: "https://github.com/acme/another-gem.git", remotes_with_urls: {"origin" => "https://github.com/acme/another-gem.git"})
       allow(Kettle::Dev::GitAdapter).to receive(:new).and_return(fake_git)
 

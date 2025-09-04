@@ -56,7 +56,7 @@ module Kettle
           homepage_val = spec&.homepage.to_s
 
           # Derive org/repo from homepage or git remote
-          forge_info = derive_forge_and_origin_repo(homepage_val, root)
+          forge_info = derive_forge_and_origin_repo(homepage_val)
           forge_org = forge_info[:forge_org]
           gh_repo = forge_info[:origin_repo]
           if forge_org.to_s.empty?
@@ -130,7 +130,7 @@ module Kettle
 
         private
 
-        def derive_forge_and_origin_repo(homepage_val, root)
+        def derive_forge_and_origin_repo(homepage_val)
           forge_info = {}
 
           if homepage_val && !homepage_val.empty?
@@ -144,10 +144,8 @@ module Kettle
 
           if forge_info[:forge_org].nil? || forge_info[:forge_org].to_s.empty?
             begin
-              origin_url = Dir.chdir(root.to_s) do
-                ga = Kettle::Dev::GitAdapter.new
-                ga.remote_url("origin") || ga.remotes_with_urls["origin"]
-              end
+              ga = Kettle::Dev::GitAdapter.new
+              origin_url = ga.remote_url("origin") || ga.remotes_with_urls["origin"]
               origin_url = origin_url.to_s.strip
               if (m = origin_url.match(%r{github\.com[/:]([^/]+)/([^/]+)}i))
                 forge_info[:forge_org] = m[1]

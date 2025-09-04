@@ -16,6 +16,8 @@
 
 # Immediate, unbuffered output
 $stdout.sync = true
+$stderr.sync = true
+
 # Depending library or project must be using bundler
 require "bundler/setup"
 

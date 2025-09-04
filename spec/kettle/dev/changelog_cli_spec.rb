@@ -82,7 +82,6 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
     end
   end
 
-
   describe "#detect_initial_compare_base (private)" do
     it "extracts historical base from first compare link when present" do
       cli = described_class.new

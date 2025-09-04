@@ -335,22 +335,14 @@ module Kettle
                 if interpolated || !valid_literal
                   puts
                   puts "Checking git remote 'origin' to derive GitHub homepage..."
-                  origin_url = nil
+                  origin_url = ""
+                  # Use GitAdapter to avoid hanging and to simplify testing.
                   begin
-                    origin_url = Dir.chdir(project_root.to_s) do
-                      # Use GitAdapter to avoid hanging and to simplify testing.
-                      begin
-                        ga = Kettle::Dev::GitAdapter.new
-                        ga.remote_url("origin") || ga.remotes_with_urls["origin"]
-                      rescue StandardError => e
-                        Kettle::Dev.debug_error(e, __method__)
-                        nil
-                      end
-                    end
+                    ga = Kettle::Dev::GitAdapter.new
+                    origin_url = ga.remote_url("origin") || ga.remotes_with_urls["origin"]
                     origin_url = origin_url.to_s.strip
                   rescue StandardError => e
                     Kettle::Dev.debug_error(e, __method__)
-                    origin_url = ""
                   end
 
                   org_repo = github_repo_from_url.call(origin_url)
@@ -371,7 +363,7 @@ module Kettle
                   puts "Suggested literal homepage: \"#{suggested}\""
                   print("Update #{File.basename(gemspec_path)} to use this homepage? [Y/n]: ")
                   ans = Kettle::Dev::InputAdapter.gets&.strip
-                  do_update = if ENV.fetch("force", "").to_s =~ /\A(1|true|y|yes)\z/i
+                  do_update = if ENV.fetch("force", "").to_s =~ ENV_TRUE_RE
                     true
                   else
                     ans.nil? || ans.empty? || ans =~ /\Ay(es)?\z/i
@@ -476,8 +468,8 @@ module Kettle
           end
 
           if defined?(updated_envrc_by_install) && updated_envrc_by_install
-            allowed_truthy = ENV.fetch("allowed", "").to_s =~ /\A(1|true|y|yes)\z/i
-            force_truthy = ENV.fetch("force", "").to_s =~ /\A(1|true|y|yes)\z/i
+            allowed_truthy = ENV.fetch("allowed", "").to_s =~ ENV_TRUE_RE
+            force_truthy = ENV.fetch("force", "").to_s =~ ENV_TRUE_RE
             if allowed_truthy || force_truthy
               reason = allowed_truthy ? "allowed=true" : "force=true"
               puts "Proceeding after .envrc update because #{reason}."
@@ -513,7 +505,7 @@ module Kettle
               puts "Would you like to add '.env.local' to #{gitignore_path}?"
               print("Add to .gitignore now [Y/n]: ")
               answer = Kettle::Dev::InputAdapter.gets&.strip
-              add_it = if ENV.fetch("force", "").to_s =~ /\A(1|true|y|yes)\z/i
+              add_it = if ENV.fetch("force", "").to_s =~ ENV_TRUE_RE
                 true
               else
                 answer.nil? || answer.empty? || answer =~ /\Ay(es)?\z/i

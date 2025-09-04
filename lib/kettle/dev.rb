@@ -23,6 +23,7 @@ module Kettle
     autoload :InputAdapter, "kettle/dev/input_adapter"
     autoload :ReadmeBackers, "kettle/dev/readme_backers"
     autoload :ReleaseCLI, "kettle/dev/release_cli"
+    autoload :PreReleaseCLI, "kettle/dev/pre_release_cli"
     autoload :TemplateHelpers, "kettle/dev/template_helpers"
     autoload :Version, "kettle/dev/version"
     autoload :Versioning, "kettle/dev/versioning"
@@ -54,6 +55,10 @@ module Kettle
     # auto-install tasks when invoked via the rake executable.
     # @return [String]
     RUNNING_AS = File.basename($PROGRAM_NAME)
+    # A case-insensitive regular expression that matches common truthy ENV values.
+    # Accepts 1, true, y, yes (any case).
+    # @return [Regexp]
+    ENV_TRUE_RE = /\A(1|true|y|yes)\z/i
 
     @defaults = []
 

@@ -1,0 +1,18 @@
+module Kettle
+  module Dev
+    class PreReleaseCLI
+      module HTTP
+        def self.head_ok?: (String url_str, ?limit: Integer, ?timeout: Integer) -> bool
+      end
+
+      module Markdown
+        def self.extract_image_urls_from_text: (String text) -> Array[String]
+        def self.extract_image_urls_from_files: (?String glob_pattern) -> Array[String]
+      end
+
+      def initialize: (?check_num: Integer) -> void
+      def run: () -> void
+      def check_markdown_images!: () -> void
+    end
+  end
+end
