@@ -1,0 +1,30 @@
+---
+http_interactions:
+- request:
+    method: head
+    uri: https://httpbin.org/image/png
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - image/png
+      Content-Length:
+      - '8090'
+    body:
+      encoding: ASCII-8BIT
+      string: ''
+    http_version: '1.1'
+  recorded_at: Thu, 04 Sep 2025 02:21:00 GMT
+recorded_with: VCR 6.2.0

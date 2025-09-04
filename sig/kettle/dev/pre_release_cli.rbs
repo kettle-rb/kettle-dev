@@ -2,6 +2,7 @@ module Kettle
   module Dev
     class PreReleaseCLI
       module HTTP
+        def self.parse_http_uri: (String url_str) -> ::URI
         def self.head_ok?: (String url_str, ?limit: Integer, ?timeout: Integer) -> bool
       end
 
@@ -12,7 +13,8 @@ module Kettle
 
       def initialize: (?check_num: Integer) -> void
       def run: () -> void
-      def check_markdown_images!: () -> void
+      def check_markdown_uri_normalization!: () -> void
+      def check_markdown_images_http!: () -> void
     end
   end
 end

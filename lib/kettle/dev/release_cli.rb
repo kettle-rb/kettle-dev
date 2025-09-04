@@ -16,6 +16,21 @@ require "ruby-progressbar"
 module Kettle
   module Dev
     class ReleaseCLI
+      class << self
+        def run_cmd!(cmd)
+          # For Bundler-invoked build/release, explicitly prefix SKIP_GEM_SIGNING so
+          # the signing step is skipped even when Bundler scrubs ENV.
+          if ENV["SKIP_GEM_SIGNING"] && cmd =~ /\Abundle(\s+exec)?\s+rake\s+(build|release)\b/
+            cmd = "SKIP_GEM_SIGNING=true #{cmd}"
+          end
+          puts "$ #{cmd}"
+          # Pass a plain Hash for the environment to satisfy tests and avoid ENV object oddities
+          env_hash = ENV.respond_to?(:to_hash) ? ENV.to_hash : ENV.to_h
+          success = system(env_hash, cmd)
+          abort("Command failed: #{cmd}") unless success
+        end
+      end
+
       private
 
       def abort(msg)
@@ -460,16 +475,7 @@ module Kettle
       end
 
       def run_cmd!(cmd)
-        # For Bundler-invoked build/release, explicitly prefix SKIP_GEM_SIGNING so
-        # the signing step is skipped even when Bundler scrubs ENV.
-        if ENV["SKIP_GEM_SIGNING"] && cmd =~ /\Abundle(\s+exec)?\s+rake\s+(build|release)\b/
-          cmd = "SKIP_GEM_SIGNING=true #{cmd}"
-        end
-        puts "$ #{cmd}"
-        # Pass a plain Hash for the environment to satisfy tests and avoid ENV object oddities
-        env_hash = ENV.respond_to?(:to_hash) ? ENV.to_hash : ENV.to_h
-        success = system(env_hash, cmd)
-        abort("Command failed: #{cmd}") unless success
+        self.class.run_cmd!(cmd)
       end
 
       def git_output(args)

@@ -3,9 +3,9 @@
     [62, 9, 63, "Style/InvertibleUnlessCondition: Prefer `if ENV.fetch(\"DEBUG\", \"false\").casecmp(\"true\").nonzero?` over `unless ENV.fetch(\"DEBUG\", \"false\").casecmp(\"true\").zero?`.", 1934394995],
     [293, 3, 196, "Lint/RescueException: Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?", 1142934825]
   ],
-  "lib/kettle/dev.rb:3641312715": [
-    [60, 17, 2, "ThreadSafety/MutableClassInstanceVariable: Freeze mutable objects assigned to class instance variables.", 5862883],
-    [71, 7, 16, "Lint/RescueException: Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?", 2127134117]
+  "lib/kettle/dev.rb:194618263": [
+    [63, 17, 2, "ThreadSafety/MutableClassInstanceVariable: Freeze mutable objects assigned to class instance variables.", 5862883],
+    [74, 7, 16, "Lint/RescueException: Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?", 2127134117]
   ],
   "lib/kettle/dev/tasks/ci_task.rb:3806600277": [
     [194, 26, 10, "ThreadSafety/NewThread: Avoid starting new threads.", 3411682361],
@@ -185,7 +185,7 @@
     [291, 9, 13, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2024371388],
     [291, 26, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `Open3` as a spy using `allow` or `instance_spy`.", 1384559950]
   ],
-  "spec/kettle/dev/release_cli_spec.rb:1403906986": [
+  "spec/kettle/dev/release_cli_spec.rb:2071031474": [
     [1283, 7, 76, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 1335859022],
     [1311, 11, 51, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [1312].", 1750577460],
     [1312, 11, 58, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [1311].", 3469329402],

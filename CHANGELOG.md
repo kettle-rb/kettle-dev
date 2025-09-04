@@ -18,9 +18,12 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [Unreleased]
 ### Added
+- kettle-pre-release: run re-release checks on a library
+  - validate URLs of image assets in Markdown files
 - honor ENV["FUNDING_FORGE"] set to "false" as intentional disabling of funding-related logic.
 ### Changed
 - expanded use of adapter patterns (Exit, Git, and Input)
+- refactored and improved structure of code, more resilient
 ### Deprecated
 ### Removed
 - defensive NameError handling in ChangelogCLI.abort method

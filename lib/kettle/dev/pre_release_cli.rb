@@ -4,17 +4,41 @@ require "optparse"
 require "uri"
 require "net/http"
 require "openssl"
+begin
+  require "addressable/uri"
+rescue LoadError
+  # addressable is optional; code will fallback to URI
+end
 
 module Kettle
   module Dev
     # PreReleaseCLI: run pre-release checks before invoking full release workflow.
-    # Currently validates Markdown image links resolve via HTTP(S) HEAD.
+    # Checks:
+    #   1) Normalize Markdown image URLs using Addressable normalization.
+    #   2) Validate Markdown image links resolve via HTTP(S) HEAD.
     #
     # Usage: Kettle::Dev::PreReleaseCLI.new(check_num: 1).run
     class PreReleaseCLI
       # Simple HTTP helpers for link validation
       module HTTP
         module_function
+
+        # Unicode-friendly HTTP URI parser with Addressable fallback.
+        # @param url_str [String]
+        # @return [URI]
+        def parse_http_uri(url_str)
+          if defined?(Addressable::URI)
+            addr = Addressable::URI.parse(url_str)
+            # Build a standard URI with properly encoded host/path/query for Net::HTTP
+            # Addressable handles unicode and punycode automatically via normalization
+            addr = addr.normalize
+            # Net::HTTP expects a ::URI; convert via to_s then URI.parse
+            URI.parse(addr.to_s)
+          else
+            # Fallback: try URI.parse directly; users can add addressable to unlock unicode support
+            URI.parse(url_str)
+          end
+        end
 
         # Perform HTTP HEAD against the given url.
         # Falls back to GET when HEAD is not allowed.
@@ -23,7 +47,7 @@ module Kettle
         # @param timeout [Integer] per-request timeout seconds
         # @return [Boolean] true when successful (2xx) after following redirects
         def head_ok?(url_str, limit: 5, timeout: 10)
-          uri = URI.parse(url_str)
+          uri = parse_http_uri(url_str)
           raise ArgumentError, "unsupported URI scheme: #{uri.scheme.inspect}" unless %w[http https].include?(uri.scheme)
 
           request = Net::HTTP::Head.new(uri)
@@ -47,7 +71,7 @@ module Kettle
           when Net::HTTPRedirection
             location = response["location"]
             return false unless location
-            new_uri = URI.parse(location)
+            new_uri = parse_http_uri(location)
             new_uri = uri + location if new_uri.relative?
             head_ok?(new_uri.to_s, limit: limit - 1, timeout: timeout)
           when Net::HTTPSuccess
@@ -60,7 +84,7 @@ module Kettle
             end
             false
           end
-        rescue StandardError => e
+        rescue Timeout::Error, Errno::ECONNREFUSED, Errno::EHOSTUNREACH, SocketError, OpenSSL::SSL::SSLError => e
           warn("[kettle-pre-release] HTTP error for #{uri}: #{e.class}: #{e.message}")
           false
         end
@@ -126,7 +150,8 @@ module Kettle
       # @return [void]
       def run
         checks = []
-        checks << method(:check_markdown_images!)
+        checks << method(:check_markdown_uri_normalization!)
+        checks << method(:check_markdown_images_http!)
 
         start = @check_num
         raise ArgumentError, "check_num must be >= 1" if start < 1
@@ -139,10 +164,60 @@ module Kettle
         nil
       end
 
-      # Check 1: Validate Markdown image links
+      # Check 1: Normalize Markdown image URLs
+      #   Compares URLs to Addressable-normalized form and rewrites Markdown when needed.
       # @return [void]
-      def check_markdown_images!
-        puts "[kettle-pre-release] Check 1: Validate Markdown image links (HTTP HEAD)"
+      def check_markdown_uri_normalization!
+        puts "[kettle-pre-release] Check 1: Normalize Markdown image URLs"
+        files = Dir.glob("**/*.md")
+        changed = []
+        total_candidates = 0
+
+        files.each do |file|
+          begin
+            original = File.read(file)
+          rescue StandardError => e
+            warn("[kettle-pre-release] Could not read #{file}: #{e.class}: #{e.message}")
+            next
+          end
+
+          text = original.dup
+          urls = Markdown.extract_image_urls_from_text(text)
+          next if urls.empty?
+
+          total_candidates += urls.size
+          updated = text.dup
+          modified = false
+
+          urls.each do |url_str|
+            addr = Addressable::URI.parse(url_str)
+            normalized = addr.normalize.to_s
+            next if normalized == url_str
+
+            # Replace exact occurrences of the URL in the markdown content
+            updated.gsub!(url_str, normalized)
+            modified = true
+            puts "  -> #{file}: normalized #{url_str} -> #{normalized}"
+          end
+
+          if modified && updated != original
+            begin
+              File.write(file, updated)
+              changed << file
+            rescue StandardError => e
+              warn("[kettle-pre-release] Could not write #{file}: #{e.class}: #{e.message}")
+            end
+          end
+        end
+
+        puts "[kettle-pre-release] Normalization candidates: #{total_candidates}. Files changed: #{changed.uniq.size}."
+        nil
+      end
+
+      # Check 2: Validate Markdown image links by HTTP HEAD (no rescue for parse failures)
+      # @return [void]
+      def check_markdown_images_http!
+        puts "[kettle-pre-release] Check 2: Validate Markdown image links (HTTP HEAD)"
         urls = Markdown.extract_image_urls_from_files("**/*.md")
         puts "[kettle-pre-release] Found #{urls.size} unique image URL(s)."
         failures = []

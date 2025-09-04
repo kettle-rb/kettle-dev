@@ -153,6 +153,9 @@ Gem::Specification.new do |spec|
   # Tasks
   spec.add_dependency("rake", "~> 13.0")                                # ruby >= 2.2.0
 
+  # URL parsing with Unicode support
+  spec.add_dependency("addressable", ">= 2.8", "< 3")
+
   # NOTE: It is preferable to list development dependencies in the gemspec due to increased
   #       visibility and discoverability on RubyGems.org.
   #       However, development dependencies in gemspec will install on
