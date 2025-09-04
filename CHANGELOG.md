@@ -29,6 +29,7 @@ Please file a bug if you notice a violation of semantic versioning.
 - defensive NameError handling in ChangelogCLI.abort method
 ### Fixed
 - fixed logic for handling derivation of forge and funding URLs
+- allow commits to succeed if dependencies are missing or broken
 ### Security
 
 ## [1.1.4] - 2025-09-02
