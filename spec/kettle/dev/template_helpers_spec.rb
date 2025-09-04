@@ -575,6 +575,7 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
       expect(meta[:funding_org]).to eq("oc-org")
     end
   end
+
   describe "::prefer_example" do
     it "returns .example variant when present" do
       Dir.mktmpdir do |dir|
@@ -625,7 +626,8 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
     it "skips copy_file_with_prompt when dest does not match any pattern and records :skip", :check_output do
       Dir.mktmpdir do |project_root|
         Dir.mktmpdir do |src_root|
-          src = File.join(src_root, "a.txt"); File.write(src, "A")
+          src = File.join(src_root, "a.txt")
+          File.write(src, "A")
           dest = File.join(project_root, "other", "a.txt")
           allow(helpers).to receive(:project_root).and_return(project_root)
           stub_env("only" => "lib/**")
@@ -642,7 +644,8 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
     it "proceeds with copy_file_with_prompt if matching, and also proceeds when File.fnmatch? raises (rescue path)" do
       Dir.mktmpdir do |project_root|
         Dir.mktmpdir do |src_root|
-          src = File.join(src_root, "a.txt"); File.write(src, "A")
+          src = File.join(src_root, "a.txt")
+          File.write(src, "A")
           dest = File.join(project_root, "lib", "a.txt")
           allow(helpers).to receive(:project_root).and_return(project_root)
           stub_env("only" => "lib/**")
@@ -662,7 +665,8 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
     it "copy_dir_with_prompt: early exit when only filter present and no files match (records :skip)" do
       Dir.mktmpdir do |project_root|
         Dir.mktmpdir do |src_root|
-          src_dir = File.join(src_root, "tmpl"); FileUtils.mkdir_p(File.join(src_dir, "a"))
+          src_dir = File.join(src_root, "tmpl")
+          FileUtils.mkdir_p(File.join(src_dir, "a"))
           File.write(File.join(src_dir, "a", "x.txt"), "X")
           dest_dir = File.join(project_root, "out")
           allow(helpers).to receive(:project_root).and_return(project_root)
@@ -678,7 +682,8 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
     it "copy_dir_with_prompt: per-file inclusion filter applies and copies only matching files" do
       Dir.mktmpdir do |project_root|
         Dir.mktmpdir do |src_root|
-          src_dir = File.join(src_root, "tmpl"); FileUtils.mkdir_p(File.join(src_dir, ".github", "workflows"))
+          src_dir = File.join(src_root, "tmpl")
+          FileUtils.mkdir_p(File.join(src_dir, ".github", "workflows"))
           File.write(File.join(src_dir, ".github", "workflows", "ci.yml"), "CI")
           FileUtils.mkdir_p(File.join(src_dir, "lib"))
           File.write(File.join(src_dir, "lib", "x.rb"), "puts :x")
@@ -697,8 +702,10 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
   describe "chmod behavior for .git-hooks" do
     it "sets executable bit when copying a single hook file via copy_file_with_prompt" do
       Dir.mktmpdir do |dir|
-        src = File.join(dir, "commit-msg.src"); File.write(src, "#!/bin/sh\n")
-        dest_dir = File.join(dir, ".git-hooks"); FileUtils.mkdir_p(dest_dir)
+        src = File.join(dir, "commit-msg.src")
+        File.write(src, "#!/bin/sh\n")
+        dest_dir = File.join(dir, ".git-hooks")
+        FileUtils.mkdir_p(dest_dir)
         dest = File.join(dest_dir, "commit-msg")
         allow(helpers).to receive(:ask).and_return(true)
         helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true)
@@ -709,8 +716,10 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
 
     it "sets executable bit when copying hook files via copy_dir_with_prompt" do
       Dir.mktmpdir do |dir|
-        src_dir = File.join(dir, "src"); FileUtils.mkdir_p(File.join(src_dir, ".git-hooks"))
-        hook = File.join(src_dir, ".git-hooks", "prepare-commit-msg"); File.write(hook, "#!/bin/sh\n")
+        src_dir = File.join(dir, "src")
+        FileUtils.mkdir_p(File.join(src_dir, ".git-hooks"))
+        hook = File.join(src_dir, ".git-hooks", "prepare-commit-msg")
+        File.write(hook, "#!/bin/sh\n")
         dest_dir = File.join(dir, "dest")
         allow(helpers).to receive(:ask).and_return(true)
         helpers.copy_dir_with_prompt(src_dir, dest_dir)

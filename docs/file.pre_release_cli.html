@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>
-  File: ci_helpers
+  File: pre_release_cli
   
     &mdash; Documentation by YARD 0.9.37
   
@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="css/common.css" type="text/css" />
 
 <script type="text/javascript">
-  pathId = "ci_helpers";
+  pathId = "pre_release_cli";
   relpath = '';
 </script>
 
@@ -37,7 +37,7 @@
         <div id="menu">
   
     <a href="_index.html">Index</a> &raquo; 
-    <span class="title">File: ci_helpers</span>
+    <span class="title">File: pre_release_cli</span>
   
 </div>
 
@@ -59,40 +59,21 @@
 
       <div id="content"><div id='filecontents'><p>module Kettle<br>
   module Dev<br>
-    module CIHelpers<br>
-      # singleton (module) methods<br>
-      def self.project_root: () -&gt; String<br>
-      def self.repo_info: () -&gt; [String, String]?<br>
-      def self.current_branch: () -&gt; String?<br>
-      def self.workflows_list: (?String root) -&gt; Array[String]<br>
-      def self.exclusions: () -&gt; Array[String]</p>
+    class PreReleaseCLI<br>
+      module HTTP<br>
+        def self.parse_http_uri: (String url_str) -&gt; ::URI<br>
+        def self.head_ok?: (String url_str, ?limit: Integer, ?timeout: Integer) -&gt; bool<br>
+      end</p>
 
-<pre class="code ruby"><code class="ruby">  def self.latest_run: (
-    owner: String,
-    repo: String,
-    workflow_file: String,
-    ?branch: String?,
-    ?token: String?
-  ) -&gt; { &quot;status&quot; =&gt; String, &quot;conclusion&quot; =&gt; String?, &quot;html_url&quot; =&gt; String, &quot;id&quot; =&gt; Integer }?
+<pre class="code ruby"><code class="ruby">  module Markdown
+    def self.extract_image_urls_from_text: (String text) -&gt; Array[String]
+    def self.extract_image_urls_from_files: (?String glob_pattern) -&gt; Array[String]
+  end
 
-  def self.success?: ({ &quot;status&quot; =&gt; String, &quot;conclusion&quot; =&gt; String? }?) -&gt; bool
-  def self.failed?: ({ &quot;status&quot; =&gt; String, &quot;conclusion&quot; =&gt; String? }?) -&gt; bool
-
-  def self.default_token: () -&gt; String?
-
-  # GitLab
-  def self.origin_url: () -&gt; String?
-  def self.repo_info_gitlab: () -&gt; [String, String]?
-  def self.default_gitlab_token: () -&gt; String?
-  def self.gitlab_latest_pipeline: (
-    owner: String,
-    repo: String,
-    ?branch: String?,
-    ?host: String,
-    ?token: String?
-  ) -&gt; { &quot;status&quot; =&gt; String, &quot;web_url&quot; =&gt; String, &quot;id&quot; =&gt; Integer, &quot;failure_reason&quot; =&gt; String? }?
-  def self.gitlab_success?: ({ &quot;status&quot; =&gt; String }?) -&gt; bool
-  def self.gitlab_failed?: ({ &quot;status&quot; =&gt; String }?) -&gt; bool
+  def initialize: (?check_num: Integer) -&gt; void
+  def run: () -&gt; void
+  def check_markdown_uri_normalization!: () -&gt; void
+  def check_markdown_images_http!: () -&gt; void
 end   end end
 </code></pre>
 </div></div>

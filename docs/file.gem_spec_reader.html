@@ -63,10 +63,10 @@
       def self.load: (String root) -&gt; {<br>
         gemspec_path: String?,<br>
         gem_name: String,<br>
-        min_ruby: String,<br>
+        min_ruby: Gem::Version,<br>
         homepage: String,<br>
-        gh_org: String?,<br>
-        forge_org: String?,<br>
+        gh_org: String,<br>
+        forge_org: String,<br>
         funding_org: String?,<br>
         gh_repo: String?,<br>
         namespace: String,<br>
@@ -77,9 +77,8 @@
         email: Array[String],<br>
         summary: String,<br>
         description: String,<br>
-        license: String,<br>
         licenses: Array[String],<br>
-        required_ruby_version: String,<br>
+        required_ruby_version: Gem::Requirement?,<br>
         require_paths: Array[String],<br>
         bindir: String,<br>
         executables: Array[String],<br>
@@ -90,7 +89,7 @@ end</p>
 </div></div>
 
       <div id="footer">
-  Generated on Tue Sep  2 15:04:02 2025 by
+  Generated on Thu Sep  4 05:38:19 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

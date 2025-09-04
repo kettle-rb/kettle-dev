@@ -18,13 +18,24 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [Unreleased]
 ### Added
+### Changed
+### Deprecated
+### Removed
+### Fixed
+### Security
+
+## [1.1.5] - 2025-09-04
+- TAG: [v1.1.5][1.1.5t]
+- COVERAGE: 97.11% -- 3019/3109 lines in 23 files
+- BRANCH COVERAGE: 82.20% -- 1233/1500 branches in 23 files
+- 76.58% documented
+### Added
 - kettle-pre-release: run re-release checks on a library
   - validate URLs of image assets in Markdown files
 - honor ENV["FUNDING_FORGE"] set to "false" as intentional disabling of funding-related logic.
 ### Changed
 - expanded use of adapter patterns (Exit, Git, and Input)
 - refactored and improved structure of code, more resilient
-### Deprecated
 ### Removed
 - defensive NameError handling in ChangelogCLI.abort method
 ### Fixed
@@ -32,7 +43,6 @@ Please file a bug if you notice a violation of semantic versioning.
 - fixed logic for handling derivation of forge and funding URLs
 - allow commits to succeed if dependencies are missing or broken
 - RBS types documentation for GemSpecReader
-### Security
 
 ## [1.1.4] - 2025-09-02
 - TAG: [v1.1.4][1.1.4t]
@@ -478,7 +488,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.4...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.5...HEAD
+[1.1.5]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.4...v1.1.5
+[1.1.5t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.5
 [1.1.4]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.3...v1.1.4
 [1.1.4t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.4
 [1.1.3]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.2...v1.1.3
