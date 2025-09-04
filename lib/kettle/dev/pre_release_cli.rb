@@ -169,7 +169,7 @@ module Kettle
       # @return [void]
       def check_markdown_uri_normalization!
         puts "[kettle-pre-release] Check 1: Normalize Markdown image URLs"
-        files = Dir.glob("**/*.md")
+        files = Dir.glob(["**/*.md", "**/*.md.example"])
         changed = []
         total_candidates = 0
 
@@ -218,7 +218,10 @@ module Kettle
       # @return [void]
       def check_markdown_images_http!
         puts "[kettle-pre-release] Check 2: Validate Markdown image links (HTTP HEAD)"
-        urls = Markdown.extract_image_urls_from_files("**/*.md")
+        urls = [
+          Markdown.extract_image_urls_from_files("**/*.md"),
+          Markdown.extract_image_urls_from_files("**/*.md.example"),
+        ].flatten.uniq
         puts "[kettle-pre-release] Found #{urls.size} unique image URL(s)."
         failures = []
         urls.each do |url|
