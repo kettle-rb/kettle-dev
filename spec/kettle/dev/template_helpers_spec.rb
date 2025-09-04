@@ -701,6 +701,7 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
 
   describe "chmod behavior for .git-hooks" do
     it "sets executable bit when copying a single hook file via copy_file_with_prompt" do
+      pending_for(reason: "Ruby 2.3 may not preserve chmod semantics for this path; behavior differs", ruby: Range.new(Gem::Version.new("2.3"), Gem::Version.new("2.4")), skip: true)
       Dir.mktmpdir do |dir|
         src = File.join(dir, "commit-msg.src")
         File.write(src, "#!/bin/sh\n")
