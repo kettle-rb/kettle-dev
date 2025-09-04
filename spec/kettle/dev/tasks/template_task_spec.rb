@@ -381,6 +381,51 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
         end
       end
 
+      it "removes self-dependencies in gemspec after templating (runtime and development, paren and no-paren)" do
+        Dir.mktmpdir do |gem_root|
+          Dir.mktmpdir do |project_root|
+            # Template gemspec includes dependencies on the template gem name
+            File.write(File.join(gem_root, "kettle-dev.gemspec.example"), <<~GEMSPEC)
+              Gem::Specification.new do |spec|
+                spec.name = "kettle-dev"
+                spec.add_dependency("kettle-dev", "~> 1.0")
+                spec.add_dependency 'kettle-dev'
+                spec.add_development_dependency("kettle-dev")
+                spec.add_development_dependency 'kettle-dev', ">= 0"
+                spec.add_dependency("addressable", ">= 2.8", "< 3")
+              end
+            GEMSPEC
+
+            # Destination project gemspec to derive gem_name and org/homepage
+            File.write(File.join(project_root, "my-gem.gemspec"), <<~GEMSPEC)
+              Gem::Specification.new do |spec|
+                spec.name = "my-gem"
+                spec.required_ruby_version = ">= 3.1"
+                spec.homepage = "https://github.com/acme/my-gem"
+              end
+            GEMSPEC
+
+            allow(helpers).to receive_messages(
+              project_root: project_root,
+              gem_checkout_root: gem_root,
+              ensure_clean_git!: nil,
+              ask: true,
+            )
+
+            described_class.run
+
+            dest = File.join(project_root, "my-gem.gemspec")
+            expect(File).to exist(dest)
+            txt = File.read(dest)
+            # Self-dependency variants should be removed (they would otherwise become my-gem)
+            expect(txt).not_to match(/spec\.add_(?:development_)?dependency\([\"\']my-gem[\"\']/)
+            expect(txt).not_to match(/spec\.add_(?:development_)?dependency\s+[\"\']my-gem[\"\']/)
+            # Other dependencies remain
+            expect(txt).to include('spec.add_dependency("addressable", ">= 2.8", "< 3")')
+          end
+        end
+      end
+
       it "when gem_name is missing, falls back to first existing *.gemspec in project" do
         Dir.mktmpdir do |gem_root|
           Dir.mktmpdir do |project_root|

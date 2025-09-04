@@ -321,6 +321,27 @@ module Kettle
                   end
                 end
 
+                # Ensure we do not introduce a self-dependency when templating the gemspec.
+                # If the template included a dependency on the template gem (e.g., "kettle-dev"),
+                # the common replacements would have turned it into the destination gem's name.
+                # Strip any dependency lines that name the destination gem.
+                begin
+                  if gem_name && !gem_name.to_s.empty?
+                    name_escaped = Regexp.escape(gem_name)
+                    # Matches both runtime and development dependency lines, with or without parentheses.
+                    # Examples matched:
+                    #   spec.add_dependency("my-gem", "~> 1.0")
+                    #   spec.add_dependency 'my-gem'
+                    #   spec.add_development_dependency "my-gem"
+                    #   spec.add_development_dependency 'my-gem', ">= 0"
+                    self_dep_re = /\A\s*spec\.add_(?:development_)?dependency(?:\s*\(|\s+)\s*["']#{name_escaped}["'][^\n]*\)?\s*\z/
+                    c = c.lines.reject { |ln| ln.match?(self_dep_re) }.join
+                  end
+                rescue StandardError => e
+                  Kettle::Dev.debug_error(e, __method__)
+                  # If anything goes wrong, keep the content as-is rather than failing the task
+                end
+
                 c
               end
             end
