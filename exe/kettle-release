@@ -18,8 +18,13 @@
 $stdout.sync = true
 $stderr.sync = true
 
-# Depending library or project must be using bundler
-require "bundler/setup"
+# Do not rely on Bundler; allow running in repos that do not depend on kettle-dev
+# Ensure RubyGems is available for 'require' lookups
+begin
+  require "rubygems"
+rescue LoadError
+  # Older Rubies always have rubygems; continue anyway
+end
 
 script_basename = File.basename(__FILE__)
 
