@@ -930,7 +930,13 @@ All options/IO are controlled via TemplateHelpers and ENV.</p>
 759
 760
 761
-762</pre>
+762
+763
+764
+765
+766
+767
+768</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/kettle/dev/tasks/template_task.rb', line 22</span>
@@ -1131,15 +1137,21 @@ All options/IO are controlled via TemplateHelpers and ENV.</p>
       <span class='kw'>end</span>
 
       <span class='id identifier rubyid_helpers'>helpers</span><span class='period'>.</span><span class='id identifier rubyid_copy_file_with_prompt'>copy_file_with_prompt</span><span class='lparen'>(</span><span class='id identifier rubyid_gemspec_template_src'>gemspec_template_src</span><span class='comma'>,</span> <span class='id identifier rubyid_dest_gemspec'>dest_gemspec</span><span class='comma'>,</span> <span class='label'>allow_create:</span> <span class='kw'>true</span><span class='comma'>,</span> <span class='label'>allow_replace:</span> <span class='kw'>true</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_content'>content</span><span class='op'>|</span>
-        <span class='comment'># First apply standard replacements from the template example
-</span>        <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='id identifier rubyid_helpers'>helpers</span><span class='period'>.</span><span class='id identifier rubyid_apply_common_replacements'>apply_common_replacements</span><span class='lparen'>(</span>
-          <span class='id identifier rubyid_content'>content</span><span class='comma'>,</span>
-          <span class='label'>org:</span> <span class='id identifier rubyid_forge_org'>forge_org</span><span class='comma'>,</span>
-          <span class='label'>gem_name:</span> <span class='id identifier rubyid_gem_name'>gem_name</span><span class='comma'>,</span>
-          <span class='label'>namespace:</span> <span class='id identifier rubyid_namespace'>namespace</span><span class='comma'>,</span>
-          <span class='label'>namespace_shield:</span> <span class='id identifier rubyid_namespace_shield'>namespace_shield</span><span class='comma'>,</span>
-          <span class='label'>gem_shield:</span> <span class='id identifier rubyid_gem_shield'>gem_shield</span><span class='comma'>,</span>
-        <span class='rparen'>)</span>
+        <span class='comment'># First apply standard replacements from the template example, but only
+</span>        <span class='comment'># when we have a usable gem_name. If gem_name is unknown, leave content as-is
+</span>        <span class='comment'># to allow filename fallback behavior without raising.
+</span>        <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='id identifier rubyid_gem_name'>gem_name</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_gem_name'>gem_name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+          <span class='id identifier rubyid_helpers'>helpers</span><span class='period'>.</span><span class='id identifier rubyid_apply_common_replacements'>apply_common_replacements</span><span class='lparen'>(</span>
+            <span class='id identifier rubyid_content'>content</span><span class='comma'>,</span>
+            <span class='label'>org:</span> <span class='id identifier rubyid_forge_org'>forge_org</span><span class='comma'>,</span>
+            <span class='label'>gem_name:</span> <span class='id identifier rubyid_gem_name'>gem_name</span><span class='comma'>,</span>
+            <span class='label'>namespace:</span> <span class='id identifier rubyid_namespace'>namespace</span><span class='comma'>,</span>
+            <span class='label'>namespace_shield:</span> <span class='id identifier rubyid_namespace_shield'>namespace_shield</span><span class='comma'>,</span>
+            <span class='label'>gem_shield:</span> <span class='id identifier rubyid_gem_shield'>gem_shield</span><span class='comma'>,</span>
+          <span class='rparen'>)</span>
+        <span class='kw'>else</span>
+          <span class='id identifier rubyid_content'>content</span><span class='period'>.</span><span class='id identifier rubyid_dup'>dup</span>
+        <span class='kw'>end</span>
 
         <span class='kw'>if</span> <span class='id identifier rubyid_orig_meta'>orig_meta</span>
           <span class='comment'># Replace a scalar string assignment like: spec.field = &quot;...&quot;
@@ -1734,7 +1746,7 @@ All options/IO are controlled via TemplateHelpers and ENV.</p>
 </div>
 
       <div id="footer">
-  Generated on Tue Sep  2 15:04:03 2025 by
+  Generated on Thu Sep  4 05:31:13 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

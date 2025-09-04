@@ -70,11 +70,30 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 
 <h2 id="unreleased"><a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.4...HEAD">Unreleased</a></h2>
 <h3 id="added">Added</h3>
-<h3 id="changed">Changed</h3>
-<h3 id="deprecated">Deprecated</h3>
-<h3 id="removed">Removed</h3>
-<h3 id="fixed">Fixed</h3>
-<h3 id="security">Security</h3>
+<ul>
+  <li>kettle-pre-release: run re-release checks on a library
+    <ul>
+      <li>validate URLs of image assets in Markdown files</li>
+    </ul>
+  </li>
+  <li>honor ENV[“FUNDING_FORGE”] set to “false” as intentional disabling of funding-related logic.
+    <h3 id="changed">Changed</h3>
+  </li>
+  <li>expanded use of adapter patterns (Exit, Git, and Input)</li>
+  <li>refactored and improved structure of code, more resilient
+    <h3 id="deprecated">Deprecated</h3>
+    <h3 id="removed">Removed</h3>
+  </li>
+  <li>defensive NameError handling in ChangelogCLI.abort method
+    <h3 id="fixed">Fixed</h3>
+  </li>
+  <li>kettle-commit-msg now runs via rubygems (not bundler) so it will work via a system gem</li>
+  <li>fixed logic for handling derivation of forge and funding URLs</li>
+  <li>allow commits to succeed if dependencies are missing or broken</li>
+  <li>RBS types documentation for GemSpecReader
+    <h3 id="security">Security</h3>
+  </li>
+</ul>
 
 <h2 id="114---2025-09-02">
 <a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.3...v1.1.4">1.1.4</a> - 2025-09-02</h2>
@@ -843,7 +862,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Tue Sep  2 15:04:02 2025 by
+  Generated on Thu Sep  4 05:31:12 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>
