@@ -100,7 +100,7 @@ RSpec.describe Kettle::Dev::CIMonitor do
       expect(described_class.preferred_github_remote).to be_nil
     end
 
-    it "preferred_github_remote prefers explicit then origin" do
+    it "preferred_github_remote prefers explicit then origin then first" do
       allow(described_class).to receive(:remotes_with_urls).and_return({
         "origin" => "https://github.com/me/repo.git",
         "github" => "https://github.com/me/repo.git",
@@ -111,6 +111,11 @@ RSpec.describe Kettle::Dev::CIMonitor do
         "upstream" => "https://github.com/me/repo.git",
       })
       expect(described_class.preferred_github_remote).to eq("origin")
+      allow(described_class).to receive(:remotes_with_urls).and_return({
+        "foo" => "https://github.com/me/repo.git",
+        "bar" => "https://github.com/me/other.git",
+      })
+      expect(described_class.preferred_github_remote).to eq("foo")
     end
 
     it "parse_github_owner_repo handles nil and unknown patterns" do
@@ -121,6 +126,35 @@ RSpec.describe Kettle::Dev::CIMonitor do
     it "parses SSH and HTTPS URLs" do
       expect(described_class.parse_github_owner_repo("git@github.com:me/repo.git")).to eq(["me", "repo"])
       expect(described_class.parse_github_owner_repo("https://github.com/me/repo")).to eq(["me", "repo"])
+    end
+
+    it "github_remote_candidates filters by github.com" do
+      allow(described_class).to receive(:remotes_with_urls).and_return({
+        "origin" => "https://gitlab.com/me/repo.git",
+        "gh" => "git@github.com:me/repo.git",
+        "cb" => "https://codeberg.org/me/repo.git",
+      })
+      expect(described_class.github_remote_candidates).to eq(["gh"])
+    end
+
+    it "gitlab_remote_candidates filters by gitlab.com" do
+      allow(described_class).to receive(:remotes_with_urls).and_return({
+        "origin" => "https://github.com/me/repo.git",
+        "gl" => "git@gitlab.com:me/repo.git",
+        "cb" => "https://codeberg.org/me/repo.git",
+      })
+      expect(described_class.gitlab_remote_candidates).to eq(["gl"])
+    end
+  end
+
+  describe "wrappers around GitAdapter" do
+    it "delegates remotes_with_urls and remote_url" do
+      fake = instance_double(Kettle::Dev::GitAdapter)
+      allow(Kettle::Dev::GitAdapter).to receive(:new).and_return(fake)
+      allow(fake).to receive(:remotes_with_urls).and_return({"origin" => "https://github.com/acme/demo.git"})
+      allow(fake).to receive(:remote_url).with("origin").and_return("https://github.com/acme/demo.git")
+      expect(described_class.remotes_with_urls).to eq({"origin" => "https://github.com/acme/demo.git"})
+      expect(described_class.remote_url("origin")).to eq("https://github.com/acme/demo.git")
     end
   end
 

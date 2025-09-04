@@ -23,6 +23,7 @@ Please file a bug if you notice a violation of semantic versioning.
 - expanded use of adapter patterns (Exit, Git, and Input)
 ### Deprecated
 ### Removed
+- defensive NameError handling in ChangelogCLI.abort method
 ### Fixed
 - fixed logic for handling derivation of forge and funding URLs
 ### Security

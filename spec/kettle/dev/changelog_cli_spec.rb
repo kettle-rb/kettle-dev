@@ -82,15 +82,24 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
     end
   end
 
-  describe "#abort fallback", :real_exit_adapter do
-    it "falls back to Kernel.abort if ExitAdapter is missing" do
-      mkproj do |root|
-        allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
-        cli = described_class.new
-        # Hide ExitAdapter to trigger NameError
-        hide_const("Kettle::Dev::ExitAdapter")
-        expect { cli.send(:abort, "boom") }.to raise_error(SystemExit)
-      end
+
+  describe "#detect_initial_compare_base (private)" do
+    it "extracts historical base from first compare link when present" do
+      cli = described_class.new
+      lines = [
+        "[Unreleased]: https://github.com/acme/demo/compare/v1.2.3...HEAD\n",
+        "[1.0.0]: https://github.com/acme/demo/compare/abc123...v1.0.0\n",
+      ]
+      expect(cli.send(:detect_initial_compare_base, lines)).to eq("abc123")
+    end
+
+    it "defaults to HEAD^ when no historical base found" do
+      cli = described_class.new
+      lines = [
+        "[Unreleased]: https://github.com/acme/demo/compare/v2.0.0...HEAD\n",
+        "[2.0.0]: https://github.com/acme/demo/compare/v1.9.9...v2.0.0\n",
+      ]
+      expect(cli.send(:detect_initial_compare_base, lines)).to eq("HEAD^")
     end
   end
 

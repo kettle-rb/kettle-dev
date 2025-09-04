@@ -97,9 +97,6 @@ module Kettle
 
       def abort(msg)
         Kettle::Dev::ExitAdapter.abort(msg)
-      rescue NameError
-        # Fallback when ExitAdapter is not loaded/available (e.g., test isolates it)
-        Kernel.abort(msg)
       end
 
       def detect_version
