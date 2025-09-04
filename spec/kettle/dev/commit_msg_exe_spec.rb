@@ -9,7 +9,7 @@ RSpec.describe "exe/kettle-commit-msg" do
   include_context "with stubbed env"
 
   it "runs without bundler by only requiring rubygems and kettle/dev" do
-    skip_for(reason: "kettle/dev autoload fails under Ruby 2.5 and 2.6 in CI environment; investigate/fix later", ruby: Range.new(Gem::Version.new("2.5"), Gem::Version.new("2.7")), skip: true)
+    skip_for(reason: "kettle/dev autoload fails under Ruby 2.5 and 2.6 in CI environment; investigate/fix later", versions: Range.new(Gem::Version.new("2.5"), Gem::Version.new("2.7")))
     Dir.mktmpdir do |dir|
       commit_file = File.join(dir, "COMMIT_EDITMSG")
       File.write(commit_file, "chore: test\n\nbody\n")

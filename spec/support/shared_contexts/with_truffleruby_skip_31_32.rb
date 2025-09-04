@@ -8,8 +8,7 @@ RSpec.shared_context "with truffleruby 3.1..3.2 skip" do
     skip_for(
       reason: "Incompatible with TruffleRuby v23.0–23.1 (Ruby 3.1–3.2)",
       engine: "truffleruby",
-      ruby: Range.new(Gem::Version.new("3.1"), Gem::Version.new("3.2")),
-      skip: true,
+      versions: Range.new(Gem::Version.new("3.1"), Gem::Version.new("3.2"))
     )
   end
 end
