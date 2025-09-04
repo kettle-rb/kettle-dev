@@ -31,6 +31,7 @@ Please file a bug if you notice a violation of semantic versioning.
 - kettle-commit-msg now runs via rubygems (not bundler) so it will work via a system gem
 - fixed logic for handling derivation of forge and funding URLs
 - allow commits to succeed if dependencies are missing or broken
+- RBS types documentation for GemSpecReader
 ### Security
 
 ## [1.1.4] - 2025-09-02
