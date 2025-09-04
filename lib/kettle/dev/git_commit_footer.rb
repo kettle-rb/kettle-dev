@@ -22,7 +22,9 @@ module Kettle
           begin
             out = %x(git rev-parse --show-toplevel 2>/dev/null)
             toplevel = out.strip unless out.nil? || out.empty?
-          rescue StandardError
+          rescue StandardError => e
+            Kettle::Dev.debug_error(e, __method__)
+            nil
           end
           toplevel
         end
@@ -111,7 +113,8 @@ module Kettle
           if @name_index
             return $2
           end
-        rescue StandardError
+        rescue StandardError => e
+          Kettle::Dev.debug_error(e, __method__)
         end
         nil
       end

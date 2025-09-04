@@ -12,6 +12,8 @@ module Kettle
       # Values: Hash with keys: :action (Symbol, one of :create, :replace, :skip, :dir_create, :dir_replace), :timestamp (Time)
       @@template_results = {}
 
+      EXECUTABLE_GIT_HOOKS_RE = %r{[\\/]\.git-hooks[\\/](commit-msg|prepare-commit-msg)\z}
+
       module_function
 
       # Root of the host project where Rake was invoked
@@ -227,10 +229,11 @@ module Kettle
         write_file(dest_path, content)
         begin
           # Ensure executable bit for git hook scripts when writing under .git-hooks
-          if dest_path.to_s.match?(%r{[\\/]\.git-hooks[\\/](commit-msg|prepare-commit-msg)\z})
+          if dest_path.to_s.match?(EXECUTABLE_GIT_HOOKS_RE)
             File.chmod(0o755, dest_path) if File.exist?(dest_path)
           end
-        rescue StandardError
+        rescue StandardError => e
+          Kettle::Dev.debug_error(e, __method__)
           # ignore permission issues
         end
         record_template_result(dest_path, dest_exists ? :replace : :create)
@@ -331,10 +334,11 @@ module Kettle
                 begin
                   # Ensure executable bit for git hook scripts when copying under .git-hooks
                   if target.end_with?("/.git-hooks/commit-msg", "/.git-hooks/prepare-commit-msg") ||
-                      target.match?(%r{[\\/]\.git-hooks[\\/](commit-msg|prepare-commit-msg)\z})
+                      target.match?(EXECUTABLE_GIT_HOOKS_RE)
                     File.chmod(0o755, target)
                   end
-                rescue StandardError
+                rescue StandardError => e
+                  Kettle::Dev.debug_error(e, __method__)
                   # ignore permission issues
                 end
               end
@@ -378,10 +382,11 @@ module Kettle
               begin
                 # Ensure executable bit for git hook scripts when copying under .git-hooks
                 if target.end_with?("/.git-hooks/commit-msg", "/.git-hooks/prepare-commit-msg") ||
-                    target.match?(%r{[\\/]\.git-hooks[\\/](commit-msg|prepare-commit-msg)\z})
+                    target.match?(EXECUTABLE_GIT_HOOKS_RE)
                   File.chmod(0o755, target)
                 end
-              rescue StandardError
+              rescue StandardError => e
+                Kettle::Dev.debug_error(e, __method__)
                 # ignore permission issues
               end
             end
@@ -398,19 +403,23 @@ module Kettle
       # @param namespace [String]
       # @param namespace_shield [String]
       # @param gem_shield [String]
+      # @param funding_org [String, nil]
       # @return [String]
-      def apply_common_replacements(content, org:, gem_name:, namespace:, namespace_shield:, gem_shield:)
+      def apply_common_replacements(content, org:, gem_name:, namespace:, namespace_shield:, gem_shield:, funding_org: nil)
         raise Error, "Org could not be derived" unless org && !org.empty?
         raise Error, "Gem name could not be derived" unless gem_name && !gem_name.empty?
 
+        funding_org ||= org
         c = content.dup
         c = c.gsub("kettle-rb", org.to_s)
+        c = c.gsub("{OPENCOLLECTIVE|ORG_NAME}", funding_org)
         # Special-case: yard-head link uses the gem name as a subdomain and must be dashes-only.
         # Apply this BEFORE other generic replacements so it isn't altered incorrectly.
         begin
           dashed = gem_name.tr("_", "-")
           c = c.gsub("[🚎yard-head]: https://kettle-dev.galtzo.com", "[🚎yard-head]: https://#{dashed}.galtzo.com")
-        rescue StandardError
+        rescue StandardError => e
+          Kettle::Dev.debug_error(e, __method__)
           # ignore
         end
 

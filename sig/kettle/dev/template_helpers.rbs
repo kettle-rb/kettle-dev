@@ -77,6 +77,8 @@ module Kettle
         bindir: String,
         executables: Array[String],
       }
+
+      def apply_common_replacements: () -> untyped
     end
   end
 end

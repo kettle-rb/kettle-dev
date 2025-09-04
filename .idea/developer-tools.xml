@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DeveloperToolsToolWindowSettingsV1" lastSelectedContentNodeId="notes" pluginVersion="7.1.0">
+    <developerToolsConfigurations>
+      <developerToolConfiguration developerToolId="unarchiver" id="0667a3d9-4283-4794-8913-84c3b8ac529a" name="Workbench">
+        <properties>
+          <property key="lastSelectedOpenedDirectoryPath" type="CONFIGURATION" value="kotlin.String|/var/home/pboling/src/kettle-rb/kettle-dev" />
+        </properties>
+      </developerToolConfiguration>
+      <developerToolConfiguration developerToolId="notes" id="5193621e-87e9-4cee-9594-486e3acab6f0" name="Workbench">
+        <properties>
+          <property key="test" type="INPUT" value="kotlin.String|These are some notes." />
+        </properties>
+      </developerToolConfiguration>
+    </developerToolsConfigurations>
+  </component>
+</project>

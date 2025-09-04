@@ -63,6 +63,7 @@ module Kettle
                   helpers.apply_common_replacements(
                     c,
                     org: forge_org,
+                    funding_org: funding_org,
                     gem_name: gem_name,
                     namespace: namespace,
                     namespace_shield: namespace_shield,
@@ -74,6 +75,7 @@ module Kettle
                   helpers.apply_common_replacements(
                     content,
                     org: forge_org,
+                    funding_org: funding_org,
                     gem_name: gem_name,
                     namespace: namespace,
                     namespace_shield: namespace_shield,
@@ -209,7 +211,8 @@ module Kettle
               if File.exist?(dest_gemspec)
                 begin
                   orig_meta = helpers.gemspec_metadata(File.dirname(dest_gemspec))
-                rescue StandardError
+                rescue StandardError => e
+                  Kettle::Dev.debug_error(e, __method__)
                   orig_meta = nil
                 end
               end
@@ -222,6 +225,7 @@ module Kettle
                   helpers.apply_common_replacements(
                     content,
                     org: forge_org,
+                    funding_org: funding_org,
                     gem_name: gem_name,
                     namespace: namespace,
                     namespace_shield: namespace_shield,
@@ -320,7 +324,8 @@ module Kettle
                 c
               end
             end
-          rescue StandardError
+          rescue StandardError => e
+            Kettle::Dev.debug_error(e, __method__)
             # Do not fail the entire template task if gemspec copy has issues
           end
 
@@ -355,7 +360,8 @@ module Kettle
           existing_readme_before = begin
             path = File.join(project_root, "README.md")
             File.file?(path) ? File.read(path) : nil
-          rescue StandardError
+          rescue StandardError => e
+            Kettle::Dev.debug_error(e, __method__)
             nil
           end
 
@@ -403,6 +409,7 @@ module Kettle
                 c = helpers.apply_common_replacements(
                   content,
                   org: forge_org,
+                  funding_org: funding_org,
                   gem_name: gem_name,
                   namespace: namespace,
                   namespace_shield: namespace_shield,
@@ -545,7 +552,8 @@ module Kettle
               helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true) do |content|
                 c = helpers.apply_common_replacements(
                   content,
-                  org: ((File.basename(rel) == ".opencollective.yml" || File.basename(rel) == "FUNDING.md") ? funding_org : forge_org),
+                  org: forge_org,
+                  funding_org: funding_org,
                   gem_name: gem_name,
                   namespace: namespace,
                   namespace_shield: namespace_shield,
@@ -587,7 +595,8 @@ module Kettle
                 end
               end
             end
-          rescue StandardError
+          rescue StandardError => e
+            Kettle::Dev.debug_error(e, __method__)
             # ignore post-processing errors
           end
 
@@ -662,7 +671,8 @@ module Kettle
                   end
                 end
               end
-            rescue StandardError
+            rescue StandardError => e
+              Kettle::Dev.debug_error(e, __method__)
               # If filter parsing fails, proceed as before
             end
             # Prefer .example variant when present for .git-hooks
@@ -715,7 +725,8 @@ module Kettle
                   # Ensure readable (0644). These are data/templates, not executables.
                   begin
                     File.chmod(0o644, dest) if File.exist?(dest)
-                  rescue StandardError
+                  rescue StandardError => e
+                    Kettle::Dev.debug_error(e, __method__)
                     # ignore permission issues
                   end
                 end
@@ -740,7 +751,8 @@ module Kettle
                       helpers.write_file(dest, content)
                       begin
                         File.chmod(mode, dest)
-                      rescue StandardError
+                      rescue StandardError => e
+                        Kettle::Dev.debug_error(e, __method__)
                         # ignore permission issues
                       end
                       puts "Replaced #{dest}"
@@ -752,7 +764,8 @@ module Kettle
                     helpers.write_file(dest, content)
                     begin
                       File.chmod(mode, dest)
-                    rescue StandardError
+                    rescue StandardError => e
+                      Kettle::Dev.debug_error(e, __method__)
                       # ignore permission issues
                     end
                     puts "Installed #{dest}"

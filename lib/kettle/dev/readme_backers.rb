@@ -127,7 +127,8 @@ module Kettle
               from_yml = from_yml.to_s if from_yml
               return from_yml unless from_yml.nil? || from_yml.strip.empty?
             end
-          rescue StandardError
+          rescue StandardError => e
+            Kettle::Dev.debug_error(e, __method__)
           end
         end
         README_OSC_TAG_DEFAULT
@@ -321,7 +322,8 @@ module Kettle
               from_yml = from_yml.to_s if from_yml
               return from_yml unless from_yml.nil? || from_yml.strip.empty?
             end
-          rescue StandardError
+          rescue StandardError => e
+            Kettle::Dev.debug_error(e, __method__)
           end
         end
         COMMIT_SUBJECT_DEFAULT

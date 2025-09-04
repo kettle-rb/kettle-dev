@@ -7,17 +7,15 @@
     [63, 17, 2, "ThreadSafety/MutableClassInstanceVariable: Freeze mutable objects assigned to class instance variables.", 5862883],
     [74, 7, 16, "Lint/RescueException: Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?", 2127134117]
   ],
-  "lib/kettle/dev/tasks/ci_task.rb:3806600277": [
-    [194, 26, 10, "ThreadSafety/NewThread: Avoid starting new threads.", 3411682361],
-    [197, 13, 320, "Lint/RescueException: Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?", 508330984],
-    [210, 24, 60, "ThreadSafety/NewThread: Avoid starting new threads.", 1884163423],
-    [250, 19, 158, "Lint/RescueException: Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?", 3347980327],
-    [256, 15, 175, "Lint/RescueException: Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?", 1705470978]
+  "lib/kettle/dev/tasks/ci_task.rb:282832326": [
+    [196, 26, 10, "ThreadSafety/NewThread: Avoid starting new threads.", 3411682361],
+    [199, 13, 320, "Lint/RescueException: Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?", 508330984],
+    [212, 24, 60, "ThreadSafety/NewThread: Avoid starting new threads.", 1884163423]
   ],
-  "lib/kettle/dev/template_helpers.rb:2459179720": [
-    [115, 11, 20, "ThreadSafety/DirChdir: Avoid using `Dir.chdir` due to its process-wide effect.", 645000286],
-    [132, 11, 52, "Style/IdenticalConditionalBranches: Move `preview = status_output.lines.take(10).map(&:rstrip)` out of the conditional.", 311333201],
-    [144, 11, 52, "Style/IdenticalConditionalBranches: Move `preview = status_output.lines.take(10).map(&:rstrip)` out of the conditional.", 311333201]
+  "lib/kettle/dev/template_helpers.rb:3540336040": [
+    [117, 11, 20, "ThreadSafety/DirChdir: Avoid using `Dir.chdir` due to its process-wide effect.", 645000286],
+    [134, 11, 52, "Style/IdenticalConditionalBranches: Move `preview = status_output.lines.take(10).map(&:rstrip)` out of the conditional.", 311333201],
+    [146, 11, 52, "Style/IdenticalConditionalBranches: Move `preview = status_output.lines.take(10).map(&:rstrip)` out of the conditional.", 311333201]
   ],
   "spec/kettle/dev/changelog_cli_spec.rb:1599338057": [
     [39, 9, 72, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [40].", 1904128172],
@@ -224,11 +222,11 @@
   "spec/kettle/dev/tasks/template_task_spec.rb:754437050": [
     [542, 15, 24, "RSpec/ContextWording: Context description should match /^when\\b/, /^with\\b/, or /^without\\b/.", 196765058]
   ],
-  "spec/kettle/dev/template_helpers_spec.rb:1684204112": [
-    [650, 11, 65, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [652].", 3890449948],
-    [652, 11, 48, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [650].", 1824268915],
-    [691, 11, 65, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [693].", 3890449948],
-    [693, 11, 48, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [691].", 1824268915]
+  "spec/kettle/dev/template_helpers_spec.rb:2923518769": [
+    [671, 11, 65, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [673].", 3890449948],
+    [673, 11, 48, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [671].", 1824268915],
+    [712, 11, 65, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [714].", 3890449948],
+    [714, 11, 48, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [712].", 1824268915]
   ],
   "spec/kettle/dev/versioning_spec.rb:3465928905": [
     [53, 7, 53, "RSpec/PredicateMatcher: Prefer using `be_epic_major` matcher over `epic_major?`.", 200417834]

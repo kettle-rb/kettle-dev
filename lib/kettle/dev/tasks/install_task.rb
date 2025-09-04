@@ -61,7 +61,8 @@ module Kettle
                       content = content.gsub(/!\[[^\]]*?\]\s*\[#{label_re}\]/, "")
                       removed_labels << label
                     end
-                  rescue StandardError
+                  rescue StandardError => e
+                    Kettle::Dev.debug_error(e, __method__)
                     # ignore
                   end
                 end
@@ -201,7 +202,8 @@ module Kettle
                         tmp = tmp[cluster.length..-1].to_s
                       end
                       rest_wo_emoji = tmp.sub(/\A\s+/, "")
-                    rescue StandardError
+                    rescue StandardError => e
+                      Kettle::Dev.debug_error(e, __method__)
                       rest_wo_emoji = rest.sub(/\A\s+/, "")
                     end
                     # Build H1 with single spaces only around separators; preserve inner spacing in rest_wo_emoji
@@ -236,7 +238,8 @@ module Kettle
                         end
                         tmp = tmp.sub(/\A\s+/, "")
                         body_wo = tmp
-                      rescue StandardError
+                      rescue StandardError => e
+                        Kettle::Dev.debug_error(e, __method__)
                         body_wo = body.sub(/\A\s+/, "")
                       end
                       pre + q + ("#{chosen_grapheme} " + body_wo) + q
@@ -272,7 +275,8 @@ module Kettle
               end.join
               File.open(readme_path, "w") { |f| f.write(content) }
             end
-          rescue StandardError
+          rescue StandardError => e
+            Kettle::Dev.debug_error(e, __method__)
             # ignore whitespace normalization errors
           end
 
@@ -440,7 +444,8 @@ module Kettle
           else
             begin
               current = File.file?(envrc_path) ? File.read(envrc_path) : ""
-            rescue StandardError
+            rescue StandardError => e
+              Kettle::Dev.debug_error(e, __method__)
               current = ""
             end
             has_path_add = current.lines.any? { |l| l.strip =~ /^PATH_add\s+bin\b/ }
@@ -496,7 +501,8 @@ module Kettle
           unless helpers.modified_by_template?(gitignore_path)
             begin
               gitignore_current = File.exist?(gitignore_path) ? File.read(gitignore_path) : ""
-            rescue StandardError
+            rescue StandardError => e
+              Kettle::Dev.debug_error(e, __method__)
               gitignore_current = ""
             end
             has_env_local = gitignore_current.lines.any? { |l| l.strip == ".env.local" }

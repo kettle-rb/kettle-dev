@@ -258,7 +258,8 @@ module Kettle
           version ||= detect_version
           gem_name = detect_gem_name
           puts "\n🚀 Release #{gem_name} v#{version} Complete 🚀"
-        rescue StandardError
+        rescue StandardError => e
+          Kettle::Dev.debug_error(e, __method__)
           # Fallback if detection fails for any reason
           puts "\n🚀 Release v#{version || "unknown"} Complete 🚀"
         end
@@ -493,7 +494,8 @@ module Kettle
       def ensure_bundler_2_7_plus!
         begin
           require "bundler"
-        rescue LoadError
+        rescue LoadError => e
+          Kettle::Dev.debug_error(e, __method__)
           abort("Bundler is required. Please install bundler >= 2.7.0 and try again.")
         end
         ver = Gem::Version.new(Bundler::VERSION)
@@ -518,7 +520,8 @@ module Kettle
 
         act_ok = begin
           system("act", "--version", out: File::NULL, err: File::NULL)
-        rescue StandardError
+        rescue StandardError => e
+          Kettle::Dev.debug_error(e, __method__)
           false
         end
         unless act_ok
@@ -598,7 +601,8 @@ module Kettle
         series_versions = gversions.select { |gv| gv.segments[0, 2] == series }
         latest_series = series_versions.last&.to_s
         [latest_overall, latest_series]
-      rescue StandardError
+      rescue StandardError => e
+        Kettle::Dev.debug_error(e, __method__)
         [nil, nil]
       end
 

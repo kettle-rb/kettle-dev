@@ -115,7 +115,8 @@ module Kettle
           "html_url" => run["html_url"],
           "id" => run["id"],
         }
-      rescue StandardError
+      rescue StandardError => e
+        Kettle::Dev.debug_error(e, __method__)
         nil
       end
 
@@ -202,7 +203,8 @@ module Kettle
               pipe["web_url"] = det["web_url"] if det["web_url"]
             end
           end
-        rescue StandardError
+        rescue StandardError => e
+          Kettle::Dev.debug_error(e, __method__)
           # ignore enrichment errors; fall back to basic fields
         end
         {
@@ -211,7 +213,8 @@ module Kettle
           "id" => pipe["id"],
           "failure_reason" => pipe["failure_reason"],
         }
-      rescue StandardError
+      rescue StandardError => e
+        Kettle::Dev.debug_error(e, __method__)
         nil
       end
 

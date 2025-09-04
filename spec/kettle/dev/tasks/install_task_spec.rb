@@ -743,7 +743,8 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
         begin
           require "bundler"
           bundler_unbundled = Bundler.respond_to?(:with_unbundled_env)
-        rescue StandardError
+        rescue StandardError => e
+          Kettle::Dev.debug_error(e, __method__)
           bundler_unbundled = false
         end
         if bundler_unbundled

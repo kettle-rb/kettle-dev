@@ -152,13 +152,15 @@ module Kettle
           upstream = begin
             out, status = Open3.capture2("git", "rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}")
             status.success? ? out.strip : nil
-          rescue StandardError
+          rescue StandardError => e
+            Kettle::Dev.debug_error(e, __method__)
             nil
           end
           sha = begin
             out, status = Open3.capture2("git", "rev-parse", "--short", "HEAD")
             status.success? ? out.strip : nil
-          rescue StandardError
+          rescue StandardError => e
+            Kettle::Dev.debug_error(e, __method__)
             nil
           end
           if org && branch
@@ -247,13 +249,15 @@ module Kettle
                     else
                       status_q << [c, f, "fail #{res.code}"]
                     end
-                  rescue Exception
+                  rescue Exception => e # rubocop:disable Lint/RescueException
+                    Kettle::Dev.debug_error(e, __method__)
                     # Catch all exceptions to prevent crashing the process from a worker thread
                     status_q << [c, f, "err"]
                   end
                   sleep(poll_interval)
                 end
-              rescue Exception
+              rescue Exception => e # rubocop:disable Lint/RescueException
+                Kettle::Dev.debug_error(e, __method__)
                 # :nocov:
                 # Catch all exceptions in the worker thread boundary, including SystemExit
                 status_q << [c, f, "err"]
@@ -290,18 +294,21 @@ module Kettle
               else
                 puts "status #{code}: #{display}"
               end
-            rescue ThreadError
+            rescue ThreadError => e
+              Kettle::Dev.debug_error(e, __method__)
               sleep(0.05)
             end
           end
 
           begin
             workers.each { |t| t.kill if t&.alive? }
-          rescue StandardError
+          rescue StandardError => e
+            Kettle::Dev.debug_error(e, __method__)
           end
           begin
             input_thread.kill if input_thread&.alive?
-          rescue StandardError
+          rescue StandardError => e
+            Kettle::Dev.debug_error(e, __method__)
           end
 
           input = selected

@@ -475,6 +475,27 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
       input = "[🚎yard-head]: https://kettle-dev.galtzo.com"
       expect(rep(input)).to eq("[🚎yard-head]: https://foo-bar.galtzo.com")
     end
+
+    context "when funding_org is different" do
+      let(:meta) do
+        {org: "some-org", funding_org: "fund-handle", gem_name: "foo_bar", namespace: "FooBar", namespace_shield: "Foo%3A%3ABar", gem_shield: "foo__bar"}
+      end
+
+      it "replaces {OPENCOLLECTIVE|ORG_NAME} with funding_org when available" do
+        expect(rep("Support us at {OPENCOLLECTIVE|ORG_NAME}!"))
+          .to eq("Support us at fund-handle!")
+      end
+    end
+
+    it "falls back to org when funding_org is nil or empty" do
+      allow(helpers).to receive(:gemspec_metadata).and_return(meta.merge(funding_org: nil))
+      expect(rep("Support us at {OPENCOLLECTIVE|ORG_NAME}!"))
+        .to eq("Support us at some-org!")
+
+      allow(helpers).to receive(:gemspec_metadata).and_return(meta.merge(funding_org: ""))
+      expect(rep("Support us at {OPENCOLLECTIVE|ORG_NAME}!"))
+        .to eq("Support us at some-org!")
+    end
   end
 
   context "when running kettle:dev:template" do
