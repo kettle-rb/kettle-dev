@@ -27,7 +27,7 @@ RSpec.describe "exe/kettle-commit-msg" do
         "BUNDLE_GEMFILE" => nil,
         "BUNDLE_WITH" => nil,
         "RUBYOPT" => (ENV["RUBYOPT"] || "").split.reject { |opt| opt.include?("bundler/setup") }.join(" "),
-      }.compact
+      }.reject { |_, v| v.nil? }
 
       stdout, stderr, status = Open3.capture3(env, *cmd)
 
