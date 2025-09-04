@@ -119,9 +119,11 @@ module Kettle
         end
 
         if clean.nil?
-          # Fallback to shelling out to get both status and preview
+          # Fallback to using the GitAdapter to get both status and preview
           status_output = begin
-            IO.popen(["git", "-C", root.to_s, "status", "--porcelain"], &:read).to_s
+            ga = Kettle::Dev::GitAdapter.new
+            out, ok = ga.capture(["-C", root.to_s, "status", "--porcelain"]) # adapter can use CLI safely
+            ok ? out.to_s : ""
           rescue StandardError => e
             Kettle::Dev.debug_error(e, __method__)
             ""
@@ -130,9 +132,11 @@ module Kettle
           preview = status_output.lines.take(10).map(&:rstrip)
         else
           return if clean
-          # For messaging, provide a small preview via porcelain even when using the adapter
+          # For messaging, provide a small preview using GitAdapter even when using the adapter
           status_output = begin
-            IO.popen(["git", "-C", root.to_s, "status", "--porcelain"], &:read).to_s
+            ga = Kettle::Dev::GitAdapter.new
+            out, ok = ga.capture(["-C", root.to_s, "status", "--porcelain"]) # read-only query
+            ok ? out.to_s : ""
           rescue StandardError => e
             Kettle::Dev.debug_error(e, __method__)
             ""
@@ -396,28 +400,28 @@ module Kettle
       # @param gem_shield [String]
       # @return [String]
       def apply_common_replacements(content, org:, gem_name:, namespace:, namespace_shield:, gem_shield:)
-        c = content.dup
-        c = c.gsub("kettle-rb", org.to_s) if org && !org.empty?
-        if gem_name && !gem_name.empty?
-          # Special-case: yard-head link uses the gem name as a subdomain and must be dashes-only.
-          # Apply this BEFORE other generic replacements so it isn't altered incorrectly.
-          begin
-            dashed = gem_name.tr("_", "-")
-            c = c.gsub("[🚎yard-head]: https://kettle-dev.galtzo.com", "[🚎yard-head]: https://#{dashed}.galtzo.com")
-          rescue StandardError
-            # ignore
-          end
+        raise Error, "Org could not be derived" unless org && !org.empty?
+        raise Error, "Gem name could not be derived" unless gem_name && !gem_name.empty?
 
-          # Replace occurrences of the template gem name in text, including inside
-          # markdown reference labels like [🖼️kettle-dev] and identifiers like kettle-dev-i
-          c = c.gsub("kettle-dev", gem_name)
-          c = c.gsub(/\bKettle::Dev\b/u, namespace) unless namespace.empty?
-          c = c.gsub("Kettle%3A%3ADev", namespace_shield) unless namespace_shield.empty?
-          c = c.gsub("kettle--dev", gem_shield)
-          # Replace require and path structures with gem_name, modifying - to / if needed
-          c = c.gsub("kettle/dev", gem_name.tr("-", "/"))
+        c = content.dup
+        c = c.gsub("kettle-rb", org.to_s)
+        # Special-case: yard-head link uses the gem name as a subdomain and must be dashes-only.
+        # Apply this BEFORE other generic replacements so it isn't altered incorrectly.
+        begin
+          dashed = gem_name.tr("_", "-")
+          c = c.gsub("[🚎yard-head]: https://kettle-dev.galtzo.com", "[🚎yard-head]: https://#{dashed}.galtzo.com")
+        rescue StandardError
+          # ignore
         end
-        c
+
+        # Replace occurrences of the template gem name in text, including inside
+        # markdown reference labels like [🖼️kettle-dev] and identifiers like kettle-dev-i
+        c = c.gsub("kettle-dev", gem_name)
+        c = c.gsub(/\bKettle::Dev\b/u, namespace) unless namespace.empty?
+        c = c.gsub("Kettle%3A%3ADev", namespace_shield) unless namespace_shield.empty?
+        c = c.gsub("kettle--dev", gem_shield)
+        # Replace require and path structures with gem_name, modifying - to / if needed
+        c.gsub("kettle/dev", gem_name.tr("-", "/"))
       end
 
       # Parse gemspec metadata and derive useful strings

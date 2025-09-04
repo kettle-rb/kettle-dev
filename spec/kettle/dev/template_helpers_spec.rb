@@ -354,7 +354,11 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
 
     it "treats status read exceptions as clean (covers line 117 rescue)" do
       allow(helpers).to receive(:system).and_return(true)
-      allow(IO).to receive(:popen).and_raise(StandardError)
+      allow(Kettle::Dev::GitAdapter).to receive(:new).and_wrap_original do |m|
+        inst = m.call
+        allow(inst).to receive(:capture).and_raise(StandardError)
+        inst
+      end
       expect { helpers.ensure_clean_git!(root: "/tmp/project", task_label: "kettle:dev:template") }.not_to raise_error
     end
 
@@ -365,14 +369,23 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
 
     it "does nothing when inside repo and status is clean" do
       allow(helpers).to receive(:system).and_return(true)
-      allow(IO).to receive(:popen).and_return("")
+      allow(Kettle::Dev::GitAdapter).to receive(:new).and_wrap_original do |m|
+        inst = m.call
+        allow(inst).to receive(:clean?).and_return(true)
+        inst
+      end
       expect { helpers.ensure_clean_git!(root: "/tmp/project", task_label: "kettle:dev:template") }.not_to raise_error
     end
 
     it "raises helpful error when dirty" do
       allow(helpers).to receive(:system).and_return(true)
       dirty = " M lib/file.rb\n?? new.txt\n"
-      allow(IO).to receive(:popen).and_return(dirty)
+      allow(Kettle::Dev::GitAdapter).to receive(:new).and_wrap_original do |m|
+        inst = m.call
+        allow(inst).to receive(:clean?).and_return(false)
+        allow(inst).to receive(:capture).with(array_including("-C", "/tmp/project", "status", "--porcelain")).and_return([dirty, true])
+        inst
+      end
       expect {
         helpers.ensure_clean_git!(root: "/tmp/project", task_label: "kettle:dev:template")
       }.to raise_error(Kettle::Dev::Error, /Aborting: git working tree is not clean\./)
@@ -384,6 +397,7 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
 
     it "parses gemspec and derives strings, falling back to git origin when needed" do
       Dir.mktmpdir do |dir|
+        stub_env("FUNDING_ORG" => "false")
         gemspec_path = File.join(dir, "example.gemspec")
         File.write(gemspec_path, <<~G)
           Gem::Specification.new do |spec|
@@ -392,14 +406,14 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
             # no homepage specified here to trigger fallback
           end
         G
-        # Stub git origin query
-        origin = "https://github.com/acme/my-gem_name.git\n"
-        allow(IO).to receive(:popen).with(array_including("git", "-C", dir, "remote", "get-url", "origin"), any_args).and_return(origin)
+        # Stub git origin query via GitAdapter
+        fake_git = instance_double(Kettle::Dev::GitAdapter, remote_url: "https://github.com/acme/my-gem_name.git", remotes_with_urls: {"origin" => "https://github.com/acme/my-gem_name.git"})
+        allow(Kettle::Dev::GitAdapter).to receive(:new).and_return(fake_git)
 
         meta = helpers.gemspec_metadata(dir)
         expect(meta[:gemspec_path]).to eq(gemspec_path)
         expect(meta[:gem_name]).to eq("my-gem_name")
-        expect(meta[:min_ruby]).to eq("3.2")
+        expect(meta[:min_ruby]).to eq(Gem::Version.new("3.2"))
         expect(meta[:forge_org]).to eq("acme")
         expect(meta[:gh_repo]).to eq("my-gem_name")
         expect(meta[:entrypoint_require]).to eq("my/gem_name")
@@ -482,6 +496,7 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
             Gem::Specification.new do |spec|
               spec.name = "demo"
               spec.required_ruby_version = ">= 3.1"
+              spec.homepage = "https://github.com/acme/demo"
             end
           G
 
@@ -493,6 +508,7 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
           )
 
           load_template_task!
+          stub_env("FUNDING_ORG" => "false")
           Rake::Task["kettle:dev:template"].invoke
 
           dest_ci = File.join(project_root, ".github", "workflows", "ci.yml")
@@ -510,6 +526,7 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
             Gem::Specification.new do |spec|
               spec.name = "demo"
               spec.required_ruby_version = ">= 3.1"
+              spec.homepage = "https://github.com/acme/demo"
             end
           G
 
@@ -521,6 +538,7 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
           )
 
           load_template_task!
+          stub_env("FUNDING_ORG" => "false")
           begin
             Rake::Task["kettle:dev:template"].invoke
           rescue Kettle::Dev::Error => e
@@ -548,7 +566,8 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
       G
       # Stub git origin so forge_org would be present if used
       origin = "https://github.com/acme/another-gem.git\n"
-      allow(IO).to receive(:popen).with(array_including("git", "-C", dir, "remote", "get-url", "origin"), any_args).and_return(origin)
+      fake_git = instance_double(Kettle::Dev::GitAdapter, remote_url: "https://github.com/acme/another-gem.git", remotes_with_urls: {"origin" => "https://github.com/acme/another-gem.git"})
+      allow(Kettle::Dev::GitAdapter).to receive(:new).and_return(fake_git)
 
       stub_env("FUNDING_ORG" => "oc-org")
 

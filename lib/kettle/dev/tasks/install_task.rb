@@ -337,11 +337,19 @@ module Kettle
                   puts "Checking git remote 'origin' to derive GitHub homepage..."
                   origin_url = nil
                   begin
-                    origin_cmd = ["git", "-C", project_root.to_s, "remote", "get-url", "origin"]
-                    origin_out = IO.popen(origin_cmd, &:read)
-                    origin_out = origin_out.read if origin_out.respond_to?(:read)
-                    origin_url = origin_out.to_s.strip
-                  rescue StandardError
+                    origin_url = Dir.chdir(project_root.to_s) do
+                      # Use GitAdapter to avoid hanging and to simplify testing.
+                      begin
+                        ga = Kettle::Dev::GitAdapter.new
+                        ga.remote_url("origin") || ga.remotes_with_urls["origin"]
+                      rescue StandardError => e
+                        Kettle::Dev.debug_error(e, __method__)
+                        nil
+                      end
+                    end
+                    origin_url = origin_url.to_s.strip
+                  rescue StandardError => e
+                    Kettle::Dev.debug_error(e, __method__)
                     origin_url = ""
                   end
 

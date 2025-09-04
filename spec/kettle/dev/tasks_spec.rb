@@ -22,6 +22,7 @@ RSpec.describe "rake kettle:dev:template" do # rubocop:disable RSpec/DescribeCla
         Gem::Specification.new do |spec|
           spec.name = "#{name}"
           spec.required_ruby_version = "#{min_ruby}"
+          spec.homepage = "https://github.com/acme/#{name}"
         end
       G
     end
@@ -43,6 +44,8 @@ RSpec.describe "rake kettle:dev:template" do # rubocop:disable RSpec/DescribeCla
             ensure_clean_git!: nil,
             ask: true,
           )
+
+          stub_env("FUNDING_ORG" => "false")
 
           expect { invoke }.not_to raise_error
 
@@ -67,6 +70,7 @@ RSpec.describe "rake kettle:dev:template" do # rubocop:disable RSpec/DescribeCla
           )
 
           stub_env("allowed" => "true")
+          stub_env("FUNDING_ORG" => "false")
 
           expect { invoke }.not_to raise_error
 

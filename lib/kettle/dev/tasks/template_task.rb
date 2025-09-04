@@ -215,15 +215,21 @@ module Kettle
               end
 
               helpers.copy_file_with_prompt(gemspec_template_src, dest_gemspec, allow_create: true, allow_replace: true) do |content|
-                # First apply standard replacements from the template example
-                c = helpers.apply_common_replacements(
-                  content,
-                  org: forge_org,
-                  gem_name: gem_name,
-                  namespace: namespace,
-                  namespace_shield: namespace_shield,
-                  gem_shield: gem_shield,
-                )
+                # First apply standard replacements from the template example, but only
+                # when we have a usable gem_name. If gem_name is unknown, leave content as-is
+                # to allow filename fallback behavior without raising.
+                c = if gem_name && !gem_name.to_s.empty?
+                  helpers.apply_common_replacements(
+                    content,
+                    org: forge_org,
+                    gem_name: gem_name,
+                    namespace: namespace,
+                    namespace_shield: namespace_shield,
+                    gem_shield: gem_shield,
+                  )
+                else
+                  content.dup
+                end
 
                 if orig_meta
                   # Replace a scalar string assignment like: spec.field = "..."

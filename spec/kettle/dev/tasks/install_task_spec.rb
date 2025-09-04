@@ -12,6 +12,8 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
   before do
     # Prevent invoking the real rake task; stub it to a no-op
     allow(Rake::Task).to receive(:[]).with("kettle:dev:template").and_return(double(invoke: nil))
+    # Bypass funding org requirement during these unit tests unless a test sets it explicitly
+    stub_env("FUNDING_ORG" => "false")
   end
 
   describe "::run" do
@@ -328,14 +330,9 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
           template_results: {},
         )
 
-        # Return non-GitHub url from git remote
-        allow(IO).to receive(:popen).and_wrap_original do |m, *args, &blk|
-          if Array(args.first).take(4) == ["git", "-C", project_root.to_s, "remote"]
-            StringIO.new("https://gitlab.example.com/acme/demo.git\n")
-          else
-            m.call(*args, &blk)
-          end
-        end
+        # Return non-GitHub url from git remote via GitAdapter
+        fake_git = instance_double(Kettle::Dev::GitAdapter, remote_url: "https://gitlab.example.com/acme/demo.git", remotes_with_urls: {"origin" => "https://gitlab.example.com/acme/demo.git"})
+        allow(Kettle::Dev::GitAdapter).to receive(:new).and_return(fake_git)
 
         expect { described_class.run }.to raise_error { |e| expect([SystemExit, Kettle::Dev::Error]).to include(e.class) }
       end
@@ -357,14 +354,9 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
           template_results: {},
         )
 
-        # GitHub origin
-        allow(IO).to receive(:popen).and_wrap_original do |m, *args, &blk|
-          if Array(args.first).take(4) == ["git", "-C", project_root.to_s, "remote"]
-            StringIO.new("https://github.com/acme/demo.git\n")
-          else
-            m.call(*args, &blk)
-          end
-        end
+        # GitHub origin via GitAdapter
+        fake_git = instance_double(Kettle::Dev::GitAdapter, remote_url: "https://github.com/acme/demo.git", remotes_with_urls: {"origin" => "https://github.com/acme/demo.git"})
+        allow(Kettle::Dev::GitAdapter).to receive(:new).and_return(fake_git)
 
         # Case 1: forced update
         stub_env("force" => "true")
@@ -508,7 +500,7 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
           end
         end
         # Decline prompt so we don't write
-        allow($stdin).to receive(:gets).and_return("n\n")
+        allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("n\n")
         expect { described_class.run }.not_to raise_error
       end
     end
@@ -527,7 +519,7 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
           modified_by_template?: false,
           template_results: {},
         )
-        allow(IO).to receive(:popen).and_raise(StandardError, "no git")
+        allow(Kettle::Dev::GitAdapter).to receive(:new).and_raise(StandardError, "no git")
         expect { described_class.run }.to raise_error { |e| expect([SystemExit, Kettle::Dev::Error]).to include(e.class) }
       end
     end

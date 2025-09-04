@@ -3,6 +3,7 @@
 module Kettle
   module Dev
     class ChangelogCLI
+      UNRELEASED_SECTION_HEADING = "[Unreleased]:"
       def initialize
         @root = Kettle::Dev::CIHelpers.project_root
         @changelog_path = File.join(@root, "CHANGELOG.md")
@@ -70,7 +71,7 @@ module Kettle
         if after && !after.empty?
           # Split 'after' by lines so we can locate the first link-ref to Unreleased
           after_lines = after.lines
-          unreleased_ref_idx = after_lines.index { |l| l.start_with?("[Unreleased]:") }
+          unreleased_ref_idx = after_lines.index { |l| l.start_with?(UNRELEASED_SECTION_HEADING) }
           if unreleased_ref_idx
             # Keep all content prior to the link-ref (older releases and interspersed refs)
             preserved_body = after_lines[0...unreleased_ref_idx].join
@@ -97,6 +98,7 @@ module Kettle
       def abort(msg)
         Kettle::Dev::ExitAdapter.abort(msg)
       rescue NameError
+        # Fallback when ExitAdapter is not loaded/available (e.g., test isolates it)
         Kernel.abort(msg)
       end
 
@@ -260,7 +262,7 @@ module Kettle
         # Identify the true start of the footer reference block: the line with the [Unreleased] link-ref.
         # Do NOT assume the first link-ref after the Unreleased heading starts the footer, because
         # some changelogs contain interspersed link-refs within section bodies.
-        unreleased_ref_idx = lines.index { |l| l.start_with?("[Unreleased]:") }
+        unreleased_ref_idx = lines.index { |l| l.start_with?(UNRELEASED_SECTION_HEADING) }
         first_ref = if unreleased_ref_idx
           unreleased_ref_idx
         else
@@ -274,7 +276,7 @@ module Kettle
           # Update an existing Unreleased ref only if it appears after Unreleased heading; otherwise append
           idx = nil
           lines.each_with_index do |l, i|
-            if l.start_with?("[Unreleased]:") && i >= first_ref
+            if l.start_with?(UNRELEASED_SECTION_HEADING) && i >= first_ref
               idx = i
               break
             end

@@ -18,10 +18,13 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [Unreleased]
 ### Added
+- honor ENV["FUNDING_FORGE"] set to "false" as intentional disabling of funding-related logic.
 ### Changed
+- expanded use of adapter patterns (Exit, Git, and Input)
 ### Deprecated
 ### Removed
 ### Fixed
+- fixed logic for handling derivation of forge and funding URLs
 ### Security
 
 ## [1.1.4] - 2025-09-02

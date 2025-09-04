@@ -13,6 +13,7 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
 
     before do
       stub_env("allowed" => "true") # allow env file changes without abort
+      stub_env("FUNDING_ORG" => "false") # bypass funding org requirement in unit tests unless explicitly set
     end
 
     describe "::task_abort" do
@@ -490,7 +491,7 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
         Dir.mktmpdir do |gem_root|
           Dir.mktmpdir do |project_root|
             File.write(File.join(gem_root, ".env.local.example"), "A=1\n")
-            File.write(File.join(project_root, "demo.gemspec"), "Gem::Specification.new{|s| s.name='demo'}\n")
+            File.write(File.join(project_root, "demo.gemspec"), "Gem::Specification.new{|s| s.name='demo'; s.homepage='https://github.com/acme/demo'}\n")
             allow(helpers).to receive_messages(project_root: project_root, gem_checkout_root: gem_root, ensure_clean_git!: nil, ask: true)
             # Only raise for .env.local.example copy, not for other copies
             allow(helpers).to receive(:copy_file_with_prompt).and_wrap_original do |m, *args, &blk|
@@ -515,7 +516,7 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
             cert_dir = File.join(gem_root, "certs")
             FileUtils.mkdir_p(cert_dir)
             File.write(File.join(cert_dir, "pboling.pem"), "certdata")
-            File.write(File.join(project_root, "demo.gemspec"), "Gem::Specification.new{|s| s.name='demo'}\n")
+            File.write(File.join(project_root, "demo.gemspec"), "Gem::Specification.new{|s| s.name='demo'; s.homepage='https://github.com/acme/demo'}\n")
             allow(helpers).to receive_messages(project_root: project_root, gem_checkout_root: gem_root, ensure_clean_git!: nil, ask: true)
 
             # Normal run
@@ -543,7 +544,7 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
           Dir.mktmpdir do |gem_root|
             Dir.mktmpdir do |project_root|
               File.write(File.join(gem_root, ".envrc"), "export A=1\n")
-              File.write(File.join(project_root, "demo.gemspec"), "Gem::Specification.new{|s| s.name='demo'}\n")
+              File.write(File.join(project_root, "demo.gemspec"), "Gem::Specification.new{|s| s.name='demo'; s.homepage='https://github.com/acme/demo'}\n")
               allow(helpers).to receive_messages(project_root: project_root, gem_checkout_root: gem_root, ensure_clean_git!: nil, ask: true)
               allow(helpers).to receive(:modified_by_template?).and_return(true)
               stub_env("allowed" => "true")
@@ -556,7 +557,7 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
           Dir.mktmpdir do |gem_root|
             Dir.mktmpdir do |project_root|
               File.write(File.join(gem_root, ".envrc"), "export A=1\n")
-              File.write(File.join(project_root, "demo.gemspec"), "Gem::Specification.new{|s| s.name='demo'}\n")
+              File.write(File.join(project_root, "demo.gemspec"), "Gem::Specification.new{|s| s.name='demo'; s.homepage='https://github.com/acme/demo'}\n")
               allow(helpers).to receive_messages(project_root: project_root, gem_checkout_root: gem_root, ensure_clean_git!: nil, ask: true)
               allow(helpers).to receive(:modified_by_template?).and_return(true)
               stub_env("allowed" => "")
@@ -569,7 +570,7 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
           Dir.mktmpdir do |gem_root|
             Dir.mktmpdir do |project_root|
               File.write(File.join(gem_root, ".envrc"), "export A=1\n")
-              File.write(File.join(project_root, "demo.gemspec"), "Gem::Specification.new{|s| s.name='demo'}\n")
+              File.write(File.join(project_root, "demo.gemspec"), "Gem::Specification.new{|s| s.name='demo'; s.homepage='https://github.com/acme/demo'}\n")
               allow(helpers).to receive_messages(project_root: project_root, gem_checkout_root: gem_root, ensure_clean_git!: nil, ask: true)
               allow(helpers).to receive(:modified_by_template?).and_raise(StandardError, "oops")
               stub_env("allowed" => "true")
@@ -621,7 +622,7 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
               FileUtils.mkdir_p(hooks_src)
               File.write(File.join(hooks_src, "commit-subjects-goalie.txt"), "x")
               File.write(File.join(hooks_src, "footer-template.erb.txt"), "y")
-              File.write(File.join(project_root, "demo.gemspec"), "Gem::Specification.new{|s| s.name='demo'}\n")
+              File.write(File.join(project_root, "demo.gemspec"), "Gem::Specification.new{|s| s.name='demo'; s.homepage='https://github.com/acme/demo'}\n")
               allow(helpers).to receive_messages(project_root: project_root, gem_checkout_root: gem_root, ensure_clean_git!: nil, ask: true)
 
               # Set only to README.md, which should exclude .git-hooks completely
@@ -643,7 +644,7 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
               FileUtils.mkdir_p(hooks_src)
               File.write(File.join(hooks_src, "commit-subjects-goalie.txt"), "x")
               File.write(File.join(hooks_src, "footer-template.erb.txt"), "y")
-              File.write(File.join(project_root, "demo.gemspec"), "Gem::Specification.new{|s| s.name='demo'}\n")
+              File.write(File.join(project_root, "demo.gemspec"), "Gem::Specification.new{|s| s.name='demo'; s.homepage='https://github.com/acme/demo'}\n")
               allow(helpers).to receive_messages(project_root: project_root, gem_checkout_root: gem_root, ensure_clean_git!: nil, ask: true)
               stub_env("only" => ".git-hooks/**")
               allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("")
@@ -661,7 +662,7 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
               FileUtils.mkdir_p(hooks_src)
               File.write(File.join(hooks_src, "commit-subjects-goalie.txt"), "x")
               File.write(File.join(hooks_src, "footer-template.erb.txt"), "y")
-              File.write(File.join(project_root, "demo.gemspec"), "Gem::Specification.new{|s| s.name='demo'}\n")
+              File.write(File.join(project_root, "demo.gemspec"), "Gem::Specification.new{|s| s.name='demo'; s.homepage='https://github.com/acme/demo'}\n")
               allow(helpers).to receive_messages(project_root: project_root, gem_checkout_root: gem_root, ensure_clean_git!: nil, ask: true)
               allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("")
               described_class.run
@@ -677,7 +678,7 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
               FileUtils.mkdir_p(hooks_src)
               File.write(File.join(hooks_src, "commit-subjects-goalie.txt"), "x")
               File.write(File.join(hooks_src, "footer-template.erb.txt"), "y")
-              File.write(File.join(project_root, "demo.gemspec"), "Gem::Specification.new{|s| s.name='demo'}\n")
+              File.write(File.join(project_root, "demo.gemspec"), "Gem::Specification.new{|s| s.name='demo'; s.homepage='https://github.com/acme/demo'}\n")
               allow(helpers).to receive_messages(project_root: project_root, gem_checkout_root: gem_root, ensure_clean_git!: nil, ask: true)
               allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("s\n")
               described_class.run
@@ -693,7 +694,7 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
               FileUtils.mkdir_p(hooks_src)
               File.write(File.join(hooks_src, "commit-msg"), "echo ruby hook\n")
               File.write(File.join(hooks_src, "prepare-commit-msg"), "echo sh hook\n")
-              File.write(File.join(project_root, "demo.gemspec"), "Gem::Specification.new{|s| s.name='demo'}\n")
+              File.write(File.join(project_root, "demo.gemspec"), "Gem::Specification.new{|s| s.name='demo'; s.homepage='https://github.com/acme/demo'}\n")
               allow(helpers).to receive_messages(project_root: project_root, gem_checkout_root: gem_root, ensure_clean_git!: nil, ask: true)
 
               # Force templates conditional to false
@@ -733,7 +734,7 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
               hooks_src = File.join(gem_root, ".git-hooks")
               FileUtils.mkdir_p(hooks_src)
               File.write(File.join(hooks_src, "commit-msg"), "echo ruby hook\n")
-              File.write(File.join(project_root, "demo.gemspec"), "Gem::Specification.new{|s| s.name='demo'}\n")
+              File.write(File.join(project_root, "demo.gemspec"), "Gem::Specification.new{|s| s.name='demo'; s.homepage='https://github.com/acme/demo'}\n")
               allow(helpers).to receive_messages(project_root: project_root, gem_checkout_root: gem_root, ensure_clean_git!: nil, ask: true)
               allow(FileUtils).to receive(:mkdir_p).and_raise(StandardError, "perm")
               expect { described_class.run }.not_to raise_error

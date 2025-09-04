@@ -183,7 +183,8 @@ module Kettle
         else
           system("git", "checkout", branch.to_s)
         end
-      rescue StandardError
+      rescue StandardError => e
+        Kettle::Dev.debug_error(e, __method__)
         false
       end
 
@@ -198,7 +199,8 @@ module Kettle
         else
           system("git", "pull", remote.to_s, branch.to_s)
         end
-      rescue StandardError
+      rescue StandardError => e
+        Kettle::Dev.debug_error(e, __method__)
         false
       end
 
@@ -219,7 +221,8 @@ module Kettle
         else
           system("git", "fetch", remote.to_s)
         end
-      rescue StandardError
+      rescue StandardError => e
+        Kettle::Dev.debug_error(e, __method__)
         false
       end
     end
