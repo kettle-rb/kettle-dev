@@ -1,6 +1,8 @@
 module Kettle
   module Dev
     class GemSpecReader
+      DEFAULT_MINIMUM_RUBY: Gem::Version
+
       def self.load: (String root) -> {
         gemspec_path: String?,
         gem_name: String,
@@ -24,6 +26,9 @@ module Kettle
         bindir: String,
         executables: Array[String],
       }
+
+      private
+      def self.derive_forge_and_origin_repo: (String? homepage_val) -> { forge_org: String?, origin_repo: String? }
     end
   end
 end
