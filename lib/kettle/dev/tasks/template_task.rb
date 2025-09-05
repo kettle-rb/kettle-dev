@@ -335,7 +335,7 @@ module Kettle
                     #   spec.add_development_dependency "my-gem"
                     #   spec.add_development_dependency 'my-gem', ">= 0"
                     self_dep_re = /\A\s*spec\.add_(?:development_)?dependency(?:\s*\(|\s+)\s*["']#{name_escaped}["'][^\n]*\)?\s*\z/
-                    c = c.lines.reject { |ln| ln.match?(self_dep_re) }.join
+                    c = c.lines.reject { |ln| self_dep_re =~ ln }.join
                   end
                 rescue StandardError => e
                   Kettle::Dev.debug_error(e, __method__)
@@ -405,7 +405,7 @@ module Kettle
                     loop do
                       cluster = s[/\A\X/u]
                       break if cluster.nil? || cluster.empty?
-                      if emoji_re.match?(cluster)
+                      if emoji_re =~ cluster
                         out << cluster
                         s = s[cluster.length..-1].to_s
                       else

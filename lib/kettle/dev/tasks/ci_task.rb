@@ -267,7 +267,6 @@ module Kettle
           sleep(0.2) unless Kettle::Dev::IS_CI
 
           selected = nil
-          input_thread = nil
           # Create input thread always so specs that assert its cleanup/exception behavior can exercise it,
           # but guard against non-interactive stdin by rescuing 'bad tty' and similar errors immediately.
           input_thread = Thread.new do
@@ -343,8 +342,6 @@ module Kettle
           # In non-interactive environments (no TTY) and when not DEBUGGING, auto-quit after a short idle
           auto_quit_deadline = if !tty && !Kettle::Dev::DEBUGGING
             Process.clock_gettime(Process::CLOCK_MONOTONIC) + 1.0
-          else
-            nil
           end
 
           loop do

@@ -751,6 +751,7 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
       end
     end
   end
+
   describe "additional coverage for edge/rescue branches" do
     include_context "with stubbed env"
 
@@ -908,14 +909,14 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
     it "apply_common_replacements: rescues yard-head dash conversion when gem_name.tr raises (covers 422)" do
       # Build a gem_name that quacks like String for emptiness/to_s but raises on tr
       class TrRaisingString < String
-      def tr(from, to)
-        if from == "_" && to == "-"
-          raise StandardError, "tr boom"
-        else
-          super
+        def tr(from, to)
+          if from == "_" && to == "-"
+            raise StandardError, "tr boom"
+          else
+            super
+          end
         end
       end
-    end
       gem_name = TrRaisingString.new("foo_bar")
       meta = {org: "org", gem_name: gem_name, namespace: "X::Y", namespace_shield: "X%3A%3AY", gem_shield: "x__y"}
       input = "[🚎yard-head]: https://kettle-dev.galtzo.com"

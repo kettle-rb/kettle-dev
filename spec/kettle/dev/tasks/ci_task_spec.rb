@@ -471,6 +471,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
       end
     end
   end
+
   describe "::act GitLab status printing (non-interactive)" do
     it "parses SSH remote and prints success status with emoji", :check_output do
       with_workflows(["ci.yml"]) do |_root, dir|
@@ -537,7 +538,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
         allow(Kettle::Dev::CIHelpers).to receive(:gitlab_latest_pipeline).and_raise(StandardError.new("gl down"))
         file_path = File.join(dir, "ci.yml")
         expect(described_class).to receive(:system).with("act", "-W", file_path).and_return(true)
-        expect { described_class.act("ci") }.to output(/GL status: error/) .to_stdout
+        expect { described_class.act("ci") }.to output(/GL status: error/).to_stdout
       end
     end
   end

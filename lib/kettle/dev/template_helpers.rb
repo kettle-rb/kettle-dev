@@ -229,7 +229,7 @@ module Kettle
         write_file(dest_path, content)
         begin
           # Ensure executable bit for git hook scripts when writing under .git-hooks
-          if dest_path.to_s.match?(EXECUTABLE_GIT_HOOKS_RE)
+          if EXECUTABLE_GIT_HOOKS_RE =~ dest_path.to_s
             File.chmod(0o755, dest_path) if File.exist?(dest_path)
           end
         rescue StandardError => e
@@ -334,7 +334,7 @@ module Kettle
                 begin
                   # Ensure executable bit for git hook scripts when copying under .git-hooks
                   if target.end_with?("/.git-hooks/commit-msg", "/.git-hooks/prepare-commit-msg") ||
-                      target.match?(EXECUTABLE_GIT_HOOKS_RE)
+                      EXECUTABLE_GIT_HOOKS_RE =~ target
                     File.chmod(0o755, target)
                   end
                 rescue StandardError => e
@@ -382,7 +382,7 @@ module Kettle
               begin
                 # Ensure executable bit for git hook scripts when copying under .git-hooks
                 if target.end_with?("/.git-hooks/commit-msg", "/.git-hooks/prepare-commit-msg") ||
-                    target.match?(EXECUTABLE_GIT_HOOKS_RE)
+                    EXECUTABLE_GIT_HOOKS_RE =~ target
                   File.chmod(0o755, target)
                 end
               rescue StandardError => e

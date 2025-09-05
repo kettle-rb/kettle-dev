@@ -21,7 +21,14 @@ begin
   # Standard library
   require "erb"
 
-  require "kettle/dev"
+  begin
+    require "kettle/dev"
+  rescue LoadError
+    # Fallback: allow running from a checkout without bundler by adding ./lib to the load path
+    repo_lib = File.expand_path("../lib", __dir__)
+    $LOAD_PATH.unshift(repo_lib) unless $LOAD_PATH.include?(repo_lib)
+    require "kettle/dev"
+  end
   puts "== #{script_basename} v#{Kettle::Dev::Version::VERSION} =="
 rescue LoadError => e
   warn("#{script_basename}: could not load dependency: #{e.class}: #{e.message}")

@@ -133,8 +133,9 @@ module Kettle
         return if ok
 
         # Non-interactive environments default to quitting unless explicitly allowed
-        non_interactive_continue = ENV.fetch("K_RELEASE_CI_CONTINUE", "false").match?(Kettle::Dev::ENV_TRUE_RE)
-        if Kettle::Dev::IS_CI || !$stdin.tty?
+        env_val = ENV.fetch("K_RELEASE_CI_CONTINUE", "false")
+        non_interactive_continue = !!(Kettle::Dev::ENV_TRUE_RE =~ env_val)
+        if !$stdin.tty?
           abort("CI checks reported failures. Fix and restart from CI validation (#{restart_hint}).") unless non_interactive_continue
           puts "CI checks reported failures, but continuing due to K_RELEASE_CI_CONTINUE=true."
           return

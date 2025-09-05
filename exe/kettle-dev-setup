@@ -166,7 +166,7 @@ module Kettle
         modified = target.dup
         wanted.each do |gem_name, desired_line|
           # Replace existing add_development_dependency for this gem, else append near the end
-          if modified.match?(/add_development_dependency\s*\(\s*["']#{Regexp.escape(gem_name)}["']/)
+          if /add_development_dependency\s*\(\s*["']#{Regexp.escape(gem_name)}["']/.match(modified)
             modified = modified.gsub(/^[^\n]*add_development_dependency\s*\(\s*["']#{Regexp.escape(gem_name)}["'][^\n]*\)$/) do |_|
               desired_line
             end
