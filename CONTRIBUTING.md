@@ -22,6 +22,35 @@ Follow these instructions:
 6. Make sure to add tests for it. This is important, so it doesn't break in a future release.
 7. Create new Pull Request.
 
+## Executables vs Rake tasks
+
+Executables shipped by kettle-dev can be used with or without generating the binstubs.
+They will work when kettle-dev is installed globally (i.e., `gem install kettle-dev`) and do not require that kettle-dev be in your bundle.
+
+- kettle-changelog
+- kettle-commit-msg
+- kettle-dev-setup
+- kettle-dvcs
+- kettle-pre-release
+- kettle-readme-backers
+- kettle-release
+
+However, the rake tasks provided by kettle-dev do require kettle-dev to be added as a development dependency and loaded in your Rakefile.
+See the full list of rake tasks in head of Rakefile
+
+**Gemfile**
+```ruby
+group :development do
+gem "kettle-dev", require: false
+end
+```
+
+**Rakefile**
+```ruby
+# Rakefile
+require "kettle/dev"
+```
+
 ## Environment Variables for Local Development
 
 Below are the primary environment variables recognized by stone_checksums (and its integrated tools). Unless otherwise noted, set boolean values to the string "true" to enable.

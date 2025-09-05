@@ -210,6 +210,19 @@ NOTE: Be prepared to track down certs for signed gems and add them the same way 
 
 ## ⚙️ Configuration
 
+Note on executables vs Rake tasks
+- Executable scripts provided by this gem (exe/* and installed binstubs) work when the gem is installed as a system gem (gem install kettle-dev). They do not require the gem to be in your bundle to run.
+- The Rake tasks provided by this gem require kettle-dev to be declared as a development dependency in your Gemfile and loaded in your project's Rakefile. Ensure your Gemfile includes:
+  ```ruby
+  group :development do
+    gem "kettle-dev", require: false
+  end
+  ```
+  And your Rakefile loads the gem's tasks, e.g.:
+  ```ruby
+  require "kettle/dev"
+  ```
+
 ### RSpec
 
 This gem integrates tightly with [kettle-test](https://github.com/kettle-rb/kettle-test).
@@ -230,11 +243,16 @@ Then run the one-time project bootstrapper:
 
 ```console
 kettle-dev-setup
+# Or to accept all defaults:
+kettle-dev-setup --allowed=true --force
 ```
 
-After bootstrapping you may want to update the template.
+You'll be able to compare the changes with your diff tool, and certainly revert some of them.
 
-Invoke the rake task directly:
+For your protection:
+- it won't run if git doesn't start out porcelain clean.
+
+After bootstrapping, to update the template to the latest version from a new release of this gem, run:
 
 ```console
 bundle exec rake kettle:dev:install
@@ -372,8 +390,10 @@ Project automation bootstrap
 - This behavior is automatic for any future `*.example` files added to the templates.
 - Exception: `.env.local` is handled specially for safety. Regardless of whether the template provides `.env.local` or `.env.local.example`, the installer copies it to `.env.local.example` in your project, and will never create or overwrite `.env.local`.
 
-Releasing (maintainers)
-- `exe/kettle-release` — guided release helper that:
+### Releasing (maintainers)
+
+- Script: `exe/kettle-release` (run as `kettle-release`)
+- Purpose: guided release helper that:
   - Runs sanity checks (`bin/setup`, `bin/rake`), confirms version/changelog, optionally updates Appraisals, commits “🔖 Prepare release vX.Y.Z”.
   - Optionally runs your CI locally with `act` before any push:
     - Enable with env: `K_RELEASE_LOCAL_CI="true"` (run automatically) or `K_RELEASE_LOCAL_CI="ask"` (prompt [Y/n]).
@@ -381,35 +401,100 @@ Releasing (maintainers)
     - On failure, the release prep commit is soft-rolled-back (`git reset --soft HEAD^`) and the process aborts.
   - Ensures trunk sync and rebases feature as needed, pushes, monitors GitHub Actions with a progress bar, and merges feature to trunk on success.
   - Exports `SOURCE_DATE_EPOCH`, builds (optionally signed), creates gem checksums, and runs `bundle exec rake release` (prompts for signing key + RubyGems MFA OTP as needed).
-
-- start_step map (skip directly to a phase):
-  - 1: Ensure Bundler >= 2.7.0 and begin full flow
-  - 2: Version detection + sanity checks + prompt to confirm version.rb and CHANGELOG.md
-  - 3: Run bin/setup
-  - 4: Run bin/rake (default task)
-  - 5: Run appraisal:update when Appraisals exists (skip otherwise)
-  - 6: Verify git user.name/email and commit release prep "🔖 Prepare release vX.Y.Z"
-  - 7: Optionally run local CI with nektos/act before pushing (see K_RELEASE_LOCAL_CI, K_RELEASE_LOCAL_CI_WORKFLOW)
-  - 8: Ensure trunk is up-to-date and reconcile with GitHub remote if needed
-  - 9: Push current branch to configured remotes (or default), force-pushing on retry when needed
-  - 10: Monitor CI after push (GitHub Actions and/or GitLab pipelines); progress bar; aborts on failure
-  - 11: Merge feature branch into trunk and push
-  - 12: Checkout trunk and pull latest
-  - 13: Signing checks and guidance (abort when signing enabled but cert missing); respect SKIP_GEM_SIGNING
-  - 14: Build gem (honors SKIP_GEM_SIGNING via env prefix)
-  - 15: Generate and validate gem checksums (bin/gem_checksums)
-  - 16: Release via `bundle exec rake release` and validate checksums again
-  - 17: Create GitHub release from CHANGELOG when GITHUB_TOKEN present
-  - 18: Push git tags to remotes (to "all" remote only when present; otherwise to each remote)
-
-  Examples:
+- Options:
+  - start_step map (skip directly to a phase):
+    - 1: Ensure Bundler >= 2.7.0 and begin full flow
+    - 2: Version detection + sanity checks + prompt to confirm version.rb and CHANGELOG.md
+    - 3: Run bin/setup
+    - 4: Run bin/rake (default task)
+    - 5: Run appraisal:update when Appraisals exists (skip otherwise)
+    - 6: Verify git user.name/email and commit release prep "🔖 Prepare release vX.Y.Z"
+    - 7: Optionally run local CI with nektos/act before pushing (see K_RELEASE_LOCAL_CI, K_RELEASE_LOCAL_CI_WORKFLOW)
+    - 8: Ensure trunk is up-to-date and reconcile with GitHub remote if needed
+    - 9: Push current branch to configured remotes (or default), force-pushing on retry when needed
+    - 10: Monitor CI after push (GitHub Actions and/or GitLab pipelines); progress bar; aborts on failure
+    - 11: Merge feature branch into trunk and push
+    - 12: Checkout trunk and pull latest
+    - 13: Signing checks and guidance (abort when signing enabled but cert missing); respect SKIP_GEM_SIGNING
+    - 14: Build gem (honors SKIP_GEM_SIGNING via env prefix)
+    - 15: Generate and validate gem checksums (bin/gem_checksums)
+    - 16: Release via `bundle exec rake release` and validate checksums again
+    - 17: Create GitHub release from CHANGELOG when GITHUB_TOKEN present
+    - 18: Push git tags to remotes (to "all" remote only when present; otherwise to each remote)
+- Examples:
   - After intermittent CI failure, restart from monitoring: `bundle exec kettle-release start_step=10`
+- Tips:
+  - The commit message helper `exe/kettle-commit-msg` prefers project-local `.git-hooks` (then falls back to `~/.git-hooks`).
+  - The goalie file `commit-subjects-goalie.txt` controls when a footer is appended; customize `footer-template.erb.txt` as you like.
 
-Tip: The commit message helper `exe/kettle-commit-msg` prefers project-local `.git-hooks` (then falls back to `~/.git-hooks`). The goalie file `commit-subjects-goalie.txt` controls when a footer is appended; customize `footer-template.erb.txt` as you like.
+### Changelog generator
+
+- Script: `exe/kettle-changelog` (run as `kettle-changelog`)
+- Purpose: Generates a new CHANGELOG.md section for the current version read from `lib/**/version.rb`, moves notes from the Unreleased section, and updates comparison links.
+- Prerequisites:
+  - `coverage/coverage.json` present (generate with: `K_SOUP_COV_FORMATTERS="json" bin/rspec`).
+  - `bin/yard` available (Bundler-installed), to compute documentation coverage.
+- Usage:
+  - `kettle-changelog`
+- Behavior:
+  - Reads version from the unique `lib/**/version.rb` in the project.
+  - Moves entries from the `[Unreleased]` section into a new `[#.#.#] - YYYY-MM-DD` section.
+  - Prepends 4 lines with TAG, line coverage, branch coverage, and percent documented.
+  - Converts any GitLab-style compare links at the bottom to GitHub style, adds new tag/compare links for the new release and a temporary tag reference `[X.Y.Zt]`.
+
+### Pre-release checks
+
+- Script: `exe/kettle-pre-release` (run as `kettle-pre-release`)
+- Purpose: Run a suite of pre-release validations to catch avoidable mistakes (resumable by check number).
+- Usage:
+  - `kettle-pre-release [--check-num N]`
+  - Short option: `kettle-pre-release -cN`
+- Options:
+  - `--check-num N` Start from check number N (default: 1)
+- Checks:
+  - 1) Validate that all image URLs referenced by Markdown files resolve (HTTP HEAD)
+
+### Commit message helper (git hook)
+
+- Script: `exe/kettle-commit-msg` (run by git as `.git/hooks/commit-msg`)
+- Purpose: Append a standardized footer and optionally enforce branch naming rules when configured.
+- Usage:
+  - Git invokes this with the path to the commit message file: `kettle-commit-msg .git/COMMIT_EDITMSG`
+  - Install via `bundle exec rake kettle:dev:install` to copy hook templates into `.git-hooks` and wire them up.
+- Behavior:
+  - When `GIT_HOOK_BRANCH_VALIDATE=jira`, validates the current branch matches the pattern: `^(hotfix|bug|feature|candy)/[0-9]{8,}-…`.
+    - If it matches and the commit message lacks the numeric ID, appends `[<type>][<id>]`.
+  - Always invokes `Kettle::Dev::GitCommitFooter.render` to potentially append a footer if allowed by the goalie.
+  - Prefers project-local `.git-hooks` templates; falls back to `~/.git-hooks`.
+- Environment:
+  - `GIT_HOOK_BRANCH_VALIDATE` Branch rule (e.g., `jira`) or `false` to disable.
+  - `GIT_HOOK_FOOTER_APPEND` Enable footer auto-append when goalie allows (true/false).
+  - `GIT_HOOK_FOOTER_SENTINEL` Required marker to avoid duplicate appends when enabled.
+  - `GIT_HOOK_FOOTER_APPEND_DEBUG` Extra debug output in the footer template (true/false).
+
+### Project bootstrap installer
+
+- Script: `exe/kettle-dev-setup` (run as `kettle-dev-setup`)
+- Purpose: Bootstrap a host gem repository to use kettle-dev’s tooling without manual steps.
+- Usage:
+  - `kettle-dev-setup [options] [passthrough args]`
+- Options (mapped through to `rake kettle:dev:install`):
+  - `--allowed=VAL` Pass `allowed=VAL` to acknowledge prior direnv allow, etc.
+  - `--force` Pass `force=true` to accept prompts non-interactively.
+  - `--hook_templates=VAL` Pass `hook_templates=VAL` to control git hook templating.
+  - `--only=VAL` Pass `only=VAL` to restrict install scope.
+  - `-h`, `--help` Show help.
+- Behavior:
+  - Verifies a clean git working tree, presence of a Gemfile and a gemspec.
+  - Syncs development dependencies from this gem’s example gemspec into the target gemspec (replacing or inserting `add_development_dependency` lines as needed).
+  - Ensures `bin/setup` exists (copies from gem if missing) and replaces/creates the project’s `Rakefile` from `Rakefile.example`.
+  - Runs `bin/setup`, then `bundle exec bundle binstubs --all`.
+  - Stages and commits any bootstrap changes with message: `🎨 Template bootstrap by kettle-dev-setup v<version>`.
+  - Executes `bin/rake kettle:dev:install` with the parsed passthrough args.
 
 ### Open Collective README updater
 
-- Script: `exe/kettle-readme-backers`
+- Script: `exe/kettle-readme-backers` (run as `kettle-readme-backers`)
 - Purpose: Updates README sections for Open Collective backers (individuals) and sponsors (organizations) by fetching live data from your collective.
 - Tags updated in README.md (first match wins for backers):
   - The default tag prefix is `OPENCOLLECTIVE`, and it is configurable:
@@ -421,7 +506,7 @@ Tip: The commit message helper `exe/kettle-commit-msg` prefers project-local `.g
   - Sponsors (Organizations): `<!-- <TAG>-ORGANIZATIONS:START --> … <!-- <TAG>-ORGANIZATIONS:END -->`
 - Handle resolution:
   1. `OPENCOLLECTIVE_HANDLE` environment variable, if set
-  2. `opencollective.yml` in the project root (`collective: "kettle-rb"` by default in this repo)
+  2. `opencollective.yml` in the project root (e.g., `collective: "kettle-rb"` in this repo)
 - Usage:
   - `exe/kettle-readme-backers`
   - `OPENCOLLECTIVE_HANDLE=my-collective exe/kettle-readme-backers`
@@ -434,7 +519,9 @@ Tip: The commit message helper `exe/kettle-commit-msg` prefers project-local `.g
     - Or via .opencollective.yml: set `readme-backers-commit-subject: "💸 Thanks 🙏 to our new backers 🎒 and subscribers 📜"`.
     - Precedence: ENV overrides .opencollective.yml; if neither is set, a sensible default is used.
     - Note: When used with the provided `.git-hooks`, the subject should start with a gitmoji character (see [gitmoji][📌gitmoji]).
-- Tip: Run this locally before committing to keep your README current, or schedule it in CI to refresh periodically.
+- Tip:
+  - Run this locally before committing to keep your README current, or schedule it in CI to refresh periodically.
+  - It runs automatically on a once-a-week schedule by the .github/workflows/opencollective.yml workflow that is part of the kettle-dev template.
 
 ## 🦷 FLOSS Funding
 

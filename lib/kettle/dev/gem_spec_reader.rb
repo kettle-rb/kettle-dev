@@ -8,11 +8,36 @@ module Kettle
     # Returns a Hash with all data used by this project from gemspecs.
     # Cache within the process to avoid repeated loads.
     class GemSpecReader
+      # Default minimum Ruby version to assume when a gemspec doesn't specify one.
+      # @return [Gem::Version]
       DEFAULT_MINIMUM_RUBY = Gem::Version.new("1.8").freeze
       class << self
-        # Load gemspec data for the project at root.
-        # @param root [String]
-        # @return [Hash]
+        # Load gemspec data for the project at root using RubyGems.
+        # The reader is lenient: failures to load or missing fields are handled with defaults and warnings.
+        #
+        # @param root [String] project root containing a *.gemspec file
+        # @return [Hash{Symbol=>Object}] a Hash of gem metadata used by templating and tasks
+        # @option return [String, nil] :gemspec_path absolute path to gemspec or nil when not found
+        # @option return [String] :gem_name gem name ("" when not derivable)
+        # @option return [Gem::Version] :min_ruby minimum Ruby version derived or DEFAULT_MINIMUM_RUBY
+        # @option return [String] :homepage homepage string (may be "")
+        # @option return [String] :gh_org GitHub org (falls back to "kettle-rb")
+        # @option return [String] :forge_org primary forge org (currently same as gh_org)
+        # @option return [String, nil] :funding_org OpenCollective/org handle or nil when not discovered
+        # @option return [String, nil] :gh_repo GitHub repo name, if discoverable
+        # @option return [String] :namespace Ruby namespace derived from gem name (e.g., "Kettle::Dev")
+        # @option return [String] :namespace_shield URL-escaped namespace for shields
+        # @option return [String] :entrypoint_require require path for gem (e.g., "kettle/dev")
+        # @option return [String] :gem_shield shield-safe gem name
+        # @option return [Array<String>] :authors
+        # @option return [Array<String>] :email
+        # @option return [String] :summary
+        # @option return [String] :description
+        # @option return [Array<String>] :licenses includes both license and licenses values
+        # @option return [Gem::Requirement, nil] :required_ruby_version
+        # @option return [Array<String>] :require_paths
+        # @option return [String] :bindir
+        # @option return [Array<String>] :executables
         def load(root)
           gemspec_path = Dir.glob(File.join(root.to_s, "*.gemspec")).first
           spec = nil
@@ -130,6 +155,11 @@ module Kettle
 
         private
 
+        # Derive the forge organization and origin repository name using homepage or git remotes.
+        # Prefers GitHub-style URLs.
+        #
+        # @param homepage_val [String] the homepage string from the gemspec (may be empty)
+        # @return [Hash{Symbol=>String,nil}] keys: :forge_org, :origin_repo (both may be nil when not discoverable)
         def derive_forge_and_origin_repo(homepage_val)
           forge_info = {}
 
