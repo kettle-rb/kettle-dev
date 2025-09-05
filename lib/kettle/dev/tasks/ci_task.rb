@@ -98,6 +98,36 @@ module Kettle
             end
           end
 
+          # Print GitLab pipeline status (if configured) for the current branch.
+          print_gitlab_status = proc do
+            begin
+              root = Kettle::Dev::CIHelpers.project_root
+              gl_ci = File.exist?(File.join(root, ".gitlab-ci.yml"))
+              branch = Kettle::Dev::CIHelpers.current_branch
+              owner, repo = Kettle::Dev::CIHelpers.repo_info_gitlab
+              unless gl_ci && branch && owner && repo
+                puts "Latest GL (#{branch || "n/a"}) pipeline: n/a"
+                next
+              end
+              pipe = Kettle::Dev::CIHelpers.gitlab_latest_pipeline(owner: owner, repo: repo, branch: branch)
+              if pipe
+                st = pipe["status"].to_s
+                emoji = case st
+                when "success" then "✅"
+                when "failed" then "🍅"
+                when "running" then "👟"
+                else "⏳️"
+                end
+                details = [st, pipe["failure_reason"]].compact.join("/")
+                puts "Latest GL (#{branch}) pipeline: #{emoji} (#{details})"
+              else
+                puts "Latest GL (#{branch}) pipeline: none"
+              end
+            rescue StandardError => e
+              puts "GL status: error #{e.class}: #{e.message}"
+            end
+          end
+
           run_act_for = proc do |file_path|
             ok = system("act", "-W", file_path)
             task_abort("ci:act failed: 'act' command not found or exited with failure") unless ok
@@ -131,6 +161,7 @@ module Kettle
               task_abort("ci:act aborted")
             end
             fetch_and_print_status.call(file)
+            print_gitlab_status.call
             run_act_for.call(file_path)
             return
           end
@@ -172,6 +203,7 @@ module Kettle
           end
           puts "Upstream: #{upstream || "n/a"}"
           puts "HEAD: #{sha || "n/a"}"
+          print_gitlab_status.call
           puts
           puts "Select a workflow to run with 'act':"
 
@@ -294,8 +326,9 @@ module Kettle
               else
                 puts "status #{code}: #{display}"
               end
-            rescue ThreadError => e
-              Kettle::Dev.debug_error(e, __method__)
+            rescue ThreadError
+              # ThreadError is raised when the queue is empty,
+              #   and it needs to be silent to maintain the output row alignment
               sleep(0.05)
             end
           end

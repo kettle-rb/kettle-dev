@@ -334,6 +334,18 @@ RSpec.describe Kettle::Dev::CIHelpers do
         expect(described_class.gitlab_latest_pipeline(owner: owner, repo: repo, branch: branch)).to be_nil
       end
 
+      it "returns nil when API returns a JSON object (non-array) despite HTTP 200" do
+        body = {"message" => "401 Unauthorized"}
+        allow(Net::HTTP).to receive(:start).and_return(gitlab_http_ok(body: body))
+        expect(described_class.gitlab_latest_pipeline(owner: owner, repo: repo, branch: branch)).to be_nil
+      end
+
+      it "returns nil when API returns a JSON string (non-array) despite HTTP 200" do
+        body = "some unexpected string"
+        allow(Net::HTTP).to receive(:start).and_return(gitlab_http_ok(body: body))
+        expect(described_class.gitlab_latest_pipeline(owner: owner, repo: repo, branch: branch)).to be_nil
+      end
+
       it "returns nil on HTTP failure" do
         bad = instance_double(Net::HTTPBadRequest, is_a?: false, code: "400", body: "")
         allow(Net::HTTP).to receive(:start).and_return(bad)

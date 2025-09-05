@@ -186,8 +186,9 @@ module Kettle
         res = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) { |http| http.request(req) }
         return unless res.is_a?(Net::HTTPSuccess)
         data = JSON.parse(res.body)
-        pipe = data&.first
-        return unless pipe
+        return unless data.is_a?(Array)
+        pipe = data.first
+        return unless pipe.is_a?(Hash)
         # Attempt to enrich with failure_reason by querying the single pipeline endpoint
         begin
           if pipe["id"]

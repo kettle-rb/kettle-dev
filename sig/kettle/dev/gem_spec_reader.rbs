@@ -27,7 +27,6 @@ module Kettle
         executables: Array[String],
       }
 
-      private
       def self.derive_forge_and_origin_repo: (String? homepage_val) -> { forge_org: String?, origin_repo: String? }
     end
   end

@@ -41,7 +41,7 @@ See the full list of rake tasks in head of Rakefile
 **Gemfile**
 ```ruby
 group :development do
-gem "kettle-dev", require: false
+  gem "kettle-dev", require: false
 end
 ```
 
