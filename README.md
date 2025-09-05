@@ -328,6 +328,7 @@ Tip: When running a single spec file locally, you may want `K_SOUP_COV_MIN_HARD=
 
 GitHub API and CI helpers
 - GITHUB_TOKEN or GH_TOKEN: Token used by `ci:act` and release workflow checks to query GitHub Actions status at higher rate limits
+- GITLAB_TOKEN or GL_TOKEN: Token used by `ci:act` and CI monitor to query GitLab pipeline status
 
 Releasing and signing
 - SKIP_GEM_SIGNING: If set, skip gem signing during build/release
@@ -361,6 +362,28 @@ Common flows
 GitHub Actions local runner helper
 - `bundle exec rake ci:act` — interactive menu shows workflows from `.github/workflows` with live status and short codes (first 3 letters of file name). Type a number or short code.
 - Non-interactive: `bundle exec rake ci:act[loc]` (short code), or `bundle exec rake ci:act[locked_deps.yml]` (filename).
+
+Setup tokens for API status (GitHub and GitLab)
+- Purpose: ci:act displays the latest status for GitHub Actions runs and (when applicable) the latest GitLab pipeline for the current branch. Unauthenticated requests are rate-limited; private repositories require tokens. Provide tokens to get reliable status.
+- GitHub token (recommended: fine-grained):
+  - Where to create: https://github.com/settings/personal-access-tokens
+    - Fine-grained: “Tokens (fine-grained)” → Generate new token
+    - Classic (fallback): “Tokens (classic)” → Generate new token
+  - Minimum permissions:
+    - Fine-grained: Repository access: Read-only for the target repository (or your org); Permissions → Actions: Read
+    - Classic: For public repos, no scopes are strictly required but rate limits are very low; for private repos, include the repo scope
+  - Add to environment (.env.local via direnv):
+    - GITHUB_TOKEN=your_token_here  (or GH_TOKEN=…)
+- GitLab token:
+  - Where to create (gitlab.com): https://gitlab.com/-/user_settings/personal_access_tokens
+  - Minimum scope: read_api (sufficient to read pipelines)
+  - Add to environment (.env.local via direnv):
+    - GITLAB_TOKEN=your_token_here  (or GL_TOKEN=…)
+- Load environment:
+  - Save tokens in .env.local (never commit this file), then run: direnv allow
+- Verify:
+  - Run: bundle exec rake ci:act
+  - The header will include Repo/Upstream/HEAD; entries will show “Latest GHA …” and “Latest GL … pipeline” with emoji status. On failure to authenticate or rate-limit, you’ll see a brief error/result code.
 
 Project automation bootstrap
 - `bundle exec rake kettle:dev:install` — copies the library’s `.github` folder into your project and offers to install `.git-hooks` templates locally or globally.
