@@ -42,7 +42,8 @@ end
 BRANCH_RULES = {
   "jira" => /^(?<story_type>(hotfix)|(bug)|(feature)|(candy))\/(?<story_id>\d{8,})-.+\Z/,
 }
-BRANCH_RULE_TYPE = (validate = ENV.fetch("GIT_HOOK_BRANCH_VALIDATE", "false")) && !validate.casecmp?("false") && validate
+# Ruby 2.3 compatibility: String#casecmp? is not available; use casecmp.zero?
+BRANCH_RULE_TYPE = (validate = ENV.fetch("GIT_HOOK_BRANCH_VALIDATE", "false")) && !(validate.respond_to?(:casecmp?) ? validate.casecmp?("false") : (validate.casecmp("false").zero?)) && validate
 
 # Called the "JIRA pattern", because of traditional use with JIRA.
 if (branch_rule = BRANCH_RULES[BRANCH_RULE_TYPE])
