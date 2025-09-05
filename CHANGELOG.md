@@ -22,6 +22,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Deprecated
 ### Removed
 ### Fixed
+- bin/rake test works for minitest
 ### Security
 
 ## [1.1.5] - 2025-09-04
