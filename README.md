@@ -123,7 +123,7 @@ What it does:
   - If any fail, the script prints import links to help you create a mirror on that forge.
 
 <details>
-  <summary>Find this repo on other forges (Coming soon!)</summary>
+  <summary>Find this repo on other forges</summary>
 
 | Federated [DVCS][💎d-in-dvcs] Repository        | Status                                                                | Issues                    | PRs                      | Wiki                      | CI                       | Discussions                  |
 |-------------------------------------------------|-----------------------------------------------------------------------|---------------------------|--------------------------|---------------------------|--------------------------|------------------------------|
