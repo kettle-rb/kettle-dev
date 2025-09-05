@@ -55,12 +55,7 @@ module Kettle
           dynamic_files.each { |f| display_code_for[f] = "" }
 
           status_emoji = proc do |status, conclusion|
-            case status
-            when "queued" then "⏳️"
-            when "in_progress" then "👟"
-            when "completed" then ((conclusion == "success") ? "✅" : "🍅")
-            else "⏳️"
-            end
+            Kettle::Dev::CIMonitor.status_emoji(status, conclusion)
           end
 
           fetch_and_print_status = proc do |workflow_file|
@@ -128,12 +123,7 @@ module Kettle
               pipe = Kettle::Dev::CIHelpers.gitlab_latest_pipeline(owner: owner, repo: repo, branch: branch)
               if pipe
                 st = pipe["status"].to_s
-                emoji = case st
-                when "success" then "✅"
-                when "failed" then "🍅"
-                when "running" then "👟"
-                else "⏳️"
-                end
+                emoji = Kettle::Dev::CIMonitor.status_emoji(st, st == "success" ? "success" : (st == "failed" ? "failure" : nil))
                 details = [st, pipe["failure_reason"]].compact.join("/")
                 puts "Latest GL (#{branch}) pipeline: #{emoji} (#{details})"
               else
@@ -310,12 +300,7 @@ module Kettle
                       if run
                         st = run["status"]
                         con = run["conclusion"]
-                        emoji = case st
-                        when "queued" then "⏳️"
-                        when "in_progress" then "👟"
-                        when "completed" then ((con == "success") ? "✅" : "🍅")
-                        else "⏳️"
-                        end
+                        emoji = Kettle::Dev::CIMonitor.status_emoji(st, con)
                         details = [st, con].compact.join("/")
                         status_q << [c, f, "#{emoji} (#{details})"]
                         break if st == "completed"

@@ -29,6 +29,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Changed
 - expanded use of adapter patterns (Exit, Git, and Input)
 - refactored and improved structure of code, more resilient
+- kettle-release: do not abort immediately on CI failure; continue checking all workflows, summarize results, and prompt to (c)ontinue or (q)uit (reuses ci:act-style summary)
 ### Removed
 - defensive NameError handling in ChangelogCLI.abort method
 ### Fixed

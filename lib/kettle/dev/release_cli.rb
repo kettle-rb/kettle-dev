@@ -471,8 +471,8 @@ module Kettle
       end
 
       def monitor_workflows_after_push!
-        # Delegate to shared CI monitor to keep logic DRY across release flow and rake tasks
-        Kettle::Dev::CIMonitor.monitor_all!(restart_hint: "bundle exec kettle-release start_step=10")
+        # Use non-aborting CI monitor that summarizes and prompts to continue/quit
+        Kettle::Dev::CIMonitor.monitor_and_prompt_for_release!(restart_hint: "bundle exec kettle-release start_step=10")
       end
 
       def run_cmd!(cmd)

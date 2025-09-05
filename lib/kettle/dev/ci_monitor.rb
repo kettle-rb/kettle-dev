@@ -21,8 +21,28 @@ module Kettle
       end
       module_function :abort
 
+      # Small helper to map CI run status/conclusion to an emoji.
+      # Reused by ci:act and release summary.
+      # @param status [String, nil]
+      # @param conclusion [String, nil]
+      # @return [String]
+      def status_emoji(status, conclusion)
+        case status.to_s
+        when "queued" then "⏳️"
+        when "in_progress", "running" then "👟"
+        when "completed"
+          (conclusion.to_s == "success") ? "✅" : "🍅"
+        else
+          # Some APIs report only a final state string like "success"/"failed"
+          return "✅" if conclusion.to_s == "success" || status.to_s == "success"
+          return "🍅" if conclusion.to_s == "failure" || status.to_s == "failed"
+          "⏳️"
+        end
+      end
+      module_function :status_emoji
+
       # Monitor both GitHub and GitLab CI for the current project/branch.
-      # This mirrors ReleaseCLI behavior.
+      # This mirrors ReleaseCLI behavior and aborts on first failure.
       #
       # @param restart_hint [String] guidance command shown on failure
       # @return [void]
@@ -33,16 +53,202 @@ module Kettle
         abort("CI configuration not detected (GitHub or GitLab). Ensure CI is configured and remotes point to the correct hosts.") unless checks_any
       end
 
-      # Monitor only the GitLab pipeline for current project/branch.
-      # Used by ci:act after running 'act'.
-      #
-      # @param restart_hint [String] guidance command shown on failure
-      # @return [Boolean] true if check performed (gitlab configured), false otherwise
-      def monitor_gitlab!(restart_hint: "bundle exec rake ci:act")
-        monitor_gitlab_internal!(restart_hint: restart_hint)
+      # Non-aborting collection across GH and GL, returning a compact results hash.
+      # Results format:
+      #   {
+      #     github: [ {workflow: "file.yml", status: "completed", conclusion: "success"|"failure"|nil, url: String} ],
+      #     gitlab: { status: "success"|"failed"|"blocked"|"unknown"|nil, url: String }
+      #   }
+      # @return [Hash]
+      def collect_all
+        results = {github: [], gitlab: nil}
+        begin
+          gh = collect_github
+          results[:github] = gh if gh
+        rescue StandardError => e
+          Kettle::Dev.debug_error(e, __method__)
+        end
+        begin
+          gl = collect_gitlab
+          results[:gitlab] = gl if gl
+        rescue StandardError => e
+          Kettle::Dev.debug_error(e, __method__)
+        end
+        results
       end
+      module_function :collect_all
 
-      # -- internals --
+      # Print a concise summary like ci:act and return whether everything is green.
+      # @param results [Hash]
+      # @return [Boolean] true when all checks passed or were unknown, false when any failed
+      def summarize_results(results)
+        all_ok = true
+        gh_items = results[:github] || []
+        unless gh_items.empty?
+          puts "GitHub Actions:"
+          gh_items.each do |it|
+            emoji = status_emoji(it[:status], it[:conclusion])
+            details = [it[:status], it[:conclusion]].compact.join("/")
+            wf = it[:workflow]
+            puts "  - #{wf}: #{emoji} (#{details}) #{it[:url] ? "-> #{it[:url]}" : ""}"
+            all_ok &&= (it[:conclusion] == "success")
+          end
+        end
+        gl = results[:gitlab]
+        if gl
+          emoji = status_emoji(gl[:status], gl[:status] == "success" ? "success" : (gl[:status] == "failed" ? "failure" : nil))
+          details = gl[:status].to_s
+          puts "GitLab Pipeline: #{emoji} (#{details}) #{gl[:url] ? "-> #{gl[:url]}" : ""}"
+          all_ok &&= (gl[:status] != "failed")
+        end
+        all_ok
+      end
+      module_function :summarize_results
+
+      # Prompt user to continue or quit when failures are present; otherwise return.
+      # Designed for kettle-release.
+      # @param restart_hint [String]
+      # @return [void]
+      def monitor_and_prompt_for_release!(restart_hint: "bundle exec kettle-release start_step=10")
+        results = collect_all
+        any_checks = !(results[:github].nil? || results[:github].empty?) || !!results[:gitlab]
+        abort("CI configuration not detected (GitHub or GitLab). Ensure CI is configured and remotes point to the correct hosts.") unless any_checks
+
+        ok = summarize_results(results)
+        return if ok
+
+        # Non-interactive environments default to quitting unless explicitly allowed
+        non_interactive_continue = ENV.fetch("K_RELEASE_CI_CONTINUE", "false").match?(Kettle::Dev::ENV_TRUE_RE)
+        if Kettle::Dev::IS_CI || !$stdin.tty?
+          abort("CI checks reported failures. Fix and restart from CI validation (#{restart_hint}).") unless non_interactive_continue
+          puts "CI checks reported failures, but continuing due to K_RELEASE_CI_CONTINUE=true."
+          return
+        end
+
+        loop do
+          print("One or more CI checks failed. (c)ontinue or (q)uit? ")
+          ans = Kettle::Dev::InputAdapter.gets
+          # If input isn't available (nil), default to quitting to avoid hanging in tests/non-tty
+          if ans.nil?
+            abort("Aborting (no input available). Fix CI, then restart with: #{restart_hint}")
+          end
+          ans = ans.strip.downcase
+          if ans == "c" || ans == "continue"
+            puts "Continuing release despite CI failures."
+            break
+          elsif ans == "q" || ans == "quit"
+            abort("Aborting per user choice. Fix CI, then restart with: #{restart_hint}")
+          end
+        end
+      end
+      module_function :monitor_and_prompt_for_release!
+
+      # --- Collectors ---
+      def collect_github
+        root = Kettle::Dev::CIHelpers.project_root
+        workflows = Kettle::Dev::CIHelpers.workflows_list(root)
+        gh_remote = preferred_github_remote
+        return nil unless gh_remote && !workflows.empty?
+
+        branch = Kettle::Dev::CIHelpers.current_branch
+        abort("Could not determine current branch for CI checks.") unless branch
+
+        url = remote_url(gh_remote)
+        owner, repo = parse_github_owner_repo(url)
+        return nil unless owner && repo
+
+        total = workflows.size
+        return [] if total.zero?
+
+        puts "Checking GitHub Actions workflows on #{branch} (#{owner}/#{repo}) via remote '#{gh_remote}'"
+        pbar = if defined?(ProgressBar)
+          ProgressBar.create(title: "GHA", total: total, format: "%t %b %c/%C", length: 30)
+        end
+        # Initial sleep same as aborting path
+        begin
+          initial_sleep = Integer(ENV["K_RELEASE_CI_INITIAL_SLEEP"])
+        rescue
+          initial_sleep = nil
+        end
+        sleep((initial_sleep && initial_sleep >= 0) ? initial_sleep : 3)
+
+        results = {}
+        idx = 0
+        loop do
+          wf = workflows[idx]
+          run = Kettle::Dev::CIHelpers.latest_run(owner: owner, repo: repo, workflow_file: wf, branch: branch)
+          if run
+            if Kettle::Dev::CIHelpers.success?(run)
+              unless results[wf]
+                results[wf] = {workflow: wf, status: run["status"], conclusion: run["conclusion"], url: run["html_url"]}
+                pbar&.increment
+              end
+            elsif Kettle::Dev::CIHelpers.failed?(run)
+              unless results[wf]
+                results[wf] = {workflow: wf, status: run["status"], conclusion: run["conclusion"] || "failure", url: run["html_url"] || "https://github.com/#{owner}/#{repo}/actions/workflows/#{wf}"}
+                pbar&.increment
+              end
+            end
+          end
+          break if results.size == total
+          idx = (idx + 1) % total
+          sleep(1)
+        end
+        pbar&.finish unless pbar&.finished?
+        results.values
+      end
+      module_function :collect_github
+
+      def collect_gitlab
+        root = Kettle::Dev::CIHelpers.project_root
+        gitlab_ci = File.exist?(File.join(root, ".gitlab-ci.yml"))
+        gl_remote = gitlab_remote_candidates.first
+        return nil unless gitlab_ci && gl_remote
+
+        branch = Kettle::Dev::CIHelpers.current_branch
+        abort("Could not determine current branch for CI checks.") unless branch
+
+        owner, repo = Kettle::Dev::CIHelpers.repo_info_gitlab
+        return nil unless owner && repo
+
+        puts "Checking GitLab pipeline on #{branch} (#{owner}/#{repo}) via remote '#{gl_remote}'"
+        pbar = if defined?(ProgressBar)
+          ProgressBar.create(title: "GL", total: 1, format: "%t %b %c/%C", length: 30)
+        end
+        result = {status: "unknown", url: nil}
+        loop do
+          pipe = Kettle::Dev::CIHelpers.gitlab_latest_pipeline(owner: owner, repo: repo, branch: branch)
+          if pipe
+            result[:url] ||= pipe["web_url"] || "https://gitlab.com/#{owner}/#{repo}/-/pipelines"
+            if Kettle::Dev::CIHelpers.gitlab_success?(pipe)
+              result[:status] = "success"
+              pbar&.increment unless pbar&.finished?
+              break
+            elsif Kettle::Dev::CIHelpers.gitlab_failed?(pipe)
+              reason = (pipe["failure_reason"] || "").to_s
+              if reason =~ /insufficient|quota|minute/i
+                result[:status] = "unknown"
+                pbar&.finish unless pbar&.finished?
+                break
+              else
+                result[:status] = "failed"
+                pbar&.increment unless pbar&.finished?
+                break
+              end
+            elsif pipe["status"] == "blocked"
+              result[:status] = "blocked"
+              pbar&.finish unless pbar&.finished?
+              break
+            end
+          end
+          sleep(1)
+        end
+        pbar&.finish unless pbar&.finished?
+        result
+      end
+      module_function :collect_gitlab
+
+      # -- internals (abort-on-failure legacy paths used elsewhere) --
 
       def monitor_github_internal!(restart_hint:)
         root = Kettle::Dev::CIHelpers.project_root
