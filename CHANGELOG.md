@@ -18,6 +18,18 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [Unreleased]
 ### Added
+### Changed
+### Deprecated
+### Removed
+### Fixed
+### Security
+
+## [1.1.5] - 2025-09-04
+- TAG: [v1.1.5][1.1.5t]
+- COVERAGE: 33.87% -- 1125/3322 lines in 22 files
+- BRANCH COVERAGE: 22.04% -- 361/1638 branches in 22 files
+- 76.83% documented
+### Added
 - kettle-pre-release: run re-release checks on a library
   - validate URLs of image assets in Markdown files
 - honor ENV["FUNDING_FORGE"] set to "false" as intentional disabling of funding-related logic.

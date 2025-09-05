@@ -83,6 +83,35 @@ the <a href="https://gitlab.com/kettle-rb/kettle-dev/-/blob/main/CODE_OF_CONDUCT
   <li>Create new Pull Request.</li>
 </ol>
 
+<h2 id="executables-vs-rake-tasks">Executables vs Rake tasks</h2>
+
+<p>Executables shipped by kettle-dev can be used with or without generating the binstubs.<br>
+They will work when kettle-dev is installed globally (i.e., <code>gem install kettle-dev</code>) and do not require that kettle-dev be in your bundle.</p>
+
+<ul>
+  <li>kettle-changelog</li>
+  <li>kettle-commit-msg</li>
+  <li>kettle-dev-setup</li>
+  <li>kettle-dvcs</li>
+  <li>kettle-pre-release</li>
+  <li>kettle-readme-backers</li>
+  <li>kettle-release</li>
+</ul>
+
+<p>However, the rake tasks provided by kettle-dev do require kettle-dev to be added as a development dependency and loaded in your Rakefile.<br>
+See the full list of rake tasks in head of Rakefile</p>
+
+<p><strong>Gemfile</strong></p>
+<pre class="code language-ruby"><code class="language-ruby">group :development do
+  gem &quot;kettle-dev&quot;, require: false
+end
+</code></pre>
+
+<p><strong>Rakefile</strong></p>
+<pre class="code language-ruby"><code class="language-ruby"># Rakefile
+require &quot;kettle/dev&quot;
+</code></pre>
+
 <h2 id="environment-variables-for-local-development">Environment Variables for Local Development</h2>
 
 <p>Below are the primary environment variables recognized by stone_checksums (and its integrated tools). Unless otherwise noted, set boolean values to the string “true” to enable.</p>
@@ -279,7 +308,7 @@ push git commits and tags, and push the <code>.gem</code> file to <a href="https
 </div></div>
 
       <div id="footer">
-  Generated on Thu Sep  4 17:04:14 2025 by
+  Generated on Thu Sep  4 19:35:05 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

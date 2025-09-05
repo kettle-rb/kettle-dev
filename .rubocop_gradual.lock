@@ -7,10 +7,10 @@
     [63, 17, 2, "ThreadSafety/MutableClassInstanceVariable: Freeze mutable objects assigned to class instance variables.", 5862883],
     [74, 7, 16, "Lint/RescueException: Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?", 2127134117]
   ],
-  "lib/kettle/dev/tasks/ci_task.rb:1389763912": [
-    [228, 26, 10, "ThreadSafety/NewThread: Avoid starting new threads.", 3411682361],
-    [231, 13, 320, "Lint/RescueException: Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?", 508330984],
-    [244, 24, 60, "ThreadSafety/NewThread: Avoid starting new threads.", 1884163423]
+  "lib/kettle/dev/tasks/ci_task.rb:2873301137": [
+    [268, 26, 10, "ThreadSafety/NewThread: Avoid starting new threads.", 3411682361],
+    [271, 13, 320, "Lint/RescueException: Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?", 508330984],
+    [284, 24, 60, "ThreadSafety/NewThread: Avoid starting new threads.", 1884163423]
   ],
   "lib/kettle/dev/template_helpers.rb:3540336040": [
     [117, 11, 20, "ThreadSafety/DirChdir: Avoid using `Dir.chdir` due to its process-wide effect.", 645000286],
@@ -34,7 +34,7 @@
     [37, 28, 33, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 3247304381],
     [40, 9, 19, "ThreadSafety/DirChdir: Avoid using `Dir.chdir` due to its process-wide effect.", 585207512]
   ],
-  "spec/kettle/dev/ci_monitor_spec.rb:534888486": [
+  "spec/kettle/dev/ci_monitor_spec.rb:1284446946": [
     [13, 7, 60, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [14, 20, 24, 25, 26].", 3901348706],
     [14, 7, 61, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [13, 20, 24, 25, 26].", 699226184],
     [20, 7, 71, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [13, 14, 24, 25, 26].", 3905906821],

@@ -950,7 +950,28 @@ All options/IO are controlled via TemplateHelpers and ENV.</p>
 779
 780
 781
-782</pre>
+782
+783
+784
+785
+786
+787
+788
+789
+790
+791
+792
+793
+794
+795
+796
+797
+798
+799
+800
+801
+802
+803</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/kettle/dev/tasks/template_task.rb', line 22</span>
@@ -1256,6 +1277,27 @@ All options/IO are controlled via TemplateHelpers and ENV.</p>
             <span class='comment'># Best-effort carry-over; ignore any individual failure
 </span>          <span class='kw'>end</span>
         <span class='kw'>end</span>
+
+        <span class='comment'># Ensure we do not introduce a self-dependency when templating the gemspec.
+</span>        <span class='comment'># If the template included a dependency on the template gem (e.g., &quot;kettle-dev&quot;),
+</span>        <span class='comment'># the common replacements would have turned it into the destination gem&#39;s name.
+</span>        <span class='comment'># Strip any dependency lines that name the destination gem.
+</span>        <span class='kw'>begin</span>
+          <span class='kw'>if</span> <span class='id identifier rubyid_gem_name'>gem_name</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_gem_name'>gem_name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+            <span class='id identifier rubyid_name_escaped'>name_escaped</span> <span class='op'>=</span> <span class='const'>Regexp</span><span class='period'>.</span><span class='id identifier rubyid_escape'>escape</span><span class='lparen'>(</span><span class='id identifier rubyid_gem_name'>gem_name</span><span class='rparen'>)</span>
+            <span class='comment'># Matches both runtime and development dependency lines, with or without parentheses.
+</span>            <span class='comment'># Examples matched:
+</span>            <span class='comment'>#   spec.add_dependency(&quot;my-gem&quot;, &quot;~&gt; 1.0&quot;)
+</span>            <span class='comment'>#   spec.add_dependency &#39;my-gem&#39;
+</span>            <span class='comment'>#   spec.add_development_dependency &quot;my-gem&quot;
+</span>            <span class='comment'>#   spec.add_development_dependency &#39;my-gem&#39;, &quot;&gt;= 0&quot;
+</span>            <span class='id identifier rubyid_self_dep_re'>self_dep_re</span> <span class='op'>=</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\A\s*spec\.add_(?:development_)?dependency(?:\s*\(|\s+)\s*[&quot;&#39;]</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name_escaped'>name_escaped</span><span class='embexpr_end'>}</span><span class='tstring_content'>[&quot;&#39;][^\n]*\)?\s*\z</span><span class='regexp_end'>/</span></span>
+            <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_lines'>lines</span><span class='period'>.</span><span class='id identifier rubyid_reject'>reject</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_ln'>ln</span><span class='op'>|</span> <span class='id identifier rubyid_ln'>ln</span><span class='period'>.</span><span class='id identifier rubyid_match?'>match?</span><span class='lparen'>(</span><span class='id identifier rubyid_self_dep_re'>self_dep_re</span><span class='rparen'>)</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span>
+          <span class='kw'>end</span>
+        <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+          <span class='const'><span class='object_link'><a href="../../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_error'><span class='object_link'><a href="../../Dev.html#debug_error-class_method" title="Kettle::Dev.debug_error (method)">debug_error</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span>
+          <span class='comment'># If anything goes wrong, keep the content as-is rather than failing the task
+</span>        <span class='kw'>end</span>
 
         <span class='id identifier rubyid_c'>c</span>
       <span class='kw'>end</span>
@@ -1774,7 +1816,7 @@ All options/IO are controlled via TemplateHelpers and ENV.</p>
 </div>
 
       <div id="footer">
-  Generated on Thu Sep  4 17:04:15 2025 by
+  Generated on Thu Sep  4 19:35:05 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

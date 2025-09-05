@@ -121,7 +121,30 @@ Cache within the process to avoid repeated loads.</p>
     <dl class="constants">
       
         <dt id="DEFAULT_MINIMUM_RUBY-constant" class="">DEFAULT_MINIMUM_RUBY =
-          
+          <div class="docstring">
+  <div class="discussion">
+    <p>Default minimum Ruby version to assume when a gemspec doesn’t specify one.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Gem::Version</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div>
         </dt>
         <dd><pre class="code"><span class='const'>Gem</span><span class='op'>::</span><span class='const'>Version</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>1.8</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_freeze'>freeze</span></pre></dd>
       
@@ -145,7 +168,7 @@ Cache within the process to avoid repeated loads.</p>
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#load-class_method" title="load (class method)">.<strong>load</strong>(root)  &#x21d2; Hash </a>
+      <a href="#load-class_method" title="load (class method)">.<strong>load</strong>(root)  &#x21d2; Hash{Symbol=&gt;Object} </a>
     
 
     
@@ -159,7 +182,7 @@ Cache within the process to avoid repeated loads.</p>
   
 
   
-    <span class="summary_desc"><div class='inline'><p>Load gemspec data for the project at root.</p>
+    <span class="summary_desc"><div class='inline'><p>Load gemspec data for the project at root using RubyGems.</p>
 </div></span>
   
 </li>
@@ -177,7 +200,7 @@ Cache within the process to avoid repeated loads.</p>
       <div class="method_details first">
   <h3 class="signature first" id="load-class_method">
   
-    .<strong>load</strong>(root)  &#x21d2; <tt>Hash</tt> 
+    .<strong>load</strong>(root)  &#x21d2; <tt>Hash{Symbol=&gt;Object}</tt> 
   
 
   
@@ -185,7 +208,8 @@ Cache within the process to avoid repeated loads.</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Load gemspec data for the project at root.</p>
+    <p>Load gemspec data for the project at root using RubyGems.<br />
+The reader is lenient: failures to load or missing fields are handled with defaults and warnings.</p>
 
 
   </div>
@@ -203,9 +227,32 @@ Cache within the process to avoid repeated loads.</p>
       
       
       
+        &mdash;
+        <div class='inline'><p>project root containing a *.gemspec file</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>return</span>
+      
+      
+        <span class='type'>(<tt>Hash</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>a customizable set of options</p>
+</div>
+      
     </li>
   
 </ul>
+
+  
+    
+    
 
 <p class="tag_title">Returns:</p>
 <ul class="return">
@@ -213,9 +260,13 @@ Cache within the process to avoid repeated loads.</p>
     <li>
       
       
-        <span class='type'>(<tt>Hash</tt>)</span>
+        <span class='type'>(<tt>Hash{Symbol=&gt;Object}</tt>)</span>
       
       
+      
+        &mdash;
+        <div class='inline'><p>a Hash of gem metadata used by templating and tasks</p>
+</div>
       
     </li>
   
@@ -227,31 +278,6 @@ Cache within the process to avoid repeated loads.</p>
       <pre class="lines">
 
 
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
 41
 42
 43
@@ -340,10 +366,35 @@ Cache within the process to avoid repeated loads.</p>
 126
 127
 128
-129</pre>
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gem_spec_reader.rb', line 16</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gem_spec_reader.rb', line 41</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_load'>load</span><span class='lparen'>(</span><span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span><span class='rparen'>)</span>
   <span class='id identifier rubyid_gemspec_path'>gemspec_path</span> <span class='op'>=</span> <span class='const'>Dir</span><span class='period'>.</span><span class='id identifier rubyid_glob'>glob</span><span class='lparen'>(</span><span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>*.gemspec</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span>
@@ -469,7 +520,7 @@ Cache within the process to avoid repeated loads.</p>
 </div>
 
       <div id="footer">
-  Generated on Thu Sep  4 17:04:15 2025 by
+  Generated on Thu Sep  4 19:35:05 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

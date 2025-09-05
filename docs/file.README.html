@@ -267,7 +267,7 @@ bin/kettle-release
 </ul>
 
 <details>
-  <summary>Find this repo on other forges (Coming soon!)</summary>
+  <summary>Find this repo on other forges</summary>
 
 | Federated [DVCS][💎d-in-dvcs] Repository        | Status                                                                | Issues                    | PRs                      | Wiki                      | CI                       | Discussions                  |
 |-------------------------------------------------|-----------------------------------------------------------------------|---------------------------|--------------------------|---------------------------|--------------------------|------------------------------|
@@ -351,6 +351,20 @@ NOTE: Be prepared to track down certs for signed gems and add them the same way 
 
 <h2 id="️-configuration">⚙️ Configuration</h2>
 
+<p>Note on executables vs Rake tasks</p>
+<ul>
+  <li>Executable scripts provided by this gem (exe/* and installed binstubs) work when the gem is installed as a system gem (gem install kettle-dev). They do not require the gem to be in your bundle to run.</li>
+  <li>The Rake tasks provided by this gem require kettle-dev to be declared as a development dependency in your Gemfile and loaded in your project’s Rakefile. Ensure your Gemfile includes:
+    <pre class="code language-ruby"><code class="language-ruby">group :development do
+  gem &quot;kettle-dev&quot;, require: false
+end
+</code></pre>
+    <p>And your Rakefile loads the gem’s tasks, e.g.:</p>
+    <pre class="code language-ruby"><code class="language-ruby">require &quot;kettle/dev&quot;
+</code></pre>
+  </li>
+</ul>
+
 <h3 id="rspec">RSpec</h3>
 
 <p>This gem integrates tightly with <a href="https://github.com/kettle-rb/kettle-test">kettle-test</a>.</p>
@@ -368,11 +382,18 @@ NOTE: Be prepared to track down certs for signed gems and add them the same way 
 <p>Then run the one-time project bootstrapper:</p>
 
 <pre class="code language-console"><code class="language-console">kettle-dev-setup
+# Or to accept all defaults:
+kettle-dev-setup --allowed=true --force
 </code></pre>
 
-<p>After bootstrapping you may want to update the template.</p>
+<p>You’ll be able to compare the changes with your diff tool, and certainly revert some of them.</p>
 
-<p>Invoke the rake task directly:</p>
+<p>For your protection:</p>
+<ul>
+  <li>it won’t run if git doesn’t start out porcelain clean.</li>
+</ul>
+
+<p>After bootstrapping, to update the template to the latest version from a new release of this gem, run:</p>
 
 <pre class="code language-console"><code class="language-console">bundle exec rake kettle:dev:install
 </code></pre>
@@ -492,6 +513,7 @@ Tip: When running a single spec file locally, you may want <code>K_SOUP_COV_MIN_
 <p>GitHub API and CI helpers</p>
 <ul>
   <li>GITHUB_TOKEN or GH_TOKEN: Token used by <code>ci:act</code> and release workflow checks to query GitHub Actions status at higher rate limits</li>
+  <li>GITLAB_TOKEN or GL_TOKEN: Token used by <code>ci:act</code> and CI monitor to query GitLab pipeline status</li>
 </ul>
 
 <p>Releasing and signing</p>
@@ -556,6 +578,54 @@ Tip: When running a single spec file locally, you may want <code>K_SOUP_COV_MIN_
   <li>Non-interactive: <code>bundle exec rake ci:act[loc]</code> (short code), or <code>bundle exec rake ci:act[locked_deps.yml]</code> (filename).</li>
 </ul>
 
+<p>Setup tokens for API status (GitHub and GitLab)</p>
+<ul>
+  <li>Purpose: ci:act displays the latest status for GitHub Actions runs and (when applicable) the latest GitLab pipeline for the current branch. Unauthenticated requests are rate-limited; private repositories require tokens. Provide tokens to get reliable status.</li>
+  <li>GitHub token (recommended: fine-grained):
+    <ul>
+      <li>Where to create: https://github.com/settings/personal-access-tokens
+        <ul>
+          <li>Fine-grained: “Tokens (fine-grained)” → Generate new token</li>
+          <li>Classic (fallback): “Tokens (classic)” → Generate new token</li>
+        </ul>
+      </li>
+      <li>Minimum permissions:
+        <ul>
+          <li>Fine-grained: Repository access: Read-only for the target repository (or your org); Permissions → Actions: Read</li>
+          <li>Classic: For public repos, no scopes are strictly required but rate limits are very low; for private repos, include the repo scope</li>
+        </ul>
+      </li>
+      <li>Add to environment (.env.local via direnv):
+        <ul>
+          <li>GITHUB_TOKEN=your_token_here  (or GH_TOKEN=…)</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>GitLab token:
+    <ul>
+      <li>Where to create (gitlab.com): https://gitlab.com/-/user_settings/personal_access_tokens</li>
+      <li>Minimum scope: read_api (sufficient to read pipelines)</li>
+      <li>Add to environment (.env.local via direnv):
+        <ul>
+          <li>GITLAB_TOKEN=your_token_here  (or GL_TOKEN=…)</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Load environment:
+    <ul>
+      <li>Save tokens in .env.local (never commit this file), then run: direnv allow</li>
+    </ul>
+  </li>
+  <li>Verify:
+    <ul>
+      <li>Run: bundle exec rake ci:act</li>
+      <li>The header will include Repo/Upstream/HEAD; entries will show “Latest GHA …” and “Latest GL … pipeline” with emoji status. On failure to authenticate or rate-limit, you’ll see a brief error/result code.</li>
+    </ul>
+  </li>
+</ul>
+
 <p>Project automation bootstrap</p>
 <ul>
   <li>
@@ -608,10 +678,11 @@ Tip: When running a single spec file locally, you may want <code>K_SOUP_COV_MIN_
   <li>Exception: <code>.env.local</code> is handled specially for safety. Regardless of whether the template provides <code>.env.local</code> or <code>.env.local.example</code>, the installer copies it to <code>.env.local.example</code> in your project, and will never create or overwrite <code>.env.local</code>.</li>
 </ul>
 
-<p>Releasing (maintainers)</p>
+<h3 id="releasing-maintainers">Releasing (maintainers)</h3>
+
 <ul>
-  <li>
-<code>exe/kettle-release</code> — guided release helper that:
+  <li>Script: <code>exe/kettle-release</code> (run as <code>kettle-release</code>)</li>
+  <li>Purpose: guided release helper that:
     <ul>
       <li>Runs sanity checks (<code>bin/setup</code>, <code>bin/rake</code>), confirms version/changelog, optionally updates Appraisals, commits “🔖 Prepare release vX.Y.Z”.</li>
       <li>Optionally runs your CI locally with <code>act</code> before any push:
@@ -625,43 +696,176 @@ Tip: When running a single spec file locally, you may want <code>K_SOUP_COV_MIN_
       <li>Exports <code>SOURCE_DATE_EPOCH</code>, builds (optionally signed), creates gem checksums, and runs <code>bundle exec rake release</code> (prompts for signing key + RubyGems MFA OTP as needed).</li>
     </ul>
   </li>
-  <li>start_step map (skip directly to a phase):
+  <li>Options:
     <ul>
-      <li>1: Ensure Bundler &gt;= 2.7.0 and begin full flow</li>
-      <li>2: Version detection + sanity checks + prompt to confirm version.rb and CHANGELOG.md</li>
-      <li>3: Run bin/setup</li>
-      <li>4: Run bin/rake (default task)</li>
-      <li>5: Run appraisal:update when Appraisals exists (skip otherwise)</li>
-      <li>6: Verify git user.name/email and commit release prep “🔖 Prepare release vX.Y.Z”</li>
-      <li>7: Optionally run local CI with nektos/act before pushing (see K_RELEASE_LOCAL_CI, K_RELEASE_LOCAL_CI_WORKFLOW)</li>
-      <li>8: Ensure trunk is up-to-date and reconcile with GitHub remote if needed</li>
-      <li>9: Push current branch to configured remotes (or default), force-pushing on retry when needed</li>
-      <li>10: Monitor CI after push (GitHub Actions and/or GitLab pipelines); progress bar; aborts on failure</li>
-      <li>11: Merge feature branch into trunk and push</li>
-      <li>12: Checkout trunk and pull latest</li>
-      <li>13: Signing checks and guidance (abort when signing enabled but cert missing); respect SKIP_GEM_SIGNING</li>
-      <li>14: Build gem (honors SKIP_GEM_SIGNING via env prefix)</li>
-      <li>15: Generate and validate gem checksums (bin/gem_checksums)</li>
-      <li>16: Release via <code>bundle exec rake release</code> and validate checksums again</li>
-      <li>17: Create GitHub release from CHANGELOG when GITHUB_TOKEN present</li>
-      <li>18: Push git tags to remotes (to “all” remote only when present; otherwise to each remote)</li>
+      <li>start_step map (skip directly to a phase):
+        <ul>
+          <li>1: Ensure Bundler &gt;= 2.7.0 and begin full flow</li>
+          <li>2: Version detection + sanity checks + prompt to confirm version.rb and CHANGELOG.md</li>
+          <li>3: Run bin/setup</li>
+          <li>4: Run bin/rake (default task)</li>
+          <li>5: Run appraisal:update when Appraisals exists (skip otherwise)</li>
+          <li>6: Verify git user.name/email and commit release prep “🔖 Prepare release vX.Y.Z”</li>
+          <li>7: Optionally run local CI with nektos/act before pushing (see K_RELEASE_LOCAL_CI, K_RELEASE_LOCAL_CI_WORKFLOW)</li>
+          <li>8: Ensure trunk is up-to-date and reconcile with GitHub remote if needed</li>
+          <li>9: Push current branch to configured remotes (or default), force-pushing on retry when needed</li>
+          <li>10: Monitor CI after push (GitHub Actions and/or GitLab pipelines); progress bar; aborts on failure</li>
+          <li>11: Merge feature branch into trunk and push</li>
+          <li>12: Checkout trunk and pull latest</li>
+          <li>13: Signing checks and guidance (abort when signing enabled but cert missing); respect SKIP_GEM_SIGNING</li>
+          <li>14: Build gem (honors SKIP_GEM_SIGNING via env prefix)</li>
+          <li>15: Generate and validate gem checksums (bin/gem_checksums)</li>
+          <li>16: Release via <code>bundle exec rake release</code> and validate checksums again</li>
+          <li>17: Create GitHub release from CHANGELOG when GITHUB_TOKEN present</li>
+          <li>18: Push git tags to remotes (to “all” remote only when present; otherwise to each remote)</li>
+        </ul>
+      </li>
     </ul>
-
-    <p>Examples:</p>
+  </li>
+  <li>Examples:
     <ul>
       <li>After intermittent CI failure, restart from monitoring: <code>bundle exec kettle-release start_step=10</code>
 </li>
     </ul>
   </li>
+  <li>Tips:
+    <ul>
+      <li>The commit message helper <code>exe/kettle-commit-msg</code> prefers project-local <code>.git-hooks</code> (then falls back to <code>~/.git-hooks</code>).</li>
+      <li>The goalie file <code>commit-subjects-goalie.txt</code> controls when a footer is appended; customize <code>footer-template.erb.txt</code> as you like.</li>
+    </ul>
+  </li>
 </ul>
 
-<p>Tip: The commit message helper <code>exe/kettle-commit-msg</code> prefers project-local <code>.git-hooks</code> (then falls back to <code>~/.git-hooks</code>). The goalie file <code>commit-subjects-goalie.txt</code> controls when a footer is appended; customize <code>footer-template.erb.txt</code> as you like.</p>
+<h3 id="changelog-generator">Changelog generator</h3>
+
+<ul>
+  <li>Script: <code>exe/kettle-changelog</code> (run as <code>kettle-changelog</code>)</li>
+  <li>Purpose: Generates a new CHANGELOG.md section for the current version read from <code>lib/**/version.rb</code>, moves notes from the Unreleased section, and updates comparison links.</li>
+  <li>Prerequisites:
+    <ul>
+      <li>
+<code>coverage/coverage.json</code> present (generate with: <code>K_SOUP_COV_FORMATTERS="json" bin/rspec</code>).</li>
+      <li>
+<code>bin/yard</code> available (Bundler-installed), to compute documentation coverage.</li>
+    </ul>
+  </li>
+  <li>Usage:
+    <ul>
+      <li><code>kettle-changelog</code></li>
+    </ul>
+  </li>
+  <li>Behavior:
+    <ul>
+      <li>Reads version from the unique <code>lib/**/version.rb</code> in the project.</li>
+      <li>Moves entries from the <code>[Unreleased]</code> section into a new <code>[#.#.#] - YYYY-MM-DD</code> section.</li>
+      <li>Prepends 4 lines with TAG, line coverage, branch coverage, and percent documented.</li>
+      <li>Converts any GitLab-style compare links at the bottom to GitHub style, adds new tag/compare links for the new release and a temporary tag reference <code>[X.Y.Zt]</code>.</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="pre-release-checks">Pre-release checks</h3>
+
+<ul>
+  <li>Script: <code>exe/kettle-pre-release</code> (run as <code>kettle-pre-release</code>)</li>
+  <li>Purpose: Run a suite of pre-release validations to catch avoidable mistakes (resumable by check number).</li>
+  <li>Usage:
+    <ul>
+      <li><code>kettle-pre-release [--check-num N]</code></li>
+      <li>Short option: <code>kettle-pre-release -cN</code>
+</li>
+    </ul>
+  </li>
+  <li>Options:
+    <ul>
+      <li>
+<code>--check-num N</code> Start from check number N (default: 1)</li>
+    </ul>
+  </li>
+  <li>Checks:
+    <ul>
+      <li>1) Validate that all image URLs referenced by Markdown files resolve (HTTP HEAD)</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="commit-message-helper-git-hook">Commit message helper (git hook)</h3>
+
+<ul>
+  <li>Script: <code>exe/kettle-commit-msg</code> (run by git as <code>.git/hooks/commit-msg</code>)</li>
+  <li>Purpose: Append a standardized footer and optionally enforce branch naming rules when configured.</li>
+  <li>Usage:
+    <ul>
+      <li>Git invokes this with the path to the commit message file: <code>kettle-commit-msg .git/COMMIT_EDITMSG</code>
+</li>
+      <li>Install via <code>bundle exec rake kettle:dev:install</code> to copy hook templates into <code>.git-hooks</code> and wire them up.</li>
+    </ul>
+  </li>
+  <li>Behavior:
+    <ul>
+      <li>When <code>GIT_HOOK_BRANCH_VALIDATE=jira</code>, validates the current branch matches the pattern: <code>^(hotfix|bug|feature|candy)/[0-9]{8,}-…</code>.
+        <ul>
+          <li>If it matches and the commit message lacks the numeric ID, appends <code>[&lt;type&gt;][&lt;id&gt;]</code>.</li>
+        </ul>
+      </li>
+      <li>Always invokes <code>Kettle::Dev::GitCommitFooter.render</code> to potentially append a footer if allowed by the goalie.</li>
+      <li>Prefers project-local <code>.git-hooks</code> templates; falls back to <code>~/.git-hooks</code>.</li>
+    </ul>
+  </li>
+  <li>Environment:
+    <ul>
+      <li>
+<code>GIT_HOOK_BRANCH_VALIDATE</code> Branch rule (e.g., <code>jira</code>) or <code>false</code> to disable.</li>
+      <li>
+<code>GIT_HOOK_FOOTER_APPEND</code> Enable footer auto-append when goalie allows (true/false).</li>
+      <li>
+<code>GIT_HOOK_FOOTER_SENTINEL</code> Required marker to avoid duplicate appends when enabled.</li>
+      <li>
+<code>GIT_HOOK_FOOTER_APPEND_DEBUG</code> Extra debug output in the footer template (true/false).</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="project-bootstrap-installer">Project bootstrap installer</h3>
+
+<ul>
+  <li>Script: <code>exe/kettle-dev-setup</code> (run as <code>kettle-dev-setup</code>)</li>
+  <li>Purpose: Bootstrap a host gem repository to use kettle-dev’s tooling without manual steps.</li>
+  <li>Usage:
+    <ul>
+      <li><code>kettle-dev-setup [options] [passthrough args]</code></li>
+    </ul>
+  </li>
+  <li>Options (mapped through to <code>rake kettle:dev:install</code>):
+    <ul>
+      <li>
+<code>--allowed=VAL</code> Pass <code>allowed=VAL</code> to acknowledge prior direnv allow, etc.</li>
+      <li>
+<code>--force</code> Pass <code>force=true</code> to accept prompts non-interactively.</li>
+      <li>
+<code>--hook_templates=VAL</code> Pass <code>hook_templates=VAL</code> to control git hook templating.</li>
+      <li>
+<code>--only=VAL</code> Pass <code>only=VAL</code> to restrict install scope.</li>
+      <li>
+<code>-h</code>, <code>--help</code> Show help.</li>
+    </ul>
+  </li>
+  <li>Behavior:
+    <ul>
+      <li>Verifies a clean git working tree, presence of a Gemfile and a gemspec.</li>
+      <li>Syncs development dependencies from this gem’s example gemspec into the target gemspec (replacing or inserting <code>add_development_dependency</code> lines as needed).</li>
+      <li>Ensures <code>bin/setup</code> exists (copies from gem if missing) and replaces/creates the project’s <code>Rakefile</code> from <code>Rakefile.example</code>.</li>
+      <li>Runs <code>bin/setup</code>, then <code>bundle exec bundle binstubs --all</code>.</li>
+      <li>Stages and commits any bootstrap changes with message: <code>🎨 Template bootstrap by kettle-dev-setup v&lt;version&gt;</code>.</li>
+      <li>Executes <code>bin/rake kettle:dev:install</code> with the parsed passthrough args.</li>
+    </ul>
+  </li>
+</ul>
 
 <h3 id="open-collective-readme-updater">Open Collective README updater</h3>
 
 <ul>
-  <li>Script: <code>exe/kettle-readme-backers</code>
-</li>
+  <li>Script: <code>exe/kettle-readme-backers</code> (run as <code>kettle-readme-backers</code>)</li>
   <li>Purpose: Updates README sections for Open Collective backers (individuals) and sponsors (organizations) by fetching live data from your collective.</li>
   <li>Tags updated in README.md (first match wins for backers):
     <ul>
@@ -686,7 +890,7 @@ Tip: When running a single spec file locally, you may want <code>K_SOUP_COV_MIN_
       <li>
 <code>OPENCOLLECTIVE_HANDLE</code> environment variable, if set</li>
       <li>
-<code>opencollective.yml</code> in the project root (<code>collective: "kettle-rb"</code> by default in this repo)</li>
+<code>opencollective.yml</code> in the project root (e.g., <code>collective: "kettle-rb"</code> in this repo)</li>
     </ol>
   </li>
   <li>Usage:
@@ -710,7 +914,12 @@ Tip: When running a single spec file locally, you may want <code>K_SOUP_COV_MIN_
       </li>
     </ul>
   </li>
-  <li>Tip: Run this locally before committing to keep your README current, or schedule it in CI to refresh periodically.</li>
+  <li>Tip:
+    <ul>
+      <li>Run this locally before committing to keep your README current, or schedule it in CI to refresh periodically.</li>
+      <li>It runs automatically on a once-a-week schedule by the .github/workflows/opencollective.yml workflow that is part of the kettle-dev template.</li>
+    </ul>
+  </li>
 </ul>
 
 <h2 id="-floss-funding">🦷 FLOSS Funding</h2>
@@ -785,7 +994,7 @@ and <a href="https://tidelift.com/subscription/pkg/rubygems-kettle-dev?utm_sourc
 <h2 id="-contributing">🤝 Contributing</h2>
 
 <p>If you need some ideas of where to help, you could work on adding more code coverage,<br>
-or if it is already 💯 (see <a href="#code-coverage">below</a>) check <a href="file.REEK.html" title="reek">reek</a>, <a href="https://github.com/kettle-rb/kettle-dev/issues">issues</a>, or <a href="https://github.com/kettle-rb/kettle-dev/pulls">PRs</a>,<br>
+or if it is already 💯 (see <a href="#code-coverage">below</a>) check <a href="REEK">reek</a>, <a href="https://github.com/kettle-rb/kettle-dev/issues">issues</a>, or <a href="https://github.com/kettle-rb/kettle-dev/pulls">PRs</a>,<br>
 or use the gem and think about how it could be better.</p>
 
 <p>We <a href="https://keepachangelog.com/en/1.0.0/"><img src="https://img.shields.io/badge/keep--a--changelog-1.0.0-34495e.svg?style=flat" alt="Keep A Changelog"></a> so if you make changes, remember to update it.</p>
@@ -913,7 +1122,7 @@ Please consider sponsoring me or the project.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Thu Sep  4 17:04:14 2025 by
+  Generated on Thu Sep  4 19:35:05 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

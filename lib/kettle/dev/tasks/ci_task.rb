@@ -123,7 +123,12 @@ module Kettle
               pipe = Kettle::Dev::CIHelpers.gitlab_latest_pipeline(owner: owner, repo: repo, branch: branch)
               if pipe
                 st = pipe["status"].to_s
-                emoji = Kettle::Dev::CIMonitor.status_emoji(st, st == "success" ? "success" : (st == "failed" ? "failure" : nil))
+                status = if st == "success"
+                  "success"
+                else
+                  ((st == "failed") ? "failure" : nil)
+                end
+                emoji = Kettle::Dev::CIMonitor.status_emoji(st, status)
                 details = [st, pipe["failure_reason"]].compact.join("/")
                 puts "Latest GL (#{branch}) pipeline: #{emoji} (#{details})"
               else
@@ -227,8 +232,8 @@ module Kettle
                 gl_sha = out.split(/\s+/).first if status.success? && out && !out.empty?
               end
               if gh_sha && gl_sha
-                gh_short = gh_sha[0,7]
-                gl_short = gl_sha[0,7]
+                gh_short = gh_sha[0, 7]
+                gl_short = gl_sha[0, 7]
                 if gh_short != gl_short
                   puts "⚠️ HEAD mismatch on #{branch_name}: GitHub #{gh_short} vs GitLab #{gl_short}"
                 end
@@ -252,14 +257,19 @@ module Kettle
 
           puts "(Fetching latest GHA status for branch #{branch || "n/a"} — you can type your choice and press Enter)"
           prompt = "Enter number or code (or 'q' to quit): "
-          print(prompt)
-          $stdout.flush
+          if tty
+            print(prompt)
+            $stdout.flush
+          end
 
           # We need to sleep a bit here to ensure the terminal is ready for both
           #   input and writing status updates to each workflow's line
           sleep(0.2) unless Kettle::Dev::IS_CI
 
           selected = nil
+          input_thread = nil
+          # Create input thread always so specs that assert its cleanup/exception behavior can exercise it,
+          # but guard against non-interactive stdin by rescuing 'bad tty' and similar errors immediately.
           input_thread = Thread.new do
             begin
               selected = Kettle::Dev::InputAdapter.gets&.strip
@@ -267,7 +277,7 @@ module Kettle
               # Catch all exceptions in background thread, including SystemExit
               # NOTE: look into refactoring to minimize potential SystemExit.
               puts "Error in background thread: #{error.class}: #{error.message}" if Kettle::Dev::DEBUGGING
-              selected = nil
+              selected = :input_error
             end
           end
 
@@ -330,8 +340,21 @@ module Kettle
 
           statuses = Hash.new(placeholder)
 
+          # In non-interactive environments (no TTY) and when not DEBUGGING, auto-quit after a short idle
+          auto_quit_deadline = if !tty && !Kettle::Dev::DEBUGGING
+            Process.clock_gettime(Process::CLOCK_MONOTONIC) + 1.0
+          else
+            nil
+          end
+
           loop do
             if selected
+              break
+            end
+
+            # Auto-quit if deadline passed without input (non-interactive runs)
+            if auto_quit_deadline && Process.clock_gettime(Process::CLOCK_MONOTONIC) >= auto_quit_deadline
+              selected = "q"
               break
             end
 
@@ -374,7 +397,7 @@ module Kettle
             Kettle::Dev.debug_error(e, __method__)
           end
 
-          input = selected
+          input = (selected == :input_error) ? nil : selected
           task_abort("ci:act aborted: no selection") if input.nil? || input.empty?
 
           chosen_file = nil

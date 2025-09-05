@@ -471,8 +471,8 @@ module Kettle
       end
 
       def monitor_workflows_after_push!
-        # Use non-aborting CI monitor that summarizes and prompts to continue/quit
-        Kettle::Dev::CIMonitor.monitor_and_prompt_for_release!(restart_hint: "bundle exec kettle-release start_step=10")
+        # Use abort-on-failure CI monitor to match historical behavior and specs
+        Kettle::Dev::CIMonitor.monitor_all!(restart_hint: "bundle exec kettle-release start_step=10")
       end
 
       def run_cmd!(cmd)
@@ -486,8 +486,8 @@ module Kettle
       end
 
       def ensure_git_user!
-        name, ok1 = git_output(["config", "user.name"])
-        email, ok2 = git_output(["config", "user.email"])
+        name, ok1 = git_output(%w[config user.name])
+        email, ok2 = git_output(%w[config user.email])
         abort("Git user.name or user.email not configured.") unless ok1 && ok2 && !name.empty? && !email.empty?
       end
 

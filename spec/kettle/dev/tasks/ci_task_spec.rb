@@ -209,6 +209,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
         expect { described_class.act(nil) }.not_to raise_error
       end
     end
+
     it "quits when user enters 'q'", :check_output do
       with_workflows(["ci.yml", "style.yaml"]) do |_root, _dir|
         allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("q\n")
@@ -467,6 +468,117 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
         allow(File).to receive(:file?).and_call_original
         allow(File).to receive(:file?).with(file_path).and_return(false)
         expect { described_class.act(nil) }.to raise_error(Kettle::Dev::Error, /workflow not found/)
+      end
+    end
+  end
+  describe "::act GitLab status printing (non-interactive)" do
+    it "parses SSH remote and prints success status with emoji", :check_output do
+      with_workflows(["ci.yml"]) do |_root, dir|
+        # Ensure GHA status query still succeeds quickly
+        allow(Net::HTTP).to receive(:start).and_return(
+          http_ok_with({"workflow_runs" => [{"status" => "completed", "conclusion" => "success"}]}),
+        )
+        # GitLab ssh remote
+        allow(Kettle::Dev::CIMonitor).to receive(:gitlab_remote_candidates).and_return(["origin"])
+        allow(Kettle::Dev::CIMonitor).to receive(:remote_url).with("origin").and_return("git@gitlab.com:acme/demo.git")
+        # Latest pipeline successful
+        allow(Kettle::Dev::CIHelpers).to receive(:gitlab_latest_pipeline).and_return({"status" => "success"})
+        file_path = File.join(dir, "ci.yml")
+        expect(described_class).to receive(:system).with("act", "-W", file_path).and_return(true)
+        expect { described_class.act("ci") }.to output(/Latest GL \(main\) pipeline: /).to_stdout
+      end
+    end
+
+    it "parses HTTPS remote and prints failed status with details", :check_output do
+      with_workflows(["ci.yml"]) do |_root, dir|
+        allow(Net::HTTP).to receive(:start).and_return(
+          http_ok_with({"workflow_runs" => [{"status" => "completed", "conclusion" => "success"}]}),
+        )
+        allow(Kettle::Dev::CIMonitor).to receive(:gitlab_remote_candidates).and_return(["gl"])
+        allow(Kettle::Dev::CIMonitor).to receive(:remote_url).with("gl").and_return("https://gitlab.com/acme/demo.git")
+        allow(Kettle::Dev::CIHelpers).to receive(:gitlab_latest_pipeline).and_return({"status" => "failed", "failure_reason" => "test_failed"})
+        file_path = File.join(dir, "ci.yml")
+        expect(described_class).to receive(:system).with("act", "-W", file_path).and_return(true)
+        expect { described_class.act("ci") }.to output(/Latest GL \(main\) pipeline: /).to_stdout
+      end
+    end
+
+    it "prints none when there is no latest GitLab pipeline", :check_output do
+      with_workflows(["ci.yml"]) do |_root, dir|
+        allow(Net::HTTP).to receive(:start).and_return(
+          http_ok_with({"workflow_runs" => [{"status" => "completed", "conclusion" => "success"}]}),
+        )
+        allow(Kettle::Dev::CIMonitor).to receive(:gitlab_remote_candidates).and_return(["gl"])
+        allow(Kettle::Dev::CIMonitor).to receive(:remote_url).with("gl").and_return("https://gitlab.com/acme/demo.git")
+        allow(Kettle::Dev::CIHelpers).to receive(:gitlab_latest_pipeline).and_return(nil)
+        file_path = File.join(dir, "ci.yml")
+        expect(described_class).to receive(:system).with("act", "-W", file_path).and_return(true)
+        expect { described_class.act("ci") }.to output(/pipeline: none/).to_stdout
+      end
+    end
+
+    it "prints n/a when GitLab remote or branch missing", :check_output do
+      allow(Kettle::Dev::CIHelpers).to receive(:current_branch).and_return(nil)
+      with_workflows(["ci.yml"]) do |_root, dir|
+        allow(Kettle::Dev::CIMonitor).to receive(:gitlab_remote_candidates).and_return([])
+        file_path = File.join(dir, "ci.yml")
+        expect(described_class).to receive(:system).with("act", "-W", file_path).and_return(true)
+        expect { described_class.act("ci") }.to output(/Latest GL \(n\/a\) pipeline: n\/a/).to_stdout
+      end
+    end
+
+    it "handles exceptions when fetching GitLab status", :check_output do
+      with_workflows(["ci.yml"]) do |_root, dir|
+        allow(Net::HTTP).to receive(:start).and_return(
+          http_ok_with({"workflow_runs" => [{"status" => "completed", "conclusion" => "success"}]}),
+        )
+        allow(Kettle::Dev::CIMonitor).to receive(:gitlab_remote_candidates).and_return(["gl"])
+        allow(Kettle::Dev::CIMonitor).to receive(:remote_url).with("gl").and_return("https://gitlab.com/acme/demo.git")
+        allow(Kettle::Dev::CIHelpers).to receive(:gitlab_latest_pipeline).and_raise(StandardError.new("gl down"))
+        file_path = File.join(dir, "ci.yml")
+        expect(described_class).to receive(:system).with("act", "-W", file_path).and_return(true)
+        expect { described_class.act("ci") }.to output(/GL status: error/) .to_stdout
+      end
+    end
+  end
+
+  describe "::act thread cleanup error handling" do
+    it "logs debug_error when killing worker threads raises", :check_output do
+      stub_const("Kettle::Dev::DEBUGGING", true)
+      with_workflows(["ci.yml"]) do |_root, _dir|
+        # Make at least one status arrive then choose quit
+        allow(Kettle::Dev::InputAdapter).to receive(:gets) {
+          sleep 0.1
+          "q\n"
+        }
+        # Force Thread#alive? to be true and Thread#kill to raise
+        allow_any_instance_of(Thread).to receive(:alive?).and_return(true)
+        allow_any_instance_of(Thread).to receive(:kill).and_raise(StandardError.new("nope"))
+        expect { described_class.act(nil) }.not_to raise_error
+      end
+    end
+
+    it "logs debug_error when input_thread.kill raises", :check_output do
+      stub_const("Kettle::Dev::DEBUGGING", true)
+      with_workflows(["ci.yml"]) do |_root, _dir|
+        # Ensure the input thread exists and then our kill will raise
+        allow(Kettle::Dev::InputAdapter).to receive(:gets) {
+          sleep 0.1
+          "q\n"
+        }
+        allow_any_instance_of(Thread).to receive(:kill).and_raise(StandardError.new("kaboom"))
+        expect { described_class.act(nil) }.not_to raise_error
+      end
+    end
+
+    it "prints background thread exception when InputAdapter.gets raises", :check_output do
+      stub_const("Kettle::Dev::DEBUGGING", true)
+      with_workflows(["ci.yml"]) do |_root, _dir|
+        # Make the background input thread raise early
+        allow(Kettle::Dev::InputAdapter).to receive(:gets).and_raise(StandardError.new("bad tty"))
+        # Quit path will be taken because selected stays nil and then we assert abort
+        # but before that, ensure there is at least one workflow so loop runs
+        expect { described_class.act(nil) }.to raise_error(Kettle::Dev::Error, /no selection/)
       end
     end
   end

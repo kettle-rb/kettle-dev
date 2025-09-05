@@ -170,4 +170,52 @@ RSpec.describe Kettle::Dev::CIMonitor do
       expect { described_class.monitor_all!(restart_hint: "hint") }.to raise_error(MockSystemExit, /CI configuration not detected/)
     end
   end
+
+  describe "::monitor_and_prompt_for_release!" do
+    include_context "with stubbed env"
+
+    before do
+      # Simulate presence of failed checks so the prompt is reached
+      allow(described_class).to receive(:collect_all).and_return({
+        github: [
+          {workflow: "ci.yml", status: "completed", conclusion: "failure", url: "https://example"},
+        ],
+        gitlab: nil,
+      })
+      # TTY environment
+      allow($stdin).to receive(:tty?).and_return(true)
+    end
+
+    it "continues once when user enters c", :check_output do
+      allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("c\n")
+      expect { described_class.monitor_and_prompt_for_release!(restart_hint: "hint") }.not_to raise_error
+    end
+
+    it "aborts when user enters q" do
+      allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("q\n")
+      expect { described_class.monitor_and_prompt_for_release!(restart_hint: "hint") }.to raise_error(MockSystemExit, /Aborting per user choice/)
+    end
+
+    it "aborts when input is nil (no input available)" do
+      allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return(nil)
+      expect { described_class.monitor_and_prompt_for_release!(restart_hint: "hint") }.to raise_error(MockSystemExit, /no input available/)
+    end
+
+    it "aborts on unrecognized input (single prompt)" do
+      allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("maybe\n")
+      expect { described_class.monitor_and_prompt_for_release!(restart_hint: "hint") }.to raise_error(MockSystemExit, /Unrecognized input/)
+    end
+
+    it "skips prompt in non-interactive when K_RELEASE_CI_CONTINUE=true", :check_output do
+      stub_env("K_RELEASE_CI_CONTINUE" => "true")
+      allow($stdin).to receive(:tty?).and_return(false)
+      expect { described_class.monitor_and_prompt_for_release!(restart_hint: "hint") }.not_to raise_error
+    end
+
+    it "aborts in non-interactive when K_RELEASE_CI_CONTINUE not set" do
+      stub_env("K_RELEASE_CI_CONTINUE" => nil)
+      allow($stdin).to receive(:tty?).and_return(false)
+      expect { described_class.monitor_and_prompt_for_release!(restart_hint: "hint") }.to raise_error(MockSystemExit, /CI checks reported failures/)
+    end
+  end
 end

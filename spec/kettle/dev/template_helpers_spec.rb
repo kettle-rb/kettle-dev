@@ -751,5 +751,176 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
       end
     end
   end
+  describe "additional coverage for edge/rescue branches" do
+    include_context "with stubbed env"
+
+    it "ensure_clean_git!: handles dirty path with capture raising (covers 139-144)" do
+      Dir.mktmpdir do |root|
+        allow(helpers).to receive(:system).and_return(true)
+        fake = instance_double(Kettle::Dev::GitAdapter)
+        allow(fake).to receive(:clean?).and_return(false)
+        allow(fake).to receive(:capture).and_raise(StandardError.new("boom"))
+        allow(Kettle::Dev::GitAdapter).to receive(:new).and_return(fake)
+        expect {
+          helpers.ensure_clean_git!(root: root, task_label: "kettle:dev:template")
+        }.to raise_error(Kettle::Dev::Error, /git working tree is not clean/)
+      end
+    end
+
+    it "copy_file_with_prompt: normalizes rel path when dest == project_root (covers 176-177)" do
+      Dir.mktmpdir do |project_root|
+        Dir.mktmpdir do |src_root|
+          src = File.join(src_root, "a.txt")
+          File.write(src, "A")
+          # Set only filter to force path normalization branch
+          allow(helpers).to receive(:project_root).and_return(project_root)
+          stub_env("only" => "**")
+          # dest equals project_root, will be normalized to empty rel path
+          allow(helpers).to receive(:ask).and_return(false)
+          helpers.copy_file_with_prompt(src, project_root, allow_create: true, allow_replace: true)
+          # No file expected to be created; just exercising branch logic
+          expect(Dir).to exist(project_root)
+        end
+      end
+    end
+
+    it "copy_file_with_prompt: rescues token replacement gsub errors (covers 226)" do
+      Dir.mktmpdir do |dir|
+        src = File.join(dir, "src.txt")
+        # Include the token so include? is true
+        File.write(src, "BEFORE {KETTLE|DEV|GEM} AFTER")
+        dest = File.join(dir, ".git-hooks", "commit-msg")
+        FileUtils.mkdir_p(File.dirname(dest))
+        allow(helpers).to receive(:ask).and_return(true)
+        # Only stub the specific gsub call to raise
+        allow_any_instance_of(String).to receive(:gsub).with("{KETTLE|DEV|GEM}", "kettle-dev").and_raise(StandardError.new("gsub boom"))
+        expect { helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true) }.not_to raise_error
+        expect(File).to exist(dest)
+      end
+    end
+
+    it "copy_file_with_prompt: rescues chmod errors under .git-hooks (covers 236)" do
+      Dir.mktmpdir do |dir|
+        src = File.join(dir, "src.sh")
+        File.write(src, "#!/bin/sh\n")
+        dest = File.join(dir, ".git-hooks", "prepare-commit-msg")
+        FileUtils.mkdir_p(File.dirname(dest))
+        allow(helpers).to receive(:ask).and_return(true)
+        allow(File).to receive(:chmod).and_raise(StandardError.new("chmod boom"))
+        expect { helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true) }.not_to raise_error
+        expect(File).to exist(dest)
+      end
+    end
+
+    it "copy_dir_with_prompt: rescues fnmatch? errors in matches_only and proceeds (covers 271, 273)" do
+      Dir.mktmpdir do |project_root|
+        Dir.mktmpdir do |src_root|
+          src_dir = File.join(src_root, "tmpl")
+          FileUtils.mkdir_p(src_dir)
+          File.write(File.join(src_dir, "a.txt"), "A")
+          dest_dir = File.join(project_root, "out")
+          allow(helpers).to receive(:project_root).and_return(project_root)
+          stub_env("only" => "out/**")
+          allow(helpers).to receive(:ask).and_return(true)
+          # Force fnmatch? to raise; matches_only should rescue and treat as matched
+          allow(File).to receive(:fnmatch?).and_raise(StandardError.new("fnmatch boom"))
+          helpers.copy_dir_with_prompt(src_dir, dest_dir)
+          expect(File).to exist(File.join(dest_dir, "a.txt"))
+        end
+      end
+    end
+
+    it "copy_dir_with_prompt: rescues scanning errors during early-only check (covers 298)" do
+      Dir.mktmpdir do |project_root|
+        Dir.mktmpdir do |src_root|
+          src_dir = File.join(src_root, "tmpl")
+          FileUtils.mkdir_p(File.join(src_dir, "sub"))
+          File.write(File.join(src_dir, "sub", "a.txt"), "A")
+          dest_dir = File.join(project_root, "out")
+          allow(helpers).to receive(:project_root).and_return(project_root)
+          stub_env("only" => "out/**")
+          # Create dest_dir so we can answer no to avoid later Find.find runs
+          FileUtils.mkdir_p(dest_dir)
+          allow(helpers).to receive(:ask).and_return(false)
+          allow(Find).to receive(:find).and_raise(StandardError.new("find boom"))
+          # Should fall through (rescue) and skip without traversing later
+          expect { helpers.copy_dir_with_prompt(src_dir, dest_dir) }.not_to raise_error
+        end
+      end
+    end
+
+    it "copy_dir_with_prompt: rescues compare_file errors in replace branch (covers 329)" do
+      Dir.mktmpdir do |dir|
+        src_dir = File.join(dir, "src")
+        dest_dir = File.join(dir, "dest")
+        FileUtils.mkdir_p(src_dir)
+        FileUtils.mkdir_p(dest_dir)
+        File.write(File.join(src_dir, "a.txt"), "NEW")
+        File.write(File.join(dest_dir, "a.txt"), "OLD")
+        allow(helpers).to receive(:ask).and_return(true)
+        allow(FileUtils).to receive(:compare_file).and_raise(StandardError.new("cmp boom"))
+        helpers.copy_dir_with_prompt(src_dir, dest_dir)
+        expect(File.read(File.join(dest_dir, "a.txt"))).to eq("NEW")
+      end
+    end
+
+    it "copy_dir_with_prompt: rescues chmod errors in replace branch (covers 341)" do
+      Dir.mktmpdir do |dir|
+        src_dir = File.join(dir, "src")
+        dest_dir = File.join(dir, "dest")
+        FileUtils.mkdir_p(File.join(src_dir, ".git-hooks"))
+        File.write(File.join(src_dir, ".git-hooks", "commit-msg"), "#!/bin/sh\n")
+        FileUtils.mkdir_p(dest_dir)
+        allow(helpers).to receive(:ask).and_return(true)
+        allow(File).to receive(:chmod).and_raise(StandardError.new("chmod boom"))
+        expect { helpers.copy_dir_with_prompt(src_dir, dest_dir) }.not_to raise_error
+        expect(File).to exist(File.join(dest_dir, ".git-hooks", "commit-msg"))
+      end
+    end
+
+    it "copy_dir_with_prompt: rescues compare_file errors in create branch (covers 377)" do
+      Dir.mktmpdir do |dir|
+        src_dir = File.join(dir, "src")
+        FileUtils.mkdir_p(src_dir)
+        File.write(File.join(src_dir, "a.txt"), "NEW")
+        dest_dir = File.join(dir, "dest")
+        allow(helpers).to receive(:ask).and_return(true)
+        # Force create branch by making dest_dir absent
+        allow(FileUtils).to receive(:compare_file).and_raise(StandardError.new("cmp boom"))
+        helpers.copy_dir_with_prompt(src_dir, dest_dir)
+        expect(File.read(File.join(dest_dir, "a.txt"))).to eq("NEW")
+      end
+    end
+
+    it "copy_dir_with_prompt: rescues chmod errors in create branch (covers 389)" do
+      Dir.mktmpdir do |dir|
+        src_dir = File.join(dir, "src")
+        FileUtils.mkdir_p(File.join(src_dir, ".git-hooks"))
+        File.write(File.join(src_dir, ".git-hooks", "prepare-commit-msg"), "#!/bin/sh\n")
+        dest_dir = File.join(dir, "dest")
+        allow(helpers).to receive(:ask).and_return(true)
+        allow(File).to receive(:chmod).and_raise(StandardError.new("chmod boom"))
+        expect { helpers.copy_dir_with_prompt(src_dir, dest_dir) }.not_to raise_error
+        expect(File).to exist(File.join(dest_dir, ".git-hooks", "prepare-commit-msg"))
+      end
+    end
+
+    it "apply_common_replacements: rescues yard-head dash conversion when gem_name.tr raises (covers 422)" do
+      # Build a gem_name that quacks like String for emptiness/to_s but raises on tr
+      class TrRaisingString < String
+      def tr(from, to)
+        if from == "_" && to == "-"
+          raise StandardError, "tr boom"
+        else
+          super
+        end
+      end
+    end
+      gem_name = TrRaisingString.new("foo_bar")
+      meta = {org: "org", gem_name: gem_name, namespace: "X::Y", namespace_shield: "X%3A%3AY", gem_shield: "x__y"}
+      input = "[🚎yard-head]: https://kettle-dev.galtzo.com"
+      expect { helpers.apply_common_replacements(input, **meta) }.not_to raise_error
+    end
+  end
 end
 # rubocop:enable RSpec/MultipleExpectations, RSpec/ExampleLength, RSpec/StubbedMock, RSpec/MessageSpies

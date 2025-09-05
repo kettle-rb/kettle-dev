@@ -53,6 +53,16 @@ module Kettle
         abort("CI configuration not detected (GitHub or GitLab). Ensure CI is configured and remotes point to the correct hosts.") unless checks_any
       end
 
+      # Public wrapper to monitor GitLab pipeline with abort-on-failure semantics.
+      # Matches RBS and call sites expecting ::monitor_gitlab!
+      # Returns false when GitLab is not configured for this repo/branch.
+      # @param restart_hint [String]
+      # @return [Boolean]
+      def monitor_gitlab!(restart_hint: "bundle exec kettle-release start_step=10")
+        monitor_gitlab_internal!(restart_hint: restart_hint)
+      end
+      module_function :monitor_gitlab!
+
       # Non-aborting collection across GH and GL, returning a compact results hash.
       # Results format:
       #   {
@@ -96,7 +106,12 @@ module Kettle
         end
         gl = results[:gitlab]
         if gl
-          emoji = status_emoji(gl[:status], gl[:status] == "success" ? "success" : (gl[:status] == "failed" ? "failure" : nil))
+          status = if gl[:status] == "success"
+            "success"
+          else
+            ((gl[:status] == "failed") ? "failure" : nil)
+          end
+          emoji = status_emoji(gl[:status], status)
           details = gl[:status].to_s
           puts "GitLab Pipeline: #{emoji} (#{details}) #{gl[:url] ? "-> #{gl[:url]}" : ""}"
           all_ok &&= (gl[:status] != "failed")
@@ -125,20 +140,20 @@ module Kettle
           return
         end
 
-        loop do
-          print("One or more CI checks failed. (c)ontinue or (q)uit? ")
-          ans = Kettle::Dev::InputAdapter.gets
-          # If input isn't available (nil), default to quitting to avoid hanging in tests/non-tty
-          if ans.nil?
-            abort("Aborting (no input available). Fix CI, then restart with: #{restart_hint}")
-          end
-          ans = ans.strip.downcase
-          if ans == "c" || ans == "continue"
-            puts "Continuing release despite CI failures."
-            break
-          elsif ans == "q" || ans == "quit"
-            abort("Aborting per user choice. Fix CI, then restart with: #{restart_hint}")
-          end
+        # Prompt exactly once; avoid repeated printing in case of unexpected input buffering.
+        # Accept c/continue to proceed or q/quit to abort. Any other input defaults to quit with a message.
+        print("One or more CI checks failed. (c)ontinue or (q)uit? ")
+        ans = Kettle::Dev::InputAdapter.gets
+        if ans.nil?
+          abort("Aborting (no input available). Fix CI, then restart with: #{restart_hint}")
+        end
+        ans = ans.strip.downcase
+        if ans == "c" || ans == "continue"
+          puts "Continuing release despite CI failures."
+        elsif ans == "q" || ans == "quit"
+          abort("Aborting per user choice. Fix CI, then restart with: #{restart_hint}")
+        else
+          abort("Unrecognized input '#{ans}'. Aborting. Fix CI, then restart with: #{restart_hint}")
         end
       end
       module_function :monitor_and_prompt_for_release!
@@ -148,14 +163,14 @@ module Kettle
         root = Kettle::Dev::CIHelpers.project_root
         workflows = Kettle::Dev::CIHelpers.workflows_list(root)
         gh_remote = preferred_github_remote
-        return nil unless gh_remote && !workflows.empty?
+        return unless gh_remote && !workflows.empty?
 
         branch = Kettle::Dev::CIHelpers.current_branch
         abort("Could not determine current branch for CI checks.") unless branch
 
         url = remote_url(gh_remote)
         owner, repo = parse_github_owner_repo(url)
-        return nil unless owner && repo
+        return unless owner && repo
 
         total = workflows.size
         return [] if total.zero?
@@ -180,7 +195,9 @@ module Kettle
           if run
             if Kettle::Dev::CIHelpers.success?(run)
               unless results[wf]
-                results[wf] = {workflow: wf, status: run["status"], conclusion: run["conclusion"], url: run["html_url"]}
+                status = run["status"] || "completed"
+                conclusion = run["conclusion"] || "success"
+                results[wf] = {workflow: wf, status: status, conclusion: conclusion, url: run["html_url"]}
                 pbar&.increment
               end
             elsif Kettle::Dev::CIHelpers.failed?(run)
@@ -203,13 +220,13 @@ module Kettle
         root = Kettle::Dev::CIHelpers.project_root
         gitlab_ci = File.exist?(File.join(root, ".gitlab-ci.yml"))
         gl_remote = gitlab_remote_candidates.first
-        return nil unless gitlab_ci && gl_remote
+        return unless gitlab_ci && gl_remote
 
         branch = Kettle::Dev::CIHelpers.current_branch
         abort("Could not determine current branch for CI checks.") unless branch
 
         owner, repo = Kettle::Dev::CIHelpers.repo_info_gitlab
-        return nil unless owner && repo
+        return unless owner && repo
 
         puts "Checking GitLab pipeline on #{branch} (#{owner}/#{repo}) via remote '#{gl_remote}'"
         pbar = if defined?(ProgressBar)
@@ -223,23 +240,20 @@ module Kettle
             if Kettle::Dev::CIHelpers.gitlab_success?(pipe)
               result[:status] = "success"
               pbar&.increment unless pbar&.finished?
-              break
             elsif Kettle::Dev::CIHelpers.gitlab_failed?(pipe)
               reason = (pipe["failure_reason"] || "").to_s
               if reason =~ /insufficient|quota|minute/i
                 result[:status] = "unknown"
                 pbar&.finish unless pbar&.finished?
-                break
               else
                 result[:status] = "failed"
                 pbar&.increment unless pbar&.finished?
-                break
               end
             elsif pipe["status"] == "blocked"
               result[:status] = "blocked"
               pbar&.finish unless pbar&.finished?
-              break
             end
+            break
           end
           sleep(1)
         end
