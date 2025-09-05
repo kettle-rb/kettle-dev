@@ -146,6 +146,69 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
   end
 
   describe "::act (interactive)", :skip_ci do
+    it "highlights mismatch when GitHub and GitLab HEAD SHAs differ", :check_output do
+      with_workflows(["ci.yml"]) do |_root, _dir|
+        # Ensure both remotes are detected
+        allow(Kettle::Dev::CIMonitor).to receive(:preferred_github_remote).and_return("origin")
+        allow(Kettle::Dev::CIMonitor).to receive(:gitlab_remote_candidates).and_return(["gitlab"])
+        # Provide ls-remote outputs for each
+        allow(Open3).to receive(:capture2).and_wrap_original do |m, *args|
+          if args == ["git", "rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}"]
+            ["origin/main\n", instance_double(Process::Status, success?: true)]
+          elsif args == ["git", "rev-parse", "--short", "HEAD"]
+            ["abc123\n", instance_double(Process::Status, success?: true)]
+          elsif args == ["git", "ls-remote", "origin", "refs/heads/main"]
+            ["1111111111111111111111111111111111111111\trefs/heads/main\n", instance_double(Process::Status, success?: true)]
+          elsif args == ["git", "ls-remote", "gitlab", "refs/heads/main"]
+            ["2222222222222222222222222222222222222222\trefs/heads/main\n", instance_double(Process::Status, success?: true)]
+          else
+            m.call(*args)
+          end
+        end
+        allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("q\n")
+        expect { described_class.act(nil) }.to output(/HEAD mismatch on main: GitHub 1111111 vs GitLab 2222222/).to_stdout
+      end
+    end
+
+    it "does not warn when GitHub and GitLab HEAD SHAs match", :check_output do
+      with_workflows(["ci.yml"]) do |_root, _dir|
+        allow(Kettle::Dev::CIMonitor).to receive(:preferred_github_remote).and_return("origin")
+        allow(Kettle::Dev::CIMonitor).to receive(:gitlab_remote_candidates).and_return(["gitlab"])
+        allow(Open3).to receive(:capture2).and_wrap_original do |m, *args|
+          if args == ["git", "rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}"]
+            ["origin/main\n", instance_double(Process::Status, success?: true)]
+          elsif args == ["git", "rev-parse", "--short", "HEAD"]
+            ["abc123\n", instance_double(Process::Status, success?: true)]
+          elsif args == ["git", "ls-remote", "origin", "refs/heads/main"] || args == ["git", "ls-remote", "gitlab", "refs/heads/main"]
+            ["aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\trefs/heads/main\n", instance_double(Process::Status, success?: true)]
+          else
+            m.call(*args)
+          end
+        end
+        allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("q\n")
+        expect { described_class.act(nil) }.not_to output(/HEAD mismatch/).to_stdout
+      end
+    end
+
+    it "handles missing GitLab remote gracefully (no mismatch check)", :check_output do
+      with_workflows(["ci.yml"]) do |_root, _dir|
+        allow(Kettle::Dev::CIMonitor).to receive(:preferred_github_remote).and_return("origin")
+        allow(Kettle::Dev::CIMonitor).to receive(:gitlab_remote_candidates).and_return([])
+        allow(Open3).to receive(:capture2).and_wrap_original do |m, *args|
+          if args == ["git", "rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}"]
+            ["origin/main\n", instance_double(Process::Status, success?: true)]
+          elsif args == ["git", "rev-parse", "--short", "HEAD"]
+            ["abc123\n", instance_double(Process::Status, success?: true)]
+          elsif args == ["git", "ls-remote", "origin", "refs/heads/main"]
+            ["aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\trefs/heads/main\n", instance_double(Process::Status, success?: true)]
+          else
+            m.call(*args)
+          end
+        end
+        allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("q\n")
+        expect { described_class.act(nil) }.not_to raise_error
+      end
+    end
     it "quits when user enters 'q'", :check_output do
       with_workflows(["ci.yml", "style.yaml"]) do |_root, _dir|
         allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("q\n")

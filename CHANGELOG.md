@@ -24,6 +24,7 @@ Please file a bug if you notice a violation of semantic versioning.
 - Add CLI Option --only passthrough from kettle-dev-setup to Installation Task
 - Comprehensive documentation of all exe/ scripts in README.md
 - add gitlab pipeline result to ci:act
+- highlight SHA discrepancies in ci:act task header info
 ### Changed
 - expanded use of adapter patterns (Exit, Git, and Input)
 - refactored and improved structure of code, more resilient

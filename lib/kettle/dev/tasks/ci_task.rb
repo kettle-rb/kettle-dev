@@ -101,14 +101,30 @@ module Kettle
           # Print GitLab pipeline status (if configured) for the current branch.
           print_gitlab_status = proc do
             begin
-              root = Kettle::Dev::CIHelpers.project_root
-              gl_ci = File.exist?(File.join(root, ".gitlab-ci.yml"))
               branch = Kettle::Dev::CIHelpers.current_branch
-              owner, repo = Kettle::Dev::CIHelpers.repo_info_gitlab
-              unless gl_ci && branch && owner && repo
+              # Detect any GitLab remote (not just origin), mirroring CIMonitor behavior
+              gl_remotes = Kettle::Dev::CIMonitor.gitlab_remote_candidates
+              if gl_remotes.nil? || gl_remotes.empty? || branch.nil?
                 puts "Latest GL (#{branch || "n/a"}) pipeline: n/a"
                 next
               end
+
+              # Parse owner/repo from the first GitLab remote URL
+              gl_url = Kettle::Dev::CIMonitor.remote_url(gl_remotes.first)
+              owner = repo = nil
+              if gl_url =~ %r{git@gitlab.com:(.+?)/(.+?)(\.git)?$}
+                owner = Regexp.last_match(1)
+                repo = Regexp.last_match(2).sub(/\.git\z/, "")
+              elsif gl_url =~ %r{https://gitlab.com/(.+?)/(.+?)(\.git)?$}
+                owner = Regexp.last_match(1)
+                repo = Regexp.last_match(2).sub(/\.git\z/, "")
+              end
+
+              unless owner && repo
+                puts "Latest GL (#{branch}) pipeline: n/a"
+                next
+              end
+
               pipe = Kettle::Dev::CIHelpers.gitlab_latest_pipeline(owner: owner, repo: repo, branch: branch)
               if pipe
                 st = pipe["status"].to_s
@@ -203,6 +219,35 @@ module Kettle
           end
           puts "Upstream: #{upstream || "n/a"}"
           puts "HEAD: #{sha || "n/a"}"
+
+          # Compare remote HEAD SHAs between GitHub and GitLab for current branch and highlight mismatch
+          begin
+            branch_name = branch
+            if branch_name
+              gh_remote = Kettle::Dev::CIMonitor.preferred_github_remote
+              gl_remote = Kettle::Dev::CIMonitor.gitlab_remote_candidates.first
+              gh_sha = nil
+              gl_sha = nil
+              if gh_remote
+                out, status = Open3.capture2("git", "ls-remote", gh_remote.to_s, "refs/heads/#{branch_name}")
+                gh_sha = out.split(/\s+/).first if status.success? && out && !out.empty?
+              end
+              if gl_remote
+                out, status = Open3.capture2("git", "ls-remote", gl_remote.to_s, "refs/heads/#{branch_name}")
+                gl_sha = out.split(/\s+/).first if status.success? && out && !out.empty?
+              end
+              if gh_sha && gl_sha
+                gh_short = gh_sha[0,7]
+                gl_short = gl_sha[0,7]
+                if gh_short != gl_short
+                  puts "⚠️ HEAD mismatch on #{branch_name}: GitHub #{gh_short} vs GitLab #{gl_short}"
+                end
+              end
+            end
+          rescue StandardError => e
+            Kettle::Dev.debug_error(e, __method__)
+          end
+
           print_gitlab_status.call
           puts
           puts "Select a workflow to run with 'act':"
