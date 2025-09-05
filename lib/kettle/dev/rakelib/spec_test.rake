@@ -9,8 +9,6 @@ begin
   RSpec::Core::RakeTask.new(:spec)
   # This takes the place of `coverage` task when running as CI=true
   Kettle::Dev.register_default("spec") if Kettle::Dev::IS_CI
-  desc "run spec task with test task"
-  task test: :spec
 rescue LoadError
   warn("[kettle-dev][spec_test.rake] failed to load rspec/core/rake_task") if Kettle::Dev::DEBUGGING
   desc("spec task stub")
@@ -28,8 +26,6 @@ begin
     t.test_files = FileList["test/**/*test*.rb"]
     t.verbose = true
   end
-  desc "run test task with spec task"
-  task spec: :test
 rescue LoadError
   warn("[kettle-dev][spec_test.rake] failed to load rake/testtask") if Kettle::Dev::DEBUGGING
   desc("test task stub")

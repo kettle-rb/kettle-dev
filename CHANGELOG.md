@@ -22,8 +22,15 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Deprecated
 ### Removed
 ### Fixed
-- bin/rake test works for minitest
 ### Security
+
+## [1.1.6] - 2025-09-05
+- TAG: [v1.1.6][1.1.6t]
+- COVERAGE: 97.06% -- 3241/3339 lines in 23 files
+- BRANCH COVERAGE: 81.83% -- 1347/1646 branches in 23 files
+- 76.97% documented
+### Fixed
+- bin/rake test works for minitest
 
 ## [1.1.5] - 2025-09-04
 - TAG: [v1.1.5][1.1.5t]
@@ -497,7 +504,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.5...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.6...HEAD
+[1.1.6]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.5...v1.1.6
+[1.1.6t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.6
 [1.1.5]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.4...v1.1.5
 [1.1.5t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.5
 [1.1.4]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.3...v1.1.4
