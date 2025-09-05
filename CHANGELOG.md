@@ -22,6 +22,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Deprecated
 ### Removed
 ### Fixed
+- Fix local CI via act for templated workflows (skip JRuby in nektos/act locally)
 ### Security
 
 ## [1.1.6] - 2025-09-05
