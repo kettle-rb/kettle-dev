@@ -60,36 +60,39 @@
       <div id="content"><div id='filecontents'><p>module Kettle<br>
   module Dev<br>
     class GemSpecReader<br>
-      def self.load: (String root) -&gt; {<br>
-        gemspec_path: String?,<br>
-        gem_name: String,<br>
-        min_ruby: Gem::Version,<br>
-        homepage: String,<br>
-        gh_org: String,<br>
-        forge_org: String,<br>
-        funding_org: String?,<br>
-        gh_repo: String?,<br>
-        namespace: String,<br>
-        namespace_shield: String,<br>
-        entrypoint_require: String,<br>
-        gem_shield: String,<br>
-        authors: Array[String],<br>
-        email: Array[String],<br>
-        summary: String,<br>
-        description: String,<br>
-        licenses: Array[String],<br>
-        required_ruby_version: Gem::Requirement?,<br>
-        require_paths: Array[String],<br>
-        bindir: String,<br>
-        executables: Array[String],<br>
-      }<br>
-    end<br>
-  end<br>
-end</p>
+      DEFAULT_MINIMUM_RUBY: Gem::Version</p>
+
+<pre class="code ruby"><code class="ruby">  def self.load: (String root) -&gt; {
+    gemspec_path: String?,
+    gem_name: String,
+    min_ruby: Gem::Version,
+    homepage: String,
+    gh_org: String,
+    forge_org: String,
+    funding_org: String?,
+    gh_repo: String?,
+    namespace: String,
+    namespace_shield: String,
+    entrypoint_require: String,
+    gem_shield: String,
+    authors: Array[String],
+    email: Array[String],
+    summary: String,
+    description: String,
+    licenses: Array[String],
+    required_ruby_version: Gem::Requirement?,
+    require_paths: Array[String],
+    bindir: String,
+    executables: Array[String],
+  }
+
+  def self.derive_forge_and_origin_repo: (String? homepage_val) -&gt; { forge_org: String?, origin_repo: String? }
+end   end end
+</code></pre>
 </div></div>
 
       <div id="footer">
-  Generated on Thu Sep  4 17:04:15 2025 by
+  Generated on Fri Sep  5 01:07:30 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

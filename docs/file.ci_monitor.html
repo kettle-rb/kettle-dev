@@ -60,15 +60,21 @@
       <div id="content"><div id='filecontents'><p>module Kettle<br>
   module Dev<br>
     module CIMonitor<br>
+      def self.status_emoji: (String? status, String? conclusion) -&gt; String<br>
       def self.monitor_all!: (?restart_hint: String) -&gt; void<br>
       def self.monitor_gitlab!: (?restart_hint: String) -&gt; bool<br>
+      def self.collect_all: () -&gt; { github: Array[untyped], gitlab: untyped? }<br>
+      def self.summarize_results: ({ github: Array[untyped], gitlab: untyped? }) -&gt; bool<br>
+      def self.monitor_and_prompt_for_release!: (?restart_hint: String) -&gt; void<br>
+      def self.collect_github: () -&gt; Array[untyped]?<br>
+      def self.collect_gitlab: () -&gt; { status: String, url: String? }?<br>
     end<br>
   end<br>
 end</p>
 </div></div>
 
       <div id="footer">
-  Generated on Thu Sep  4 17:04:15 2025 by
+  Generated on Fri Sep  5 01:07:30 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>
