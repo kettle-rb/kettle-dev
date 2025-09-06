@@ -150,12 +150,6 @@ Gem::Specification.new do |spec|
     "kettle-dvcs",
   ]
 
-  # Tasks
-  spec.add_dependency("rake", "~> 13.0")                                # ruby >= 2.2.0
-
-  # URL parsing with Unicode support
-  spec.add_dependency("addressable", ">= 2.8", "< 3")
-
   # NOTE: It is preferable to list development dependencies in the gemspec due to increased
   #       visibility and discoverability on RubyGems.org.
   #       However, development dependencies in gemspec will install on
@@ -174,6 +168,9 @@ Gem::Specification.new do |spec|
   #       but this gem will always be used in the context of other libraries.
   #       At runtime, this gem depends on its dependencies being direct dependencies of those other libraries.
   #       The kettle-dev-setup script and kettle:dev:install rake task ensure libraries meet the requirements.
+
+  # Tasks
+  spec.add_development_dependency("rake", "~> 13.0")                                # ruby >= 2.2.0
 
   # Security
   spec.add_development_dependency("bundler-audit", "~> 0.9.2")                      # ruby >= 2.0.0

@@ -2,4 +2,7 @@
 # git gem is not a direct dependency for two reasons:
 # 1. it is incompatible with Truffleruby v23
 # 2. it depends on activesupport, which is too heavy
-gem "git", ">= 1.19.1"    # ruby >= 2.3
+gem "git", ">= 1.19.1"             # ruby >= 2.3
+
+# URL parsing with Unicode support (falls back to URI if not available)
+gem "addressable", ">= 2.8", "< 3" # ruby >= 2.2

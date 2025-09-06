@@ -22,6 +22,8 @@ Please file a bug if you notice a violation of semantic versioning.
 - .git-hooks/commit-msg allows commit if gitmoji-regex is unavailable
 ### Deprecated
 ### Removed
+- addressable, rake runtime dependencies
+  - moved to optional, or development dependencies
 ### Fixed
 - Fix local CI via act for templated workflows (skip JRuby in nektos/act locally)
 ### Security
