@@ -15,11 +15,7 @@ module Kettle
 
         # Local abort indirection to enable mocking via ExitAdapter
         def task_abort(msg)
-          if defined?(RSpec)
-            raise Kettle::Dev::Error, msg
-          else
-            Kettle::Dev::ExitAdapter.abort(msg)
-          end
+          raise Kettle::Dev::Error, msg
         end
 
         # Runs `act` for a selected workflow. Option can be a short code or workflow basename.

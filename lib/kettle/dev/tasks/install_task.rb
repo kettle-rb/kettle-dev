@@ -6,13 +6,11 @@ module Kettle
       module InstallTask
         module_function
 
-        # Abort wrapper that avoids terminating the entire process during specs
+        # Abort wrapper that avoids terminating the current rake task process.
+        # Always raise Kettle::Dev::Error so callers can decide whether to handle
+        # it without terminating the process (e.g., in tests or non-interactive runs).
         def task_abort(msg)
-          if defined?(RSpec)
-            raise Kettle::Dev::Error, msg
-          else
-            Kettle::Dev::ExitAdapter.abort(msg)
-          end
+          raise Kettle::Dev::Error, msg
         end
 
         def run

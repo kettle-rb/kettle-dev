@@ -10,11 +10,7 @@ module Kettle
 
         # Abort wrapper that avoids terminating the entire process during specs
         def task_abort(msg)
-          if defined?(RSpec)
-            raise Kettle::Dev::Error, msg
-          else
-            Kettle::Dev::ExitAdapter.abort(msg)
-          end
+          raise Kettle::Dev::Error, msg
         end
 
         # Execute the template operation into the current project.

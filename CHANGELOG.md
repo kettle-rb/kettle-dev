@@ -22,6 +22,8 @@ Please file a bug if you notice a violation of semantic versioning.
   - initial setup for projects that didn't previously use Appraisal
 ### Changed
 - .git-hooks/commit-msg allows commit if gitmoji-regex is unavailable
+- simplified `*Task` classes' `task_abort` methods to just raise Kettle::Dev::Error
+  - Allows caller to decide how to handle.
 ### Deprecated
 ### Removed
 - addressable, rake runtime dependencies

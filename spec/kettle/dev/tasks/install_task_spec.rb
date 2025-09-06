@@ -721,6 +721,7 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
         File.write(File.join(project_root, "Gemfile"), <<~GEMFILE)
           # frozen_string_literal: true
           source "https://rubygems.org"
+          gem "rake"
           gem "kettle-dev", path: "#{repo_root}"
         GEMFILE
         # Minimal Rakefile that loads kettle-dev tasks from this checkout

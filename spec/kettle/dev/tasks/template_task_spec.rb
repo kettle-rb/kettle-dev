@@ -17,25 +17,10 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
     end
 
     describe "::task_abort" do
-      it "raises Kettle::Dev::Error when running under RSpec (abort is suppressed during specs)" do
+      it "raises Kettle::Dev::Error" do
         expect {
           described_class.task_abort("STOP ME")
         }.to raise_error(Kettle::Dev::Error, /STOP ME/)
-      end
-
-      it "delegates to ExitAdapter.abort when RSpec is not defined (subprocess)" do
-        ruby = RbConfig.ruby
-        libdir = File.expand_path("../../../../../../lib", __FILE__)
-        script = <<~'FILE'
-          require "kettle/dev/tasks/template_task"
-          module Kettle; module Dev; module ExitAdapter
-            def self.abort(msg); puts("CALLED: #{msg}"); end
-          end; end; end
-          Kettle::Dev::Tasks::TemplateTask.task_abort("BYE")
-        FILE
-        out, = Open3.capture3(ruby, "-I", libdir, "-e", script)
-        # Some Rubies may mark nonzero due to tooling; assert on output primarily
-        expect(out).to include("CALLED: BYE")
       end
     end
 
