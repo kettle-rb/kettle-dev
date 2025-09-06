@@ -19,6 +19,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ## [Unreleased]
 ### Added
 ### Changed
+- .git-hooks/commit-msg allows commit if gitmoji-regex is unavailable
 ### Deprecated
 ### Removed
 ### Fixed

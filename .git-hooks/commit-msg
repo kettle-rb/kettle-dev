@@ -43,5 +43,6 @@ EOM
     exit 1
   end
 rescue LoadError => e
-  warn("gitmoji-regex gem not found: #{e.class}: #{e.message}.\n\tInstall the 'gitmoji-regex' gem to enable this check.\n\tSkipping gitmoji check.")
+  warn("gitmoji-regex gem not found: #{e.class}: #{e.message}.\n\tSkipping gitmoji check and allowing commit to proceed.\n\tRecommendation: add 'gitmoji-regex' to your development dependencies to enable this check.")
+  exit 0
 end
