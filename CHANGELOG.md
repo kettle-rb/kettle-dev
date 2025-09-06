@@ -18,6 +18,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [Unreleased]
 ### Added
+- rake task - `appraisal:install`
+  - initial setup for projects that didn't previously use Appraisal
 ### Changed
 - .git-hooks/commit-msg allows commit if gitmoji-regex is unavailable
 ### Deprecated

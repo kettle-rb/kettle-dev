@@ -4,6 +4,33 @@
 begin
   require "appraisal/task"
 
+  desc("Install Appraisal gemfiles (initial setup for projects that didn't previously use Appraisal)")
+  task("appraisal:install") do
+    bundle = Gem.bindir ? File.join(Gem.bindir, "bundle") : "bundle"
+
+    run_in_unbundled = proc do
+      env = {"BUNDLE_GEMFILE" => "Appraisal.root.gemfile"}
+
+      # 1) bundle install --gemfile Appraisal.root.gemfile
+      ok = system(bundle, "install", "--gemfile", "Appraisal.root.gemfile")
+      abort("appraisal:install failed: bundle install --gemfile Appraisal.root.gemfile") unless ok
+
+      # 2) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle exec appraisal install
+      ok = system(env, bundle, "exec", "appraisal", "install")
+      abort("appraisal:install failed: bundle exec appraisal install") unless ok
+
+      # 3) bundle exec rake rubocop_gradual:autocorrect
+      ok = system(bundle, "exec", "rake", "rubocop_gradual:autocorrect")
+      abort("appraisal:update failed: rubocop_gradual:autocorrect") unless ok
+    end
+
+    if defined?(Bundler)
+      Bundler.with_unbundled_env(&run_in_unbundled)
+    else
+      run_in_unbundled.call
+    end
+  end
+
   desc("Update Appraisal gemfiles and run RuboCop Gradual autocorrect")
   task("appraisal:update") do
     bundle = Gem.bindir ? File.join(Gem.bindir, "bundle") : "bundle"
