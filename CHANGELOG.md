@@ -18,19 +18,29 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [Unreleased]
 ### Added
+### Changed
+### Deprecated
+### Removed
+### Fixed
+### Security
+
+## [1.1.7] - 2025-09-06
+- TAG: [v1.1.7][1.1.7t]
+- COVERAGE: 97.12% -- 3237/3333 lines in 23 files
+- BRANCH COVERAGE: 81.95% -- 1344/1640 branches in 23 files
+- 76.97% documented
+### Added
 - rake task - `appraisal:install`
   - initial setup for projects that didn't previously use Appraisal
 ### Changed
 - .git-hooks/commit-msg allows commit if gitmoji-regex is unavailable
 - simplified `*Task` classes' `task_abort` methods to just raise Kettle::Dev::Error
   - Allows caller to decide how to handle.
-### Deprecated
 ### Removed
 - addressable, rake runtime dependencies
   - moved to optional, or development dependencies
 ### Fixed
 - Fix local CI via act for templated workflows (skip JRuby in nektos/act locally)
-### Security
 
 ## [1.1.6] - 2025-09-05
 - TAG: [v1.1.6][1.1.6t]
@@ -512,7 +522,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.6...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.7...HEAD
+[1.1.7]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.6...v1.1.7
+[1.1.7t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.7
 [1.1.6]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.5...v1.1.6
 [1.1.6t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.6
 [1.1.5]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.4...v1.1.5
