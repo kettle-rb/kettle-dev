@@ -13,7 +13,7 @@ This document captures project-specific knowledge to streamline setup, testing, 
     - See CONTRIBUTING.md for details on how to set up your local environment.
 - Ruby and Bundler
   - Runtime supports very old Rubies (>= 1.9.2) but development tooling targets >= 2.3 because of CI/setup-ruby and dev dependencies.
-  - Use a recent Ruby (>= 3.1 recommended) for fastest setup and to exercise modern coverage behavior.
+  - Use a recent Ruby (>= 3.4 recommended) for fastest setup and to exercise modern coverage behavior.
   - Install dependencies via Bundler in project root:
     - bundle install
 - Rake tasks (preferred entry points)
