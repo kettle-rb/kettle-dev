@@ -115,7 +115,7 @@ module Kettle
             runtime_heads
             x_std_libs
           ]
-          modular_gemfiles.each do |fname|
+          modular_gemfiles.each do |base|
             modular_gemfile = "#{base}.gemfile"
             src = helpers.prefer_example(File.join(gem_checkout_root, MODULAR_GEMFILE_DIR, modular_gemfile))
             dest = File.join(project_root, MODULAR_GEMFILE_DIR, modular_gemfile)
