@@ -18,15 +18,23 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [Unreleased]
 ### Added
-- badge for current runtime heads in example readme
 ### Changed
 ### Deprecated
 ### Removed
 ### Fixed
+### Security
+
+## [1.1.9] - 2025-09-07
+- TAG: [v1.1.9][1.1.9t]
+- COVERAGE: 97.11% -- 3255/3352 lines in 23 files
+- BRANCH COVERAGE: 81.91% -- 1345/1642 branches in 23 files
+- 76.65% documented
+### Added
+- badge for current runtime heads in example readme
+### Fixed
 - Add gemfiles/modular/x_std_libs.gemfile & injected.gemfile to template
 - example version of gemfiles/modular/runtime_heads.gemfile
   - necessary to avoid deps on recording gems in the template
-### Security
 
 ## [1.1.8] - 2025-09-07
 - TAG: [v1.1.8][1.1.8t]
@@ -547,7 +555,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.8...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.9...HEAD
+[1.1.9]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.8...v1.1.9
+[1.1.9t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.9
 [1.1.8]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.7...v1.1.8
 [1.1.8t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.8
 [1.1.7]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.6...v1.1.7
