@@ -361,16 +361,19 @@ module Kettle
           end
 
           files_to_copy = %w[
+            .aiignore
             .envrc
             .gitignore
             .gitlab-ci.yml
+            .junie/guidelines-rbs.md
+            .junie/guidelines.md
+            .opencollective.yml
             .rspec
             .rubocop.yml
             .simplecov
             .tool-versions
             .yard_gfm_support.rb
             .yardopts
-            .opencollective.yml
             Appraisal.root.gemfile
             Appraisals
             CHANGELOG.md
@@ -379,12 +382,10 @@ module Kettle
             CONTRIBUTING.md
             FUNDING.md
             Gemfile
-            Rakefile
             README.md
             RUBOCOP.md
+            Rakefile
             SECURITY.md
-            .junie/guidelines.md
-            .junie/guidelines-rbs.md
           ]
 
           # Snapshot existing README content once (for H1 prefix preservation after write)

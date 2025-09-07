@@ -79,6 +79,30 @@ RSpec.describe "rake kettle:dev:template" do # rubocop:disable RSpec/DescribeCla
         end
       end
     end
+    it "copies .aiignore.example to .aiignore using prefer_example" do
+      Dir.mktmpdir do |gem_root|
+        Dir.mktmpdir do |project_root|
+          File.write(File.join(gem_root, ".aiignore.example"), "# aiignore example\nfoo\n")
+          write_gemspec(project_root)
+
+          allow(helpers).to receive_messages(
+            project_root: project_root,
+            gem_checkout_root: gem_root,
+            ensure_clean_git!: nil,
+            ask: true,
+          )
+
+          stub_env("allowed" => "true")
+          stub_env("FUNDING_ORG" => "false")
+
+          expect { invoke }.not_to raise_error
+
+          dest_path = File.join(project_root, ".aiignore")
+          expect(File).to exist(dest_path)
+          expect(File.read(dest_path)).to include("foo")
+        end
+      end
+    end
   end
 end
 # rubocop:enable RSpec/NestedGroups, RSpec/MultipleExpectations
