@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="DeveloperToolsToolWindowSettingsV1" lastSelectedContentNodeId="notes" pluginVersion="7.1.0">
+  <component name="DeveloperToolsToolWindowSettingsV1" lastSelectedContentNodeId="unarchiver" pluginVersion="7.1.0">
     <developerToolsConfigurations>
       <developerToolConfiguration developerToolId="unarchiver" id="0667a3d9-4283-4794-8913-84c3b8ac529a" name="Workbench">
         <properties>
@@ -13,5 +13,6 @@
         </properties>
       </developerToolConfiguration>
     </developerToolsConfigurations>
+    <expandedGroupNodeIds />
   </component>
 </project>

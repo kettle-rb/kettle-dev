@@ -23,8 +23,9 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Deprecated
 ### Removed
 ### Fixed
+- Add gemfiles/modular/x_std_libs.gemfile & injected.gemfile to template
 - example version of gemfiles/modular/runtime_heads.gemfile
-  - necessary to avoid deps on recording gems in template
+  - necessary to avoid deps on recording gems in the template
 ### Security
 
 ## [1.1.8] - 2025-09-07

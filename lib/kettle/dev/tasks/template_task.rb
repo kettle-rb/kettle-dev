@@ -6,6 +6,7 @@ module Kettle
       # Thin wrapper to expose the kettle:dev:template task logic as a callable API
       # for testability. The rake task should only call this method.
       module TemplateTask
+        MODULAR_GEMFILE_DIR = "gemfiles/modular"
         module_function
 
         # Abort wrapper that avoids terminating the entire process during specs
@@ -102,78 +103,89 @@ module Kettle
             allow_replace: true,
           )
 
-          # 4) gemfiles/modular/*.gemfile (from gem's gemfiles/modular)
-          [%w[coverage.gemfile], %w[documentation.gemfile], %w[style.gemfile], %w[optional.gemfile]].each do |base|
-            src = helpers.prefer_example(File.join(gem_checkout_root, "gemfiles/modular", base[0]))
-            dest = File.join(project_root, "gemfiles/modular", base[0])
-            if File.basename(src).sub(/\.example\z/, "") == "style.gemfile"
-              helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true) do |content|
-                # Adjust rubocop-lts constraint based on min_ruby
-                version_map = [
-                  [Gem::Version.new("1.8"), "~> 0.1"],
-                  [Gem::Version.new("1.9"), "~> 2.0"],
-                  [Gem::Version.new("2.0"), "~> 4.0"],
-                  [Gem::Version.new("2.1"), "~> 6.0"],
-                  [Gem::Version.new("2.2"), "~> 8.0"],
-                  [Gem::Version.new("2.3"), "~> 10.0"],
-                  [Gem::Version.new("2.4"), "~> 12.0"],
-                  [Gem::Version.new("2.5"), "~> 14.0"],
-                  [Gem::Version.new("2.6"), "~> 16.0"],
-                  [Gem::Version.new("2.7"), "~> 18.0"],
-                  [Gem::Version.new("3.0"), "~> 20.0"],
-                  [Gem::Version.new("3.1"), "~> 22.0"],
-                  [Gem::Version.new("3.2"), "~> 24.0"],
-                  [Gem::Version.new("3.3"), "~> 26.0"],
-                  [Gem::Version.new("3.4"), "~> 28.0"],
-                ]
-                new_constraint = nil
-                rubocop_ruby_gem_version = nil
-                ruby1_8 = version_map.first
-                begin
-                  if min_ruby
-                    version_map.reverse_each do |min, req|
-                      if min_ruby >= min
-                        new_constraint = req
-                        rubocop_ruby_gem_version = min.segments.join("_")
-                        break
-                      end
-                    end
-                  end
-                  if !new_constraint || !rubocop_ruby_gem_version
-                    # A gem with no declared minimum ruby is effectively >= 1.8.7
-                    new_constraint = ruby1_8[1]
-                    rubocop_ruby_gem_version = ruby1_8[0].segments.join("_")
-                  end
-                rescue StandardError => e
-                  Kettle::Dev.debug_error(e, __method__)
-                  # ignore, use default
-                ensure
-                  new_constraint ||= ruby1_8[1]
-                  rubocop_ruby_gem_version ||= ruby1_8[0].segments.join("_")
-                end
-                if new_constraint && rubocop_ruby_gem_version
-                  token = "{RUBOCOP|LTS|CONSTRAINT}"
-                  content.gsub!(token, new_constraint) if content.include?(token)
-                  token = "{RUBOCOP|RUBY|GEM}"
-                  content.gsub!(token, "rubocop-ruby#{rubocop_ruby_gem_version}") if content.include?(token)
-                end
-              end
-            else
-              helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true)
-            end
+          # 4a) gemfiles/modular/*.gemfile
+          #     from gem's gemfiles/modular,
+          #     except `style.gemfile` which has special handling below
+          modular_gemfiles = %w[
+            coverage
+            debug
+            documentation
+            injected
+            optional
+            runtime_heads
+            x_std_libs
+          ]
+          modular_gemfiles.each do |fname|
+            modular_gemfile = "#{base}.gemfile"
+            src = helpers.prefer_example(File.join(gem_checkout_root, MODULAR_GEMFILE_DIR, modular_gemfile))
+            dest = File.join(project_root, MODULAR_GEMFILE_DIR, modular_gemfile)
+            helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true)
           end
 
-          # 4b) Additional modular gemfiles to include
-          ["debug.gemfile", "runtime_heads.gemfile"].each do |fname|
-            src = helpers.prefer_example(File.join(gem_checkout_root, "gemfiles/modular", fname))
-            dest = File.join(project_root, "gemfiles/modular", fname)
+          # 4b) gemfiles/modular/style.gemfile
+          modular_gemfile = "style.gemfile"
+          src = helpers.prefer_example(File.join(gem_checkout_root, MODULAR_GEMFILE_DIR, modular_gemfile))
+          dest = File.join(project_root, MODULAR_GEMFILE_DIR, modular_gemfile)
+          if File.basename(src).sub(/\.example\z/, "") == "style.gemfile"
+            helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true) do |content|
+              # Adjust rubocop-lts constraint based on min_ruby
+              version_map = [
+                [Gem::Version.new("1.8"), "~> 0.1"],
+                [Gem::Version.new("1.9"), "~> 2.0"],
+                [Gem::Version.new("2.0"), "~> 4.0"],
+                [Gem::Version.new("2.1"), "~> 6.0"],
+                [Gem::Version.new("2.2"), "~> 8.0"],
+                [Gem::Version.new("2.3"), "~> 10.0"],
+                [Gem::Version.new("2.4"), "~> 12.0"],
+                [Gem::Version.new("2.5"), "~> 14.0"],
+                [Gem::Version.new("2.6"), "~> 16.0"],
+                [Gem::Version.new("2.7"), "~> 18.0"],
+                [Gem::Version.new("3.0"), "~> 20.0"],
+                [Gem::Version.new("3.1"), "~> 22.0"],
+                [Gem::Version.new("3.2"), "~> 24.0"],
+                [Gem::Version.new("3.3"), "~> 26.0"],
+                [Gem::Version.new("3.4"), "~> 28.0"],
+              ]
+              new_constraint = nil
+              rubocop_ruby_gem_version = nil
+              ruby1_8 = version_map.first
+              begin
+                if min_ruby
+                  version_map.reverse_each do |min, req|
+                    if min_ruby >= min
+                      new_constraint = req
+                      rubocop_ruby_gem_version = min.segments.join("_")
+                      break
+                    end
+                  end
+                end
+                if !new_constraint || !rubocop_ruby_gem_version
+                  # A gem with no declared minimum ruby is effectively >= 1.8.7
+                  new_constraint = ruby1_8[1]
+                  rubocop_ruby_gem_version = ruby1_8[0].segments.join("_")
+                end
+              rescue StandardError => e
+                Kettle::Dev.debug_error(e, __method__)
+                # ignore, use default
+              ensure
+                new_constraint ||= ruby1_8[1]
+                rubocop_ruby_gem_version ||= ruby1_8[0].segments.join("_")
+              end
+              if new_constraint && rubocop_ruby_gem_version
+                token = "{RUBOCOP|LTS|CONSTRAINT}"
+                content.gsub!(token, new_constraint) if content.include?(token)
+                token = "{RUBOCOP|RUBY|GEM}"
+                content.gsub!(token, "rubocop-ruby#{rubocop_ruby_gem_version}") if content.include?(token)
+              end
+            end
+          else
             helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true)
           end
 
           # 4c) Copy modular directories with nested/versioned files
           %w[erb mutex_m stringio x_std_libs].each do |dir|
-            src_dir = File.join(gem_checkout_root, "gemfiles/modular", dir)
-            dest_dir = File.join(project_root, "gemfiles/modular", dir)
+            src_dir = File.join(gem_checkout_root, MODULAR_GEMFILE_DIR, dir)
+            dest_dir = File.join(project_root, MODULAR_GEMFILE_DIR, dir)
             helpers.copy_dir_with_prompt(src_dir, dest_dir)
           end
 
