@@ -2,8 +2,6 @@
 
 source "https://rubygems.org"
 
-gem "erb"
-
 gemspec path: "../"
 
 eval_gemfile("modular/coverage.gemfile")
@@ -15,3 +13,5 @@ eval_gemfile("modular/style.gemfile")
 eval_gemfile("modular/optional.gemfile")
 
 eval_gemfile("modular/recording/r3/recording.gemfile")
+
+eval_gemfile("modular/x_std_libs.gemfile")

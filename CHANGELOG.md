@@ -18,6 +18,13 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [Unreleased]
 ### Added
+- gemfiles/modular/x_std_libs pattern to template, including:
+  - erb
+  - mutex_m
+  - stringio
+- gemfiles/modular/debug.gemfile
+- gemfiles/modular/runtime_heads.gemfile
+- .github/workflows/current-runtime-heads.yml
 ### Changed
 ### Deprecated
 ### Removed
@@ -71,7 +78,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Removed
 - defensive NameError handling in ChangelogCLI.abort method
 ### Fixed
-- replace token {OPENCOLLECTIVE|ORG_NAME} with funding org name
+- replace token `{OPENCOLLECTIVE|ORG_NAME}` with funding org name
 - prefer .example version of .git-hooks
 - kettle-commit-msg now runs via rubygems (not bundler) so it will work via a system gem
 - fixed logic for handling derivation of forge and funding URLs

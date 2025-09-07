@@ -187,6 +187,53 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
         end
       end
 
+      it "copies modular directories and additional gemfiles (erb, mutex_m, stringio, x_std_libs; debug/runtime_heads)" do
+        Dir.mktmpdir do |gem_root|
+          Dir.mktmpdir do |project_root|
+            base = File.join(gem_root, "gemfiles", "modular")
+            %w[erb mutex_m stringio x_std_libs].each do |d|
+              dir = File.join(base, d)
+              FileUtils.mkdir_p(dir)
+              # nested/versioned example files
+              FileUtils.mkdir_p(File.join(dir, "r2.6"))
+              File.write(File.join(dir, "r2.6", "v2.2.gemfile"), "# v2.2\n")
+              FileUtils.mkdir_p(File.join(dir, "r3"))
+              File.write(File.join(dir, "r3", "libs.gemfile"), "# r3 libs\n")
+            end
+            # additional specific gemfiles
+            File.write(File.join(base, "debug.gemfile"), "# debug\n")
+            File.write(File.join(base, "runtime_heads.gemfile"), "# runtime heads\n")
+
+            # minimal gemspec to satisfy metadata scan
+            File.write(File.join(project_root, "demo.gemspec"), <<~G)
+              Gem::Specification.new do |spec|
+                spec.name = "demo"
+                spec.required_ruby_version = ">= 3.1"
+                spec.homepage = "https://github.com/acme/demo"
+              end
+            G
+
+            allow(helpers).to receive_messages(
+              project_root: project_root,
+              gem_checkout_root: gem_root,
+              ensure_clean_git!: nil,
+              ask: true,
+            )
+
+            expect { described_class.run }.not_to raise_error
+
+            # assert directories copied recursively
+            %w[erb mutex_m stringio x_std_libs].each do |d|
+              expect(File).to exist(File.join(project_root, "gemfiles", "modular", d, "r2.6", "v2.2.gemfile"))
+              expect(File).to exist(File.join(project_root, "gemfiles", "modular", d, "r3", "libs.gemfile"))
+            end
+            # assert specific gemfiles copied
+            expect(File).to exist(File.join(project_root, "gemfiles", "modular", "debug.gemfile"))
+            expect(File).to exist(File.join(project_root, "gemfiles", "modular", "runtime_heads.gemfile"))
+          end
+        end
+      end
+
       # Regression: optional.gemfile should prefer the .example version when both exist
       it "prefers optional.gemfile.example over optional.gemfile" do
         Dir.mktmpdir do |gem_root|

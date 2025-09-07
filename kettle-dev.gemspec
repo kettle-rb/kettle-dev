@@ -80,12 +80,20 @@ Gem::Specification.new do |spec|
     ".git-hooks/*",
     ".qlty/**/*",
     "gemfiles/modular/*.gemfile",
+    "gemfiles/modular/erb/**/*.gemfile",
+    "gemfiles/modular/mutex_m/**/*.gemfile",
+    "gemfiles/modular/stringio/**/*.gemfile",
+    "gemfiles/modular/x_std_libs/**/*.gemfile",
     # Example templates
     "*.example",
     # NOTE: Dir globs do not match dotfiles unless the pattern starts with a dot.
     # This will include to .env.local.example so it is packaged and available to template.
     ".*.example",
     "gemfiles/modular/*.gemfile.example",
+    "gemfiles/modular/erb/**/*.gemfile.example",
+    "gemfiles/modular/mutex_m/**/*.gemfile.example",
+    "gemfiles/modular/stringio/**/*.gemfile.example",
+    "gemfiles/modular/x_std_libs/**/*.gemfile.example",
     "lib/**/*.example",
     # Root files used by template tasks
     ".envrc",

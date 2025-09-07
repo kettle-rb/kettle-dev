@@ -151,6 +151,20 @@ module Kettle
             end
           end
 
+          # 4b) Additional modular gemfiles to include
+          ["debug.gemfile", "runtime_heads.gemfile"].each do |fname|
+            src = helpers.prefer_example(File.join(gem_checkout_root, "gemfiles/modular", fname))
+            dest = File.join(project_root, "gemfiles/modular", fname)
+            helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true)
+          end
+
+          # 4c) Copy modular directories with nested/versioned files
+          %w[erb mutex_m stringio x_std_libs].each do |dir|
+            src_dir = File.join(gem_checkout_root, "gemfiles/modular", dir)
+            dest_dir = File.join(project_root, "gemfiles/modular", dir)
+            helpers.copy_dir_with_prompt(src_dir, dest_dir)
+          end
+
           # 5) spec/spec_helper.rb (no create)
           dest_spec_helper = File.join(project_root, "spec/spec_helper.rb")
           if File.file?(dest_spec_helper)
