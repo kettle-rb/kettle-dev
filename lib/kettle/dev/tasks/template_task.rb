@@ -7,6 +7,7 @@ module Kettle
       # for testability. The rake task should only call this method.
       module TemplateTask
         MODULAR_GEMFILE_DIR = "gemfiles/modular"
+
         module_function
 
         # Abort wrapper that avoids terminating the entire process during specs
