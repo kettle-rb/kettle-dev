@@ -2,8 +2,7 @@
 
 require "fileutils"
 
-test_tasks = []
-
+# rubocop:disable Rake/DuplicateTask
 # Set up MiniTest
 begin
   require "rake/testtask"
@@ -52,4 +51,4 @@ elsif test_registered && spec_or_coverage
 else
   puts "No test task is registered."
 end
-
+# rubocop:enable Rake/DuplicateTask

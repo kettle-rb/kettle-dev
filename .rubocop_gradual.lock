@@ -3,7 +3,7 @@
     [62, 9, 63, "Style/InvertibleUnlessCondition: Prefer `if ENV.fetch(\"DEBUG\", \"false\").casecmp(\"true\").nonzero?` over `unless ENV.fetch(\"DEBUG\", \"false\").casecmp(\"true\").zero?`.", 1934394995],
     [294, 3, 196, "Lint/RescueException: Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?", 1142934825]
   ],
-  "lib/kettle/dev.rb:194618263": [
+  "lib/kettle/dev.rb:2723357232": [
     [63, 17, 2, "ThreadSafety/MutableClassInstanceVariable: Freeze mutable objects assigned to class instance variables.", 5862883],
     [74, 7, 16, "Lint/RescueException: Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?", 2127134117]
   ],
@@ -197,9 +197,9 @@
   "spec/kettle/dev/versioning_spec.rb:3465928905": [
     [53, 7, 53, "RSpec/PredicateMatcher: Prefer using `be_epic_major` matcher over `epic_major?`.", 200417834]
   ],
-  "spec/kettle/dev_private_spec.rb:2105232169": [
-    [10, 7, 20, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 794029890],
-    [80, 9, 18, "RSpec/LeakyConstantDeclaration: Stub module constant instead of declaring explicitly.", 3236815244]
+  "spec/kettle/dev_spec.rb:3559647913": [
+    [18, 7, 20, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 794029890],
+    [88, 9, 18, "RSpec/LeakyConstantDeclaration: Stub module constant instead of declaring explicitly.", 3236815244]
   ],
   "spec/kettle/entry_points_spec.rb:847894159": [
     [3, 16, 14, "RSpec/DescribeClass: The first argument to describe should be the class or module being tested.", 3581131150]
