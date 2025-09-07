@@ -22,6 +22,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Deprecated
 ### Removed
 ### Fixed
+- fix typo in the path to x_std_libs.gemfile
 ### Security
 
 ## [1.1.9] - 2025-09-07
