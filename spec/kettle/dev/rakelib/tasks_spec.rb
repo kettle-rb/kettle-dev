@@ -79,6 +79,7 @@ RSpec.describe "rake kettle:dev:template" do # rubocop:disable RSpec/DescribeCla
         end
       end
     end
+
     it "copies .aiignore.example to .aiignore using prefer_example" do
       Dir.mktmpdir do |gem_root|
         Dir.mktmpdir do |project_root|

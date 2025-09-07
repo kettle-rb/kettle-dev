@@ -51,6 +51,11 @@ appraise "current" do
   #  eval_gemfile "modular/injected.gemfile"
 end
 
+# Test current Rubies against head versions of runtime dependencies
+appraise "dep-heads" do
+  eval_gemfile "modular/runtime_heads.gemfile"
+end
+
 appraise "ruby-2-3" do
   eval_gemfile "modular/recording/r2.3/recording.gemfile"
   eval_gemfile "modular/x_std_libs/r2.3/libs.gemfile"

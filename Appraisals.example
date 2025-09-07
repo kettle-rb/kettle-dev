@@ -41,7 +41,7 @@ appraise "current" do
 end
 
 # Test current Rubies against head versions of runtime dependencies
-appraise "current-runtime-heads" do
+appraise "dep-heads" do
   eval_gemfile "modular/runtime_heads.gemfile"
 end
 

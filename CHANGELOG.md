@@ -26,7 +26,7 @@ Please file a bug if you notice a violation of semantic versioning.
   - stringio
 - gemfiles/modular/debug.gemfile
 - gemfiles/modular/runtime_heads.gemfile
-- .github/workflows/current-runtime-heads.yml
+- .github/workflows/dep-heads.yml
 ### Changed
 ### Deprecated
 ### Removed

@@ -41,7 +41,7 @@ jobs:
         include:
           # Ruby 3.4
           - ruby: "ruby"
-            appraisal: "current-runtime-heads"
+            appraisal: "dep-heads"
             exec_cmd: "rake test"
             gemfile: "Appraisal.root"
             rubygems: latest
@@ -51,7 +51,7 @@ jobs:
           #   (according to documentation: targets Ruby 3.3 compatibility)
           #   (according to runtime: targets Ruby 3.2 compatibility)
           - ruby: "truffleruby"
-            appraisal: "current-runtime-heads"
+            appraisal: "dep-heads"
             exec_cmd: "rake test"
             gemfile: "Appraisal.root"
             rubygems: default
@@ -59,7 +59,7 @@ jobs:
 
           # jruby-10.0 (targets Ruby 3.4 compatibility)
           - ruby: "jruby"
-            appraisal: "current-runtime-heads"
+            appraisal: "dep-heads"
             exec_cmd: "rake test"
             gemfile: "Appraisal.root"
             rubygems: default

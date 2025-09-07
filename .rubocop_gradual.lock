@@ -20,18 +20,14 @@
   "spec/kettle/dev/changelog_cli_spec.rb:1599338057": [
     [39, 9, 72, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [40].", 1904128172],
     [40, 9, 75, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [39].", 2496915125],
-    [292, 85, 12, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 4264369714],
     [456, 7, 60, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [457].", 1941286627],
     [457, 7, 71, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [456].", 3274330758],
     [464, 13, 25, "RSpec/DescribedClass: Use `described_class` instead of `Kettle::Dev::ChangelogCLI`.", 320529073],
     [506, 7, 60, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [507].", 1941286627],
     [507, 7, 71, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [506].", 3274330758],
-    [513, 13, 25, "RSpec/DescribedClass: Use `described_class` instead of `Kettle::Dev::ChangelogCLI`.", 320529073],
-    [546, 103, 12, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 4264369714]
+    [513, 13, 25, "RSpec/DescribedClass: Use `described_class` instead of `Kettle::Dev::ChangelogCLI`.", 320529073]
   ],
   "spec/kettle/dev/ci_helpers_spec.rb:929910759": [
-    [36, 16, 42, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 465257938],
-    [37, 28, 33, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 3247304381],
     [40, 9, 19, "ThreadSafety/DirChdir: Avoid using `Dir.chdir` due to its process-wide effect.", 585207512]
   ],
   "spec/kettle/dev/ci_monitor_spec.rb:1284446946": [
@@ -104,84 +100,41 @@
     [296, 7, 58, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [292, 293, 294, 295, 297].", 496823878],
     [297, 7, 50, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [292, 293, 294, 295, 296].", 615323092],
     [337, 7, 15, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 3416856044],
-    [337, 26, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `adapter` as a spy using `allow` or `instance_spy`.", 1384559950],
     [344, 7, 60, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [346].", 702473014],
     [346, 7, 98, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [344].", 2766558819],
     [347, 7, 15, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 3416856044],
-    [347, 26, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `adapter` as a spy using `allow` or `instance_spy`.", 1384559950],
     [360, 7, 15, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 3416856044],
-    [360, 26, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `adapter` as a spy using `allow` or `instance_spy`.", 1384559950],
     [361, 7, 15, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 3416856044],
-    [361, 26, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `adapter` as a spy using `allow` or `instance_spy`.", 1384559950],
     [362, 7, 15, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 3416856044],
-    [362, 26, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `adapter` as a spy using `allow` or `instance_spy`.", 1384559950],
     [363, 7, 15, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 3416856044],
-    [363, 26, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `adapter` as a spy using `allow` or `instance_spy`.", 1384559950],
     [364, 7, 15, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 3416856044],
-    [364, 26, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `adapter` as a spy using `allow` or `instance_spy`.", 1384559950],
     [365, 7, 15, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 3416856044],
-    [365, 26, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `adapter` as a spy using `allow` or `instance_spy`.", 1384559950],
     [366, 7, 15, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 3416856044],
-    [366, 26, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `adapter` as a spy using `allow` or `instance_spy`.", 1384559950],
     [405, 7, 14, "ThreadSafety/DirChdir: Avoid using `Dir.chdir` due to its process-wide effect.", 2866645406],
     [424, 5, 51, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [426, 433].", 1486437938],
     [426, 5, 50, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [424, 433].", 615323092],
     [433, 5, 54, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [424, 426].", 1075717093]
   ],
   "spec/kettle/dev/git_adapter_spec.rb:1532760866": [
-    [6, 22, 19, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 3198354142],
-    [9, 27, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `git_repo` as a spy using `allow` or `instance_spy`.", 1384559950],
-    [17, 27, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `git_repo` as a spy using `allow` or `instance_spy`.", 1384559950],
     [25, 7, 16, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 722749302],
-    [25, 27, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `git_repo` as a spy using `allow` or `instance_spy`.", 1384559950],
-    [43, 18, 37, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 2376854826],
-    [44, 18, 37, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 3615709467],
-    [55, 18, 72, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 2627662438],
-    [56, 18, 76, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 4194664841],
-    [70, 18, 72, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 2627662438],
-    [81, 27, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `git_repo` as a spy using `allow` or `instance_spy`.", 1384559950],
-    [91, 27, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `git_repo` as a spy using `allow` or `instance_spy`.", 1384559950],
-    [101, 27, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `git_repo` as a spy using `allow` or `instance_spy`.", 1384559950],
-    [106, 27, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `git_repo` as a spy using `allow` or `instance_spy`.", 1384559950],
     [123, 7, 15, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 3416856044],
-    [123, 26, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `adapter` as a spy using `allow` or `instance_spy`.", 1384559950],
     [125, 7, 15, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 3416856044],
-    [125, 26, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `adapter` as a spy using `allow` or `instance_spy`.", 1384559950],
     [131, 7, 15, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 3416856044],
-    [131, 26, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `adapter` as a spy using `allow` or `instance_spy`.", 1384559950],
     [133, 7, 15, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 3416856044],
-    [133, 26, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `adapter` as a spy using `allow` or `instance_spy`.", 1384559950],
     [138, 7, 13, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2024371388],
-    [138, 24, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `Open3` as a spy using `allow` or `instance_spy`.", 1384559950],
     [144, 7, 13, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2024371388],
-    [144, 24, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `Open3` as a spy using `allow` or `instance_spy`.", 1384559950],
     [156, 7, 13, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2024371388],
-    [156, 24, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `Open3` as a spy using `allow` or `instance_spy`.", 1384559950],
     [165, 7, 13, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2024371388],
-    [165, 24, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `Open3` as a spy using `allow` or `instance_spy`.", 1384559950],
     [172, 7, 15, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 3416856044],
-    [172, 26, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `adapter` as a spy using `allow` or `instance_spy`.", 1384559950],
     [174, 7, 15, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 3416856044],
-    [174, 26, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `adapter` as a spy using `allow` or `instance_spy`.", 1384559950],
     [176, 7, 15, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 3416856044],
-    [176, 26, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `adapter` as a spy using `allow` or `instance_spy`.", 1384559950],
     [178, 7, 15, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 3416856044],
-    [178, 26, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `adapter` as a spy using `allow` or `instance_spy`.", 1384559950],
-    [235, 24, 19, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 3198354142],
-    [236, 26, 73, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 1163148245],
     [242, 9, 16, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 722749302],
-    [242, 29, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `git_repo` as a spy using `allow` or `instance_spy`.", 1384559950],
-    [247, 24, 83, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 2467801370],
     [251, 9, 16, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 722749302],
-    [251, 29, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `git_repo` as a spy using `allow` or `instance_spy`.", 1384559950],
     [273, 9, 13, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2024371388],
-    [273, 26, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `Open3` as a spy using `allow` or `instance_spy`.", 1384559950],
     [279, 9, 13, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2024371388],
-    [279, 26, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `Open3` as a spy using `allow` or `instance_spy`.", 1384559950],
     [285, 9, 13, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2024371388],
-    [285, 26, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `Open3` as a spy using `allow` or `instance_spy`.", 1384559950],
-    [291, 9, 13, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2024371388],
-    [291, 26, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `Open3` as a spy using `allow` or `instance_spy`.", 1384559950]
+    [291, 9, 13, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2024371388]
   ],
   "spec/kettle/dev/pre_release_cli_spec.rb:3795621826": [
     [163, 9, 50, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [165].", 2390041128],
@@ -224,8 +177,8 @@
     [557, 9, 29, "RSpec/AnyInstance: Avoid stubbing using `allow_any_instance_of`.", 440176922],
     [570, 9, 29, "RSpec/AnyInstance: Avoid stubbing using `allow_any_instance_of`.", 440176922]
   ],
-  "spec/kettle/dev/tasks/template_task_spec.rb:2364069216": [
-    [572, 15, 24, "RSpec/ContextWording: Context description should match /^when\\b/, /^with\\b/, or /^without\\b/.", 196765058]
+  "spec/kettle/dev/tasks/template_task_spec.rb:149664963": [
+    [619, 15, 24, "RSpec/ContextWording: Context description should match /^when\\b/, /^with\\b/, or /^without\\b/.", 196765058]
   ],
   "spec/kettle/dev/template_helpers_spec.rb:1388125955": [
     [671, 11, 65, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [673].", 3890449948],
@@ -246,9 +199,7 @@
   ],
   "spec/kettle/dev_private_spec.rb:2105232169": [
     [10, 7, 20, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 794029890],
-    [10, 31, 7, "RSpec/MessageSpies: Prefer `have_received` for setting message expectations. Setup `default_task` as a spy using `allow` or `instance_spy`.", 1384559950],
-    [80, 9, 18, "RSpec/LeakyConstantDeclaration: Stub module constant instead of declaring explicitly.", 3236815244],
-    [83, 41, 36, "RSpec/VerifiedDoubles: Prefer using verifying doubles over normal doubles.", 1790782556]
+    [80, 9, 18, "RSpec/LeakyConstantDeclaration: Stub module constant instead of declaring explicitly.", 3236815244]
   ],
   "spec/kettle/entry_points_spec.rb:847894159": [
     [3, 16, 14, "RSpec/DescribeClass: The first argument to describe should be the class or module being tested.", 3581131150]
