@@ -41,6 +41,8 @@ Please file a bug if you notice a violation of semantic versioning.
 - .github/workflows/dep-heads.yml
 - (performance) filter and prioritize example files in the `.github` directory
 - added codecov config to the template
+### Fixed
+- run specs as part of the test task
 
 ## [1.1.7] - 2025-09-06
 - TAG: [v1.1.7][1.1.7t]

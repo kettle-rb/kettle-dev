@@ -109,6 +109,10 @@ module Kettle
         defaults
       end
 
+      def default_registered?(task_name)
+        defaults.include?(task_name.to_s)
+      end
+
       private
 
       ### LINTING TASKS
