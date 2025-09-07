@@ -18,7 +18,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [Unreleased]
 ### Added
-- add .aiignore to template
+- add .aiignore to the template
+- add .rubocop_rspec.yml to the template
 - gemfiles/modular/x_std_libs pattern to template, including:
   - erb
   - mutex_m

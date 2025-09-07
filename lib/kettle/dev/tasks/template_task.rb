@@ -370,6 +370,7 @@ module Kettle
             .opencollective.yml
             .rspec
             .rubocop.yml
+            .rubocop_rspec.yml
             .simplecov
             .tool-versions
             .yard_gfm_support.rb
