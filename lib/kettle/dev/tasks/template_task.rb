@@ -41,9 +41,21 @@ module Kettle
           # 2) .github/**/*.yml with FUNDING.yml customizations
           source_github_dir = File.join(gem_checkout_root, ".github")
           if Dir.exist?(source_github_dir)
-            files = Dir.glob(File.join(source_github_dir, "**", "*.yml")) +
+            # Build a unique set of logical .yml paths, preferring the .example variant when present
+            candidates = Dir.glob(File.join(source_github_dir, "**", "*.yml")) +
               Dir.glob(File.join(source_github_dir, "**", "*.yml.example"))
-            files.uniq.each do |orig_src|
+            selected = {}
+            candidates.each do |path|
+              # Key by the path without the optional .example suffix
+              key = path.sub(/\.example\z/, "")
+              # Prefer example: overwrite a plain selection with .example, but do not downgrade
+              if path.end_with?(".example")
+                selected[key] = path
+              else
+                selected[key] ||= path
+              end
+            end
+            selected.values.each do |orig_src|
               src = helpers.prefer_example(orig_src)
               # Destination path should never include the .example suffix.
               rel = orig_src.sub(/^#{Regexp.escape(gem_checkout_root)}\/?/, "").sub(/\.example\z/, "")
