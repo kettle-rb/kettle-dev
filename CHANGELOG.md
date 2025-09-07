@@ -18,6 +18,18 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [Unreleased]
 ### Added
+### Changed
+### Deprecated
+### Removed
+### Fixed
+### Security
+
+## [1.1.8] - 2025-09-07
+- TAG: [v1.1.8][1.1.8t]
+- COVERAGE: 97.16% -- 3246/3341 lines in 23 files
+- BRANCH COVERAGE: 81.95% -- 1344/1640 branches in 23 files
+- 76.97% documented
+### Added
 - add .aiignore to the template
 - add .rubocop_rspec.yml to the template
 - gemfiles/modular/x_std_libs pattern to template, including:
@@ -29,11 +41,6 @@ Please file a bug if you notice a violation of semantic versioning.
 - .github/workflows/dep-heads.yml
 - (performance) filter and prioritize example files in the `.github` directory
 - added codecov config to the template
-### Changed
-### Deprecated
-### Removed
-### Fixed
-### Security
 
 ## [1.1.7] - 2025-09-06
 - TAG: [v1.1.7][1.1.7t]
@@ -533,7 +540,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.7...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.8...HEAD
+[1.1.8]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.7...v1.1.8
+[1.1.8t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.8
 [1.1.7]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.6...v1.1.7
 [1.1.7t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.7
 [1.1.6]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.5...v1.1.6
