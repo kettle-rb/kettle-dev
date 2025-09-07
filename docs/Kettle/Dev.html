@@ -328,6 +328,29 @@ Accepts 1, true, y, yes (any case).</p>
         <li class="public ">
   <span class="summary_signature">
     
+      <a href="#default_registered%3F-class_method" title="default_registered? (class method)">.<strong>default_registered?</strong>(task_name)  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
       <a href="#install_tasks-class_method" title="install_tasks (class method)">.<strong>install_tasks</strong>  &#x21d2; void </a>
     
 
@@ -521,6 +544,59 @@ Accepts 1, true, y, yes (any case).</p>
 </div>
     
       <div class="method_details ">
+  <h3 class="signature " id="default_registered?-class_method">
+  
+    .<strong>default_registered?</strong>(task_name)  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+112
+113
+114</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 112</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_default_registered?'>default_registered?</span><span class='lparen'>(</span><span class='id identifier rubyid_task_name'>task_name</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_defaults'>defaults</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_task_name'>task_name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
   <h3 class="signature " id="install_tasks-class_method">
   
     .<strong>install_tasks</strong>  &#x21d2; <tt>void</tt> 
@@ -667,7 +743,7 @@ Also enhances the :default task immediately if it exists.</p>
 </div>
 
       <div id="footer">
-  Generated on Sun Sep  7 04:59:24 2025 by
+  Generated on Sun Sep  7 05:41:37 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

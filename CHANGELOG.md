@@ -41,6 +41,7 @@ Please file a bug if you notice a violation of semantic versioning.
 - .github/workflows/dep-heads.yml
 - (performance) filter and prioritize example files in the `.github` directory
 - added codecov config to the template
+- Kettle::Dev.default_registered?
 ### Fixed
 - run specs as part of the test task
 
