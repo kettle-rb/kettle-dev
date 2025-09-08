@@ -617,17 +617,50 @@ module Kettle
                   namespace_shield: namespace_shield,
                   gem_shield: gem_shield,
                 )
-                # Retain whitespace everywhere, except collapse repeated whitespace in CHANGELOG release headers only
                 if File.basename(rel) == "CHANGELOG.md"
-                  lines = c.split("\n", -1)
-                  lines.map! do |ln|
-                    if ln =~ /^##\s+\[.*\]/
-                      ln.gsub(/[ \t]+/, " ")
+                  begin
+                    # Special handling: only template header through Unreleased section (inclusive), preserve the rest
+                    src_lines = c.split("\n", -1)
+                    # Find index of Unreleased heading (case-insensitive), typical format: ## [Unreleased]
+                    unreleased_idx = src_lines.index { |ln| ln =~ /^##\s*\[\s*Unreleased\s*\]/i }
+                    if unreleased_idx
+                      # Determine end of Unreleased section: next heading of same or higher level (## or #)
+                      stop_idx = src_lines.length - 1
+                      j = unreleased_idx + 1
+                      while j < src_lines.length
+                        if src_lines[j] =~ /^##\s+\[/ || src_lines[j] =~ /^#\s+/ || src_lines[j] =~ /^##\s+[^\[]/
+                          stop_idx = j - 1
+                          break
+                        end
+                        j += 1
+                      end
+                      header_through_unreleased = src_lines[0..stop_idx]
+                      tail = File.file?(dest) ? File.read(dest).split("\n", -1)[(File.read(dest).split("\n", -1).index { |ln| ln =~ /^##\s*\[\s*Unreleased\s*\]/i } || -1) + 1..-1] : nil
+                      tail ||= []
+                      # Additionally, ensure we preserve existing markdown link refs typically at file bottom (e.g., [Unreleased]: ...)
+                      # Prefer tail from existing file entirely to avoid clobbering release notes and refs.
+                      merged = (header_through_unreleased + (tail || [])).join("\n")
+                      c = merged
                     else
-                      ln
+                      # If Unreleased not found, fallback to original c (only collapse header spacing below)
                     end
+                    # Collapse repeated whitespace in release headers only
+                    lines = c.split("\n", -1)
+                    lines.map! do |ln|
+                      if ln =~ /^##\s+\[.*\]/
+                        ln.gsub(/[ \t]+/, " ")
+                      else
+                        ln
+                      end
+                    end
+                    c = lines.join("\n")
+                  rescue StandardError => e
+                    Kettle::Dev.debug_error(e, __method__)
+                    # On any error, keep previous behavior (collapse whitespace only)
+                    lines = c.split("\n", -1)
+                    lines.map! { |ln| ln =~ /^##\s+\[.*\]/ ? ln.gsub(/[ \t]+/, " ") : ln }
+                    c = lines.join("\n")
                   end
-                  c = lines.join("\n")
                 end
                 c
               end

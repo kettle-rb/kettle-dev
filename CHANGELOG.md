@@ -21,6 +21,10 @@ Please file a bug if you notice a violation of semantic versioning.
 - Improve documentation
   - Fix an internal link in README.md
 ### Changed
+- template task no longer overwrites CHANGELOG.md completely
+  - attempts to retain existing release notes content
+### Fixed
+- Fix a typo in the README.md
 ### Deprecated
 ### Removed
 ### Fixed
