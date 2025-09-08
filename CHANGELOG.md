@@ -18,6 +18,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [Unreleased]
 ### Added
+- Improve documentation
+  - Fix an internal link in README.md
 ### Changed
 ### Deprecated
 ### Removed
