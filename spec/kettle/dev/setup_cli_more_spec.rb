@@ -41,7 +41,7 @@ RSpec.describe Kettle::Dev::SetupCLI do
     it "does not print when DEBUG=false", :check_output do
       stub_env("DEBUG" => "false")
       cli = described_class.allocate
-      expect { cli.send(:debug, "hi") }.to_not output.to_stderr
+      expect { cli.send(:debug, "hi") }.not_to output.to_stderr
     end
   end
 
@@ -233,7 +233,7 @@ RSpec.describe Kettle::Dev::SetupCLI do
       %i[prechecks! ensure_dev_deps! ensure_bin_setup! ensure_rakefile! run_bin_setup! run_bundle_binstubs! commit_bootstrap_changes! run_kettle_install!].each do |m|
         expect(cli).to receive(m).ordered
       end
-      expect { cli.run! }.to_not raise_error
+      expect { cli.run! }.not_to raise_error
     end
   end
 end

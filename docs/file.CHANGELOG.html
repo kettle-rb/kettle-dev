@@ -68,13 +68,29 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 and <a href="https://tom.preston-werner.com/2022/05/23/major-version-numbers-are-not-sacred.html">yes</a>, platform and engine support are part of the <a href="https://github.com/semver/semver/issues/716#issuecomment-869336139">public API</a>.<br>
 Please file a bug if you notice a violation of semantic versioning.</p>
 
-<h2 id="unreleased"><a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.10...HEAD">Unreleased</a></h2>
+<h2 id="unreleased"><a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.11...HEAD">Unreleased</a></h2>
 <h3 id="added">Added</h3>
 <h3 id="changed">Changed</h3>
 <h3 id="deprecated">Deprecated</h3>
 <h3 id="removed">Removed</h3>
 <h3 id="fixed">Fixed</h3>
 <h3 id="security">Security</h3>
+
+<h2 id="1111---2025-09-08">
+<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.10...v1.1.11">1.1.11</a> - 2025-09-08</h2>
+<ul>
+  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.11">v1.1.11</a>
+</li>
+  <li>COVERAGE: 96.56% – 3396/3517 lines in 24 files</li>
+  <li>BRANCH COVERAGE: 81.33% – 1385/1703 branches in 24 files</li>
+  <li>77.06% documented
+    <h3 id="changed-1">Changed</h3>
+  </li>
+  <li>move kettle-dev-setup logic into Kettle::Dev::SetupCLI
+    <h3 id="fixed-1">Fixed</h3>
+  </li>
+  <li>gem dependency detection in kettle-dev-setup to prevent duplication</li>
+</ul>
 
 <h2 id="1110---2025-09-08">
 <a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.9...v1.1.10">1.1.10</a> - 2025-09-08</h2>
@@ -89,19 +105,19 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>Improve documentation
     <ul>
       <li>Fix an internal link in README.md
-        <h3 id="changed-1">Changed</h3>
+        <h3 id="changed-2">Changed</h3>
       </li>
     </ul>
   </li>
   <li>template task no longer overwrites CHANGELOG.md completely
     <ul>
       <li>attempts to retain existing release notes content
-        <h3 id="fixed-1">Fixed</h3>
+        <h3 id="fixed-2">Fixed</h3>
       </li>
     </ul>
   </li>
   <li>Fix a typo in the README.md
-    <h3 id="fixed-2">Fixed</h3>
+    <h3 id="fixed-3">Fixed</h3>
   </li>
   <li>fix typo in the path to x_std_libs.gemfile</li>
 </ul>
@@ -117,7 +133,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
     <h3 id="added-2">Added</h3>
   </li>
   <li>badge for current runtime heads in example readme
-    <h3 id="fixed-3">Fixed</h3>
+    <h3 id="fixed-4">Fixed</h3>
   </li>
   <li>Add gemfiles/modular/x_std_libs.gemfile &amp; injected.gemfile to template</li>
   <li>example version of gemfiles/modular/runtime_heads.gemfile
@@ -152,7 +168,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>(performance) filter and prioritize example files in the <code>.github</code> directory</li>
   <li>added codecov config to the template</li>
   <li>Kettle::Dev.default_registered?
-    <h3 id="fixed-4">Fixed</h3>
+    <h3 id="fixed-5">Fixed</h3>
   </li>
   <li>run specs as part of the test task</li>
 </ul>
@@ -170,7 +186,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>rake task - <code>appraisal:install</code>
     <ul>
       <li>initial setup for projects that didn’t previously use Appraisal
-        <h3 id="changed-2">Changed</h3>
+        <h3 id="changed-3">Changed</h3>
       </li>
     </ul>
   </li>
@@ -185,7 +201,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>addressable, rake runtime dependencies
     <ul>
       <li>moved to optional, or development dependencies
-        <h3 id="fixed-5">Fixed</h3>
+        <h3 id="fixed-6">Fixed</h3>
       </li>
     </ul>
   </li>
@@ -200,7 +216,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 97.06% – 3241/3339 lines in 23 files</li>
   <li>BRANCH COVERAGE: 81.83% – 1347/1646 branches in 23 files</li>
   <li>76.97% documented
-    <h3 id="fixed-6">Fixed</h3>
+    <h3 id="fixed-7">Fixed</h3>
   </li>
   <li>bin/rake test works for minitest</li>
 </ul>
@@ -226,7 +242,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>add gitlab pipeline result to ci:act</li>
   <li>highlight SHA discrepancies in ci:act task header info</li>
   <li>how to set up forge tokens for ci:act, and other tools, instructions for README.md
-    <h3 id="changed-3">Changed</h3>
+    <h3 id="changed-4">Changed</h3>
   </li>
   <li>expanded use of adapter patterns (Exit, Git, and Input)</li>
   <li>refactored and improved structure of code, more resilient</li>
@@ -234,7 +250,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
     <h3 id="removed-2">Removed</h3>
   </li>
   <li>defensive NameError handling in ChangelogCLI.abort method
-    <h3 id="fixed-7">Fixed</h3>
+    <h3 id="fixed-8">Fixed</h3>
   </li>
   <li>replace token <code>{OPENCOLLECTIVE|ORG_NAME}</code> with funding org name</li>
   <li>prefer .example version of .git-hooks</li>
@@ -252,7 +268,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 67.64% – 554/819 lines in 9 files</li>
   <li>BRANCH COVERAGE: 53.25% – 221/415 branches in 9 files</li>
   <li>76.22% documented
-    <h3 id="fixed-8">Fixed</h3>
+    <h3 id="fixed-9">Fixed</h3>
   </li>
   <li>documentation of rake tasks from this gem no longer includes standard gem tasks</li>
   <li>kettle-dev-setup: package bin/setup so setup can copy it</li>
@@ -267,12 +283,12 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 97.14% – 2857/2941 lines in 22 files</li>
   <li>BRANCH COVERAGE: 82.29% – 1194/1451 branches in 22 files</li>
   <li>76.22% documented
-    <h3 id="changed-4">Changed</h3>
+    <h3 id="changed-5">Changed</h3>
   </li>
   <li>URL for migrating repo to CodeBerg:
     <ul>
       <li>https://codeberg.org/repo/migrate
-        <h3 id="fixed-9">Fixed</h3>
+        <h3 id="fixed-10">Fixed</h3>
       </li>
     </ul>
   </li>
@@ -301,10 +317,10 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>Document kettle-dvcs CLI in README (usage, options, examples)</li>
   <li>RBS types for Kettle::Dev::DvcsCLI and inline YARD docs on CLI</li>
   <li>Specs for DvcsCLI covering remote normalization, fetch outcomes, and README updates
-    <h3 id="changed-5">Changed</h3>
+    <h3 id="changed-6">Changed</h3>
   </li>
   <li>major spec refactoring
-    <h3 id="fixed-10">Fixed</h3>
+    <h3 id="fixed-11">Fixed</h3>
   </li>
   <li>(linting) rspec-pending_for 0.0.17+ (example gemspec)</li>
 </ul>
@@ -322,7 +338,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>.simplecov.example - keeps it generic</li>
   <li>improved documentation on automatic release script</li>
   <li>.gitlab-ci.yml documentation
-    <h3 id="fixed-11">Fixed</h3>
+    <h3 id="fixed-12">Fixed</h3>
   </li>
   <li>reduce extra leading whitespace in info table column 2</li>
 </ul>
@@ -358,7 +374,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 97.77% – 2629/2689 lines in 22 files</li>
   <li>BRANCH COVERAGE: 82.40% – 1100/1335 branches in 22 files</li>
   <li>76.47% documented
-    <h3 id="changed-6">Changed</h3>
+    <h3 id="changed-7">Changed</h3>
   </li>
   <li>Use semver version dependency (~&gt; 1.0) on kettle-dev when templating
     <h3 id="removed-4">Removed</h3>
@@ -374,7 +390,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 97.81% – 2630/2689 lines in 22 files</li>
   <li>BRANCH COVERAGE: 82.40% – 1100/1335 branches in 22 files</li>
   <li>75.00% documented
-    <h3 id="fixed-12">Fixed</h3>
+    <h3 id="fixed-13">Fixed</h3>
   </li>
   <li>.env.local.example is now included in the packaged gem
     <ul>
@@ -394,7 +410,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
     <h3 id="added-9">Added</h3>
   </li>
   <li>test that .env.local.example is copied by install / template tasks
-    <h3 id="changed-7">Changed</h3>
+    <h3 id="changed-8">Changed</h3>
   </li>
   <li>update Appraisals.example template’s instructions for updating appraisals</li>
 </ul>
@@ -413,7 +429,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>more badges in README (gem &amp; template)</li>
   <li>integration test for kettle-changelog using CHANGELOG.md.</li>
   <li>integration test for kettle-changelog using KEEP_A_CHANGELOG.md.
-    <h3 id="changed-8">Changed</h3>
+    <h3 id="changed-9">Changed</h3>
   </li>
   <li>add output to error handling related to release creation on GitHub</li>
   <li>refactored Kettle::Dev::Tasks::CITask.abort =&gt; task_abort
@@ -423,7 +439,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
     </ul>
   </li>
   <li>move –help handling for kettle-changelog to kettle-changelog itself
-    <h3 id="fixed-13">Fixed</h3>
+    <h3 id="fixed-14">Fixed</h3>
   </li>
   <li>typos in README for gem &amp; template</li>
   <li>kettle-changelog: more robust in retention of version chunks, and markdown link refs, that are not relevant to the chunk being added</li>
@@ -447,7 +463,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
     <ul>
       <li>refactor gemspec parsing</li>
       <li>normalize template gemspec data
-        <h3 id="fixed-14">Fixed</h3>
+        <h3 id="fixed-15">Fixed</h3>
       </li>
     </ul>
   </li>
@@ -531,7 +547,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   </li>
   <li>template supports local development of RuboCop-LTS suite of gems</li>
   <li>improved documentation
-    <h3 id="changed-9">Changed</h3>
+    <h3 id="changed-10">Changed</h3>
   </li>
   <li>dependabot: ignore rubocop-lts for updates</li>
   <li>template configures RSpec to run tests in random order</li>
@@ -545,7 +561,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 14.01% – 96/685 lines in 8 files</li>
   <li>BRANCH COVERAGE: 0.30% – 1/338 branches in 8 files</li>
   <li>76.23% documented
-    <h3 id="changed-10">Changed</h3>
+    <h3 id="changed-11">Changed</h3>
   </li>
   <li>Use example version of ancient.yml workflow since local version has been customized</li>
   <li>Use example version of jruby.yml workflow since local version has been customized</li>
@@ -559,12 +575,12 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 97.84% – 2350/2402 lines in 20 files</li>
   <li>BRANCH COVERAGE: 81.46% – 962/1181 branches in 20 files</li>
   <li>76.23% documented
-    <h3 id="fixed-15">Fixed</h3>
+    <h3 id="fixed-16">Fixed</h3>
   </li>
   <li>replacement logic handles a dashed gem-name which maps onto a nested path structure</li>
 </ul>
 
-<h2 id="unreleased-1"><a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.10...HEAD">Unreleased</a></h2>
+<h2 id="unreleased-1"><a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.11...HEAD">Unreleased</a></h2>
 <h3 id="added-14">Added</h3>
 <ul>
   <li>kettle:dev:install and kettle:dev:template support <code>only=</code> option: comma-separated glob patterns matched against destination paths relative to project root; non-matching files are excluded from templating.</li>
@@ -583,7 +599,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>kettle:dev:install can overwrite gemspec with example gemspec</li>
   <li>documentation for the start_step CLI option for kettle-release</li>
   <li>kettle:dev:install add <code>only=</code> option for glob filtering.
-    <h3 id="fixed-16">Fixed</h3>
+    <h3 id="fixed-17">Fixed</h3>
   </li>
   <li>kettle:dev:install remove “Works with MRI Ruby*” lines with no badges left</li>
   <li>kettle:dev:install prefix badge cell replacement with a single space</li>
@@ -597,7 +613,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 98.14% – 2271/2314 lines in 20 files</li>
   <li>BRANCH COVERAGE: 81.42% – 916/1125 branches in 20 files</li>
   <li>76.23% documented
-    <h3 id="fixed-17">Fixed</h3>
+    <h3 id="fixed-18">Fixed</h3>
   </li>
   <li>kettle-changelog added to exe files so packaged with released gem</li>
 </ul>
@@ -610,7 +626,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 98.14% – 2271/2314 lines in 20 files</li>
   <li>BRANCH COVERAGE: 81.42% – 916/1125 branches in 20 files</li>
   <li>76.23% documented
-    <h3 id="fixed-18">Fixed</h3>
+    <h3 id="fixed-19">Fixed</h3>
   </li>
   <li>default rake task must be defined before it can be enhanced</li>
 </ul>
@@ -628,14 +644,14 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>kettle-release: early validation of identical set of copyright years in README.md and CHANGELOG.md, adds current year if missing, aborts on mismatch</li>
   <li>kettle-release: update KLOC in README.md</li>
   <li>kettle-release: update Rakefile.example with version and date
-    <h3 id="changed-11">Changed</h3>
+    <h3 id="changed-12">Changed</h3>
   </li>
   <li>kettle-release: print package name and version released as final line</li>
   <li>use git adapter to wrap more git commands to make tests easier to build</li>
   <li>stop testing Ruby 2.4 on CI due to a strange issue with VCR.
     <ul>
       <li>still testing Ruby 2.3
-        <h3 id="fixed-19">Fixed</h3>
+        <h3 id="fixed-20">Fixed</h3>
       </li>
     </ul>
   </li>
@@ -660,10 +676,10 @@ Please file a bug if you notice a violation of semantic versioning.</p>
     <h3 id="added-17">Added</h3>
   </li>
   <li>kettle-release: Push tags to additional remotes after release
-    <h3 id="changed-12">Changed</h3>
+    <h3 id="changed-13">Changed</h3>
   </li>
   <li>Improve .gitlab-ci.yml pipeline
-    <h3 id="fixed-20">Fixed</h3>
+    <h3 id="fixed-21">Fixed</h3>
   </li>
   <li>Removed README badges for unsupported old Ruby versions</li>
   <li>Minor inconsistencies in template files</li>
@@ -708,7 +724,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>Ability to restart kettle-release from any failed step, so manual fixed can be applied.
     <ul>
       <li>Example (after intermittent failure of CI): <code>bundle exec kettle-release start_step=10</code>
-        <h3 id="fixed-21">Fixed</h3>
+        <h3 id="fixed-22">Fixed</h3>
       </li>
     </ul>
   </li>
@@ -747,7 +763,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
     </ul>
   </li>
   <li>new exe script: kettle-changelog - transitions a changelog from unreleased to next release
-    <h3 id="changed-13">Changed</h3>
+    <h3 id="changed-14">Changed</h3>
   </li>
   <li>Make ‘git’ gem dependency optional; fall back to raw <code>git</code> commands when the gem is not present (rescues LoadError). See Kettle::Dev::GitAdapter.</li>
   <li>upgraded to stone_checksums v1.0.2</li>
@@ -759,7 +775,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
       <li>git gem is still supported if present and not bypassed by new ENV variable <code>KETTLE_DEV_DISABLE_GIT_GEM</code>
 </li>
       <li>no longer a direct dependency
-        <h3 id="fixed-22">Fixed</h3>
+        <h3 id="fixed-23">Fixed</h3>
       </li>
     </ul>
   </li>
@@ -788,7 +804,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
     <h3 id="added-21">Added</h3>
   </li>
   <li>runs git add –all before git commit, to ensure all files are committed.
-    <h3 id="changed-14">Changed</h3>
+    <h3 id="changed-15">Changed</h3>
   </li>
   <li>This gem is now loaded via Ruby’s standard <code>autoload</code> feature.</li>
   <li>Bundler is always expected, and most things probably won’t work without it.</li>
@@ -798,7 +814,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
     <h3 id="removed-6">Removed</h3>
   </li>
   <li>attempts to make exe/* scripts work without bundler. Bundler is required.
-    <h3 id="fixed-23">Fixed</h3>
+    <h3 id="fixed-24">Fixed</h3>
   </li>
   <li>
 <code>Kettle::Dev::ReleaseCLI#detect_version</code> handles gems with multiple VERSION constants</li>
@@ -835,7 +851,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 100.00% – 130/130 lines in 7 files</li>
   <li>BRANCH COVERAGE: 96.00% – 48/50 branches in 7 files</li>
   <li>95.35% documented
-    <h3 id="fixed-24">Fixed</h3>
+    <h3 id="fixed-25">Fixed</h3>
   </li>
   <li>Can’t add checksums to the gem package, because it changes the checksum (duh!)</li>
 </ul>
@@ -848,7 +864,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 100.00% – 130/130 lines in 7 files</li>
   <li>BRANCH COVERAGE: 96.00% – 48/50 branches in 7 files</li>
   <li>95.35% documented
-    <h3 id="fixed-25">Fixed</h3>
+    <h3 id="fixed-26">Fixed</h3>
   </li>
   <li>Reproducible builds, with consistent checksums, by <em>not</em> using SOURCE_DATE_EPOCH.
     <ul>
@@ -865,7 +881,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 100.00% – 130/130 lines in 7 files</li>
   <li>BRANCH COVERAGE: 96.00% – 48/50 branches in 7 files</li>
   <li>95.35% documented
-    <h3 id="fixed-26">Fixed</h3>
+    <h3 id="fixed-27">Fixed</h3>
   </li>
   <li>kettle-release: ensure SOURCE_DATE_EPOCH is applied within the same shell for both build and release by prefixing the commands with the env var (e.g., <code>SOURCE_DATE_EPOCH=$epoch bundle exec rake build</code> and <code>... rake release</code>); prevents losing the variable across shell boundaries and improves reproducible checksums.</li>
 </ul>
@@ -878,7 +894,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 100.00% – 130/130 lines in 7 files</li>
   <li>BRANCH COVERAGE: 96.00% – 48/50 branches in 7 files</li>
   <li>95.35% documented
-    <h3 id="fixed-27">Fixed</h3>
+    <h3 id="fixed-28">Fixed</h3>
   </li>
   <li>kettle-release: will run regardless of how it is invoked (i.e. works as binstub)</li>
 </ul>
@@ -895,7 +911,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   </li>
   <li>kettle-release: checks all remotes for a GitHub remote and syncs origin/trunk with it; prompts to rebase or –no-ff merge when histories diverge; pushes to both origin and the GitHub remote on merge; uses the GitHub remote for GitHub Actions CI checks, and also checks GitLab CI when a GitLab remote and .gitlab-ci.yml are present.</li>
   <li>kettle-release: push logic improved — if a remote named <code>all</code> exists, push the current branch to it (assumed to cover multiple push URLs). Otherwise push the current branch to <code>origin</code> and to any GitHub, GitLab, and Codeberg remotes (whatever their names are).
-    <h3 id="fixed-28">Fixed</h3>
+    <h3 id="fixed-29">Fixed</h3>
   </li>
   <li>kettle-release now validates SHA256 checksums of the built gem against the recorded checksums and aborts on mismatch; helps ensure reproducible artifacts (honoring SOURCE_DATE_EPOCH).</li>
   <li>kettle-release now enforces CI checks and aborts if CI cannot be verified; supports GitHub Actions and GitLab pipelines, including releases from trunk/main.</li>
@@ -913,7 +929,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
     <h3 id="added-24">Added</h3>
   </li>
   <li>template task now copies .git-hooks files necessary for git hooks to work
-    <h3 id="fixed-29">Fixed</h3>
+    <h3 id="fixed-30">Fixed</h3>
   </li>
   <li>kettle-release now uses the host project’s root, instead of this gem’s installed root.</li>
   <li>Added .git-hooks files necessary for git hooks to work</li>
@@ -927,7 +943,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 100.00% – 98/98 lines in 7 files</li>
   <li>BRANCH COVERAGE: 100.00% – 30/30 branches in 7 files</li>
   <li>94.59% documented
-    <h3 id="fixed-30">Fixed</h3>
+    <h3 id="fixed-31">Fixed</h3>
   </li>
   <li>Added files necessary for kettle:dev:template task to work</li>
   <li>.github/workflows/opencollective.yml working!</li>
@@ -1011,7 +1027,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Mon Sep  8 03:22:02 2025 by
+  Generated on Mon Sep  8 05:50:03 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

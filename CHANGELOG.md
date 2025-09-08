@@ -19,12 +19,20 @@ Please file a bug if you notice a violation of semantic versioning.
 ## [Unreleased]
 ### Added
 ### Changed
-- move kettle-dev-setup logic into Kettle::Dev::SetupCLI
 ### Deprecated
 ### Removed
 ### Fixed
-- gem dependency detection in kettle-dev-setup to prevent duplication
 ### Security
+
+## [1.1.11] - 2025-09-08
+- TAG: [v1.1.11][1.1.11t]
+- COVERAGE: 96.56% -- 3396/3517 lines in 24 files
+- BRANCH COVERAGE: 81.33% -- 1385/1703 branches in 24 files
+- 77.06% documented
+### Changed
+- move kettle-dev-setup logic into Kettle::Dev::SetupCLI
+### Fixed
+- gem dependency detection in kettle-dev-setup to prevent duplication
 
 ## [1.1.10] - 2025-09-08
 - TAG: [v1.1.10][1.1.10t]
@@ -573,7 +581,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.10...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.11...HEAD
+[1.1.11]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.10...v1.1.11
+[1.1.11t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.11
 [1.1.10]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.9...v1.1.10
 [1.1.10t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.10
 [1.1.9]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.8...v1.1.9
