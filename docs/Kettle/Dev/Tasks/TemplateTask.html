@@ -1026,7 +1026,40 @@ All options/IO are controlled via TemplateHelpers and ENV.</p>
 837
 838
 839
-840</pre>
+840
+841
+842
+843
+844
+845
+846
+847
+848
+849
+850
+851
+852
+853
+854
+855
+856
+857
+858
+859
+860
+861
+862
+863
+864
+865
+866
+867
+868
+869
+870
+871
+872
+873</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/kettle/dev/tasks/template_task.rb', line 20</span>
@@ -1631,17 +1664,50 @@ All options/IO are controlled via TemplateHelpers and ENV.</p>
           <span class='label'>namespace_shield:</span> <span class='id identifier rubyid_namespace_shield'>namespace_shield</span><span class='comma'>,</span>
           <span class='label'>gem_shield:</span> <span class='id identifier rubyid_gem_shield'>gem_shield</span><span class='comma'>,</span>
         <span class='rparen'>)</span>
-        <span class='comment'># Retain whitespace everywhere, except collapse repeated whitespace in CHANGELOG release headers only
-</span>        <span class='kw'>if</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_basename'>basename</span><span class='lparen'>(</span><span class='id identifier rubyid_rel'>rel</span><span class='rparen'>)</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>CHANGELOG.md</span><span class='tstring_end'>&quot;</span></span>
-          <span class='id identifier rubyid_lines'>lines</span> <span class='op'>=</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='op'>-</span><span class='int'>1</span><span class='rparen'>)</span>
-          <span class='id identifier rubyid_lines'>lines</span><span class='period'>.</span><span class='id identifier rubyid_map!'>map!</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_ln'>ln</span><span class='op'>|</span>
-            <span class='kw'>if</span> <span class='id identifier rubyid_ln'>ln</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^##\s+\[.*\]</span><span class='regexp_end'>/</span></span>
-              <span class='id identifier rubyid_ln'>ln</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>[ \t]+</span><span class='regexp_end'>/</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'> </span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+        <span class='kw'>if</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_basename'>basename</span><span class='lparen'>(</span><span class='id identifier rubyid_rel'>rel</span><span class='rparen'>)</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>CHANGELOG.md</span><span class='tstring_end'>&quot;</span></span>
+          <span class='kw'>begin</span>
+            <span class='comment'># Special handling: only template header through Unreleased section (inclusive), preserve the rest
+</span>            <span class='id identifier rubyid_src_lines'>src_lines</span> <span class='op'>=</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='op'>-</span><span class='int'>1</span><span class='rparen'>)</span>
+            <span class='comment'># Find index of Unreleased heading (case-insensitive), typical format: ## [Unreleased]
+</span>            <span class='id identifier rubyid_unreleased_idx'>unreleased_idx</span> <span class='op'>=</span> <span class='id identifier rubyid_src_lines'>src_lines</span><span class='period'>.</span><span class='id identifier rubyid_index'>index</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_ln'>ln</span><span class='op'>|</span> <span class='id identifier rubyid_ln'>ln</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^##\s*\[\s*Unreleased\s*\]</span><span class='regexp_end'>/i</span></span> <span class='rbrace'>}</span>
+            <span class='kw'>if</span> <span class='id identifier rubyid_unreleased_idx'>unreleased_idx</span>
+              <span class='comment'># Determine end of Unreleased section: next heading of same or higher level (## or #)
+</span>              <span class='id identifier rubyid_stop_idx'>stop_idx</span> <span class='op'>=</span> <span class='id identifier rubyid_src_lines'>src_lines</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span> <span class='op'>-</span> <span class='int'>1</span>
+              <span class='id identifier rubyid_j'>j</span> <span class='op'>=</span> <span class='id identifier rubyid_unreleased_idx'>unreleased_idx</span> <span class='op'>+</span> <span class='int'>1</span>
+              <span class='kw'>while</span> <span class='id identifier rubyid_j'>j</span> <span class='op'>&lt;</span> <span class='id identifier rubyid_src_lines'>src_lines</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span>
+                <span class='kw'>if</span> <span class='id identifier rubyid_src_lines'>src_lines</span><span class='lbracket'>[</span><span class='id identifier rubyid_j'>j</span><span class='rbracket'>]</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^##\s+\[</span><span class='regexp_end'>/</span></span> <span class='op'>||</span> <span class='id identifier rubyid_src_lines'>src_lines</span><span class='lbracket'>[</span><span class='id identifier rubyid_j'>j</span><span class='rbracket'>]</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^#\s+</span><span class='regexp_end'>/</span></span> <span class='op'>||</span> <span class='id identifier rubyid_src_lines'>src_lines</span><span class='lbracket'>[</span><span class='id identifier rubyid_j'>j</span><span class='rbracket'>]</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^##\s+[^\[]</span><span class='regexp_end'>/</span></span>
+                  <span class='id identifier rubyid_stop_idx'>stop_idx</span> <span class='op'>=</span> <span class='id identifier rubyid_j'>j</span> <span class='op'>-</span> <span class='int'>1</span>
+                  <span class='kw'>break</span>
+                <span class='kw'>end</span>
+                <span class='id identifier rubyid_j'>j</span> <span class='op'>+=</span> <span class='int'>1</span>
+              <span class='kw'>end</span>
+              <span class='id identifier rubyid_header_through_unreleased'>header_through_unreleased</span> <span class='op'>=</span> <span class='id identifier rubyid_src_lines'>src_lines</span><span class='lbracket'>[</span><span class='int'>0</span><span class='op'>..</span><span class='id identifier rubyid_stop_idx'>stop_idx</span><span class='rbracket'>]</span>
+              <span class='id identifier rubyid_tail'>tail</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_file?'>file?</span><span class='lparen'>(</span><span class='id identifier rubyid_dest'>dest</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='lparen'>(</span><span class='id identifier rubyid_dest'>dest</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='op'>-</span><span class='int'>1</span><span class='rparen'>)</span><span class='lbracket'>[</span><span class='lparen'>(</span><span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='lparen'>(</span><span class='id identifier rubyid_dest'>dest</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='op'>-</span><span class='int'>1</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_index'>index</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_ln'>ln</span><span class='op'>|</span> <span class='id identifier rubyid_ln'>ln</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^##\s*\[\s*Unreleased\s*\]</span><span class='regexp_end'>/i</span></span> <span class='rbrace'>}</span> <span class='op'>||</span> <span class='op'>-</span><span class='int'>1</span><span class='rparen'>)</span> <span class='op'>+</span> <span class='int'>1</span><span class='op'>..</span><span class='op'>-</span><span class='int'>1</span><span class='rbracket'>]</span> <span class='op'>:</span> <span class='kw'>nil</span>
+              <span class='id identifier rubyid_tail'>tail</span> <span class='op'>||=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+              <span class='comment'># Additionally, ensure we preserve existing markdown link refs typically at file bottom (e.g., [Unreleased]: ...)
+</span>              <span class='comment'># Prefer tail from existing file entirely to avoid clobbering release notes and refs.
+</span>              <span class='id identifier rubyid_merged'>merged</span> <span class='op'>=</span> <span class='lparen'>(</span><span class='id identifier rubyid_header_through_unreleased'>header_through_unreleased</span> <span class='op'>+</span> <span class='lparen'>(</span><span class='id identifier rubyid_tail'>tail</span> <span class='op'>||</span> <span class='lbracket'>[</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+              <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='id identifier rubyid_merged'>merged</span>
             <span class='kw'>else</span>
-              <span class='id identifier rubyid_ln'>ln</span>
+              <span class='comment'># If Unreleased not found, fallback to original c (only collapse header spacing below)
+</span>            <span class='kw'>end</span>
+            <span class='comment'># Collapse repeated whitespace in release headers only
+</span>            <span class='id identifier rubyid_lines'>lines</span> <span class='op'>=</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='op'>-</span><span class='int'>1</span><span class='rparen'>)</span>
+            <span class='id identifier rubyid_lines'>lines</span><span class='period'>.</span><span class='id identifier rubyid_map!'>map!</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_ln'>ln</span><span class='op'>|</span>
+              <span class='kw'>if</span> <span class='id identifier rubyid_ln'>ln</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^##\s+\[.*\]</span><span class='regexp_end'>/</span></span>
+                <span class='id identifier rubyid_ln'>ln</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>[ \t]+</span><span class='regexp_end'>/</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'> </span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+              <span class='kw'>else</span>
+                <span class='id identifier rubyid_ln'>ln</span>
+              <span class='kw'>end</span>
             <span class='kw'>end</span>
+            <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='id identifier rubyid_lines'>lines</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+          <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+            <span class='const'><span class='object_link'><a href="../../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_error'><span class='object_link'><a href="../../Dev.html#debug_error-class_method" title="Kettle::Dev.debug_error (method)">debug_error</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span>
+            <span class='comment'># On any error, keep previous behavior (collapse whitespace only)
+</span>            <span class='id identifier rubyid_lines'>lines</span> <span class='op'>=</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='op'>-</span><span class='int'>1</span><span class='rparen'>)</span>
+            <span class='id identifier rubyid_lines'>lines</span><span class='period'>.</span><span class='id identifier rubyid_map!'>map!</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_ln'>ln</span><span class='op'>|</span> <span class='lparen'>(</span><span class='id identifier rubyid_ln'>ln</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^##\s+\[.*\]</span><span class='regexp_end'>/</span></span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_ln'>ln</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>[ \t]+</span><span class='regexp_end'>/</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'> </span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>:</span> <span class='id identifier rubyid_ln'>ln</span> <span class='rbrace'>}</span>
+            <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='id identifier rubyid_lines'>lines</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
           <span class='kw'>end</span>
-          <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='id identifier rubyid_lines'>lines</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
         <span class='kw'>end</span>
         <span class='id identifier rubyid_c'>c</span>
       <span class='kw'>end</span>
@@ -1915,7 +1981,7 @@ All options/IO are controlled via TemplateHelpers and ENV.</p>
 </div>
 
       <div id="footer">
-  Generated on Mon Sep  8 02:12:49 2025 by
+  Generated on Mon Sep  8 03:22:03 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

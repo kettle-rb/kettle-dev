@@ -658,7 +658,7 @@ module Kettle
                     Kettle::Dev.debug_error(e, __method__)
                     # On any error, keep previous behavior (collapse whitespace only)
                     lines = c.split("\n", -1)
-                    lines.map! { |ln| ln =~ /^##\s+\[.*\]/ ? ln.gsub(/[ \t]+/, " ") : ln }
+                    lines.map! { |ln| (ln =~ /^##\s+\[.*\]/) ? ln.gsub(/[ \t]+/, " ") : ln }
                     c = lines.join("\n")
                   end
                 end

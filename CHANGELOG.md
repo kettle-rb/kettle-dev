@@ -18,6 +18,18 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [Unreleased]
 ### Added
+### Changed
+### Deprecated
+### Removed
+### Fixed
+### Security
+
+## [1.1.10] - 2025-09-08
+- TAG: [v1.1.10][1.1.10t]
+- COVERAGE: 97.14% -- 3256/3352 lines in 23 files
+- BRANCH COVERAGE: 81.91% -- 1345/1642 branches in 23 files
+- 76.65% documented
+### Added
 - Improve documentation
   - Fix an internal link in README.md
 ### Changed
@@ -25,11 +37,8 @@ Please file a bug if you notice a violation of semantic versioning.
   - attempts to retain existing release notes content
 ### Fixed
 - Fix a typo in the README.md
-### Deprecated
-### Removed
 ### Fixed
 - fix typo in the path to x_std_libs.gemfile
-### Security
 
 ## [1.1.9] - 2025-09-07
 - TAG: [v1.1.9][1.1.9t]
@@ -562,7 +571,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.9...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.10...HEAD
+[1.1.10]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.9...v1.1.10
+[1.1.10t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.10
 [1.1.9]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.8...v1.1.9
 [1.1.9t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.9
 [1.1.8]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.7...v1.1.8
