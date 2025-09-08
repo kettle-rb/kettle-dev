@@ -22,6 +22,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Deprecated
 ### Removed
 ### Fixed
+- gem dependency detection in kettle-dev-setup to prevent duplication
 ### Security
 
 ## [1.1.10] - 2025-09-08

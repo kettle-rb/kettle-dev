@@ -148,7 +148,7 @@ module Kettle
         example = example.gsub("{KETTLE|DEV|GEM}", "kettle-dev")
 
         wanted_lines = example.each_line.map(&:rstrip).select do |line|
-          line =~ /add_development_dependency\s*\(/
+          line =~ /add_development_dependency\s*\(?/
         end
 
         return if wanted_lines.empty?
@@ -158,7 +158,7 @@ module Kettle
         # Build a map from gem name to the desired line
         wanted = {}
         wanted_lines.each do |line|
-          if (m = line.match(/add_development_dependency\s*\(\s*["']([^"']+)["']/))
+          if (m = line.match(/add_development_dependency\s*\(?\s*["']([^"']+)["']/))
             wanted[m[1]] = line
           end
         end
@@ -166,11 +166,23 @@ module Kettle
         modified = target.dup
         wanted.each do |gem_name, desired_line|
           # Replace existing add_development_dependency for this gem, else append near the end
-          if /add_development_dependency\s*\(\s*["']#{Regexp.escape(gem_name)}["']/ =~ modified
-            modified = modified.gsub(/^[^\n]*add_development_dependency\s*\(\s*["']#{Regexp.escape(gem_name)}["'][^\n]*\)$/) do |_|
-              desired_line
+          lines = modified.lines
+          found = false
+          lines.map! do |ln|
+            if ln =~ /add_development_dependency\s*\(?\s*["']#{Regexp.escape(gem_name)}["']/
+              found = true
+              indent = ln[/^\s*/] || ""
+              # Replace entire line, preserving original indentation
+              "#{indent}#{desired_line.strip}\n"
+            else
+              ln
             end
-          elsif (idx = modified.rindex(/\nend\s*\z/))
+          end
+          modified = lines.join
+
+          next if found
+
+          if (idx = modified.rindex(/\nend\s*\z/))
             # Insert before the last end, if present, otherwise append
             before = modified[0...idx]
             after = modified[idx..-1]
