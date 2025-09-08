@@ -1,0 +1,8 @@
+module Kettle
+  module Dev
+    class SetupCLI
+      def initialize: (Array[String] argv) -> void
+      def run!: () -> void
+    end
+  end
+end

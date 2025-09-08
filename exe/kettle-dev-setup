@@ -19,7 +19,7 @@ $stdout.sync = true
 $stderr.sync = true
 
 script_basename = File.basename(__FILE__)
-running_as_script = File.basename($PROGRAM_NAME)
+File.basename($PROGRAM_NAME)
 
 begin
   require "kettle/dev"
@@ -31,285 +31,37 @@ rescue StandardError => e
   warn("[kettle-dev-setup] Warning: could not fully load kettle/dev (#{e.class}: #{e.message}). Proceeding with limited features.")
 end
 
-module Kettle
-  module Dev
-    class SetupCLI
-      def initialize(argv)
-        debug("initialize(argv=#{argv.inspect})")
-        @argv = argv
-        @passthrough = []
-        @options = {}
-        parse!
-      end
+# Always execute when this file is loaded (e.g., via a Bundler binstub).
+# Do not guard with __FILE__ == $PROGRAM_NAME because binstubs use Kernel.load.
+if ARGV.include?("-h") || ARGV.include?("--help")
+  puts <<~USAGE
+    Usage: kettle-dev-setup [options]
 
-      def run!
-        debug("run!")
-        say("Starting kettle-dev setup…")
-        prechecks!
-        ensure_dev_deps!
-        ensure_bin_setup!
-        ensure_rakefile!
-        run_bin_setup!
-        run_bundle_binstubs!
-        commit_bootstrap_changes!
-        run_kettle_install!
-        say("kettle-dev setup complete.")
-      end
+    Bootstraps a host gem repository to use kettle-dev tooling.
 
-      private
+    Options (passed through to rake kettle:dev:install):
+      --allowed=VAL
+      --force
+      --hook_templates=VAL
+      --only=VAL
 
-      def debug(msg)
-        return unless ENV.fetch("DEBUG", "false").casecmp("true").zero?
-        $stderr.puts("[kettle-dev-setup] DEBUG: #{msg}")
-      end
-
-      def parse!
-        debug("parse! argv_before=#{@argv.inspect}")
-        parser = OptionParser.new do |opts|
-          opts.banner = "Usage: kettle-dev-setup [options]"
-          # Map CLI flags to environment-style assignments for Rake (key=value)
-          opts.on("--allowed=VAL", "Pass through to kettle:dev:install") { |v| @passthrough << "allowed=#{v}" }
-          opts.on("--force", "Pass through to kettle:dev:install") { @passthrough << "force=true" }
-          opts.on("--hook_templates=VAL", "Pass through to kettle:dev:install") { |v| @passthrough << "hook_templates=#{v}" }
-          opts.on("--only=VAL", "Pass through to kettle:dev:install") { |v| @passthrough << "only=#{v}" }
-          opts.on("-h", "--help", "Show help") do
-            puts opts
-            exit(0)
-          end
-        end
-        begin
-          parser.parse!(@argv)
-        rescue OptionParser::ParseError => e
-          warn("[kettle-dev-setup] #{e.class}: #{e.message}")
-          puts parser
-          exit(2)
-        end
-        # Any remaining args pass through as-is
-        @passthrough.concat(@argv)
-        debug("parse! argv_after=#{@argv.inspect} passthrough=#{@passthrough.inspect}")
-      end
-
-      def say(msg)
-        puts "[kettle-dev-setup] #{msg}"
-      end
-
-      def abort!(msg)
-        debug("abort!(msg=#{msg.inspect})")
-        raise SystemExit, "[kettle-dev-setup] ERROR: #{msg}"
-      end
-
-      def sh!(cmd, env: {})
-        debug("sh!(cmd=#{cmd.inspect}, env_keys=#{env.keys.inspect})")
-        say("exec: #{cmd}")
-        stdout_str, stderr_str, status = Open3.capture3(env, cmd)
-        $stdout.print(stdout_str) unless stdout_str.empty?
-        $stderr.print(stderr_str) unless stderr_str.empty?
-        abort!("Command failed: #{cmd}") unless status.success?
-      end
-
-      # 1. Prechecks
-      def prechecks!
-        debug("prechecks!")
-        abort!("Not inside a git repository (missing .git).") unless Dir.exist?(".git")
-
-        # 1a. git clean
-        begin
-          # Use GitAdapter if available; otherwise shell out
-          if defined?(Kettle::Dev::GitAdapter)
-            ga = Kettle::Dev::GitAdapter.new
-            dirty = !ga.clean?
-          else
-            stdout, _stderr, _status = Open3.capture3("git status --porcelain")
-            dirty = !stdout.strip.empty?
-          end
-          abort!("Git working tree is not clean. Please commit/stash changes and try again.") if dirty
-        rescue StandardError
-          # Fallback if anything goes wrong: be conservative and require clean tree via shell
-          stdout, _stderr, _status = Open3.capture3("git status --porcelain")
-          abort!("Git working tree is not clean. Please commit/stash changes and try again.") unless stdout.strip.empty?
-        end
-
-        # 1b. target is a gem (has *.gemspec)
-        gemspecs = Dir["*.gemspec"]
-        abort!("No gemspec found in current directory.") if gemspecs.empty?
-        @gemspec_path = gemspecs.first
-
-        # 1c. target uses bundler (Gemfile)
-        abort!("No Gemfile found; bundler is required.") unless File.exist?("Gemfile")
-      end
-
-      # 3. Sync dev dependencies from this gem's example gemspec into target gemspec
-      def ensure_dev_deps!
-        debug("ensure_dev_deps!")
-        source_example = installed_path("kettle-dev.gemspec.example")
-        abort!("Internal error: kettle-dev.gemspec.example not found within the installed gem.") unless source_example && File.exist?(source_example)
-
-        example = File.read(source_example)
-        example = example.gsub("{KETTLE|DEV|GEM}", "kettle-dev")
-
-        wanted_lines = example.each_line.map(&:rstrip).select do |line|
-          line =~ /add_development_dependency\s*\(?/
-        end
-
-        return if wanted_lines.empty?
-
-        target = File.read(@gemspec_path)
-
-        # Build a map from gem name to the desired line
-        wanted = {}
-        wanted_lines.each do |line|
-          if (m = line.match(/add_development_dependency\s*\(?\s*["']([^"']+)["']/))
-            wanted[m[1]] = line
-          end
-        end
-
-        modified = target.dup
-        wanted.each do |gem_name, desired_line|
-          # Replace existing add_development_dependency for this gem, else append near the end
-          lines = modified.lines
-          found = false
-          lines.map! do |ln|
-            if ln =~ /add_development_dependency\s*\(?\s*["']#{Regexp.escape(gem_name)}["']/
-              found = true
-              indent = ln[/^\s*/] || ""
-              # Replace entire line, preserving original indentation
-              "#{indent}#{desired_line.strip}\n"
-            else
-              ln
-            end
-          end
-          modified = lines.join
-
-          next if found
-
-          if (idx = modified.rindex(/\nend\s*\z/))
-            # Insert before the last end, if present, otherwise append
-            before = modified[0...idx]
-            after = modified[idx..-1]
-            insertion = "\n  #{desired_line.strip}\n"
-            modified = before + insertion + after
-          else
-            modified << "\n#{desired_line}\n"
-          end
-        end
-
-        if modified != target
-          File.write(@gemspec_path, modified)
-          say("Updated development dependencies in #{@gemspec_path}.")
-        else
-          say("Development dependencies already up to date.")
-        end
-      end
-
-      # 4. Ensure bin/setup present (copy from gem if missing)
-      def ensure_bin_setup!
-        debug("ensure_bin_setup!")
-        target = File.join("bin", "setup")
-        return say("bin/setup present.") if File.exist?(target)
-
-        source = installed_path(File.join("bin", "setup"))
-        abort!("Internal error: source bin/setup not found within installed gem.") unless source && File.exist?(source)
-        FileUtils.mkdir_p("bin")
-        FileUtils.cp(source, target)
-        FileUtils.chmod("+x", target)
-        say("Copied bin/setup.")
-      end
-
-      # 5. Ensure Rakefile matches example (replace or create)
-      def ensure_rakefile!
-        debug("ensure_rakefile!")
-        source = installed_path("Rakefile.example")
-        abort!("Internal error: Rakefile.example not found within installed gem.") unless source && File.exist?(source)
-
-        content = File.read(source)
-        if File.exist?("Rakefile")
-          say("Replacing existing Rakefile with kettle-dev Rakefile.example.")
-        else
-          say("Creating Rakefile from kettle-dev Rakefile.example.")
-        end
-        File.write("Rakefile", content)
-      end
-
-      # 6. Run bin/setup
-      def run_bin_setup!
-        debug("run_bin_setup!")
-        sh!(Shellwords.join([File.join("bin", "setup")]))
-      end
-
-      # 7. Run bundle binstubs --all
-      def run_bundle_binstubs!
-        debug("run_bundle_binstubs!")
-        sh!("bundle exec bundle binstubs --all")
-      end
-
-      # 8. Stage and commit any changes made by the setup before install
-      def commit_bootstrap_changes!
-        debug("commit_bootstrap_changes!")
-        # Only operate if we are inside a git repo (prechecked earlier), and if dirty
-        dirty = begin
-          if defined?(Kettle::Dev::GitAdapter)
-            !Kettle::Dev::GitAdapter.new.clean?
-          else
-            out, _st = Open3.capture2("git", "status", "--porcelain")
-            !out.strip.empty?
-          end
-        rescue StandardError
-          out, _st = Open3.capture2("git", "status", "--porcelain")
-          !out.strip.empty?
-        end
-        unless dirty
-          say("No changes to commit from template bootstrap.")
-          return
-        end
-        # Stage all changes
-        sh!(Shellwords.join(["git", "add", "-A"]))
-        # Compose commit message exactly as required
-        script_name = File.basename(__FILE__)
-        msg = "🎨 Template bootstrap by #{script_name} v#{Kettle::Dev::Version::VERSION}"
-        # Commit; allow empty to be false (we already detected dirty)
-        sh!(Shellwords.join(["git", "commit", "-m", msg]))
-        say("Committed template bootstrap changes.")
-      end
-
-      # 9. Run rake kettle:dev:install with passthrough args
-      def run_kettle_install!
-        debug("run_kettle_install! passthrough=#{@passthrough.inspect}")
-        cmd = ["bin/rake", "kettle:dev:install"] + @passthrough
-        sh!(Shellwords.join(cmd))
-      end
-
-      # Locate files shipped with this gem installation. Handles execution under a checkout as well.
-      def installed_path(rel)
-        debug("installed_path(rel=#{rel.inspect})")
-        # Prefer real gem installation location
-        if defined?(Gem) && (spec = Gem.loaded_specs["kettle-dev"])
-          path = File.join(spec.full_gem_path, rel)
-          return path if File.exist?(path)
-        end
-        # Fallback: relative to this file (useful when running from repo)
-        here = File.expand_path(File.join(__dir__, "..")) # move from exe/ to project root
-        path = File.join(here, rel)
-        return path if File.exist?(path)
-        nil
-      end
-    end
-  end
+    Environment:
+      DEBUG=true                    # print backtraces on errors
+  USAGE
+  exit 0
 end
 
-if running_as_script == script_basename
-  begin
-    puts "== Kettle::Dev::SetupCLI.new => run! =="
-    Kettle::Dev::SetupCLI.new(ARGV).run!
-  rescue SystemExit => e
-    warn(e.message)
-    exit(e.status || 1)
-  rescue Exception => e
-    warn("[kettle-dev-setup] FATAL: #{e.class}: #{e.message}")
-    if ENV.fetch("DEBUG", "false").casecmp("true").zero?
-      warn(e.backtrace.join("\n"))
-    end
-    exit(1)
-  end
-else
-  puts "== #{script_basename} v#{Kettle::Dev::Version::VERSION} fin (#{running_as_script}) == (#{script_basename}) =="
+begin
+  Kettle::Dev::SetupCLI.new(ARGV).run!
+rescue LoadError => e
+  warn("#{script_basename}: could not load dependency: #{e.class}: #{e.message}")
+  warn(e.backtrace.join("\n")) if ENV["DEBUG"]
+  exit(1)
+rescue SystemExit => e
+  warn("#{script_basename}: exited (status=#{e.status}, msg=#{e.message})") if e.status != 0
+  raise
+rescue StandardError => e
+  warn("#{script_basename}: unexpected error: #{e.class}: #{e.message}")
+  warn(e.backtrace.join("\n")) if ENV["DEBUG"]
+  exit(1)
 end

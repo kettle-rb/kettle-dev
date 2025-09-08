@@ -1,13 +1,10 @@
 # frozen_string_literal: true
 
-RSpec.describe "kettle-dev-setup ensure_dev_deps!" do
-  include_context 'with stubbed env'
+RSpec.describe Kettle::Dev::SetupCLI do
+  include_context "with stubbed env"
 
-  let(:script_path) { File.expand_path("../../../exe/kettle-dev-setup", __dir__) }
-
-  # We'll load the class under test by requiring the exe file, which defines Kettle::Dev::SetupCLI
   before do
-    load script_path
+    require "kettle/dev"
   end
 
   def write(file, content)
@@ -20,11 +17,13 @@ RSpec.describe "kettle-dev-setup ensure_dev_deps!" do
 
   it "updates existing add_development_dependency lines that omit parentheses, without creating duplicates" do
     Dir.mktmpdir do |dir|
+      # rubocop:disable ThreadSafety/DirChdir
       Dir.chdir(dir) do
+        # rubocop:enable ThreadSafety/DirChdir
         # minimal git repo to satisfy prechecks!
-        `git init -q`
+        %x(git init -q)
         # clean working tree
-        `git add -A && git commit --allow-empty -m initial -q`
+        %x(git add -A && git commit --allow-empty -m initial -q)
 
         # Create a Gemfile to satisfy prechecks
         write("Gemfile", "source 'https://rubygems.org'\n")
@@ -51,7 +50,7 @@ RSpec.describe "kettle-dev-setup ensure_dev_deps!" do
         # Stub installed_path to point to the example shipped with repo
         example_path = File.expand_path("../../../kettle-dev.gemspec.example", __dir__)
 
-        cli = Kettle::Dev::SetupCLI.allocate
+        cli = described_class.allocate
         cli.instance_variable_set(:@argv, [])
         cli.instance_variable_set(:@passthrough, [])
         cli.send(:parse!) # init options

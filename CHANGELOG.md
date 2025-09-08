@@ -19,6 +19,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ## [Unreleased]
 ### Added
 ### Changed
+- move kettle-dev-setup logic into Kettle::Dev::SetupCLI
 ### Deprecated
 ### Removed
 ### Fixed

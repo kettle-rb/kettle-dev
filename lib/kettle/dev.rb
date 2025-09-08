@@ -24,6 +24,7 @@ module Kettle
     autoload :ReadmeBackers, "kettle/dev/readme_backers"
     autoload :ReleaseCLI, "kettle/dev/release_cli"
     autoload :PreReleaseCLI, "kettle/dev/pre_release_cli"
+    autoload :SetupCLI, "kettle/dev/setup_cli"
     autoload :TemplateHelpers, "kettle/dev/template_helpers"
     autoload :Version, "kettle/dev/version"
     autoload :Versioning, "kettle/dev/versioning"
