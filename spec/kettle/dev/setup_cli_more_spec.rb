@@ -296,7 +296,7 @@ RSpec.describe Kettle::Dev::SetupCLI do
       cli = described_class.allocate
       cli.instance_variable_set(:@argv, [])
       allow(cli).to receive(:parse!)
-      %i[prechecks! ensure_dev_deps! ensure_gemfile_from_example! ensure_bin_setup! ensure_rakefile! run_bin_setup! run_bundle_binstubs! commit_bootstrap_changes! run_kettle_install!].each do |m|
+      %i[prechecks! ensure_dev_deps! ensure_gemfile_from_example! ensure_modular_gemfiles! ensure_bin_setup! ensure_rakefile! run_bin_setup! run_bundle_binstubs! commit_bootstrap_changes! run_kettle_install!].each do |m|
         expect(cli).to receive(m).ordered
       end
       expect { cli.run! }.not_to raise_error
