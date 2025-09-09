@@ -23,6 +23,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Removed
 ### Fixed
 - include .rubocop_rspec.yml during install / template task's file copy
+- kettle-dev-setup now honors `--force` option
 ### Security
 
 ## [1.1.12] - 2025-09-09
