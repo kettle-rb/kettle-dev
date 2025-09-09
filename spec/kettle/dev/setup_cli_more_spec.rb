@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# rubocop:disable ThreadSafety/DirChdir
+
 RSpec.describe Kettle::Dev::SetupCLI do
   include_context "with stubbed env"
 
@@ -71,6 +73,70 @@ RSpec.describe Kettle::Dev::SetupCLI do
       status = instance_double(Process::Status, success?: true)
       expect(Open3).to receive(:capture3).with({"A" => "1"}, "cmd").and_return(["", "", status])
       expect { cli.send(:sh!, "cmd", env: {"A" => "1"}) }.to output(/exec: cmd/).to_stdout
+    end
+  end
+
+  describe "#ensure_gemfile_from_example!" do
+    around do |ex|
+      Dir.mktmpdir do |dir|
+        Dir.chdir(dir) { ex.run }
+      end
+    end
+
+    it "merges Gemfile.example entries without duplicating directives" do
+      # minimal git repo and files
+      %x(git init -q)
+      %x(git add -A && git commit --allow-empty -m initial -q)
+      File.write("a.gemspec", "Gem::Specification.new do |s| end\n")
+
+      # Start with a Gemfile that already has source, gemspec, and one eval_gemfile
+      initial = <<~G
+        source "https://rubygems.org"
+        gemspec
+        eval_gemfile "gemfiles/modular/style.gemfile"
+      G
+      File.write("Gemfile", initial)
+
+      cli = described_class.allocate
+      cli.instance_variable_set(:@argv, [])
+      cli.instance_variable_set(:@passthrough, [])
+      cli.send(:parse!)
+
+      # Stub installed_path to return the repo's Gemfile.example
+      example_path = File.expand_path("../../../Gemfile.example", __dir__)
+      allow(cli).to receive(:installed_path).and_wrap_original do |orig, rel|
+        if rel == "Gemfile.example"
+          example_path
+        else
+          orig.call(rel)
+        end
+      end
+
+      # Act
+      cli.send(:ensure_gemfile_from_example!)
+
+      result = File.read("Gemfile")
+
+      # It should not duplicate the existing source/gemspec/eval line
+      expect(result.scan(/^source /).size).to eq(1)
+      expect(result.scan(/^gemspec/).size).to eq(1)
+      expect(result.scan(/^eval_gemfile \"gemfiles\/modular\/style.gemfile\"/).size).to eq(1)
+
+      # It should add the git_source lines (both github and gitlab) from example
+      expect(result).to match(/^git_source\(:github\) \{ \|repo_name\| \"https:\/\/github.com\/\#\{repo_name\}\" \}/)
+      expect(result).to match(/^git_source\(:gitlab\) \{ \|repo_name\| \"https:\/\/gitlab.com\/\#\{repo_name\}\" \}/)
+
+      # It should add the missing eval_gemfile entries listed in the example
+      expect(result).to include('eval_gemfile "gemfiles/modular/debug.gemfile"')
+      expect(result).to include('eval_gemfile "gemfiles/modular/coverage.gemfile"')
+      expect(result).to include('eval_gemfile "gemfiles/modular/documentation.gemfile"')
+      expect(result).to include('eval_gemfile "gemfiles/modular/optional.gemfile"')
+      expect(result).to include('eval_gemfile "gemfiles/modular/x_std_libs.gemfile"')
+
+      # Idempotent on second run
+      cli.send(:ensure_gemfile_from_example!)
+      result2 = File.read("Gemfile")
+      expect(result2).to eq(result)
     end
   end
 
@@ -230,10 +296,11 @@ RSpec.describe Kettle::Dev::SetupCLI do
       cli = described_class.allocate
       cli.instance_variable_set(:@argv, [])
       allow(cli).to receive(:parse!)
-      %i[prechecks! ensure_dev_deps! ensure_bin_setup! ensure_rakefile! run_bin_setup! run_bundle_binstubs! commit_bootstrap_changes! run_kettle_install!].each do |m|
+      %i[prechecks! ensure_dev_deps! ensure_gemfile_from_example! ensure_bin_setup! ensure_rakefile! run_bin_setup! run_bundle_binstubs! commit_bootstrap_changes! run_kettle_install!].each do |m|
         expect(cli).to receive(m).ordered
       end
       expect { cli.run! }.not_to raise_error
     end
   end
+  # rubocop:enable ThreadSafety/DirChdir
 end

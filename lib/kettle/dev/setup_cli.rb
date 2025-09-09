@@ -31,6 +31,7 @@ module Kettle
         say("Starting kettle-dev setup…")
         prechecks!
         ensure_dev_deps!
+        ensure_gemfile_from_example!
         ensure_bin_setup!
         ensure_rakefile!
         run_bin_setup!
@@ -179,6 +180,81 @@ module Kettle
         FileUtils.cp(source, target)
         FileUtils.chmod("+x", target)
         say("Copied bin/setup.")
+      end
+
+      # 3b. Ensure Gemfile contains required lines from example without duplicating directives
+      #    - Copies source, git_source, gemspec, and eval_gemfile lines that are missing
+      #    - Idempotent (running multiple times does not duplicate entries)
+      def ensure_gemfile_from_example!
+        source_path = installed_path("Gemfile.example")
+        abort!("Internal error: Gemfile.example not found within installed gem.") unless source_path && File.exist?(source_path)
+
+        example = File.read(source_path)
+        target_path = "Gemfile"
+        target = File.exist?(target_path) ? File.read(target_path) : ""
+
+        # Extract interesting lines from example
+        ex_sources = []
+        ex_git_sources = [] # names (e.g., :github)
+        ex_git_source_lines = {}
+        ex_has_gemspec = false
+        ex_eval_paths = []
+
+        example.each_line do |ln|
+          s = ln.strip
+          next if s.empty?
+          if s.start_with?("source ")
+            ex_sources << ln.rstrip
+          elsif (m = s.match(/^git_source\(\s*:(\w+)\s*\)/))
+            name = m[1]
+            ex_git_sources << name
+            ex_git_source_lines[name] = ln.rstrip
+          elsif s.start_with?("gemspec")
+            ex_has_gemspec = true
+          elsif (m = s.match(/^eval_gemfile\s+["']([^"']+)["']/))
+            ex_eval_paths << m[1]
+          end
+        end
+
+        # Scan target for presence
+        tg_sources = target.each_line.map(&:rstrip).select { |l| l.strip.start_with?("source ") }
+        tg_git_sources = {}
+        target.each_line do |ln|
+          if (m = ln.strip.match(/^git_source\(\s*:(\w+)\s*\)/))
+            tg_git_sources[m[1]] = true
+          end
+        end
+        tg_has_gemspec = !!target.each_line.find { |l| l.strip.start_with?("gemspec") }
+        tg_eval_paths = target.each_line.map do |ln|
+          if (m = ln.strip.match(/^eval_gemfile\s+["']([^"']+)["']/))
+            m[1]
+          end
+        end.compact
+
+        additions = []
+        # Add missing sources (exact line match)
+        ex_sources.each do |src_line|
+          additions << src_line unless tg_sources.include?(src_line)
+        end
+        # Add missing git_source by name
+        ex_git_sources.each do |name|
+          additions << ex_git_source_lines[name] unless tg_git_sources[name]
+        end
+        # Add gemspec if example has it and target lacks it
+        additions << "gemspec" if ex_has_gemspec && !tg_has_gemspec
+        # Add missing eval_gemfile paths (recreate the exact example line when possible)
+        ex_eval_paths.each do |path|
+          next if tg_eval_paths.include?(path)
+          additions << "eval_gemfile \"#{path}\""
+        end
+
+        return say("Gemfile already contains required entries from example.") if additions.empty?
+
+        # Ensure file ends with a newline
+        target << "\n" unless target.end_with?("\n") || target.empty?
+        new_content = target + additions.join("\n") + "\n"
+        File.write(target_path, new_content)
+        say("Updated Gemfile with entries from Gemfile.example (added #{additions.size}).")
       end
 
       # 5. Ensure Rakefile matches example (replace or create)
