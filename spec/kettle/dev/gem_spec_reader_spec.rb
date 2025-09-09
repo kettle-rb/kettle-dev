@@ -105,6 +105,16 @@ RSpec.describe Kettle::Dev::GemSpecReader do
   context "when detecting funding org" do
     let(:oc_yaml) { File.join(tmp_root, ".opencollective.yml") }
 
+    # Ensure a clean env for funding detection in each example; rely on rspec-stubbed_env.
+    before do
+      stub_env("FUNDING_ORG" => nil, "OPENCOLLECTIVE_HANDLE" => nil)
+      FileUtils.rm_f(oc_yaml)
+    end
+
+    after do
+      FileUtils.rm_f(oc_yaml)
+    end
+
     it "honors FUNDING_ORG=false bypass" do
       stub_env("FUNDING_ORG" => "false")
       write_gemspec <<~G
