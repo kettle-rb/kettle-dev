@@ -20,6 +20,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Added
 ### Changed
 - improve Gemfile updates during kettle-dev-setup
+- git origin-based funding_org derivation during setup
 ### Deprecated
 ### Removed
 ### Fixed

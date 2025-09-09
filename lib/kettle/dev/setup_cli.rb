@@ -49,6 +49,59 @@ module Kettle
         $stderr.puts("[kettle-dev-setup] DEBUG: #{msg}")
       end
 
+      # Attempt to derive a funding organization from the git remote 'origin' when
+      # not explicitly provided via env or .opencollective.yml.
+      # This is a soft helper that only sets ENV["FUNDING_ORG"] if a plausible
+      # GitHub org can be parsed from the origin URL.
+      # @return [void]
+      def derive_funding_org_from_git_if_missing!
+        # Respect explicit bypass
+        env_val = ENV["FUNDING_ORG"]
+        return if env_val && env_val.to_s.strip.casecmp("false").zero?
+
+        # If already provided via env, do nothing
+        return if ENV["FUNDING_ORG"].to_s.strip != ""
+        return if ENV["OPENCOLLECTIVE_HANDLE"].to_s.strip != ""
+
+        # If project provides an .opencollective.yml with org, do nothing
+        begin
+          oc_path = File.join(Dir.pwd, ".opencollective.yml")
+          if File.file?(oc_path)
+            txt = File.read(oc_path)
+            return if txt =~ /\borg:\s*([\w\-]+)/i
+          end
+        rescue StandardError => e
+          debug("Reading .opencollective.yml failed: #{e.class}: #{e.message}")
+        end
+
+        # Attempt to get origin URL and parse GitHub org
+        begin
+          ga = Kettle::Dev::GitAdapter.new
+          origin_url = nil
+          origin_url = ga.remote_url("origin") if ga.respond_to?(:remote_url)
+          if origin_url.nil? && ga.respond_to?(:remotes_with_urls)
+            begin
+              urls = ga.remotes_with_urls
+              origin_url = urls["origin"] if urls
+            rescue StandardError => e
+              # graceful fallback if adapter backend errs; keep silent behavior
+              debug("remotes_with_urls failed: #{e.class}: #{e.message}")
+            end
+          end
+          origin_url = origin_url.to_s.strip
+          if (m = origin_url.match(%r{github\.com[/:]([^/]+)/}i))
+            org = m[1].to_s
+            if !org.empty?
+              ENV["FUNDING_ORG"] = org
+              debug("Derived FUNDING_ORG from git origin: #{org}")
+            end
+          end
+        rescue StandardError => e
+          # Be silent; this is a best-effort and shouldn't fail setup
+          debug("Could not derive funding org from git: #{e.class}: #{e.message}")
+        end
+      end
+
       def parse!
         parser = OptionParser.new do |opts|
           opts.banner = "Usage: kettle-dev-setup [options]"
@@ -112,6 +165,9 @@ module Kettle
 
         # Gemfile
         abort!("No Gemfile found; bundler is required.") unless File.exist?("Gemfile")
+
+        # Seed FUNDING_ORG from git remote origin org when not provided elsewhere
+        derive_funding_org_from_git_if_missing!
       end
 
       # 3. Sync dev dependencies from this gem's example gemspec into target gemspec
