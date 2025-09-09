@@ -19,6 +19,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ## [Unreleased]
 ### Added
 ### Changed
+- improve Gemfile updates during kettle-dev-setup
 ### Deprecated
 ### Removed
 ### Fixed
