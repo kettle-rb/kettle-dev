@@ -19,12 +19,19 @@ Please file a bug if you notice a violation of semantic versioning.
 ## [Unreleased]
 ### Added
 ### Changed
-- improve Gemfile updates during kettle-dev-setup
-- git origin-based funding_org derivation during setup
 ### Deprecated
 ### Removed
 ### Fixed
 ### Security
+
+## [1.1.12] - 2025-09-09
+- TAG: [v1.1.12][1.1.12t]
+- COVERAGE: 94.84% -- 3422/3608 lines in 25 files
+- BRANCH COVERAGE: 78.97% -- 1386/1755 branches in 25 files
+- 76.88% documented
+### Changed
+- improve Gemfile updates during kettle-dev-setup
+- git origin-based funding_org derivation during setup
 
 ## [1.1.11] - 2025-09-08
 - TAG: [v1.1.11][1.1.11t]
@@ -583,7 +590,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.11...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.12...HEAD
+[1.1.12]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.11...v1.1.12
+[1.1.12t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.12
 [1.1.11]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.10...v1.1.11
 [1.1.11t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.11
 [1.1.10]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.9...v1.1.10

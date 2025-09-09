@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="US-ASCII">
+    <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>
-  File: version
+  File: modular_gemfiles
   
     &mdash; Documentation by YARD 0.9.37
   
@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="css/common.css" type="text/css" />
 
 <script type="text/javascript">
-  pathId = "version";
+  pathId = "modular_gemfiles";
   relpath = '';
 </script>
 
@@ -37,7 +37,7 @@
         <div id="menu">
   
     <a href="_index.html">Index</a> &raquo; 
-    <span class="title">File: version</span>
+    <span class="title">File: modular_gemfiles</span>
   
 </div>
 
@@ -57,7 +57,18 @@
         <div class="clear"></div>
       </div>
 
-      <div id="content"><div id='filecontents'>
+      <div id="content"><div id='filecontents'><p>module Kettle<br>
+  module Dev<br>
+    module ModularGemfiles<br>
+      def self.sync!: (<br>
+        helpers: untyped,<br>
+        project_root: String,<br>
+        gem_checkout_root: String,<br>
+        min_ruby: untyped<br>
+      ) -&gt; void<br>
+    end<br>
+  end<br>
+end</p>
 </div></div>
 
       <div id="footer">
