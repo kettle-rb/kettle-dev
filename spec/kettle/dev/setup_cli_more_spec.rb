@@ -34,10 +34,14 @@ RSpec.describe Kettle::Dev::SetupCLI do
   end
 
   it "--force sets ENV['force']=true for in-process auto-yes prompts" do
-    # stubbed_env context ensures cleanup
-    expect(ENV["force"]).to be_nil
-    _cli = described_class.new(["--force"]) # parse! runs in initialize
-    expect(ENV["force"]).to eq("true")
+    # Ensure we clean up ENV["force"] since SetupCLI writes directly to ENV
+    begin
+      expect(ENV["force"]).to be_nil
+      _cli = described_class.new(["--force"]) # parse! runs in initialize
+      expect(ENV["force"]).to eq("true")
+    ensure
+      ENV.delete("force")
+    end
   end
 
   describe "#debug" do

@@ -174,14 +174,19 @@ module Kettle
                 end
               end
 
-              # If no grapheme found in README H1, ask the user which to use
+              # If no grapheme found in README H1, either use a default in force mode, or ask the user.
               if chosen_grapheme.nil? || chosen_grapheme.empty?
-                puts "No grapheme found after README H1. Enter a grapheme (emoji/symbol) to use for README, summary, and description:"
-                print("Grapheme: ")
-                ans = Kettle::Dev::InputAdapter.gets&.strip.to_s
-                chosen_grapheme = ans[/\A\X/u].to_s
-                # If still empty, skip synchronization silently
-                chosen_grapheme = nil if chosen_grapheme.empty?
+                if ENV.fetch("force", "").to_s =~ ENV_TRUE_RE
+                  # Non-interactive install: default to pizza slice to match template style.
+                  chosen_grapheme = "🍕"
+                else
+                  puts "No grapheme found after README H1. Enter a grapheme (emoji/symbol) to use for README, summary, and description:"
+                  print("Grapheme: ")
+                  ans = Kettle::Dev::InputAdapter.gets&.strip.to_s
+                  chosen_grapheme = ans[/\A\X/u].to_s
+                  # If still empty, skip synchronization silently
+                  chosen_grapheme = nil if chosen_grapheme.empty?
+                end
               end
 
               if chosen_grapheme
@@ -364,12 +369,13 @@ module Kettle
                   puts "Current spec.homepage appears #{interpolated ? "interpolated" : "invalid"}: #{assigned}"
                   puts "Suggested literal homepage: \"#{suggested}\""
                   print("Update #{File.basename(gemspec_path)} to use this homepage? [Y/n]: ")
-                  ans = Kettle::Dev::InputAdapter.gets&.strip
-                  do_update = if ENV.fetch("force", "").to_s =~ ENV_TRUE_RE
-                    true
-                  else
-                    ans.nil? || ans.empty? || ans =~ /\Ay(es)?\z/i
-                  end
+                  do_update =
+                    if ENV.fetch("force", "").to_s =~ ENV_TRUE_RE
+                      true
+                    else
+                      ans = Kettle::Dev::InputAdapter.gets&.strip
+                      ans.nil? || ans.empty? || ans =~ /\Ay(es)?\z/i
+                    end
 
                   if do_update
                     new_line = homepage_line.sub(/=.*/, "= \"#{suggested}\"\n")
@@ -472,10 +478,8 @@ module Kettle
 
           if defined?(updated_envrc_by_install) && updated_envrc_by_install
             allowed_truthy = ENV.fetch("allowed", "").to_s =~ ENV_TRUE_RE
-            force_truthy = ENV.fetch("force", "").to_s =~ ENV_TRUE_RE
-            if allowed_truthy || force_truthy
-              reason = allowed_truthy ? "allowed=true" : "force=true"
-              puts "Proceeding after .envrc update because #{reason}."
+            if allowed_truthy
+              puts "Proceeding after .envrc update because allowed=true."
             else
               puts
               puts "IMPORTANT: .envrc was updated during kettle:dev:install."
@@ -509,10 +513,15 @@ module Kettle
               puts "Would you like to add '.env.local' to #{gitignore_path}?"
               print("Add to .gitignore now [Y/n]: ")
               answer = Kettle::Dev::InputAdapter.gets&.strip
-              add_it = if ENV.fetch("force", "").to_s =~ ENV_TRUE_RE
-                true
+              # Respect an explicit negative answer even when force=true
+              if answer && answer =~ /\An(o)?\z/i
+                add_it = false
               else
-                answer.nil? || answer.empty? || answer =~ /\Ay(es)?\z/i
+                add_it = if ENV.fetch("force", "").to_s =~ ENV_TRUE_RE
+                  true
+                else
+                  answer.nil? || answer.empty? || answer =~ /\Ay(es)?\z/i
+                end
               end
               if add_it
                 FileUtils.mkdir_p(File.dirname(gitignore_path))
