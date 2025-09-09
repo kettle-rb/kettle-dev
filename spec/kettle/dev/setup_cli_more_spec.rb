@@ -147,6 +147,26 @@ RSpec.describe Kettle::Dev::SetupCLI do
       end
     end
 
+    it "seeds FUNDING_ORG from git origin when not provided elsewhere" do
+      %x(git init -q)
+      %x(git add -A && git commit --allow-empty -m initial -q)
+      File.write("Gemfile", "")
+      File.write("a.gemspec", "Gem::Specification.new do |s| end\n")
+      # Ensure no env or oc file
+      # stubbed_env context starts with nils, just ensure file not present
+      FileUtils.rm_f(".opencollective.yml")
+
+      fake_ga = instance_double(Kettle::Dev::GitAdapter)
+      allow(Kettle::Dev::GitAdapter).to receive(:new).and_return(fake_ga)
+      allow(fake_ga).to receive(:clean?).and_return(true)
+      allow(fake_ga).to receive(:remote_url).with("origin").and_return("git@github.com:acme/thing.git")
+
+      cli = described_class.allocate
+      cli.send(:prechecks!)
+
+      expect(ENV["FUNDING_ORG"]).to eq("acme")
+    end
+
     it "aborts if not in git repo" do
       cli = described_class.allocate
       expect { cli.send(:prechecks!) }.to raise_error(MockSystemExit, /Not inside a git repository/)

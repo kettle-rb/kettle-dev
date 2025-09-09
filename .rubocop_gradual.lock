@@ -168,7 +168,7 @@
     [1491, 7, 58, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 1054286736],
     [1522, 7, 69, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 2519740787]
   ],
-  "spec/kettle/dev/setup_cli_more_spec.rb:1682564880": [
+  "spec/kettle/dev/setup_cli_more_spec.rb:1974808325": [
     [74, 7, 13, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2024371388]
   ],
   "spec/kettle/dev/tasks/ci_task_spec.rb:3449714240": [
