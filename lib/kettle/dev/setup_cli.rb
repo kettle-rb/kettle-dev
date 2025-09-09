@@ -32,6 +32,7 @@ module Kettle
         prechecks!
         ensure_dev_deps!
         ensure_gemfile_from_example!
+        ensure_modular_gemfiles!
         ensure_bin_setup!
         ensure_rakefile!
         run_bin_setup!
@@ -255,6 +256,26 @@ module Kettle
         new_content = target + additions.join("\n") + "\n"
         File.write(target_path, new_content)
         say("Updated Gemfile with entries from Gemfile.example (added #{additions.size}).")
+      end
+
+      # 3c. Ensure gemfiles/modular/* are present (copied like template task)
+      def ensure_modular_gemfiles!
+        helpers = Kettle::Dev::TemplateHelpers
+        project_root = helpers.project_root
+        gem_checkout_root = helpers.gem_checkout_root
+        # Gather min_ruby for style.gemfile adjustments
+        min_ruby = begin
+          md = helpers.gemspec_metadata(project_root)
+          md[:min_ruby]
+        rescue StandardError
+          nil
+        end
+        Kettle::Dev::ModularGemfiles.sync!(
+          helpers: helpers,
+          project_root: project_root,
+          gem_checkout_root: gem_checkout_root,
+          min_ruby: min_ruby,
+        )
       end
 
       # 5. Ensure Rakefile matches example (replace or create)

@@ -1,0 +1,12 @@
+module Kettle
+  module Dev
+    module ModularGemfiles
+      def self.sync!: (
+        helpers: untyped,
+        project_root: String,
+        gem_checkout_root: String,
+        min_ruby: untyped
+      ) -> void
+    end
+  end
+end

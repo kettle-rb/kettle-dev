@@ -1,7 +1,7 @@
 {
-  "lib/kettle/dev.rb:261745226": [
-    [64, 17, 2, "ThreadSafety/MutableClassInstanceVariable: Freeze mutable objects assigned to class instance variables.", 5862883],
-    [75, 7, 16, "Lint/RescueException: Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?", 2127134117]
+  "lib/kettle/dev.rb:3349086928": [
+    [65, 17, 2, "ThreadSafety/MutableClassInstanceVariable: Freeze mutable objects assigned to class instance variables.", 5862883],
+    [76, 7, 16, "Lint/RescueException: Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?", 2127134117]
   ],
   "lib/kettle/dev/tasks/ci_task.rb:4072951873": [
     [268, 26, 10, "ThreadSafety/NewThread: Avoid starting new threads.", 3411682361],
@@ -168,7 +168,7 @@
     [1491, 7, 58, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 1054286736],
     [1522, 7, 69, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 2519740787]
   ],
-  "spec/kettle/dev/setup_cli_more_spec.rb:2481923901": [
+  "spec/kettle/dev/setup_cli_more_spec.rb:1682564880": [
     [74, 7, 13, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2024371388]
   ],
   "spec/kettle/dev/tasks/ci_task_spec.rb:3449714240": [

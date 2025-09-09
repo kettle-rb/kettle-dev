@@ -26,6 +26,7 @@ module Kettle
     autoload :PreReleaseCLI, "kettle/dev/pre_release_cli"
     autoload :SetupCLI, "kettle/dev/setup_cli"
     autoload :TemplateHelpers, "kettle/dev/template_helpers"
+    autoload :ModularGemfiles, "kettle/dev/modular_gemfiles"
     autoload :Version, "kettle/dev/version"
     autoload :Versioning, "kettle/dev/versioning"
 
