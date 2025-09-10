@@ -19,6 +19,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ## [Unreleased]
 ### Added
 ### Changed
+- use current x_std_libs modular gemfile for all appraisals that are pinned to current ruby
 ### Deprecated
 ### Removed
 ### Fixed
