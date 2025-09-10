@@ -22,8 +22,15 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Deprecated
 ### Removed
 ### Fixed
-- fix appraisals for Ruby v2.7 to use correct x_std_libs
 ### Security
+
+## [1.1.15] - 2025-09-10
+- TAG: [v1.1.15][1.1.15t]
+- COVERAGE: 96.29% -- 3479/3613 lines in 25 files
+- BRANCH COVERAGE: 80.96% -- 1424/1759 branches in 25 files
+- 76.88% documented
+### Fixed
+- fix appraisals for Ruby v2.7 to use correct x_std_libs
 
 ## [1.1.14] - 2025-09-10
 - TAG: [v1.1.14][1.1.14t]
@@ -609,7 +616,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.14...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.15...HEAD
+[1.1.15]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.14...v1.1.15
+[1.1.15t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.15
 [1.1.14]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.13...v1.1.14
 [1.1.14t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.14
 [1.1.13]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.12...v1.1.13
