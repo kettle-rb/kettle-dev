@@ -22,9 +22,15 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Deprecated
 ### Removed
 ### Fixed
+### Security
+
+## [1.1.16] - 2025-09-10
+- TAG: [v1.1.16][1.1.16t]
+- COVERAGE: 96.24% -- 3477/3613 lines in 25 files
+- BRANCH COVERAGE: 81.01% -- 1425/1759 branches in 25 files
+- 76.88% documented
+### Fixed
 - handling of alternate format of Unreleased section in CHANGELOG.md
-### Security
-### Security
 
 ## [1.1.15] - 2025-09-10
 - TAG: [v1.1.15][1.1.15t]
@@ -618,7 +624,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.15...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.16...HEAD
+[1.1.16]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.15...v1.1.16
+[1.1.16t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.16
 [1.1.15]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.14...v1.1.15
 [1.1.15t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.15
 [1.1.14]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.13...v1.1.14
