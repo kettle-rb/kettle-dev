@@ -143,7 +143,7 @@ end
 # Only run linter on the latest version of Ruby (but, in support of oldest supported Ruby version)
 appraise "style" do
   eval_gemfile "modular/style.gemfile"
-  eval_gemfile "modular/x_std_libs/r3/libs.gemfile"
+  eval_gemfile "modular/x_std_libs.gemfile"
   # Dependencies injected by the kettle-dev-setup script & kettle:dev:install rake task
   #  eval_gemfile "modular/injected.gemfile"
 end
