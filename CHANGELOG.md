@@ -22,9 +22,16 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Deprecated
 ### Removed
 ### Fixed
+### Security
+
+## [1.1.13] - 2025-09-09
+- TAG: [v1.1.13][1.1.13t]
+- COVERAGE: 96.29% -- 3479/3613 lines in 25 files
+- BRANCH COVERAGE: 80.96% -- 1424/1759 branches in 25 files
+- 76.88% documented
+### Fixed
 - include .rubocop_rspec.yml during install / template task's file copy
 - kettle-dev-setup now honors `--force` option
-### Security
 
 ## [1.1.12] - 2025-09-09
 - TAG: [v1.1.12][1.1.12t]
@@ -592,7 +599,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.12...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.13...HEAD
+[1.1.13]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.12...v1.1.13
+[1.1.13t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.13
 [1.1.12]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.11...v1.1.12
 [1.1.12t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.12
 [1.1.11]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.10...v1.1.11
