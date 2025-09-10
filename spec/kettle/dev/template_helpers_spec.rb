@@ -38,6 +38,7 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
       # Ensure force mode is not active for these interactive-path tests
       stub_env("force" => "false")
     end
+
     def simulate_input(str)
       allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return(str)
     end

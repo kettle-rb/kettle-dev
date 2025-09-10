@@ -514,14 +514,12 @@ module Kettle
               print("Add to .gitignore now [Y/n]: ")
               answer = Kettle::Dev::InputAdapter.gets&.strip
               # Respect an explicit negative answer even when force=true
-              if answer && answer =~ /\An(o)?\z/i
-                add_it = false
+              add_it = if answer && answer =~ /\An(o)?\z/i
+                false
+              elsif ENV.fetch("force", "").to_s =~ ENV_TRUE_RE
+                true
               else
-                add_it = if ENV.fetch("force", "").to_s =~ ENV_TRUE_RE
-                  true
-                else
-                  answer.nil? || answer.empty? || answer =~ /\Ay(es)?\z/i
-                end
+                answer.nil? || answer.empty? || answer =~ /\Ay(es)?\z/i
               end
               if add_it
                 FileUtils.mkdir_p(File.dirname(gitignore_path))
