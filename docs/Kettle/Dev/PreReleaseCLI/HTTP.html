@@ -463,7 +463,8 @@ Falls back to GET when HEAD is not allowed.</p>
 87
 88
 89
-90</pre>
+90
+91</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/kettle/dev/pre_release_cli.rb', line 58</span>
@@ -484,6 +485,7 @@ Falls back to GET when HEAD is not allowed.</p>
   <span class='kw'>when</span> <span class='const'>Net</span><span class='op'>::</span><span class='const'>HTTPRedirection</span>
     <span class='id identifier rubyid_location'>location</span> <span class='op'>=</span> <span class='id identifier rubyid_response'>response</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>location</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
     <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='id identifier rubyid_location'>location</span>
+
     <span class='id identifier rubyid_new_uri'>new_uri</span> <span class='op'>=</span> <span class='id identifier rubyid_parse_http_uri'>parse_http_uri</span><span class='lparen'>(</span><span class='id identifier rubyid_location'>location</span><span class='rparen'>)</span>
     <span class='id identifier rubyid_new_uri'>new_uri</span> <span class='op'>=</span> <span class='id identifier rubyid_uri'>uri</span> <span class='op'>+</span> <span class='id identifier rubyid_location'>location</span> <span class='kw'>if</span> <span class='id identifier rubyid_new_uri'>new_uri</span><span class='period'>.</span><span class='id identifier rubyid_relative?'>relative?</span>
     <span class='id identifier rubyid_head_ok?'>head_ok?</span><span class='lparen'>(</span><span class='id identifier rubyid_new_uri'>new_uri</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span> <span class='label'>limit:</span> <span class='id identifier rubyid_limit'>limit</span> <span class='op'>-</span> <span class='int'>1</span><span class='comma'>,</span> <span class='label'>timeout:</span> <span class='id identifier rubyid_timeout'>timeout</span><span class='rparen'>)</span>
@@ -511,7 +513,7 @@ Falls back to GET when HEAD is not allowed.</p>
 </div>
 
       <div id="footer">
-  Generated on Tue Sep  9 18:27:35 2025 by
+  Generated on Tue Sep  9 18:44:35 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

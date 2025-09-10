@@ -617,7 +617,6 @@ this method to avoid shelling out.</p>
       <pre class="lines">
 
 
-179
 180
 181
 182
@@ -627,10 +626,11 @@ this method to avoid shelling out.</p>
 186
 187
 188
-189</pre>
+189
+190</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 179</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 180</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_checkout'>checkout</span><span class='lparen'>(</span><span class='id identifier rubyid_branch'>branch</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='ivar'>@backend</span> <span class='op'>==</span> <span class='symbol'>:gem</span>
@@ -874,7 +874,6 @@ this method to avoid shelling out.</p>
       <pre class="lines">
 
 
-211
 212
 213
 214
@@ -890,10 +889,11 @@ this method to avoid shelling out.</p>
 224
 225
 226
-227</pre>
+227
+228</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 211</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 212</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='id identifier rubyid_remote'>remote</span><span class='comma'>,</span> <span class='id identifier rubyid_ref'>ref</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='ivar'>@backend</span> <span class='op'>==</span> <span class='symbol'>:gem</span>
@@ -981,7 +981,6 @@ this method to avoid shelling out.</p>
       <pre class="lines">
 
 
-195
 196
 197
 198
@@ -991,10 +990,11 @@ this method to avoid shelling out.</p>
 202
 203
 204
-205</pre>
+205
+206</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 195</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 196</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_pull'>pull</span><span class='lparen'>(</span><span class='id identifier rubyid_remote'>remote</span><span class='comma'>,</span> <span class='id identifier rubyid_branch'>branch</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='ivar'>@backend</span> <span class='op'>==</span> <span class='symbol'>:gem</span>
@@ -1213,7 +1213,6 @@ this method to avoid shelling out.</p>
       <pre class="lines">
 
 
-163
 164
 165
 166
@@ -1224,10 +1223,11 @@ this method to avoid shelling out.</p>
 171
 172
 173
-174</pre>
+174
+175</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 163</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 164</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_remote_url'>remote_url</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='ivar'>@backend</span> <span class='op'>==</span> <span class='symbol'>:gem</span>
@@ -1386,7 +1386,8 @@ this method to avoid shelling out.</p>
 156
 157
 158
-159</pre>
+159
+160</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 134</span>
@@ -1404,6 +1405,7 @@ this method to avoid shelling out.</p>
   <span class='kw'>else</span>
     <span class='id identifier rubyid_out'>out</span><span class='comma'>,</span> <span class='id identifier rubyid_status'>status</span> <span class='op'>=</span> <span class='const'>Open3</span><span class='period'>.</span><span class='id identifier rubyid_capture2'>capture2</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>git</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>remote</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>-v</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
     <span class='kw'>return</span> <span class='lbrace'>{</span><span class='rbrace'>}</span> <span class='kw'>unless</span> <span class='id identifier rubyid_status'>status</span><span class='period'>.</span><span class='id identifier rubyid_success?'>success?</span>
+
     <span class='id identifier rubyid_urls'>urls</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
     <span class='id identifier rubyid_out'>out</span><span class='period'>.</span><span class='id identifier rubyid_each_line'>each_line</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_line'>line</span><span class='op'>|</span>
       <span class='comment'># Example: origin https://github.com/me/repo.git (fetch)
@@ -1427,7 +1429,7 @@ this method to avoid shelling out.</p>
 </div>
 
       <div id="footer">
-  Generated on Tue Sep  9 18:27:35 2025 by
+  Generated on Tue Sep  9 18:44:36 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

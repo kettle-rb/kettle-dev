@@ -458,16 +458,16 @@
       <pre class="lines">
 
 
-95
 96
 97
 98
 99
 100
-101</pre>
+101
+102</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_commit_footer.rb', line 95</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_commit_footer.rb', line 96</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span>
   <span class='ivar'>@pwd</span> <span class='op'>=</span> <span class='const'>Dir</span><span class='period'>.</span><span class='id identifier rubyid_pwd'>pwd</span>
@@ -503,12 +503,12 @@
       <pre class="lines">
 
 
-51
 52
-53</pre>
+53
+54</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_commit_footer.rb', line 51</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_commit_footer.rb', line 52</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_commit_goalie_path'>commit_goalie_path</span>
   <span class='id identifier rubyid_hooks_path_for'>hooks_path_for</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>commit-subjects-goalie.txt</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
@@ -602,12 +602,12 @@
       <pre class="lines">
 
 
-38
 39
-40</pre>
+40
+41</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_commit_footer.rb', line 38</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_commit_footer.rb', line 39</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_global_hooks_dir'>global_hooks_dir</span>
   <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>HOME</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>.git-hooks</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
@@ -655,7 +655,6 @@
       <pre class="lines">
 
 
-55
 56
 57
 58
@@ -664,10 +663,11 @@
 61
 62
 63
-64</pre>
+64
+65</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_commit_footer.rb', line 55</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_commit_footer.rb', line 56</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_goalie_allows_footer?'>goalie_allows_footer?</span><span class='lparen'>(</span><span class='id identifier rubyid_subject_line'>subject_line</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_goalie_path'>goalie_path</span> <span class='op'>=</span> <span class='id identifier rubyid_commit_goalie_path'>commit_goalie_path</span>
@@ -699,17 +699,17 @@
       <pre class="lines">
 
 
-42
 43
 44
 45
 46
 47
 48
-49</pre>
+49
+50</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_commit_footer.rb', line 42</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_commit_footer.rb', line 43</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_hooks_path_for'>hooks_path_for</span><span class='lparen'>(</span><span class='id identifier rubyid_filename'>filename</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_local_dir'>local_dir</span> <span class='op'>=</span> <span class='id identifier rubyid_local_hooks_dir'>local_hooks_dir</span>
@@ -743,7 +743,8 @@
 33
 34
 35
-36</pre>
+36
+37</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_commit_footer.rb', line 32</span>
@@ -751,6 +752,7 @@
 <span class='kw'>def</span> <span class='id identifier rubyid_local_hooks_dir'>local_hooks_dir</span>
   <span class='id identifier rubyid_top'>top</span> <span class='op'>=</span> <span class='id identifier rubyid_git_toplevel'>git_toplevel</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_top'>top</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_top'>top</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+
   <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_top'>top</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>.git-hooks</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -773,7 +775,6 @@
       <pre class="lines">
 
 
-66
 67
 68
 69
@@ -799,10 +800,11 @@
 89
 90
 91
-92</pre>
+92
+93</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_commit_footer.rb', line 66</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_commit_footer.rb', line 67</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_render'>render</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_argv'>argv</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_commit_msg'>commit_msg</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='lparen'>(</span><span class='id identifier rubyid_argv'>argv</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span><span class='rparen'>)</span>
@@ -857,12 +859,12 @@
       <pre class="lines">
 
 
-103
 104
-105</pre>
+105
+106</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_commit_footer.rb', line 103</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_commit_footer.rb', line 104</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_render'>render</span>
   <span class='const'>ERB</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_template'>template</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_result'>result</span><span class='lparen'>(</span><span class='id identifier rubyid_binding'>binding</span><span class='rparen'>)</span>
@@ -877,7 +879,7 @@
 </div>
 
       <div id="footer">
-  Generated on Tue Sep  9 18:27:35 2025 by
+  Generated on Tue Sep  9 18:44:36 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

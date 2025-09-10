@@ -405,7 +405,8 @@ and updates README federation status accordingly.</p>
 97
 98
 99
-100</pre>
+100
+101</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/kettle/dev/dvcs_cli.rb', line 57</span>
@@ -425,6 +426,7 @@ and updates README federation status accordingly.</p>
     <span class='qsymbols_beg'>%i[</span><span class='tstring_content'>github</span><span class='words_sep'> </span><span class='tstring_content'>gitlab</span><span class='words_sep'> </span><span class='tstring_content'>codeberg</span><span class='tstring_end'>]</span></span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_forge'>forge</span><span class='op'>|</span>
       <span class='id identifier rubyid_r'>r</span> <span class='op'>=</span> <span class='id identifier rubyid_names'>names</span><span class='lbracket'>[</span><span class='id identifier rubyid_forge'>forge</span><span class='rbracket'>]</span>
       <span class='kw'>next</span> <span class='kw'>unless</span> <span class='id identifier rubyid_r'>r</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_r'>r</span> <span class='op'>!=</span> <span class='id identifier rubyid_names'>names</span><span class='lbracket'>[</span><span class='symbol'>:origin</span><span class='rbracket'>]</span>
+
       <span class='id identifier rubyid_git'>git</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='id identifier rubyid_r'>r</span><span class='rparen'>)</span>
     <span class='kw'>end</span>
     <span class='id identifier rubyid_show_status!'>show_status!</span><span class='lparen'>(</span><span class='id identifier rubyid_git'>git</span><span class='comma'>,</span> <span class='id identifier rubyid_names'>names</span><span class='comma'>,</span> <span class='id identifier rubyid_branch'>branch</span><span class='rparen'>)</span>
@@ -464,7 +466,7 @@ and updates README federation status accordingly.</p>
 </div>
 
       <div id="footer">
-  Generated on Tue Sep  9 18:27:35 2025 by
+  Generated on Tue Sep  9 18:44:35 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

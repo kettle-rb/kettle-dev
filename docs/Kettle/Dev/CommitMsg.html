@@ -211,7 +211,8 @@
 33
 34
 35
-36</pre>
+36
+37</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/kettle/dev/commit_msg.rb', line 17</span>
@@ -220,6 +221,7 @@
   <span class='id identifier rubyid_validate'>validate</span> <span class='op'>=</span> <span class='const'>ENV</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>GIT_HOOK_BRANCH_VALIDATE</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>false</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
   <span class='id identifier rubyid_branch_rule_type'>branch_rule_type</span> <span class='op'>=</span> <span class='lparen'>(</span><span class='op'>!</span><span class='id identifier rubyid_validate'>validate</span><span class='period'>.</span><span class='id identifier rubyid_casecmp'>casecmp</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>false</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_zero?'>zero?</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_validate'>validate</span><span class='rparen'>)</span> <span class='op'>||</span> <span class='kw'>nil</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_branch_rule_type'>branch_rule_type</span>
+
   <span class='id identifier rubyid_branch_rule'>branch_rule</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="#BRANCH_RULES-constant" title="Kettle::Dev::CommitMsg::BRANCH_RULES (constant)">BRANCH_RULES</a></span></span><span class='lbracket'>[</span><span class='id identifier rubyid_branch_rule_type'>branch_rule_type</span><span class='rbracket'>]</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_branch_rule'>branch_rule</span>
 
@@ -246,7 +248,7 @@
 </div>
 
       <div id="footer">
-  Generated on Tue Sep  9 18:27:35 2025 by
+  Generated on Tue Sep  9 18:44:35 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>
