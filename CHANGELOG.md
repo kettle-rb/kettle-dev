@@ -19,12 +19,19 @@ Please file a bug if you notice a violation of semantic versioning.
 ## [Unreleased]
 ### Added
 ### Changed
-- use current x_std_libs modular gemfile for all appraisals that are pinned to current ruby
-- fix appraisals for Ruby v2 to use correct version of erb
 ### Deprecated
 ### Removed
 ### Fixed
 ### Security
+
+## [1.1.14] - 2025-09-10
+- TAG: [v1.1.14][1.1.14t]
+- COVERAGE: 96.24% -- 3477/3613 lines in 25 files
+- BRANCH COVERAGE: 80.96% -- 1424/1759 branches in 25 files
+- 76.88% documented
+### Changed
+- use current x_std_libs modular gemfile for all appraisals that are pinned to current ruby
+- fix appraisals for Ruby v2 to use correct version of erb
 
 ## [1.1.13] - 2025-09-09
 - TAG: [v1.1.13][1.1.13t]
@@ -601,7 +608,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.13...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.14...HEAD
+[1.1.14]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.13...v1.1.14
+[1.1.14t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.14
 [1.1.13]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.12...v1.1.13
 [1.1.13t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.13
 [1.1.12]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.11...v1.1.12
