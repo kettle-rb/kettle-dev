@@ -25,7 +25,7 @@
     [311, 15, 18, "Layout/EmptyLineAfterGuardClause: Add empty line after guard clause.", 389279762],
     [360, 13, 18, "Layout/EmptyLineAfterGuardClause: Add empty line after guard clause.", 389279762]
   ],
-  "spec/kettle/dev/changelog_cli_spec.rb:1599338057": [
+  "spec/kettle/dev/changelog_cli_spec.rb:2169839476": [
     [39, 9, 72, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [40].", 1904128172],
     [40, 9, 75, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [39].", 2496915125],
     [456, 7, 60, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [457].", 1941286627],

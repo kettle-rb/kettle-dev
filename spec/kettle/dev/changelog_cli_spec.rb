@@ -532,6 +532,50 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
     end
   end
 
+  it "works with a partial-unreleased changelog fixture" do
+    Dir.mktmpdir do |root|
+      FileUtils.mkdir_p(File.join(root, "lib", "my", "gem"))
+      File.write(File.join(root, "lib", "my", "gem", "version.rb"), <<~RB)
+        module My
+          module Gem
+            VERSION = "9.9.9"
+          end
+        end
+      RB
+      FileUtils.mkdir_p(File.join(root, "coverage"))
+      File.write(File.join(root, "coverage", "coverage.json"), {"coverage" => {}}.to_json)
+
+      # Copy the new partial Unreleased fixture
+      fixture_path = File.expand_path("../../support/fixtures/CHANGELOG_PARTIAL_UNRELEASED.md", __dir__)
+      content = File.read(fixture_path)
+      File.write(File.join(root, "CHANGELOG.md"), content)
+
+      # Stub project_root and repo_info for deterministic link updates
+      allow(Kettle::Dev::CIHelpers).to receive_messages(project_root: root, repo_info: ["acme", "x"]) # owner, repo
+
+      # Freeze time for deterministic date
+      t = Time.new(2025, 8, 30)
+      allow(Time).to receive(:now).and_return(t)
+
+      cli = described_class.new
+      expect { cli.run }.not_to raise_error
+
+      updated = File.read(File.join(root, "CHANGELOG.md"))
+
+      # New section and TAG
+      expect(updated).to include("## [9.9.9] - 2025-08-30")
+      expect(updated).to include("- TAG: [v9.9.9][9.9.9t]")
+
+      # Unreleased section should be fully reset to all standard subheadings without duplication
+      reset_block = "## [Unreleased]\n### Added\n### Changed\n### Deprecated\n### Removed\n### Fixed\n### Security\n\n## [9.9.9] - 2025-08-30"
+      expect(updated).to include(reset_block)
+
+      # Ensure footer [Unreleased] link-ref is preserved (fixture uses ...main)
+      expect(updated).to include("[Unreleased]: ")
+      expect(updated).to include("...main").or include("...HEAD")
+    end
+  end
+
   describe "#yard_percent_documented success" do
     it "parses the documented percentage from yard output" do
       mkproj do |root|

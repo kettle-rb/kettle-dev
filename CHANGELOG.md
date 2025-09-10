@@ -22,6 +22,8 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Deprecated
 ### Removed
 ### Fixed
+- handling of alternate format of Unreleased section in CHANGELOG.md
+### Security
 ### Security
 
 ## [1.1.15] - 2025-09-10
