@@ -256,6 +256,7 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
         allow(helpers).to receive_messages(
           project_root: project_root,
           modified_by_template?: false,
+          ask: false, # avoid modifying .envrc in this example
           template_results: {},
         )
 
@@ -279,7 +280,8 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
           template_results: {},
         )
 
-        # Decline prompt; stub input adapter for this example only
+        # Decline prompt; stub input adapter for this example only (and ensure force is not set)
+        stub_env("force" => nil)
         allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("n\n")
 
         expect { described_class.run }.not_to raise_error
@@ -295,6 +297,7 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
           modified_by_template?: false,
           template_results: {},
         )
+        allow(helpers).to receive(:ask).and_return(false)
         expect { described_class.run }.not_to raise_error
       end
     end
@@ -309,6 +312,7 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
           modified_by_template?: false,
           template_results: {},
         )
+        allow(helpers).to receive(:ask).and_return(false)
 
         expect { described_class.run }.not_to raise_error
       end
@@ -338,7 +342,7 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
       end
     end
 
-    it "updates homepage using origin when forced, or skips when declined" do
+    it "updates homepage using origin when forced" do
       Dir.mktmpdir do |project_root|
         gemspec = File.join(project_root, "demo.gemspec")
         File.write(gemspec, <<~G)
@@ -358,18 +362,34 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
         fake_git = instance_double(Kettle::Dev::GitAdapter, remote_url: "https://github.com/acme/demo.git", remotes_with_urls: {"origin" => "https://github.com/acme/demo.git"})
         allow(Kettle::Dev::GitAdapter).to receive(:new).and_return(fake_git)
 
-        # Case 1: forced update
-        stub_env("force" => "true")
+        # forced update (no input read under force)
+        stub_env("force" => "true", "allowed" => "true")
         described_class.run
         expect(File.read(gemspec)).to match(/spec.homepage\s*=\s*"https:\/\/github.com\/acme\/demo"/)
+      end
+    end
 
-        # Case 2: decline
+    it "skips homepage update when declined" do
+      Dir.mktmpdir do |project_root|
+        gemspec = File.join(project_root, "demo.gemspec")
         File.write(gemspec, <<~G)
           Gem::Specification.new do |spec|
             spec.name = "demo"
             spec.homepage = "http://example.com/demo"
           end
         G
+
+        allow(helpers).to receive_messages(
+          project_root: project_root,
+          modified_by_template?: false,
+          template_results: {},
+        )
+
+        # GitHub origin via GitAdapter
+        fake_git = instance_double(Kettle::Dev::GitAdapter, remote_url: "https://github.com/acme/demo.git", remotes_with_urls: {"origin" => "https://github.com/acme/demo.git"})
+        allow(Kettle::Dev::GitAdapter).to receive(:new).and_return(fake_git)
+
+        # decline (no force, so input is read)
         stub_env("force" => nil)
         allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("n\n")
         described_class.run
@@ -403,6 +423,7 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
       Dir.mktmpdir do |project_root|
         allow(helpers).to receive(:project_root).and_return(project_root)
         allow(helpers).to receive(:modified_by_template?).and_return(false)
+        allow(helpers).to receive(:ask).and_return(false)
 
         # First run: provide meaningful template results across action types
         allow(helpers).to receive(:template_results).and_return({
@@ -492,6 +513,7 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
           modified_by_template?: false,
           template_results: {},
         )
+        allow(helpers).to receive(:ask).and_return(false)
         allow(File).to receive(:read).and_wrap_original do |m, path|
           if path == gi
             raise StandardError, "boom"
@@ -550,6 +572,7 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
           modified_by_template?: false,
           template_results: {},
         )
+        allow(helpers).to receive(:ask).and_return(false)
         expect { described_class.run }.not_to raise_error
         expect(File.read(gemspec)).to include("'https://github.com/acme/demo'")
       end
@@ -617,6 +640,8 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
           modified_by_template?: true,
           template_results: {},
         )
+        # No force set, so input is read and stubbed to 🚀
+        stub_env("force" => nil)
         allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("🚀\n")
         described_class.run
         readme = File.read(File.join(project_root, "README.md"))
@@ -645,6 +670,7 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
           modified_by_template?: true,
           template_results: {},
         )
+        stub_env("force" => nil)
         allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("\n")
         described_class.run
         # unchanged
@@ -680,8 +706,8 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
           template_results: {},
         )
 
-        # Provide a grapheme non-interactively to avoid prompt
-        allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("🍕")
+        # Provide a grapheme non-interactively to avoid prompt unless force is set.
+        # With force=true, InputAdapter.gets is not called, so do not stub it in this case.
 
         stub_env(
           "allowed" => "true",

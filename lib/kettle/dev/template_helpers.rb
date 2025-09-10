@@ -42,9 +42,13 @@ module Kettle
         print("#{prompt} #{default ? "[Y/n]" : "[y/N]"}: ")
         ans = Kettle::Dev::InputAdapter.gets&.strip
         ans = "" if ans.nil?
+        # Normalize explicit no first
+        return false if ans =~ /\An(o)?\z/i
         if default
+          # Empty -> default true; explicit yes -> true; anything else -> false
           ans.empty? || ans =~ /\Ay(es)?\z/i
         else
+          # Empty -> default false; explicit yes -> true; others (including garbage) -> false
           ans =~ /\Ay(es)?\z/i
         end
       end

@@ -106,7 +106,11 @@ module Kettle
         parser = OptionParser.new do |opts|
           opts.banner = "Usage: kettle-dev-setup [options]"
           opts.on("--allowed=VAL", "Pass through to kettle:dev:install") { |v| @passthrough << "allowed=#{v}" }
-          opts.on("--force", "Pass through to kettle:dev:install") { @passthrough << "force=true" }
+          opts.on("--force", "Pass through to kettle:dev:install") do
+            # Ensure in-process helpers (TemplateHelpers.ask) also see force mode
+            ENV["force"] = "true"
+            @passthrough << "force=true"
+          end
           opts.on("--hook_templates=VAL", "Pass through to kettle:dev:install") { |v| @passthrough << "hook_templates=#{v}" }
           opts.on("--only=VAL", "Pass through to kettle:dev:install") { |v| @passthrough << "only=#{v}" }
           opts.on("-h", "--help", "Show help") do
