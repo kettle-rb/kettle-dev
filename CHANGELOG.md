@@ -22,6 +22,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Deprecated
 ### Removed
 ### Fixed
+- fix appraisals for Ruby v2.7 to use correct x_std_libs
 ### Security
 
 ## [1.1.14] - 2025-09-10
