@@ -106,6 +106,7 @@ module Kettle
           content = File.read(path)
           m = content.match(/VERSION\s*=\s*(["'])([^"']+)\1/)
           next unless m
+
           m[2]
         end.compact
         abort("VERSION constant not found in #{@root}/lib/**/version.rb") if versions.none?
@@ -117,6 +118,7 @@ module Kettle
         lines = content.lines
         start_i = lines.index { |l| l.start_with?("## [Unreleased]") }
         return [nil, nil, nil] unless start_i
+
         # Find the next version heading after Unreleased
         next_i = (start_i + 1)
         while next_i < lines.length && !lines[next_i].start_with?("## [")
@@ -133,6 +135,7 @@ module Kettle
         # after_text begins with the first released section following Unreleased
         m = after_text.match(/^## \[(\d+\.\d+\.\d+)\]/)
         return m[1] if m
+
         nil
       end
 
@@ -199,8 +202,10 @@ module Kettle
           branches = h["branches"] || []
           branches.each do |b|
             next unless b.is_a?(Hash)
+
             cov = b["coverage"]
             next unless cov.is_a?(Numeric)
+
             total_branches += 1
             covered_branches += 1 if cov > 0
           end

@@ -283,6 +283,7 @@ module Kettle
         # Example match: "- COVERAGE: 97.70% -- 2125/2175 lines in 20 files"
         m = section.lines.find { |l| l =~ /-\s*COVERAGE:\s*.+--\s*\d+\/(\d+)\s+lines/i }
         return unless m
+
         denom = m.match(/-\s*COVERAGE:\s*.+--\s*\d+\/(\d+)\s+lines/i)[1].to_i
         kloc = denom.to_f / 1000.0
         kloc_str = format("%.3f", kloc)
@@ -296,6 +297,7 @@ module Kettle
       # Replaces only the numeric portion after "KLOC-" keeping other URL parts intact.
       def update_badge_number_in_file(path, kloc_str)
         return unless File.file?(path)
+
         content = File.read(path)
         # Match the specific reference line, capture groups around the number
         # Example: [🧮kloc-img]: https://img.shields.io/badge/KLOC-2.175-FFDD67.svg?style=...
@@ -310,6 +312,7 @@ module Kettle
       def update_rakefile_example_header!(version)
         path = File.join(@root, "Rakefile.example")
         return unless File.file?(path)
+
         content = File.read(path)
         today = Time.now.strftime("%Y-%m-%d")
         new_line = "# kettle-dev Rakefile v#{version} - #{today}"
@@ -394,6 +397,7 @@ module Kettle
       def collapse_years(enum)
         arr = enum.to_a.map(&:to_i).uniq.sort
         return "" if arr.empty?
+
         segments = []
         start = arr.first
         prev = start
@@ -422,10 +426,12 @@ module Kettle
           unless line =~ /copyright/i
             next line
           end
+
           m = line.match(/\A(?<pre>.*?copyright[^0-9]*)(?<years>(?:\b(?:19|20)\d{2}\b(?:\s*[\-–]\s*\b(?:19|20)\d{2}\b)?)(?:\s*,\s*\b(?:19|20)\d{2}\b(?:\s*[\-–]\s*\b(?:19|20)\d{2}\b)?)*)(?<post>.*)\z/i)
           unless m
             next line
           end
+
           new_line = "#{m[:pre]}#{canonical_all}#{m[:post]}"
           changed ||= (new_line != line)
           new_line
@@ -444,12 +450,14 @@ module Kettle
           unless line =~ /copyright/i
             next line
           end
+
           # Capture three parts: prefix up to first year, the year blob, and the rest
           m = line.match(/\A(?<pre>.*?copyright[^0-9]*)(?<years>(?:\b(?:19|20)\d{2}\b(?:\s*[\-–]\s*\b(?:19|20)\d{2}\b)?)(?:\s*,\s*\b(?:19|20)\d{2}\b(?:\s*[\-–]\s*\b(?:19|20)\d{2}\b)?)*)(?<post>.*)\z/i)
           unless m
             # No parsable year sequence on this line; leave as-is
             next line
           end
+
           years_blob = m[:years]
           # Reuse extraction logic on just the years blob
           years = []
@@ -731,15 +739,18 @@ module Kettle
       def preferred_github_remote
         cands = github_remote_candidates
         return if cands.empty?
+
         # Prefer explicitly named GitHub remotes first, then origin (only if it points to GitHub), else the first candidate
         explicit = cands.find { |n| n == "github" } || cands.find { |n| n == "gh" }
         return explicit if explicit
         return "origin" if cands.include?("origin")
+
         cands.first
       end
 
       def parse_github_owner_repo(url)
         return [nil, nil] unless url
+
         if url =~ %r{git@github.com:(.+?)/(.+?)(\.git)?$}
           [Regexp.last_match(1), Regexp.last_match(2).sub(/\.git\z/, "")]
         elsif url =~ %r{https://github.com/(.+?)/(.+?)(\.git)?$}
@@ -761,6 +772,7 @@ module Kettle
       def ahead_behind_counts(local_ref, remote_ref)
         out, ok = git_output(["rev-list", "--left-right", "--count", "#{local_ref}...#{remote_ref}"])
         return [0, 0] unless ok && !out.empty?
+
         parts = out.split
         left = parts[0].to_i
         right = parts[1].to_i
@@ -769,6 +781,7 @@ module Kettle
 
       def trunk_behind_remote?(trunk, remote)
         return false unless remote_branch_exists?(remote, trunk)
+
         _ahead, behind = ahead_behind_counts(trunk, "#{remote}/#{trunk}")
         behind.positive?
       end
@@ -781,6 +794,7 @@ module Kettle
           missing_from = []
           remotes.each do |r|
             next if r == "all"
+
             if remote_branch_exists?(r, trunk)
               _ahead, behind = ahead_behind_counts(trunk, "#{r}/#{trunk}")
               missing_from << r if behind.positive?
@@ -853,6 +867,7 @@ module Kettle
 
       def merge_feature_into_trunk_and_push!(trunk, feature)
         return if feature.nil? || feature == trunk
+
         puts "Merging #{feature} into #{trunk} (after CI success)..."
         checkout!(trunk)
         run_cmd!("git pull --rebase origin #{Shellwords.escape(trunk)}")
@@ -971,12 +986,14 @@ module Kettle
       def extract_changelog_for_version(version)
         path = File.join(@root, "CHANGELOG.md")
         return [nil, nil, nil] unless File.file?(path)
+
         content = File.read(path)
         lines = content.lines
 
         # Find section start
         start_idx = lines.index { |l| l.start_with?("## [#{version}]") }
         return [nil, nil, nil] unless start_idx
+
         i = start_idx + 1
         # Find next section heading or EOF
         while i < lines.length && !lines[i].start_with?("## [")
@@ -999,12 +1016,14 @@ module Kettle
       def extract_release_notes_footer
         path = File.join(@root, "FUNDING.md")
         return unless File.file?(path)
+
         content = File.read(path)
         start_tag = "<!-- RELEASE-NOTES-FOOTER-START -->"
         end_tag = "<!-- RELEASE-NOTES-FOOTER-END -->"
         s = content.index(start_tag)
         e = content.index(end_tag)
         return unless s && e && e > s
+
         # Extract between tags, excluding the tags themselves
         block = content[(s + start_tag.length)...e]
         # Normalize: trim trailing whitespace but keep internal formatting

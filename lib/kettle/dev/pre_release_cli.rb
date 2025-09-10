@@ -71,6 +71,7 @@ module Kettle
           when Net::HTTPRedirection
             location = response["location"]
             return false unless location
+
             new_uri = parse_http_uri(location)
             new_uri = uri + location if new_uri.relative?
             head_ok?(new_uri.to_s, limit: limit - 1, timeout: timeout)
@@ -155,6 +156,7 @@ module Kettle
 
         start = @check_num
         raise ArgumentError, "check_num must be >= 1" if start < 1
+
         begin_idx = start - 1
         checks[begin_idx..-1].each_with_index do |check, i|
           idx = begin_idx + i + 1

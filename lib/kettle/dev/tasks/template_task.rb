@@ -349,6 +349,7 @@ module Kettle
             src = helpers.prefer_example(File.join(gem_checkout_root, rel))
             dest = File.join(project_root, rel)
             next unless File.exist?(src)
+
             if File.basename(rel) == "README.md"
               # Precompute destination README H1 prefix (emoji(s) or first grapheme) before any overwrite occurs
               prev_readme = File.exist?(dest) ? File.read(dest) : nil
@@ -364,6 +365,7 @@ module Kettle
                     loop do
                       cluster = s[/\A\X/u]
                       break if cluster.nil? || cluster.empty?
+
                       if emoji_re =~ cluster
                         out << cluster
                         s = s[cluster.length..-1].to_s
@@ -403,6 +405,7 @@ module Kettle
                   # Parse Markdown headings while ignoring fenced code blocks (``` ... ```)
                   build_sections = lambda do |md|
                     return {lines: [], sections: [], line_count: 0} unless md
+
                     lines = md.split("\n", -1)
                     line_count = lines.length
 
@@ -416,6 +419,7 @@ module Kettle
                         next
                       end
                       next if in_code
+
                       if (m = ln.match(/^(#+)\s+.+/))
                         level = m[1].length
                         title = ln.sub(/^#+\s+/, "")
@@ -449,6 +453,7 @@ module Kettle
                     j = i + 1
                     while j < sections_arr.length
                       return sections_arr[j][:start] - 1 if sections_arr[j][:level] <= current[:level]
+
                       j += 1
                     end
                     total_lines - 1
@@ -464,6 +469,7 @@ module Kettle
                       base = s[:base]
                       # Only set once (first occurrence wins)
                       next if dest_lookup.key?(base)
+
                       be = branch_end_index.call(dest_parsed[:sections], idx, dest_parsed[:line_count])
                       body_lines = dest_parsed[:lines][(s[:start] + 1)..be] || []
                       dest_lookup[base] = {body_branch: body_lines.join("\n"), level: s[:level]}
@@ -485,6 +491,7 @@ module Kettle
                     # Iterate in reverse to keep indices valid
                     src_parsed[:sections].reverse_each.with_index do |sec, rev_i|
                       next unless targets.include?(sec[:base])
+
                       # Determine branch range in src for this section
                       # rev_i is reverse index; compute forward index
                       i = src_parsed[:sections].length - 1 - rev_i
@@ -652,6 +659,7 @@ module Kettle
           rescue StandardError => e
             # Do not swallow intentional task aborts
             raise if e.is_a?(Kettle::Dev::Error)
+
             puts "WARNING: Could not determine env file changes: #{e.class}: #{e.message}"
           end
 
@@ -753,6 +761,7 @@ module Kettle
             hook_pairs = [[hook_ruby_src, "commit-msg", 0o755], [hook_sh_src, "prepare-commit-msg", 0o755]]
             hook_pairs.each do |src, base, mode|
               next unless File.file?(src)
+
               hook_dests.each do |dstdir|
                 begin
                   FileUtils.mkdir_p(dstdir)

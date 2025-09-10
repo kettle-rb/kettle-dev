@@ -119,6 +119,7 @@ module Kettle
       def readme_osc_tag
         env = ENV["KETTLE_DEV_BACKER_README_OSC_TAG"].to_s
         return env unless env.strip.empty?
+
         if File.file?(OC_YML_PATH)
           begin
             yml = YAML.safe_load(File.read(OC_YML_PATH))
@@ -149,6 +150,7 @@ module Kettle
       def resolve_handle
         env = ENV["OPENCOLLECTIVE_HANDLE"]
         return env unless env.nil? || env.strip.empty?
+
         if File.file?(OC_YML_PATH)
           yml = YAML.safe_load(File.read(OC_YML_PATH))
           handle = yml.is_a?(Hash) ? yml["collective"] || yml[:collective] : nil
@@ -167,6 +169,7 @@ module Kettle
           conn.request(req)
         end
         return [] unless response.is_a?(Net::HTTPSuccess)
+
         parsed = JSON.parse(response.body)
         Array(parsed).map do |h|
           Backer.new(
@@ -186,6 +189,7 @@ module Kettle
 
       def generate_markdown(members, empty_message:, default_name:)
         return empty_message if members.nil? || members.empty?
+
         members.map do |m|
           image_url = m.image || DEFAULT_AVATAR
           link = m.website || m.profile || "#"
@@ -196,14 +200,17 @@ module Kettle
 
       def replace_between_tags(content, start_tag, end_tag, new_content)
         return :not_found if start_tag == :not_found || end_tag == :not_found
+
         start_index = content.index(start_tag)
         end_index = content.index(end_tag)
         return :not_found if start_index.nil? || end_index.nil? || end_index < start_index
+
         before = content[0..start_index + start_tag.length - 1]
         after = content[end_index..-1]
         replacement = "#{start_tag}\n#{new_content}\n#{end_tag}"
         current_block = content[start_index..end_index + end_tag.length - 1]
         return :no_change if current_block == replacement
+
         trailing = after[end_tag.length..-1] || ""
         "#{before}\n#{new_content}\n#{end_tag}#{trailing}"
       end
@@ -230,9 +237,11 @@ module Kettle
 
       def extract_section_identities(content, start_tag, end_tag)
         return Set.new unless start_tag && end_tag && start_tag != :not_found && end_tag != :not_found
+
         start_index = content.index(start_tag)
         end_index = content.index(end_tag)
         return Set.new if start_index.nil? || end_index.nil? || end_index < start_index
+
         block = content[(start_index + start_tag.length)...end_index]
         identities = Set.new
         block.to_s.scan(/\[!\[[^\]]*\]\([^\)]*\)\]\(([^\)]+)\)/) do |m|
@@ -269,6 +278,7 @@ module Kettle
       def mention_for_member(m, default_name: "Member")
         handle = github_handle_from_urls(m.profile, m.website)
         return "@#{handle}" if handle
+
         name = (m.name && !m.name.strip.empty?) ? m.name.strip : default_name
         name
       end
@@ -281,8 +291,10 @@ module Kettle
             next
           end
           next unless uri&.host&.downcase&.end_with?("github.com")
+
           path = (uri.path || "").sub(%r{^/}, "").sub(%r{/$}, "")
           next if path.empty?
+
           parts = path.split("/")
           candidate = if parts[0].downcase == "sponsors" && parts[1]
             parts[1]
@@ -308,12 +320,14 @@ module Kettle
         if system("git", "diff", "--cached", "--quiet")
           return
         end
+
         system("git", "commit", "-m", message)
       end
 
       def commit_subject
         env = ENV["KETTLE_README_BACKERS_COMMIT_SUBJECT"].to_s
         return env unless env.strip.empty?
+
         if File.file?(OC_YML_PATH)
           begin
             yml = YAML.safe_load(File.read(OC_YML_PATH))

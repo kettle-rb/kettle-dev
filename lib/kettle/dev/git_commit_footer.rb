@@ -32,6 +32,7 @@ module Kettle
         def local_hooks_dir
           top = git_toplevel
           return unless top && !top.empty?
+
           File.join(top, ".git-hooks")
         end
 

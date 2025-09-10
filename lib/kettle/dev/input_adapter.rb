@@ -37,6 +37,7 @@ module Kettle
       def readline(*args)
         line = gets(*args)
         raise EOFError, "end of file reached" if line.nil?
+
         line
       end
     end

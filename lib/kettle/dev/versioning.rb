@@ -16,6 +16,7 @@ module Kettle
           content = File.read(path)
           m = content.match(/VERSION\s*=\s*(["'])([^"']+)\1/)
           next unless m
+
           m[2]
         end.compact
         abort!("VERSION constant not found in #{root}/lib/**/version.rb") if versions.none?
@@ -39,6 +40,7 @@ module Kettle
 
         if cmaj > pmaj
           return :epic if cmaj && cmaj > 1000
+
           :major
         elsif cmin > pmin
           :minor

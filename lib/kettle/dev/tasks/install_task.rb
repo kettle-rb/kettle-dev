@@ -316,15 +316,18 @@ module Kettle
 
                 github_repo_from_url = lambda do |url|
                   return unless url
+
                   url = url.strip
                   m = url.match(%r{github\.com[/:]([^/\s:]+)/([^/\s]+?)(?:\.git)?/?\z}i)
                   return unless m
+
                   [m[1], m[2]]
                 end
 
                 github_homepage_literal = lambda do |val|
                   return false unless val
                   return false if val.include?('#{')
+
                   v = val.to_s.strip
                   if (v.start_with?("\"") && v.end_with?("\"")) || (v.start_with?("'") && v.end_with?("'"))
                     v = begin
@@ -334,6 +337,7 @@ module Kettle
                     end
                   end
                   return false unless v =~ %r{\Ahttps?://github\.com/}i
+
                   !!github_repo_from_url.call(v)
                 end
 
@@ -391,6 +395,7 @@ module Kettle
           rescue StandardError => e
             # Do not swallow intentional task aborts signaled via Kettle::Dev::Error
             raise if e.is_a?(Kettle::Dev::Error)
+
             puts "WARNING: An error occurred while checking gemspec homepage: #{e.class}: #{e.message}"
           end
 
@@ -412,6 +417,7 @@ module Kettle
               [:create, :replace, :dir_create, :dir_replace].each do |sym|
                 items = meaningful.select { |_, rec| rec[:action] == sym }.map { |path, _| path }
                 next if items.empty?
+
                 puts "  #{action_labels[sym]}:"
                 items.sort.each do |abs|
                   rel = begin

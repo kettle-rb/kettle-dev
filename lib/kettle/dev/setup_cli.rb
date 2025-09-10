@@ -46,6 +46,7 @@ module Kettle
 
       def debug(msg)
         return if ENV.fetch("DEBUG", "false").casecmp("true").nonzero?
+
         $stderr.puts("[kettle-dev-setup] DEBUG: #{msg}")
       end
 
@@ -264,6 +265,7 @@ module Kettle
         example.each_line do |ln|
           s = ln.strip
           next if s.empty?
+
           if s.start_with?("source ")
             ex_sources << ln.rstrip
           elsif (m = s.match(/^git_source\(\s*:(\w+)\s*\)/))
@@ -306,6 +308,7 @@ module Kettle
         # Add missing eval_gemfile paths (recreate the exact example line when possible)
         ex_eval_paths.each do |path|
           next if tg_eval_paths.include?(path)
+
           additions << "eval_gemfile \"#{path}\""
         end
 
@@ -402,6 +405,7 @@ module Kettle
         here = File.expand_path(File.join(__dir__, "..", "..", "..")) # lib/kettle/dev/ -> project root
         path = File.join(here, rel)
         return path if File.exist?(path)
+
         nil
       end
     end

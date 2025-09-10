@@ -36,6 +36,7 @@ module Kettle
           # Some APIs report only a final state string like "success"/"failed"
           return "✅" if conclusion.to_s == "success" || status.to_s == "success"
           return "🍅" if conclusion.to_s == "failure" || status.to_s == "failed"
+
           "⏳️"
         end
       end
@@ -100,7 +101,7 @@ module Kettle
             emoji = status_emoji(it[:status], it[:conclusion])
             details = [it[:status], it[:conclusion]].compact.join("/")
             wf = it[:workflow]
-            puts "  - #{wf}: #{emoji} (#{details}) #{it[:url] ? "-> #{it[:url]}" : ""}"
+            puts "  - #{wf}: #{emoji} (#{details}) #{"-> #{it[:url]}" if it[:url]}"
             all_ok &&= (it[:conclusion] == "success")
           end
         end
@@ -113,7 +114,7 @@ module Kettle
           end
           emoji = status_emoji(gl[:status], status)
           details = gl[:status].to_s
-          puts "GitLab Pipeline: #{emoji} (#{details}) #{gl[:url] ? "-> #{gl[:url]}" : ""}"
+          puts "GitLab Pipeline: #{emoji} (#{details}) #{"-> #{gl[:url]}" if gl[:url]}"
           all_ok &&= (gl[:status] != "failed")
         end
         all_ok
@@ -209,6 +210,7 @@ module Kettle
             end
           end
           break if results.size == total
+
           idx = (idx + 1) % total
           sleep(1)
         end
@@ -313,6 +315,7 @@ module Kettle
             end
           end
           break if passed.size == total
+
           idx = (idx + 1) % total
           sleep(1)
         end
@@ -395,15 +398,18 @@ module Kettle
       def preferred_github_remote
         cands = github_remote_candidates
         return if cands.empty?
+
         explicit = cands.find { |n| n == "github" } || cands.find { |n| n == "gh" }
         return explicit if explicit
         return "origin" if cands.include?("origin")
+
         cands.first
       end
       module_function :preferred_github_remote
 
       def parse_github_owner_repo(url)
         return [nil, nil] unless url
+
         if url =~ %r{git@github.com:(.+?)/(.+?)(\.git)?$}
           [Regexp.last_match(1), Regexp.last_match(2).sub(/\.git\z/, "")]
         elsif url =~ %r{https://github.com/(.+?)/(.+?)(\.git)?$}

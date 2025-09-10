@@ -144,6 +144,7 @@ module Kettle
         else
           out, status = Open3.capture2("git", "remote", "-v")
           return {} unless status.success?
+
           urls = {}
           out.each_line do |line|
             # Example: origin https://github.com/me/repo.git (fetch)

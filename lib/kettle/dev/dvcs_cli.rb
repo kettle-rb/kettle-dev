@@ -69,6 +69,7 @@ module Kettle
           %i[github gitlab codeberg].each do |forge|
             r = names[forge]
             next unless r && r != names[:origin]
+
             git.fetch(r)
           end
           show_status!(git, names, branch)
@@ -106,8 +107,10 @@ module Kettle
       def detect_default_branch!(git)
         _out, ok = git.capture(["rev-parse", "--verify", "origin/main"])
         return "main" if ok
+
         _out2, ok2 = git.capture(["rev-parse", "--verify", "origin/master"])
         return "master" if ok2
+
         # Default to main if neither verifies
         "main"
       end
@@ -125,6 +128,7 @@ module Kettle
           next unless remote
           next if remote == names[:origin]
           next unless existing.include?(remote)
+
           ref = "#{remote}/#{branch}"
           out, ok = git.capture(["rev-list", "--left-right", "--count", "#{base}...#{ref}"])
           if ok && !out.to_s.strip.empty?
@@ -232,6 +236,7 @@ module Kettle
         if org && repo
           return [org, repo]
         end
+
         # Try to infer from any existing remote url
         urls = git.remotes_with_urls
         sample = urls["origin"] || urls.values.first
@@ -252,7 +257,8 @@ module Kettle
 
       def prompt(label, default: nil)
         return default if @opts[:force]
-        print("#{label}#{default ? " [#{default}]" : ""}: ")
+
+        print("#{label}#{" [#{default}]" if default}: ")
         ans = $stdin.gets&.strip
         ans = nil if ans == ""
         ans || default || abort!("#{label} is required")
@@ -341,6 +347,7 @@ module Kettle
           codeberg: names[:codeberg],
         }.each do |forge, remote_name|
           next unless remote_name
+
           ok = git.fetch(remote_name)
           results[forge] = !!ok
           say("Fetched from #{forge} (remote: #{remote_name}) => #{ok ? "OK" : "FAILED"}")
@@ -352,6 +359,7 @@ module Kettle
       def update_readme_federation_status!(org, repo, results)
         readme_path = File.join(Dir.pwd, "README.md")
         return unless File.exist?(readme_path)
+
         content = File.read(readme_path)
         # Determine if all succeeded
         forges = [:github, :gitlab, :codeberg]
@@ -376,6 +384,7 @@ module Kettle
           say("\nSome forges are not yet available. Use these import links to create mirrors:")
           [:github, :gitlab, :codeberg].each do |forge|
             next if results[forge]
+
             say("  - #{forge.capitalize} import: #{FORGE_MIGRATION_TOOLS[forge]}")
           end
         end

@@ -21,6 +21,7 @@ class KettleTestInputMachine
 
   def each_line
     return enum_for(:each_line) unless block_given?
+
     nil
   end
 
