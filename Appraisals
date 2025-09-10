@@ -86,7 +86,7 @@ end
 
 appraise "ruby-2-7" do
   eval_gemfile "modular/recording/r2.5/recording.gemfile"
-  eval_gemfile "modular/x_std_libs/r3.1/libs.gemfile"
+  eval_gemfile "modular/x_std_libs/r2/libs.gemfile"
   # Dependencies injected by the kettle-dev-setup script & kettle:dev:install rake task
   #  eval_gemfile "modular/injected.gemfile"
 end
@@ -125,7 +125,7 @@ end
 
 # Only run security audit on the latest version of Ruby
 appraise "audit" do
-  eval_gemfile "modular/x_std_libs/r3/libs.gemfile"
+  eval_gemfile "modular/x_std_libs.gemfile"
   # Dependencies injected by the kettle-dev-setup script & kettle:dev:install rake task
   #  eval_gemfile "modular/injected.gemfile"
 end
@@ -135,7 +135,7 @@ appraise "coverage" do
   eval_gemfile "modular/coverage.gemfile"
   eval_gemfile "modular/optional.gemfile"
   eval_gemfile "modular/recording/r3/recording.gemfile"
-  eval_gemfile "modular/x_std_libs/r3/libs.gemfile"
+  eval_gemfile "modular/x_std_libs.gemfile"
   # Dependencies injected by the kettle-dev-setup script & kettle:dev:install rake task
   #  eval_gemfile "modular/injected.gemfile"
 end
