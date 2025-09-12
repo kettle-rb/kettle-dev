@@ -136,6 +136,12 @@ bin/kettle-release
 </td>
     </tr>
     <tr>
+      <td>Support &amp; Community</td>
+      <td>
+<a href="https://app.daily.dev/squads/rubyfriends"><img src="https://img.shields.io/badge/daily.dev-%F0%9F%92%8E_Ruby_Friends-0A0A0A?style=for-the-badge&amp;logo=dailydotdev&amp;logoColor=white" alt="Join Me on Daily.dev's RubyFriends"></a> <a href="https://discord.gg/3qme4XHNKN"><img src="https://img.shields.io/discord/1373797679469170758?style=for-the-badge&amp;logo=discord" alt="Live Chat on Discord"></a> <a href="https://www.upwork.com/freelancers/~014942e9b056abdf86?mp_source=share"><img src="https://img.shields.io/badge/UpWork-13544E?style=for-the-badge&amp;logo=Upwork&amp;logoColor=white" alt="Get help from me on Upwork"></a> <a href="https://www.codementor.io/peterboling?utm_source=github&amp;utm_medium=button&amp;utm_term=peterboling&amp;utm_campaign=github"><img src="https://img.shields.io/badge/CodeMentor-Get_Help-1abc9c?style=for-the-badge&amp;logo=CodeMentor&amp;logoColor=white" alt="Get help from me on Codementor"></a>
+</td>
+    </tr>
+    <tr>
       <td>Source</td>
       <td>
 <a href="https://gitlab.com/kettle-rb/kettle-dev/"><img src="https://img.shields.io/badge/GitLab-FBA326?style=for-the-badge&amp;logo=Gitlab&amp;logoColor=orange" alt="Source on GitLab.com"></a> <a href="https://codeberg.org/kettle-rb/kettle-dev"><img src="https://img.shields.io/badge/CodeBerg-4893CC?style=for-the-badge&amp;logo=CodeBerg&amp;logoColor=blue" alt="Source on CodeBerg.org"></a> <a href="https://github.com/kettle-rb/kettle-dev"><img src="https://img.shields.io/badge/GitHub-238636?style=for-the-badge&amp;logo=Github&amp;logoColor=green" alt="Source on Github.com"></a> <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"><img src="https://img.shields.io/badge/KLOC-3.613-FFDD67.svg?style=for-the-badge&amp;logo=YouTube&amp;logoColor=blue" alt="The best SHA: dQw4w9WgXcQ!"></a>
@@ -157,12 +163,6 @@ bin/kettle-release
       <td>Style</td>
       <td>
 <a href="https://github.com/rubocop-lts/rubocop-lts"><img src="https://img.shields.io/badge/code_style_&amp;_linting-rubocop--lts-34495e.svg?plastic&amp;logo=ruby&amp;logoColor=white" alt="Enforced Code Style Linter"></a> <a href="https://keepachangelog.com/en/1.0.0/"><img src="https://img.shields.io/badge/keep--a--changelog-1.0.0-34495e.svg?style=flat" alt="Keep-A-Changelog 1.0.0"></a> <a href="https://gitmoji.dev"><img src="https://img.shields.io/badge/gitmoji_commits-%20%F0%9F%98%9C%20%F0%9F%98%8D-34495e.svg?style=flat-square" alt="Gitmoji Commits"></a> <a href="https://github.com/appraisal-rb/appraisal2"><img src="https://img.shields.io/badge/appraised_by-appraisal2-34495e.svg?plastic&amp;logo=ruby&amp;logoColor=white" alt="Compatibility appraised by: appraisal2"></a>
-</td>
-    </tr>
-    <tr>
-      <td>Support</td>
-      <td>
-<a href="https://discord.gg/3qme4XHNKN"><img src="https://img.shields.io/discord/1373797679469170758?style=for-the-badge" alt="Live Chat on Discord"></a> <a href="https://www.upwork.com/freelancers/~014942e9b056abdf86?mp_source=share"><img src="https://img.shields.io/badge/UpWork-13544E?style=for-the-badge&amp;logo=Upwork&amp;logoColor=white" alt="Get help from me on Upwork"></a> <a href="https://www.codementor.io/peterboling?utm_source=github&amp;utm_medium=button&amp;utm_term=peterboling&amp;utm_campaign=github"><img src="https://img.shields.io/badge/CodeMentor-Get_Help-1abc9c?style=for-the-badge&amp;logo=CodeMentor&amp;logoColor=white" alt="Get help from me on Codementor"></a>
 </td>
     </tr>
     <tr>
@@ -202,72 +202,8 @@ bin/kettle-release
 
 <h3 id="federated-dvcs">Federated DVCS</h3>
 
-<h4 id="kettle-dvcs-normalize-multi-forge-remotes">kettle-dvcs (normalize multi-forge remotes)</h4>
-
-<ul>
-  <li>Script: <code>exe/kettle-dvcs</code> (install binstubs for convenience: <code>bundle binstubs kettle-dev --path bin</code>)</li>
-  <li>Purpose: Normalize git remotes across GitHub, GitLab, and Codeberg, and create an <code>all</code> remote that pushes to all and fetches only from your chosen origin.</li>
-  <li>Assumptions: org and repo names are identical across forges.</li>
-</ul>
-
-<p>Usage:</p>
-
-<pre class="code language-console"><code class="language-console">kettle-dvcs [options] [ORG] [REPO]
-</code></pre>
-
-<p>Options:</p>
-<ul>
-  <li>
-<code>--origin [github|gitlab|codeberg]</code> Which forge to use as <code>origin</code> (default: github)</li>
-  <li>
-<code>--protocol [ssh|https]</code> URL style (default: ssh)</li>
-  <li>
-<code>--github-name NAME</code> Remote name for GitHub when not origin (default: gh)</li>
-  <li>
-<code>--gitlab-name NAME</code> Remote name for GitLab (default: gl)</li>
-  <li>
-<code>--codeberg-name NAME</code> Remote name for Codeberg (default: cb)</li>
-  <li>
-<code>--force</code> Non-interactive; accept defaults, and do not prompt for ORG/REPO</li>
-</ul>
-
-<p>Examples:</p>
-<ul>
-  <li>Default, interactive (infers ORG/REPO from an existing remote when possible):
-    <pre class="code language-console"><code class="language-console">kettle-dvcs
-</code></pre>
-  </li>
-  <li>Non-interactive with explicit org/repo:
-    <pre class="code language-console"><code class="language-console">kettle-dvcs --force my-org my-repo
-</code></pre>
-  </li>
-  <li>Use GitLab as origin and HTTPS URLs:
-    <pre class="code language-console"><code class="language-console">kettle-dvcs --origin gitlab --protocol https my-org my-repo
-</code></pre>
-  </li>
-</ul>
-
-<p>What it does:</p>
-<ul>
-  <li>Ensures remotes exist and have consistent URLs for each forge.</li>
-  <li>Renames existing remotes when their URL already matches the desired target but their name does not (e.g., <code>gitlab</code> -&gt; <code>gl</code>).</li>
-  <li>Creates/refreshes an <code>all</code> remote that:
-    <ul>
-      <li>fetches only from your chosen <code>origin</code> forge.</li>
-      <li>has pushurls configured for all three forges so <code>git push all &lt;branch&gt;</code> updates all mirrors.</li>
-    </ul>
-  </li>
-  <li>Prints <code>git remote -v</code> at the end.</li>
-  <li>Attempts to <code>git fetch</code> each forge remote to check availability:
-    <ul>
-      <li>If all succeed, the README’s federated DVCS summary line has “(Coming soon!)” removed.</li>
-      <li>If any fail, the script prints import links to help you create a mirror on that forge.</li>
-    </ul>
-  </li>
-</ul>
-
 <details>
-  <summary>Find this repo on other forges</summary>
+  <summary>Find this repo on other forges (Coming soon!)</summary>
 
 | Federated [DVCS][💎d-in-dvcs] Repository        | Status                                                                | Issues                    | PRs                      | Wiki                      | CI                       | Discussions                  |
 |-------------------------------------------------|-----------------------------------------------------------------------|---------------------------|--------------------------|---------------------------|--------------------------|------------------------------|
@@ -660,6 +596,70 @@ Tip: When running a single spec file locally, you may want <code>K_SOUP_COV_MIN_
     <ul>
       <li><code>bundle binstubs kettle-dev --path bin</code></li>
       <li>Add to <code>.envrc</code>: <code>PATH_add bin</code> (so <code>bin/</code> tools run without the prefix)</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="kettle-dvcs-normalize-multi-forge-remotes">kettle-dvcs (normalize multi-forge remotes)</h3>
+
+<ul>
+  <li>Script: <code>exe/kettle-dvcs</code> (install binstubs for convenience: <code>bundle binstubs kettle-dev --path bin</code>)</li>
+  <li>Purpose: Normalize git remotes across GitHub, GitLab, and Codeberg, and create an <code>all</code> remote that pushes to all and fetches only from your chosen origin.</li>
+  <li>Assumptions: org and repo names are identical across forges.</li>
+</ul>
+
+<p>Usage:</p>
+
+<pre class="code language-console"><code class="language-console">kettle-dvcs [options] [ORG] [REPO]
+</code></pre>
+
+<p>Options:</p>
+<ul>
+  <li>
+<code>--origin [github|gitlab|codeberg]</code> Which forge to use as <code>origin</code> (default: github)</li>
+  <li>
+<code>--protocol [ssh|https]</code> URL style (default: ssh)</li>
+  <li>
+<code>--github-name NAME</code> Remote name for GitHub when not origin (default: gh)</li>
+  <li>
+<code>--gitlab-name NAME</code> Remote name for GitLab (default: gl)</li>
+  <li>
+<code>--codeberg-name NAME</code> Remote name for Codeberg (default: cb)</li>
+  <li>
+<code>--force</code> Non-interactive; accept defaults, and do not prompt for ORG/REPO</li>
+</ul>
+
+<p>Examples:</p>
+<ul>
+  <li>Default, interactive (infers ORG/REPO from an existing remote when possible):
+    <pre class="code language-console"><code class="language-console">kettle-dvcs
+</code></pre>
+  </li>
+  <li>Non-interactive with explicit org/repo:
+    <pre class="code language-console"><code class="language-console">kettle-dvcs --force my-org my-repo
+</code></pre>
+  </li>
+  <li>Use GitLab as origin and HTTPS URLs:
+    <pre class="code language-console"><code class="language-console">kettle-dvcs --origin gitlab --protocol https my-org my-repo
+</code></pre>
+  </li>
+</ul>
+
+<p>What it does:</p>
+<ul>
+  <li>Ensures remotes exist and have consistent URLs for each forge.</li>
+  <li>Renames existing remotes when their URL already matches the desired target but their name does not (e.g., <code>gitlab</code> -&gt; <code>gl</code>).</li>
+  <li>Creates/refreshes an <code>all</code> remote that:
+    <ul>
+      <li>fetches only from your chosen <code>origin</code> forge.</li>
+      <li>has pushurls configured for all three forges so <code>git push all &lt;branch&gt;</code> updates all mirrors.</li>
+    </ul>
+  </li>
+  <li>Prints <code>git remote -v</code> at the end.</li>
+  <li>Attempts to <code>git fetch</code> each forge remote to check availability:
+    <ul>
+      <li>If all succeed, the README’s federated DVCS summary line has “(Coming soon!)” removed.</li>
+      <li>If any fail, the script prints import links to help you create a mirror on that forge.</li>
     </ul>
   </li>
 </ul>
@@ -1109,7 +1109,7 @@ Please consider sponsoring me or the project.</p>
 
 <p>To join the community or get help 👇️ Join the Discord.</p>
 
-<p><a href="https://discord.gg/3qme4XHNKN"><img src="https://img.shields.io/discord/1373797679469170758?style=for-the-badge" alt="Live Chat on Discord"></a></p>
+<p><a href="https://discord.gg/3qme4XHNKN"><img src="https://img.shields.io/discord/1373797679469170758?style=for-the-badge&amp;logo=discord" alt="Live Chat on Discord"></a></p>
 
 <p>To say “thanks!” ☝️ Join the Discord or 👇️ send money.</p>
 
@@ -1122,7 +1122,7 @@ Please consider sponsoring me or the project.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Fri Sep 12 00:40:04 2025 by
+  Generated on Fri Sep 12 02:57:13 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>
