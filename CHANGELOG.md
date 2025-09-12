@@ -19,8 +19,11 @@ Please file a bug if you notice a violation of semantic versioning.
 ## [Unreleased]
 ### Added
 ### Changed
+- update template to version_gem v1.1.9
+- right-size funding commit message append width
 ### Deprecated
 ### Removed
+- remove patreon link from template
 ### Fixed
 ### Security
 
