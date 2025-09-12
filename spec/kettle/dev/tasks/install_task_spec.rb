@@ -731,9 +731,9 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
       repo_root = Kettle::Dev::TemplateHelpers.gem_checkout_root
       src_readme = File.join(repo_root, "README.md.example")
       template_lines = File.readlines(src_readme)
-      # Line 38 (1-based) is index 37
-      src_line = template_lines[37]
-      expect(src_line).to start_with("| Support")
+      # Find the 'Support & Community' row dynamically in case table order changes
+      src_line = template_lines.find { |l| l.start_with?("| Support") }
+      expect(src_line).not_to be_nil
       src_prefix = src_line[/^\|[^|]*\|/]
       Dir.mktmpdir do |project_root|
         # Minimal gemspec to satisfy homepage/GitHub checks
