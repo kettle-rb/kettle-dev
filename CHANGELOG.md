@@ -29,6 +29,11 @@ Please file a bug if you notice a violation of semantic versioning.
 - COVERAGE: 96.29% -- 3479/3613 lines in 25 files
 - BRANCH COVERAGE: 81.01% -- 1425/1759 branches in 25 files
 - 76.88% documented
+### Added
+- improved documentation
+- better organized readme
+- badges are more clear & new badge for Ruby Friends Squad on Daily.dev
+    - https://app.daily.dev/squads/rubyfriends
 ### Changed
 - update template to version_gem v1.1.9
 - right-size funding commit message append width
