@@ -68,13 +68,30 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 and <a href="https://tom.preston-werner.com/2022/05/23/major-version-numbers-are-not-sacred.html">yes</a>, platform and engine support are part of the <a href="https://github.com/semver/semver/issues/716#issuecomment-869336139">public API</a>.<br>
 Please file a bug if you notice a violation of semantic versioning.</p>
 
-<h2 id="unreleased"><a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.16...HEAD">Unreleased</a></h2>
+<h2 id="unreleased"><a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.17...HEAD">Unreleased</a></h2>
 <h3 id="added">Added</h3>
 <h3 id="changed">Changed</h3>
 <h3 id="deprecated">Deprecated</h3>
 <h3 id="removed">Removed</h3>
 <h3 id="fixed">Fixed</h3>
 <h3 id="security">Security</h3>
+
+<h2 id="1117---2025-09-11">
+<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.16...v1.1.17">1.1.17</a> - 2025-09-11</h2>
+<ul>
+  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.17">v1.1.17</a>
+</li>
+  <li>COVERAGE: 96.29% – 3479/3613 lines in 25 files</li>
+  <li>BRANCH COVERAGE: 81.01% – 1425/1759 branches in 25 files</li>
+  <li>76.88% documented
+    <h3 id="changed-1">Changed</h3>
+  </li>
+  <li>update template to version_gem v1.1.9</li>
+  <li>right-size funding commit message append width
+    <h3 id="removed-1">Removed</h3>
+  </li>
+  <li>remove patreon link from template</li>
+</ul>
 
 <h2 id="1116---2025-09-10">
 <a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.15...v1.1.16">1.1.16</a> - 2025-09-10</h2>
@@ -110,7 +127,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 96.24% – 3477/3613 lines in 25 files</li>
   <li>BRANCH COVERAGE: 80.96% – 1424/1759 branches in 25 files</li>
   <li>76.88% documented
-    <h3 id="changed-1">Changed</h3>
+    <h3 id="changed-2">Changed</h3>
   </li>
   <li>use current x_std_libs modular gemfile for all appraisals that are pinned to current ruby</li>
   <li>fix appraisals for Ruby v2 to use correct version of erb</li>
@@ -138,7 +155,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 94.84% – 3422/3608 lines in 25 files</li>
   <li>BRANCH COVERAGE: 78.97% – 1386/1755 branches in 25 files</li>
   <li>76.88% documented
-    <h3 id="changed-2">Changed</h3>
+    <h3 id="changed-3">Changed</h3>
   </li>
   <li>improve Gemfile updates during kettle-dev-setup</li>
   <li>git origin-based funding_org derivation during setup</li>
@@ -152,7 +169,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 96.56% – 3396/3517 lines in 24 files</li>
   <li>BRANCH COVERAGE: 81.33% – 1385/1703 branches in 24 files</li>
   <li>77.06% documented
-    <h3 id="changed-3">Changed</h3>
+    <h3 id="changed-4">Changed</h3>
   </li>
   <li>move kettle-dev-setup logic into Kettle::Dev::SetupCLI
     <h3 id="fixed-4">Fixed</h3>
@@ -173,7 +190,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>Improve documentation
     <ul>
       <li>Fix an internal link in README.md
-        <h3 id="changed-4">Changed</h3>
+        <h3 id="changed-5">Changed</h3>
       </li>
     </ul>
   </li>
@@ -254,7 +271,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>rake task - <code>appraisal:install</code>
     <ul>
       <li>initial setup for projects that didn’t previously use Appraisal
-        <h3 id="changed-5">Changed</h3>
+        <h3 id="changed-6">Changed</h3>
       </li>
     </ul>
   </li>
@@ -262,7 +279,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>simplified <code>*Task</code> classes’ <code>task_abort</code> methods to just raise Kettle::Dev::Error
     <ul>
       <li>Allows caller to decide how to handle.
-        <h3 id="removed-1">Removed</h3>
+        <h3 id="removed-2">Removed</h3>
       </li>
     </ul>
   </li>
@@ -310,12 +327,12 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>add gitlab pipeline result to ci:act</li>
   <li>highlight SHA discrepancies in ci:act task header info</li>
   <li>how to set up forge tokens for ci:act, and other tools, instructions for README.md
-    <h3 id="changed-6">Changed</h3>
+    <h3 id="changed-7">Changed</h3>
   </li>
   <li>expanded use of adapter patterns (Exit, Git, and Input)</li>
   <li>refactored and improved structure of code, more resilient</li>
   <li>kettle-release: do not abort immediately on CI failure; continue checking all workflows, summarize results, and prompt to (c)ontinue or (q)uit (reuses ci:act-style summary)
-    <h3 id="removed-2">Removed</h3>
+    <h3 id="removed-3">Removed</h3>
   </li>
   <li>defensive NameError handling in ChangelogCLI.abort method
     <h3 id="fixed-11">Fixed</h3>
@@ -351,7 +368,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 97.14% – 2857/2941 lines in 22 files</li>
   <li>BRANCH COVERAGE: 82.29% – 1194/1451 branches in 22 files</li>
   <li>76.22% documented
-    <h3 id="changed-7">Changed</h3>
+    <h3 id="changed-8">Changed</h3>
   </li>
   <li>URL for migrating repo to CodeBerg:
     <ul>
@@ -385,7 +402,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>Document kettle-dvcs CLI in README (usage, options, examples)</li>
   <li>RBS types for Kettle::Dev::DvcsCLI and inline YARD docs on CLI</li>
   <li>Specs for DvcsCLI covering remote normalization, fetch outcomes, and README updates
-    <h3 id="changed-8">Changed</h3>
+    <h3 id="changed-9">Changed</h3>
   </li>
   <li>major spec refactoring
     <h3 id="fixed-14">Fixed</h3>
@@ -422,7 +439,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
     <h3 id="added-8">Added</h3>
   </li>
   <li>exe/kettle-dev-setup - bootstrap templating in any RubyGem
-    <h3 id="removed-3">Removed</h3>
+    <h3 id="removed-4">Removed</h3>
   </li>
   <li>all runtime deps
     <ul>
@@ -442,10 +459,10 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 97.77% – 2629/2689 lines in 22 files</li>
   <li>BRANCH COVERAGE: 82.40% – 1100/1335 branches in 22 files</li>
   <li>76.47% documented
-    <h3 id="changed-9">Changed</h3>
+    <h3 id="changed-10">Changed</h3>
   </li>
   <li>Use semver version dependency (~&gt; 1.0) on kettle-dev when templating
-    <h3 id="removed-4">Removed</h3>
+    <h3 id="removed-5">Removed</h3>
   </li>
   <li>dependency on version_gem (backwards compatible change)</li>
 </ul>
@@ -478,7 +495,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
     <h3 id="added-9">Added</h3>
   </li>
   <li>test that .env.local.example is copied by install / template tasks
-    <h3 id="changed-10">Changed</h3>
+    <h3 id="changed-11">Changed</h3>
   </li>
   <li>update Appraisals.example template’s instructions for updating appraisals</li>
 </ul>
@@ -497,7 +514,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>more badges in README (gem &amp; template)</li>
   <li>integration test for kettle-changelog using CHANGELOG.md.</li>
   <li>integration test for kettle-changelog using KEEP_A_CHANGELOG.md.
-    <h3 id="changed-11">Changed</h3>
+    <h3 id="changed-12">Changed</h3>
   </li>
   <li>add output to error handling related to release creation on GitHub</li>
   <li>refactored Kettle::Dev::Tasks::CITask.abort =&gt; task_abort
@@ -615,7 +632,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   </li>
   <li>template supports local development of RuboCop-LTS suite of gems</li>
   <li>improved documentation
-    <h3 id="changed-12">Changed</h3>
+    <h3 id="changed-13">Changed</h3>
   </li>
   <li>dependabot: ignore rubocop-lts for updates</li>
   <li>template configures RSpec to run tests in random order</li>
@@ -629,7 +646,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>COVERAGE: 14.01% – 96/685 lines in 8 files</li>
   <li>BRANCH COVERAGE: 0.30% – 1/338 branches in 8 files</li>
   <li>76.23% documented
-    <h3 id="changed-13">Changed</h3>
+    <h3 id="changed-14">Changed</h3>
   </li>
   <li>Use example version of ancient.yml workflow since local version has been customized</li>
   <li>Use example version of jruby.yml workflow since local version has been customized</li>
@@ -648,7 +665,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>replacement logic handles a dashed gem-name which maps onto a nested path structure</li>
 </ul>
 
-<h2 id="unreleased-1"><a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.16...HEAD">Unreleased</a></h2>
+<h2 id="unreleased-1"><a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.17...HEAD">Unreleased</a></h2>
 <h3 id="added-14">Added</h3>
 <ul>
   <li>kettle:dev:install and kettle:dev:template support <code>only=</code> option: comma-separated glob patterns matched against destination paths relative to project root; non-matching files are excluded from templating.</li>
@@ -712,7 +729,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>kettle-release: early validation of identical set of copyright years in README.md and CHANGELOG.md, adds current year if missing, aborts on mismatch</li>
   <li>kettle-release: update KLOC in README.md</li>
   <li>kettle-release: update Rakefile.example with version and date
-    <h3 id="changed-14">Changed</h3>
+    <h3 id="changed-15">Changed</h3>
   </li>
   <li>kettle-release: print package name and version released as final line</li>
   <li>use git adapter to wrap more git commands to make tests easier to build</li>
@@ -744,7 +761,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
     <h3 id="added-17">Added</h3>
   </li>
   <li>kettle-release: Push tags to additional remotes after release
-    <h3 id="changed-15">Changed</h3>
+    <h3 id="changed-16">Changed</h3>
   </li>
   <li>Improve .gitlab-ci.yml pipeline
     <h3 id="fixed-24">Fixed</h3>
@@ -831,12 +848,12 @@ Please file a bug if you notice a violation of semantic versioning.</p>
     </ul>
   </li>
   <li>new exe script: kettle-changelog - transitions a changelog from unreleased to next release
-    <h3 id="changed-16">Changed</h3>
+    <h3 id="changed-17">Changed</h3>
   </li>
   <li>Make ‘git’ gem dependency optional; fall back to raw <code>git</code> commands when the gem is not present (rescues LoadError). See Kettle::Dev::GitAdapter.</li>
   <li>upgraded to stone_checksums v1.0.2</li>
   <li>exe scripts now print their name and version as they start up
-    <h3 id="removed-5">Removed</h3>
+    <h3 id="removed-6">Removed</h3>
   </li>
   <li>dependency on git gem
     <ul>
@@ -872,14 +889,14 @@ Please file a bug if you notice a violation of semantic versioning.</p>
     <h3 id="added-21">Added</h3>
   </li>
   <li>runs git add –all before git commit, to ensure all files are committed.
-    <h3 id="changed-17">Changed</h3>
+    <h3 id="changed-18">Changed</h3>
   </li>
   <li>This gem is now loaded via Ruby’s standard <code>autoload</code> feature.</li>
   <li>Bundler is always expected, and most things probably won’t work without it.</li>
   <li>exe/ scripts and rake tasks logic is all now moved into classes for testability, and is nearly fully covered by tests.</li>
   <li>New Kettle::Dev::GitAdapter class is an adapter pattern wrapper for git commands</li>
   <li>New Kettle::Dev::ExitAdapter class is an adapter pattern wrapper for Kernel.exit and Kernel.abort within this codebase.
-    <h3 id="removed-6">Removed</h3>
+    <h3 id="removed-7">Removed</h3>
   </li>
   <li>attempts to make exe/* scripts work without bundler. Bundler is required.
     <h3 id="fixed-27">Fixed</h3>
@@ -1095,7 +1112,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Wed Sep 10 04:00:07 2025 by
+  Generated on Fri Sep 12 00:40:04 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

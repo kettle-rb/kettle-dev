@@ -19,13 +19,21 @@ Please file a bug if you notice a violation of semantic versioning.
 ## [Unreleased]
 ### Added
 ### Changed
-- update template to version_gem v1.1.9
-- right-size funding commit message append width
 ### Deprecated
 ### Removed
-- remove patreon link from template
 ### Fixed
 ### Security
+
+## [1.1.17] - 2025-09-11
+- TAG: [v1.1.17][1.1.17t]
+- COVERAGE: 96.29% -- 3479/3613 lines in 25 files
+- BRANCH COVERAGE: 81.01% -- 1425/1759 branches in 25 files
+- 76.88% documented
+### Changed
+- update template to version_gem v1.1.9
+- right-size funding commit message append width
+### Removed
+- remove patreon link from template
 
 ## [1.1.16] - 2025-09-10
 - TAG: [v1.1.16][1.1.16t]
@@ -627,7 +635,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.16...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.17...HEAD
+[1.1.17]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.16...v1.1.17
+[1.1.17t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.17
 [1.1.16]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.15...v1.1.16
 [1.1.16t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.16
 [1.1.15]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.14...v1.1.15
