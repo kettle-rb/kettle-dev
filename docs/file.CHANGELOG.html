@@ -68,13 +68,26 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 and <a href="https://tom.preston-werner.com/2022/05/23/major-version-numbers-are-not-sacred.html">yes</a>, platform and engine support are part of the <a href="https://github.com/semver/semver/issues/716#issuecomment-869336139">public API</a>.<br>
 Please file a bug if you notice a violation of semantic versioning.</p>
 
-<h2 id="unreleased"><a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.17...HEAD">Unreleased</a></h2>
+<h2 id="unreleased"><a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.18...HEAD">Unreleased</a></h2>
 <h3 id="added">Added</h3>
 <h3 id="changed">Changed</h3>
 <h3 id="deprecated">Deprecated</h3>
 <h3 id="removed">Removed</h3>
 <h3 id="fixed">Fixed</h3>
 <h3 id="security">Security</h3>
+
+<h2 id="1118---2025-09-12">
+<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.17...v1.1.18">1.1.18</a> - 2025-09-12</h2>
+<ul>
+  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.18">v1.1.18</a>
+</li>
+  <li>COVERAGE: 96.24% – 3477/3613 lines in 25 files</li>
+  <li>BRANCH COVERAGE: 81.01% – 1425/1759 branches in 25 files</li>
+  <li>76.88% documented
+    <h3 id="removed-1">Removed</h3>
+  </li>
+  <li>remove patreon link from README template</li>
+</ul>
 
 <h2 id="1117---2025-09-11">
 <a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.16...v1.1.17">1.1.17</a> - 2025-09-11</h2>
@@ -97,9 +110,9 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   </li>
   <li>update template to version_gem v1.1.9</li>
   <li>right-size funding commit message append width
-    <h3 id="removed-1">Removed</h3>
+    <h3 id="removed-2">Removed</h3>
   </li>
-  <li>remove patreon link from template</li>
+  <li>remove patreon link from README</li>
 </ul>
 
 <h2 id="1116---2025-09-10">
@@ -288,7 +301,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>simplified <code>*Task</code> classes’ <code>task_abort</code> methods to just raise Kettle::Dev::Error
     <ul>
       <li>Allows caller to decide how to handle.
-        <h3 id="removed-2">Removed</h3>
+        <h3 id="removed-3">Removed</h3>
       </li>
     </ul>
   </li>
@@ -341,7 +354,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>expanded use of adapter patterns (Exit, Git, and Input)</li>
   <li>refactored and improved structure of code, more resilient</li>
   <li>kettle-release: do not abort immediately on CI failure; continue checking all workflows, summarize results, and prompt to (c)ontinue or (q)uit (reuses ci:act-style summary)
-    <h3 id="removed-3">Removed</h3>
+    <h3 id="removed-4">Removed</h3>
   </li>
   <li>defensive NameError handling in ChangelogCLI.abort method
     <h3 id="fixed-11">Fixed</h3>
@@ -448,7 +461,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
     <h3 id="added-9">Added</h3>
   </li>
   <li>exe/kettle-dev-setup - bootstrap templating in any RubyGem
-    <h3 id="removed-4">Removed</h3>
+    <h3 id="removed-5">Removed</h3>
   </li>
   <li>all runtime deps
     <ul>
@@ -471,7 +484,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
     <h3 id="changed-10">Changed</h3>
   </li>
   <li>Use semver version dependency (~&gt; 1.0) on kettle-dev when templating
-    <h3 id="removed-5">Removed</h3>
+    <h3 id="removed-6">Removed</h3>
   </li>
   <li>dependency on version_gem (backwards compatible change)</li>
 </ul>
@@ -674,7 +687,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>replacement logic handles a dashed gem-name which maps onto a nested path structure</li>
 </ul>
 
-<h2 id="unreleased-1"><a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.17...HEAD">Unreleased</a></h2>
+<h2 id="unreleased-1"><a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.18...HEAD">Unreleased</a></h2>
 <h3 id="added-15">Added</h3>
 <ul>
   <li>kettle:dev:install and kettle:dev:template support <code>only=</code> option: comma-separated glob patterns matched against destination paths relative to project root; non-matching files are excluded from templating.</li>
@@ -862,7 +875,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>Make ‘git’ gem dependency optional; fall back to raw <code>git</code> commands when the gem is not present (rescues LoadError). See Kettle::Dev::GitAdapter.</li>
   <li>upgraded to stone_checksums v1.0.2</li>
   <li>exe scripts now print their name and version as they start up
-    <h3 id="removed-6">Removed</h3>
+    <h3 id="removed-7">Removed</h3>
   </li>
   <li>dependency on git gem
     <ul>
@@ -905,7 +918,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>exe/ scripts and rake tasks logic is all now moved into classes for testability, and is nearly fully covered by tests.</li>
   <li>New Kettle::Dev::GitAdapter class is an adapter pattern wrapper for git commands</li>
   <li>New Kettle::Dev::ExitAdapter class is an adapter pattern wrapper for Kernel.exit and Kernel.abort within this codebase.
-    <h3 id="removed-7">Removed</h3>
+    <h3 id="removed-8">Removed</h3>
   </li>
   <li>attempts to make exe/* scripts work without bundler. Bundler is required.
     <h3 id="fixed-27">Fixed</h3>
@@ -1121,7 +1134,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Fri Sep 12 02:57:13 2025 by
+  Generated on Fri Sep 12 03:31:08 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

@@ -21,9 +21,16 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Changed
 ### Deprecated
 ### Removed
-- remove patreon link from README template
 ### Fixed
 ### Security
+
+## [1.1.18] - 2025-09-12
+- TAG: [v1.1.18][1.1.18t]
+- COVERAGE: 96.24% -- 3477/3613 lines in 25 files
+- BRANCH COVERAGE: 81.01% -- 1425/1759 branches in 25 files
+- 76.88% documented
+### Removed
+- remove patreon link from README template
 
 ## [1.1.17] - 2025-09-11
 - TAG: [v1.1.17][1.1.17t]
@@ -641,7 +648,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.17...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.18...HEAD
+[1.1.18]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.17...v1.1.18
+[1.1.18t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.18
 [1.1.17]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.16...v1.1.17
 [1.1.17t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.17
 [1.1.16]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.15...v1.1.16
