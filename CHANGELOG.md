@@ -21,6 +21,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Changed
 ### Deprecated
 ### Removed
+- remove patreon link from README template
 ### Fixed
 ### Security
 
@@ -38,7 +39,7 @@ Please file a bug if you notice a violation of semantic versioning.
 - update template to version_gem v1.1.9
 - right-size funding commit message append width
 ### Removed
-- remove patreon link from template
+- remove patreon link from README
 
 ## [1.1.16] - 2025-09-10
 - TAG: [v1.1.16][1.1.16t]
