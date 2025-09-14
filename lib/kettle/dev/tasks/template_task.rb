@@ -565,7 +565,7 @@ module Kettle
                       end
                       tpl_header_pre = src_lines[0...tpl_unrel_idx] # lines before Unreleased heading
                       tpl_unrel_heading = src_lines[tpl_unrel_idx]
-                      tpl_unrel_body = src_lines[(tpl_unrel_idx + 1)..tpl_end_idx] || []
+                      src_lines[(tpl_unrel_idx + 1)..tpl_end_idx] || []
 
                       # 2) Extract destination Unreleased content, preserving list items under any standard headings
                       dest_content = File.file?(dest) ? File.read(dest) : ""
