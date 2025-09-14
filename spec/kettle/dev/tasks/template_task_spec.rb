@@ -1197,10 +1197,7 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
       end
     end
   end
-end
 
-
-RSpec.describe Kettle::Dev::Tasks::TemplateTask do
   describe "CHANGELOG default spacing regression" do
     let(:helpers) { Kettle::Dev::TemplateHelpers }
 
@@ -1217,7 +1214,8 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
           default_changelog = if File.file?(fixture_path)
             content = File.read(fixture_path)
             content.strip.empty? ? nil : content
-          end || <<~MD
+          end
+          default_changelog ||= <<~MD
             # Changelog
 
             ## [Unreleased]
