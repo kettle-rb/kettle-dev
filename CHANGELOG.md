@@ -18,15 +18,23 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [Unreleased]
 ### Added
-- documentation of vcr on Ruby 2.4
-- Apache SkyWalking Eyes dependency license check
-  - Added to template
 ### Changed
 ### Deprecated
 ### Removed
 ### Fixed
-- fix duplicate headings in CHANGELOG.md Unreleased section
 ### Security
+
+## [1.1.19] - 2025-09-14
+- TAG: [v1.1.19][1.1.19t]
+- COVERAGE: 96.58% -- 3531/3656 lines in 25 files
+- BRANCH COVERAGE: 81.11% -- 1443/1779 branches in 25 files
+- 76.88% documented
+### Added
+- documentation of vcr on Ruby 2.4
+- Apache SkyWalking Eyes dependency license check
+  - Added to template
+### Fixed
+- fix duplicate headings in CHANGELOG.md Unreleased section
 
 ## [1.1.18] - 2025-09-12
 - TAG: [v1.1.18][1.1.18t]
@@ -652,7 +660,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.18...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.19...HEAD
+[1.1.19]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.18...v1.1.19
+[1.1.19t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.19
 [1.1.18]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.17...v1.1.18
 [1.1.18t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.18
 [1.1.17]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.16...v1.1.17
