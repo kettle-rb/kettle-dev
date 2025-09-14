@@ -548,31 +548,91 @@ module Kettle
                 )
                 if File.basename(rel) == "CHANGELOG.md"
                   begin
-                    # Special handling: only template header through Unreleased section (inclusive), preserve the rest
+                    # Special handling for CHANGELOG.md
+                    # 1) Take template header through Unreleased section (inclusive)
                     src_lines = c.split("\n", -1)
-                    # Find index of Unreleased heading (case-insensitive), typical format: ## [Unreleased]
-                    unreleased_idx = src_lines.index { |ln| ln =~ /^##\s*\[\s*Unreleased\s*\]/i }
-                    if unreleased_idx
-                      # Determine end of Unreleased section: next heading of same or higher level (## or #)
-                      stop_idx = src_lines.length - 1
-                      j = unreleased_idx + 1
+                    tpl_unrel_idx = src_lines.index { |ln| ln =~ /^##\s*\[\s*Unreleased\s*\]/i }
+                    if tpl_unrel_idx
+                      # Find end of Unreleased in template (next ## or # heading)
+                      tpl_end_idx = src_lines.length - 1
+                      j = tpl_unrel_idx + 1
                       while j < src_lines.length
                         if src_lines[j] =~ /^##\s+\[/ || src_lines[j] =~ /^#\s+/ || src_lines[j] =~ /^##\s+[^\[]/
-                          stop_idx = j - 1
+                          tpl_end_idx = j - 1
                           break
                         end
                         j += 1
                       end
-                      header_through_unreleased = src_lines[0..stop_idx]
-                      tail = File.file?(dest) ? File.read(dest).split("\n", -1)[(File.read(dest).split("\n", -1).index { |ln| ln =~ /^##\s*\[\s*Unreleased\s*\]/i } || -1) + 1..-1] : nil
-                      tail ||= []
-                      # Additionally, ensure we preserve existing markdown link refs typically at file bottom (e.g., [Unreleased]: ...)
-                      # Prefer tail from existing file entirely to avoid clobbering release notes and refs.
-                      merged = (header_through_unreleased + (tail || [])).join("\n")
-                      c = merged
-                    else
-                      # If Unreleased not found, fallback to original c (only collapse header spacing below)
+                      tpl_header_pre = src_lines[0...tpl_unrel_idx] # lines before Unreleased heading
+                      tpl_unrel_heading = src_lines[tpl_unrel_idx]
+                      src_lines[(tpl_unrel_idx + 1)..tpl_end_idx] || []
+
+                      # 2) Extract destination Unreleased content, preserving list items under any standard headings
+                      dest_content = File.file?(dest) ? File.read(dest) : ""
+                      dest_lines = dest_content.split("\n", -1)
+                      dest_unrel_idx = dest_lines.index { |ln| ln =~ /^##\s*\[\s*Unreleased\s*\]/i }
+                      dest_end_idx = if dest_unrel_idx
+                        k = dest_unrel_idx + 1
+                        e = dest_lines.length - 1
+                        while k < dest_lines.length
+                          if dest_lines[k] =~ /^##\s+\[/ || dest_lines[k] =~ /^#\s+/ || dest_lines[k] =~ /^##\s+[^\[]/
+                            e = k - 1
+                            break
+                          end
+                          k += 1
+                        end
+                        e
+                      end
+                      dest_unrel_body = dest_unrel_idx ? (dest_lines[(dest_unrel_idx + 1)..dest_end_idx] || []) : []
+
+                      # Helper: parse body into map of heading=>items (only '- ' markdown items)
+                      std_heads = [
+                        "### Added",
+                        "### Changed",
+                        "### Deprecated",
+                        "### Removed",
+                        "### Fixed",
+                        "### Security",
+                      ]
+
+                      parse_items = lambda do |body_lines|
+                        result = {}
+                        cur = nil
+                        body_lines.each do |ln|
+                          if ln.start_with?("### ")
+                            cur = ln.strip
+                            result[cur] ||= []
+                          elsif ln.start_with?("- ")
+                            result[cur] ||= []
+                            result[cur] << ln.rstrip
+                          end
+                        end
+                        result
+                      end
+
+                      dest_items = parse_items.call(dest_unrel_body)
+
+                      # 3) Build a single canonical Unreleased section: heading + the six standard subheads in order
+                      new_unrel_block = []
+                      new_unrel_block << tpl_unrel_heading
+                      std_heads.each do |h|
+                        new_unrel_block << h
+                        if dest_items[h] && !dest_items[h].empty?
+                          new_unrel_block.concat(dest_items[h])
+                        end
+                      end
+
+                      # 4) Compose final content: template preface + new unreleased + rest of destination (after its unreleased)
+                      tail_after_unrel = []
+                      if dest_unrel_idx
+                        tail_after_unrel = dest_lines[(dest_end_idx + 1)..-1] || []
+                      end
+
+                      merged_lines = tpl_header_pre + new_unrel_block + tail_after_unrel
+
+                      c = merged_lines.join("\n")
                     end
+
                     # Collapse repeated whitespace in release headers only
                     lines = c.split("\n", -1)
                     lines.map! do |ln|
@@ -585,7 +645,7 @@ module Kettle
                     c = lines.join("\n")
                   rescue StandardError => e
                     Kettle::Dev.debug_error(e, __method__)
-                    # On any error, keep previous behavior (collapse whitespace only)
+                    # Fallback: whitespace normalization
                     lines = c.split("\n", -1)
                     lines.map! { |ln| (ln =~ /^##\s+\[.*\]/) ? ln.gsub(/[ \t]+/, " ") : ln }
                     c = lines.join("\n")

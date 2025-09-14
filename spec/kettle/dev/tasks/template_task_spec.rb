@@ -690,6 +690,56 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
         end
       end
 
+      it "does not duplicate Unreleased change-type headings and preserves existing list items under them" do
+        Dir.mktmpdir do |gem_root|
+          Dir.mktmpdir do |project_root|
+            # Template CHANGELOG with Unreleased and six standard headings (empty)
+            File.write(File.join(gem_root, "CHANGELOG.md.example"), <<~MD)
+              # Changelog
+              \n
+              ## [Unreleased]
+              ### Added
+              ### Changed
+              ### Deprecated
+              ### Removed
+              ### Fixed
+              ### Security
+              \n
+              ## [0.1.0] - 2020-01-01
+              - initial
+            MD
+
+            # Destination project with existing Unreleased having an item under Added and Fixed
+            File.write(File.join(project_root, "CHANGELOG.md"), <<~MD)
+              # Changelog
+              \n
+              ## [Unreleased]
+              ### Added
+              - keep me
+              ### Fixed
+              - also keep me
+              \n
+              ## [0.0.1] - 2019-01-01
+              - start
+            MD
+
+            File.write(File.join(project_root, "demo.gemspec"), "Gem::Specification.new{|s| s.name='demo'; s.homepage='https://github.com/acme/demo'}\n")
+            allow(helpers).to receive_messages(project_root: project_root, gem_checkout_root: gem_root, ensure_clean_git!: nil, ask: true)
+
+            described_class.run
+
+            result = File.read(File.join(project_root, "CHANGELOG.md"))
+            # Exactly one of each standard heading under Unreleased
+            %w[Added Changed Deprecated Removed Fixed Security].each do |h|
+              expect(result.scan(/^### #{h}$/).size).to eq(1)
+            end
+            # Preserved items
+            expect(result).to include("### Added\n- keep me")
+            expect(result).to include("### Fixed\n- also keep me")
+          end
+        end
+      end
+
       context "with .git-hooks present" do
         it "honors only filter by skipping .git-hooks when not selected" do
           Dir.mktmpdir do |gem_root|

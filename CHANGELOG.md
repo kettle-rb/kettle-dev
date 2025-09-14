@@ -18,10 +18,12 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [Unreleased]
 ### Added
+- documentation of vcr on Ruby 2.4
 ### Changed
 ### Deprecated
 ### Removed
 ### Fixed
+- fix duplicate headings in CHANGELOG.md Unreleased section
 ### Security
 
 ## [1.1.18] - 2025-09-12
