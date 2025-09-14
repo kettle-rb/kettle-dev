@@ -314,6 +314,7 @@ module Kettle
             .gitlab-ci.yml
             .junie/guidelines-rbs.md
             .junie/guidelines.md
+            .licenserc.yaml
             .opencollective.yml
             .rspec
             .rubocop.yml
