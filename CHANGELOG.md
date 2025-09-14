@@ -19,6 +19,8 @@ Please file a bug if you notice a violation of semantic versioning.
 ## [Unreleased]
 ### Added
 - documentation of vcr on Ruby 2.4
+- Apache SkyWalking Eyes dependency license check
+  - Added to template
 ### Changed
 ### Deprecated
 ### Removed

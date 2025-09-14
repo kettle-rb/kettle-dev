@@ -564,6 +564,41 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
         end
       end
 
+      it "copies .licenserc.yaml preferring .licenserc.yaml.example when available" do
+        Dir.mktmpdir do |gem_root|
+          Dir.mktmpdir do |project_root|
+            # Arrange template files at root
+            File.write(File.join(gem_root, ".licenserc.yaml"), "header:\n  license: REAL\n")
+            File.write(File.join(gem_root, ".licenserc.yaml.example"), "header:\n  license: EXAMPLE\n")
+
+            # Minimal gemspec so metadata scan works
+            File.write(File.join(project_root, "demo.gemspec"), <<~GEMSPEC)
+              Gem::Specification.new do |spec|
+                spec.name = "demo"
+                spec.required_ruby_version = ">= 3.1"
+                spec.homepage = "https://github.com/acme/demo"
+              end
+            GEMSPEC
+
+            allow(helpers).to receive_messages(
+              project_root: project_root,
+              gem_checkout_root: gem_root,
+              ensure_clean_git!: nil,
+              ask: true,
+            )
+
+            # Exercise
+            described_class.run
+
+            # Assert destination is the non-example name and content from example
+            dest = File.join(project_root, ".licenserc.yaml")
+            expect(File).to exist(dest)
+            expect(File.read(dest)).to include("EXAMPLE")
+            expect(File.read(dest)).not_to include("REAL")
+          end
+        end
+      end
+
       it "prints a warning when copying .env.local.example raises", :check_output do
         Dir.mktmpdir do |gem_root|
           Dir.mktmpdir do |project_root|
