@@ -160,6 +160,10 @@ module Kettle
             # Determine if chunk has any content (non-blank)
             content_present = chunk.any? { |l| l.strip != "" }
             if content_present
+              # Trim leading blank lines so there is no blank line after the header
+              while chunk.any? && chunk.first.strip == ""
+                chunk.shift
+              end
               # Trim trailing blank lines
               while chunk.any? && chunk.last.strip == ""
                 chunk.pop
