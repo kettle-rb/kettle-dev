@@ -176,8 +176,8 @@
     [557, 9, 29, "RSpec/AnyInstance: Avoid stubbing using `allow_any_instance_of`.", 440176922],
     [570, 9, 29, "RSpec/AnyInstance: Avoid stubbing using `allow_any_instance_of`.", 440176922]
   ],
-  "spec/kettle/dev/tasks/template_task_spec.rb:316940623": [
-    [619, 15, 24, "RSpec/ContextWording: Context description should match /^when\\b/, /^with\\b/, or /^without\\b/.", 196765058]
+  "spec/kettle/dev/tasks/template_task_spec.rb:4020256355": [
+    [654, 15, 24, "RSpec/ContextWording: Context description should match /^when\\b/, /^with\\b/, or /^without\\b/.", 196765058]
   ],
   "spec/kettle/dev/template_helpers_spec.rb:464503673": [
     [676, 11, 65, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [678].", 3890449948],
