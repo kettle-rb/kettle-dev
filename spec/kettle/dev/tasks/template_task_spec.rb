@@ -1198,3 +1198,75 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
     end
   end
 end
+
+
+RSpec.describe Kettle::Dev::Tasks::TemplateTask do
+  describe "CHANGELOG default spacing regression" do
+    let(:helpers) { Kettle::Dev::TemplateHelpers }
+
+    before do
+      stub_env("allowed" => "true")
+      stub_env("FUNDING_ORG" => "false")
+    end
+
+    it "ensures a blank line exists between Unreleased chunk and first released version when using DEFAULT_CHANGELOG.md" do
+      Dir.mktmpdir do |gem_root|
+        Dir.mktmpdir do |project_root|
+          # Use the DEFAULT_CHANGELOG.md fixture as the template CHANGELOG
+          fixture_path = File.join(__dir__, "..", "..", "..", "support", "fixtures", "DEFAULT_CHANGELOG.md")
+          default_changelog = if File.file?(fixture_path)
+            content = File.read(fixture_path)
+            content.strip.empty? ? nil : content
+          end || <<~MD
+            # Changelog
+
+            ## [Unreleased]
+            ### Added
+            ### Changed
+            ### Deprecated
+            ### Removed
+            ### Fixed
+            ### Security
+
+            ## [0.1.0] - 2025-09-13
+            - Initial release
+          MD
+          # Template CHANGELOG provides only header and Unreleased skeleton
+          template_changelog = <<~MD
+            # Changelog
+
+            ## [Unreleased]
+            ### Added
+            ### Changed
+            ### Deprecated
+            ### Removed
+            ### Fixed
+            ### Security
+          MD
+          File.write(File.join(gem_root, "CHANGELOG.md.example"), template_changelog)
+
+          # Destination project already has a default CHANGELOG (from bundle gem)
+          File.write(File.join(project_root, "CHANGELOG.md"), default_changelog)
+
+          # Minimal gemspec so metadata scanning works and replacements happen
+          File.write(File.join(project_root, "my-gem.gemspec"), <<~GEMSPEC)
+            Gem::Specification.new do |spec|
+              spec.name = "my-gem"
+              spec.required_ruby_version = ">= 3.1"
+              spec.homepage = "https://github.com/acme/my-gem"
+            end
+          GEMSPEC
+
+          allow(helpers).to receive_messages(project_root: project_root, gem_checkout_root: gem_root, ensure_clean_git!: nil, ask: true)
+
+          described_class.run
+
+          result = File.read(File.join(project_root, "CHANGELOG.md"))
+          # There must be exactly one blank line between the Unreleased section and the next version chunk
+          # Specifically, ensure a blank line before the first numbered version header following Unreleased
+          expect(result).to match(/## \[Unreleased\](?:.|\n)*?### Security\n\n## \[/)
+        end
+      end
+    end
+  end
+end

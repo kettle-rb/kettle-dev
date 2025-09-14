@@ -628,7 +628,19 @@ module Kettle
                         tail_after_unrel = dest_lines[(dest_end_idx + 1)..-1] || []
                       end
 
-                      merged_lines = tpl_header_pre + new_unrel_block + tail_after_unrel
+                      # Ensure exactly one blank line between the Unreleased chunk and the next version chunk
+                      #  - Strip trailing blanks from the newly built Unreleased block
+                      while new_unrel_block.any? && new_unrel_block.last.to_s.strip == ""
+                        new_unrel_block.pop
+                      end
+                      #  - Strip leading blanks from the tail
+                      while tail_after_unrel.any? && tail_after_unrel.first.to_s.strip == ""
+                        tail_after_unrel.shift
+                      end
+                      merged_lines = tpl_header_pre + new_unrel_block
+                      # Insert a single separator blank line if there is any tail content
+                      merged_lines << "" if tail_after_unrel.any?
+                      merged_lines.concat(tail_after_unrel)
 
                       c = merged_lines.join("\n")
                     end
