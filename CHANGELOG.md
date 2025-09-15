@@ -18,6 +18,7 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [Unreleased]
 ### Added
+- Allow reformating of CHANGELOG.md without version bump
 - `--include=GLOB` includes files not otherwise included in default template
 - more test coverage
 ### Changed

@@ -24,9 +24,22 @@ module Kettle
 
         changelog = File.read(@changelog_path)
 
-        # If the detected version already exists in the changelog, abort to avoid duplicates
+        # If the detected version already exists in the changelog, offer reformat-only mode
         if changelog =~ /^## \[#{Regexp.escape(version)}\]/
-          abort("CHANGELOG.md already has a section for version #{version}. Bump version.rb or remove the duplicate.")
+          warn("CHANGELOG.md already has a section for version #{version}.")
+          warn("It appears the version has not been bumped. You can reformat CHANGELOG.md without adding a new release section.")
+          print("Proceed with reformat only? [y/N]: ")
+          ans = Kettle::Dev::InputAdapter.gets&.strip&.downcase
+          if ans == "y" || ans == "yes"
+            updated = normalize_heading_spacing(changelog)
+            updated = ensure_footer_spacing(updated)
+            updated = updated.rstrip + "\n"
+            File.write(@changelog_path, updated)
+            puts "CHANGELOG.md reformatted. No new version section added."
+            return
+          else
+            abort("Aborting: version not bumped. Re-run after bumping version or answer 'y' to reformat-only.")
+          end
         end
 
         unreleased_block, before, after = extract_unreleased(changelog)
@@ -388,6 +401,24 @@ module Kettle
           collapsed << l
         end
         collapsed.join("\n")
+      end
+
+      def ensure_footer_spacing(text)
+        lines = text.split("\n", -1)
+        # Find the Unreleased link-ref which denotes start of footer refs
+        idx = lines.index { |l| l.start_with?(UNRELEASED_SECTION_HEADING) }
+        return text unless idx
+        head = lines[0...idx]
+        tail = lines[idx..-1]
+        # Ensure exactly one blank line between body and refs
+        if head.any? && head.last.to_s.strip != ""
+          head << ""
+        elsif head.any? && head.last.to_s.strip == "" && head[-2].to_s.strip == ""
+          # Collapse multiple blanks before footer to a single
+          head.pop while head.any? && head.last.to_s.strip == ""
+          head << ""
+        end
+        (head + tail).join("\n")
       end
 
       def detect_initial_compare_base(lines)
