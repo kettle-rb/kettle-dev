@@ -783,6 +783,61 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
         end
       end
 
+      it "preserves GFM fenced code blocks nested under list items in Unreleased sections" do
+        Dir.mktmpdir do |gem_root|
+          Dir.mktmpdir do |project_root|
+            # Template with empty Unreleased standard headings
+            File.write(File.join(gem_root, "CHANGELOG.md.example"), <<~MD)
+              # Changelog
+
+              ## [Unreleased]
+              ### Added
+              ### Changed
+              ### Deprecated
+              ### Removed
+              ### Fixed
+              ### Security
+
+              ## [0.1.0] - 2020-01-01
+              - initial
+            MD
+
+            # Destination with a bullet containing a fenced code block
+            File.write(File.join(project_root, "CHANGELOG.md"), <<~MD)
+              # Changelog
+
+              ## [Unreleased]
+              ### Added
+              - Add helper with example usage
+                
+                ```ruby
+                puts "hello"
+                1 + 2
+                ```
+              - Another item
+
+              ## [0.0.1] - 2019-01-01
+              - start
+            MD
+
+            File.write(File.join(project_root, "demo.gemspec"), "Gem::Specification.new{|s| s.name='demo'; s.homepage='https://github.com/acme/demo'}\n")
+            allow(helpers).to receive_messages(project_root: project_root, gem_checkout_root: gem_root, ensure_clean_git!: nil, ask: true)
+
+            described_class.run
+
+            result = File.read(File.join(project_root, "CHANGELOG.md"))
+            # Ensure the fenced block and its contents are preserved under the list item
+            expect(result).to include("### Added")
+            expect(result).to include("- Add helper with example usage")
+            expect(result).to include("```ruby")
+            expect(result).to include("puts \"hello\"")
+            expect(result).to include("1 + 2")
+            expect(result).to include("```")
+            expect(result).to include("- Another item")
+          end
+        end
+      end
+
       context "with .git-hooks present" do
         it "honors only filter by skipping .git-hooks when not selected" do
           Dir.mktmpdir do |gem_root|

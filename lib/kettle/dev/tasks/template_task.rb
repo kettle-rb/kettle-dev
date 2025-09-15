@@ -636,15 +636,63 @@ module Kettle
                       parse_items = lambda do |body_lines|
                         result = {}
                         cur = nil
-                        body_lines.each do |ln|
+                        i = 0
+                        while i < body_lines.length
+                          ln = body_lines[i]
                           if ln.start_with?("### ")
                             cur = ln.strip
                             result[cur] ||= []
-                          elsif ln =~ /^\s*[-*]\s/
-                            # Preserve any indentation and the bullet for nested lists
-                            result[cur] ||= []
-                            result[cur] << ln.rstrip
+                            i += 1
+                            next
                           end
+
+                          # Detect a list item bullet (allow optional indentation)
+                          if (m = ln.match(/^(\s*)[-*]\s/))
+                            result[cur] ||= []
+                            base_indent = m[1].length
+                            # Start a new item: include the bullet line
+                            result[cur] << ln.rstrip
+                            i += 1
+
+                            # Include subsequent lines that belong to this list item:
+                            # - blank lines
+                            # - lines with indentation greater than the bullet's indentation
+                            # - any lines inside fenced code blocks (```), regardless of indentation until fence closes
+                            in_fence = false
+                            fence_re = /^\s*```/
+                            while i < body_lines.length
+                              l2 = body_lines[i]
+                              # Stop if next sibling/top-level bullet of same or smaller indent and not inside a fence
+                              if !in_fence && l2 =~ /^(\s*)[-*]\s/
+                                ind = Regexp.last_match(1).length
+                                break if ind <= base_indent
+                              end
+                              # Break if a new section heading appears and we're not in a fence
+                              break if !in_fence && l2.start_with?("### ")
+
+                              if l2 =~ fence_re
+                                in_fence = !in_fence
+                                result[cur] << l2.rstrip
+                                i += 1
+                                next
+                              end
+
+                              # Include blanks and lines indented more than base indent, or anything while in fence
+                              if in_fence || l2.strip.empty? || (l2[/^\s*/].length > base_indent)
+                                result[cur] << l2.rstrip
+                                i += 1
+                                next
+                              end
+
+                              # Otherwise, this line does not belong to the current list item
+                              break
+                            end
+
+                            next
+                          end
+
+                          # Non-bullet, non-heading line: just advance
+                          i += 1
                         end
                         result
                       end
