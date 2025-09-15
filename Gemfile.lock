@@ -13,7 +13,7 @@ GIT
 PATH
   remote: .
   specs:
-    kettle-dev (1.1.19)
+    kettle-dev (1.1.20)
 
 GEM
   remote: https://rubygems.org/
@@ -136,7 +136,7 @@ GEM
     logger (1.7.0)
     minitest (5.25.5)
     mutex_m (0.3.0)
-    nokogiri (1.18.9-x86_64-linux-gnu)
+    nokogiri (1.18.10-x86_64-linux-gnu)
       racc (~> 1.4)
     ostruct (0.6.3)
     parallel (1.27.0)
@@ -168,7 +168,7 @@ GEM
       parser (~> 3.3.0)
       rainbow (>= 2.0, < 4.0)
       rexml (~> 3.1)
-    regexp_parser (2.11.2)
+    regexp_parser (2.11.3)
     reline (0.6.2)
       io-console (~> 0.5)
     require_bench (1.0.4)

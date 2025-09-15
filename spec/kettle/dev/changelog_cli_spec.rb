@@ -48,7 +48,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       end
     end
 
-    it "aborts when duplicate version section exists" do
+    it "prompts and aborts when duplicate version exists and user declines reformat" do
       mkproj do |root|
         File.write(File.join(root, "lib", "my", "gem", "version.rb"), <<~RB)
           module My; module Gem; VERSION = "1.2.3"; end; end
@@ -57,13 +57,44 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
         File.write(File.join(root, "coverage", "coverage.json"), {"coverage" => {}}.to_json)
         # Duplicate section already exists
         File.write(File.join(root, "CHANGELOG.md"), <<~MD)
+          # Changelog
           ## [Unreleased]
 
           ## [1.2.3] - 2025-08-30
         MD
         allow(Kettle::Dev::CIHelpers).to receive_messages(project_root: root, repo_info: ["o", "r"])
+        allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("n\n")
         cli = described_class.new
-        expect { cli.run }.to raise_error(MockSystemExit, /already has a section/)
+        expect { cli.run }.to raise_error(MockSystemExit, /Aborting: version not bumped/)
+      end
+    end
+
+    it "reformats only when duplicate version exists and user agrees" do
+      mkproj do |root|
+        File.write(File.join(root, "lib", "my", "gem", "version.rb"), <<~RB)
+          module My; module Gem; VERSION = "1.2.3"; end; end
+        RB
+        FileUtils.mkdir_p(File.join(root, "coverage"))
+        File.write(File.join(root, "coverage", "coverage.json"), {"coverage" => {}}.to_json)
+        # Changelog with minimal missing blank lines to demonstrate reformat
+        File.write(File.join(root, "CHANGELOG.md"), <<~MD)
+          # Changelog
+          ## [Unreleased]
+          ### Added
+          - item
+          ## [1.2.3] - 2025-08-30
+          - prev
+        MD
+        allow(Kettle::Dev::CIHelpers).to receive_messages(project_root: root, repo_info: ["o", "r"])
+        allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("y\n")
+        cli = described_class.new
+        expect { cli.run }.not_to raise_error
+        updated = File.read(File.join(root, "CHANGELOG.md"))
+        # Should not add another 1.2.3 section
+        expect(updated.scan(/^## \[1\.2\.3\]/).size).to eq(1)
+        # Headings should have blank lines around
+        expect(updated).to match(/# Changelog\n\n## \[Unreleased\]/)
+        expect(updated).to match(/## \[Unreleased\]\n\n### Added/)
       end
     end
 
@@ -478,8 +509,8 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       expect(updated).to include("[gh657]: https://github.com/ruby-oauth/oauth2/pull/657")
       expect(updated).to include("[gh656]: https://github.com/ruby-oauth/oauth2/pull/656")
 
-      # Unreleased section should be reset with headings intact
-      expect(updated).to include("## [Unreleased]\n### Added\n### Changed\n### Deprecated\n### Removed\n### Fixed\n### Security")
+      # Unreleased section should be reset with headings intact and spaced by blank lines
+      expect(updated).to match(/## \[Unreleased\]\n\n### Added\n\n### Changed\n\n### Deprecated\n\n### Removed\n\n### Fixed\n\n### Security/)
     end
   end
 
@@ -522,8 +553,8 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       # Preserve at least one older release section from the vanilla fixture
       expect(updated).to include("## [1.3.3] - 2024-11-08").or include("## [1.3.2] - 2024-11-05")
 
-      # Unreleased section reset with headings intact
-      expect(updated).to include("## [Unreleased]\n### Added\n### Changed\n### Deprecated\n### Removed\n### Fixed\n### Security")
+      # Unreleased section reset with headings intact and spaced by blank lines
+      expect(updated).to match(/## \[Unreleased\]\n\n### Added\n\n### Changed\n\n### Deprecated\n\n### Removed\n\n### Fixed\n\n### Security/)
 
       # Footer should still contain the Unreleased link-ref and include new compare/tag refs for 9.9.9
       expect(updated).to include("[Unreleased]: ")
@@ -567,8 +598,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       expect(updated).to include("- TAG: [v9.9.9][9.9.9t]")
 
       # Unreleased section should be fully reset to all standard subheadings without duplication
-      reset_block = "## [Unreleased]\n### Added\n### Changed\n### Deprecated\n### Removed\n### Fixed\n### Security\n\n## [9.9.9] - 2025-08-30"
-      expect(updated).to include(reset_block)
+      expect(updated).to match(/## \[Unreleased\]\n\n### Added\n\n### Changed\n\n### Deprecated\n\n### Removed\n\n### Fixed\n\n### Security\n\n## \[9\.9\.9\] - 2025-08-30/)
 
       # Ensure footer [Unreleased] link-ref is preserved (fixture uses ...main)
       expect(updated).to include("[Unreleased]: ")
@@ -623,10 +653,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       expect(out).not_to include("[Unreleased]: https://github.com/")
     end
   end
-end
 
-
-RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
   describe "#update_link_refs spacing around footer" do
     it "ensures a blank line before the link-ref block and retains a trailing blank line" do
       cli = described_class.new

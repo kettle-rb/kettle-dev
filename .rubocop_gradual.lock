@@ -13,15 +13,15 @@
     [138, 11, 52, "Style/IdenticalConditionalBranches: Move `preview = status_output.lines.take(10).map(&:rstrip)` out of the conditional.", 311333201],
     [150, 11, 52, "Style/IdenticalConditionalBranches: Move `preview = status_output.lines.take(10).map(&:rstrip)` out of the conditional.", 311333201]
   ],
-  "spec/kettle/dev/changelog_cli_spec.rb:2169839476": [
+  "spec/kettle/dev/changelog_cli_spec.rb:1316407414": [
     [39, 9, 72, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [40].", 1904128172],
     [40, 9, 75, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [39].", 2496915125],
-    [456, 7, 60, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [457].", 1941286627],
-    [457, 7, 71, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [456].", 3274330758],
-    [464, 13, 25, "RSpec/DescribedClass: Use `described_class` instead of `Kettle::Dev::ChangelogCLI`.", 320529073],
-    [506, 7, 60, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [507].", 1941286627],
-    [507, 7, 71, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [506].", 3274330758],
-    [513, 13, 25, "RSpec/DescribedClass: Use `described_class` instead of `Kettle::Dev::ChangelogCLI`.", 320529073]
+    [487, 7, 60, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [488].", 1941286627],
+    [488, 7, 71, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [487].", 3274330758],
+    [495, 13, 25, "RSpec/DescribedClass: Use `described_class` instead of `Kettle::Dev::ChangelogCLI`.", 320529073],
+    [537, 7, 60, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [538].", 1941286627],
+    [538, 7, 71, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [537].", 3274330758],
+    [544, 13, 25, "RSpec/DescribedClass: Use `described_class` instead of `Kettle::Dev::ChangelogCLI`.", 320529073]
   ],
   "spec/kettle/dev/ci_helpers_spec.rb:929910759": [
     [40, 9, 19, "ThreadSafety/DirChdir: Avoid using `Dir.chdir` due to its process-wide effect.", 585207512]
@@ -184,7 +184,7 @@
     [557, 9, 29, "RSpec/AnyInstance: Avoid stubbing using `allow_any_instance_of`.", 440176922],
     [570, 9, 29, "RSpec/AnyInstance: Avoid stubbing using `allow_any_instance_of`.", 440176922]
   ],
-  "spec/kettle/dev/tasks/template_task_spec.rb:4020256355": [
+  "spec/kettle/dev/tasks/template_task_spec.rb:2407385189": [
     [654, 15, 24, "RSpec/ContextWording: Context description should match /^when\\b/, /^with\\b/, or /^without\\b/.", 196765058]
   ],
   "spec/kettle/dev/template_helpers_spec.rb:464503673": [

@@ -18,6 +18,7 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [Unreleased]
 ### Added
+- Allow reformating of CHANGELOG.md without version bump
 - `--include=GLOB` includes files not otherwise included in default template
 - more test coverage
 ### Changed
@@ -25,6 +26,9 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Removed
 ### Fixed
 - Add .licenserc.yaml to gem package
+- Handling of GFM fenced code blocks in CHANGELOG.md
+- Handling of nested list items in CHANGELOG.md
+- Handling of blank lines around all headings in CHANGELOG.md
 ### Security
 
 ## [1.1.19] - 2025-09-14

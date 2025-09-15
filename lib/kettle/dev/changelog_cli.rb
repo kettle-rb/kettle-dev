@@ -24,9 +24,22 @@ module Kettle
 
         changelog = File.read(@changelog_path)
 
-        # If the detected version already exists in the changelog, abort to avoid duplicates
+        # If the detected version already exists in the changelog, offer reformat-only mode
         if changelog =~ /^## \[#{Regexp.escape(version)}\]/
-          abort("CHANGELOG.md already has a section for version #{version}. Bump version.rb or remove the duplicate.")
+          warn("CHANGELOG.md already has a section for version #{version}.")
+          warn("It appears the version has not been bumped. You can reformat CHANGELOG.md without adding a new release section.")
+          print("Proceed with reformat only? [y/N]: ")
+          ans = Kettle::Dev::InputAdapter.gets&.strip&.downcase
+          if ans == "y" || ans == "yes"
+            updated = normalize_heading_spacing(changelog)
+            updated = ensure_footer_spacing(updated)
+            updated = updated.rstrip + "\n"
+            File.write(@changelog_path, updated)
+            puts "CHANGELOG.md reformatted. No new version section added."
+            return
+          else
+            abort("Aborting: version not bumped. Re-run after bumping version or answer 'y' to reformat-only.")
+          end
         end
 
         unreleased_block, before, after = extract_unreleased(changelog)
@@ -85,6 +98,9 @@ module Kettle
         end
 
         updated = update_link_refs(updated, owner, repo, prev_version, version)
+
+        # Normalize spacing around headings to aid Markdown renderers
+        updated = normalize_heading_spacing(updated)
 
         # Ensure exactly one trailing newline at EOF
         updated = updated.rstrip + "\n"
@@ -347,6 +363,62 @@ module Kettle
         end
         rebuilt = head + new_ref_block + ["\n"]
         rebuilt.join
+      end
+
+      # Ensure every Markdown atx-style heading line (e.g., "# ", "## ") has exactly one blank line
+      # before and after it, skipping content inside fenced code blocks.
+      def normalize_heading_spacing(text)
+        lines = text.split("\n", -1)
+        out = []
+        in_fence = false
+        fence_re = /^\s*```/
+        heading_re = /^\s*#+\s+.+/
+        lines.each_with_index do |ln, idx|
+          if ln =~ fence_re
+            in_fence = !in_fence
+            out << ln
+            next
+          end
+          if !in_fence && ln =~ heading_re
+            # Ensure previous line is blank (unless start of file or already blank)
+            prev_blank = out.empty? ? false : out.last.to_s.strip == ""
+            out << "" unless out.empty? || prev_blank
+            out << ln
+            # Peek at next line in source to decide if we need to inject a blank now.
+            nxt = lines[idx + 1]
+            out << "" unless nxt.to_s.strip == ""
+          else
+            out << ln
+          end
+        end
+        # Collapse multiple consecutive blank lines down to a single between regions that our logic might have doubled
+        collapsed = []
+        lines_enum = out
+        lines_enum.each do |l|
+          if l.strip == "" && collapsed.last.to_s.strip == ""
+            next
+          end
+          collapsed << l
+        end
+        collapsed.join("\n")
+      end
+
+      def ensure_footer_spacing(text)
+        lines = text.split("\n", -1)
+        # Find the Unreleased link-ref which denotes start of footer refs
+        idx = lines.index { |l| l.start_with?(UNRELEASED_SECTION_HEADING) }
+        return text unless idx
+        head = lines[0...idx]
+        tail = lines[idx..-1]
+        # Ensure exactly one blank line between body and refs
+        if head.any? && head.last.to_s.strip != ""
+          head << ""
+        elsif head.any? && head.last.to_s.strip == "" && head[-2].to_s.strip == ""
+          # Collapse multiple blanks before footer to a single
+          head.pop while head.any? && head.last.to_s.strip == ""
+          head << ""
+        end
+        (head + tail).join("\n")
       end
 
       def detect_initial_compare_base(lines)

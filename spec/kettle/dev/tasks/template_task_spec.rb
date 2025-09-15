@@ -773,12 +773,40 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
               expect(result.scan(/^### #{h}$/).size).to eq(1)
             end
             # Preserved items, including nested sub-bullets and their indentation
-            expect(result).to include("### Added\n- kettle-dev v1.1.18")
+            expect(result).to include("### Added\n\n- kettle-dev v1.1.18")
             expect(result).to include("- Internal escape & unescape methods")
             expect(result).to include("  - Stop relying on URI / CGI for escaping and unescaping")
             expect(result).to include("  - They are both unstable across supported versions of Ruby (including 3.5 HEAD)")
             expect(result).to include("- keep me")
-            expect(result).to include("### Fixed\n- also keep me")
+            expect(result).to include("### Fixed\n\n- also keep me")
+          end
+        end
+      end
+
+      it "ensures blank lines before and after headings in CHANGELOG.md" do
+        Dir.mktmpdir do |gem_root|
+          Dir.mktmpdir do |project_root|
+            File.write(File.join(gem_root, "CHANGELOG.md.example"), <<~MD)
+              # Changelog
+              ## [Unreleased]
+              ### Added
+              ### Changed
+
+              ## [0.1.0] - 2020-01-01
+              - initial
+            MD
+            File.write(File.join(project_root, "demo.gemspec"), "Gem::Specification.new{|s| s.name='demo'; s.homepage='https://github.com/acme/demo'}\n")
+            allow(helpers).to receive_messages(project_root: project_root, gem_checkout_root: gem_root, ensure_clean_git!: nil, ask: true)
+
+            described_class.run
+
+            content = File.read(File.join(project_root, "CHANGELOG.md"))
+            # Expect blank line after H1 and before the next heading
+            expect(content).to match(/# Changelog\n\n## \[Unreleased\]/)
+            # Expect blank line after Unreleased and before the first subheading
+            expect(content).to match(/## \[Unreleased\]\n\n### Added/)
+            # Expect blank line between consecutive subheadings
+            expect(content).to match(/### Added\n\n### Changed/)
           end
         end
       end
