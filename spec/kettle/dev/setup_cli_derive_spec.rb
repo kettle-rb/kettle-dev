@@ -14,10 +14,12 @@ RSpec.describe Kettle::Dev::SetupCLI do
       ENV.delete("FUNDING_ORG")
       ENV.delete("OPENCOLLECTIVE_HANDLE")
     end
+
     after do
       ENV.delete("FUNDING_ORG")
       ENV.delete("OPENCOLLECTIVE_HANDLE")
     end
+
     around do |ex|
       Dir.mktmpdir do |dir|
         Dir.chdir(dir) { ex.run }
@@ -61,7 +63,9 @@ RSpec.describe Kettle::Dev::SetupCLI do
 
     it "uses remotes_with_urls when remote_url is unavailable and sets FUNDING_ORG from origin" do
       fake_ga = Object.new
-      def fake_ga.respond_to?(m); m == :remotes_with_urls; end
+      def fake_ga.respond_to?(m)
+        m == :remotes_with_urls
+      end
       allow(fake_ga).to receive(:remotes_with_urls).and_return({"origin" => "https://github.com/example/repo.git"})
       allow(Kettle::Dev::GitAdapter).to receive(:new).and_return(fake_ga)
 
@@ -74,7 +78,9 @@ RSpec.describe Kettle::Dev::SetupCLI do
     it "logs debug when remotes_with_urls raises and otherwise continues silently", :check_output do
       stub_env("DEBUG" => "true")
       fake_ga = Object.new
-      def fake_ga.respond_to?(m); m == :remotes_with_urls; end
+      def fake_ga.respond_to?(m)
+        m == :remotes_with_urls
+      end
       allow(fake_ga).to receive(:remotes_with_urls).and_raise(StandardError, "bad remote")
       allow(Kettle::Dev::GitAdapter).to receive(:new).and_return(fake_ga)
 

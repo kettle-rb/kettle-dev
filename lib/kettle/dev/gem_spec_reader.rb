@@ -106,16 +106,22 @@ module Kettle
             if funding_org_env && funding_org_env.to_s.strip.casecmp("false").zero?
               funding_org = nil
             else
-              funding_org = ENV["OPENCOLLECTIVE_HANDLE"].to_s.strip if funding_org.empty?
-              if funding_org.to_s.empty?
-                oc_path = File.join(root.to_s, ".opencollective.yml")
-                if File.file?(oc_path)
-                  txt = File.read(oc_path)
-                  if (m = txt.match(/\borg:\s*([\w\-]+)/i))
-                    funding_org = m[1].to_s
-                  end
+              # Prefer .opencollective.yml when present so that specs forcing the file path are stable
+              oc_path = File.join(root.to_s, ".opencollective.yml")
+              if File.file?(oc_path)
+                txt = File.read(oc_path)
+                funding_org = if (m = txt.match(/\borg:\s*([\w\-]+)/i))
+                  m[1].to_s
+                else
+                  ""
                 end
               end
+
+              # Fallback to ENV when file not present or did not contain an org
+              if funding_org.to_s.strip.empty?
+                funding_org = ENV["OPENCOLLECTIVE_HANDLE"].to_s.strip if funding_org.empty?
+              end
+
               # Be lenient: if funding_org cannot be determined, do not raise — leave it nil and warn.
               if funding_org.to_s.empty?
                 Kernel.warn("kettle-dev: Could not determine funding org.\n  - Options:\n    * Set ENV['FUNDING_ORG'] to your funding handle (e.g., 'opencollective-handle').\n    * Or set ENV['OPENCOLLECTIVE_HANDLE'].\n    * Or add .opencollective.yml with: org: <handle>\n    * Or bypass by setting ENV['FUNDING_ORG']=false for gems without funding.")

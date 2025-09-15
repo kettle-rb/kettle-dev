@@ -101,15 +101,10 @@ RSpec.describe Kettle::Dev::SetupCLI do
 
     it "uses Open3 path when GitAdapter constant is removed (else branch)", :check_output do
       %x(git init -q)
-      original = Kettle::Dev.const_get(:GitAdapter)
-      Kettle::Dev.send(:remove_const, :GitAdapter)
-      begin
-        allow(Open3).to receive(:capture2).with("git", "status", "--porcelain").and_return(["", instance_double(Process::Status)])
-        cli = described_class.allocate
-        expect { cli.send(:commit_bootstrap_changes!) }.to output(/No changes to commit/).to_stdout
-      ensure
-        Kettle::Dev.const_set(:GitAdapter, original)
-      end
+      hide_const("Kettle::Dev::GitAdapter")
+      allow(Open3).to receive(:capture2).with("git", "status", "--porcelain").and_return(["", instance_double(Process::Status)])
+      cli = described_class.allocate
+      expect { cli.send(:commit_bootstrap_changes!) }.to output(/No changes to commit/).to_stdout
     end
   end
 end
