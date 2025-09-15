@@ -128,6 +128,29 @@ for testability. The rake task should only call this method.</p>
         <li class="public ">
   <span class="summary_signature">
     
+      <a href="#normalize_heading_spacing-class_method" title="normalize_heading_spacing (class method)">.<strong>normalize_heading_spacing</strong>(text)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Ensure every Markdown atx-style heading line has exactly one blank line before and after, skipping content inside fenced code blocks.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
       <a href="#run-class_method" title="run (class method)">.<strong>run</strong>  &#x21d2; Object </a>
     
 
@@ -181,9 +204,9 @@ for testability. The rake task should only call this method.</p>
 
     
       <div class="method_details first">
-  <h3 class="signature first" id="run-class_method">
+  <h3 class="signature first" id="normalize_heading_spacing-class_method">
   
-    .<strong>run</strong>  &#x21d2; <tt>Object</tt> 
+    .<strong>normalize_heading_spacing</strong>(text)  &#x21d2; <tt>Object</tt> 
   
 
   
@@ -191,8 +214,8 @@ for testability. The rake task should only call this method.</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Execute the template operation into the current project.<br />
-All options/IO are controlled via TemplateHelpers and ENV.</p>
+    <p>Ensure every Markdown atx-style heading line has exactly one blank line<br />
+before and after, skipping content inside fenced code blocks.</p>
 
 
   </div>
@@ -206,6 +229,11 @@ All options/IO are controlled via TemplateHelpers and ENV.</p>
       <pre class="lines">
 
 
+15
+16
+17
+18
+19
 20
 21
 22
@@ -232,15 +260,74 @@ All options/IO are controlled via TemplateHelpers and ENV.</p>
 43
 44
 45
-46
-47
-48
-49
-50
-51
-52
-53
-54
+46</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/tasks/template_task.rb', line 15</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_normalize_heading_spacing'>normalize_heading_spacing</span><span class='lparen'>(</span><span class='id identifier rubyid_text'>text</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_lines'>lines</span> <span class='op'>=</span> <span class='id identifier rubyid_text'>text</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='op'>-</span><span class='int'>1</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_out'>out</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+  <span class='id identifier rubyid_in_fence'>in_fence</span> <span class='op'>=</span> <span class='kw'>false</span>
+  <span class='id identifier rubyid_fence_re'>fence_re</span> <span class='op'>=</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^\s*```</span><span class='regexp_end'>/</span></span>
+  <span class='id identifier rubyid_heading_re'>heading_re</span> <span class='op'>=</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^\s*#+\s+.+</span><span class='regexp_end'>/</span></span>
+  <span class='id identifier rubyid_lines'>lines</span><span class='period'>.</span><span class='id identifier rubyid_each_with_index'>each_with_index</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_ln'>ln</span><span class='comma'>,</span> <span class='id identifier rubyid_idx'>idx</span><span class='op'>|</span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_ln'>ln</span> <span class='op'>=~</span> <span class='id identifier rubyid_fence_re'>fence_re</span>
+      <span class='id identifier rubyid_in_fence'>in_fence</span> <span class='op'>=</span> <span class='op'>!</span><span class='id identifier rubyid_in_fence'>in_fence</span>
+      <span class='id identifier rubyid_out'>out</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_ln'>ln</span>
+      <span class='kw'>next</span>
+    <span class='kw'>end</span>
+    <span class='kw'>if</span> <span class='op'>!</span><span class='id identifier rubyid_in_fence'>in_fence</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_ln'>ln</span> <span class='op'>=~</span> <span class='id identifier rubyid_heading_re'>heading_re</span>
+      <span class='id identifier rubyid_prev_blank'>prev_blank</span> <span class='op'>=</span> <span class='id identifier rubyid_out'>out</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span> <span class='op'>?</span> <span class='kw'>false</span> <span class='op'>:</span> <span class='id identifier rubyid_out'>out</span><span class='period'>.</span><span class='id identifier rubyid_last'>last</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span>
+      <span class='id identifier rubyid_out'>out</span> <span class='op'>&lt;&lt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_out'>out</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span> <span class='op'>||</span> <span class='id identifier rubyid_prev_blank'>prev_blank</span>
+      <span class='id identifier rubyid_out'>out</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_ln'>ln</span>
+      <span class='id identifier rubyid_nxt'>nxt</span> <span class='op'>=</span> <span class='id identifier rubyid_lines'>lines</span><span class='lbracket'>[</span><span class='id identifier rubyid_idx'>idx</span> <span class='op'>+</span> <span class='int'>1</span><span class='rbracket'>]</span>
+      <span class='id identifier rubyid_out'>out</span> <span class='op'>&lt;&lt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_nxt'>nxt</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span>
+    <span class='kw'>else</span>
+      <span class='id identifier rubyid_out'>out</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_ln'>ln</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+  <span class='comment'># Collapse accidental multiple blanks
+</span>  <span class='id identifier rubyid_collapsed'>collapsed</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+  <span class='id identifier rubyid_out'>out</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_l'>l</span><span class='op'>|</span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_l'>l</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_collapsed'>collapsed</span><span class='period'>.</span><span class='id identifier rubyid_last'>last</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span>
+      <span class='kw'>next</span>
+    <span class='kw'>end</span>
+    <span class='id identifier rubyid_collapsed'>collapsed</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_l'>l</span>
+  <span class='kw'>end</span>
+  <span class='id identifier rubyid_collapsed'>collapsed</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="run-class_method">
+  
+    .<strong>run</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Execute the template operation into the current project.<br />
+All options/IO are controlled via TemplateHelpers and ENV.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
 55
 56
 57
@@ -1063,10 +1150,133 @@ All options/IO are controlled via TemplateHelpers and ENV.</p>
 874
 875
 876
-877</pre>
+877
+878
+879
+880
+881
+882
+883
+884
+885
+886
+887
+888
+889
+890
+891
+892
+893
+894
+895
+896
+897
+898
+899
+900
+901
+902
+903
+904
+905
+906
+907
+908
+909
+910
+911
+912
+913
+914
+915
+916
+917
+918
+919
+920
+921
+922
+923
+924
+925
+926
+927
+928
+929
+930
+931
+932
+933
+934
+935
+936
+937
+938
+939
+940
+941
+942
+943
+944
+945
+946
+947
+948
+949
+950
+951
+952
+953
+954
+955
+956
+957
+958
+959
+960
+961
+962
+963
+964
+965
+966
+967
+968
+969
+970
+971
+972
+973
+974
+975
+976
+977
+978
+979
+980
+981
+982
+983
+984
+985
+986
+987
+988
+989
+990
+991
+992
+993
+994
+995
+996
+997
+998
+999
+1000</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/tasks/template_task.rb', line 20</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/tasks/template_task.rb', line 55</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_run'>run</span>
   <span class='comment'># Inline the former rake task body, but using helpers directly.
@@ -1108,11 +1318,48 @@ All options/IO are controlled via TemplateHelpers and ENV.</p>
         <span class='id identifier rubyid_selected'>selected</span><span class='lbracket'>[</span><span class='id identifier rubyid_key'>key</span><span class='rbracket'>]</span> <span class='op'>||=</span> <span class='id identifier rubyid_path'>path</span>
       <span class='kw'>end</span>
     <span class='kw'>end</span>
+    <span class='comment'># Parse optional include patterns (comma-separated globs relative to project root)
+</span>    <span class='id identifier rubyid_include_raw'>include_raw</span> <span class='op'>=</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>include</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
+    <span class='id identifier rubyid_include_patterns'>include_patterns</span> <span class='op'>=</span> <span class='id identifier rubyid_include_raw'>include_raw</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>,</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_s'>s</span><span class='op'>|</span> <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_reject'>reject</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:empty?</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_matches_include'>matches_include</span> <span class='op'>=</span> <span class='id identifier rubyid_lambda'>lambda</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_abs_dest'>abs_dest</span><span class='op'>|</span>
+      <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>if</span> <span class='id identifier rubyid_include_patterns'>include_patterns</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+      <span class='kw'>begin</span>
+        <span class='id identifier rubyid_rel_dest'>rel_dest</span> <span class='op'>=</span> <span class='id identifier rubyid_abs_dest'>abs_dest</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
+        <span class='id identifier rubyid_proj'>proj</span> <span class='op'>=</span> <span class='id identifier rubyid_project_root'>project_root</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
+        <span class='kw'>if</span> <span class='id identifier rubyid_rel_dest'>rel_dest</span><span class='period'>.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='id identifier rubyid_proj'>proj</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+          <span class='id identifier rubyid_rel_dest'>rel_dest</span> <span class='op'>=</span> <span class='id identifier rubyid_rel_dest'>rel_dest</span><span class='lbracket'>[</span><span class='lparen'>(</span><span class='id identifier rubyid_proj'>proj</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span> <span class='op'>+</span> <span class='int'>1</span><span class='rparen'>)</span><span class='op'>..</span><span class='op'>-</span><span class='int'>1</span><span class='rbracket'>]</span>
+        <span class='kw'>elsif</span> <span class='id identifier rubyid_rel_dest'>rel_dest</span> <span class='op'>==</span> <span class='id identifier rubyid_proj'>proj</span>
+          <span class='id identifier rubyid_rel_dest'>rel_dest</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span>
+        <span class='kw'>end</span>
+        <span class='id identifier rubyid_include_patterns'>include_patterns</span><span class='period'>.</span><span class='id identifier rubyid_any?'>any?</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_pat'>pat</span><span class='op'>|</span>
+          <span class='kw'>if</span> <span class='id identifier rubyid_pat'>pat</span><span class='period'>.</span><span class='id identifier rubyid_end_with?'>end_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/**</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+            <span class='id identifier rubyid_base'>base</span> <span class='op'>=</span> <span class='id identifier rubyid_pat'>pat</span><span class='lbracket'>[</span><span class='int'>0</span><span class='op'>..</span><span class='op'>-</span><span class='int'>4</span><span class='rbracket'>]</span>
+            <span class='id identifier rubyid_rel_dest'>rel_dest</span> <span class='op'>==</span> <span class='id identifier rubyid_base'>base</span> <span class='op'>||</span> <span class='id identifier rubyid_rel_dest'>rel_dest</span><span class='period'>.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='id identifier rubyid_base'>base</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+          <span class='kw'>else</span>
+            <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_fnmatch?'>fnmatch?</span><span class='lparen'>(</span><span class='id identifier rubyid_pat'>pat</span><span class='comma'>,</span> <span class='id identifier rubyid_rel_dest'>rel_dest</span><span class='comma'>,</span> <span class='const'>File</span><span class='op'>::</span><span class='const'>FNM_PATHNAME</span> <span class='op'>|</span> <span class='const'>File</span><span class='op'>::</span><span class='const'>FNM_EXTGLOB</span> <span class='op'>|</span> <span class='const'>File</span><span class='op'>::</span><span class='const'>FNM_DOTMATCH</span><span class='rparen'>)</span>
+          <span class='kw'>end</span>
+        <span class='kw'>end</span>
+      <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+        <span class='const'><span class='object_link'><a href="../../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_error'><span class='object_link'><a href="../../Dev.html#debug_error-class_method" title="Kettle::Dev.debug_error (method)">debug_error</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span>
+        <span class='kw'>false</span>
+      <span class='kw'>end</span>
+    <span class='kw'>end</span>
+
     <span class='id identifier rubyid_selected'>selected</span><span class='period'>.</span><span class='id identifier rubyid_values'>values</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_orig_src'>orig_src</span><span class='op'>|</span>
       <span class='id identifier rubyid_src'>src</span> <span class='op'>=</span> <span class='id identifier rubyid_helpers'>helpers</span><span class='period'>.</span><span class='id identifier rubyid_prefer_example'>prefer_example</span><span class='lparen'>(</span><span class='id identifier rubyid_orig_src'>orig_src</span><span class='rparen'>)</span>
       <span class='comment'># Destination path should never include the .example suffix.
 </span>      <span class='id identifier rubyid_rel'>rel</span> <span class='op'>=</span> <span class='id identifier rubyid_orig_src'>orig_src</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^</span><span class='embexpr_beg'>#{</span><span class='const'>Regexp</span><span class='period'>.</span><span class='id identifier rubyid_escape'>escape</span><span class='lparen'>(</span><span class='id identifier rubyid_gem_checkout_root'>gem_checkout_root</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'>\/?</span><span class='regexp_end'>/</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\.example\z</span><span class='regexp_end'>/</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
       <span class='id identifier rubyid_dest'>dest</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_project_root'>project_root</span><span class='comma'>,</span> <span class='id identifier rubyid_rel'>rel</span><span class='rparen'>)</span>
+
+      <span class='comment'># Optional file: .github/workflows/discord-notifier.yml should NOT be copied by default.
+</span>      <span class='comment'># Only copy when --include matches it.
+</span>      <span class='kw'>if</span> <span class='id identifier rubyid_rel'>rel</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>.github/workflows/discord-notifier.yml</span><span class='tstring_end'>&quot;</span></span>
+        <span class='kw'>unless</span> <span class='id identifier rubyid_matches_include'>matches_include</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_dest'>dest</span><span class='rparen'>)</span>
+          <span class='comment'># Explicitly skip without prompting
+</span>          <span class='kw'>next</span>
+        <span class='kw'>end</span>
+      <span class='kw'>end</span>
+
       <span class='kw'>if</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_basename'>basename</span><span class='lparen'>(</span><span class='id identifier rubyid_rel'>rel</span><span class='rparen'>)</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>FUNDING.yml</span><span class='tstring_end'>&quot;</span></span>
         <span class='id identifier rubyid_helpers'>helpers</span><span class='period'>.</span><span class='id identifier rubyid_copy_file_with_prompt'>copy_file_with_prompt</span><span class='lparen'>(</span><span class='id identifier rubyid_src'>src</span><span class='comma'>,</span> <span class='id identifier rubyid_dest'>dest</span><span class='comma'>,</span> <span class='label'>allow_create:</span> <span class='kw'>true</span><span class='comma'>,</span> <span class='label'>allow_replace:</span> <span class='kw'>true</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_content'>content</span><span class='op'>|</span>
           <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='id identifier rubyid_content'>content</span><span class='period'>.</span><span class='id identifier rubyid_dup'>dup</span>
@@ -1650,14 +1897,63 @@ All options/IO are controlled via TemplateHelpers and ENV.</p>
               <span class='id identifier rubyid_parse_items'>parse_items</span> <span class='op'>=</span> <span class='id identifier rubyid_lambda'>lambda</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_body_lines'>body_lines</span><span class='op'>|</span>
                 <span class='id identifier rubyid_result'>result</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
                 <span class='id identifier rubyid_cur'>cur</span> <span class='op'>=</span> <span class='kw'>nil</span>
-                <span class='id identifier rubyid_body_lines'>body_lines</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_ln'>ln</span><span class='op'>|</span>
+                <span class='id identifier rubyid_i'>i</span> <span class='op'>=</span> <span class='int'>0</span>
+                <span class='kw'>while</span> <span class='id identifier rubyid_i'>i</span> <span class='op'>&lt;</span> <span class='id identifier rubyid_body_lines'>body_lines</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span>
+                  <span class='id identifier rubyid_ln'>ln</span> <span class='op'>=</span> <span class='id identifier rubyid_body_lines'>body_lines</span><span class='lbracket'>[</span><span class='id identifier rubyid_i'>i</span><span class='rbracket'>]</span>
                   <span class='kw'>if</span> <span class='id identifier rubyid_ln'>ln</span><span class='period'>.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>### </span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
                     <span class='id identifier rubyid_cur'>cur</span> <span class='op'>=</span> <span class='id identifier rubyid_ln'>ln</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span>
                     <span class='id identifier rubyid_result'>result</span><span class='lbracket'>[</span><span class='id identifier rubyid_cur'>cur</span><span class='rbracket'>]</span> <span class='op'>||=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
-                  <span class='kw'>elsif</span> <span class='id identifier rubyid_ln'>ln</span><span class='period'>.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>- </span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-                    <span class='id identifier rubyid_result'>result</span><span class='lbracket'>[</span><span class='id identifier rubyid_cur'>cur</span><span class='rbracket'>]</span> <span class='op'>||=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
-                    <span class='id identifier rubyid_result'>result</span><span class='lbracket'>[</span><span class='id identifier rubyid_cur'>cur</span><span class='rbracket'>]</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_ln'>ln</span><span class='period'>.</span><span class='id identifier rubyid_rstrip'>rstrip</span>
+                    <span class='id identifier rubyid_i'>i</span> <span class='op'>+=</span> <span class='int'>1</span>
+                    <span class='kw'>next</span>
                   <span class='kw'>end</span>
+
+                  <span class='comment'># Detect a list item bullet (allow optional indentation)
+</span>                  <span class='kw'>if</span> <span class='lparen'>(</span><span class='id identifier rubyid_m'>m</span> <span class='op'>=</span> <span class='id identifier rubyid_ln'>ln</span><span class='period'>.</span><span class='id identifier rubyid_match'>match</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^(\s*)[-*]\s</span><span class='regexp_end'>/</span></span><span class='rparen'>)</span><span class='rparen'>)</span>
+                    <span class='id identifier rubyid_result'>result</span><span class='lbracket'>[</span><span class='id identifier rubyid_cur'>cur</span><span class='rbracket'>]</span> <span class='op'>||=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+                    <span class='id identifier rubyid_base_indent'>base_indent</span> <span class='op'>=</span> <span class='id identifier rubyid_m'>m</span><span class='lbracket'>[</span><span class='int'>1</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span>
+                    <span class='comment'># Start a new item: include the bullet line
+</span>                    <span class='id identifier rubyid_result'>result</span><span class='lbracket'>[</span><span class='id identifier rubyid_cur'>cur</span><span class='rbracket'>]</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_ln'>ln</span><span class='period'>.</span><span class='id identifier rubyid_rstrip'>rstrip</span>
+                    <span class='id identifier rubyid_i'>i</span> <span class='op'>+=</span> <span class='int'>1</span>
+
+                    <span class='comment'># Include subsequent lines that belong to this list item:
+</span>                    <span class='comment'># - blank lines
+</span>                    <span class='comment'># - lines with indentation greater than the bullet&#39;s indentation
+</span>                    <span class='comment'># - any lines inside fenced code blocks (```), regardless of indentation until fence closes
+</span>                    <span class='id identifier rubyid_in_fence'>in_fence</span> <span class='op'>=</span> <span class='kw'>false</span>
+                    <span class='id identifier rubyid_fence_re'>fence_re</span> <span class='op'>=</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^\s*```</span><span class='regexp_end'>/</span></span>
+                    <span class='kw'>while</span> <span class='id identifier rubyid_i'>i</span> <span class='op'>&lt;</span> <span class='id identifier rubyid_body_lines'>body_lines</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span>
+                      <span class='id identifier rubyid_l2'>l2</span> <span class='op'>=</span> <span class='id identifier rubyid_body_lines'>body_lines</span><span class='lbracket'>[</span><span class='id identifier rubyid_i'>i</span><span class='rbracket'>]</span>
+                      <span class='comment'># Stop if next sibling/top-level bullet of same or smaller indent and not inside a fence
+</span>                      <span class='kw'>if</span> <span class='op'>!</span><span class='id identifier rubyid_in_fence'>in_fence</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_l2'>l2</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^(\s*)[-*]\s</span><span class='regexp_end'>/</span></span>
+                        <span class='id identifier rubyid_ind'>ind</span> <span class='op'>=</span> <span class='const'>Regexp</span><span class='period'>.</span><span class='id identifier rubyid_last_match'>last_match</span><span class='lparen'>(</span><span class='int'>1</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span>
+                        <span class='kw'>break</span> <span class='kw'>if</span> <span class='id identifier rubyid_ind'>ind</span> <span class='op'>&lt;=</span> <span class='id identifier rubyid_base_indent'>base_indent</span>
+                      <span class='kw'>end</span>
+                      <span class='comment'># Break if a new section heading appears and we&#39;re not in a fence
+</span>                      <span class='kw'>break</span> <span class='kw'>if</span> <span class='op'>!</span><span class='id identifier rubyid_in_fence'>in_fence</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_l2'>l2</span><span class='period'>.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>### </span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+
+                      <span class='kw'>if</span> <span class='id identifier rubyid_l2'>l2</span> <span class='op'>=~</span> <span class='id identifier rubyid_fence_re'>fence_re</span>
+                        <span class='id identifier rubyid_in_fence'>in_fence</span> <span class='op'>=</span> <span class='op'>!</span><span class='id identifier rubyid_in_fence'>in_fence</span>
+                        <span class='id identifier rubyid_result'>result</span><span class='lbracket'>[</span><span class='id identifier rubyid_cur'>cur</span><span class='rbracket'>]</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_l2'>l2</span><span class='period'>.</span><span class='id identifier rubyid_rstrip'>rstrip</span>
+                        <span class='id identifier rubyid_i'>i</span> <span class='op'>+=</span> <span class='int'>1</span>
+                        <span class='kw'>next</span>
+                      <span class='kw'>end</span>
+
+                      <span class='comment'># Include blanks and lines indented more than base indent, or anything while in fence
+</span>                      <span class='kw'>if</span> <span class='id identifier rubyid_in_fence'>in_fence</span> <span class='op'>||</span> <span class='id identifier rubyid_l2'>l2</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span> <span class='op'>||</span> <span class='lparen'>(</span><span class='id identifier rubyid_l2'>l2</span><span class='lbracket'>[</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^\s*</span><span class='regexp_end'>/</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span> <span class='op'>&gt;</span> <span class='id identifier rubyid_base_indent'>base_indent</span><span class='rparen'>)</span>
+                        <span class='id identifier rubyid_result'>result</span><span class='lbracket'>[</span><span class='id identifier rubyid_cur'>cur</span><span class='rbracket'>]</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_l2'>l2</span><span class='period'>.</span><span class='id identifier rubyid_rstrip'>rstrip</span>
+                        <span class='id identifier rubyid_i'>i</span> <span class='op'>+=</span> <span class='int'>1</span>
+                        <span class='kw'>next</span>
+                      <span class='kw'>end</span>
+
+                      <span class='comment'># Otherwise, this line does not belong to the current list item
+</span>                      <span class='kw'>break</span>
+                    <span class='kw'>end</span>
+
+                    <span class='kw'>next</span>
+                  <span class='kw'>end</span>
+
+                  <span class='comment'># Non-bullet, non-heading line: just advance
+</span>                  <span class='id identifier rubyid_i'>i</span> <span class='op'>+=</span> <span class='int'>1</span>
                 <span class='kw'>end</span>
                 <span class='id identifier rubyid_result'>result</span>
               <span class='kw'>end</span>
@@ -1715,6 +2011,8 @@ All options/IO are controlled via TemplateHelpers and ENV.</p>
             <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='id identifier rubyid_lines'>lines</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
           <span class='kw'>end</span>
         <span class='kw'>end</span>
+        <span class='comment'># Normalize spacing around Markdown headings for broad renderer compatibility
+</span>        <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='id identifier rubyid_normalize_heading_spacing'>normalize_heading_spacing</span><span class='lparen'>(</span><span class='id identifier rubyid_c'>c</span><span class='rparen'>)</span>
         <span class='id identifier rubyid_c'>c</span>
       <span class='kw'>end</span>
     <span class='kw'>else</span>
@@ -1969,12 +2267,12 @@ All options/IO are controlled via TemplateHelpers and ENV.</p>
       <pre class="lines">
 
 
-14
-15
-16</pre>
+49
+50
+51</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/tasks/template_task.rb', line 14</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/tasks/template_task.rb', line 49</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_task_abort'>task_abort</span><span class='lparen'>(</span><span class='id identifier rubyid_msg'>msg</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Error.html" title="Kettle::Dev::Error (class)">Error</a></span></span><span class='comma'>,</span> <span class='id identifier rubyid_msg'>msg</span>
@@ -1989,7 +2287,7 @@ All options/IO are controlled via TemplateHelpers and ENV.</p>
 </div>
 
       <div id="footer">
-  Generated on Sun Sep 14 07:10:02 2025 by
+  Generated on Mon Sep 15 05:47:24 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

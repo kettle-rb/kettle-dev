@@ -391,7 +391,13 @@ The reader is lenient: failures to load or missing fields are handled with defau
 151
 152
 153
-154</pre>
+154
+155
+156
+157
+158
+159
+160</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/kettle/dev/gem_spec_reader.rb', line 41</span>
@@ -464,16 +470,22 @@ The reader is lenient: failures to load or missing fields are handled with defau
 </span>    <span class='kw'>if</span> <span class='id identifier rubyid_funding_org_env'>funding_org_env</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_funding_org_env'>funding_org_env</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_casecmp'>casecmp</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>false</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_zero?'>zero?</span>
       <span class='id identifier rubyid_funding_org'>funding_org</span> <span class='op'>=</span> <span class='kw'>nil</span>
     <span class='kw'>else</span>
-      <span class='id identifier rubyid_funding_org'>funding_org</span> <span class='op'>=</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>OPENCOLLECTIVE_HANDLE</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span> <span class='kw'>if</span> <span class='id identifier rubyid_funding_org'>funding_org</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
-      <span class='kw'>if</span> <span class='id identifier rubyid_funding_org'>funding_org</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
-        <span class='id identifier rubyid_oc_path'>oc_path</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>.opencollective.yml</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-        <span class='kw'>if</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_file?'>file?</span><span class='lparen'>(</span><span class='id identifier rubyid_oc_path'>oc_path</span><span class='rparen'>)</span>
-          <span class='id identifier rubyid_txt'>txt</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='lparen'>(</span><span class='id identifier rubyid_oc_path'>oc_path</span><span class='rparen'>)</span>
-          <span class='kw'>if</span> <span class='lparen'>(</span><span class='id identifier rubyid_m'>m</span> <span class='op'>=</span> <span class='id identifier rubyid_txt'>txt</span><span class='period'>.</span><span class='id identifier rubyid_match'>match</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\borg:\s*([\w\-]+)</span><span class='regexp_end'>/i</span></span><span class='rparen'>)</span><span class='rparen'>)</span>
-            <span class='id identifier rubyid_funding_org'>funding_org</span> <span class='op'>=</span> <span class='id identifier rubyid_m'>m</span><span class='lbracket'>[</span><span class='int'>1</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
-          <span class='kw'>end</span>
+      <span class='comment'># Prefer .opencollective.yml when present so that specs forcing the file path are stable
+</span>      <span class='id identifier rubyid_oc_path'>oc_path</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>.opencollective.yml</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+      <span class='kw'>if</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_file?'>file?</span><span class='lparen'>(</span><span class='id identifier rubyid_oc_path'>oc_path</span><span class='rparen'>)</span>
+        <span class='id identifier rubyid_txt'>txt</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='lparen'>(</span><span class='id identifier rubyid_oc_path'>oc_path</span><span class='rparen'>)</span>
+        <span class='id identifier rubyid_funding_org'>funding_org</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='lparen'>(</span><span class='id identifier rubyid_m'>m</span> <span class='op'>=</span> <span class='id identifier rubyid_txt'>txt</span><span class='period'>.</span><span class='id identifier rubyid_match'>match</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\borg:\s*([\w\-]+)</span><span class='regexp_end'>/i</span></span><span class='rparen'>)</span><span class='rparen'>)</span>
+          <span class='id identifier rubyid_m'>m</span><span class='lbracket'>[</span><span class='int'>1</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
+        <span class='kw'>else</span>
+          <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span>
         <span class='kw'>end</span>
       <span class='kw'>end</span>
+
+      <span class='comment'># Fallback to ENV when file not present or did not contain an org
+</span>      <span class='kw'>if</span> <span class='id identifier rubyid_funding_org'>funding_org</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+        <span class='id identifier rubyid_funding_org'>funding_org</span> <span class='op'>=</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>OPENCOLLECTIVE_HANDLE</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span> <span class='kw'>if</span> <span class='id identifier rubyid_funding_org'>funding_org</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+      <span class='kw'>end</span>
+
       <span class='comment'># Be lenient: if funding_org cannot be determined, do not raise — leave it nil and warn.
 </span>      <span class='kw'>if</span> <span class='id identifier rubyid_funding_org'>funding_org</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
         <span class='const'>Kernel</span><span class='period'>.</span><span class='id identifier rubyid_warn'>warn</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>kettle-dev: Could not determine funding org.\n  - Options:\n    * Set ENV[&#39;FUNDING_ORG&#39;] to your funding handle (e.g., &#39;opencollective-handle&#39;).\n    * Or set ENV[&#39;OPENCOLLECTIVE_HANDLE&#39;].\n    * Or add .opencollective.yml with: org: &lt;handle&gt;\n    * Or bypass by setting ENV[&#39;FUNDING_ORG&#39;]=false for gems without funding.</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
@@ -520,7 +532,7 @@ The reader is lenient: failures to load or missing fields are handled with defau
 </div>
 
       <div id="footer">
-  Generated on Sun Sep 14 07:10:02 2025 by
+  Generated on Mon Sep 15 05:47:24 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

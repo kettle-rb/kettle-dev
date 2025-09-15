@@ -18,18 +18,26 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [Unreleased]
 ### Added
-- Allow reformating of CHANGELOG.md without version bump
-- `--include=GLOB` includes files not otherwise included in default template
-- more test coverage
 ### Changed
 ### Deprecated
 ### Removed
+### Fixed
+### Security
+
+## [1.1.20] - 2025-09-15
+- TAG: [v1.1.20][1.1.20t]
+- COVERAGE: 96.80% -- 3660/3781 lines in 25 files
+- BRANCH COVERAGE: 81.65% -- 1504/1842 branches in 25 files
+- 77.01% documented
+### Added
+- Allow reformating of CHANGELOG.md without version bump
+- `--include=GLOB` includes files not otherwise included in default template
+- more test coverage
 ### Fixed
 - Add .licenserc.yaml to gem package
 - Handling of GFM fenced code blocks in CHANGELOG.md
 - Handling of nested list items in CHANGELOG.md
 - Handling of blank lines around all headings in CHANGELOG.md
-### Security
 
 ## [1.1.19] - 2025-09-14
 - TAG: [v1.1.19][1.1.19t]
@@ -667,7 +675,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.19...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.20...HEAD
+[1.1.20]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.19...v1.1.20
+[1.1.20t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.20
 [1.1.19]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.18...v1.1.19
 [1.1.19t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.19
 [1.1.18]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.17...v1.1.18

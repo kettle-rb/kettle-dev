@@ -144,7 +144,7 @@ bin/kettle-release
     <tr>
       <td>Source</td>
       <td>
-<a href="https://gitlab.com/kettle-rb/kettle-dev/"><img src="https://img.shields.io/badge/GitLab-FBA326?style=for-the-badge&amp;logo=Gitlab&amp;logoColor=orange" alt="Source on GitLab.com"></a> <a href="https://codeberg.org/kettle-rb/kettle-dev"><img src="https://img.shields.io/badge/CodeBerg-4893CC?style=for-the-badge&amp;logo=CodeBerg&amp;logoColor=blue" alt="Source on CodeBerg.org"></a> <a href="https://github.com/kettle-rb/kettle-dev"><img src="https://img.shields.io/badge/GitHub-238636?style=for-the-badge&amp;logo=Github&amp;logoColor=green" alt="Source on Github.com"></a> <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"><img src="https://img.shields.io/badge/KLOC-3.656-FFDD67.svg?style=for-the-badge&amp;logo=YouTube&amp;logoColor=blue" alt="The best SHA: dQw4w9WgXcQ!"></a>
+<a href="https://gitlab.com/kettle-rb/kettle-dev/"><img src="https://img.shields.io/badge/GitLab-FBA326?style=for-the-badge&amp;logo=Gitlab&amp;logoColor=orange" alt="Source on GitLab.com"></a> <a href="https://codeberg.org/kettle-rb/kettle-dev"><img src="https://img.shields.io/badge/CodeBerg-4893CC?style=for-the-badge&amp;logo=CodeBerg&amp;logoColor=blue" alt="Source on CodeBerg.org"></a> <a href="https://github.com/kettle-rb/kettle-dev"><img src="https://img.shields.io/badge/GitHub-238636?style=for-the-badge&amp;logo=Github&amp;logoColor=green" alt="Source on Github.com"></a> <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"><img src="https://img.shields.io/badge/KLOC-3.781-FFDD67.svg?style=for-the-badge&amp;logo=YouTube&amp;logoColor=blue" alt="The best SHA: dQw4w9WgXcQ!"></a>
 </td>
     </tr>
     <tr>
@@ -373,6 +373,7 @@ I wrote this for myself, and it fits my patterns of development.</p>
           <li>option: allowed: When truthy (1, true, y, yes), resume task after you have reviewed <code>.envrc</code>/<code>.env.local</code> and run <code>direnv allow</code>. If either file is created or updated, the task will abort with instructions unless <code>allowed=true</code> is present. Example: <code>bundle exec rake kettle:dev:install allowed=true</code>
 </li>
           <li>option: only: A comma-separated list of glob patterns to include in templating. Any destination file whose path+filename does not match one of the patterns is excluded. Patterns are matched relative to your project root. Examples: <code>only="README.md,.github/**"</code>, <code>only="docs/**,lib/**/*.rb"</code>.</li>
+          <li>option: include: A comma-separated list of glob patterns that opt-in additional, non-default files. Currently, <code>.github/workflows/discord-notifier.yml</code> is not copied by default and will only be copied when <code>include</code> matches it (e.g., <code>include=".github/workflows/discord-notifier.yml"</code>).</li>
         </ul>
       </li>
       <li>
@@ -383,6 +384,7 @@ I wrote this for myself, and it fits my patterns of development.</p>
           <li>option: allowed: When truthy (1, true, y, yes), resume task after you have reviewed <code>.envrc</code>/<code>.env.local</code> and run <code>direnv allow</code>. If either file is created or updated, the task will abort with instructions unless <code>allowed=true</code> is present. Example: <code>bundle exec rake kettle:dev:template allowed=true</code>
 </li>
           <li>option: only: Same as for install; limits which destination files are written based on glob patterns relative to the project root.</li>
+          <li>option: include: Same as for install; opts into optional files (e.g., <code>.github/workflows/discord-notifier.yml</code>).</li>
         </ul>
       </li>
     </ul>
@@ -847,6 +849,8 @@ Tip: When running a single spec file locally, you may want <code>K_SOUP_COV_MIN_
       <li>
 <code>--only=VAL</code> Pass <code>only=VAL</code> to restrict install scope.</li>
       <li>
+<code>--include=VAL</code> Pass <code>include=VAL</code> to include optional files by glob (see notes below).</li>
+      <li>
 <code>-h</code>, <code>--help</code> Show help.</li>
     </ul>
   </li>
@@ -1122,7 +1126,7 @@ Please consider sponsoring me or the project.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Sun Sep 14 07:10:01 2025 by
+  Generated on Mon Sep 15 05:47:23 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>
