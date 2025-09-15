@@ -18,10 +18,13 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ## [Unreleased]
 ### Added
+- `--include=GLOB` includes files not otherwise included in default template
+- more test coverage
 ### Changed
 ### Deprecated
 ### Removed
 ### Fixed
+- Add .licenserc.yaml to gem package
 ### Security
 
 ## [1.1.19] - 2025-09-14

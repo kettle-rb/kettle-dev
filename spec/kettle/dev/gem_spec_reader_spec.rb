@@ -196,4 +196,45 @@ RSpec.describe Kettle::Dev::GemSpecReader do
       expect(info[:forge_org]).to eq("kettle-rb")
     end
   end
+
+  context "when gemspec load raises" do
+    it "rescues, logs via debug_error, and proceeds with defaults" do
+      write_gemspec <<~G
+        Gem::Specification.new do |spec|
+          spec.name    = "boom"
+          spec.version = "0.0.1"
+        end
+      G
+      # Make RubyGems loader blow up to exercise rescue at lines 48-49
+      allow(Gem::Specification).to receive(:load).and_raise(StandardError.new("load-fail"))
+      allow(Kettle::Dev).to receive(:debug_error)
+      allow(Kernel).to receive(:warn).and_call_original
+
+      info = load_info
+
+      expect(Kettle::Dev).to have_received(:debug_error)
+      expect(info[:gemspec_path]).to eq(gemspec_path)
+      expect(info[:gem_name]).to eq("") # falls back when spec could not be loaded
+      expect(Kernel).to have_received(:warn).with(/Could not derive gem name/)
+    end
+  end
+
+  context "when funding detection raises unexpectedly" do
+    it "rescues, logs, and re-raises Kettle::Dev::Error" do
+      write_gemspec <<~G
+        Gem::Specification.new do |spec|
+          spec.name    = "x"
+          spec.version = "0.0.1"
+        end
+      G
+      # Force the file branch, then make File.read explode to hit rescue at 126-127
+      oc_yaml = File.join(tmp_root, ".opencollective.yml")
+      File.write(oc_yaml, "org: oc-file\n")
+      allow(File).to receive(:read).and_raise(StandardError.new("bad read"))
+      allow(Kettle::Dev).to receive(:debug_error)
+
+      expect { load_info }.to raise_error(Kettle::Dev::Error, /Unable to determine funding org/)
+      expect(Kettle::Dev).to have_received(:debug_error)
+    end
+  end
 end

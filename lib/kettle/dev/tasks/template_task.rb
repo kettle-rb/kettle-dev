@@ -57,11 +57,48 @@ module Kettle
                 selected[key] ||= path
               end
             end
+            # Parse optional include patterns (comma-separated globs relative to project root)
+            include_raw = ENV["include"].to_s
+            include_patterns = include_raw.split(",").map { |s| s.strip }.reject(&:empty?)
+            matches_include = lambda do |abs_dest|
+              return false if include_patterns.empty?
+              begin
+                rel_dest = abs_dest.to_s
+                proj = project_root.to_s
+                if rel_dest.start_with?(proj + "/")
+                  rel_dest = rel_dest[(proj.length + 1)..-1]
+                elsif rel_dest == proj
+                  rel_dest = ""
+                end
+                include_patterns.any? do |pat|
+                  if pat.end_with?("/**")
+                    base = pat[0..-4]
+                    rel_dest == base || rel_dest.start_with?(base + "/")
+                  else
+                    File.fnmatch?(pat, rel_dest, File::FNM_PATHNAME | File::FNM_EXTGLOB | File::FNM_DOTMATCH)
+                  end
+                end
+              rescue StandardError => e
+                Kettle::Dev.debug_error(e, __method__)
+                false
+              end
+            end
+
             selected.values.each do |orig_src|
               src = helpers.prefer_example(orig_src)
               # Destination path should never include the .example suffix.
               rel = orig_src.sub(/^#{Regexp.escape(gem_checkout_root)}\/?/, "").sub(/\.example\z/, "")
               dest = File.join(project_root, rel)
+
+              # Optional file: .github/workflows/discord-notifier.yml should NOT be copied by default.
+              # Only copy when --include matches it.
+              if rel == ".github/workflows/discord-notifier.yml"
+                unless matches_include.call(dest)
+                  # Explicitly skip without prompting
+                  next
+                end
+              end
+
               if File.basename(rel) == "FUNDING.yml"
                 helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true) do |content|
                   c = content.dup
