@@ -44,6 +44,7 @@ if ARGV.include?("-h") || ARGV.include?("--help")
       --force
       --hook_templates=VAL
       --only=VAL
+      --include=VAL
 
     Environment:
       DEBUG=true                    # print backtraces on errors

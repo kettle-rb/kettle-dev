@@ -241,10 +241,12 @@ That’s it. Once installed, kettle-dev:
     - option: force: When truthy (1, true, y, yes), treat all y/N prompts as Yes. Useful for non-interactive runs or to accept defaults quickly. Example: `bundle exec rake kettle:dev:template force=true`
     - option: allowed: When truthy (1, true, y, yes), resume task after you have reviewed `.envrc`/`.env.local` and run `direnv allow`. If either file is created or updated, the task will abort with instructions unless `allowed=true` is present. Example: `bundle exec rake kettle:dev:install allowed=true`
     - option: only: A comma-separated list of glob patterns to include in templating. Any destination file whose path+filename does not match one of the patterns is excluded. Patterns are matched relative to your project root. Examples: `only="README.md,.github/**"`, `only="docs/**,lib/**/*.rb"`.
+    - option: include: A comma-separated list of glob patterns that opt-in additional, non-default files. Currently, `.github/workflows/discord-notifier.yml` is not copied by default and will only be copied when `include` matches it (e.g., `include=".github/workflows/discord-notifier.yml"`).
   - `kettle:dev:template` — templates files from this gem into your project (e.g., .github workflows, .devcontainer, .qlty, modular Gemfiles, README/CONTRIBUTING stubs). You can run this independently to refresh templates without the extra install prompts.
     - option: force: When truthy (1, true, y, yes), treat all y/N prompts as Yes. Useful for non-interactive runs or to accept defaults quickly. Example: `bundle exec rake kettle:dev:template force=true`
     - option: allowed: When truthy (1, true, y, yes), resume task after you have reviewed `.envrc`/`.env.local` and run `direnv allow`. If either file is created or updated, the task will abort with instructions unless `allowed=true` is present. Example: `bundle exec rake kettle:dev:template allowed=true`
     - option: only: Same as for install; limits which destination files are written based on glob patterns relative to the project root.
+    - option: include: Same as for install; opts into optional files (e.g., `.github/workflows/discord-notifier.yml`).
 
 Recommended one-time setup in your project:
 - Install binstubs so kettle-dev executables are available under `./bin`:
@@ -506,6 +508,7 @@ What it does:
   - `--force` Pass `force=true` to accept prompts non-interactively.
   - `--hook_templates=VAL` Pass `hook_templates=VAL` to control git hook templating.
   - `--only=VAL` Pass `only=VAL` to restrict install scope.
+  - `--include=VAL` Pass `include=VAL` to include optional files by glob (see notes below).
   - `-h`, `--help` Show help.
 - Behavior:
   - Verifies a clean git working tree, presence of a Gemfile and a gemspec.

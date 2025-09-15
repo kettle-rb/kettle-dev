@@ -114,6 +114,7 @@ module Kettle
           end
           opts.on("--hook_templates=VAL", "Pass through to kettle:dev:install") { |v| @passthrough << "hook_templates=#{v}" }
           opts.on("--only=VAL", "Pass through to kettle:dev:install") { |v| @passthrough << "only=#{v}" }
+          opts.on("--include=VAL", "Pass through to kettle:dev:install") { |v| @passthrough << "include=#{v}" }
           opts.on("-h", "--help", "Show help") do
             puts opts
             Kettle::Dev::ExitAdapter.exit(0)
