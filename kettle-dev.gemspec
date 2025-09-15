@@ -98,6 +98,7 @@ Gem::Specification.new do |spec|
     # Root files used by template tasks
     ".envrc",
     ".gitignore",
+    ".licenserc.yaml",
     ".opencollective.yml",
     ".rspec",
     ".rubocop.yml",
