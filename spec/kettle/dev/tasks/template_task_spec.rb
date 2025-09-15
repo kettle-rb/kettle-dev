@@ -725,7 +725,7 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
         end
       end
 
-      it "does not duplicate Unreleased change-type headings and preserves existing list items under them" do
+      it "does not duplicate Unreleased change-type headings and preserves existing list items under them, including nested bullets" do
         Dir.mktmpdir do |gem_root|
           Dir.mktmpdir do |project_root|
             # Template CHANGELOG with Unreleased and six standard headings (empty)
@@ -744,12 +744,16 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
               - initial
             MD
 
-            # Destination project with existing Unreleased having an item under Added and Fixed
+            # Destination project with existing Unreleased having items including nested sub-bullets
             File.write(File.join(project_root, "CHANGELOG.md"), <<~MD)
               # Changelog
               \n
               ## [Unreleased]
               ### Added
+              - kettle-dev v1.1.18
+              - Internal escape & unescape methods
+                - Stop relying on URI / CGI for escaping and unescaping
+                - They are both unstable across supported versions of Ruby (including 3.5 HEAD)
               - keep me
               ### Fixed
               - also keep me
@@ -768,9 +772,68 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
             %w[Added Changed Deprecated Removed Fixed Security].each do |h|
               expect(result.scan(/^### #{h}$/).size).to eq(1)
             end
-            # Preserved items
-            expect(result).to include("### Added\n- keep me")
+            # Preserved items, including nested sub-bullets and their indentation
+            expect(result).to include("### Added\n- kettle-dev v1.1.18")
+            expect(result).to include("- Internal escape & unescape methods")
+            expect(result).to include("  - Stop relying on URI / CGI for escaping and unescaping")
+            expect(result).to include("  - They are both unstable across supported versions of Ruby (including 3.5 HEAD)")
+            expect(result).to include("- keep me")
             expect(result).to include("### Fixed\n- also keep me")
+          end
+        end
+      end
+
+      it "preserves GFM fenced code blocks nested under list items in Unreleased sections" do
+        Dir.mktmpdir do |gem_root|
+          Dir.mktmpdir do |project_root|
+            # Template with empty Unreleased standard headings
+            File.write(File.join(gem_root, "CHANGELOG.md.example"), <<~MD)
+              # Changelog
+
+              ## [Unreleased]
+              ### Added
+              ### Changed
+              ### Deprecated
+              ### Removed
+              ### Fixed
+              ### Security
+
+              ## [0.1.0] - 2020-01-01
+              - initial
+            MD
+
+            # Destination with a bullet containing a fenced code block
+            File.write(File.join(project_root, "CHANGELOG.md"), <<~MD)
+              # Changelog
+
+              ## [Unreleased]
+              ### Added
+              - Add helper with example usage
+                
+                ```ruby
+                puts "hello"
+                1 + 2
+                ```
+              - Another item
+
+              ## [0.0.1] - 2019-01-01
+              - start
+            MD
+
+            File.write(File.join(project_root, "demo.gemspec"), "Gem::Specification.new{|s| s.name='demo'; s.homepage='https://github.com/acme/demo'}\n")
+            allow(helpers).to receive_messages(project_root: project_root, gem_checkout_root: gem_root, ensure_clean_git!: nil, ask: true)
+
+            described_class.run
+
+            result = File.read(File.join(project_root, "CHANGELOG.md"))
+            # Ensure the fenced block and its contents are preserved under the list item
+            expect(result).to include("### Added")
+            expect(result).to include("- Add helper with example usage")
+            expect(result).to include("```ruby")
+            expect(result).to include("puts \"hello\"")
+            expect(result).to include("1 + 2")
+            expect(result).to include("```")
+            expect(result).to include("- Another item")
           end
         end
       end

@@ -624,3 +624,23 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
     end
   end
 end
+
+
+RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
+  describe "#update_link_refs spacing around footer" do
+    it "ensures a blank line before the link-ref block and retains a trailing blank line" do
+      cli = described_class.new
+      input = <<~TXT
+        ## [Unreleased]
+        Changelog body
+        [Unreleased]: https://github.com/acme/demo/compare/v1.0.0...HEAD
+        [1.0.0]: https://github.com/acme/demo/compare/v0.9.0...v1.0.0
+      TXT
+      out = cli.send(:update_link_refs, input, "acme", "demo", "1.0.0", "1.1.0")
+      # There should be exactly one blank line between body and the first ref line
+      expect(out).to match(/Changelog body\n\n\[Unreleased\]:/)
+      # And the output should end with a blank line (double newline at EOF)
+      expect(out).to match(/\n\n\z/)
+    end
+  end
+end

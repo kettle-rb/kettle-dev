@@ -340,7 +340,12 @@ module Kettle
           new_ref_block << tags[v] if tags[v]
         end
         # Replace the old block
-        rebuilt = lines[0...first_ref] + new_ref_block + ["\n"]
+        head = lines[0...first_ref]
+        # Ensure exactly one blank line separating body content from the reference block
+        if head.any? && head.last.to_s.strip != ""
+          head << "\n"
+        end
+        rebuilt = head + new_ref_block + ["\n"]
         rebuilt.join
       end
 
