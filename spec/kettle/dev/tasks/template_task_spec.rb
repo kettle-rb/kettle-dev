@@ -725,7 +725,7 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
         end
       end
 
-      it "does not duplicate Unreleased change-type headings and preserves existing list items under them" do
+      it "does not duplicate Unreleased change-type headings and preserves existing list items under them, including nested bullets" do
         Dir.mktmpdir do |gem_root|
           Dir.mktmpdir do |project_root|
             # Template CHANGELOG with Unreleased and six standard headings (empty)
@@ -744,12 +744,16 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
               - initial
             MD
 
-            # Destination project with existing Unreleased having an item under Added and Fixed
+            # Destination project with existing Unreleased having items including nested sub-bullets
             File.write(File.join(project_root, "CHANGELOG.md"), <<~MD)
               # Changelog
               \n
               ## [Unreleased]
               ### Added
+              - kettle-dev v1.1.18
+              - Internal escape & unescape methods
+                - Stop relying on URI / CGI for escaping and unescaping
+                - They are both unstable across supported versions of Ruby (including 3.5 HEAD)
               - keep me
               ### Fixed
               - also keep me
@@ -768,8 +772,12 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
             %w[Added Changed Deprecated Removed Fixed Security].each do |h|
               expect(result.scan(/^### #{h}$/).size).to eq(1)
             end
-            # Preserved items
-            expect(result).to include("### Added\n- keep me")
+            # Preserved items, including nested sub-bullets and their indentation
+            expect(result).to include("### Added\n- kettle-dev v1.1.18")
+            expect(result).to include("- Internal escape & unescape methods")
+            expect(result).to include("  - Stop relying on URI / CGI for escaping and unescaping")
+            expect(result).to include("  - They are both unstable across supported versions of Ruby (including 3.5 HEAD)")
+            expect(result).to include("- keep me")
             expect(result).to include("### Fixed\n- also keep me")
           end
         end

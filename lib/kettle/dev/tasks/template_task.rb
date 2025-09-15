@@ -640,7 +640,8 @@ module Kettle
                           if ln.start_with?("### ")
                             cur = ln.strip
                             result[cur] ||= []
-                          elsif ln.start_with?("- ")
+                          elsif ln =~ /^\s*[-*]\s/
+                            # Preserve any indentation and the bullet for nested lists
                             result[cur] ||= []
                             result[cur] << ln.rstrip
                           end
