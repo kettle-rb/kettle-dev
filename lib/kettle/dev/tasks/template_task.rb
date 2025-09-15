@@ -10,6 +10,41 @@ module Kettle
 
         module_function
 
+        # Ensure every Markdown atx-style heading line has exactly one blank line
+        # before and after, skipping content inside fenced code blocks.
+        def normalize_heading_spacing(text)
+          lines = text.split("\n", -1)
+          out = []
+          in_fence = false
+          fence_re = /^\s*```/
+          heading_re = /^\s*#+\s+.+/
+          lines.each_with_index do |ln, idx|
+            if ln =~ fence_re
+              in_fence = !in_fence
+              out << ln
+              next
+            end
+            if !in_fence && ln =~ heading_re
+              prev_blank = out.empty? ? false : out.last.to_s.strip == ""
+              out << "" unless out.empty? || prev_blank
+              out << ln
+              nxt = lines[idx + 1]
+              out << "" unless nxt.to_s.strip == ""
+            else
+              out << ln
+            end
+          end
+          # Collapse accidental multiple blanks
+          collapsed = []
+          out.each do |l|
+            if l.strip == "" && collapsed.last.to_s.strip == ""
+              next
+            end
+            collapsed << l
+          end
+          collapsed.join("\n")
+        end
+
         # Abort wrapper that avoids terminating the entire process during specs
         def task_abort(msg)
           raise Kettle::Dev::Error, msg
@@ -750,6 +785,8 @@ module Kettle
                     c = lines.join("\n")
                   end
                 end
+                # Normalize spacing around Markdown headings for broad renderer compatibility
+                c = normalize_heading_spacing(c)
                 c
               end
             else

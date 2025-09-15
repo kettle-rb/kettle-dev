@@ -86,6 +86,9 @@ module Kettle
 
         updated = update_link_refs(updated, owner, repo, prev_version, version)
 
+        # Normalize spacing around headings to aid Markdown renderers
+        updated = normalize_heading_spacing(updated)
+
         # Ensure exactly one trailing newline at EOF
         updated = updated.rstrip + "\n"
 
@@ -347,6 +350,44 @@ module Kettle
         end
         rebuilt = head + new_ref_block + ["\n"]
         rebuilt.join
+      end
+
+      # Ensure every Markdown atx-style heading line (e.g., "# ", "## ") has exactly one blank line
+      # before and after it, skipping content inside fenced code blocks.
+      def normalize_heading_spacing(text)
+        lines = text.split("\n", -1)
+        out = []
+        in_fence = false
+        fence_re = /^\s*```/
+        heading_re = /^\s*#+\s+.+/
+        lines.each_with_index do |ln, idx|
+          if ln =~ fence_re
+            in_fence = !in_fence
+            out << ln
+            next
+          end
+          if !in_fence && ln =~ heading_re
+            # Ensure previous line is blank (unless start of file or already blank)
+            prev_blank = out.empty? ? false : out.last.to_s.strip == ""
+            out << "" unless out.empty? || prev_blank
+            out << ln
+            # Peek at next line in source to decide if we need to inject a blank now.
+            nxt = lines[idx + 1]
+            out << "" unless nxt.to_s.strip == ""
+          else
+            out << ln
+          end
+        end
+        # Collapse multiple consecutive blank lines down to a single between regions that our logic might have doubled
+        collapsed = []
+        lines_enum = out
+        lines_enum.each do |l|
+          if l.strip == "" && collapsed.last.to_s.strip == ""
+            next
+          end
+          collapsed << l
+        end
+        collapsed.join("\n")
       end
 
       def detect_initial_compare_base(lines)

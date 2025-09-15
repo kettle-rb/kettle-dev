@@ -478,8 +478,8 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       expect(updated).to include("[gh657]: https://github.com/ruby-oauth/oauth2/pull/657")
       expect(updated).to include("[gh656]: https://github.com/ruby-oauth/oauth2/pull/656")
 
-      # Unreleased section should be reset with headings intact
-      expect(updated).to include("## [Unreleased]\n### Added\n### Changed\n### Deprecated\n### Removed\n### Fixed\n### Security")
+      # Unreleased section should be reset with headings intact and spaced by blank lines
+      expect(updated).to match(/## \[Unreleased\]\n\n### Added\n\n### Changed\n\n### Deprecated\n\n### Removed\n\n### Fixed\n\n### Security/)
     end
   end
 
@@ -522,8 +522,8 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       # Preserve at least one older release section from the vanilla fixture
       expect(updated).to include("## [1.3.3] - 2024-11-08").or include("## [1.3.2] - 2024-11-05")
 
-      # Unreleased section reset with headings intact
-      expect(updated).to include("## [Unreleased]\n### Added\n### Changed\n### Deprecated\n### Removed\n### Fixed\n### Security")
+      # Unreleased section reset with headings intact and spaced by blank lines
+      expect(updated).to match(/## \[Unreleased\]\n\n### Added\n\n### Changed\n\n### Deprecated\n\n### Removed\n\n### Fixed\n\n### Security/)
 
       # Footer should still contain the Unreleased link-ref and include new compare/tag refs for 9.9.9
       expect(updated).to include("[Unreleased]: ")
@@ -567,8 +567,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       expect(updated).to include("- TAG: [v9.9.9][9.9.9t]")
 
       # Unreleased section should be fully reset to all standard subheadings without duplication
-      reset_block = "## [Unreleased]\n### Added\n### Changed\n### Deprecated\n### Removed\n### Fixed\n### Security\n\n## [9.9.9] - 2025-08-30"
-      expect(updated).to include(reset_block)
+      expect(updated).to match(/## \[Unreleased\]\n\n### Added\n\n### Changed\n\n### Deprecated\n\n### Removed\n\n### Fixed\n\n### Security\n\n## \[9\.9\.9\] - 2025-08-30/)
 
       # Ensure footer [Unreleased] link-ref is preserved (fixture uses ...main)
       expect(updated).to include("[Unreleased]: ")
