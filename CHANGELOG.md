@@ -28,10 +28,24 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [1.1.21] - 2025-09-16
+
+- TAG: [v1.1.21][1.1.21t]
+- COVERAGE: 96.83% -- 3661/3781 lines in 25 files
+- BRANCH COVERAGE: 81.65% -- 1504/1842 branches in 25 files
+- 77.01% documented
+
+### Changed
+
+- improved templating
+- improved documentation
+
+### Fixed
+
 - kettle-readme-backers: read correct config file
   - .opencollective.yml in project root
-
-### Security
 
 ## [1.1.20] - 2025-09-15
 
@@ -911,7 +925,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.20...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.21...HEAD
+[1.1.21]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.20...v1.1.21
+[1.1.21t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.21
 [1.1.20]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.19...v1.1.20
 [1.1.20t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.20
 [1.1.19]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.18...v1.1.19
