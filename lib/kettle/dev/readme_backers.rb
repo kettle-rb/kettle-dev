@@ -19,8 +19,8 @@ module Kettle
       public
 
       DEFAULT_AVATAR = "https://opencollective.com/static/images/default-avatar.png"
-      README_PATH = File.expand_path("../../../../README.md", __dir__)
-      OC_YML_PATH = File.expand_path("../../../../.opencollective.yml", __dir__)
+      README_PATH = File.expand_path("../../../README.md", __dir__)
+      OC_YML_PATH = File.expand_path("../../../.opencollective.yml", __dir__)
       README_OSC_TAG_DEFAULT = "OPENCOLLECTIVE"
       COMMIT_SUBJECT_DEFAULT = "💸 Thanks 🙏 to our new backers 🎒 and subscribers 📜"
 

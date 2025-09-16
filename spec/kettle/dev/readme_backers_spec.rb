@@ -157,6 +157,13 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
       expect(described_class.new(readme_path: tmp_readme).send(:resolve_handle)).to eq("yml_handle")
     end
 
+    it "reads handle from actual .opencollective.yml in repo root without stubbing" do
+      stub_env("OPENCOLLECTIVE_HANDLE" => nil)
+      path = described_class::OC_YML_PATH
+      expect(File.file?(path)).to be true
+      expect(described_class.new(readme_path: tmp_readme).send(:resolve_handle)).to eq("kettle-rb")
+    end
+
     it "aborts when missing" do
       allow(File).to receive(:file?).with(described_class::OC_YML_PATH).and_return(false)
       expect { described_class.new(readme_path: tmp_readme).send(:resolve_handle) }.to raise_error(MockSystemExit)
