@@ -20,9 +20,11 @@ module Kettle
 
       DEFAULT_AVATAR = "https://opencollective.com/static/images/default-avatar.png"
       README_PATH = File.expand_path("../../../README.md", __dir__)
-      OC_YML_PATH = File.expand_path("../../../.opencollective.yml", __dir__)
       README_OSC_TAG_DEFAULT = "OPENCOLLECTIVE"
       COMMIT_SUBJECT_DEFAULT = "💸 Thanks 🙏 to our new backers 🎒 and subscribers 📜"
+      # Deprecated constant maintained for backwards compatibility in tests/specs.
+      # Prefer OpenCollectiveConfig.yaml_path going forward.
+      OC_YML_PATH = OpenCollectiveConfig.yaml_path
 
       # Ruby 2.3 compatibility: Struct keyword_init added in Ruby 2.5
       # Switch to struct when dropping ruby < 2.5
@@ -120,9 +122,9 @@ module Kettle
         env = ENV["KETTLE_DEV_BACKER_README_OSC_TAG"].to_s
         return env unless env.strip.empty?
 
-        if File.file?(OC_YML_PATH)
+        if File.file?(OpenCollectiveConfig.yaml_path)
           begin
-            yml = YAML.safe_load(File.read(OC_YML_PATH))
+            yml = YAML.safe_load(File.read(OpenCollectiveConfig.yaml_path))
             if yml.is_a?(Hash)
               from_yml = yml["readme-osc-tag"] || yml[:"readme-osc-tag"]
               from_yml = from_yml.to_s if from_yml
@@ -148,15 +150,7 @@ module Kettle
       end
 
       def resolve_handle
-        env = ENV["OPENCOLLECTIVE_HANDLE"]
-        return env unless env.nil? || env.strip.empty?
-
-        if File.file?(OC_YML_PATH)
-          yml = YAML.safe_load(File.read(OC_YML_PATH))
-          handle = yml.is_a?(Hash) ? yml["collective"] || yml[:collective] : nil
-          return handle.to_s unless handle.nil? || handle.to_s.strip.empty?
-        end
-        abort("ERROR: Open Collective handle not provided. Set OPENCOLLECTIVE_HANDLE or add 'collective: <handle>' to .opencollective.yml.")
+        OpenCollectiveConfig.handle(required: true)
       end
 
       def fetch_members(path)

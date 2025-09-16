@@ -22,6 +22,7 @@ module Kettle
     autoload :GitCommitFooter, "kettle/dev/git_commit_footer"
     autoload :InputAdapter, "kettle/dev/input_adapter"
     autoload :ReadmeBackers, "kettle/dev/readme_backers"
+    autoload :OpenCollectiveConfig, "kettle/dev/open_collective_config"
     autoload :ReleaseCLI, "kettle/dev/release_cli"
     autoload :PreReleaseCLI, "kettle/dev/pre_release_cli"
     autoload :SetupCLI, "kettle/dev/setup_cli"

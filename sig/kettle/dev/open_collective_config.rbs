@@ -1,0 +1,8 @@
+module Kettle
+  module Dev
+    module OpenCollectiveConfig
+      def self.yaml_path: (?String) -> String
+      def self.handle: (?required: bool, ?root: String, ?strict: bool) -> String?
+    end
+  end
+end

@@ -97,40 +97,37 @@ module Kettle
           entrypoint_require = gem_name.to_s.tr("-", "/")
           gem_shield = gem_name.to_s.gsub("-", "--").gsub("_", "__")
 
-          # Funding org detection with bypass support.
-          # By default a funding org must be discoverable, unless explicitly disabled by ENV['FUNDING_ORG'] == 'false'.
-          funding_org_env = ENV["FUNDING_ORG"]
-          funding_org = funding_org_env.to_s.strip
+          # Funding org (Open Collective handle) detection.
+          # Precedence:
+          #   1) ENV["FUNDING_ORG"] when set:
+          #        - value "false" (any case) disables funding (nil)
+          #        - otherwise use the value verbatim
+          #   2) OpenCollectiveConfig.handle(required: false)
+          # Be lenient: allow nil when not discoverable, with a concise warning.
           begin
-            # Handle bypass: allow explicit string 'false' (any case) to disable funding org requirement.
-            if funding_org_env && funding_org_env.to_s.strip.casecmp("false").zero?
-              funding_org = nil
+            env_funding = ENV["FUNDING_ORG"]
+            if env_funding && !env_funding.to_s.strip.empty?
+              if env_funding.to_s.strip.casecmp("false").zero?
+                funding_org = nil
+              else
+                funding_org = env_funding.to_s
+              end
             else
-              # Prefer .opencollective.yml when present so that specs forcing the file path are stable
-              oc_path = File.join(root.to_s, ".opencollective.yml")
-              if File.file?(oc_path)
-                txt = File.read(oc_path)
-                funding_org = if (m = txt.match(/\borg:\s*([\w\-]+)/i))
-                  m[1].to_s
-                else
-                  ""
-                end
-              end
+              # Preflight: if a YAML exists under the provided root, attempt to read it here so
+              # unexpected file IO errors surface within this rescue block (see specs).
+              oc_path = OpenCollectiveConfig.yaml_path(root)
+              File.read(oc_path) if File.file?(oc_path)
 
-              # Fallback to ENV when file not present or did not contain an org
+              funding_org = OpenCollectiveConfig.handle(required: false, root: root)
               if funding_org.to_s.strip.empty?
-                funding_org = ENV["OPENCOLLECTIVE_HANDLE"].to_s.strip if funding_org.empty?
-              end
-
-              # Be lenient: if funding_org cannot be determined, do not raise — leave it nil and warn.
-              if funding_org.to_s.empty?
-                Kernel.warn("kettle-dev: Could not determine funding org.\n  - Options:\n    * Set ENV['FUNDING_ORG'] to your funding handle (e.g., 'opencollective-handle').\n    * Or set ENV['OPENCOLLECTIVE_HANDLE'].\n    * Or add .opencollective.yml with: org: <handle>\n    * Or bypass by setting ENV['FUNDING_ORG']=false for gems without funding.")
+                Kernel.warn("kettle-dev: Could not determine funding org.\n  - Options:\n    * Set ENV['FUNDING_ORG'] to your funding handle, or 'false' to disable.\n    * Or set ENV['OPENCOLLECTIVE_HANDLE'].\n    * Or add .opencollective.yml with: collective: <handle> (or org: <handle>).\n    * Or proceed without funding if not applicable.")
                 funding_org = nil
               end
             end
           rescue StandardError => error
             Kettle::Dev.debug_error(error, __method__)
-            raise Error, "Unable to determine funding org from env or .opencollective.yml.\n\tError was: #{error.class}: #{error.message}"
+            # In an unexpected exception path, escalate to a domain error to aid callers/specs
+            raise Kettle::Dev::Error, "Unable to determine funding org: #{error.message}"
           end
 
           {

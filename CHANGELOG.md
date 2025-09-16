@@ -28,6 +28,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- GemSpecReader, ReadmeBackers now use shared OpenCollectiveConfig
+  - fixes broken opencollective config handling in GemSPecReader
+
 ### Security
 
 ## [1.1.22] - 2025-09-16
