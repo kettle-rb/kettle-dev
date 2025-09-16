@@ -1,7 +1,7 @@
 {
-  "lib/kettle/dev.rb:3349086928": [
-    [65, 17, 2, "ThreadSafety/MutableClassInstanceVariable: Freeze mutable objects assigned to class instance variables.", 5862883],
-    [76, 7, 16, "Lint/RescueException: Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?", 2127134117]
+  "lib/kettle/dev.rb:1251507029": [
+    [66, 17, 2, "ThreadSafety/MutableClassInstanceVariable: Freeze mutable objects assigned to class instance variables.", 5862883],
+    [77, 7, 16, "Lint/RescueException: Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?", 2127134117]
   ],
   "lib/kettle/dev/tasks/ci_task.rb:4072951873": [
     [268, 26, 10, "ThreadSafety/NewThread: Avoid starting new threads.", 3411682361],

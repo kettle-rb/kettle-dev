@@ -28,10 +28,19 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [1.1.23] - 2025-09-16
+
+- TAG: [v1.1.23][1.1.23t]
+- COVERAGE: 96.71% -- 3673/3798 lines in 26 files
+- BRANCH COVERAGE: 81.57% -- 1509/1850 branches in 26 files
+- 77.97% documented
+
+### Fixed
+
 - GemSpecReader, ReadmeBackers now use shared OpenCollectiveConfig
   - fixes broken opencollective config handling in GemSPecReader
-
-### Security
 
 ## [1.1.22] - 2025-09-16
 
@@ -940,7 +949,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.22...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.23...HEAD
+[1.1.23]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.22...v1.1.23
+[1.1.23t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.23
 [1.1.22]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.21...v1.1.22
 [1.1.22t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.22
 [1.1.21]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.20...v1.1.21

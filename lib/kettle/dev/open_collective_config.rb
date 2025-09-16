@@ -37,18 +37,16 @@ module Kettle
             handle = yml["collective"] || yml[:collective] || yml["org"] || yml[:org]
             return handle.to_s unless handle.nil? || handle.to_s.strip.empty?
           end
-        else
-          if File.file?(ypath)
-            begin
-              yml = YAML.safe_load(File.read(ypath))
-              if yml.is_a?(Hash)
-                handle = yml["collective"] || yml[:collective] || yml["org"] || yml[:org]
-                return handle.to_s unless handle.nil? || handle.to_s.strip.empty?
-              end
-            rescue StandardError => e
-              Kettle::Dev.debug_error(e, __method__) if Kettle::Dev.respond_to?(:debug_error)
-              # fall through to required check
+        elsif File.file?(ypath)
+          begin
+            yml = YAML.safe_load(File.read(ypath))
+            if yml.is_a?(Hash)
+              handle = yml["collective"] || yml[:collective] || yml["org"] || yml[:org]
+              return handle.to_s unless handle.nil? || handle.to_s.strip.empty?
             end
+          rescue StandardError => e
+            Kettle::Dev.debug_error(e, __method__) if Kettle::Dev.respond_to?(:debug_error)
+            # fall through to required check
           end
         end
 

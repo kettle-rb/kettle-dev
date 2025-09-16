@@ -128,11 +128,6 @@
         </dt>
         <dd><pre class="code"><span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_expand_path'>expand_path</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>../../../README.md</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid___dir__'>__dir__</span><span class='rparen'>)</span></pre></dd>
       
-        <dt id="OC_YML_PATH-constant" class="">OC_YML_PATH =
-          
-        </dt>
-        <dd><pre class="code"><span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_expand_path'>expand_path</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>../../../.opencollective.yml</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid___dir__'>__dir__</span><span class='rparen'>)</span></pre></dd>
-      
         <dt id="README_OSC_TAG_DEFAULT-constant" class="">README_OSC_TAG_DEFAULT =
           
         </dt>
@@ -142,6 +137,22 @@
           
         </dt>
         <dd><pre class="code"><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>💸 Thanks 🙏 to our new backers 🎒 and subscribers 📜</span><span class='tstring_end'>&quot;</span></span></pre></dd>
+      
+        <dt id="OC_YML_PATH-constant" class="">OC_YML_PATH =
+          <div class="docstring">
+  <div class="discussion">
+    <p>Deprecated constant maintained for backwards compatibility in tests/specs.<br />
+Prefer OpenCollectiveConfig.yaml_path going forward.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
+        </dt>
+        <dd><pre class="code"><span class='const'><span class='object_link'><a href="OpenCollectiveConfig.html" title="Kettle::Dev::OpenCollectiveConfig (module)">OpenCollectiveConfig</a></span></span><span class='period'>.</span><span class='id identifier rubyid_yaml_path'><span class='object_link'><a href="OpenCollectiveConfig.html#yaml_path-class_method" title="Kettle::Dev::OpenCollectiveConfig.yaml_path (method)">yaml_path</a></span></span></pre></dd>
       
     </dl>
   
@@ -239,13 +250,13 @@
       <pre class="lines">
 
 
-42
-43
 44
-45</pre>
+45
+46
+47</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/readme_backers.rb', line 42</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/readme_backers.rb', line 44</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='label'>handle:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>readme_path:</span> <span class='const'><span class='object_link'><a href="#README_PATH-constant" title="Kettle::Dev::ReadmeBackers::README_PATH (constant)">README_PATH</a></span></span><span class='rparen'>)</span>
   <span class='ivar'>@handle</span> <span class='op'>=</span> <span class='id identifier rubyid_handle'>handle</span> <span class='op'>||</span> <span class='id identifier rubyid_resolve_handle'>resolve_handle</span>
@@ -278,8 +289,6 @@
       <pre class="lines">
 
 
-47
-48
 49
 50
 51
@@ -346,10 +355,12 @@
 112
 113
 114
-115</pre>
+115
+116
+117</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/readme_backers.rb', line 47</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/readme_backers.rb', line 49</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_run!'>run!</span>
   <span class='id identifier rubyid_readme'>readme</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='lparen'>(</span><span class='ivar'>@readme_path</span><span class='rparen'>)</span>
@@ -430,7 +441,7 @@
 </div>
 
       <div id="footer">
-  Generated on Tue Sep 16 16:36:39 2025 by
+  Generated on Tue Sep 16 17:30:43 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

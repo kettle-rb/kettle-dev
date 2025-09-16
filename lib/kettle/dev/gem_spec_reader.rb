@@ -107,10 +107,10 @@ module Kettle
           begin
             env_funding = ENV["FUNDING_ORG"]
             if env_funding && !env_funding.to_s.strip.empty?
-              if env_funding.to_s.strip.casecmp("false").zero?
-                funding_org = nil
+              funding_org = if env_funding.to_s.strip.casecmp("false").zero?
+                nil
               else
-                funding_org = env_funding.to_s
+                env_funding.to_s
               end
             else
               # Preflight: if a YAML exists under the provided root, attempt to read it here so
