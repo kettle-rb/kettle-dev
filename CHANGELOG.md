@@ -28,6 +28,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- kettle-readme-backers: read correct config file
+  - .opencollective.yml in project root
+
 ### Security
 
 ## [1.1.20] - 2025-09-15
