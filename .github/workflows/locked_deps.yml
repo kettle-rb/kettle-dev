@@ -43,6 +43,11 @@ on:
   pull_request:
     branches:
       - '*'
+  # security - only use workflows from the canonical branches
+  pull_request_target:
+    branches:
+      - 'main'
+      - '*-stable'
   # Allow manually triggering the workflow.
   workflow_dispatch:
 
