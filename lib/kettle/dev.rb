@@ -62,6 +62,9 @@ module Kettle
     # Accepts 1, true, y, yes (any case).
     # @return [Regexp]
     ENV_TRUE_RE = /\A(1|true|y|yes)\z/i
+    # Absolute path to the root of the kettle-dev gem (repository root when working from source)
+    # @return [String]
+    GEM_ROOT = File.expand_path("../..", __dir__)
 
     @defaults = []
 

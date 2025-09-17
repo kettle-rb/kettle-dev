@@ -85,16 +85,12 @@ Gem::Specification.new do |spec|
     "gemfiles/modular/stringio/**/*.gemfile",
     "gemfiles/modular/x_std_libs/**/*.gemfile",
     # Example templates
-    "*.example",
     # NOTE: Dir globs do not match dotfiles unless the pattern starts with a dot.
-    # This will include to .env.local.example so it is packaged and available to template.
-    ".*.example",
-    "gemfiles/modular/*.gemfile.example",
-    "gemfiles/modular/erb/**/*.gemfile.example",
-    "gemfiles/modular/mutex_m/**/*.gemfile.example",
-    "gemfiles/modular/stringio/**/*.gemfile.example",
-    "gemfiles/modular/x_std_libs/**/*.gemfile.example",
-    "lib/**/*.example",
+    # Include example files anywhere in the tree (non-dot and dot-directories)
+    "**/*.example",
+    "**/.*.example",
+    ".**/*.example",
+    ".**/.*.example",
     # Root files used by template tasks
     ".envrc",
     ".gitignore",
@@ -149,15 +145,15 @@ Gem::Specification.new do |spec|
   ]
   spec.require_paths = ["lib"]
   spec.bindir = "exe"
-  # files listed are relative paths from bindir above.
-  spec.executables = [
-    "kettle-changelog",
-    "kettle-commit-msg",
-    "kettle-dev-setup",
-    "kettle-pre-release",
-    "kettle-readme-backers",
-    "kettle-release",
-    "kettle-dvcs",
+  # Listed files are the relative paths from bindir above.
+  spec.executables = %w[
+    kettle-changelog
+    kettle-commit-msg
+    kettle-dev-setup
+    kettle-pre-release
+    kettle-readme-backers
+    kettle-release
+    kettle-dvcs
   ]
 
   # NOTE: It is preferable to list development dependencies in the gemspec due to increased
@@ -199,7 +195,8 @@ Gem::Specification.new do |spec|
 
   # Git integration (optional)
   # The 'git' gem is optional; kettle-dev falls back to shelling out to `git` if it is not present.
-  # The current release of the git gem depends on activesupport, which makes it too heavy to depend on directly
+  # The current release of the git gem depends on activesupport, which makes it too heavy to depend on directly. Also,
+  # Additionally, the LGPL license is incompatible with the MIT license of this gem.
   # spec.add_dependency("git", ">= 1.19.1")                               # ruby >= 2.3
 
   # Development tasks
