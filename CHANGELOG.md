@@ -20,6 +20,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- Replace template tokens with real minimum ruby versions for runtime and development
+
 ### Changed
 
 - consolidated specs

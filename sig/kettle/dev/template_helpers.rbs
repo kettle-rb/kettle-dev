@@ -48,7 +48,9 @@ module Kettle
         gem_name: String,
         namespace: String,
         namespace_shield: String,
-        gem_shield: String
+        gem_shield: String,
+        ?funding_org: String?,
+        ?min_ruby: String?
       ) -> String
 
       # Parse gemspec metadata and derive useful strings
@@ -77,8 +79,6 @@ module Kettle
         bindir: String,
         executables: Array[String],
       }
-
-      def apply_common_replacements: () -> untyped
     end
   end
 end
