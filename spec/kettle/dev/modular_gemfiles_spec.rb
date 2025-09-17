@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 RSpec.describe Kettle::Dev::ModularGemfiles do
-  include_context "with stubbed env"
-
   before do
     require "kettle/dev"
   end

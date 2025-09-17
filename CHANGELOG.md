@@ -22,11 +22,15 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- consolidated specs
+
 ### Deprecated
 
 ### Removed
 
 ### Fixed
+
+- Leaky state in specs
 
 ### Security
 

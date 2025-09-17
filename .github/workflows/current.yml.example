@@ -45,14 +45,13 @@ jobs:
             rubygems: latest
             bundler: latest
 
-# Turn back on once allow-failures is a feature of GHA.
-#          # truffleruby-24.1 (targets Ruby 3.3 compatibility)
-#          - ruby: "truffleruby"
-#            appraisal: "current"
-#            exec_cmd: "rake test"
-#            gemfile: "Appraisal.root"
-#            rubygems: default
-#            bundler: default
+          # truffleruby-24.1 (targets Ruby 3.3 compatibility)
+          - ruby: "truffleruby"
+            appraisal: "current"
+            exec_cmd: "rake test"
+            gemfile: "Appraisal.root"
+            rubygems: default
+            bundler: default
 
           # jruby-10.0 (targets Ruby 3.4 compatibility)
           - ruby: "jruby"

@@ -647,8 +647,6 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
   end
 
   describe "ENV[\"only\"] filtering" do
-    include_context "with stubbed env"
-
     it "skips copy_file_with_prompt when dest does not match any pattern and records :skip", :check_output do
       Dir.mktmpdir do |project_root|
         Dir.mktmpdir do |src_root|
@@ -758,8 +756,6 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
   end
 
   describe "additional coverage for edge/rescue branches" do
-    include_context "with stubbed env"
-
     it "ensure_clean_git!: handles dirty path with capture raising (covers 139-144)" do
       Dir.mktmpdir do |root|
         allow(helpers).to receive(:system).and_return(true)
