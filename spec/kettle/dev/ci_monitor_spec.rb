@@ -3,11 +3,6 @@
 RSpec.describe Kettle::Dev::CIMonitor do
   let(:helpers) { Kettle::Dev::CIHelpers }
 
-  before do
-    # Speed up loops inside monitor (we still assert on the initial sleep with a specific value in dedicated examples)
-    allow(described_class).to receive(:sleep)
-  end
-
   describe "::monitor_gitlab! minutes exhausted handling" do
     it "treats insufficient quota/minutes as unknown and continues", :check_output do
       allow(helpers).to receive(:project_root).and_return(Dir.pwd)
@@ -234,9 +229,9 @@ RSpec.describe Kettle::Dev::CIMonitor do
       gh = [{workflow: "ci.yml", status: "completed", conclusion: "success", url: "https://x"}]
       gl = {status: "success", url: "https://gitlab.com/x/y/-/pipelines"}
       allow(described_class).to receive_messages(
-                                  collect_github: gh,
-                                  collect_gitlab: gl,
-                                  )
+        collect_github: gh,
+        collect_gitlab: gl,
+      )
       res = described_class.collect_all
       expect(res[:github]).to eq(gh)
       expect(res[:gitlab]).to eq(gl)
@@ -268,13 +263,6 @@ RSpec.describe Kettle::Dev::CIMonitor do
     end
   end
 
-  let(:helpers) { Kettle::Dev::CIHelpers }
-
-  before do
-    # Speed up polling loops
-    allow(described_class).to receive(:sleep)
-  end
-
   describe "::collect_github" do
     it "returns nil when no gh remote or workflows" do
       allow(helpers).to receive_messages(project_root: Dir.pwd, workflows_list: [])
@@ -300,9 +288,9 @@ RSpec.describe Kettle::Dev::CIMonitor do
 
       res = described_class.collect_github
       expect(res).to contain_exactly(
-                       include(workflow: "ci.yml", conclusion: "success", url: "https://github.com/me/repo/actions/runs/1"),
-                       include(workflow: "lint.yml", conclusion: "failure", url: "https://github.com/me/repo/actions/workflows/lint.yml"),
-                       )
+        include(workflow: "ci.yml", conclusion: "success", url: "https://github.com/me/repo/actions/runs/1"),
+        include(workflow: "lint.yml", conclusion: "failure", url: "https://github.com/me/repo/actions/workflows/lint.yml"),
+      )
     end
 
     it "respects K_RELEASE_CI_INITIAL_SLEEP when set" do

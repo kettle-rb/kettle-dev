@@ -26,30 +26,30 @@
   "spec/kettle/dev/ci_helpers_spec.rb:929910759": [
     [40, 9, 19, "ThreadSafety/DirChdir: Avoid using `Dir.chdir` due to its process-wide effect.", 585207512]
   ],
-  "spec/kettle/dev/ci_monitor_spec.rb:1284446946": [
-    [13, 7, 60, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [14, 20, 24, 25, 26].", 3901348706],
-    [14, 7, 61, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [13, 20, 24, 25, 26].", 699226184],
-    [20, 7, 71, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [13, 14, 24, 25, 26].", 3905906821],
-    [24, 7, 67, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [13, 14, 20, 25, 26].", 1891603964],
-    [25, 7, 61, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [13, 14, 20, 24, 26].", 3527598679],
-    [26, 7, 59, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [13, 14, 20, 24, 25].", 2768473756],
-    [32, 7, 60, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [33, 38, 41, 42, 43].", 3901348706],
-    [33, 7, 61, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [32, 38, 41, 42, 43].", 699226184],
-    [38, 7, 71, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [32, 33, 41, 42, 43].", 3905906821],
-    [41, 7, 67, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [32, 33, 38, 42, 43].", 1891603964],
-    [42, 7, 61, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [32, 33, 38, 41, 43].", 3527598679],
-    [43, 7, 60, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [32, 33, 38, 41, 42].", 326783895],
-    [49, 7, 60, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [50, 55, 58, 59, 60].", 3901348706],
-    [50, 7, 61, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [49, 55, 58, 59, 60].", 699226184],
-    [55, 7, 71, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [49, 50, 58, 59, 60].", 3905906821],
-    [58, 7, 67, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [49, 50, 55, 59, 60].", 1891603964],
-    [59, 7, 61, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [49, 50, 55, 58, 60].", 3527598679],
-    [60, 7, 59, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [49, 50, 55, 58, 59].", 2768473756],
-    [163, 7, 60, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [164, 169].", 3901348706],
-    [164, 7, 57, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [163, 169].", 4167565767],
-    [165, 7, 75, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [168].", 656584126],
-    [168, 7, 75, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [165].", 3847887328],
-    [169, 7, 61, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [163, 164].", 699226184]
+  "spec/kettle/dev/ci_monitor_spec.rb:1377194110": [
+    [8, 7, 60, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [9, 15, 19, 20, 21].", 3901348706],
+    [9, 7, 61, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [8, 15, 19, 20, 21].", 699226184],
+    [15, 7, 71, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [8, 9, 19, 20, 21].", 3905906821],
+    [19, 7, 67, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [8, 9, 15, 20, 21].", 1891603964],
+    [20, 7, 61, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [8, 9, 15, 19, 21].", 3527598679],
+    [21, 7, 59, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [8, 9, 15, 19, 20].", 2768473756],
+    [27, 7, 60, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [28, 33, 36, 37, 38].", 3901348706],
+    [28, 7, 61, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [27, 33, 36, 37, 38].", 699226184],
+    [33, 7, 71, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [27, 28, 36, 37, 38].", 3905906821],
+    [36, 7, 67, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [27, 28, 33, 37, 38].", 1891603964],
+    [37, 7, 61, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [27, 28, 33, 36, 38].", 3527598679],
+    [38, 7, 60, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [27, 28, 33, 36, 37].", 326783895],
+    [44, 7, 60, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [45, 50, 53, 54, 55].", 3901348706],
+    [45, 7, 61, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [44, 50, 53, 54, 55].", 699226184],
+    [50, 7, 71, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [44, 45, 53, 54, 55].", 3905906821],
+    [53, 7, 67, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [44, 45, 50, 54, 55].", 1891603964],
+    [54, 7, 61, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [44, 45, 50, 53, 55].", 3527598679],
+    [55, 7, 59, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [44, 45, 50, 53, 54].", 2768473756],
+    [156, 7, 60, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [157, 162].", 3901348706],
+    [157, 7, 57, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [156, 162].", 4167565767],
+    [158, 7, 75, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [161].", 656584126],
+    [161, 7, 75, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [158].", 3847887328],
+    [162, 7, 61, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [156, 157].", 699226184]
   ],
   "spec/kettle/dev/dvcs_cli_spec.rb:1400903079": [
     [13, 7, 14, "ThreadSafety/DirChdir: Avoid using `Dir.chdir` due to its process-wide effect.", 2866645406],
@@ -111,7 +111,7 @@
     [426, 5, 50, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [424, 433].", 615323092],
     [433, 5, 54, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [424, 426].", 1075717093]
   ],
-  "spec/kettle/dev/git_adapter_spec.rb:1532760866": [
+  "spec/kettle/dev/git_adapter_spec.rb:3048225362": [
     [25, 7, 16, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 722749302],
     [123, 7, 15, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 3416856044],
     [125, 7, 15, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 3416856044],
@@ -125,12 +125,12 @@
     [174, 7, 15, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 3416856044],
     [176, 7, 15, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 3416856044],
     [178, 7, 15, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 3416856044],
-    [242, 9, 16, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 722749302],
-    [251, 9, 16, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 722749302],
-    [273, 9, 13, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2024371388],
-    [279, 9, 13, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2024371388],
-    [285, 9, 13, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2024371388],
-    [291, 9, 13, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2024371388]
+    [240, 9, 16, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 722749302],
+    [249, 9, 16, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 722749302],
+    [271, 9, 13, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2024371388],
+    [277, 9, 13, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2024371388],
+    [283, 9, 13, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2024371388],
+    [289, 9, 13, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2024371388]
   ],
   "spec/kettle/dev/pre_release_cli_spec.rb:3795621826": [
     [163, 9, 50, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [165].", 2390041128],
@@ -168,16 +168,12 @@
     [1491, 7, 58, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 1054286736],
     [1522, 7, 69, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 2519740787]
   ],
-  "spec/kettle/dev/setup_cli_derive_spec.rb:328985812": [
-    [39, 7, 51, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [40].", 3515691221],
-    [40, 7, 82, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [39].", 869749006]
-  ],
-  "spec/kettle/dev/setup_cli_modular_and_deps_spec.rb:1219309767": [
-    [16, 7, 67, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [17].", 975042764],
-    [17, 7, 73, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [16].", 3302390268]
-  ],
-  "spec/kettle/dev/setup_cli_more_spec.rb:1604168635": [
-    [85, 7, 13, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2024371388]
+  "spec/kettle/dev/setup_cli_spec.rb:3487078494": [
+    [98, 7, 67, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [99].", 975042764],
+    [99, 7, 73, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [98].", 3302390268],
+    [217, 7, 51, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [218].", 3515691221],
+    [218, 7, 82, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [217].", 869749006],
+    [350, 7, 13, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2024371388]
   ],
   "spec/kettle/dev/tasks/ci_task_spec.rb:3449714240": [
     [556, 9, 29, "RSpec/AnyInstance: Avoid stubbing using `allow_any_instance_of`.", 440176922],
@@ -187,19 +183,19 @@
   "spec/kettle/dev/tasks/template_task_spec.rb:2407385189": [
     [654, 15, 24, "RSpec/ContextWording: Context description should match /^when\\b/, /^with\\b/, or /^without\\b/.", 196765058]
   ],
-  "spec/kettle/dev/template_helpers_spec.rb:464503673": [
-    [676, 11, 65, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [678].", 3890449948],
-    [678, 11, 48, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [676].", 1824268915],
-    [717, 11, 65, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [719].", 3890449948],
-    [719, 11, 48, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [717].", 1824268915],
-    [782, 11, 65, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [785].", 3890449948],
-    [785, 11, 49, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [782].", 3989616664],
-    [802, 9, 29, "RSpec/AnyInstance: Avoid stubbing using `allow_any_instance_of`.", 835110177],
-    [828, 11, 65, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [830].", 3890449948],
-    [830, 11, 48, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [828].", 1824268915],
-    [846, 11, 65, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [850].", 3890449948],
-    [850, 11, 49, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [846].", 3989616664],
-    [916, 7, 205, "RSpec/LeakyConstantDeclaration: Stub class constant instead of declaring explicitly.", 418390978]
+  "spec/kettle/dev/template_helpers_spec.rb:2655016249": [
+    [674, 11, 65, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [676].", 3890449948],
+    [676, 11, 48, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [674].", 1824268915],
+    [715, 11, 65, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [717].", 3890449948],
+    [717, 11, 48, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [715].", 1824268915],
+    [778, 11, 65, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [781].", 3890449948],
+    [781, 11, 49, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [778].", 3989616664],
+    [798, 9, 29, "RSpec/AnyInstance: Avoid stubbing using `allow_any_instance_of`.", 835110177],
+    [824, 11, 65, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [826].", 3890449948],
+    [826, 11, 48, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [824].", 1824268915],
+    [842, 11, 65, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [846].", 3890449948],
+    [846, 11, 49, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [842].", 3989616664],
+    [912, 7, 205, "RSpec/LeakyConstantDeclaration: Stub class constant instead of declaring explicitly.", 418390978]
   ],
   "spec/kettle/dev/versioning_spec.rb:3465928905": [
     [53, 7, 53, "RSpec/PredicateMatcher: Prefer using `be_epic_major` matcher over `epic_major?`.", 200417834]

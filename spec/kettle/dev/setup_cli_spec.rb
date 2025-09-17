@@ -13,9 +13,7 @@ RSpec.describe Kettle::Dev::SetupCLI do
 
   it "updates existing add_development_dependency lines that omit parentheses, without creating duplicates" do
     Dir.mktmpdir do |dir|
-      # rubocop:disable ThreadSafety/DirChdir
       Dir.chdir(dir) do
-        # rubocop:enable ThreadSafety/DirChdir
         # minimal git repo to satisfy prechecks!
         %x(git init -q)
         # clean working tree

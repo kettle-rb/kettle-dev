@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# rubocop:disable ThreadSafety/DirChdir
 RSpec.describe Kettle::Dev::OpenCollectiveConfig do
   describe "::handle" do
     around do |ex|
@@ -39,3 +40,4 @@ RSpec.describe Kettle::Dev::OpenCollectiveConfig do
     end
   end
 end
+# rubocop:enable ThreadSafety/DirChdir

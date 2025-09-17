@@ -37,6 +37,11 @@ RSpec.configure do |config|
     # Skip on Ruby < 3.2 using rspec-pending_for's version matcher
     skip_for(reason: "Requires Bundler >= 2.7 which is unavailable on Ruby < 3.2", versions: %w[2.3 2.4 2.5 2.6 2.7 3.0 3.1])
   end
+
+  config.before do
+    # Speed up polling loops
+    allow(described_class).to receive(:sleep)
+  end
 end
 
 # Internal RSpec & related config
