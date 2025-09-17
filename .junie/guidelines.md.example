@@ -12,8 +12,8 @@ This document captures project-specific knowledge to streamline setup, testing, 
     - See .env.local.example for an example of what to put in .env.local.
     - See CONTRIBUTING.md for details on how to set up your local environment.
 - Ruby and Bundler
-  - Runtime supports Ruby >= 1.9.2.
-  - Development tooling targets Ruby >= 2.3 (minimum supported by setup-ruby GHA).
+  - Runtime supports Ruby >= {K_D_MIN_RUBY}
+  - Development tooling targets Ruby >= {K_D_MIN_DEV_RUBY} (minimum supported by setup-ruby GHA).
   - Use a recent Ruby (>= 3.4 recommended) for fastest setup and to exercise modern coverage behavior.
   - Install dependencies via Bundler in project root:
     - bundle install
@@ -54,7 +54,7 @@ This document captures project-specific knowledge to streamline setup, testing, 
     - RSpec.describe usage:
       - Use `describe "#<method_name>"` to contain a block of specs that test instance method behavior.
       - Use `describe "::<method_name>"` to contain a block of specs that test class method behavior.
-      - Do not use `describe ".<method_name>"` because the dot is ambiguous w.r.t instance vs. class methods. 
+      - Do not use `describe ".<method_name>"` because the dot is ambiguous w.r.t instance vs. class methods.
     - When adding new code or modifying existing code always add tests to cover the updated behavior, including branches, and different types of expected and unexpected inputs.
   - Additional test utilities:
     - rspec-stubbed_env: Use stub_env to control ENV safely within examples.

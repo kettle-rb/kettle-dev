@@ -13,6 +13,8 @@ module Kettle
       @@template_results = {}
 
       EXECUTABLE_GIT_HOOKS_RE = %r{[\\/]\.git-hooks[\\/](commit-msg|prepare-commit-msg)\z}
+      # The minimum Ruby supported by setup-ruby GHA
+      MIN_SETUP_RUBY = Gem::Version.create("2.3")
 
       module_function
 
@@ -409,14 +411,56 @@ module Kettle
       # @param gem_shield [String]
       # @param funding_org [String, nil]
       # @return [String]
-      def apply_common_replacements(content, org:, gem_name:, namespace:, namespace_shield:, gem_shield:, funding_org: nil)
+      def apply_common_replacements(content, org:, gem_name:, namespace:, namespace_shield:, gem_shield:, funding_org: nil, min_ruby: nil)
         raise Error, "Org could not be derived" unless org && !org.empty?
         raise Error, "Gem name could not be derived" unless gem_name && !gem_name.empty?
 
         funding_org ||= org
+        # Derive min_ruby if not provided
+        mr = begin
+          meta = gemspec_metadata
+          meta[:min_ruby]
+        rescue StandardError => e
+          Kettle::Dev.debug_error(e, __method__)
+          # leave min_ruby as-is (possibly nil)
+        end
+        if min_ruby.nil? || min_ruby.to_s.strip.empty?
+          min_ruby = mr.respond_to?(:to_s) ? mr.to_s : mr
+        end
+
+        # Derive min_dev_ruby from min_ruby
+        # min_dev_ruby is the greater of min_dev_ruby and ruby 2.3,
+        #   because ruby 2.3 is the minimum ruby supported by setup-ruby GHA
+        min_dev_ruby = begin
+          [mr, MIN_SETUP_RUBY].max
+        rescue StandardError => e
+          Kettle::Dev.debug_error(e, __method__)
+          MIN_SETUP_RUBY
+        end
+
         c = content.dup
         c = c.gsub("kettle-rb", org.to_s)
         c = c.gsub("{OPENCOLLECTIVE|ORG_NAME}", funding_org)
+        # Replace min ruby token if present
+        begin
+          if min_ruby && !min_ruby.to_s.empty? && c.include?("{K_D_MIN_RUBY}")
+            c = c.gsub("{K_D_MIN_RUBY}", min_ruby.to_s)
+          end
+        rescue StandardError => e
+          Kettle::Dev.debug_error(e, __method__)
+          # ignore
+        end
+
+        # Replace min ruby dev token if present
+        begin
+          if min_dev_ruby && !min_dev_ruby.to_s.empty? && c.include?("{K_D_MIN_DEV_RUBY}")
+            c = c.gsub("{K_D_MIN_DEV_RUBY}", min_dev_ruby.to_s)
+          end
+        rescue StandardError => e
+          Kettle::Dev.debug_error(e, __method__)
+          # ignore
+        end
+
         # Special-case: yard-head link uses the gem name as a subdomain and must be dashes-only.
         # Apply this BEFORE other generic replacements so it isn't altered incorrectly.
         begin

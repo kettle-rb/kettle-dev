@@ -150,6 +150,7 @@ module Kettle
                     namespace: namespace,
                     namespace_shield: namespace_shield,
                     gem_shield: gem_shield,
+                    min_ruby: min_ruby,
                   )
                 end
               else
@@ -162,6 +163,7 @@ module Kettle
                     namespace: namespace,
                     namespace_shield: namespace_shield,
                     gem_shield: gem_shield,
+                    min_ruby: min_ruby,
                   )
                 end
               end
@@ -259,6 +261,7 @@ module Kettle
                     namespace: namespace,
                     namespace_shield: namespace_shield,
                     gem_shield: gem_shield,
+                    min_ruby: min_ruby,
                   )
                 else
                   content.dup
@@ -469,6 +472,7 @@ module Kettle
                   namespace: namespace,
                   namespace_shield: namespace_shield,
                   gem_shield: gem_shield,
+                  min_ruby: min_ruby,
                 )
 
                 # 2) Merge specific sections from destination README, if present
@@ -618,6 +622,7 @@ module Kettle
                   namespace: namespace,
                   namespace_shield: namespace_shield,
                   gem_shield: gem_shield,
+                  min_ruby: min_ruby,
                 )
                 if File.basename(rel) == "CHANGELOG.md"
                   begin

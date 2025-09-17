@@ -41,7 +41,7 @@
 
 ### Compatibility
 
-Compatible with MRI Ruby 2.3+, and concordant releases of JRuby, and TruffleRuby.
+Compatible with MRI Ruby {K_D_MIN_RUBY}+, and concordant releases of JRuby, and TruffleRuby.
 
 | 🚚 _Amazing_ test matrix was brought to you by | 🔎 appraisal2 🔎 and the color 💚 green 💚             |
 |------------------------------------------------|--------------------------------------------------------|
