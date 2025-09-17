@@ -13,7 +13,7 @@ GIT
 PATH
   remote: .
   specs:
-    kettle-dev (1.1.23)
+    kettle-dev (1.1.24)
 
 GEM
   remote: https://rubygems.org/

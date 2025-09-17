@@ -20,11 +20,7 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
-- Replace template tokens with real minimum ruby versions for runtime and development
-
 ### Changed
-
-- consolidated specs
 
 ### Deprecated
 
@@ -32,10 +28,27 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [1.1.24] - 2025-09-17
+
+- TAG: [v1.1.24][1.1.24t]
+- COVERAGE: 96.85% -- 3694/3814 lines in 26 files
+- BRANCH COVERAGE: 81.81% -- 1520/1858 branches in 26 files
+- 78.21% documented
+
+### Added
+
+- Replace template tokens with real minimum ruby versions for runtime and development
+
+### Changed
+
+- consolidated specs
+
+### Fixed
+
 - All .example files are now included in the gem package
 - Leaky state in specs
-
-### Security
 
 ## [1.1.23] - 2025-09-16
 
@@ -956,7 +969,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.23...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.24...HEAD
+[1.1.24]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.23...v1.1.24
+[1.1.24t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.24
 [1.1.23]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.22...v1.1.23
 [1.1.23t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.23
 [1.1.22]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.21...v1.1.22

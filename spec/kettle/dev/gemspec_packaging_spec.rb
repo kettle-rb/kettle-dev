@@ -2,6 +2,7 @@
 
 require "rubygems"
 
+# rubocop:disable RSpec/DescribeClass
 RSpec.describe "kettle-dev gem packaging (example files inclusion)" do
   it "includes all **/*.example and **/.*.example files in the packaged gem, including .junie/guidelines.md.example" do
     # Determine repo root using the public constant
@@ -46,3 +47,4 @@ RSpec.describe "kettle-dev gem packaging (example files inclusion)" do
     expect(packaged).to include(".junie/guidelines.md.example")
   end
 end
+# rubocop:enable RSpec/DescribeClass
