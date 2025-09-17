@@ -181,8 +181,6 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
   end
 
   describe "ENV override to disable git gem" do
-    include_context "with stubbed env"
-
     # rubocop:disable RSpec/LeakyConstantDeclaration
     # Ensure verifying doubles work even when the git gem is not installed.
     unless defined?(Git)

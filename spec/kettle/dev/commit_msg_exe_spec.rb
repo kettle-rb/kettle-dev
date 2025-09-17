@@ -6,8 +6,6 @@ require "tmpdir"
 
 # rubocop:disable RSpec/DescribeClass
 RSpec.describe "exe/kettle-commit-msg" do
-  include_context "with stubbed env"
-
   it "runs without bundler by only requiring rubygems and kettle/dev" do
     skip_for(reason: "kettle/dev autoload fails under Ruby 2.3 - 2.6 in CI environment; investigate/fix later", versions: %w[2.3 2.4 2.5 2.6])
     Dir.mktmpdir do |dir|

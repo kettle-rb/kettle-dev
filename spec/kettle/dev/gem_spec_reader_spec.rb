@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 RSpec.describe Kettle::Dev::GemSpecReader do
-  include_context "with stubbed env"
-
   let(:tmp_root) { File.join(Dir.mktmpdir, "proj") }
   let(:gemspec_path) { File.join(tmp_root, "demo.gemspec") }
 
@@ -221,6 +219,9 @@ RSpec.describe Kettle::Dev::GemSpecReader do
 
   context "when funding detection raises unexpectedly" do
     it "rescues, logs, and re-raises Kettle::Dev::Error" do
+      # Ensure env does not short-circuit funding detection (deterministic on CI)
+      stub_env("FUNDING_ORG" => nil, "OPENCOLLECTIVE_HANDLE" => nil)
+
       write_gemspec <<~G
         Gem::Specification.new do |spec|
           spec.name    = "x"
