@@ -32,6 +32,7 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- All .example files are now included in the gem package
 - Leaky state in specs
 
 ### Security
