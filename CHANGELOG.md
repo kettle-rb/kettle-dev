@@ -28,9 +28,18 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- kettle-readme-backers fails gracefully when README_UPDATER_TOKEN is missing from org secrets
-
 ### Security
+
+## [1.1.25] - 2025-09-18
+
+- TAG: [v1.1.25][1.1.25t]
+- COVERAGE: 96.87% -- 3708/3828 lines in 26 files
+- BRANCH COVERAGE: 81.69% -- 1526/1868 branches in 26 files
+- 78.33% documented
+
+### Fixed
+
+- kettle-readme-backers fails gracefully when README_UPDATER_TOKEN is missing from org secrets
 
 ## [1.1.24] - 2025-09-17
 
@@ -971,7 +980,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.24...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.25...HEAD
+[1.1.25]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.24...v1.1.25
+[1.1.25t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.25
 [1.1.24]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.23...v1.1.24
 [1.1.24t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.24
 [1.1.23]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.22...v1.1.23
