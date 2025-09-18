@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- kettle-readme-backers fails gracefully when README_UPDATER_TOKEN is missing from org secrets
+
 ### Security
 
 ## [1.1.24] - 2025-09-17

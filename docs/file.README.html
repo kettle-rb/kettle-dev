@@ -924,6 +924,17 @@ Tip: When running a single spec file locally, you may want <code>K_SOUP_COV_MIN_
       <li>It runs automatically on a once-a-week schedule by the .github/workflows/opencollective.yml workflow that is part of the kettle-dev template.</li>
     </ul>
   </li>
+  <li>Authentication requirement:
+    <ul>
+      <li>When running in CI with the provided workflow, you must provide an organization-level Actions secret named <code>README_UPDATER_TOKEN</code>.
+        <ul>
+          <li>Create it under your GitHub organization settings: <code>https://github.com/organizations/&lt;YOUR_ORG&gt;/settings/secrets/actions</code>.</li>
+          <li>The updater will look for <code>REPO</code> or <code>GITHUB_REPOSITORY</code> (both usually set by GitHub Actions) to infer <code>&lt;YOUR_ORG&gt;</code> for guidance.</li>
+          <li>If <code>README_UPDATER_TOKEN</code> is missing, the tool prints a helpful error to STDERR and aborts, including a direct link to the expected org settings page.</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
 </ul>
 
 <h2 id="-floss-funding">🦷 FLOSS Funding</h2>
@@ -1126,7 +1137,7 @@ Please consider sponsoring me or the project.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Wed Sep 17 03:49:53 2025 by
+  Generated on Thu Sep 18 01:53:41 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

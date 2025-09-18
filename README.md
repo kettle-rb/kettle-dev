@@ -548,6 +548,11 @@ What it does:
 - Tip:
   - Run this locally before committing to keep your README current, or schedule it in CI to refresh periodically.
   - It runs automatically on a once-a-week schedule by the .github/workflows/opencollective.yml workflow that is part of the kettle-dev template.
+- Authentication requirement:
+  - When running in CI with the provided workflow, you must provide an organization-level Actions secret named `README_UPDATER_TOKEN`.
+    - Create it under your GitHub organization settings: `https://github.com/organizations/<YOUR_ORG>/settings/secrets/actions`.
+    - The updater will look for `REPO` or `GITHUB_REPOSITORY` (both usually set by GitHub Actions) to infer `<YOUR_ORG>` for guidance.
+    - If `README_UPDATER_TOKEN` is missing, the tool prints a helpful error to STDERR and aborts, including a direct link to the expected org settings page.
 
 ## 🦷 FLOSS Funding
 
