@@ -175,7 +175,7 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
   end
 
   describe "#fetch_all_backers_raw" do
-    let(:success) { instance_double(Net::HTTPSuccess, body: JSON.dump([{ "name" => "N", "image" => "", "website" => "", "profile" => "", "role" => "BACKER", "tier" => "Backer" }])) }
+    let(:success) { instance_double(Net::HTTPSuccess, body: JSON.dump([{"name" => "N", "image" => "", "website" => "", "profile" => "", "role" => "BACKER", "tier" => "Backer"}])) }
 
     it "sets headers and timeouts when fetching" do
       fake_response = instance_double(Net::HTTPSuccess, body: JSON.dump([]))
@@ -402,6 +402,36 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
   end
 
   describe "additional run! scenarios" do
+    it "renders empty-tier BACKERs under a Donors section appended beneath Sponsors", :check_output do
+      instance_tags = instance.send(:tag_strings)
+      # README with both tag pairs but no content
+      File.write(tmp_readme, [
+        "# Title",
+        instance_tags[:generic_start],
+        "",
+        instance_tags[:generic_end],
+        "",
+        instance_tags[:orgs_start],
+        "",
+        instance_tags[:orgs_end],
+        "",
+      ].join("\n"))
+
+      raw = [
+        {"name" => "Firstname Lastname", "image" => nil, "website" => nil, "profile" => "https://opencollective.com/firstname-lastname", "role" => "BACKER", "tier" => ""},
+      ]
+      allow(instance).to receive(:fetch_all_backers_raw).and_return(raw)
+      allow(instance).to receive(:git_repo?).and_return(false)
+
+      instance.run!
+
+      content = File.read(tmp_readme)
+      expect(content).to include("### Open Collective for Donors\n\n")
+      expect(content).to match(/\[!\[[^\]]*\]\([^\)]*\)\]\(/) # at least one badge link
+      # ensure an empty line after the injected donor line
+      expect(content).to match(/### Open Collective for Donors\n\n\[!\[[^\]]*\]\([^\)]*\)\]\([^\)]*\)\n\n/)
+    end
+
     it "updates only backers section and uses singular 'section' message", :check_output do
       # README with both tags; backers will change, sponsors unchanged
       instance_tags = instance.send(:tag_strings)

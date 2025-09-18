@@ -140,6 +140,20 @@
     [239, 19, 26, "RSpec/DescribedClass: Use `described_class` instead of `Kettle::Dev::PreReleaseCLI`.", 1843931869],
     [255, 19, 26, "RSpec/DescribedClass: Use `described_class` instead of `Kettle::Dev::PreReleaseCLI`.", 1843931869]
   ],
+  "spec/kettle/dev/readme_backers_spec.rb:398034650": [
+    [100, 9, 66, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [103].", 798457357],
+    [103, 9, 55, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [100].", 673372644],
+    [423, 7, 66, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [424].", 798457357],
+    [424, 7, 56, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [423].", 1426439343],
+    [460, 7, 66, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [461].", 798457357],
+    [461, 7, 55, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [460].", 673372644],
+    [486, 7, 66, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [487].", 798457357],
+    [487, 7, 55, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [486].", 673372644],
+    [505, 7, 66, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [506].", 798457357],
+    [506, 7, 56, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [505].", 1426439343],
+    [521, 7, 66, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [522].", 798457357],
+    [522, 7, 55, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [521].", 673372644]
+  ],
   "spec/kettle/dev/release_cli_spec.rb:4280640386": [
     [1285, 7, 76, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 1335859022],
     [1313, 11, 51, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [1314].", 1750577460],

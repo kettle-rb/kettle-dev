@@ -579,6 +579,8 @@ and [Tidelift][🏙️entsup-tidelift].
 
 ### Open Collective for Individuals
 
+NOTE: [kettle-readme-backers][kettle-readme-backers] updates this list every day, automatically.
+
 <!-- OPENCOLLECTIVE-INDIVIDUALS:START -->
 No backers yet. Be the first!
 <!-- OPENCOLLECTIVE-INDIVIDUALS:END -->
@@ -587,11 +589,15 @@ Support us with a monthly donation and help us continue our activities. [[Become
 
 ### Open Collective for Organizations
 
+NOTE: [kettle-readme-backers][kettle-readme-backers] updates this list every day, automatically.
+
 <!-- OPENCOLLECTIVE-ORGANIZATIONS:START -->
 No sponsors yet. Be the first!
 <!-- OPENCOLLECTIVE-ORGANIZATIONS:END -->
 
 Become a sponsor and get your logo on our README on GitHub with a link to your site. [[Become a sponsor](https://opencollective.com/kettle-rb#sponsor)]
+
+[kettle-readme-backers]: https://github.com/kettle-rb/kettle-dev/blob/main/exe/kettle-readme-backers
 
 ### Another way to support open-source
 

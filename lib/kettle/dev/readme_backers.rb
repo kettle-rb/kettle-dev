@@ -24,8 +24,23 @@ module Kettle
       README_OSC_TAG_DEFAULT = "OPENCOLLECTIVE"
       COMMIT_SUBJECT_DEFAULT = "💸 Thanks 🙏 to our new backers 🎒 and subscribers 📜"
       # Deprecated constant maintained for backwards compatibility in tests/specs.
-      # Prefer OpenCollectiveConfig.yaml_path going forward.
-      OC_YML_PATH = OpenCollectiveConfig.yaml_path
+      # Prefer OpenCollectiveConfig.yaml_path going forward, but resolve to the host project root.
+      OC_YML_PATH = OpenCollectiveConfig.yaml_path(Dir.pwd)
+
+      private
+
+      # Emit a debug log line when kettle-dev debugging is enabled.
+      # Controlled by KETTLE_DEV_DEBUG=true (or DEBUG=true as fallback).
+      # @param msg [String]
+      # @return [void]
+      def debug_log(msg)
+        return unless Kettle::Dev::DEBUGGING
+        Kernel.warn("[readme_backers] #{msg}")
+      rescue StandardError
+        # never raise from a standard error within debug logging
+      end
+
+      public
 
       # Ruby 2.3 compatibility: Struct keyword_init added in Ruby 2.5
       # Switch to struct when dropping ruby < 2.5
@@ -74,28 +89,55 @@ module Kettle
 
       def run!
         validate
+        debug_log("Starting run: handle=#{@handle.inspect}, readme=#{@readme_path}")
+        debug_log("Resolved OSC tag base=#{readme_osc_tag.inspect}")
         readme = File.read(@readme_path)
 
         # Identify previous entries for diffing/mentions
         b_start, b_end = detect_backer_tags(readme)
-        prev_backer_identities = extract_section_identities(readme, b_start, b_end)
         s_start_prev, s_end_prev = detect_sponsor_tags(readme)
+        debug_log("Backer tags present=#{b_start != :not_found && b_end != :not_found}; Sponsor tags present=#{s_start_prev != :not_found && s_end_prev != :not_found}")
+        prev_backer_identities = extract_section_identities(readme, b_start, b_end)
         prev_sponsor_identities = extract_section_identities(readme, s_start_prev, s_end_prev)
 
         # Fetch all BACKER-role members once and partition by tier
+        debug_log("Fetching OpenCollective members JSON for handle=#{@handle} ...")
         raw = fetch_all_backers_raw
+        debug_log("Fetched #{Array(raw).size} members (role=#{Backer::ROLE}) before tier partitioning")
+        if Kettle::Dev::DEBUGGING
+          tier_counts = Array(raw).group_by { |h| (h["tier"] || "").to_s.strip }.transform_values(&:size)
+          debug_log("Tier distribution: #{tier_counts}")
+          empty_tier = Array(raw).select { |h| h["tier"].to_s.strip.empty? }
+          unless empty_tier.empty?
+            debug_log("Members with empty tier: count=#{empty_tier.size}; showing up to 5 samples:")
+            empty_tier.first(5).each_with_index do |m, i|
+              debug_log("  [empty-tier ##{i + 1}] name=#{m["name"].inspect}, isActive=#{m["isActive"].inspect}, profile=#{m["profile"].inspect}, website=#{m["website"].inspect}")
+            end
+          end
+          other_tiers = Array(raw).map { |h| h["tier"].to_s.strip }.reject { |t| t.empty? || t.casecmp("Backer").zero? || t.casecmp("Sponsor").zero? }
+          unless other_tiers.empty?
+            counts = other_tiers.group_by { |t| t }.transform_values(&:size)
+            debug_log("Non-standard tiers present (excluding Backer/Sponsor): #{counts}")
+          end
+        end
         backers_hashes = Array(raw).select { |h| h["tier"].to_s.strip.casecmp("Backer").zero? }
         sponsors_hashes = Array(raw).select { |h| h["tier"].to_s.strip.casecmp("Sponsor").zero? }
 
         backers = map_hashes_to_backers(backers_hashes)
         sponsors = map_hashes_to_backers(sponsors_hashes)
+        debug_log("Partitioned counts => Backers=#{backers.size}, Sponsors=#{sponsors.size}")
+        if Kettle::Dev::DEBUGGING && backers.empty? && sponsors.empty? && Array(raw).any?
+          debug_log("No Backer or Sponsor tiers matched among #{Array(raw).size} BACKER-role records. If tiers are empty, they will not appear in Backers/Sponsors sections.")
+        end
 
         # Additional dynamic tiers (exclude Backer/Sponsor)
         extra_map = {}
         Array(raw).group_by { |h| h["tier"].to_s.strip }.each do |tier, members|
-          next if tier.empty? || tier.casecmp("Backer").zero? || tier.casecmp("Sponsor").zero?
-          extra_map[tier] = map_hashes_to_backers(members)
+          normalized = tier.empty? ? "Donors" : tier
+          next if normalized.casecmp("Backer").zero? || normalized.casecmp("Sponsor").zero?
+          extra_map[normalized] = map_hashes_to_backers(members)
         end
+        debug_log("Extra tiers detected: #{extra_map.keys.sort}") unless extra_map.empty?
 
         backers_md = generate_markdown(backers, empty_message: "No backers yet. Be the first!", default_name: "Backer")
         sponsors_md_base = generate_markdown(sponsors, empty_message: "No sponsors yet. Be the first!", default_name: "Sponsor")
@@ -111,10 +153,12 @@ module Kettle
         updated = replace_between_tags(readme, b_start, b_end, backers_md)
         case updated
         when :not_found
+          debug_log("Backers tag block not found; skipping backers section update")
           updated_readme = readme
           backers_changed = false
           new_backers = []
         when :no_change
+          debug_log("Backers section unchanged (generated markdown matches existing block)")
           updated_readme = readme
           backers_changed = false
           new_backers = []
@@ -122,12 +166,14 @@ module Kettle
           updated_readme = updated
           backers_changed = true
           new_backers = compute_new_members(prev_backer_identities, backers)
+          debug_log("Backers section updated; new_backers=#{new_backers.size}")
         end
 
         # Update sponsors section (with extra tiers appended when present)
         s_start, s_end = detect_sponsor_tags(updated_readme)
         # If there is no sponsors section but there is a backers section, append extra tiers to backers instead.
         if s_start == :not_found && !extra_tiers_md.empty? && b_start != :not_found
+          debug_log("Sponsors tags not found; appending extra tiers under Backers section")
           backers_md_with_extra = [backers_md, "", extra_tiers_md].join("\n")
           updated = replace_between_tags(updated_readme, b_start, b_end, backers_md_with_extra)
           updated_readme = updated unless updated == :no_change || updated == :not_found
@@ -136,10 +182,12 @@ module Kettle
         updated2 = replace_between_tags(updated_readme, s_start, s_end, sponsors_md)
         case updated2
         when :not_found
+          debug_log("Sponsors tag block not found; skipping sponsors section update")
           sponsors_changed = false
           final = updated_readme
           new_sponsors = []
         when :no_change
+          debug_log("Sponsors section unchanged (generated markdown matches existing block)")
           sponsors_changed = false
           final = updated_readme
           new_sponsors = []
@@ -147,6 +195,7 @@ module Kettle
           sponsors_changed = true
           final = updated2
           new_sponsors = compute_new_members(prev_sponsor_identities, sponsors)
+          debug_log("Sponsors section updated; new_sponsors=#{new_sponsors.size}")
         end
 
         if !backers_changed && !sponsors_changed
@@ -154,9 +203,11 @@ module Kettle
             ts = tag_strings
             warn("No recognized Open Collective tags found in #{@readme_path}. Expected one or more of: " \
               "#{ts[:generic_start]}/#{ts[:generic_end]}, #{ts[:individuals_start]}/#{ts[:individuals_end]}, #{ts[:orgs_start]}/#{ts[:orgs_end]}.")
+            debug_log("Missing tags: looked for #{ts}")
             # Do not exit the process during tests or library use; just return.
             return
           end
+          debug_log("No changes detected after processing; Backers=#{backers.size}, Sponsors=#{sponsors.size}, ExtraTiers=#{extra_map.keys.size}")
           puts "No changes to backers or sponsors sections in #{@readme_path}."
           return
         end
@@ -177,9 +228,9 @@ module Kettle
         env = ENV["KETTLE_DEV_BACKER_README_OSC_TAG"].to_s
         return env unless env.strip.empty?
 
-        if File.file?(OpenCollectiveConfig.yaml_path)
+        if File.file?(OC_YML_PATH)
           begin
-            yml = YAML.safe_load(File.read(OpenCollectiveConfig.yaml_path))
+            yml = YAML.safe_load(File.read(OC_YML_PATH))
             if yml.is_a?(Hash)
               from_yml = yml["readme-osc-tag"] || yml[:"readme-osc-tag"]
               from_yml = from_yml.to_s if from_yml
@@ -205,12 +256,13 @@ module Kettle
       end
 
       def resolve_handle
-        OpenCollectiveConfig.handle(required: true)
+        OpenCollectiveConfig.handle(required: true, root: Dir.pwd)
       end
 
       def fetch_all_backers_raw
         api_path = "members/all.json"
         url = URI("https://opencollective.com/#{@handle}/#{api_path}")
+        debug_log("GET #{url}")
         response = Net::HTTP.start(url.host, url.port, use_ssl: url.scheme == "https") do |conn|
           conn.read_timeout = 10
           conn.open_timeout = 5
@@ -218,15 +270,26 @@ module Kettle
           req["User-Agent"] = "kettle-dev/README-backers"
           conn.request(req)
         end
-        return [] unless response.is_a?(Net::HTTPSuccess)
+        unless response.is_a?(Net::HTTPSuccess)
+          body_len = (response.respond_to?(:body) && response.body) ? response.body.bytesize : 0
+          code = response.respond_to?(:code) ? response.code : response.class.name
+          warn("OpenCollective API non-success for #{api_path}: status=#{code}, body_len=#{body_len}")
+          debug_log("Response body (truncated 500 bytes): #{response.body.to_s[0, 500]}") if Kettle::Dev::DEBUGGING && body_len.to_i > 0
+          return []
+        end
 
         parsed = JSON.parse(response.body)
-        Array(parsed).select { |h| h["role"].to_s.upcase == Backer::ROLE }
+        all = Array(parsed)
+        filtered = all.select { |h| h["role"].to_s.upcase == Backer::ROLE }
+        debug_log("Parsed #{all.size} records; filtered BACKER => #{filtered.size}")
+        filtered
       rescue JSON::ParserError => e
         warn("Error parsing #{api_path} JSON: #{e.message}")
+        debug_log("Body that failed to parse (truncated 500): #{response&.body.to_s[0, 500]}")
         []
       rescue StandardError => e
         warn("Error fetching #{api_path}: #{e.class}: #{e.message}")
+        debug_log(e.backtrace.join("\n"))
         []
       end
 
@@ -245,8 +308,11 @@ module Kettle
         return empty_message if members.nil? || members.empty?
 
         members.map do |m|
-          image_url = m.image || DEFAULT_AVATAR
-          link = m.website || m.profile || "#"
+          # Treat empty strings as missing for image/link selection
+          image_url = (m.image && !m.image.to_s.strip.empty?) ? m.image : DEFAULT_AVATAR
+          primary_link = (m.website && !m.website.to_s.strip.empty?) ? m.website : nil
+          fallback_link = (m.profile && !m.profile.to_s.strip.empty?) ? m.profile : nil
+          link = primary_link || fallback_link || "#"
           name = (m.name && !m.name.strip.empty?) ? m.name : default_name
           "[![#{escape_text(name)}](#{image_url})](#{link})"
         end.join(" ")
@@ -262,11 +328,12 @@ module Kettle
         extra_map.keys.sort.each do |tier|
           members = extra_map[tier]
           next if members.nil? || members.empty?
-          lines << "### #{tier}"
+          lines << "### Open Collective for #{tier}"
+          lines << ""
           lines << generate_markdown(members, empty_message: "", default_name: tier)
           lines << ""
         end
-        lines.join("\n").strip
+        lines.join("\n")
       end
 
       def replace_between_tags(content, start_tag, end_tag, new_content)
