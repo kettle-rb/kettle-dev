@@ -71,6 +71,7 @@ module Kettle
       end
 
       def run!
+        validate
         readme = File.read(@readme_path)
 
         # Identify previous entries for diffing/mentions

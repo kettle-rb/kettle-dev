@@ -23,6 +23,8 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
       "KETTLE_DEV_BACKER_README_OSC_TAG" => nil,
       "OPENCOLLECTIVE_HANDLE" => nil,
       "KETTLE_README_BACKERS_COMMIT_SUBJECT" => nil,
+      # Required by ReadmeBackers#validate
+      "README_UPDATER_TOKEN" => "test-token",
     )
   end
 
