@@ -32,14 +32,19 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
     context "when backers and sponsors content is unchanged" do
       it "prints no changes and returns without writing", :check_output do
         # Arrange members and README matching generated markdown
-        members = [
+        backers_members = [
           Kettle::Dev::ReadmeBackers::Backer.new(name: "Alice", image: nil, website: "https://a.example", profile: nil),
+        ]
+        sponsors_members = [
           Kettle::Dev::ReadmeBackers::Backer.new(name: "", image: "", website: "", profile: ""),
         ]
-        allow(instance).to receive(:fetch_members).with("backers.json").and_return(members)
-        allow(instance).to receive(:fetch_members).with("sponsors.json").and_return(members)
-        backers_md = instance.send(:generate_markdown, members, empty_message: "No backers yet. Be the first!", default_name: "Backer")
-        sponsors_md = instance.send(:generate_markdown, members, empty_message: "No sponsors yet. Be the first!", default_name: "Sponsor")
+        raw = [
+          {"name" => "Alice", "image" => nil, "website" => "https://a.example", "profile" => nil, "role" => "BACKER", "tier" => "Backer"},
+          {"name" => "", "image" => "", "website" => "", "profile" => "", "role" => "BACKER", "tier" => "Sponsor"},
+        ]
+        allow(instance).to receive(:fetch_all_backers_raw).and_return(raw)
+        backers_md = instance.send(:generate_markdown, backers_members, empty_message: "No backers yet. Be the first!", default_name: "Backer")
+        sponsors_md = instance.send(:generate_markdown, sponsors_members, empty_message: "No sponsors yet. Be the first!", default_name: "Sponsor")
         content = [
           "# Title",
           tags[:generic_start],
@@ -62,7 +67,7 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
     context "when no recognized tags are present" do
       it "warns and returns", :check_output do
         File.write(tmp_readme, "# No tags here\n")
-        allow(instance).to receive(:fetch_members).and_return([])
+        allow(instance).to receive(:fetch_all_backers_raw).and_return([])
         allow(instance).to receive(:perform_git_commit)
         allow(File).to receive(:write)
         instance.run!
@@ -88,14 +93,11 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
         File.write(tmp_readme, initial)
 
         # Members that will generate different markdown
-        new_backers = [
-          Kettle::Dev::ReadmeBackers::Backer.new(name: "Alice", image: nil, website: nil, profile: "https://github.com/Alice"),
+        raw = [
+          {"name" => "Alice", "image" => nil, "website" => nil, "profile" => "https://github.com/Alice", "role" => "BACKER", "tier" => "Backer"},
+          {"name" => "Acme", "image" => nil, "website" => "https://acme.example", "profile" => nil, "role" => "BACKER", "tier" => "Sponsor"},
         ]
-        new_sponsors = [
-          Kettle::Dev::ReadmeBackers::Backer.new(name: "Acme", image: nil, website: "https://acme.example", profile: nil),
-        ]
-        allow(instance).to receive(:fetch_members).with("backers.json").and_return(new_backers)
-        allow(instance).to receive(:fetch_members).with("sponsors.json").and_return(new_sponsors)
+        allow(instance).to receive(:fetch_all_backers_raw).and_return(raw)
 
         # In a git repo, ensure commit is attempted
         allow(instance).to receive(:git_repo?).and_return(true)
@@ -172,8 +174,8 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
     end
   end
 
-  describe "#fetch_members" do
-    let(:success) { instance_double(Net::HTTPSuccess, body: JSON.dump([{"name" => "N", "image" => "", "website" => "", "profile" => ""}])) }
+  describe "#fetch_all_backers_raw" do
+    let(:success) { instance_double(Net::HTTPSuccess, body: JSON.dump([{ "name" => "N", "image" => "", "website" => "", "profile" => "", "role" => "BACKER", "tier" => "Backer" }])) }
 
     it "sets headers and timeouts when fetching" do
       fake_response = instance_double(Net::HTTPSuccess, body: JSON.dump([]))
@@ -188,39 +190,37 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
       }
       allow(Net::HTTP).to receive(:start).and_yield(conn).and_return(fake_response)
 
-      instance.send(:fetch_members, "backers.json")
+      instance.send(:fetch_all_backers_raw)
 
       expect(captured_req).to be_a(Net::HTTP::Get)
       expect(captured_req["User-Agent"]).to eq("kettle-dev/README-backers")
     end
 
-    it "returns parsed members on success" do
+    it "returns parsed raw hashes on success filtered by role BACKER" do
       allow(Net::HTTP).to receive(:start).and_return(success)
       allow(success).to receive(:is_a?).with(Net::HTTPSuccess).and_return(true)
-      res = instance.send(:fetch_members, "backers.json")
-      expect(res).to all(be_a(Kettle::Dev::ReadmeBackers::Backer))
-      expect(res.first.image).to be_nil
-      expect(res.first.website).to be_nil
-      expect(res.first.profile).to be_nil
+      res = instance.send(:fetch_all_backers_raw)
+      expect(res).to all(be_a(Hash))
+      expect(res.first["tier"]).to eq("Backer")
     end
 
     it "returns [] when not success" do
       failure = instance_double(Net::HTTPResponse)
       allow(Net::HTTP).to receive(:start).and_return(failure)
       allow(failure).to receive(:is_a?).with(Net::HTTPSuccess).and_return(false)
-      expect(instance.send(:fetch_members, "backers.json")).to eq([])
+      expect(instance.send(:fetch_all_backers_raw)).to eq([])
     end
 
     it "rescues JSON parsing error" do
       bad = instance_double(Net::HTTPSuccess, body: "not json")
       allow(Net::HTTP).to receive(:start).and_return(bad)
       allow(bad).to receive(:is_a?).with(Net::HTTPSuccess).and_return(true)
-      expect(instance.send(:fetch_members, "backers.json")).to eq([])
+      expect(instance.send(:fetch_all_backers_raw)).to eq([])
     end
 
     it "rescues other StandardError" do
       allow(Net::HTTP).to receive(:start).and_raise(StandardError.new("boom"))
-      expect(instance.send(:fetch_members, "backers.json")).to eq([])
+      expect(instance.send(:fetch_all_backers_raw)).to eq([])
     end
   end
 
@@ -423,9 +423,11 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
       ].join("\n"))
 
       # New backers different; sponsors same so no change for sponsors
-      new_backers = [Kettle::Dev::ReadmeBackers::Backer.new(name: "Alice", image: nil, website: nil, profile: "https://github.com/alice")]
-      allow(instance).to receive(:fetch_members).with("backers.json").and_return(new_backers)
-      allow(instance).to receive(:fetch_members).with("sponsors.json").and_return(initial_sponsors)
+      raw = [
+        {"name" => "Alice", "image" => nil, "website" => nil, "profile" => "https://github.com/alice", "role" => "BACKER", "tier" => "Backer"},
+        {"name" => "Org", "image" => nil, "website" => "https://org.example", "profile" => nil, "role" => "BACKER", "tier" => "Sponsor"},
+      ]
+      allow(instance).to receive(:fetch_all_backers_raw).and_return(raw)
       allow(instance).to receive(:git_repo?).and_return(true)
       allow(instance).to receive(:perform_git_commit)
 
@@ -447,9 +449,11 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
         instance_tags[:orgs_end],
       ].join("\n"))
 
-      allow(instance).to receive(:fetch_members).with("backers.json").and_return(initial_backers) # unchanged
-      new_sponsors = [Kettle::Dev::ReadmeBackers::Backer.new(name: "Acme", image: nil, website: "https://acme.example", profile: nil)]
-      allow(instance).to receive(:fetch_members).with("sponsors.json").and_return(new_sponsors)
+      raw = [
+        {"name" => "Old", "image" => nil, "website" => nil, "profile" => nil, "role" => "BACKER", "tier" => "Backer"},
+        {"name" => "Acme", "image" => nil, "website" => "https://acme.example", "profile" => nil, "role" => "BACKER", "tier" => "Sponsor"},
+      ]
+      allow(instance).to receive(:fetch_all_backers_raw).and_return(raw)
       allow(instance).to receive(:git_repo?).and_return(true)
       allow(instance).to receive(:perform_git_commit)
 
@@ -465,8 +469,10 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
         "old",
         instance_tags[:generic_end],
       ].join("\n"))
-      allow(instance).to receive(:fetch_members).with("backers.json").and_return([Kettle::Dev::ReadmeBackers::Backer.new(name: "A", image: nil, website: nil, profile: nil)])
-      allow(instance).to receive(:fetch_members).with("sponsors.json").and_return([])
+      raw = [
+        {"name" => "A", "image" => nil, "website" => nil, "profile" => nil, "role" => "BACKER", "tier" => "Backer"},
+      ]
+      allow(instance).to receive(:fetch_all_backers_raw).and_return(raw)
       allow(instance).to receive(:git_repo?).and_return(false)
       expect(instance).not_to receive(:perform_git_commit)
       instance.run!
@@ -479,8 +485,10 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
         "old",
         instance_tags[:generic_end],
       ].join("\n"))
-      allow(instance).to receive(:fetch_members).with("backers.json").and_return([Kettle::Dev::ReadmeBackers::Backer.new(name: "A", image: nil, website: nil, profile: nil)])
-      allow(instance).to receive(:fetch_members).with("sponsors.json").and_return([])
+      raw = [
+        {"name" => "A", "image" => nil, "website" => nil, "profile" => nil, "role" => "BACKER", "tier" => "Backer"},
+      ]
+      allow(instance).to receive(:fetch_all_backers_raw).and_return(raw)
       allow(instance).to receive(:git_repo?).and_return(true)
       allow(instance).to receive(:perform_git_commit)
       expect { instance.run! }.to output(a_string_matching(/Updated backers section in/)).to_stdout

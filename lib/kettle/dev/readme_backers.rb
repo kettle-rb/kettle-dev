@@ -19,7 +19,8 @@ module Kettle
       public
 
       DEFAULT_AVATAR = "https://opencollective.com/static/images/default-avatar.png"
-      README_PATH = File.expand_path("../../../README.md", __dir__)
+      # Default README is the one in the current working directory of the host project
+      README_PATH = File.expand_path("README.md", Dir.pwd)
       README_OSC_TAG_DEFAULT = "OPENCOLLECTIVE"
       COMMIT_SUBJECT_DEFAULT = "💸 Thanks 🙏 to our new backers 🎒 and subscribers 📜"
       # Deprecated constant maintained for backwards compatibility in tests/specs.
@@ -31,6 +32,7 @@ module Kettle
       # Backer = Struct.new(:name, :image, :website, :profile, keyword_init: true)
       # Fallback for Ruby < 2.5 where Struct keyword_init is unsupported
       class Backer
+        ROLE = "BACKER"
         attr_accessor :name, :image, :website, :profile
 
         def initialize(name: nil, image: nil, website: nil, profile: nil, **_ignored)
@@ -80,9 +82,32 @@ module Kettle
         s_start_prev, s_end_prev = detect_sponsor_tags(readme)
         prev_sponsor_identities = extract_section_identities(readme, s_start_prev, s_end_prev)
 
-        # Backers (individuals)
-        backers = fetch_members("backers.json")
+        # Fetch all BACKER-role members once and partition by tier
+        raw = fetch_all_backers_raw
+        backers_hashes = Array(raw).select { |h| h["tier"].to_s.strip.casecmp("Backer").zero? }
+        sponsors_hashes = Array(raw).select { |h| h["tier"].to_s.strip.casecmp("Sponsor").zero? }
+
+        backers = map_hashes_to_backers(backers_hashes)
+        sponsors = map_hashes_to_backers(sponsors_hashes)
+
+        # Additional dynamic tiers (exclude Backer/Sponsor)
+        extra_map = {}
+        Array(raw).group_by { |h| h["tier"].to_s.strip }.each do |tier, members|
+          next if tier.empty? || tier.casecmp("Backer").zero? || tier.casecmp("Sponsor").zero?
+          extra_map[tier] = map_hashes_to_backers(members)
+        end
+
         backers_md = generate_markdown(backers, empty_message: "No backers yet. Be the first!", default_name: "Backer")
+        sponsors_md_base = generate_markdown(sponsors, empty_message: "No sponsors yet. Be the first!", default_name: "Sponsor")
+
+        extra_tiers_md = generate_extra_tiers_markdown(extra_map)
+        sponsors_md = if extra_tiers_md.empty?
+          sponsors_md_base
+        else
+          [sponsors_md_base, "", extra_tiers_md].join("\n")
+        end
+
+        # Update backers section
         updated = replace_between_tags(readme, b_start, b_end, backers_md)
         case updated
         when :not_found
@@ -99,10 +124,15 @@ module Kettle
           new_backers = compute_new_members(prev_backer_identities, backers)
         end
 
-        # Sponsors (organizations)
-        sponsors = fetch_members("sponsors.json")
-        sponsors_md = generate_markdown(sponsors, empty_message: "No sponsors yet. Be the first!", default_name: "Sponsor")
+        # Update sponsors section (with extra tiers appended when present)
         s_start, s_end = detect_sponsor_tags(updated_readme)
+        # If there is no sponsors section but there is a backers section, append extra tiers to backers instead.
+        if s_start == :not_found && !extra_tiers_md.empty? && b_start != :not_found
+          backers_md_with_extra = [backers_md, "", extra_tiers_md].join("\n")
+          updated = replace_between_tags(updated_readme, b_start, b_end, backers_md_with_extra)
+          updated_readme = updated unless updated == :no_change || updated == :not_found
+        end
+
         updated2 = replace_between_tags(updated_readme, s_start, s_end, sponsors_md)
         case updated2
         when :not_found
@@ -178,8 +208,9 @@ module Kettle
         OpenCollectiveConfig.handle(required: true)
       end
 
-      def fetch_members(path)
-        url = URI("https://opencollective.com/#{@handle}/#{path}")
+      def fetch_all_backers_raw
+        api_path = "members/all.json"
+        url = URI("https://opencollective.com/#{@handle}/#{api_path}")
         response = Net::HTTP.start(url.host, url.port, use_ssl: url.scheme == "https") do |conn|
           conn.read_timeout = 10
           conn.open_timeout = 5
@@ -190,7 +221,17 @@ module Kettle
         return [] unless response.is_a?(Net::HTTPSuccess)
 
         parsed = JSON.parse(response.body)
-        Array(parsed).map do |h|
+        Array(parsed).select { |h| h["role"].to_s.upcase == Backer::ROLE }
+      rescue JSON::ParserError => e
+        warn("Error parsing #{api_path} JSON: #{e.message}")
+        []
+      rescue StandardError => e
+        warn("Error fetching #{api_path}: #{e.class}: #{e.message}")
+        []
+      end
+
+      def map_hashes_to_backers(hashes)
+        Array(hashes).map do |h|
           Backer.new(
             name: h["name"],
             image: (h["image"].to_s.strip.empty? ? nil : h["image"]),
@@ -198,12 +239,6 @@ module Kettle
             profile: (h["profile"].to_s.strip.empty? ? nil : h["profile"]),
           )
         end
-      rescue JSON::ParserError => e
-        warn("Error parsing #{path} JSON: #{e.message}")
-        []
-      rescue StandardError => e
-        warn("Error fetching #{path}: #{e.class}: #{e.message}")
-        []
       end
 
       def generate_markdown(members, empty_message:, default_name:)
@@ -215,6 +250,23 @@ module Kettle
           name = (m.name && !m.name.strip.empty?) ? m.name : default_name
           "[![#{escape_text(name)}](#{image_url})](#{link})"
         end.join(" ")
+      end
+
+      # Build markdown for any additional tiers beyond Backer/Sponsor.
+      # Accepts a Hash of { tier_name => [Backer, ...] }.
+      # Returns an empty string when there are no extra tiers.
+      def generate_extra_tiers_markdown(extra_map)
+        return "" if extra_map.nil? || extra_map.empty?
+
+        lines = []
+        extra_map.keys.sort.each do |tier|
+          members = extra_map[tier]
+          next if members.nil? || members.empty?
+          lines << "### #{tier}"
+          lines << generate_markdown(members, empty_message: "", default_name: tier)
+          lines << ""
+        end
+        lines.join("\n").strip
       end
 
       def replace_between_tags(content, start_tag, end_tag, new_content)
