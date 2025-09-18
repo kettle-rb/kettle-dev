@@ -46,6 +46,30 @@ module Kettle
         @readme_path = readme_path
       end
 
+      # Validate environment preconditions for running the updater.
+      # Ensures README_UPDATER_TOKEN is present. If missing, prints guidance and raises.
+      #
+      # @return [void]
+      # @raise [RuntimeError] when README_UPDATER_TOKEN is not provided
+      def validate
+        token = ENV["README_UPDATER_TOKEN"].to_s
+        if token.strip.empty?
+          repo = ENV["REPO"] || ENV["GITHUB_REPOSITORY"]
+          org = repo&.to_s&.split("/")&.first
+          org_url = if org && !org.strip.empty?
+            "https://github.com/organizations/#{org}/settings/secrets/actions"
+          else
+            "https://github.com/organizations/YOUR_ORG/settings/secrets/actions"
+          end
+          $stderr.puts "ERROR: README_UPDATER_TOKEN is not set."
+          $stderr.puts "Please create an organization-level Actions secret named README_UPDATER_TOKEN at:"
+          $stderr.puts "  #{org_url}"
+          $stderr.puts "Then update the workflow to reference it, or provide README_UPDATER_TOKEN in the environment."
+          raise 'Missing ENV["README_UPDATER_TOKEN"]'
+        end
+        nil
+      end
+
       def run!
         readme = File.read(@readme_path)
 

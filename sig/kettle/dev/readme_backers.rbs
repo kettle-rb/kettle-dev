@@ -10,6 +10,7 @@ module Kettle
       ) -> void
 
       def run!: () -> void
+      def validate: () -> void
 
       # Selected public helpers (kept minimal)
       def readme_osc_tag: () -> String

@@ -548,6 +548,40 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
       expect(instance).not_to have_received(:system).with("git", "commit", "-m", a_string_including("Backers:"))
     end
   end
+
+  describe "#validate" do
+    it "raises with guidance to org secrets when token missing and REPO set" do
+      stub_env(
+        "README_UPDATER_TOKEN" => nil,
+        "REPO" => "acme/widgets",
+        "GITHUB_REPOSITORY" => nil,
+      )
+      expect {
+        expect {
+          instance.validate
+        }.to raise_error(RuntimeError, 'Missing ENV["README_UPDATER_TOKEN"]')
+      }.to output(
+        a_string_including(
+          "ERROR: README_UPDATER_TOKEN is not set.\n",
+        ).and(
+          a_string_including("Please create an organization-level Actions secret named README_UPDATER_TOKEN at:"),
+        ).and(
+          a_string_including("https://github.com/organizations/acme/settings/secrets/actions"),
+        ).and(
+          a_string_including("Then update the workflow to reference it, or provide README_UPDATER_TOKEN in the environment."),
+        ),
+      ).to_stderr
+    end
+
+    it "returns nil and does not print when token is present" do
+      stub_env(
+        "README_UPDATER_TOKEN" => "abc123",
+        "REPO" => nil,
+        "GITHUB_REPOSITORY" => nil,
+      )
+      expect { expect(instance.validate).to be_nil }.not_to output.to_stderr
+    end
+  end
 end
 
 # rubocop:enable RSpec/MultipleExpectations, RSpec/MessageSpies, RSpec/LeakyConstantDeclaration, ThreadSafety/ClassInstanceVariable, RSpec/InstanceVariable, RSpec/VerifiedDoubles
