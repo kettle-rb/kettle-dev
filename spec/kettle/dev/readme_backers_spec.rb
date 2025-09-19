@@ -32,27 +32,22 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
     context "when backers and sponsors content is unchanged" do
       it "prints no changes and returns without writing", :check_output do
         # Arrange members and README matching generated markdown
-        backers_members = [
-          Kettle::Dev::ReadmeBackers::Backer.new(name: "Alice", image: nil, website: "https://a.example", profile: nil),
-        ]
-        sponsors_members = [
-          Kettle::Dev::ReadmeBackers::Backer.new(name: "", image: "", website: "", profile: ""),
-        ]
         raw = [
-          {"name" => "Alice", "image" => nil, "website" => "https://a.example", "profile" => nil, "role" => "BACKER", "tier" => "Backer"},
-          {"name" => "", "image" => "", "website" => "", "profile" => "", "role" => "BACKER", "tier" => "Sponsor"},
+          {"name" => "Alice", "image" => nil, "website" => "https://a.example", "profile" => nil, "role" => "BACKER", "tier" => "Backer", "type" => "USER"},
+          {"name" => "", "image" => "", "website" => "", "profile" => "", "role" => "BACKER", "tier" => "Sponsor", "type" => "ORGANIZATION"},
         ]
         allow(instance).to receive(:fetch_all_backers_raw).and_return(raw)
-        backers_md = instance.send(:generate_markdown, backers_members, empty_message: "No backers yet. Be the first!", default_name: "Backer")
-        sponsors_md = instance.send(:generate_markdown, sponsors_members, empty_message: "No sponsors yet. Be the first!", default_name: "Sponsor")
+        # Pre-seed README with the exact HTML that generate_markdown will produce
+        backer_html = '<a href="https://opencollective.com/test-oc/backer/0/website" target="_blank"><img src="https://opencollective.com/test-oc/backer/0/avatar.svg"></a>'
+        sponsor_html = '<a href="https://opencollective.com/test-oc/organization/0/website" target="_blank"><img src="https://opencollective.com/test-oc/organization/0/avatar.svg"></a>'
         content = [
           "# Title",
           tags[:generic_start],
-          backers_md,
+          backer_html,
           tags[:generic_end],
           "",
           tags[:orgs_start],
-          sponsors_md,
+          sponsor_html,
           tags[:orgs_end],
           "",
         ].join("\n")
@@ -111,8 +106,8 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
         content = File.read(tmp_readme)
         expect(content).to include(tags[:generic_start])
         expect(content).to include(tags[:orgs_start])
-        expect(content).to include("[Alice](")
-        expect(content).to include("[Acme](")
+        expect(content).to include('href="https://opencollective.com/test-oc/backer/0/website"')
+        expect(content).to include('href="https://opencollective.com/test-oc/organization/0/website"')
 
         expect(instance).to have_received(:perform_git_commit).with(kind_of(Array), kind_of(Array))
       end
@@ -427,10 +422,10 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
 
       content = File.read(tmp_readme)
       expect(content).to include("### Open Collective for Donors\n\n")
-      # At least one link (image-wrapped or plain): [TEXT](HREF)
-      expect(content).to match(/\[[^\]]+\]\([^\)]+\)/)
+      # At least one link present (either Markdown [text](href) or HTML <a href="..."></a>)
+      expect(content).to match(/(\[[^\]]+\]\([^\)]+\)|<a\s+[^>]*href=["'][^"']+["'][^>]*>)/)
       # ensure an empty line after the injected donor line
-      expect(content).to match(/### Open Collective for Donors\n\n\[[^\]]+\]\([^\)]+\)\n\n/)
+      expect(content).to match(/### Open Collective for Donors\n\n(\[[^\]]+\]\([^\)]+\)|<a\s+[^>]*href=["'][^"']+["'][^>]*>)\n\n/)
     end
 
     it "updates only backers section and uses singular 'section' message", :check_output do
@@ -463,7 +458,8 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
       allow(instance).to receive(:perform_git_commit)
 
       expect { instance.run! }.to output(a_string_matching(/Updated backers section in/)).to_stdout
-      expect(File.read(tmp_readme)).to include("[Alice](")
+      content = File.read(tmp_readme)
+      expect(content).to include('href="https://opencollective.com/test-oc/backer/0/website"')
       expect(instance).to have_received(:perform_git_commit)
     end
 
@@ -489,7 +485,8 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
       allow(instance).to receive(:perform_git_commit)
 
       expect { instance.run! }.to output(a_string_matching(/Updated sponsors section in/)).to_stdout
-      expect(File.read(tmp_readme)).to include("[Acme](")
+      content = File.read(tmp_readme)
+      expect(content).to include('href="https://opencollective.com/test-oc/organization/0/website"')
       expect(instance).to have_received(:perform_git_commit)
     end
 
@@ -541,7 +538,7 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
       allow(instance).to receive(:perform_git_commit)
       expect { instance.run! }.to output(a_string_matching(/Updated backers section in/)).to_stdout
       content = File.read(tmp_readme)
-      expect(content).to include("[![Indy](https://img.example/indy.jpg)](https://indy.example)")
+      expect(content).to include('<a href="https://opencollective.com/test-oc/backer/0/website" target="_blank"><img src="https://opencollective.com/test-oc/backer/0/avatar.svg"></a>')
       expect(instance).to have_received(:perform_git_commit)
     end
   end

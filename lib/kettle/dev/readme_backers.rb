@@ -47,13 +47,15 @@ module Kettle
       # Fallback for Ruby < 2.5 where Struct keyword_init is unsupported
       class Backer
         ROLE = "BACKER"
-        attr_accessor :name, :image, :website, :profile
+        attr_accessor :name, :image, :website, :profile, :oc_type, :oc_index
 
-        def initialize(name: nil, image: nil, website: nil, profile: nil, **_ignored)
+        def initialize(name: nil, image: nil, website: nil, profile: nil, oc_type: nil, oc_index: nil, **_ignored)
           @name = name
           @image = image
           @website = website
           @profile = profile
+          @oc_type = oc_type # "backer" or "organization"
+          @oc_index = oc_index # Integer index within type for OC URL generation
         end
       end
 
@@ -103,6 +105,8 @@ module Kettle
         debug_log("Fetching OpenCollective members JSON for handle=#{@handle} ...")
         raw = fetch_all_backers_raw
         debug_log("Fetched #{Array(raw).size} members (role=#{Backer::ROLE}) before tier partitioning")
+        # Build OpenCollective type-index map to generate stable avatar/website links
+        index_map = build_oc_index_map(raw)
         if Kettle::Dev::DEBUGGING
           tier_counts = Array(raw).group_by { |h| (h["tier"] || "").to_s.strip }.transform_values(&:size)
           debug_log("Tier distribution: #{tier_counts}")
@@ -122,8 +126,8 @@ module Kettle
         backers_hashes = Array(raw).select { |h| h["tier"].to_s.strip.casecmp("Backer").zero? }
         sponsors_hashes = Array(raw).select { |h| h["tier"].to_s.strip.casecmp("Sponsor").zero? }
 
-        backers = map_hashes_to_backers(backers_hashes)
-        sponsors = map_hashes_to_backers(sponsors_hashes)
+        backers = map_hashes_to_backers(backers_hashes, index_map)
+        sponsors = map_hashes_to_backers(sponsors_hashes, index_map)
         debug_log("Partitioned counts => Backers=#{backers.size}, Sponsors=#{sponsors.size}")
         if Kettle::Dev::DEBUGGING && backers.empty? && sponsors.empty? && Array(raw).any?
           debug_log("No Backer or Sponsor tiers matched among #{Array(raw).size} BACKER-role records. If tiers are empty, they will not appear in Backers/Sponsors sections.")
@@ -134,7 +138,7 @@ module Kettle
         Array(raw).group_by { |h| h["tier"].to_s.strip }.each do |tier, members|
           normalized = tier.empty? ? "Donors" : tier
           next if normalized.casecmp("Backer").zero? || normalized.casecmp("Sponsor").zero?
-          extra_map[normalized] = map_hashes_to_backers(members)
+          extra_map[normalized] = map_hashes_to_backers(members, index_map)
         end
         debug_log("Extra tiers detected: #{extra_map.keys.sort}") unless extra_map.empty?
 
@@ -292,8 +296,49 @@ module Kettle
         []
       end
 
-      def map_hashes_to_backers(hashes)
+      # Build a deterministic OpenCollective index map used to construct avatar/website URLs.
+      # Rules:
+      # - Iterate through the raw BACKER-role array in order received from OC.
+      # - Maintain two independent counters: one for "backer" (users) and one for "organization".
+      # - Derive a stable identity key for each member by preferring profile URL, then website URL, then name; all downcased.
+      # - Assign the current counter as the index for that type and increment the counter.
+      # - Return a Hash mapping the identity key to { type: "backer"|"organization", index: Integer }.
+      # This lets generate_markdown output links like:
+      #   https://opencollective.com/<handle>/<type>/<index>/website and avatar.svg
+      def build_oc_index_map(hashes)
+        counts = {"backer" => 0, "organization" => 0}
+        map = {}
+        Array(hashes).each do |h|
+          type = h["type"].to_s.upcase == "ORGANIZATION" ? "organization" : "backer"
+          key = if h["profile"].to_s.strip != ""
+            h["profile"].to_s.strip.downcase
+          elsif h["website"].to_s.strip != ""
+            h["website"].to_s.strip.downcase
+          else
+            h["name"].to_s.strip.downcase
+          end
+          idx = counts[type]
+          counts[type] = idx + 1
+          map[key] = { type: type, index: idx }
+        end
+        # Helpful debug summary so users can see which index maps to which backer.
+        if Kettle::Dev::DEBUGGING
+          samples = map.first(5).map { |k, v| "#{v[:type]}##{v[:index]} => #{k}" }
+          debug_log("Built OC index map: backer_count=#{counts['backer']}, organization_count=#{counts['organization']}; sample=#{samples}")
+        end
+        map
+      end
+
+      def map_hashes_to_backers(hashes, index_map = nil)
         Array(hashes).map do |h|
+          key = if h["profile"].to_s.strip != ""
+            h["profile"].to_s.strip.downcase
+          elsif h["website"].to_s.strip != ""
+            h["website"].to_s.strip.downcase
+          else
+            h["name"].to_s.strip.downcase
+          end
+          oc = index_map ? index_map[key] : nil
           Backer.new(
             name: h["name"],
             image: begin
@@ -304,6 +349,8 @@ module Kettle
             end,
             website: (h["website"].to_s.strip.empty? ? nil : h["website"]),
             profile: (h["profile"].to_s.strip.empty? ? nil : h["profile"]),
+            oc_type: oc ? oc[:type] : nil,
+            oc_index: oc ? oc[:index] : nil,
           )
         end
       end
@@ -312,16 +359,25 @@ module Kettle
         return empty_message if members.nil? || members.empty?
 
         members.map do |m|
-          # Treat empty strings as missing for image/link selection
-          image_url = (m.image && !m.image.to_s.strip.empty?) ? m.image : nil
-          primary_link = (m.website && !m.website.to_s.strip.empty?) ? m.website : nil
-          fallback_link = (m.profile && !m.profile.to_s.strip.empty?) ? m.profile : nil
-          link = primary_link || fallback_link || "#"
-          name = (m.name && !m.name.strip.empty?) ? m.name : default_name
-          if image_url
-            "[![#{escape_text(name)}](#{image_url})](#{link})"
+          # Prefer deterministic OpenCollective avatar/link form when index is available
+          if m.oc_type && !m.oc_type.to_s.strip.empty? && !m.oc_index.nil?
+            type = m.oc_type
+            idx = m.oc_index
+            href = "https://opencollective.com/#{@handle}/#{type}/#{idx}/website"
+            img = "https://opencollective.com/#{@handle}/#{type}/#{idx}/avatar.svg"
+            %Q(<a href="#{href}" target="_blank"><img src="#{img}"></a>)
           else
-            "[#{escape_text(name)}](#{link})"
+            # Fallback to prior Markdown behavior
+            image_url = (m.image && !m.image.to_s.strip.empty?) ? m.image : nil
+            primary_link = (m.website && !m.website.to_s.strip.empty?) ? m.website : nil
+            fallback_link = (m.profile && !m.profile.to_s.strip.empty?) ? m.profile : nil
+            link = primary_link || fallback_link || "#"
+            name = (m.name && !m.name.strip.empty?) ? m.name : default_name
+            if image_url
+              "[![#{escape_text(name)}](#{image_url})](#{link})"
+            else
+              "[#{escape_text(name)}](#{link})"
+            end
           end
         end.join(" ")
       end
@@ -406,6 +462,11 @@ module Kettle
           href = (m[1] || "").strip
           identities << href.downcase unless href.empty?
           identities << text.downcase unless text.empty?
+        end
+        # 4) HTML anchors: <a href="HREF">...</a>
+        block.to_s.scan(/<a\s+[^>]*href=["']([^"']+)["'][^>]*>/i) do |m|
+          href = (m[0] || "").strip
+          identities << href.downcase unless href.empty?
         end
         identities
       end
