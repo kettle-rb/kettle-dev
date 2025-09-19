@@ -111,8 +111,8 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
         content = File.read(tmp_readme)
         expect(content).to include(tags[:generic_start])
         expect(content).to include(tags[:orgs_start])
-        expect(content).to include("[![Alice]")
-        expect(content).to include("[![Acme]")
+        expect(content).to include("[Alice](")
+        expect(content).to include("[Acme](")
 
         expect(instance).to have_received(:perform_git_commit).with(kind_of(Array), kind_of(Array))
       end
@@ -427,9 +427,10 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
 
       content = File.read(tmp_readme)
       expect(content).to include("### Open Collective for Donors\n\n")
-      expect(content).to match(/\[!\[[^\]]*\]\([^\)]*\)\]\(/) # at least one badge link
+      # At least one link (image-wrapped or plain): [TEXT](HREF)
+      expect(content).to match(/\[[^\]]+\]\([^\)]+\)/)
       # ensure an empty line after the injected donor line
-      expect(content).to match(/### Open Collective for Donors\n\n\[!\[[^\]]*\]\([^\)]*\)\]\([^\)]*\)\n\n/)
+      expect(content).to match(/### Open Collective for Donors\n\n\[[^\]]+\]\([^\)]+\)\n\n/)
     end
 
     it "updates only backers section and uses singular 'section' message", :check_output do
@@ -462,7 +463,7 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
       allow(instance).to receive(:perform_git_commit)
 
       expect { instance.run! }.to output(a_string_matching(/Updated backers section in/)).to_stdout
-      expect(File.read(tmp_readme)).to include("[![Alice]")
+      expect(File.read(tmp_readme)).to include("[Alice](")
       expect(instance).to have_received(:perform_git_commit)
     end
 
@@ -488,7 +489,7 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
       allow(instance).to receive(:perform_git_commit)
 
       expect { instance.run! }.to output(a_string_matching(/Updated sponsors section in/)).to_stdout
-      expect(File.read(tmp_readme)).to include("[![Acme]")
+      expect(File.read(tmp_readme)).to include("[Acme](")
       expect(instance).to have_received(:perform_git_commit)
     end
 
@@ -524,6 +525,25 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
       expect { instance.run! }.to output(a_string_matching(/Updated backers section in/)).to_stdout
       expect(instance).to have_received(:perform_git_commit)
     end
+
+    it "handles INDIVIDUALS tag pair as backers when generic not present", :check_output do
+      instance_tags = instance.send(:tag_strings)
+      File.write(tmp_readme, [
+        instance_tags[:individuals_start],
+        "No backers yet. Be the first!",
+        instance_tags[:individuals_end],
+      ].join("\n"))
+      raw = [
+        {"name" => "Indy", "avatar" => "https://img.example/indy.jpg", "website" => "https://indy.example", "profile" => "https://opencollective.com/indy", "role" => "BACKER", "tier" => "Backer"},
+      ]
+      allow(instance).to receive(:fetch_all_backers_raw).and_return(raw)
+      allow(instance).to receive(:git_repo?).and_return(true)
+      allow(instance).to receive(:perform_git_commit)
+      expect { instance.run! }.to output(a_string_matching(/Updated backers section in/)).to_stdout
+      content = File.read(tmp_readme)
+      expect(content).to include("[![Indy](https://img.example/indy.jpg)](https://indy.example)")
+      expect(instance).to have_received(:perform_git_commit)
+    end
   end
 
   describe "edge cases for helpers" do
@@ -555,11 +575,18 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
       expect(instance.send(:commit_subject)).to eq(described_class::COMMIT_SUBJECT_DEFAULT)
     end
 
-    it "generate_markdown prefers website over profile and uses default avatar" do
+    it "generate_markdown prefers website over profile and omits image when none present" do
       m = Kettle::Dev::ReadmeBackers::Backer.new(name: "Name", image: nil, website: "https://web", profile: "https://profile")
       md = instance.send(:generate_markdown, [m], empty_message: "none", default_name: "X")
-      expect(md).to include("(https://web)")
-      expect(md).to include(Kettle::Dev::ReadmeBackers::DEFAULT_AVATAR)
+      expect(md).to include("[Name](https://web)")
+      expect(md).not_to include("![](")
+      expect(md).not_to include("default-avatar")
+    end
+
+    it "uses avatar when provided by OpenCollective API and prefers website for link" do
+      backer = Kettle::Dev::ReadmeBackers::Backer.new(name: "Zed", image: "https://cdn.example/avatar.jpg", website: "https://zed.example", profile: "https://opencollective.com/zed")
+      md = instance.send(:generate_markdown, [backer], empty_message: "none", default_name: "X")
+      expect(md).to include("[![Zed](https://cdn.example/avatar.jpg)](https://zed.example)")
     end
   end
 

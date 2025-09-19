@@ -18,7 +18,6 @@ module Kettle
 
       public
 
-      DEFAULT_AVATAR = "https://opencollective.com/static/images/default-avatar.png"
       # Default README is the one in the current working directory of the host project
       README_PATH = File.expand_path("README.md", Dir.pwd)
       README_OSC_TAG_DEFAULT = "OPENCOLLECTIVE"
@@ -297,7 +296,12 @@ module Kettle
         Array(hashes).map do |h|
           Backer.new(
             name: h["name"],
-            image: (h["image"].to_s.strip.empty? ? nil : h["image"]),
+            image: begin
+              # Prefer OpenCollective's "avatar" key; fallback to legacy "image"
+              img = h["avatar"]
+              img = h["image"] if img.to_s.strip.empty?
+              img.to_s.strip.empty? ? nil : img
+            end,
             website: (h["website"].to_s.strip.empty? ? nil : h["website"]),
             profile: (h["profile"].to_s.strip.empty? ? nil : h["profile"]),
           )
@@ -309,12 +313,16 @@ module Kettle
 
         members.map do |m|
           # Treat empty strings as missing for image/link selection
-          image_url = (m.image && !m.image.to_s.strip.empty?) ? m.image : DEFAULT_AVATAR
+          image_url = (m.image && !m.image.to_s.strip.empty?) ? m.image : nil
           primary_link = (m.website && !m.website.to_s.strip.empty?) ? m.website : nil
           fallback_link = (m.profile && !m.profile.to_s.strip.empty?) ? m.profile : nil
           link = primary_link || fallback_link || "#"
           name = (m.name && !m.name.strip.empty?) ? m.name : default_name
-          "[![#{escape_text(name)}](#{image_url})](#{link})"
+          if image_url
+            "[![#{escape_text(name)}](#{image_url})](#{link})"
+          else
+            "[#{escape_text(name)}](#{link})"
+          end
         end.join(" ")
       end
 
@@ -382,13 +390,22 @@ module Kettle
 
         block = content[(start_index + start_tag.length)...end_index]
         identities = Set.new
+        # 1) Image-style link wrappers: [![ALT](IMG)](HREF)
         block.to_s.scan(/\[!\[[^\]]*\]\([^\)]*\)\]\(([^\)]+)\)/) do |m|
           href = (m[0] || "").strip
           identities << href.downcase unless href.empty?
         end
+        # 2) Capture ALT text from image-style wrappers for name identity
         block.to_s.scan(/\[!\[([^\]]*)\]\([^\)]*\)\]\([^\)]*\)/) do |m|
           alt = (m[0] || "").strip
           identities << alt.downcase unless alt.empty?
+        end
+        # 3) Plain markdown links: [TEXT](HREF)
+        block.to_s.scan(/\[([^!][^\]]*)\]\(([^\)]+)\)/) do |m|
+          text = (m[0] || "").strip
+          href = (m[1] || "").strip
+          identities << href.downcase unless href.empty?
+          identities << text.downcase unless text.empty?
         end
         identities
       end
