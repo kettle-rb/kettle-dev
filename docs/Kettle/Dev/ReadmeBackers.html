@@ -118,11 +118,6 @@
 
     <dl class="constants">
       
-        <dt id="DEFAULT_AVATAR-constant" class="">DEFAULT_AVATAR =
-          
-        </dt>
-        <dd><pre class="code"><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>https://opencollective.com/static/images/default-avatar.png</span><span class='tstring_end'>&quot;</span></span></pre></dd>
-      
         <dt id="README_PATH-constant" class="">README_PATH =
           <div class="docstring">
   <div class="discussion">
@@ -283,13 +278,13 @@ Prefer OpenCollectiveConfig.yaml_path going forward, but resolve to the host pro
       <pre class="lines">
 
 
-61
 62
 63
-64</pre>
+64
+65</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/readme_backers.rb', line 61</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/readme_backers.rb', line 62</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='label'>handle:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>readme_path:</span> <span class='const'><span class='object_link'><a href="#README_PATH-constant" title="Kettle::Dev::ReadmeBackers::README_PATH (constant)">README_PATH</a></span></span><span class='rparen'>)</span>
   <span class='ivar'>@handle</span> <span class='op'>=</span> <span class='id identifier rubyid_handle'>handle</span> <span class='op'>||</span> <span class='id identifier rubyid_resolve_handle'>resolve_handle</span>
@@ -322,7 +317,6 @@ Prefer OpenCollectiveConfig.yaml_path going forward, but resolve to the host pro
       <pre class="lines">
 
 
-90
 91
 92
 93
@@ -455,10 +449,27 @@ Prefer OpenCollectiveConfig.yaml_path going forward, but resolve to the host pro
 220
 221
 222
-223</pre>
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/readme_backers.rb', line 90</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/readme_backers.rb', line 91</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_run!'>run!</span>
   <span class='id identifier rubyid_validate'>validate</span>
@@ -477,6 +488,8 @@ Prefer OpenCollectiveConfig.yaml_path going forward, but resolve to the host pro
 </span>  <span class='id identifier rubyid_debug_log'>debug_log</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Fetching OpenCollective members JSON for handle=</span><span class='embexpr_beg'>#{</span><span class='ivar'>@handle</span><span class='embexpr_end'>}</span><span class='tstring_content'> ...</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
   <span class='id identifier rubyid_raw'>raw</span> <span class='op'>=</span> <span class='id identifier rubyid_fetch_all_backers_raw'>fetch_all_backers_raw</span>
   <span class='id identifier rubyid_debug_log'>debug_log</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Fetched </span><span class='embexpr_beg'>#{</span><span class='const'>Array</span><span class='lparen'>(</span><span class='id identifier rubyid_raw'>raw</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span><span class='embexpr_end'>}</span><span class='tstring_content'> members (role=</span><span class='embexpr_beg'>#{</span><span class='const'><span class='object_link'><a href="ReadmeBackers/Backer.html" title="Kettle::Dev::ReadmeBackers::Backer (class)">Backer</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="ReadmeBackers/Backer.html#ROLE-constant" title="Kettle::Dev::ReadmeBackers::Backer::ROLE (constant)">ROLE</a></span></span><span class='embexpr_end'>}</span><span class='tstring_content'>) before tier partitioning</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='comment'># Build OpenCollective type-index map to generate stable avatar/website links
+</span>  <span class='id identifier rubyid_index_map'>index_map</span> <span class='op'>=</span> <span class='id identifier rubyid_build_oc_index_map'>build_oc_index_map</span><span class='lparen'>(</span><span class='id identifier rubyid_raw'>raw</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html#DEBUGGING-constant" title="Kettle::Dev::DEBUGGING (constant)">DEBUGGING</a></span></span>
     <span class='id identifier rubyid_tier_counts'>tier_counts</span> <span class='op'>=</span> <span class='const'>Array</span><span class='lparen'>(</span><span class='id identifier rubyid_raw'>raw</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_group_by'>group_by</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_h'>h</span><span class='op'>|</span> <span class='lparen'>(</span><span class='id identifier rubyid_h'>h</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>tier</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>||</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_transform_values'>transform_values</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:size</span><span class='rparen'>)</span>
     <span class='id identifier rubyid_debug_log'>debug_log</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Tier distribution: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_tier_counts'>tier_counts</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
@@ -496,8 +509,8 @@ Prefer OpenCollectiveConfig.yaml_path going forward, but resolve to the host pro
   <span class='id identifier rubyid_backers_hashes'>backers_hashes</span> <span class='op'>=</span> <span class='const'>Array</span><span class='lparen'>(</span><span class='id identifier rubyid_raw'>raw</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_h'>h</span><span class='op'>|</span> <span class='id identifier rubyid_h'>h</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>tier</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_casecmp'>casecmp</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Backer</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_zero?'>zero?</span> <span class='rbrace'>}</span>
   <span class='id identifier rubyid_sponsors_hashes'>sponsors_hashes</span> <span class='op'>=</span> <span class='const'>Array</span><span class='lparen'>(</span><span class='id identifier rubyid_raw'>raw</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_h'>h</span><span class='op'>|</span> <span class='id identifier rubyid_h'>h</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>tier</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_casecmp'>casecmp</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Sponsor</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_zero?'>zero?</span> <span class='rbrace'>}</span>
 
-  <span class='id identifier rubyid_backers'>backers</span> <span class='op'>=</span> <span class='id identifier rubyid_map_hashes_to_backers'>map_hashes_to_backers</span><span class='lparen'>(</span><span class='id identifier rubyid_backers_hashes'>backers_hashes</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_sponsors'>sponsors</span> <span class='op'>=</span> <span class='id identifier rubyid_map_hashes_to_backers'>map_hashes_to_backers</span><span class='lparen'>(</span><span class='id identifier rubyid_sponsors_hashes'>sponsors_hashes</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_backers'>backers</span> <span class='op'>=</span> <span class='id identifier rubyid_map_hashes_to_backers'>map_hashes_to_backers</span><span class='lparen'>(</span><span class='id identifier rubyid_backers_hashes'>backers_hashes</span><span class='comma'>,</span> <span class='id identifier rubyid_index_map'>index_map</span><span class='comma'>,</span> <span class='label'>force_type:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>backer</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_sponsors'>sponsors</span> <span class='op'>=</span> <span class='id identifier rubyid_map_hashes_to_backers'>map_hashes_to_backers</span><span class='lparen'>(</span><span class='id identifier rubyid_sponsors_hashes'>sponsors_hashes</span><span class='comma'>,</span> <span class='id identifier rubyid_index_map'>index_map</span><span class='comma'>,</span> <span class='label'>force_type:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>organization</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
   <span class='id identifier rubyid_debug_log'>debug_log</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Partitioned counts =&gt; Backers=</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_backers'>backers</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span><span class='embexpr_end'>}</span><span class='tstring_content'>, Sponsors=</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_sponsors'>sponsors</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html#DEBUGGING-constant" title="Kettle::Dev::DEBUGGING (constant)">DEBUGGING</a></span></span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_backers'>backers</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_sponsors'>sponsors</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span> <span class='op'>&amp;&amp;</span> <span class='const'>Array</span><span class='lparen'>(</span><span class='id identifier rubyid_raw'>raw</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_any?'>any?</span>
     <span class='id identifier rubyid_debug_log'>debug_log</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>No Backer or Sponsor tiers matched among </span><span class='embexpr_beg'>#{</span><span class='const'>Array</span><span class='lparen'>(</span><span class='id identifier rubyid_raw'>raw</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span><span class='embexpr_end'>}</span><span class='tstring_content'> BACKER-role records. If tiers are empty, they will not appear in Backers/Sponsors sections.</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
@@ -508,7 +521,7 @@ Prefer OpenCollectiveConfig.yaml_path going forward, but resolve to the host pro
   <span class='const'>Array</span><span class='lparen'>(</span><span class='id identifier rubyid_raw'>raw</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_group_by'>group_by</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_h'>h</span><span class='op'>|</span> <span class='id identifier rubyid_h'>h</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>tier</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_tier'>tier</span><span class='comma'>,</span> <span class='id identifier rubyid_members'>members</span><span class='op'>|</span>
     <span class='id identifier rubyid_normalized'>normalized</span> <span class='op'>=</span> <span class='id identifier rubyid_tier'>tier</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span> <span class='op'>?</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Donors</span><span class='tstring_end'>&quot;</span></span> <span class='op'>:</span> <span class='id identifier rubyid_tier'>tier</span>
     <span class='kw'>next</span> <span class='kw'>if</span> <span class='id identifier rubyid_normalized'>normalized</span><span class='period'>.</span><span class='id identifier rubyid_casecmp'>casecmp</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Backer</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_zero?'>zero?</span> <span class='op'>||</span> <span class='id identifier rubyid_normalized'>normalized</span><span class='period'>.</span><span class='id identifier rubyid_casecmp'>casecmp</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Sponsor</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_zero?'>zero?</span>
-    <span class='id identifier rubyid_extra_map'>extra_map</span><span class='lbracket'>[</span><span class='id identifier rubyid_normalized'>normalized</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_map_hashes_to_backers'>map_hashes_to_backers</span><span class='lparen'>(</span><span class='id identifier rubyid_members'>members</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_extra_map'>extra_map</span><span class='lbracket'>[</span><span class='id identifier rubyid_normalized'>normalized</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_map_hashes_to_backers'>map_hashes_to_backers</span><span class='lparen'>(</span><span class='id identifier rubyid_members'>members</span><span class='comma'>,</span> <span class='id identifier rubyid_index_map'>index_map</span><span class='rparen'>)</span>
   <span class='kw'>end</span>
   <span class='id identifier rubyid_debug_log'>debug_log</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Extra tiers detected: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_extra_map'>extra_map</span><span class='period'>.</span><span class='id identifier rubyid_keys'>keys</span><span class='period'>.</span><span class='id identifier rubyid_sort'>sort</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='kw'>unless</span> <span class='id identifier rubyid_extra_map'>extra_map</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
 
@@ -523,7 +536,14 @@ Prefer OpenCollectiveConfig.yaml_path going forward, but resolve to the host pro
   <span class='kw'>end</span>
 
   <span class='comment'># Update backers section
-</span>  <span class='id identifier rubyid_updated'>updated</span> <span class='op'>=</span> <span class='id identifier rubyid_replace_between_tags'>replace_between_tags</span><span class='lparen'>(</span><span class='id identifier rubyid_readme'>readme</span><span class='comma'>,</span> <span class='id identifier rubyid_b_start'>b_start</span><span class='comma'>,</span> <span class='id identifier rubyid_b_end'>b_end</span><span class='comma'>,</span> <span class='id identifier rubyid_backers_md'>backers_md</span><span class='rparen'>)</span>
+</span>  <span class='comment'># If the identities in the existing block match the identities derived from current data,
+</span>  <span class='comment'># treat as no-change to avoid rewriting formatting (e.g., Markdown -&gt; HTML OC anchors).
+</span>  <span class='id identifier rubyid_semantically_same_backers'>semantically_same_backers</span> <span class='op'>=</span> <span class='id identifier rubyid_semantically_same_section?'>semantically_same_section?</span><span class='lparen'>(</span><span class='id identifier rubyid_prev_backer_identities'>prev_backer_identities</span><span class='comma'>,</span> <span class='id identifier rubyid_backers'>backers</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_updated'>updated</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='id identifier rubyid_semantically_same_backers'>semantically_same_backers</span>
+    <span class='symbol'>:no_change</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_replace_between_tags'>replace_between_tags</span><span class='lparen'>(</span><span class='id identifier rubyid_readme'>readme</span><span class='comma'>,</span> <span class='id identifier rubyid_b_start'>b_start</span><span class='comma'>,</span> <span class='id identifier rubyid_b_end'>b_end</span><span class='comma'>,</span> <span class='id identifier rubyid_backers_md'>backers_md</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
   <span class='kw'>case</span> <span class='id identifier rubyid_updated'>updated</span>
   <span class='kw'>when</span> <span class='symbol'>:not_found</span>
     <span class='id identifier rubyid_debug_log'>debug_log</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Backers tag block not found; skipping backers section update</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
@@ -531,7 +551,7 @@ Prefer OpenCollectiveConfig.yaml_path going forward, but resolve to the host pro
     <span class='id identifier rubyid_backers_changed'>backers_changed</span> <span class='op'>=</span> <span class='kw'>false</span>
     <span class='id identifier rubyid_new_backers'>new_backers</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
   <span class='kw'>when</span> <span class='symbol'>:no_change</span>
-    <span class='id identifier rubyid_debug_log'>debug_log</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Backers section unchanged (generated markdown matches existing block)</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_debug_log'>debug_log</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Backers section unchanged (identities match or generated markdown matches existing block)</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
     <span class='id identifier rubyid_updated_readme'>updated_readme</span> <span class='op'>=</span> <span class='id identifier rubyid_readme'>readme</span>
     <span class='id identifier rubyid_backers_changed'>backers_changed</span> <span class='op'>=</span> <span class='kw'>false</span>
     <span class='id identifier rubyid_new_backers'>new_backers</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
@@ -552,7 +572,14 @@ Prefer OpenCollectiveConfig.yaml_path going forward, but resolve to the host pro
     <span class='id identifier rubyid_updated_readme'>updated_readme</span> <span class='op'>=</span> <span class='id identifier rubyid_updated'>updated</span> <span class='kw'>unless</span> <span class='id identifier rubyid_updated'>updated</span> <span class='op'>==</span> <span class='symbol'>:no_change</span> <span class='op'>||</span> <span class='id identifier rubyid_updated'>updated</span> <span class='op'>==</span> <span class='symbol'>:not_found</span>
   <span class='kw'>end</span>
 
-  <span class='id identifier rubyid_updated2'>updated2</span> <span class='op'>=</span> <span class='id identifier rubyid_replace_between_tags'>replace_between_tags</span><span class='lparen'>(</span><span class='id identifier rubyid_updated_readme'>updated_readme</span><span class='comma'>,</span> <span class='id identifier rubyid_s_start'>s_start</span><span class='comma'>,</span> <span class='id identifier rubyid_s_end'>s_end</span><span class='comma'>,</span> <span class='id identifier rubyid_sponsors_md'>sponsors_md</span><span class='rparen'>)</span>
+  <span class='comment'># Sponsors: apply the same semantic no-change rule
+</span>  <span class='id identifier rubyid_prev_s_ids'>prev_s_ids</span> <span class='op'>=</span> <span class='id identifier rubyid_extract_section_identities'>extract_section_identities</span><span class='lparen'>(</span><span class='id identifier rubyid_updated_readme'>updated_readme</span><span class='comma'>,</span> <span class='id identifier rubyid_s_start'>s_start</span><span class='comma'>,</span> <span class='id identifier rubyid_s_end'>s_end</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_semantically_same_sponsors'>semantically_same_sponsors</span> <span class='op'>=</span> <span class='id identifier rubyid_semantically_same_section?'>semantically_same_section?</span><span class='lparen'>(</span><span class='id identifier rubyid_prev_s_ids'>prev_s_ids</span><span class='comma'>,</span> <span class='id identifier rubyid_sponsors'>sponsors</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_updated2'>updated2</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='id identifier rubyid_semantically_same_sponsors'>semantically_same_sponsors</span>
+    <span class='symbol'>:no_change</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_replace_between_tags'>replace_between_tags</span><span class='lparen'>(</span><span class='id identifier rubyid_updated_readme'>updated_readme</span><span class='comma'>,</span> <span class='id identifier rubyid_s_start'>s_start</span><span class='comma'>,</span> <span class='id identifier rubyid_s_end'>s_end</span><span class='comma'>,</span> <span class='id identifier rubyid_sponsors_md'>sponsors_md</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
   <span class='kw'>case</span> <span class='id identifier rubyid_updated2'>updated2</span>
   <span class='kw'>when</span> <span class='symbol'>:not_found</span>
     <span class='id identifier rubyid_debug_log'>debug_log</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Sponsors tag block not found; skipping sponsors section update</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
@@ -560,7 +587,7 @@ Prefer OpenCollectiveConfig.yaml_path going forward, but resolve to the host pro
     <span class='id identifier rubyid_final'>final</span> <span class='op'>=</span> <span class='id identifier rubyid_updated_readme'>updated_readme</span>
     <span class='id identifier rubyid_new_sponsors'>new_sponsors</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
   <span class='kw'>when</span> <span class='symbol'>:no_change</span>
-    <span class='id identifier rubyid_debug_log'>debug_log</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Sponsors section unchanged (generated markdown matches existing block)</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_debug_log'>debug_log</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Sponsors section unchanged (identities match or generated markdown matches existing block)</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
     <span class='id identifier rubyid_sponsors_changed'>sponsors_changed</span> <span class='op'>=</span> <span class='kw'>false</span>
     <span class='id identifier rubyid_final'>final</span> <span class='op'>=</span> <span class='id identifier rubyid_updated_readme'>updated_readme</span>
     <span class='id identifier rubyid_new_sponsors'>new_sponsors</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
@@ -642,7 +669,6 @@ Ensures README_UPDATER_TOKEN is present. If missing, prints guidance and raises.
       <pre class="lines">
 
 
-71
 72
 73
 74
@@ -659,10 +685,11 @@ Ensures README_UPDATER_TOKEN is present. If missing, prints guidance and raises.
 85
 86
 87
-88</pre>
+88
+89</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/readme_backers.rb', line 71</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/readme_backers.rb', line 72</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_validate'>validate</span>
   <span class='id identifier rubyid_token'>token</span> <span class='op'>=</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>README_UPDATER_TOKEN</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
@@ -692,7 +719,7 @@ Ensures README_UPDATER_TOKEN is present. If missing, prints guidance and raises.
 </div>
 
       <div id="footer">
-  Generated on Thu Sep 18 06:33:21 2025 by
+  Generated on Sat Sep 20 06:40:36 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

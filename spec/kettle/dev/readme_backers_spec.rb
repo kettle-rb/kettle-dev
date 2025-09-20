@@ -422,10 +422,11 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
 
       content = File.read(tmp_readme)
       expect(content).to include("### Open Collective for Donors\n\n")
-      # At least one link present (either Markdown [text](href) or HTML <a href="..."></a>)
-      expect(content).to match(/(\[[^\]]+\]\([^\)]+\)|<a\s+[^>]*href=["'][^"']+["'][^>]*>)/)
-      # ensure an empty line after the injected donor line
-      expect(content).to match(/### Open Collective for Donors\n\n(\[[^\]]+\]\([^\)]+\)|<a\s+[^>]*href=["'][^"']+["'][^>]*>)\n\n/)
+      # Assert deterministically on the exact Markdown link we expect for the donor
+      expected_link_line = "[Firstname Lastname](https://opencollective.com/firstname-lastname)"
+      expect(content).to include(expected_link_line)
+      # Ensure the donors header is followed by a blank line and then the link line with a trailing newline
+      expect(content).to include("### Open Collective for Donors\n\n#{expected_link_line}\n")
     end
 
     it "updates only backers section and uses singular 'section' message", :check_output do

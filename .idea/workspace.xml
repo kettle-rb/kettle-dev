@@ -4,14 +4,70 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d08cadcc-d2ae-48f0-8a2f-f4fe948c245c" name="Changes" comment="📝 Docs update">
-      <change beforePath="$PROJECT_DIR$/.rubocop_gradual.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.rubocop_gradual.lock" afterDir="false" />
+    <list default="true" id="d08cadcc-d2ae-48f0-8a2f-f4fe948c245c" name="Changes" comment="🚨 Linting">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Gemfile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Gemfile.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md.example" beforeDir="false" afterPath="$PROJECT_DIR$/README.md.example" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Rakefile.example" beforeDir="false" afterPath="$PROJECT_DIR$/Rakefile.example" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Kettle.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Kettle.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Kettle/Dev.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Kettle/Dev.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Kettle/Dev/CIHelpers.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Kettle/Dev/CIHelpers.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Kettle/Dev/CIMonitor.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Kettle/Dev/CIMonitor.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Kettle/Dev/ChangelogCLI.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Kettle/Dev/ChangelogCLI.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Kettle/Dev/CommitMsg.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Kettle/Dev/CommitMsg.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Kettle/Dev/DvcsCLI.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Kettle/Dev/DvcsCLI.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Kettle/Dev/Error.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Kettle/Dev/Error.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Kettle/Dev/ExitAdapter.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Kettle/Dev/ExitAdapter.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Kettle/Dev/GemSpecReader.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Kettle/Dev/GemSpecReader.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Kettle/Dev/GitAdapter.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Kettle/Dev/GitAdapter.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Kettle/Dev/GitCommitFooter.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Kettle/Dev/GitCommitFooter.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Kettle/Dev/InputAdapter.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Kettle/Dev/InputAdapter.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Kettle/Dev/ModularGemfiles.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Kettle/Dev/ModularGemfiles.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Kettle/Dev/OpenCollectiveConfig.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Kettle/Dev/OpenCollectiveConfig.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Kettle/Dev/PreReleaseCLI.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Kettle/Dev/PreReleaseCLI.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Kettle/Dev/PreReleaseCLI/HTTP.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Kettle/Dev/PreReleaseCLI/HTTP.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Kettle/Dev/PreReleaseCLI/Markdown.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Kettle/Dev/PreReleaseCLI/Markdown.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Kettle/Dev/ReadmeBackers.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Kettle/Dev/ReadmeBackers.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Kettle/Dev/ReadmeBackers/Backer.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Kettle/Dev/ReadmeBackers/Backer.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Kettle/Dev/ReleaseCLI.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Kettle/Dev/ReleaseCLI.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Kettle/Dev/SetupCLI.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Kettle/Dev/SetupCLI.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Kettle/Dev/Tasks.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Kettle/Dev/Tasks.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Kettle/Dev/Tasks/CITask.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Kettle/Dev/Tasks/CITask.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Kettle/Dev/Tasks/InstallTask.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Kettle/Dev/Tasks/InstallTask.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Kettle/Dev/Tasks/TemplateTask.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Kettle/Dev/Tasks/TemplateTask.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Kettle/Dev/TemplateHelpers.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Kettle/Dev/TemplateHelpers.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Kettle/Dev/Version.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Kettle/Dev/Version.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Kettle/Dev/Versioning.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Kettle/Dev/Versioning.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Kettle/EmojiRegex.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Kettle/EmojiRegex.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/_index.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/_index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/file.CHANGELOG.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/file.CHANGELOG.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/file.CODE_OF_CONDUCT.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/file.CODE_OF_CONDUCT.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/file.CONTRIBUTING.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/file.CONTRIBUTING.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/file.FUNDING.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/file.FUNDING.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/file.LICENSE.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/file.LICENSE.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/file.README.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/file.README.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/file.RUBOCOP.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/file.RUBOCOP.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/file.SECURITY.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/file.SECURITY.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/file_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/file_list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/method_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/method_list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/top-level-namespace.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/top-level-namespace.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/kettle/dev/readme_backers.rb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/kettle/dev/readme_backers.rb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/kettle/dev/version.rb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/kettle/dev/version.rb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spec/kettle/dev/readme_backers_spec.rb" beforeDir="false" afterPath="$PROJECT_DIR$/spec/kettle/dev/readme_backers_spec.rb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ChangesViewManager">
+    <option name="groupingKeys">
+      <option value="directory" />
+      <option value="repository" />
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -61,7 +117,8 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "org.jetbrains.plugins.ruby.settings.RubyActiveModuleSdkConfigurable",
+    "ruby.structure.view.model.defaults.configured": "true",
+    "settings.editor.selected.configurable": "ml.llm.LLMConfigurable",
     "to.speed.mode.migration.done": "true",
     "vue.rearranger.settings.migration": "true"
   }
@@ -81,7 +138,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1758352224736</updated>
-      <workItem from="1758352226184" duration="3169000" />
+      <workItem from="1758352226184" duration="11712000" />
     </task>
     <task id="LOCAL-00001" summary="📝 Docs update">
       <option name="closed" value="true" />
@@ -91,7 +148,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758355261615</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="🚨 Linting">
+      <option name="closed" value="true" />
+      <created>1758360233859</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1758360233859</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -99,6 +164,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value=" Docs update" />
-    <option name="LAST_COMMIT_MESSAGE" value=" Docs update" />
+    <MESSAGE value=" Linting" />
+    <option name="LAST_COMMIT_MESSAGE" value=" Linting" />
   </component>
 </project>

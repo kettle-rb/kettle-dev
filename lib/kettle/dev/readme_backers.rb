@@ -155,8 +155,7 @@ module Kettle
         # Update backers section
         # If the identities in the existing block match the identities derived from current data,
         # treat as no-change to avoid rewriting formatting (e.g., Markdown -> HTML OC anchors).
-        new_backer_ids = identities_for_members(backers)
-        semantically_same_backers = identities_semantically_same?(prev_backer_identities, new_backer_ids)
+        semantically_same_backers = semantically_same_section?(prev_backer_identities, backers)
         updated = if semantically_same_backers
           :no_change
         else
@@ -191,9 +190,8 @@ module Kettle
         end
 
         # Sponsors: apply the same semantic no-change rule
-        new_sponsor_ids = identities_for_members(sponsors)
         prev_s_ids = extract_section_identities(updated_readme, s_start, s_end)
-        semantically_same_sponsors = identities_semantically_same?(prev_s_ids, new_sponsor_ids)
+        semantically_same_sponsors = semantically_same_section?(prev_s_ids, sponsors)
         updated2 = if semantically_same_sponsors
           :no_change
         else
@@ -425,6 +423,16 @@ module Kettle
         extra_map.keys.sort.each do |tier|
           members = extra_map[tier]
           next if members.nil? || members.empty?
+          # For extra tiers, render using plain Markdown links to satisfy specs
+          # that expect either Markdown or a bare <a> tag (without nested <img>).
+          members_plain = Array(members).map do |m|
+            Backer.new(
+              name: m.name,
+              image: m.image,
+              website: m.website,
+              profile: m.profile,
+            )
+          end
           # Build a single, well-formed block per tier with deterministic spacing:
           # - Header
           # - One empty line
@@ -432,7 +440,7 @@ module Kettle
           block = [
             "### Open Collective for #{tier}",
             "",
-            generate_markdown(members, empty_message: "", default_name: tier),
+            generate_markdown(members_plain, empty_message: "", default_name: tier),
           ].join("\n")
           blocks << block
         end
@@ -451,11 +459,14 @@ module Kettle
 
         before = content[0..start_index + start_tag.length - 1]
         after = content[end_index..-1]
-        replacement = "#{start_tag}\n#{new_content}\n#{end_tag}"
         current_block = content[start_index..end_index + end_tag.length - 1]
-        return :no_change if current_block == replacement
+        # Treat as unchanged if the block matches either single or double newline spacing
+        unchanged_a = "#{start_tag}\n#{new_content}\n#{end_tag}"
+        unchanged_b = "#{start_tag}\n#{new_content}\n\n#{end_tag}"
+        return :no_change if current_block == unchanged_a || current_block == unchanged_b
 
         trailing = after[end_tag.length..-1] || ""
+        # Use a single blank line between content and end tag for normalized output
         "#{before}\n#{new_content}\n#{end_tag}#{trailing}"
       end
 
@@ -530,10 +541,17 @@ module Kettle
       def identities_for_members(members)
         set = Set.new
         Array(members).each do |m|
-          id = identity_for_member(m).to_s
-          id = id.strip.downcase
-          next if id.empty?
-          set << id
+          ids = []
+          # Include deterministic OpenCollective href identity when available
+          if m.oc_type && !m.oc_type.to_s.strip.empty? && !m.oc_index.nil?
+            ids << "https://opencollective.com/#{@handle}/#{m.oc_type}/#{m.oc_index}/website"
+          end
+          # Also include the standard identity used elsewhere (profile/website/name)
+          ids << identity_for_member(m)
+          ids.compact.each do |id|
+            norm = id.to_s.strip.downcase
+            set << norm unless norm.empty?
+          end
         end
         set
       end
@@ -552,6 +570,31 @@ module Kettle
         return false if new_set.nil? || new_set.empty?
         return false if previous.nil? || previous.empty?
         new_set.all? { |id| previous.include?(id) }
+      end
+
+      # Determine semantic sameness by ensuring each member has at least one
+      # identity present in the previous README identities set. This allows
+      # different formatting (OC anchors vs Markdown website/profile links)
+      # without rewriting when the underlying members are the same.
+      # @param previous [Set<String>]
+      # @param members [Array<Backer>]
+      # @return [Boolean]
+      def semantically_same_section?(previous, members)
+        return false if previous.nil? || previous.empty?
+        Array(members).all? do |m|
+          candidates = []
+          if m.oc_type && !m.oc_type.to_s.strip.empty? && !m.oc_index.nil?
+            candidates << "https://opencollective.com/#{@handle}/#{m.oc_type}/#{m.oc_index}/website"
+          end
+          candidates << m.profile
+          candidates << m.website
+          candidates << m.name
+          candidates.compact!
+          candidates.any? { |id|
+            s = id.to_s.strip.downcase
+            !s.empty? && previous.include?(s)
+          }
+        end
       end
 
       def identity_for_member(m)
