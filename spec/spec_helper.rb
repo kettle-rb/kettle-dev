@@ -40,7 +40,7 @@ RSpec.configure do |config|
 
   config.before do
     # Speed up polling loops
-    allow(described_class).to receive(:sleep)
+    allow(described_class).to receive(:sleep) unless described_class.nil?
   end
 end
 

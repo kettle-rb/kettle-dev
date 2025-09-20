@@ -260,7 +260,7 @@ module Kettle
 
           # We need to sleep a bit here to ensure the terminal is ready for both
           #   input and writing status updates to each workflow's line
-          sleep(0.2) unless Kettle::Dev::IS_CI
+          sleep(0.2)
 
           selected = nil
           # Create input thread always so specs that assert its cleanup/exception behavior can exercise it,

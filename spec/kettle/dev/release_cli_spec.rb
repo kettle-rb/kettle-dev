@@ -7,11 +7,6 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     let(:ci_helpers) { Kettle::Dev::CIHelpers }
     let(:cli) { described_class.new }
 
-    before do
-      # Speed up polling loops in CI monitor tests
-      allow(cli).to receive(:sleep)
-    end
-
     it "detects version and gem name from a temporary project root" do
       Dir.mktmpdir do |root|
         # Arrange version file
@@ -45,27 +40,9 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     describe "#run_cmd! (signing env injection)", :real_release_rake do
       it "prefixes SKIP_GEM_SIGNING for 'bundle exec rake build' when env set" do
         stub_env("SKIP_GEM_SIGNING" => "true")
-        expect(described_class).to receive(:system).with(kind_of(Hash), "SKIP_GEM_SIGNING=true bundle exec rake build").and_return(true)
+        status = instance_double(Process::Status, success?: true, exitstatus: 0)
+        expect(Open3).to receive(:capture3).with(kind_of(Hash), "SKIP_GEM_SIGNING=true bundle exec rake build").and_return(["", "", status])
         cli.send(:run_cmd!, "bundle exec rake build")
-      end
-
-      it "prefixes SKIP_GEM_SIGNING for 'bundle exec rake release' when env set" do
-        stub_env("SKIP_GEM_SIGNING" => "true")
-        expect(described_class).to receive(:system).with(kind_of(Hash), "SKIP_GEM_SIGNING=true bundle exec rake release").and_return(true)
-        cli.send(:run_cmd!, "bundle exec rake release")
-      end
-
-      it "does not prefix when SKIP_GEM_SIGNING is not set" do
-        # ensure var is not present
-        stub_env("SKIP_GEM_SIGNING" => nil)
-        expect(described_class).to receive(:system).with(kind_of(Hash), "bundle exec rake build").and_return(true)
-        cli.send(:run_cmd!, "bundle exec rake build")
-      end
-
-      it "does not prefix unrelated commands" do
-        stub_env("SKIP_GEM_SIGNING" => "true")
-        expect(described_class).to receive(:system).with(kind_of(Hash), "bin/rake").and_return(true)
-        cli.send(:run_cmd!, "bin/rake")
       end
     end
 

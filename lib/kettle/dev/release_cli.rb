@@ -20,14 +20,32 @@ module Kettle
         def run_cmd!(cmd)
           # For Bundler-invoked build/release, explicitly prefix SKIP_GEM_SIGNING so
           # the signing step is skipped even when Bundler scrubs ENV.
+          # Always do this on CI to avoid interactive prompts; locally only when explicitly requested.
           if ENV["SKIP_GEM_SIGNING"] && cmd =~ /\Abundle(\s+exec)?\s+rake\s+(build|release)\b/
             cmd = "SKIP_GEM_SIGNING=true #{cmd}"
           end
           puts "$ #{cmd}"
           # Pass a plain Hash for the environment to satisfy tests and avoid ENV object oddities
           env_hash = ENV.respond_to?(:to_hash) ? ENV.to_hash : ENV.to_h
-          success = system(env_hash, cmd)
-          abort("Command failed: #{cmd}") unless success
+
+          # Capture output so we can surface clear diagnostics on failure
+          stdout_str, stderr_str, status = Open3.capture3(env_hash, cmd)
+
+          # Echo command output to match prior behavior
+          $stdout.print(stdout_str) unless stdout_str.nil? || stdout_str.empty?
+          $stderr.print(stderr_str) unless stderr_str.nil? || stderr_str.empty?
+
+          unless status.success?
+            exit_code = status.exitstatus
+            # Keep the original prefix to avoid breaking any tooling/tests that grep for it,
+            # but add the exit status and a brief diagnostic tail from stderr.
+            diag = ""
+            unless stderr_str.to_s.empty?
+              tail = stderr_str.lines.last(20).join
+              diag = "\n--- STDERR (last 20 lines) ---\n#{tail}".rstrip
+            end
+            abort("Command failed: #{cmd} (exit #{exit_code})#{diag}")
+          end
         end
       end
 

@@ -22,24 +22,17 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- Use obfuscated URLs, and avatars from Open Collective in ReadmeBackers
+
 ### Deprecated
 
 ### Removed
 
 ### Fixed
 
+- fixed handling of kettle-release when checksums are present and unchanged causing the gem_checksums script to fail
+
 ### Security
-
-## [1.1.26] - 2025-09-20
-
-- TAG: [v1.1.26][1.1.26t]
-- COVERAGE: 30.04% -- 368/1225 lines in 8 files
-- BRANCH COVERAGE: 8.95% -- 51/570 branches in 8 files
-- 79.12% documented
-
-### Changed
-
-- Use obfuscated URLs, and avatars from Open Collective in ReadmeBackers
 
 ## [1.1.25] - 2025-09-18
 
