@@ -22,6 +22,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- Use obfuscated URLs, and avatars from Open Collective in ReadmeBackers
+
 ### Deprecated
 
 ### Removed

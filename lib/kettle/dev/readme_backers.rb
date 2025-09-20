@@ -126,8 +126,8 @@ module Kettle
         backers_hashes = Array(raw).select { |h| h["tier"].to_s.strip.casecmp("Backer").zero? }
         sponsors_hashes = Array(raw).select { |h| h["tier"].to_s.strip.casecmp("Sponsor").zero? }
 
-        backers = map_hashes_to_backers(backers_hashes, index_map)
-        sponsors = map_hashes_to_backers(sponsors_hashes, index_map)
+        backers = map_hashes_to_backers(backers_hashes, index_map, force_type: "backer")
+        sponsors = map_hashes_to_backers(sponsors_hashes, index_map, force_type: "organization")
         debug_log("Partitioned counts => Backers=#{backers.size}, Sponsors=#{sponsors.size}")
         if Kettle::Dev::DEBUGGING && backers.empty? && sponsors.empty? && Array(raw).any?
           debug_log("No Backer or Sponsor tiers matched among #{Array(raw).size} BACKER-role records. If tiers are empty, they will not appear in Backers/Sponsors sections.")
@@ -153,7 +153,15 @@ module Kettle
         end
 
         # Update backers section
-        updated = replace_between_tags(readme, b_start, b_end, backers_md)
+        # If the identities in the existing block match the identities derived from current data,
+        # treat as no-change to avoid rewriting formatting (e.g., Markdown -> HTML OC anchors).
+        new_backer_ids = identities_for_members(backers)
+        semantically_same_backers = identities_semantically_same?(prev_backer_identities, new_backer_ids)
+        updated = if semantically_same_backers
+          :no_change
+        else
+          replace_between_tags(readme, b_start, b_end, backers_md)
+        end
         case updated
         when :not_found
           debug_log("Backers tag block not found; skipping backers section update")
@@ -161,7 +169,7 @@ module Kettle
           backers_changed = false
           new_backers = []
         when :no_change
-          debug_log("Backers section unchanged (generated markdown matches existing block)")
+          debug_log("Backers section unchanged (identities match or generated markdown matches existing block)")
           updated_readme = readme
           backers_changed = false
           new_backers = []
@@ -182,7 +190,15 @@ module Kettle
           updated_readme = updated unless updated == :no_change || updated == :not_found
         end
 
-        updated2 = replace_between_tags(updated_readme, s_start, s_end, sponsors_md)
+        # Sponsors: apply the same semantic no-change rule
+        new_sponsor_ids = identities_for_members(sponsors)
+        prev_s_ids = extract_section_identities(updated_readme, s_start, s_end)
+        semantically_same_sponsors = identities_semantically_same?(prev_s_ids, new_sponsor_ids)
+        updated2 = if semantically_same_sponsors
+          :no_change
+        else
+          replace_between_tags(updated_readme, s_start, s_end, sponsors_md)
+        end
         case updated2
         when :not_found
           debug_log("Sponsors tag block not found; skipping sponsors section update")
@@ -190,7 +206,7 @@ module Kettle
           final = updated_readme
           new_sponsors = []
         when :no_change
-          debug_log("Sponsors section unchanged (generated markdown matches existing block)")
+          debug_log("Sponsors section unchanged (identities match or generated markdown matches existing block)")
           sponsors_changed = false
           final = updated_readme
           new_sponsors = []
@@ -329,7 +345,8 @@ module Kettle
         map
       end
 
-      def map_hashes_to_backers(hashes, index_map = nil)
+      def map_hashes_to_backers(hashes, index_map = nil, force_type: nil)
+        forced_counter = 0
         Array(hashes).map do |h|
           key = if h["profile"].to_s.strip != ""
             h["profile"].to_s.strip.downcase
@@ -339,6 +356,22 @@ module Kettle
             h["name"].to_s.strip.downcase
           end
           oc = index_map ? index_map[key] : nil
+          # Determine oc_type/index with optional forced type override (used for sections)
+          oc_type = nil
+          oc_index = nil
+          if force_type
+            if oc && oc[:type] == force_type && !oc[:index].nil?
+              oc_type = oc[:type]
+              oc_index = oc[:index]
+            else
+              oc_type = force_type
+              oc_index = forced_counter
+              forced_counter += 1
+            end
+          else
+            oc_type = oc ? oc[:type] : nil
+            oc_index = oc ? oc[:index] : nil
+          end
           Backer.new(
             name: h["name"],
             image: begin
@@ -349,8 +382,8 @@ module Kettle
             end,
             website: (h["website"].to_s.strip.empty? ? nil : h["website"]),
             profile: (h["profile"].to_s.strip.empty? ? nil : h["profile"]),
-            oc_type: oc ? oc[:type] : nil,
-            oc_index: oc ? oc[:index] : nil,
+            oc_type: oc_type,
+            oc_index: oc_index,
           )
         end
       end
@@ -388,16 +421,25 @@ module Kettle
       def generate_extra_tiers_markdown(extra_map)
         return "" if extra_map.nil? || extra_map.empty?
 
-        lines = []
+        blocks = []
         extra_map.keys.sort.each do |tier|
           members = extra_map[tier]
           next if members.nil? || members.empty?
-          lines << "### Open Collective for #{tier}"
-          lines << ""
-          lines << generate_markdown(members, empty_message: "", default_name: tier)
-          lines << ""
+          # Build a single, well-formed block per tier with deterministic spacing:
+          # - Header
+          # - One empty line
+          # - Links line
+          block = [
+            "### Open Collective for #{tier}",
+            "",
+            generate_markdown(members, empty_message: "", default_name: tier),
+          ].join("\n")
+          blocks << block
         end
-        lines.join("\n")
+        # Separate multiple tiers with a single blank line between blocks.
+        # The caller (replace_between_tags) will append one trailing newline before the end tag,
+        # yielding exactly two newlines after the links line within the section.
+        blocks.join("\n\n")
       end
 
       def replace_between_tags(content, start_tag, end_tag, new_content)
@@ -477,6 +519,39 @@ module Kettle
           id = identity_for_member(m)
           !prev.include?(id)
         end
+      end
+
+      # Build the identity set for a list of members using the same precedence
+      # as compute_new_members/identity_for_member. Used to compare semantic
+      # equivalence of existing README sections vs new data, to avoid rewrites
+      # when only formatting differs.
+      # @param members [Array<Backer>]
+      # @return [Set<String>]
+      def identities_for_members(members)
+        set = Set.new
+        Array(members).each do |m|
+          id = identity_for_member(m).to_s
+          id = id.strip.downcase
+          next if id.empty?
+          set << id
+        end
+        set
+      end
+
+      # Determine if the new identity set is semantically the same as the previous
+      # block found in the README. We treat it as the same when all new identities
+      # are already present in the previous set (subset), allowing the previous set
+      # to contain additional identities such as plain-text names extracted from
+      # Markdown ALT text. This avoids unnecessary rewrites when only formatting
+      # changes (e.g., Markdown -> HTML OC anchors) but the underlying members are
+      # unchanged.
+      # @param previous [Set<String>]
+      # @param new_set [Set<String>]
+      # @return [Boolean]
+      def identities_semantically_same?(previous, new_set)
+        return false if new_set.nil? || new_set.empty?
+        return false if previous.nil? || previous.empty?
+        new_set.all? { |id| previous.include?(id) }
       end
 
       def identity_for_member(m)
