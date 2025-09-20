@@ -325,7 +325,7 @@ module Kettle
         counts = {"backer" => 0, "organization" => 0}
         map = {}
         Array(hashes).each do |h|
-          type = h["type"].to_s.upcase == "ORGANIZATION" ? "organization" : "backer"
+          type = (h["type"].to_s.upcase == "ORGANIZATION") ? "organization" : "backer"
           key = if h["profile"].to_s.strip != ""
             h["profile"].to_s.strip.downcase
           elsif h["website"].to_s.strip != ""
@@ -335,12 +335,12 @@ module Kettle
           end
           idx = counts[type]
           counts[type] = idx + 1
-          map[key] = { type: type, index: idx }
+          map[key] = {type: type, index: idx}
         end
         # Helpful debug summary so users can see which index maps to which backer.
         if Kettle::Dev::DEBUGGING
           samples = map.first(5).map { |k, v| "#{v[:type]}##{v[:index]} => #{k}" }
-          debug_log("Built OC index map: backer_count=#{counts['backer']}, organization_count=#{counts['organization']}; sample=#{samples}")
+          debug_log("Built OC index map: backer_count=#{counts["backer"]}, organization_count=#{counts["organization"]}; sample=#{samples}")
         end
         map
       end
@@ -398,7 +398,7 @@ module Kettle
             idx = m.oc_index
             href = "https://opencollective.com/#{@handle}/#{type}/#{idx}/website"
             img = "https://opencollective.com/#{@handle}/#{type}/#{idx}/avatar.svg"
-            %Q(<a href="#{href}" target="_blank"><img src="#{img}"></a>)
+            %(<a href="#{href}" target="_blank"><img src="#{img}"></a>)
           else
             # Fallback to prior Markdown behavior
             image_url = (m.image && !m.image.to_s.strip.empty?) ? m.image : nil

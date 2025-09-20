@@ -4,18 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d08cadcc-d2ae-48f0-8a2f-f4fe948c245c" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/GitLink.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/developer-tools.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/project.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/kettle-dev.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sonarlint.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG.md" afterDir="false" />
+    <list default="true" id="d08cadcc-d2ae-48f0-8a2f-f4fe948c245c" name="Changes" comment="📝 Docs update">
+      <change beforePath="$PROJECT_DIR$/.rubocop_gradual.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.rubocop_gradual.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/kettle/dev/readme_backers.rb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/kettle/dev/readme_backers.rb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -57,7 +47,11 @@
   "keyToString": {
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
+    "com.github.patou.gitmoji.display-icon": "emoji",
+    "com.github.patou.gitmoji.text-after-unicode": " ",
+    "com.github.patou.gitmoji.use-unicode": "true",
     "com.intellij.lang.ruby.rbs.tools.collection.workspace.sync.RbsCollectionUpdateProjectActivity#LAST_UPDATE_TIMESTAMP": "1758352284772",
     "git-widget-placeholder": "main",
     "junie.onboarding.icon.badge.shown": "true",
@@ -67,7 +61,7 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "reference.settings.grazie.pro.style.in.ai.assistant",
+    "settings.editor.selected.configurable": "org.jetbrains.plugins.ruby.settings.RubyActiveModuleSdkConfigurable",
     "to.speed.mode.migration.done": "true",
     "vue.rearranger.settings.migration": "true"
   }
@@ -87,11 +81,24 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1758352224736</updated>
-      <workItem from="1758352226184" duration="1306000" />
+      <workItem from="1758352226184" duration="3169000" />
     </task>
+    <task id="LOCAL-00001" summary="📝 Docs update">
+      <option name="closed" value="true" />
+      <created>1758355261615</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1758355261615</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value=" Docs update" />
+    <option name="LAST_COMMIT_MESSAGE" value=" Docs update" />
   </component>
 </project>

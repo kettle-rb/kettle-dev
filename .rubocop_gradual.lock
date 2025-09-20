@@ -140,19 +140,21 @@
     [239, 19, 26, "RSpec/DescribedClass: Use `described_class` instead of `Kettle::Dev::PreReleaseCLI`.", 1843931869],
     [255, 19, 26, "RSpec/DescribedClass: Use `described_class` instead of `Kettle::Dev::PreReleaseCLI`.", 1843931869]
   ],
-  "spec/kettle/dev/readme_backers_spec.rb:398034650": [
-    [100, 9, 66, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [103].", 798457357],
-    [103, 9, 55, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [100].", 673372644],
-    [423, 7, 66, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [424].", 798457357],
-    [424, 7, 56, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [423].", 1426439343],
-    [460, 7, 66, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [461].", 798457357],
-    [461, 7, 55, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [460].", 673372644],
-    [486, 7, 66, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [487].", 798457357],
-    [487, 7, 55, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [486].", 673372644],
-    [505, 7, 66, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [506].", 798457357],
-    [506, 7, 56, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [505].", 1426439343],
-    [521, 7, 66, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [522].", 798457357],
-    [522, 7, 55, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [521].", 673372644]
+  "spec/kettle/dev/readme_backers_spec.rb:3828657223": [
+    [95, 9, 66, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [98].", 798457357],
+    [98, 9, 55, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [95].", 673372644],
+    [418, 7, 66, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [419].", 798457357],
+    [419, 7, 56, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [418].", 1426439343],
+    [456, 7, 66, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [457].", 798457357],
+    [457, 7, 55, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [456].", 673372644],
+    [483, 7, 66, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [484].", 798457357],
+    [484, 7, 55, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [483].", 673372644],
+    [503, 7, 66, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [504].", 798457357],
+    [504, 7, 56, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [503].", 1426439343],
+    [519, 7, 66, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [520].", 798457357],
+    [520, 7, 55, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [519].", 673372644],
+    [536, 7, 66, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [537].", 798457357],
+    [537, 7, 55, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [536].", 673372644]
   ],
   "spec/kettle/dev/release_cli_spec.rb:4280640386": [
     [1285, 7, 76, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 1335859022],
