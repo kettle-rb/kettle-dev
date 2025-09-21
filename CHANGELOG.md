@@ -30,6 +30,7 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- improved handling of flaky truffleruby builds in workflow templates
 - fixed handling of kettle-release when checksums are present and unchanged causing the gem_checksums script to fail
 
 ### Security
