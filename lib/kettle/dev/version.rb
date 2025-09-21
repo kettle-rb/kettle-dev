@@ -6,7 +6,7 @@ module Kettle
     module Version
       # The gem version.
       # @return [String]
-      VERSION = "1.1.28"
+      VERSION = "1.1.29"
 
       module_function
 
