@@ -22,18 +22,29 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
-- Use obfuscated URLs, and avatars from Open Collective in ReadmeBackers
-
 ### Deprecated
 
 ### Removed
 
 ### Fixed
 
+### Security
+
+## [1.1.27] - 2025-09-20
+
+- TAG: [v1.1.27][1.1.27t]
+- COVERAGE: 96.33% -- 3860/4007 lines in 26 files
+- BRANCH COVERAGE: 81.09% -- 1591/1962 branches in 26 files
+- 79.12% documented
+
+### Changed
+
+- Use obfuscated URLs, and avatars from Open Collective in ReadmeBackers
+
+### Fixed
+
 - improved handling of flaky truffleruby builds in workflow templates
 - fixed handling of kettle-release when checksums are present and unchanged causing the gem_checksums script to fail
-
-### Security
 
 ## [1.1.25] - 2025-09-18
 
@@ -985,7 +996,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.26...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.27...HEAD
+[1.1.27]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.25...v1.1.27
+[1.1.27t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.27
 [1.1.26]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.25...v1.1.26
 [1.1.26t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.26
 [1.1.25]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.24...v1.1.25
