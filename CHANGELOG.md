@@ -28,9 +28,18 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- kettle-release: restore compatability with MFA input
-
 ### Security
+
+## [1.1.28] - 2025-09-21
+
+- TAG: [v1.1.28][1.1.28t]
+- COVERAGE: 96.19% -- 3861/4014 lines in 26 files
+- BRANCH COVERAGE: 80.89% -- 1592/1968 branches in 26 files
+- 79.12% documented
+
+### Fixed
+
+- kettle-release: restore compatability with MFA input
 
 ## [1.1.27] - 2025-09-20
 
@@ -998,7 +1007,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.27...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.28...HEAD
+[1.1.28]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.27...v1.1.28
+[1.1.28t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.28
 [1.1.27]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.25...v1.1.27
 [1.1.27t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.27
 [1.1.26]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.25...v1.1.26

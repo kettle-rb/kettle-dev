@@ -31,7 +31,7 @@ module Kettle
           # Some commands are interactive (e.g., `bundle exec rake release` prompting for RubyGems MFA).
           # Using capture3 detaches STDIN, preventing prompts from working. For such commands, use system
           # so they inherit the current TTY and can read the user's input.
-          interactive = (cmd =~ /\Abundle(\s+exec)?\s+rake\s+release\b/ || cmd =~ /\Agem\s+push\b/)
+          interactive = cmd =~ /\Abundle(\s+exec)?\s+rake\s+release\b/ || cmd =~ /\Agem\s+push\b/
           if interactive
             ok = system(env_hash, cmd)
             unless ok
