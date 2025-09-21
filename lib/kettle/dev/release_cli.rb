@@ -28,7 +28,20 @@ module Kettle
           # Pass a plain Hash for the environment to satisfy tests and avoid ENV object oddities
           env_hash = ENV.respond_to?(:to_hash) ? ENV.to_hash : ENV.to_h
 
-          # Capture output so we can surface clear diagnostics on failure
+          # Some commands are interactive (e.g., `bundle exec rake release` prompting for RubyGems MFA).
+          # Using capture3 detaches STDIN, preventing prompts from working. For such commands, use system
+          # so they inherit the current TTY and can read the user's input.
+          interactive = (cmd =~ /\Abundle(\s+exec)?\s+rake\s+release\b/ || cmd =~ /\Agem\s+push\b/)
+          if interactive
+            ok = system(env_hash, cmd)
+            unless ok
+              exit_code = $?.respond_to?(:exitstatus) ? $?.exitstatus : 1
+              abort("Command failed: #{cmd} (exit #{exit_code})")
+            end
+            return
+          end
+
+          # Non-interactive: capture output so we can surface clear diagnostics on failure
           stdout_str, stderr_str, status = Open3.capture3(env_hash, cmd)
 
           # Echo command output to match prior behavior

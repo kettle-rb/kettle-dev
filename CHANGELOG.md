@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- kettle-release: restore compatability with MFA input
+
 ### Security
 
 ## [1.1.27] - 2025-09-20
