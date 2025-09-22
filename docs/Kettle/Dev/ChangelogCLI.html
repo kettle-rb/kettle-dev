@@ -347,7 +347,11 @@
 107
 108
 109
-110</pre>
+110
+111
+112
+113
+114</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/kettle/dev/changelog_cli.rb', line 13</span>
@@ -373,7 +377,8 @@
     <span class='id identifier rubyid_print'>print</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Proceed with reformat only? [y/N]: </span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
     <span class='id identifier rubyid_ans'>ans</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="InputAdapter.html" title="Kettle::Dev::InputAdapter (module)">InputAdapter</a></span></span><span class='period'>.</span><span class='id identifier rubyid_gets'><span class='object_link'><a href="InputAdapter.html#gets-class_method" title="Kettle::Dev::InputAdapter.gets (method)">gets</a></span></span><span class='op'>&amp;.</span><span class='id identifier rubyid_strip'>strip</span><span class='op'>&amp;.</span><span class='id identifier rubyid_downcase'>downcase</span>
     <span class='kw'>if</span> <span class='id identifier rubyid_ans'>ans</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>y</span><span class='tstring_end'>&quot;</span></span> <span class='op'>||</span> <span class='id identifier rubyid_ans'>ans</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>yes</span><span class='tstring_end'>&quot;</span></span>
-      <span class='id identifier rubyid_updated'>updated</span> <span class='op'>=</span> <span class='id identifier rubyid_normalize_heading_spacing'>normalize_heading_spacing</span><span class='lparen'>(</span><span class='id identifier rubyid_changelog'>changelog</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_updated'>updated</span> <span class='op'>=</span> <span class='id identifier rubyid_convert_heading_tag_suffix_to_list'>convert_heading_tag_suffix_to_list</span><span class='lparen'>(</span><span class='id identifier rubyid_changelog'>changelog</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_updated'>updated</span> <span class='op'>=</span> <span class='id identifier rubyid_normalize_heading_spacing'>normalize_heading_spacing</span><span class='lparen'>(</span><span class='id identifier rubyid_updated'>updated</span><span class='rparen'>)</span>
       <span class='id identifier rubyid_updated'>updated</span> <span class='op'>=</span> <span class='id identifier rubyid_ensure_footer_spacing'>ensure_footer_spacing</span><span class='lparen'>(</span><span class='id identifier rubyid_updated'>updated</span><span class='rparen'>)</span>
       <span class='id identifier rubyid_updated'>updated</span> <span class='op'>=</span> <span class='id identifier rubyid_updated'>updated</span><span class='period'>.</span><span class='id identifier rubyid_rstrip'>rstrip</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span>
       <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_write'>write</span><span class='lparen'>(</span><span class='ivar'>@changelog_path</span><span class='comma'>,</span> <span class='id identifier rubyid_updated'>updated</span><span class='rparen'>)</span>
@@ -441,6 +446,9 @@
 
   <span class='id identifier rubyid_updated'>updated</span> <span class='op'>=</span> <span class='id identifier rubyid_update_link_refs'>update_link_refs</span><span class='lparen'>(</span><span class='id identifier rubyid_updated'>updated</span><span class='comma'>,</span> <span class='id identifier rubyid_owner'>owner</span><span class='comma'>,</span> <span class='id identifier rubyid_repo'>repo</span><span class='comma'>,</span> <span class='id identifier rubyid_prev_version'>prev_version</span><span class='comma'>,</span> <span class='id identifier rubyid_version'>version</span><span class='rparen'>)</span>
 
+  <span class='comment'># Transform legacy heading suffix tags into list items under headings
+</span>  <span class='id identifier rubyid_updated'>updated</span> <span class='op'>=</span> <span class='id identifier rubyid_convert_heading_tag_suffix_to_list'>convert_heading_tag_suffix_to_list</span><span class='lparen'>(</span><span class='id identifier rubyid_updated'>updated</span><span class='rparen'>)</span>
+
   <span class='comment'># Normalize spacing around headings to aid Markdown renderers
 </span>  <span class='id identifier rubyid_updated'>updated</span> <span class='op'>=</span> <span class='id identifier rubyid_normalize_heading_spacing'>normalize_heading_spacing</span><span class='lparen'>(</span><span class='id identifier rubyid_updated'>updated</span><span class='rparen'>)</span>
 
@@ -460,7 +468,7 @@
 </div>
 
       <div id="footer">
-  Generated on Sun Sep 21 06:13:09 2025 by
+  Generated on Sun Sep 21 18:48:25 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

@@ -670,4 +670,14 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       expect(out).to match(/\n\n\z/)
     end
   end
+
+  describe "tag suffix transformation" do
+    it "moves ([tag][Xt]) from heading suffix into first list item under heading using fixtures" do
+      cli = described_class.new
+      heading_style = File.read(File.join(__dir__, "..", "..", "support", "fixtures", "CHANGELOG_HEADING_TAGS.md"))
+      list_style = File.read(File.join(__dir__, "..", "..", "support", "fixtures", "CHANGELOG_LIST_TAGS.md"))
+      transformed = cli.send(:convert_heading_tag_suffix_to_list, heading_style)
+      expect(transformed).to eq(list_style)
+    end
+  end
 end
