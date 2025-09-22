@@ -31,7 +31,8 @@ module Kettle
           print("Proceed with reformat only? [y/N]: ")
           ans = Kettle::Dev::InputAdapter.gets&.strip&.downcase
           if ans == "y" || ans == "yes"
-            updated = normalize_heading_spacing(changelog)
+            updated = convert_heading_tag_suffix_to_list(changelog)
+            updated = normalize_heading_spacing(updated)
             updated = ensure_footer_spacing(updated)
             updated = updated.rstrip + "\n"
             File.write(@changelog_path, updated)
@@ -98,6 +99,9 @@ module Kettle
         end
 
         updated = update_link_refs(updated, owner, repo, prev_version, version)
+
+        # Transform legacy heading suffix tags into list items under headings
+        updated = convert_heading_tag_suffix_to_list(updated)
 
         # Normalize spacing around headings to aid Markdown renderers
         updated = normalize_heading_spacing(updated)
@@ -260,6 +264,109 @@ module Kettle
       rescue StandardError => e
         warn("Failed to run bin/yard: #{e.class}: #{e.message}")
         nil
+      end
+
+      # Transform legacy release headings that include a tag suffix, e.g.:
+      #   "## [1.2.3] 2022-08-29 ([tag][1.2.3t])"
+      # into a heading followed by a list item:
+      #   "## [1.2.3] 2022-08-29\n\n- TAG: [v1.2.3][1.2.3t]"
+      # The method is idempotent: if the next non-blank line already starts with "- TAG:",
+      # no new list item is inserted. Case-insensitive match for [tag].
+      def convert_heading_tag_suffix_to_list(text)
+        lines = text.lines
+        # Build a set of versions that have a tag reference (e.g., "[1.2.3t]: ...").
+        # IMPORTANT: Only scan the footer link-ref block (starting at the [Unreleased]: line)
+        # to avoid accidentally picking up body content.
+        scan_start = lines.index { |l| l.start_with?(UNRELEASED_SECTION_HEADING) } || lines.length
+        t_versions = {}
+        non_t_tag_refs = {}
+        lines[scan_start..-1].to_a.each do |l|
+          # Case A: explicit tag ref key like [1.2.3t]: ...
+          if (m = l.match(/^\[(\d+\.\d+\.\d+)t\]:\s+(\S+)/))
+            t_versions[m[1]] = true
+            next
+          end
+          # Case B: non-t ref that nevertheless points to a tag URL (GitHub or GitLab)
+          if (m2 = l.match(/^\[(\d+\.\d+\.\d+)\]:\s+(\S+)/))
+            url = m2[2]
+            # Accept only when the URL clearly points to a tag for the SAME version
+            # Support both GitHub and GitLab style tag URLs
+            if (murl = url.match(%r{/(?:releases/)?tags?/v(\d+\.\d+\.\d+)}i))
+              version_in_url = murl[1]
+              if version_in_url == m2[1]
+                non_t_tag_refs[m2[1]] = url
+              end
+            end
+          end
+        end
+        # Any version that has either explicit t-ref or a non-t tag-ref is considered tagged
+        tag_ref_versions = {}
+        t_versions.keys.each { |v| tag_ref_versions[v] = true }
+        non_t_tag_refs.keys.each { |v| tag_ref_versions[v] = true }
+
+        out = []
+        i = 0
+        while i < lines.length
+          line = lines[i]
+          # Case 1: Heading contains legacy tag suffix we should convert
+          m = line.match(/^## \[(\d+\.\d+\.\d+)\](.*)\(\[tag\]\[(\d+\.\d+\.\d+)t\]\)\s*$/i)
+          if m && m[1] == m[3]
+            ver = m[1]
+            middle = m[2]
+            new_heading = ("## [#{ver}]" + middle).rstrip + "\n"
+            out << new_heading
+            # If the next non-blank line is already a TAG list item, don't add another
+            k = i + 1
+            k += 1 while k < lines.length && lines[k].strip == ""
+            unless k < lines.length && lines[k].lstrip.start_with?("- TAG:")
+              out << "\n"
+              out << "- TAG: [v#{ver}][#{ver}t]\n"
+              out << "\n"
+            end
+            # Skip any existing blank lines following the heading to avoid duplicate spacing
+            i = k
+            next
+          end
+
+          # Case 2: Heading does NOT contain suffix, but a matching tag ref exists; ensure a TAG list item
+          if (m2 = line.match(/^## \[(\d+\.\d+\.\d+)\](.*)$/))
+            ver2 = m2[1]
+            # Skip Unreleased heading and non-release headings
+            unless ver2.nil?
+              k = i + 1
+              k += 1 while k < lines.length && lines[k].strip == ""
+              needs_tag = tag_ref_versions[ver2] && !(k < lines.length && lines[k].lstrip.start_with?("- TAG:"))
+              if needs_tag
+                out << (line.end_with?("\n") ? line : line + "\n")
+                out << "\n"
+                out << "- TAG: [v#{ver2}][#{ver2}t]\n"
+                out << "\n"
+                i = k
+                next
+              end
+            end
+          end
+
+          # Footer duplication: if we are in the footer block and encounter a non-t tag-ref
+          # without a matching t-ref, emit the t-ref immediately after with the same URL.
+          if i >= scan_start
+            if (mref = line.match(/^\[(\d+\.\d+\.\d+)\]:\s+(\S+)/))
+              vref = mref[1]
+              mref[2]
+              if non_t_tag_refs[vref] && !t_versions[vref]
+                out << line
+                out << "[#{vref}t]: #{non_t_tag_refs[vref]}\n"
+                t_versions[vref] = true
+                i += 1
+                next
+              end
+            end
+          end
+
+          out << line
+          i += 1
+        end
+        out.join
       end
 
       def update_link_refs(content, owner, repo, prev_version, new_version)
