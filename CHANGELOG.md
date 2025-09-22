@@ -30,6 +30,18 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Security
 
+## [1.1.30] - 2025-09-21
+
+- TAG: [v1.1.30][1.1.30t]
+- COVERAGE: 96.27% -- 3926/4078 lines in 26 files
+- BRANCH COVERAGE: 80.97% -- 1617/1997 branches in 26 files
+- 79.12% documented
+
+### Added
+
+- kettle-changelog: handle legacy tag-in-release-heading style
+  - convert to tag-in-list style
+
 ## [1.1.29] - 2025-09-21
 
 - TAG: [v1.1.29][1.1.29t]
@@ -1018,7 +1030,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.29...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.30...HEAD
+[1.1.30]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.29...v1.1.30
+[1.1.30t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.30
 [1.1.29]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.28...v1.1.29
 [1.1.29t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.29
 [1.1.28]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.27...v1.1.28
