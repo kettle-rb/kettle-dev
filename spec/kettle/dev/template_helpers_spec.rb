@@ -501,6 +501,69 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
       expect(rep("Support us at {OPENCOLLECTIVE|ORG_NAME}!"))
         .to eq("Support us at some-org!")
     end
+
+    it "handles gemspec_metadata failure gracefully (covers ~424 rescue, min_dev fallback)" do
+      allow(helpers).to receive(:gemspec_metadata).and_raise(StandardError.new("meta boom"))
+      input = "ruby={K_D_MIN_RUBY}; dev={K_D_MIN_DEV_RUBY}"
+      out = helpers.apply_common_replacements(input, **meta)
+      # min ruby token remains because min_ruby is effectively empty on failure
+      expect(out).to include("{K_D_MIN_RUBY}")
+      # min_dev falls back to MIN_SETUP_RUBY (2.3)
+      expect(out).to include(Kettle::Dev::TemplateHelpers::MIN_SETUP_RUBY.to_s)
+    end
+
+    it "replaces {K_D_MIN_RUBY} token when min_ruby provided (covers ~447)" do
+      out = helpers.apply_common_replacements("v={K_D_MIN_RUBY}", **meta.merge(min_ruby: "3.3"))
+      expect(out).to eq("v=3.3")
+    end
+
+    it "rescues errors during min_ruby replacement (covers ~450)" do
+      # Provide a min_ruby object whose first to_s returns a string (for the condition),
+      # then raises on subsequent to_s during the gsub to trigger the rescue path
+      class FlakyToS
+        def initialize(val)
+          @val = val
+          @calls = 0
+        end
+
+        def to_s
+          @calls += 1
+          return @val if @calls == 1
+          raise StandardError, "to_s boom"
+        end
+      end
+      s = "v={K_D_MIN_RUBY}"
+      out = helpers.apply_common_replacements(s, **meta.merge(min_ruby: FlakyToS.new("3.2")))
+      # The token should remain because replacement failed
+      expect(out).to include("{K_D_MIN_RUBY}")
+    end
+
+    it "replaces {K_D_MIN_DEV_RUBY} token based on gemspec min_ruby (covers ~457)" do
+      allow(helpers).to receive(:gemspec_metadata).and_return({min_ruby: Gem::Version.new("3.1")})
+      out = helpers.apply_common_replacements("dev={K_D_MIN_DEV_RUBY}", **meta)
+      expect(out).to eq("dev=3.1")
+    end
+
+    it "rescues errors during min_dev_ruby replacement (covers ~460)" do
+      # Make MIN_SETUP_RUBY be a version-like object that raises on to_s, and ensure it wins in max()
+      class BadToSVersion
+        include Comparable
+
+        def <=>(other)
+          1 # treat self as greater than any other
+        end
+
+        def to_s
+          raise StandardError, "to_s boom"
+        end
+      end
+      stub_const("Kettle::Dev::TemplateHelpers::MIN_SETUP_RUBY", BadToSVersion.new)
+      # Provide mr lower than MIN_SETUP_RUBY so max chooses the constant
+      allow(helpers).to receive(:gemspec_metadata).and_return({min_ruby: Gem::Version.new("2.0")})
+      s = "dev={K_D_MIN_DEV_RUBY}"
+      out = helpers.apply_common_replacements(s, **meta.merge(min_ruby: "1.0"))
+      expect(out).to include("{K_D_MIN_DEV_RUBY}")
+    end
   end
 
   context "when running kettle:dev:template" do

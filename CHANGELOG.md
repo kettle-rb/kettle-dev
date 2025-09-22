@@ -28,10 +28,19 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [1.1.31] - 2025-09-21
+
+- TAG: [v1.1.31][1.1.31t]
+- COVERAGE: 96.39% -- 3929/4076 lines in 26 files
+- BRANCH COVERAGE: 81.07% -- 1619/1997 branches in 26 files
+- 79.12% documented
+
+### Fixed
+
 - order of checksums and release / tag reversed
   - remove all possibility of gem rebuild (part of reproducible builds) including checksums in the rebuilt gem
-
-### Security
 
 ## [1.1.30] - 2025-09-21
 
@@ -1033,7 +1042,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.30...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.31...HEAD
+[1.1.31]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.30...v1.1.31
+[1.1.31t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.31
 [1.1.30]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.29...v1.1.30
 [1.1.30t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.30
 [1.1.29]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.28...v1.1.29

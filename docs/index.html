@@ -144,7 +144,7 @@ bin/kettle-release
     <tr>
       <td>Source</td>
       <td>
-<a href="https://gitlab.com/kettle-rb/kettle-dev/"><img src="https://img.shields.io/badge/GitLab-FBA326?style=for-the-badge&amp;logo=Gitlab&amp;logoColor=orange" alt="Source on GitLab.com"></a> <a href="https://codeberg.org/kettle-rb/kettle-dev"><img src="https://img.shields.io/badge/CodeBerg-4893CC?style=for-the-badge&amp;logo=CodeBerg&amp;logoColor=blue" alt="Source on CodeBerg.org"></a> <a href="https://github.com/kettle-rb/kettle-dev"><img src="https://img.shields.io/badge/GitHub-238636?style=for-the-badge&amp;logo=Github&amp;logoColor=green" alt="Source on Github.com"></a> <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"><img src="https://img.shields.io/badge/KLOC-4.014-FFDD67.svg?style=for-the-badge&amp;logo=YouTube&amp;logoColor=blue" alt="The best SHA: dQw4w9WgXcQ!"></a>
+<a href="https://gitlab.com/kettle-rb/kettle-dev/"><img src="https://img.shields.io/badge/GitLab-FBA326?style=for-the-badge&amp;logo=Gitlab&amp;logoColor=orange" alt="Source on GitLab.com"></a> <a href="https://codeberg.org/kettle-rb/kettle-dev"><img src="https://img.shields.io/badge/CodeBerg-4893CC?style=for-the-badge&amp;logo=CodeBerg&amp;logoColor=blue" alt="Source on CodeBerg.org"></a> <a href="https://github.com/kettle-rb/kettle-dev"><img src="https://img.shields.io/badge/GitHub-238636?style=for-the-badge&amp;logo=Github&amp;logoColor=green" alt="Source on Github.com"></a> <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"><img src="https://img.shields.io/badge/KLOC-4.076-FFDD67.svg?style=for-the-badge&amp;logo=YouTube&amp;logoColor=blue" alt="The best SHA: dQw4w9WgXcQ!"></a>
 </td>
     </tr>
     <tr>
@@ -716,8 +716,8 @@ Tip: When running a single spec file locally, you may want <code>K_SOUP_COV_MIN_
           <li>12: Checkout trunk and pull latest</li>
           <li>13: Signing checks and guidance (abort when signing enabled but cert missing); respect SKIP_GEM_SIGNING</li>
           <li>14: Build gem (honors SKIP_GEM_SIGNING via env prefix)</li>
-          <li>15: Generate and validate gem checksums (bin/gem_checksums)</li>
-          <li>16: Release via <code>bundle exec rake release</code> and validate checksums again</li>
+          <li>15: Release via <code>bundle exec rake release</code> (also creates git tag)</li>
+          <li>16: Generate and validate gem checksums (bin/gem_checksums)</li>
           <li>17: Create GitHub release from CHANGELOG when GITHUB_TOKEN present</li>
           <li>18: Push git tags to remotes (to “all” remote only when present; otherwise to each remote)</li>
         </ul>
@@ -1141,7 +1141,7 @@ Please consider sponsoring me or the project.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Sun Sep 21 18:48:24 2025 by
+  Generated on Mon Sep 22 01:05:04 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>

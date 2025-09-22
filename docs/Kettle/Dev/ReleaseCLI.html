@@ -601,7 +601,9 @@
 294
 295
 296
-297</pre>
+297
+298
+299</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 80</span>
@@ -789,17 +791,19 @@
     <span class='id identifier rubyid_run_cmd!'>run_cmd!</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>bundle exec rake build</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
   <span class='kw'>end</span>
 
-  <span class='comment'># 15. checksums validate
+  <span class='comment'># 15. release and tag
 </span>  <span class='kw'>if</span> <span class='ivar'>@start_step</span> <span class='op'>&lt;=</span> <span class='int'>15</span>
-    <span class='id identifier rubyid_run_cmd!'>run_cmd!</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>bin/gem_checksums</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_version'>version</span> <span class='op'>||=</span> <span class='id identifier rubyid_detect_version'>detect_version</span>
-    <span class='id identifier rubyid_validate_checksums!'>validate_checksums!</span><span class='lparen'>(</span><span class='id identifier rubyid_version'>version</span><span class='comma'>,</span> <span class='label'>stage:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>after build + gem_checksums</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-  <span class='kw'>end</span>
-
-  <span class='comment'># 16. release and validate
-</span>  <span class='kw'>if</span> <span class='ivar'>@start_step</span> <span class='op'>&lt;=</span> <span class='int'>16</span>
     <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Running release (you may be prompted for signing key password and RubyGems MFA OTP)...</span><span class='tstring_end'>&quot;</span></span>
     <span class='id identifier rubyid_run_cmd!'>run_cmd!</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>bundle exec rake release</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># 16. generate checksums
+</span>  <span class='comment'>#    Checksums are generated after release to avoid including checksums/ in gem package
+</span>  <span class='comment'>#    Rationale: Running gem_checksums before release may commit checksums/ and cause Bundler&#39;s
+</span>  <span class='comment'>#    release build to include them in the gem, altering the artifact.
+</span>  <span class='kw'>if</span> <span class='ivar'>@start_step</span> <span class='op'>&lt;=</span> <span class='int'>16</span>
+    <span class='comment'># Generate checksums for the just-built artifact, then validate
+</span>    <span class='id identifier rubyid_run_cmd!'>run_cmd!</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>bin/gem_checksums</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
     <span class='id identifier rubyid_version'>version</span> <span class='op'>||=</span> <span class='id identifier rubyid_detect_version'>detect_version</span>
     <span class='id identifier rubyid_validate_checksums!'>validate_checksums!</span><span class='lparen'>(</span><span class='id identifier rubyid_version'>version</span><span class='comma'>,</span> <span class='label'>stage:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>after release</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
   <span class='kw'>end</span>
@@ -834,7 +838,7 @@
 </div>
 
       <div id="footer">
-  Generated on Sun Sep 21 18:48:25 2025 by
+  Generated on Mon Sep 22 01:05:04 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.5).
 </div>
