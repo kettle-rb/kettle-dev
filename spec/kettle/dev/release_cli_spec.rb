@@ -559,7 +559,6 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         allow(cli).to receive(:pull!)
         allow(cli).to receive(:ensure_signing_setup_or_skip!)
         allow(cli).to receive(:push_tags!)
-        expect(cli).to receive(:validate_checksums!).with("9.9.9", stage: "after build + gem_checksums")
         expect(cli).to receive(:validate_checksums!).with("9.9.9", stage: "after release")
 
         # Appraisals exists at repo root; ensure truthy branch executes
@@ -570,8 +569,8 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect(cli).to have_received(:run_cmd!).with("bin/rake")
         expect(cli).to have_received(:run_cmd!).with("bin/rake appraisal:update")
         expect(cli).to have_received(:run_cmd!).with("bundle exec rake build")
-        expect(cli).to have_received(:run_cmd!).with("bin/gem_checksums")
         expect(cli).to have_received(:run_cmd!).with("bundle exec rake release")
+        expect(cli).to have_received(:run_cmd!).with("bin/gem_checksums")
       end
 
       it "skips appraisal:update when Appraisals file missing" do

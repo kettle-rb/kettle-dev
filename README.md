@@ -442,8 +442,8 @@ What it does:
     - 12: Checkout trunk and pull latest
     - 13: Signing checks and guidance (abort when signing enabled but cert missing); respect SKIP_GEM_SIGNING
     - 14: Build gem (honors SKIP_GEM_SIGNING via env prefix)
-    - 15: Generate and validate gem checksums (bin/gem_checksums)
-    - 16: Release via `bundle exec rake release` and validate checksums again
+    - 15: Release via `bundle exec rake release` (also creates git tag)
+    - 16: Generate and validate gem checksums (bin/gem_checksums)
     - 17: Create GitHub release from CHANGELOG when GITHUB_TOKEN present
     - 18: Push git tags to remotes (to "all" remote only when present; otherwise to each remote)
 - Examples:

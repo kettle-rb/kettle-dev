@@ -28,6 +28,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- order of checksums and release / tag reversed
+  - remove all possibility of gem rebuild (part of reproducible builds) including checksums in the rebuilt gem
+
 ### Security
 
 ## [1.1.30] - 2025-09-21

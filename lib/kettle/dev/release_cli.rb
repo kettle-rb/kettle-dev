@@ -260,17 +260,19 @@ module Kettle
           run_cmd!("bundle exec rake build")
         end
 
-        # 15. checksums validate
+        # 15. release and tag
         if @start_step <= 15
-          run_cmd!("bin/gem_checksums")
-          version ||= detect_version
-          validate_checksums!(version, stage: "after build + gem_checksums")
-        end
-
-        # 16. release and validate
-        if @start_step <= 16
           puts "Running release (you may be prompted for signing key password and RubyGems MFA OTP)..."
           run_cmd!("bundle exec rake release")
+        end
+
+        # 16. generate checksums
+        #    Checksums are generated after release to avoid including checksums/ in gem package
+        #    Rationale: Running gem_checksums before release may commit checksums/ and cause Bundler's
+        #    release build to include them in the gem, altering the artifact.
+        if @start_step <= 16
+          # Generate checksums for the just-built artifact, then validate
+          run_cmd!("bin/gem_checksums")
           version ||= detect_version
           validate_checksums!(version, stage: "after release")
         end
