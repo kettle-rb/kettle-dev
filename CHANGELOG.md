@@ -30,6 +30,22 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Security
 
+## [1.1.32] - 2025-10-07
+
+- TAG: [v1.1.32][1.1.32t]
+- COVERAGE: 96.39% -- 3929/4076 lines in 26 files
+- BRANCH COVERAGE: 81.07% -- 1619/1997 branches in 26 files
+- 79.12% documented
+
+### Added
+
+- A top-level note on gem server switch in README.md & template
+
+### Changed
+
+- Switch to cooperative gem server
+  - https://gem.coop
+
 ## [1.1.31] - 2025-09-21
 
 - TAG: [v1.1.31][1.1.31t]
@@ -1042,7 +1058,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.31...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.32...HEAD
+[1.1.32]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.31...v1.1.32
+[1.1.32t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.32
 [1.1.31]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.30...v1.1.31
 [1.1.31t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.31
 [1.1.30]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.29...v1.1.30
