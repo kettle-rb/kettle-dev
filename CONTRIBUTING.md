@@ -167,7 +167,7 @@ Also see GitLab Contributors: [https://gitlab.com/kettle-rb/kettle-dev/-/graphs/
 **IMPORTANT**: To sign a build,
 a public key for signing gems will need to be picked up by the line in the
 `gemspec` defining the `spec.cert_chain` (check the relevant ENV variables there).
-All releases to RubyGems.org are signed releases.
+All releases are signed releases.
 See: [RubyGems Security Guide][🔒️rubygems-security-guide]
 
 NOTE: To build without signing the gem set `SKIP_GEM_SIGNING` to any value in the environment.
@@ -205,7 +205,7 @@ NOTE: To build without signing the gem set `SKIP_GEM_SIGNING` to any value in th
 12. Sanity check the SHA256, comparing with the output from the `bin/gem_checksums` command:
     - `sha256sum pkg/<gem name>-<version>.gem`
 13. Run `bundle exec rake release` which will create a git tag for the version,
-    push git commits and tags, and push the `.gem` file to [rubygems.org][💎rubygems]
+    push git commits and tags, and push the `.gem` file to the gem host configured in the gemspec.
 
 [📜src-gl]: https://gitlab.com/kettle-rb/kettle-dev/
 [📜src-cb]: https://codeberg.org/kettle-rb/kettle-dev
@@ -216,7 +216,7 @@ NOTE: To build without signing the gem set `SKIP_GEM_SIGNING` to any value in th
 [🖐contributors]: https://github.com/kettle-rb/kettle-dev/graphs/contributors
 [🚎contributors-gl]: https://gitlab.com/kettle-rb/kettle-dev/-/graphs/main
 [🖐contributors-img]: https://contrib.rocks/image?repo=kettle-rb/kettle-dev
-[💎rubygems]: https://rubygems.org
+[💎gem-coop]: https://gem.coop
 [🔒️rubygems-security-guide]: https://guides.rubygems.org/security/#building-gems
 [🔒️rubygems-checksums-pr]: https://github.com/rubygems/rubygems/pull/6022
 [🔒️rubygems-guides-pr]: https://github.com/rubygems/guides/pull/325

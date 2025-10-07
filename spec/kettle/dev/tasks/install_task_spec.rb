@@ -746,7 +746,7 @@ RSpec.describe Kettle::Dev::Tasks::InstallTask do
         # Create a minimal Gemfile inside the fixture gem
         File.write(File.join(project_root, "Gemfile"), <<~GEMFILE)
           # frozen_string_literal: true
-          source "https://rubygems.org"
+          source "https://gem.coop"
           gem "rake"
           gem "kettle-dev", path: "#{repo_root}"
         GEMFILE

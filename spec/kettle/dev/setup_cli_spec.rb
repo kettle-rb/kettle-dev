@@ -20,7 +20,7 @@ RSpec.describe Kettle::Dev::SetupCLI do
         %x(git add -A && git commit --allow-empty -m initial -q)
 
         # Create a Gemfile to satisfy prechecks
-        write("Gemfile", "source 'https://rubygems.org'\n")
+        write("Gemfile", "source 'https://gem.coop'\n")
 
         # Create a target gemspec with non-parenthesized dev deps (from the user's example)
         gemspec = <<~RUBY
@@ -367,7 +367,7 @@ RSpec.describe Kettle::Dev::SetupCLI do
 
       # Start with a Gemfile that already has source, gemspec, and one eval_gemfile
       initial = <<~G
-        source "https://rubygems.org"
+        source "https://gem.coop"
         gemspec
         eval_gemfile "gemfiles/modular/style.gemfile"
       G

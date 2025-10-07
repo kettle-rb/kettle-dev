@@ -242,7 +242,7 @@ They are created and updated with the commands:</p>
 <p><strong>IMPORTANT</strong>: To sign a build,<br>
 a public key for signing gems will need to be picked up by the line in the<br>
 <code>gemspec</code> defining the <code>spec.cert_chain</code> (check the relevant ENV variables there).<br>
-All releases to RubyGems.org are signed releases.<br>
+All releases are signed releases.<br>
 See: <a href="https://guides.rubygems.org/security/#building-gems">RubyGems Security Guide</a></p>
 
 <p>NOTE: To build without signing the gem set <code>SKIP_GEM_SIGNING</code> to any value in the environment.</p>
@@ -301,16 +301,15 @@ to create SHA-256 and SHA-512 checksums. This functionality is provided by the <
     </ul>
   </li>
   <li>Run <code>bundle exec rake release</code> which will create a git tag for the version,<br>
-push git commits and tags, and push the <code>.gem</code> file to <a href="https://rubygems.org">rubygems.org</a>
-</li>
+push git commits and tags, and push the <code>.gem</code> file to the gem host configured in the gemspec.</li>
 </ol>
 
 </div></div>
 
       <div id="footer">
-  Generated on Mon Sep 22 01:05:04 2025 by
+  Generated on Tue Oct  7 07:53:04 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.37 (ruby-3.4.5).
+  0.9.37 (ruby-3.4.6).
 </div>
 
     </div>

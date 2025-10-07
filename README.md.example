@@ -1,3 +1,17 @@
+| 📍 NOTE                                                                                                                                                     |
+|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| RubyGems.org was [recently compromised][draper-security] in a [hostile takeover][draper-takeover] about which [many lies][draper-lies] have been told.      |
+| I'm in the process of adding warnings to some important gems because I [don't condone the theft][draper-theft] of the bundler and rubygems-update projects. |
+| Once publishing to [gem.coop][gem-coop] is available I will stop publishing to RubyGems.org.                                                                |
+| Please see [here][gem-coop] and [here][martin-ann] for more info on what comes next.                                                                        |
+
+[draper-security]: https://joel.drapper.me/p/ruby-central-security-measures/
+[draper-takeover]: https://joel.drapper.me/p/ruby-central-takeover/
+[draper-lies]: https://joel.drapper.me/p/ruby-central-fact-check/
+[draper-theft]: https://joel.drapper.me/p/ruby-central/
+[gem-coop]: https://gem.coop
+[martin-ann]: https://martinemde.com/2025/10/05/announcing-gem-coop.html
+
 [![Galtzo FLOSS Logo by Aboling0, CC BY-SA 4.0][🖼️galtzo-i]][🖼️galtzo-discord] [![ruby-lang Logo, Yukihiro Matsumoto, Ruby Visual Identity Team, CC BY-SA 2.5][🖼️ruby-lang-i]][🖼️ruby-lang] [![kettle-dev Logo by Aboling0, CC BY-SA 4.0][🖼️kettle-dev-i]][🖼️kettle-dev]
 
 [🖼️galtzo-i]: https://logos.galtzo.com/assets/images/galtzo-floss/avatar-192px.svg
@@ -371,7 +385,7 @@ Thanks for RTFM. ☺️
 [✇bundle-group-pattern]: https://gist.github.com/pboling/4564780
 [⛳️gem-namespace]: https://github.com/kettle-rb/kettle-dev
 [⛳️namespace-img]: https://img.shields.io/badge/namespace-Kettle::Dev-3C2D2D.svg?style=square&logo=ruby&logoColor=white
-[⛳️gem-name]: https://rubygems.org/gems/kettle-dev
+[⛳️gem-name]: https://bestgems.org/gems/kettle-dev
 [⛳️name-img]: https://img.shields.io/badge/name-kettle--dev-3C2D2D.svg?style=square&logo=rubygems&logoColor=red
 [⛳️tag-img]: https://img.shields.io/github/tag/kettle-rb/kettle-dev.svg
 [⛳️tag]: http://github.com/kettle-rb/kettle-dev/releases
@@ -420,11 +434,11 @@ Thanks for RTFM. ☺️
 [📜gh-wiki]: https://github.com/kettle-rb/kettle-dev/wiki
 [📜gl-wiki-img]: https://img.shields.io/badge/wiki-examples-943CD2.svg?style=for-the-badge&logo=gitlab&logoColor=white
 [📜gh-wiki-img]: https://img.shields.io/badge/wiki-examples-943CD2.svg?style=for-the-badge&logo=github&logoColor=white
-[👽dl-rank]: https://rubygems.org/gems/kettle-dev
+[👽dl-rank]: https://bestgems.org/gems/kettle-dev
 [👽dl-ranki]: https://img.shields.io/gem/rd/kettle-dev.svg
 [👽oss-help]: https://www.codetriage.com/kettle-rb/kettle-dev
 [👽oss-helpi]: https://www.codetriage.com/kettle-rb/kettle-dev/badges/users.svg
-[👽version]: https://rubygems.org/gems/kettle-dev
+[👽version]: https://bestgems.org/gems/kettle-dev
 [👽versioni]: https://img.shields.io/gem/v/kettle-dev.svg
 [🏀qlty-mnt]: https://qlty.sh/gh/kettle-rb/projects/kettle-dev
 [🏀qlty-mnti]: https://qlty.sh/gh/kettle-rb/projects/kettle-dev/maintainability.svg

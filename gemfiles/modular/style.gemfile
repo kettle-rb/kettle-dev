@@ -4,7 +4,7 @@
 #   but in support of the oldest supported version of Ruby
 
 gem "reek", "~> 6.5"
-# gem "rubocop", "~> 1.73", ">= 1.73.2" # constrained by standard
+# gem "rubocop", "~> 1.80", ">= 1.80.2" # constrained by standard
 gem "rubocop-packaging", "~> 0.6", ">= 0.6.0"
 gem "standard", ">= 1.50"
 gem "rubocop-on-rbs", "~> 1.8"                    # ruby >= 3.1.0
