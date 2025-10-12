@@ -1,5 +1,5 @@
 GIT
-  remote: https://github.com/pboling/yard-junk
+  remote: https://github.com/pboling/yard-junk.git
   revision: 54ccebabbfa9a9cd44d0b991687ebbfd22c32b55
   branch: next
   specs:
@@ -42,7 +42,7 @@ GEM
     backports (3.25.2)
     base64 (0.3.0)
     benchmark (0.4.1)
-    bigdecimal (3.3.0)
+    bigdecimal (3.3.1)
     bundler-audit (0.9.2)
       bundler (>= 1.2.0, < 3)
       thor (~> 1.0)
@@ -89,7 +89,7 @@ GEM
       dry-inflector (~> 1.0)
       dry-logic (~> 1.4)
       zeitwerk (~> 2.6)
-    erb (5.0.3)
+    erb (5.1.1)
     gem_bench (2.0.5)
       bundler (>= 1.14)
       version_gem (~> 1.1, >= 1.1.4)
@@ -134,7 +134,7 @@ GEM
     language_server-protocol (3.17.0.5)
     lint_roller (1.1.0)
     logger (1.7.0)
-    minitest (5.25.5)
+    minitest (5.26.0)
     mutex_m (0.3.0)
     nokogiri (1.18.10-x86_64-linux-gnu)
       racc (~> 1.4)
@@ -146,7 +146,7 @@ GEM
     pp (0.6.3)
       prettyprint
     prettyprint (0.2.0)
-    prism (1.5.1)
+    prism (1.5.2)
     process_executer (4.0.0)
       track_open_instances (~> 0.1)
     psych (5.2.6)
