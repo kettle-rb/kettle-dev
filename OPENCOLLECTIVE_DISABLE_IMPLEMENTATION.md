@@ -25,10 +25,10 @@ Returns `true` when `OPENCOLLECTIVE_HANDLE` or `FUNDING_ORG` environment variabl
 def opencollective_disabled?
   oc_handle = ENV["OPENCOLLECTIVE_HANDLE"]
   funding_org = ENV["FUNDING_ORG"]
-  
+
   # Check if either variable is explicitly set to false
   [oc_handle, funding_org].any? do |val|
-    val && val.to_s.strip.match?(/\A(false|no|0)\z/i)
+    val && val.to_s.strip.match?(Kettle::Dev::ENV_FALSE_RE)
   end
 end
 ```
@@ -52,7 +52,7 @@ Returns `true` for these files when `opencollective_disabled?` is `true`:
 
 Updated the template task to use the new helpers:
 
-1. **In the `.github` files section**: 
+1. **In the `.github` files section**:
    - Replaced `helpers.prefer_example(orig_src)` with `helpers.prefer_example_with_osc_check(orig_src)`
    - Added check to skip opencollective-specific workflow files
 

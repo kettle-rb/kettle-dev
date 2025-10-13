@@ -85,7 +85,7 @@ module Kettle
 
         # Check if either variable is explicitly set to false
         [oc_handle, funding_org].any? do |val|
-          val && val.to_s.strip.match?(/\A(false|no|0)\z/i)
+          val && val.to_s.strip.match?(Kettle::Dev::ENV_FALSE_RE)
         end
       end
 
@@ -115,7 +115,7 @@ module Kettle
 
         opencollective_files = [
           ".opencollective.yml",
-          ".github/workflows/opencollective.yml"
+          ".github/workflows/opencollective.yml",
         ]
 
         opencollective_files.include?(relative_path)

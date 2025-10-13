@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe "Open Collective Disable Functionality" do
+RSpec.describe "Open Collective Disable Functionality" do # rubocop:disable RSpec/DescribeClass
   describe "Kettle::Dev::TemplateHelpers" do
     let(:helpers) { Kettle::Dev::TemplateHelpers }
 
@@ -360,4 +360,3 @@ RSpec.describe "Open Collective Disable Functionality" do
     end
   end
 end
-
