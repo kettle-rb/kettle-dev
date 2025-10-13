@@ -20,13 +20,19 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- added codeberg gem source
+
 ### Changed
+
+- Removed redundant github gem source
 
 ### Deprecated
 
 ### Removed
 
 ### Fixed
+
+- Handling of env.ACT conditions in workflows
 
 ### Security
 
