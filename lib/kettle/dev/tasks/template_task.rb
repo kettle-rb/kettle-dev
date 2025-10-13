@@ -120,10 +120,16 @@ module Kettle
             end
 
             selected.values.each do |orig_src|
-              src = helpers.prefer_example(orig_src)
+              src = helpers.prefer_example_with_osc_check(orig_src)
               # Destination path should never include the .example suffix.
               rel = orig_src.sub(/^#{Regexp.escape(gem_checkout_root)}\/?/, "").sub(/\.example\z/, "")
               dest = File.join(project_root, rel)
+
+              # Skip opencollective-specific files when Open Collective is disabled
+              if helpers.skip_for_disabled_opencollective?(rel)
+                puts "Skipping #{rel} (Open Collective disabled)"
+                next
+              end
 
               # Optional file: .github/workflows/discord-notifier.yml should NOT be copied by default.
               # Only copy when --include matches it.
@@ -422,7 +428,13 @@ module Kettle
           end
 
           files_to_copy.each do |rel|
-            src = helpers.prefer_example(File.join(gem_checkout_root, rel))
+            # Skip opencollective-specific files when Open Collective is disabled
+            if helpers.skip_for_disabled_opencollective?(rel)
+              puts "Skipping #{rel} (Open Collective disabled)"
+              next
+            end
+
+            src = helpers.prefer_example_with_osc_check(File.join(gem_checkout_root, rel))
             dest = File.join(project_root, rel)
             next unless File.exist?(src)
 
