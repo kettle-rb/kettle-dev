@@ -24,7 +24,7 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
-- Removed redundant github gem source
+- removed redundant github gem source
 
 ### Deprecated
 
@@ -32,7 +32,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Handling of env.ACT conditions in workflows
+- added addressable to optional modular gemfile template, as it is required for kettle-pre-release
+- handling of env.ACT conditions in workflows
 
 ### Security
 
