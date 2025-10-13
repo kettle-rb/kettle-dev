@@ -398,9 +398,9 @@ RSpec.describe Kettle::Dev::SetupCLI do
       expect(result.scan(/^gemspec/).size).to eq(1)
       expect(result.scan(/^eval_gemfile \"gemfiles\/modular\/style.gemfile\"/).size).to eq(1)
 
-      # It should add the git_source lines (both github and gitlab) from example
-      expect(result).to match(/^git_source\(:github\) \{ \|repo_name\| \"https:\/\/github.com\/\#\{repo_name\}\" \}/)
-      expect(result).to match(/^git_source\(:gitlab\) \{ \|repo_name\| \"https:\/\/gitlab.com\/\#\{repo_name\}\" \}/)
+      # It should add the git_source lines (gitlab) from example
+      expect(result).to match(/^git_source\(:codeberg\) \{ \|repo_name\| \"https:\/\/codeberg\.org\/\#\{repo_name\}\" \}/)
+      expect(result).to match(/^git_source\(:gitlab\) \{ \|repo_name\| \"https:\/\/gitlab\.com\/\#\{repo_name\}\" \}/)
 
       # It should add the missing eval_gemfile entries listed in the example
       expect(result).to include('eval_gemfile "gemfiles/modular/debug.gemfile"')
