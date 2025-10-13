@@ -32,6 +32,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Handling of env.ACT conditions in workflows
+
 ### Security
 
 ## [1.1.32] - 2025-10-07
