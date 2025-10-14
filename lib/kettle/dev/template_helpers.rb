@@ -85,7 +85,7 @@ module Kettle
 
         # Check if either variable is explicitly set to false
         [oc_handle, funding_org].any? do |val|
-          val && val.to_s.strip.match?(Kettle::Dev::ENV_FALSE_RE)
+          val && val.to_s.strip.match(Kettle::Dev::ENV_FALSE_RE)
         end
       end
 
