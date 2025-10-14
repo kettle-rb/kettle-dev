@@ -25,7 +25,7 @@ Returns `true` when `OPENCOLLECTIVE_HANDLE` or `FUNDING_ORG` environment variabl
 def opencollective_disabled?
   oc_handle = ENV["OPENCOLLECTIVE_HANDLE"]
   funding_org = ENV["FUNDING_ORG"]
-  
+
   # Check if either variable is explicitly set to false
   [oc_handle, funding_org].any? do |val|
     val && val.to_s.strip.match(Kettle::Dev::ENV_FALSE_RE)
