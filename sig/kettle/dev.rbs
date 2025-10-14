@@ -12,6 +12,7 @@ module Kettle
     REQUIRE_BENCH: bool
     RUNNING_AS: String
     ENV_TRUE_RE: Regexp
+    ENV_FALSE_RE: Regexp
     GEM_ROOT: String
 
     # Singleton methods

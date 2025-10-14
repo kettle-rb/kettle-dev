@@ -99,29 +99,30 @@ module Kettle
 
           # Funding org (Open Collective handle) detection.
           # Precedence:
-          #   1) ENV["FUNDING_ORG"] when set:
-          #        - value "false" (any case) disables funding (nil)
-          #        - otherwise use the value verbatim
-          #   2) OpenCollectiveConfig.handle(required: false)
+          #   1) TemplateHelpers.opencollective_disabled? - when true, funding_org is nil
+          #   2) ENV["FUNDING_ORG"] when set and non-empty (unless already disabled above)
+          #   3) OpenCollectiveConfig.handle(required: false)
           # Be lenient: allow nil when not discoverable, with a concise warning.
           begin
-            env_funding = ENV["FUNDING_ORG"]
-            if env_funding && !env_funding.to_s.strip.empty?
-              funding_org = if env_funding.to_s.strip.casecmp("false").zero?
-                nil
-              else
-                env_funding.to_s
-              end
+            # Check if Open Collective is explicitly disabled via environment variables
+            if TemplateHelpers.opencollective_disabled?
+              funding_org = nil
             else
-              # Preflight: if a YAML exists under the provided root, attempt to read it here so
-              # unexpected file IO errors surface within this rescue block (see specs).
-              oc_path = OpenCollectiveConfig.yaml_path(root)
-              File.read(oc_path) if File.file?(oc_path)
+              env_funding = ENV["FUNDING_ORG"]
+              if env_funding && !env_funding.to_s.strip.empty?
+                # FUNDING_ORG is set and non-empty; use it as-is (already filtered by opencollective_disabled?)
+                funding_org = env_funding.to_s
+              else
+                # Preflight: if a YAML exists under the provided root, attempt to read it here so
+                # unexpected file IO errors surface within this rescue block (see specs).
+                oc_path = OpenCollectiveConfig.yaml_path(root)
+                File.read(oc_path) if File.file?(oc_path)
 
-              funding_org = OpenCollectiveConfig.handle(required: false, root: root)
-              if funding_org.to_s.strip.empty?
-                Kernel.warn("kettle-dev: Could not determine funding org.\n  - Options:\n    * Set ENV['FUNDING_ORG'] to your funding handle, or 'false' to disable.\n    * Or set ENV['OPENCOLLECTIVE_HANDLE'].\n    * Or add .opencollective.yml with: collective: <handle> (or org: <handle>).\n    * Or proceed without funding if not applicable.")
-                funding_org = nil
+                funding_org = OpenCollectiveConfig.handle(required: false, root: root)
+                if funding_org.to_s.strip.empty?
+                  Kernel.warn("kettle-dev: Could not determine funding org.\n  - Options:\n    * Set ENV['FUNDING_ORG'] to your funding handle, or 'false' to disable.\n    * Or set ENV['OPENCOLLECTIVE_HANDLE'].\n    * Or add .opencollective.yml with: collective: <handle> (or org: <handle>).\n    * Or proceed without funding if not applicable.")
+                  funding_org = nil
+                end
               end
             end
           rescue StandardError => error

@@ -62,6 +62,11 @@ module Kettle
     # Accepts 1, true, y, yes (any case).
     # @return [Regexp]
     ENV_TRUE_RE = /\A(1|true|y|yes)\z/i
+
+    # A case-insensitive regular expression that matches common falsy ENV values.
+    # Accepts false, n, no, 0 (any case).
+    # @return [Regexp]
+    ENV_FALSE_RE = /\A(false|n|no|0)\z/i
     # Absolute path to the root of the kettle-dev gem (repository root when working from source)
     # @return [String]
     GEM_ROOT = File.expand_path("../..", __dir__)

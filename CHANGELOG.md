@@ -20,6 +20,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- handling for no open source collective, specified by:
+  - `ENV["FUNDING_ORG"]` set to "false", or
+  - `ENV["OPENCOLLECTIVE_HANDLE"]` set to "false"
 - added codeberg gem source
 
 ### Changed

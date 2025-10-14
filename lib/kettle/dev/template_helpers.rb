@@ -76,6 +76,51 @@ module Kettle
         File.exist?(example) ? example : src_path
       end
 
+      # Check if Open Collective is disabled via environment variable.
+      # Returns true when OPENCOLLECTIVE_HANDLE or FUNDING_ORG is explicitly set to a falsey value.
+      # @return [Boolean]
+      def opencollective_disabled?
+        oc_handle = ENV["OPENCOLLECTIVE_HANDLE"]
+        funding_org = ENV["FUNDING_ORG"]
+
+        # Check if either variable is explicitly set to false
+        [oc_handle, funding_org].any? do |val|
+          val && val.to_s.strip.match(Kettle::Dev::ENV_FALSE_RE)
+        end
+      end
+
+      # Prefer a .no-osc.example variant when Open Collective is disabled.
+      # Otherwise, falls back to prefer_example behavior.
+      # For a given source path, this will return:
+      #   - "path.no-osc.example" if opencollective_disabled? and it exists
+      #   - Otherwise delegates to prefer_example
+      # @param src_path [String]
+      # @return [String]
+      def prefer_example_with_osc_check(src_path)
+        if opencollective_disabled?
+          # Try .no-osc.example first
+          base = src_path.sub(/\.example\z/, "")
+          no_osc = base + ".no-osc.example"
+          return no_osc if File.exist?(no_osc)
+        end
+        prefer_example(src_path)
+      end
+
+      # Check if a file should be skipped when Open Collective is disabled.
+      # Returns true for opencollective-specific files when opencollective_disabled? is true.
+      # @param relative_path [String] relative path from gem checkout root
+      # @return [Boolean]
+      def skip_for_disabled_opencollective?(relative_path)
+        return false unless opencollective_disabled?
+
+        opencollective_files = [
+          ".opencollective.yml",
+          ".github/workflows/opencollective.yml",
+        ]
+
+        opencollective_files.include?(relative_path)
+      end
+
       # Record a template action for a destination path
       # @param dest_path [String]
       # @param action [Symbol] one of :create, :replace, :skip, :dir_create, :dir_replace
