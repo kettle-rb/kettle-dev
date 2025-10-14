@@ -1,2 +1,0 @@
-Bundler is using a binstub that was created for a different gem (reek).
-You should run `bundle binstub flag_shih_tzu` to work around a system/bundle conflict.

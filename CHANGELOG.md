@@ -20,6 +20,25 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [1.1.33] - 2025-10-13
+
+- TAG: [v1.1.33][1.1.33t]
+- COVERAGE: 20.83% -- 245/1176 lines in 9 files
+- BRANCH COVERAGE: 7.31% -- 43/588 branches in 9 files
+- 79.57% documented
+
+### Added
+
 - handling for no open source collective, specified by:
   - `ENV["FUNDING_ORG"]` set to "false", or
   - `ENV["OPENCOLLECTIVE_HANDLE"]` set to "false"
@@ -29,16 +48,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - removed redundant github gem source
 
-### Deprecated
-
-### Removed
-
 ### Fixed
 
 - added addressable to optional modular gemfile template, as it is required for kettle-pre-release
 - handling of env.ACT conditions in workflows
-
-### Security
 
 ## [1.1.32] - 2025-10-07
 
@@ -1068,7 +1081,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.32...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.33...HEAD
+[1.1.33]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.32...v1.1.33
+[1.1.33t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.33
 [1.1.32]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.31...v1.1.32
 [1.1.32t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.32
 [1.1.31]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.30...v1.1.31
