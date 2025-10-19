@@ -15,7 +15,7 @@ begin
   desc("Run reek and store the output into the REEK file")
   task("reek:update") do
     # Run via Bundler if available to ensure the right gem version is used
-    cmd = [Gem.bindir ? File.join(Gem.bindir, "bundle") : "bundle", "exec", "reek"]
+    cmd = %w[bundle exec reek]
 
     output, status = Open3.capture2e(*cmd)
 

@@ -22,7 +22,7 @@ namespace :bench do
     end
 
     ruby = RbConfig.ruby
-    bundle = Gem.bindir ? File.join(Gem.bindir, "bundle") : "bundle"
+    bundle = "bundle"
     bench_files = Dir[File.join(__dir__, "benchmarks", "*.rb")].sort
     if bench_files.empty?
       puts "No benchmark scripts found under benchmarks/."
