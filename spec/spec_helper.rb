@@ -27,11 +27,7 @@ require "kettle-dev"
 # Dog food autoload setup and ensure ExitAdapter constant is available for potential stubbing
 # Dog food autoload setup and ensure InputAdapter constant is available for stubbing
 
-# rspec-pending_for: enable skipping on incompatible Ruby versions
-require "rspec/pending_for"
 RSpec.configure do |config|
-  config.include Rspec::PendingFor
-
   # Auto-skip examples that require Bundler >= 2.7 (which implies Ruby >= 3.2)
   config.before(:each, :bundler_27_only) do
     # Skip on Ruby < 3.2 using rspec-pending_for's version matcher

@@ -69,15 +69,15 @@ RSpec.describe Kettle::Dev::SetupCLI do
 
         result = read("example.gemspec")
 
-        # Ensure we did not introduce duplicates for gems like rake and rspec-pending_for
+        # Ensure we did not introduce duplicates for gems like rake and stone_checksums
         rake_lines = result.lines.grep(/add_development_dependency\s*\(?\s*["']rake["']/)
-        pending_for_lines = result.lines.grep(/add_development_dependency\s*\(?\s*["']rspec-pending_for["']/)
+        stone_checksums_lines = result.lines.grep(/add_development_dependency\s*\(?\s*["']stone_checksums["']/)
         expect(rake_lines.size).to eq(1)
-        expect(pending_for_lines.size).to eq(1)
+        expect(stone_checksums_lines.size).to eq(1)
 
         # Ensure the lines were updated to match the constraints from the example file (i.e., include ~> 13.0 etc.)
-        expect(result).to match(/add_development_dependency\(\s*"rake"\s*,\s*"~> 13.0"\s*\)/)
-        expect(result).to match(/add_development_dependency\(\s*"rspec-pending_for"\s*,\s*"~> 0.0"\s*,\s*">= 0.0.17"\s*\)/)
+        expect(result).to match(/add_development_dependency\(\s*"rake"\s*,\s*"~> 13\.0"\s*\)/)
+        expect(result).to match(/add_development_dependency\(\s*"stone_checksums"\s*,\s*"~> 1\.0"\s*,\s*">= 1\.0\.\d+"\s*\)/)
       end
     end
   end
