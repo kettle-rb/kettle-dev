@@ -124,12 +124,10 @@ module Kettle
           else
             system("git", "push", "--tags")
           end
+        elsif remote && !remote.to_s.empty?
+          system("git", "push", remote.to_s, "--tags")
         else
-          if remote && !remote.to_s.empty?
-            system("git", "push", remote.to_s, "--tags")
-          else
-            system("git", "push", "--tags")
-          end
+          system("git", "push", "--tags")
         end
       rescue StandardError => e
         Kettle::Dev.debug_error(e, __method__)
