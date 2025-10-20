@@ -711,17 +711,20 @@ module Kettle
         # 2) Otherwise, if other remotes exist, push tags to each of them.
         # 3) If no remotes are configured, push tags using default remote.
         if has_remote?("all")
-          run_cmd!("git push all --tags")
+          ok = @git.push_tags("all")
+          warn("Push tags to 'all' reported failure.") unless ok
           return
         end
 
         remotes = list_remotes
         remotes -= ["all"] if remotes
         if remotes.nil? || remotes.empty?
-          run_cmd!("git push --tags")
+          ok = @git.push_tags(nil)
+          warn("Push tags (default remote) reported failure.") unless ok
         else
           remotes.each do |remote|
-            run_cmd!("git push #{Shellwords.escape(remote)} --tags")
+            ok = @git.push_tags(remote)
+            warn("Push tags to #{remote} reported failure.") unless ok
           end
         end
       end

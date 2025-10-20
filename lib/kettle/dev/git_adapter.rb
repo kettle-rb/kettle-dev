@@ -104,6 +104,38 @@ module Kettle
         end
       end
 
+      # Push all tags to a remote.
+      # Notes:
+      # - The ruby-git gem does not provide a stable API for pushing all tags across
+      #   versions, so we intentionally shell out to `git push --tags` for both
+      #   backends. Tests should stub this method in higher-level code to avoid
+      #   mutating any repositories.
+      #
+      # @param remote [String, nil] The remote name. When nil or empty, uses the
+      #   repository's default remote (same behavior as running `git push --tags`)
+      #   which typically uses the current branch's upstream.
+      # @return [Boolean] true if the system call reports success; false on failure
+      def push_tags(remote)
+        if @backend == :gem
+          # The ruby-git gem does not expose a dedicated API for "--tags" consistently across versions.
+          # Use a shell fallback even when the gem backend is active. Tests should stub this method.
+          if remote && !remote.to_s.empty?
+            system("git", "push", remote.to_s, "--tags")
+          else
+            system("git", "push", "--tags")
+          end
+        else
+          if remote && !remote.to_s.empty?
+            system("git", "push", remote.to_s, "--tags")
+          else
+            system("git", "push", "--tags")
+          end
+        end
+      rescue StandardError => e
+        Kettle::Dev.debug_error(e, __method__)
+        false
+      end
+
       # @return [String, nil] current branch name, or nil on error
       def current_branch
         if @backend == :gem
