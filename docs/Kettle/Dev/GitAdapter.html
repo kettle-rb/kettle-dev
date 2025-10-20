@@ -324,6 +324,29 @@ the system <code>git</code> executable for the small set of operations we need.<
         <li class="public ">
   <span class="summary_signature">
     
+      <a href="#push_tags-instance_method" title="#push_tags (instance method)">#<strong>push_tags</strong>(remote)  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Push all tags to a remote.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
       <a href="#remote_url-instance_method" title="#remote_url (instance method)">#<strong>remote_url</strong>(name)  &#x21d2; String<sup>?</sup> </a>
     
 
@@ -617,20 +640,20 @@ this method to avoid shelling out.</p>
       <pre class="lines">
 
 
-180
-181
-182
-183
-184
-185
-186
-187
-188
-189
-190</pre>
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 180</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 210</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_checkout'>checkout</span><span class='lparen'>(</span><span class='id identifier rubyid_branch'>branch</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='ivar'>@backend</span> <span class='op'>==</span> <span class='symbol'>:gem</span>
@@ -777,20 +800,20 @@ this method to avoid shelling out.</p>
       <pre class="lines">
 
 
-108
-109
-110
-111
-112
-113
-114
-115
-116
-117
-118</pre>
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 108</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 138</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_current_branch'>current_branch</span>
   <span class='kw'>if</span> <span class='ivar'>@backend</span> <span class='op'>==</span> <span class='symbol'>:gem</span>
@@ -874,26 +897,26 @@ this method to avoid shelling out.</p>
       <pre class="lines">
 
 
-212
-213
-214
-215
-216
-217
-218
-219
-220
-221
-222
-223
-224
-225
-226
-227
-228</pre>
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 212</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 242</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='id identifier rubyid_remote'>remote</span><span class='comma'>,</span> <span class='id identifier rubyid_ref'>ref</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='ivar'>@backend</span> <span class='op'>==</span> <span class='symbol'>:gem</span>
@@ -981,20 +1004,20 @@ this method to avoid shelling out.</p>
       <pre class="lines">
 
 
-196
-197
-198
-199
-200
-201
-202
-203
-204
-205
-206</pre>
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 196</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 226</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_pull'>pull</span><span class='lparen'>(</span><span class='id identifier rubyid_remote'>remote</span><span class='comma'>,</span> <span class='id identifier rubyid_branch'>branch</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='ivar'>@backend</span> <span class='op'>==</span> <span class='symbol'>:gem</span>
@@ -1161,6 +1184,121 @@ this method to avoid shelling out.</p>
 </div>
     
       <div class="method_details ">
+  <h3 class="signature " id="push_tags-instance_method">
+  
+    #<strong>push_tags</strong>(remote)  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Push all tags to a remote.<br />
+Notes:</p>
+<ul>
+  <li>The ruby-git gem does not provide a stable API for pushing all tags across<br />
+versions, so we intentionally shell out to <code>git push --tags</code> for both<br />
+backends. Tests should stub this method in higher-level code to avoid<br />
+mutating any repositories.</li>
+</ul>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>remote</span>
+      
+      
+        <span class='type'>(<tt>String</tt>, <tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The remote name. When nil or empty, uses the<br />
+repository’s default remote (same behavior as running <code>git push --tags</code>)<br />
+which typically uses the current branch’s upstream.</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>true if the system call reports success; false on failure</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 118</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_push_tags'>push_tags</span><span class='lparen'>(</span><span class='id identifier rubyid_remote'>remote</span><span class='rparen'>)</span>
+  <span class='kw'>if</span> <span class='ivar'>@backend</span> <span class='op'>==</span> <span class='symbol'>:gem</span>
+    <span class='comment'># The ruby-git gem does not expose a dedicated API for &quot;--tags&quot; consistently across versions.
+</span>    <span class='comment'># Use a shell fallback even when the gem backend is active. Tests should stub this method.
+</span>    <span class='kw'>if</span> <span class='id identifier rubyid_remote'>remote</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_remote'>remote</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+      <span class='id identifier rubyid_system'>system</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>git</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>push</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_remote'>remote</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>--tags</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+    <span class='kw'>else</span>
+      <span class='id identifier rubyid_system'>system</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>git</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>push</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>--tags</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+    <span class='kw'>end</span>
+  <span class='kw'>elsif</span> <span class='id identifier rubyid_remote'>remote</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_remote'>remote</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+    <span class='id identifier rubyid_system'>system</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>git</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>push</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_remote'>remote</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>--tags</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_system'>system</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>git</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>push</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>--tags</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+<span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+  <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_error'><span class='object_link'><a href="../Dev.html#debug_error-class_method" title="Kettle::Dev.debug_error (method)">debug_error</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span>
+  <span class='kw'>false</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
   <h3 class="signature " id="remote_url-instance_method">
   
     #<strong>remote_url</strong>(name)  &#x21d2; <tt>String</tt><sup>?</sup> 
@@ -1213,21 +1351,21 @@ this method to avoid shelling out.</p>
       <pre class="lines">
 
 
-164
-165
-166
-167
-168
-169
-170
-171
-172
-173
-174
-175</pre>
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 164</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 194</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_remote_url'>remote_url</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='ivar'>@backend</span> <span class='op'>==</span> <span class='symbol'>:gem</span>
@@ -1288,20 +1426,20 @@ this method to avoid shelling out.</p>
       <pre class="lines">
 
 
-121
-122
-123
-124
-125
-126
-127
-128
-129
-130
-131</pre>
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 121</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 151</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_remotes'>remotes</span>
   <span class='kw'>if</span> <span class='ivar'>@backend</span> <span class='op'>==</span> <span class='symbol'>:gem</span>
@@ -1361,36 +1499,36 @@ this method to avoid shelling out.</p>
       <pre class="lines">
 
 
-134
-135
-136
-137
-138
-139
-140
-141
-142
-143
-144
-145
-146
-147
-148
-149
-150
-151
-152
-153
-154
-155
-156
-157
-158
-159
-160</pre>
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 134</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 164</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_remotes_with_urls'>remotes_with_urls</span>
   <span class='kw'>if</span> <span class='ivar'>@backend</span> <span class='op'>==</span> <span class='symbol'>:gem</span>
@@ -1429,7 +1567,7 @@ this method to avoid shelling out.</p>
 </div>
 
       <div id="footer">
-  Generated on Mon Oct 13 18:08:23 2025 by
+  Generated on Mon Oct 20 02:56:50 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.7).
 </div>

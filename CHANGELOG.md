@@ -22,12 +22,25 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
-- kettle-release: Make step 17 only push the checksum commit; bin/gem_checksums creates the commit internally.
-- kettle-release: Ensure a final push of tags occurs after checksums and optional GitHub release; supports an 'all' remote aggregator when configured.
-
 ### Deprecated
 
 ### Removed
+
+### Fixed
+
+### Security
+
+## [1.1.34] - 2025-10-20
+
+- TAG: [v1.1.34][1.1.34t]
+- COVERAGE: 96.10% -- 3938/4098 lines in 26 files
+- BRANCH COVERAGE: 80.92% -- 1624/2007 branches in 26 files
+- 79.68% documented
+
+### Changed
+
+- kettle-release: Make step 17 only push the checksum commit; bin/gem_checksums creates the commit internally.
+- kettle-release: Ensure a final push of tags occurs after checksums and optional GitHub release; supports an 'all' remote aggregator when configured.
 
 ### Fixed
 
@@ -35,8 +48,6 @@ Please file a bug if you notice a violation of semantic versioning.
   - appraisal tasks
   - bench tasks
   - reek tasks
-
-### Security
 
 ## [1.1.33] - 2025-10-13
 
@@ -1089,7 +1100,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.33...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.34...HEAD
+[1.1.34]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.33...v1.1.34
+[1.1.34t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.34
 [1.1.33]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.32...v1.1.33
 [1.1.33t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.33
 [1.1.32]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.31...v1.1.32

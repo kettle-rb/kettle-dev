@@ -603,7 +603,10 @@
 296
 297
 298
-299</pre>
+299
+300
+301
+302</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 80</span>
@@ -800,22 +803,25 @@
   <span class='comment'># 16. generate checksums
 </span>  <span class='comment'>#    Checksums are generated after release to avoid including checksums/ in gem package
 </span>  <span class='comment'>#    Rationale: Running gem_checksums before release may commit checksums/ and cause Bundler&#39;s
-</span>  <span class='comment'>#    release build to include them in the gem, altering the artifact.
+</span>  <span class='comment'>#    release build to include them in the gem, thus altering the artifact, and invalidating the checksums.
 </span>  <span class='kw'>if</span> <span class='ivar'>@start_step</span> <span class='op'>&lt;=</span> <span class='int'>16</span>
-    <span class='comment'># Generate checksums for the just-built artifact, then validate
+    <span class='comment'># Generate checksums for the just-built artifact, commit them, then validate
 </span>    <span class='id identifier rubyid_run_cmd!'>run_cmd!</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>bin/gem_checksums</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
     <span class='id identifier rubyid_version'>version</span> <span class='op'>||=</span> <span class='id identifier rubyid_detect_version'>detect_version</span>
     <span class='id identifier rubyid_validate_checksums!'>validate_checksums!</span><span class='lparen'>(</span><span class='id identifier rubyid_version'>version</span><span class='comma'>,</span> <span class='label'>stage:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>after release</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
   <span class='kw'>end</span>
 
-  <span class='comment'># 17. create GitHub release (optional)
-</span>  <span class='kw'>if</span> <span class='ivar'>@start_step</span> <span class='op'>&lt;=</span> <span class='int'>17</span>
+  <span class='comment'># 17. push checksum commit (gem_checksums already commits)
+</span>  <span class='id identifier rubyid_push!'>push!</span> <span class='kw'>if</span> <span class='ivar'>@start_step</span> <span class='op'>&lt;=</span> <span class='int'>17</span>
+
+  <span class='comment'># 18. create GitHub release (optional)
+</span>  <span class='kw'>if</span> <span class='ivar'>@start_step</span> <span class='op'>&lt;=</span> <span class='int'>18</span>
     <span class='id identifier rubyid_version'>version</span> <span class='op'>||=</span> <span class='id identifier rubyid_detect_version'>detect_version</span>
     <span class='id identifier rubyid_maybe_create_github_release!'>maybe_create_github_release!</span><span class='lparen'>(</span><span class='id identifier rubyid_version'>version</span><span class='rparen'>)</span>
   <span class='kw'>end</span>
 
-  <span class='comment'># 18. push tags to remotes (new final step)
-</span>  <span class='id identifier rubyid_push_tags!'>push_tags!</span> <span class='kw'>if</span> <span class='ivar'>@start_step</span> <span class='op'>&lt;=</span> <span class='int'>18</span>
+  <span class='comment'># 19. push tags to remotes (final step)
+</span>  <span class='id identifier rubyid_push_tags!'>push_tags!</span> <span class='kw'>if</span> <span class='ivar'>@start_step</span> <span class='op'>&lt;=</span> <span class='int'>19</span>
 
   <span class='comment'># Final success message
 </span>  <span class='kw'>begin</span>
@@ -838,7 +844,7 @@
 </div>
 
       <div id="footer">
-  Generated on Mon Oct 13 18:08:23 2025 by
+  Generated on Mon Oct 20 02:56:50 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.7).
 </div>
