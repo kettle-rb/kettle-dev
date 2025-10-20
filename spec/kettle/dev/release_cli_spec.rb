@@ -836,22 +836,25 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     describe "push_tags!" do
       it "pushes tags only to 'all' when present" do
         allow(cli).to receive(:has_remote?).with("all").and_return(true)
-        expect(cli).to receive(:run_cmd!).with("git push all --tags")
+        git = cli.instance_variable_get(:@git)
+        expect(git).to receive(:push_tags).with("all")
         cli.send(:push_tags!)
       end
 
       it "pushes tags to each remote when 'all' missing" do
         allow(cli).to receive(:has_remote?).with("all").and_return(false)
         allow(cli).to receive(:list_remotes).and_return(%w[origin github]) # includes two remotes
-        expect(cli).to receive(:run_cmd!).with("git push origin --tags")
-        expect(cli).to receive(:run_cmd!).with("git push github --tags")
+        git = cli.instance_variable_get(:@git)
+        expect(git).to receive(:push_tags).with("origin")
+        expect(git).to receive(:push_tags).with("github")
         cli.send(:push_tags!)
       end
 
       it "pushes tags without specifying remote when no remotes configured" do
         allow(cli).to receive(:has_remote?).with("all").and_return(false)
         allow(cli).to receive(:list_remotes).and_return([])
-        expect(cli).to receive(:run_cmd!).with("git push --tags")
+        git = cli.instance_variable_get(:@git)
+        expect(git).to receive(:push_tags).with(nil)
         cli.send(:push_tags!)
       end
     end

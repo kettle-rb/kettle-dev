@@ -17,6 +17,8 @@ RSpec.shared_context "with mocked git adapter" do
     # Create a fresh double per example to avoid cross-test leakage
     adapter_double = instance_double(Kettle::Dev::GitAdapter)
     allow(adapter_double).to receive(:push) { |_remote, _branch, **_opts| git_push_success }
+    # Support tag pushing via adapter
+    allow(adapter_double).to receive(:push_tags) { |_remote| git_push_success }
     # Safe defaults for other methods used by ReleaseCLI
     allow(adapter_double).to receive_messages(
       current_branch: "main",

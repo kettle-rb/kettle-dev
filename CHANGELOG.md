@@ -22,11 +22,19 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- kettle-release: Make step 17 only push the checksum commit; bin/gem_checksums creates the commit internally.
+- kettle-release: Ensure a final push of tags occurs after checksums and optional GitHub release; supports an 'all' remote aggregator when configured.
+
 ### Deprecated
 
 ### Removed
 
 ### Fixed
+
+- fixed rake task compatibility with BUNDLE_PATH (i.e. vendored bundle)
+  - appraisal tasks
+  - bench tasks
+  - reek tasks
 
 ### Security
 

@@ -11,8 +11,10 @@
 # - Builds and releases using Bundler/Rake (reproducible by default in Bundler 2.7+)
 # - Runs `bundle exec rake build` (expects PEM password unless SKIP_GEM_SIGNING)
 #   - If signing not skipped and no public cert in certs/<user>.pem, aborts with guidance
-# - Runs bin/gem_checksums
 # - Runs `bundle exec rake release` (expects PEM password and RubyGems MFA OTP)
+# - Runs bin/gem_checksums (which creates the checksum commit), then pushes it
+# - Optionally creates a GitHub Release when GITHUB_TOKEN is present
+# - Finally pushes tags to remotes (including an 'all' aggregator if configured)
 
 # Immediate, unbuffered output
 $stdout.sync = true
@@ -52,7 +54,10 @@ if ARGV.include?("-h") || ARGV.include?("--help")
       - Commits a release prep change
       - Ensures trunk is up-to-date, pushes branch, and monitors CI (GitHub/GitLab)
       - Merges feature into trunk upon CI success
-      - Builds, records checksums, and releases (requires Bundler >= 2.7.0)
+      - Builds and releases the gem
+      - Generates checksums (via bin/gem_checksums), then pushes the checksum commit
+      - Optionally creates a GitHub Release
+      - Pushes tags to remotes at the end
 
     Environment:
       SKIP_GEM_SIGNING=true        # skip gem signing during build/release

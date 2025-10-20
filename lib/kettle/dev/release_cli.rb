@@ -269,22 +269,25 @@ module Kettle
         # 16. generate checksums
         #    Checksums are generated after release to avoid including checksums/ in gem package
         #    Rationale: Running gem_checksums before release may commit checksums/ and cause Bundler's
-        #    release build to include them in the gem, altering the artifact.
+        #    release build to include them in the gem, thus altering the artifact, and invalidating the checksums.
         if @start_step <= 16
-          # Generate checksums for the just-built artifact, then validate
+          # Generate checksums for the just-built artifact, commit them, then validate
           run_cmd!("bin/gem_checksums")
           version ||= detect_version
           validate_checksums!(version, stage: "after release")
         end
 
-        # 17. create GitHub release (optional)
-        if @start_step <= 17
+        # 17. push checksum commit (gem_checksums already commits)
+        push! if @start_step <= 17
+
+        # 18. create GitHub release (optional)
+        if @start_step <= 18
           version ||= detect_version
           maybe_create_github_release!(version)
         end
 
-        # 18. push tags to remotes (new final step)
-        push_tags! if @start_step <= 18
+        # 19. push tags to remotes (final step)
+        push_tags! if @start_step <= 19
 
         # Final success message
         begin
@@ -708,17 +711,20 @@ module Kettle
         # 2) Otherwise, if other remotes exist, push tags to each of them.
         # 3) If no remotes are configured, push tags using default remote.
         if has_remote?("all")
-          run_cmd!("git push all --tags")
+          ok = @git.push_tags("all")
+          warn("Push tags to 'all' reported failure.") unless ok
           return
         end
 
         remotes = list_remotes
         remotes -= ["all"] if remotes
         if remotes.nil? || remotes.empty?
-          run_cmd!("git push --tags")
+          ok = @git.push_tags(nil)
+          warn("Push tags (default remote) reported failure.") unless ok
         else
           remotes.each do |remote|
-            run_cmd!("git push #{Shellwords.escape(remote)} --tags")
+            ok = @git.push_tags(remote)
+            warn("Push tags to #{remote} reported failure.") unless ok
           end
         end
       end

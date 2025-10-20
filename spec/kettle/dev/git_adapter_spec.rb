@@ -108,6 +108,29 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
       allow(git_repo).to receive(:fetch).and_raise(StandardError)
       expect(adapter.fetch("origin", "oops")).to be false
     end
+
+    # New tests for push_tags behavior under gem backend (shells out)
+    it "pushes tags to a named remote via system even with gem backend" do
+      adapter = described_class.new
+      adapter.instance_variable_set(:@backend, :gem)
+      adapter.instance_variable_set(:@git, git_repo)
+      expect(adapter).to receive(:system).with("git", "push", "origin", "--tags").and_return(true)
+      expect(adapter.push_tags("origin")).to be true
+    end
+
+    it "pushes tags without specifying remote when remote is nil or empty" do
+      adapter = described_class.new
+      adapter.instance_variable_set(:@backend, :gem)
+      adapter.instance_variable_set(:@git, git_repo)
+      expect(adapter).to receive(:system).with("git", "push", "--tags").and_return(true)
+      expect(adapter.push_tags(nil)).to be true
+      # also cover empty string
+      adapter2 = described_class.new
+      adapter2.instance_variable_set(:@backend, :gem)
+      adapter2.instance_variable_set(:@git, git_repo)
+      expect(adapter2).to receive(:system).with("git", "push", "--tags").and_return(true)
+      expect(adapter2.push_tags("")).to be true
+    end
   end
 
   describe "CLI fallback when git gem is missing" do
@@ -177,6 +200,19 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
       expect(adapter.fetch("origin", "main")).to be true
       expect(adapter).to receive(:system).with("git", "fetch", "origin").and_return(true)
       expect(adapter.fetch("origin")).to be true
+    end
+
+    # New tests for push_tags behavior under CLI backend
+    it "pushes tags to named remote via system with CLI backend" do
+      adapter = described_class.new
+      expect(adapter).to receive(:system).with("git", "push", "origin", "--tags").and_return(true)
+      expect(adapter.push_tags("origin")).to be true
+    end
+
+    it "pushes tags without remote via system with CLI backend" do
+      adapter = described_class.new
+      expect(adapter).to receive(:system).with("git", "push", "--tags").and_return(true)
+      expect(adapter.push_tags(nil)).to be true
     end
   end
 
