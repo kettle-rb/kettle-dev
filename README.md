@@ -1,16 +1,22 @@
-| 📍 NOTE                                                                                                                                                                                      |
-|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| RubyGems.org was [recently compromised][draper-security] in a [hostile takeover][draper-takeover] about which [many lies][draper-lies] have been told.                                       |
-| I'm in the process of adding warnings to some important gems because I [don't condone the theft][draper-theft] of the bundler and rubygems-update projects.                                  |
-| Once publishing to [gem.coop][gem-coop] is available I will stop publishing to RubyGems.org, unless they make amends. I am writing my a new federated gem-server.                            |
-| Please see [here][gem-coop] and [here][martin-ann] for more info on what comes next. This ["Technology for Humans" podcast episode][reinteractive-podcast] is the best summary I'm aware of. |
+| 📍 NOTE                                                                                                                                                                                                   |
+|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| RubyGems.org [suffered][draper-security] a [hostile takeover][ellen-takeover] in September 2025. It is a [complicated story][draper-takeover] which is difficult to [parse quickly][draper-lies].         |
+| I'm in the process of adding warnings to gems because I [don't condone the theft][draper-theft] of the bundler and rubygems-update projects.                                                              |
+| If repos or publishing rights for my gems were similarly stolen, I'd hope others would stand up for me.                                                                                                   |
+| Once publishing to [gem.coop][gem-coop] is available I will stop publishing to RubyGems.org, unless they make amends.                                                                                     |
+| See [here][gem-naming], [here][gem-coop] and [here][martin-ann] for more info on what comes next. This ["Technology for Humans" podcast episode][reinteractive-podcast] is the best summary I'm aware of. |
+| My (WIP) proposal for [bundler/gem scopes][gem-scopes]. My (WIP) proposal for a federated [gem server][gem-server].                                                                                       |
 
 [draper-security]: https://joel.drapper.me/p/ruby-central-security-measures/
 [draper-takeover]: https://joel.drapper.me/p/ruby-central-takeover/
+[ellen-takeover]: https://pup-e.com/blog/goodbye-rubygems/
 [draper-lies]: https://joel.drapper.me/p/ruby-central-fact-check/
 [draper-theft]: https://joel.drapper.me/p/ruby-central/
 [gem-coop]: https://gem.coop
+[gem-naming]: https://github.com/gem-coop/gem.coop/issues/12
 [martin-ann]: https://martinemde.com/2025/10/05/announcing-gem-coop.html
+[gem-scopes]: https://github.com/galtzo-floss/bundle-namespace
+[gem-server]: https://github.com/galtzo-floss/gem-server
 [reinteractive-podcast]: https://youtu.be/_H4qbtC5qzU?si=BvuBU90R2wAqD2E6
 
 [![Galtzo FLOSS Logo by Aboling0, CC BY-SA 4.0][🖼️galtzo-i]][🖼️galtzo-discord] [![ruby-lang Logo, Yukihiro Matsumoto, Ruby Visual Identity Team, CC BY-SA 2.5][🖼️ruby-lang-i]][🖼️ruby-lang] [![kettle-dev Logo by Aboling0, CC BY-SA 4.0][🖼️kettle-dev-i]][🖼️kettle-dev]
