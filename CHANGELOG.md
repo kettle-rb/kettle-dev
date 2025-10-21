@@ -30,6 +30,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- alphabetize dependencies
+
 ### Security
 
 ## [1.1.35] - 2025-10-20
