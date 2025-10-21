@@ -6,10 +6,10 @@
 | I'm adding notes like this to gems because I [don't condone theft][draper-theft] of repositories or gems from their rightful owners.                              |
 | If a similar theft happened with my repos/gems, I'd hope some would stand up for me.                                                                              |
 | Disenfranchised former-maintainers have started [gem.coop][gem-coop].                                                                                             |
-| Once available, I will publish there exclusively; unless RubyCentral makes amends with the community.                                                             |
-| The ["Technology for Humans: Joel Draper"][reinteractive-podcast] podcast episode by [reinteractive][reinteractive] is the more cogent summary I'm aware of.      |
+| Once available I will publish there exclusively; unless RubyCentral makes amends with the community.                                                              |
+| The ["Technology for Humans: Joel Draper"][reinteractive-podcast] podcast episode by [reinteractive][reinteractive] is the most cogent summary I'm aware of.      |
 | See [here][gem-naming], [here][gem-coop] and [here][martin-ann] for more info on what comes next.                                                                 |
-| My (WIP) proposal for [bundler/gem scopes][gem-scopes]. My (WIP) proposal for a federated [gem server][gem-server].                                               |
+| What I'm doing: A (WIP) proposal for [bundler/gem scopes][gem-scopes], and a (WIP) proposal for a federated [gem server][gem-server].                             |
 
 [rubygems-org]: https://github.com/rubygems/
 [draper-security]: https://joel.drapper.me/p/ruby-central-security-measures/
