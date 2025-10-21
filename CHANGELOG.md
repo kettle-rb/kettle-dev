@@ -20,6 +20,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- kettle-release: improved --help
+
 ### Changed
 
 ### Deprecated

@@ -43,28 +43,47 @@ end
 # Do not guard with __FILE__ == $PROGRAM_NAME because binstubs use Kernel.load.
 if ARGV.include?("-h") || ARGV.include?("--help")
   puts <<~USAGE
-    Usage: kettle-release [start_step=<number>]
+    Usage: kettle-release [start_step=<1-19>]
 
-    Automates the release flow for a Ruby gem in the host project:
+    Automates the release flow for a Ruby gem in the host project.
+
+    Start steps (use start_step=<n> to begin at that step):
+      1. Verify Bundler >= 2.7 (always runs; start at 1 to do everything)
+      2. Detect version; RubyGems sanity check; confirm CHANGELOG/version; sync copyright years; update badges/headers
+      3. Run bin/setup
+      4. Run bin/rake (default task)
+      5. Run bin/rake appraisal:update if Appraisals present
+      6. Ensure git user configured; commit release prep
+      7. Optional local CI with `act` (controlled by K_RELEASE_LOCAL_CI)
+      8. Ensure trunk in sync across remotes; rebase feature as needed
+      9. Push current branch to remotes (or 'all' remote)
+     10. Monitor CI after push; abort on failures
+     11. Merge feature into trunk and push
+     12. Checkout trunk and pull latest
+     13. Gem signing checks/guidance (skip with SKIP_GEM_SIGNING=true)
+     14. Build gem (bundle exec rake build)
+     15. Release gem (bundle exec rake release)
+     16. Generate and validate checksums (bin/gem_checksums)
+     17. Push checksum commit
+     18. Create GitHub Release (requires GITHUB_TOKEN)
+     19. Push tags to remotes (final)
 
     Options:
-      start_step=<number>         # skip directly to the numbered step (e.g., 10 for CI validation)
-      - Runs bin/setup and bin/rake sanity checks
-      - Prompts to confirm version and changelog updates
-      - Commits a release prep change
-      - Ensures trunk is up-to-date, pushes branch, and monitors CI (GitHub/GitLab)
-      - Merges feature into trunk upon CI success
-      - Builds and releases the gem
-      - Generates checksums (via bin/gem_checksums), then pushes the checksum commit
-      - Optionally creates a GitHub Release
-      - Pushes tags to remotes at the end
+      start_step=<number>         # Begin at the numbered step above (e.g., 10 to resume at CI monitoring)
 
     Environment:
-      SKIP_GEM_SIGNING=true        # skip gem signing during build/release
-      GEM_CERT_USER=<user>         # selects certs/<user>.pem for signing
-      GITHUB_TOKEN / GH_TOKEN      # optional, to query GitHub Actions
-      GITLAB_TOKEN / GL_TOKEN      # optional, to query GitLab pipelines
-      DEBUG=true                   # print backtraces on errors
+      SKIP_GEM_SIGNING=true       # Build/release unsigned; avoids PEM password prompts
+      GEM_CERT_USER=<user>        # Select certs/<user>.pem for signing
+      K_RELEASE_LOCAL_CI=ask|1|0  # Use 'act' locally before push; 'ask' prompts, '1' forces, default off
+      K_RELEASE_LOCAL_CI_WORKFLOW # Name of workflow (without .yml) for local CI; defaults to locked_deps or first
+      GITHUB_TOKEN / GH_TOKEN     # Optional; enables GitHub release creation and API queries
+      GITLAB_TOKEN / GL_TOKEN     # Optional; enables GitLab API queries when applicable
+      DEBUG=true                  # Print backtraces on errors
+
+    Examples:
+      kettle-release                       # full flow from the top (start_step=1)
+      kettle-release start_step=10         # resume by monitoring CI for the current branch
+      SKIP_GEM_SIGNING=true kettle-release start_step=14  # build+release without signing
   USAGE
   exit 0
 end
@@ -77,7 +96,7 @@ begin
   Kettle::Dev::ReleaseCLI.new(start_step: start_step).run
 rescue LoadError => e
   warn("#{script_basename}: could not load dependency: #{e.class}: #{e.message}")
-  warn(e.backtrace.join("\n")) if ENV["DEBUG"]
+  warn(Array(e.backtrace).join("\n")) if ENV["DEBUG"]
   exit(1)
 rescue SystemExit => e
   # Preserve exit status, but ensure at least a newline so shells don't show an empty line only.
@@ -85,6 +104,6 @@ rescue SystemExit => e
   raise
 rescue StandardError => e
   warn("#{script_basename}: unexpected error: #{e.class}: #{e.message}")
-  warn(e.backtrace.join("\n"))
+  warn(Array(e.backtrace).join("\n"))
   exit(1)
 end
