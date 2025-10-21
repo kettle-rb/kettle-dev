@@ -22,6 +22,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- legacy ruby 3.1 pinned to bundler 2.6.9
+
 ### Deprecated
 
 ### Removed
