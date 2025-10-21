@@ -20,19 +20,15 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
-- kettle-release: improved --help
-- improved documentation of kettle-release
-- improved documentation of spec setup with kettle-test
-
 ### Changed
-
-- upgrade to kettle-test v1.0.6
 
 ### Deprecated
 
 ### Removed
 
 ### Fixed
+
+- Corrected typo: truffleruby-24.1 (targets Ruby 3.3 compatibility)
 
 ### Security
 
