@@ -346,6 +346,21 @@ end
 <p>This gem integrates tightly with <a href="https://github.com/kettle-rb/kettle-test">kettle-test</a>.</p>
 
 <pre class="code language-ruby"><code class="language-ruby">require &quot;kettle/test/rspec&quot;
+
+# ... any other config you need to do.
+
+# NOTE: Gemfiles for older rubies (&lt; 2.7) won&#39;t have kettle-soup-cover.
+#       The rescue LoadError handles that scenario.
+begin
+  require &quot;kettle-soup-cover&quot;
+  require &quot;simplecov&quot; if Kettle::Soup::Cover::DO_COV # `.simplecov` is run here!
+rescue LoadError =&gt; error
+  # check the error message, and re-raise if not what is expected
+  raise error unless error.message.include?(&quot;kettle&quot;)
+end
+
+# This gem (or app)
+require &quot;gem-under-test&quot;
 </code></pre>
 
 <h3 id="rakefile">Rakefile</h3>
@@ -741,26 +756,27 @@ Tip: When running a single spec file locally, you may want <code>K_SOUP_COV_MIN_
   <li>Options:
     <ul>
       <li>start_step map (skip directly to a phase):
-        <ul>
-          <li>1: Ensure Bundler &gt;= 2.7.0 and begin full flow</li>
-          <li>2: Version detection + sanity checks + prompt to confirm version.rb and CHANGELOG.md</li>
-          <li>3: Run bin/setup</li>
-          <li>4: Run bin/rake (default task)</li>
-          <li>5: Run appraisal:update when Appraisals exists (skip otherwise)</li>
-          <li>6: Verify git user.name/email and commit release prep “🔖 Prepare release vX.Y.Z”</li>
-          <li>7: Optionally run local CI with nektos/act before pushing (see K_RELEASE_LOCAL_CI, K_RELEASE_LOCAL_CI_WORKFLOW)</li>
-          <li>8: Ensure trunk is up-to-date and reconcile with GitHub remote if needed</li>
-          <li>9: Push current branch to configured remotes (or default), force-pushing on retry when needed</li>
-          <li>10: Monitor CI after push (GitHub Actions and/or GitLab pipelines); progress bar; aborts on failure</li>
-          <li>11: Merge feature branch into trunk and push</li>
-          <li>12: Checkout trunk and pull latest</li>
-          <li>13: Signing checks and guidance (abort when signing enabled but cert missing); respect SKIP_GEM_SIGNING</li>
-          <li>14: Build gem (honors SKIP_GEM_SIGNING via env prefix)</li>
-          <li>15: Release via <code>bundle exec rake release</code> (also creates git tag)</li>
-          <li>16: Generate and validate gem checksums (bin/gem_checksums)</li>
-          <li>17: Create GitHub release from CHANGELOG when GITHUB_TOKEN present</li>
-          <li>18: Push git tags to remotes (to “all” remote only when present; otherwise to each remote)</li>
-        </ul>
+        <ol>
+          <li>Verify Bundler &gt;= 2.7 (always runs; start at 1 to do everything)</li>
+          <li>Detect version; RubyGems sanity check; confirm CHANGELOG/version; sync copyright years; update badges/headers</li>
+          <li>Run bin/setup</li>
+          <li>Run bin/rake (default task)</li>
+          <li>Run bin/rake appraisal:update if Appraisals present</li>
+          <li>Ensure git user configured; commit release prep</li>
+          <li>Optional local CI with <code>act</code> (controlled by K_RELEASE_LOCAL_CI)</li>
+          <li>Ensure trunk in sync across remotes; rebase feature as needed</li>
+          <li>Push current branch to remotes (or ‘all’ remote)</li>
+          <li>Monitor CI after push; abort on failures</li>
+          <li>Merge feature into trunk and push</li>
+          <li>Checkout trunk and pull latest</li>
+          <li>Gem signing checks/guidance (skip with SKIP_GEM_SIGNING=true)</li>
+          <li>Build gem (bundle exec rake build)</li>
+          <li>Release gem (bundle exec rake release)</li>
+          <li>Generate and validate checksums (bin/gem_checksums)</li>
+          <li>Push checksum commit</li>
+          <li>Create GitHub Release (requires GITHUB_TOKEN)</li>
+          <li>Push tags to remotes (final)</li>
+        </ol>
       </li>
     </ul>
   </li>
@@ -1181,7 +1197,7 @@ Please consider sponsoring me or the project.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Mon Oct 20 22:58:55 2025 by
+  Generated on Tue Oct 21 00:50:28 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.7).
 </div>
