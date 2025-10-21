@@ -213,6 +213,21 @@ This gem integrates tightly with [kettle-test](https://github.com/kettle-rb/kett
 
 ```ruby
 require "kettle/test/rspec"
+
+# ... any other config you need to do.
+
+# NOTE: Gemfiles for older rubies (< 2.7) won't have kettle-soup-cover.
+#       The rescue LoadError handles that scenario.
+begin
+  require "kettle-soup-cover"
+  require "simplecov" if Kettle::Soup::Cover::DO_COV # `.simplecov` is run here!
+rescue LoadError => error
+  # check the error message, and re-raise if not what is expected
+  raise error unless error.message.include?("kettle")
+end
+
+# This gem (or app)
+require "gem-under-test"
 ```
 
 ### Rakefile
@@ -457,24 +472,25 @@ What it does:
   - Exports `SOURCE_DATE_EPOCH`, builds (optionally signed), creates gem checksums, and runs `bundle exec rake release` (prompts for signing key + RubyGems MFA OTP as needed).
 - Options:
   - start_step map (skip directly to a phase):
-    - 1: Ensure Bundler >= 2.7.0 and begin full flow
-    - 2: Version detection + sanity checks + prompt to confirm version.rb and CHANGELOG.md
-    - 3: Run bin/setup
-    - 4: Run bin/rake (default task)
-    - 5: Run appraisal:update when Appraisals exists (skip otherwise)
-    - 6: Verify git user.name/email and commit release prep "🔖 Prepare release vX.Y.Z"
-    - 7: Optionally run local CI with nektos/act before pushing (see K_RELEASE_LOCAL_CI, K_RELEASE_LOCAL_CI_WORKFLOW)
-    - 8: Ensure trunk is up-to-date and reconcile with GitHub remote if needed
-    - 9: Push current branch to configured remotes (or default), force-pushing on retry when needed
-    - 10: Monitor CI after push (GitHub Actions and/or GitLab pipelines); progress bar; aborts on failure
-    - 11: Merge feature branch into trunk and push
-    - 12: Checkout trunk and pull latest
-    - 13: Signing checks and guidance (abort when signing enabled but cert missing); respect SKIP_GEM_SIGNING
-    - 14: Build gem (honors SKIP_GEM_SIGNING via env prefix)
-    - 15: Release via `bundle exec rake release` (also creates git tag)
-    - 16: Generate and validate gem checksums (bin/gem_checksums)
-    - 17: Create GitHub release from CHANGELOG when GITHUB_TOKEN present
-    - 18: Push git tags to remotes (to "all" remote only when present; otherwise to each remote)
+    1. Verify Bundler >= 2.7 (always runs; start at 1 to do everything)
+    2. Detect version; RubyGems sanity check; confirm CHANGELOG/version; sync copyright years; update badges/headers
+    3. Run bin/setup
+    4. Run bin/rake (default task)
+    5. Run bin/rake appraisal:update if Appraisals present
+    6. Ensure git user configured; commit release prep
+    7. Optional local CI with `act` (controlled by K_RELEASE_LOCAL_CI)
+    8. Ensure trunk in sync across remotes; rebase feature as needed
+    9. Push current branch to remotes (or 'all' remote)
+    10. Monitor CI after push; abort on failures
+    11. Merge feature into trunk and push
+    12. Checkout trunk and pull latest
+    13. Gem signing checks/guidance (skip with SKIP_GEM_SIGNING=true)
+    14. Build gem (bundle exec rake build)
+    15. Release gem (bundle exec rake release)
+    16. Generate and validate checksums (bin/gem_checksums)
+    17. Push checksum commit
+    18. Create GitHub Release (requires GITHUB_TOKEN)
+    19. Push tags to remotes (final)
 - Examples:
   - After intermittent CI failure, restart from monitoring: `bundle exec kettle-release start_step=10`
 - Tips:

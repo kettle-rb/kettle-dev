@@ -21,6 +21,8 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Added
 
 - kettle-release: improved --help
+- improved documentation of kettle-release
+- improved documentation of spec setup with kettle-test
 
 ### Changed
 
