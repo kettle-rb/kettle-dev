@@ -1,17 +1,25 @@
-| 📍 NOTE                                                                                                                                                                                                   |
-|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| RubyGems.org [suffered][draper-security] a [hostile takeover][ellen-takeover] in September 2025. It is a [complicated story][draper-takeover] which is difficult to [parse quickly][draper-lies].         |
-| I'm in the process of adding warnings to gems because I [don't condone the theft][draper-theft] of the bundler and rubygems-update projects.                                                              |
-| If repos or publishing rights for my gems were similarly stolen, I'd hope others would stand up for me.                                                                                                   |
-| Once publishing to [gem.coop][gem-coop] is available I will stop publishing to RubyGems.org, unless they make amends.                                                                                     |
-| See [here][gem-naming], [here][gem-coop] and [here][martin-ann] for more info on what comes next. This ["Technology for Humans" podcast episode][reinteractive-podcast] is the best summary I'm aware of. |
-| My (WIP) proposal for [bundler/gem scopes][gem-scopes]. My (WIP) proposal for a federated [gem server][gem-server].                                                                                       |
+| 📍 NOTE                                                                                                                                                           |
+|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| RubyGems (the [GitHub org][rubygems-org], not the website) [suffered][draper-security] a [hostile takeover][ellen-takeover] in September 2025.                    |
+| Ultimately [4 maintainers][simi-removed] were [hard removed][martin-removed] and a reason has been given for only 1 of those, while 2 others resigned in protest. |
+| It is a [complicated story][draper-takeover] which is difficult to [parse quickly][draper-lies].                                                                  |
+| I'm adding notes like this to gems because I [don't condone theft][draper-theft] of repositories or gems from their rightful owners.                              |
+| If a similar theft happened with my repos/gems, I'd hope some would stand up for me.                                                                              |
+| Disenfranchised former-maintainers have started [gem.coop][gem-coop].                                                                                             |
+| Once available, I will publish there exclusively; unless RubyCentral makes amends with the community.                                                             |
+| The ["Technology for Humans: Joel Draper"][reinteractive-podcast] podcast episode by [reinteractive][reinteractive] is the more cogent summary I'm aware of.      |
+| See [here][gem-naming], [here][gem-coop] and [here][martin-ann] for more info on what comes next.                                                                 |
+| My (WIP) proposal for [bundler/gem scopes][gem-scopes]. My (WIP) proposal for a federated [gem server][gem-server].                                               |
 
+[rubygems-org]: https://github.com/rubygems/
 [draper-security]: https://joel.drapper.me/p/ruby-central-security-measures/
 [draper-takeover]: https://joel.drapper.me/p/ruby-central-takeover/
 [ellen-takeover]: https://pup-e.com/blog/goodbye-rubygems/
+[simi-removed]: https://www.reddit.com/r/ruby/s/gOk42POCaV
+[martin-removed]: https://bsky.app/profile/martinemde.com/post/3m3occezxxs2q
 [draper-lies]: https://joel.drapper.me/p/ruby-central-fact-check/
 [draper-theft]: https://joel.drapper.me/p/ruby-central/
+[reinteractive]: https://reinteractive.com/ruby-on-rails
 [gem-coop]: https://gem.coop
 [gem-naming]: https://github.com/gem-coop/gem.coop/issues/12
 [martin-ann]: https://martinemde.com/2025/10/05/announcing-gem-coop.html
