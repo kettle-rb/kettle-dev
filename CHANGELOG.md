@@ -20,8 +20,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
-- More documentation of RC situation
-
 ### Changed
 
 ### Deprecated
@@ -30,9 +28,22 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- alphabetize dependencies
-
 ### Security
+
+## [1.1.36] - 2025-10-20
+
+- TAG: [v1.1.36][1.1.36t]
+- COVERAGE: 96.04% -- 3949/4112 lines in 26 files
+- BRANCH COVERAGE: 80.85% -- 1634/2021 branches in 26 files
+- 79.68% documented
+
+### Added
+
+- More documentation of RC situation
+
+### Fixed
+
+- alphabetize dependencies
 
 ## [1.1.35] - 2025-10-20
 
@@ -1123,7 +1134,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.35...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.36...HEAD
+[1.1.36]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.35...v1.1.36
+[1.1.36t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.36
 [1.1.35]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.34...v1.1.35
 [1.1.35t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.35
 [1.1.34]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.33...v1.1.34
