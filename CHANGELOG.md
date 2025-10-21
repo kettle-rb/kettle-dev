@@ -24,6 +24,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- upgrade to kettle-test v1.0.6
+
 ### Deprecated
 
 ### Removed
