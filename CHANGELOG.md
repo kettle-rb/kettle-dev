@@ -20,8 +20,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
-- CONTRIBUTING.md.example tailored for the templated gem
-
 ### Changed
 
 ### Deprecated
@@ -30,9 +28,22 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Minor typos
-
 ### Security
+
+## [1.1.39] - 2025-10-27
+
+- TAG: [v1.1.39][1.1.39t]
+- COVERAGE: 96.04% -- 3949/4112 lines in 26 files
+- BRANCH COVERAGE: 80.85% -- 1634/2021 branches in 26 files
+- 79.68% documented
+
+### Added
+
+- CONTRIBUTING.md.example tailored for the templated gem
+
+### Fixed
+
+- Minor typos
 
 ## [1.1.38] - 2025-10-21
 
@@ -1170,7 +1181,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.38...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.39...HEAD
+[1.1.39]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.38...v1.1.39
+[1.1.39t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.39
 [1.1.38]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.37...v1.1.38
 [1.1.38t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.38
 [1.1.37]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.36...v1.1.37
