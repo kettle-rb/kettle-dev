@@ -20,6 +20,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- CONTRIBUTING.md.example tailored for the templated gem
+
 ### Changed
 
 ### Deprecated
@@ -27,6 +29,8 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Removed
 
 ### Fixed
+
+- Minor typos
 
 ### Security
 
