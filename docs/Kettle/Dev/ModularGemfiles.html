@@ -343,11 +343,11 @@ via the provided helpers.</p>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_sync!'>sync!</span><span class='lparen'>(</span><span class='label'>helpers:</span><span class='comma'>,</span> <span class='label'>project_root:</span><span class='comma'>,</span> <span class='label'>gem_checkout_root:</span><span class='comma'>,</span> <span class='label'>min_ruby:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='comment'># 4a) gemfiles/modular/*.gemfile except style.gemfile (handled below)
+</span>  <span class='comment'># Note: `injected.gemfile` is only intended for testing this gem, and isn&#39;t even actively used there. It is not part of the template.
 </span>  <span class='id identifier rubyid_modular_gemfiles'>modular_gemfiles</span> <span class='op'>=</span> <span class='qwords_beg'>%w[</span><span class='words_sep'>
 </span><span class='words_sep'>    </span><span class='tstring_content'>coverage</span><span class='words_sep'>
 </span><span class='words_sep'>    </span><span class='tstring_content'>debug</span><span class='words_sep'>
 </span><span class='words_sep'>    </span><span class='tstring_content'>documentation</span><span class='words_sep'>
-</span><span class='words_sep'>    </span><span class='tstring_content'>injected</span><span class='words_sep'>
 </span><span class='words_sep'>    </span><span class='tstring_content'>optional</span><span class='words_sep'>
 </span><span class='words_sep'>    </span><span class='tstring_content'>runtime_heads</span><span class='words_sep'>
 </span><span class='words_sep'>    </span><span class='tstring_content'>x_std_libs</span><span class='words_sep'>
@@ -437,7 +437,7 @@ via the provided helpers.</p>
 </div>
 
       <div id="footer">
-  Generated on Tue Oct 28 13:08:44 2025 by
+  Generated on Wed Oct 29 15:30:48 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.7).
 </div>

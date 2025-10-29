@@ -26,11 +26,20 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Removed
 
-- Exclude `gemfiles/modular/injected.gemfile` from the install/template process, as it is not relevant.
-
 ### Fixed
 
 ### Security
+
+## [1.1.42] - 2025-10-29
+
+- TAG: [v1.1.42][1.1.42t]
+- COVERAGE: 96.04% -- 3949/4112 lines in 26 files
+- BRANCH COVERAGE: 80.85% -- 1634/2021 branches in 26 files
+- 79.68% documented
+
+### Removed
+
+- Exclude `gemfiles/modular/injected.gemfile` from the install/template process, as it is not relevant.
 
 ## [1.1.41] - 2025-10-28
 
@@ -1205,7 +1214,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.41...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.42...HEAD
+[1.1.42]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.41...v1.1.42
+[1.1.42t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.42
 [1.1.41]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.40...v1.1.41
 [1.1.41t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.41
 [1.1.40]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.39...v1.1.40
