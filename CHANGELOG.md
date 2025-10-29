@@ -26,6 +26,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Removed
 
+- Exclude `gemfiles/modular/injected.gemfile` from the install/template process, as it is not relevant.
+
 ### Fixed
 
 ### Security
@@ -1029,8 +1031,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - TAG: [v1.0.10][1.0.10t]
 - COVERAGE: 97.68% -- 1685/1725 lines in 17 files
-- BRANCH COVERAGE: 77.54% -- 618/797 branches in 17 files- 95.35% documented
-- 77.00% documented
+- BRANCH COVERAGE: 77.54% -- 618/797 branches in 17 files
+- 95.35% documented
 
 ### Added
 

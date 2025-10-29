@@ -21,11 +21,11 @@ module Kettle
       # @return [void]
       def sync!(helpers:, project_root:, gem_checkout_root:, min_ruby: nil)
         # 4a) gemfiles/modular/*.gemfile except style.gemfile (handled below)
+        # Note: `injected.gemfile` is only intended for testing this gem, and isn't even actively used there. It is not part of the template.
         modular_gemfiles = %w[
           coverage
           debug
           documentation
-          injected
           optional
           runtime_heads
           x_std_libs
