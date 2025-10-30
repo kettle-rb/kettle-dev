@@ -26,6 +26,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Removed
 
+- `exe/*` from `spec.files`, because it is redundant with `spec.bindir` & `spec.executables`
+
 ### Fixed
 
 ### Security

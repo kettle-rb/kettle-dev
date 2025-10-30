@@ -67,9 +67,8 @@ Gem::Specification.new do |spec|
   # Specify which files are part of the released package.
   # Include all sources required by install/template tasks so they work from the shipped gem.
   spec.files = Dir[
-    # Executables and tasks
-    "exe/*",
-    "bin/setup",
+    # Code / tasks / data (NOTE: exe/ is specified via spec.bindir and spec.executables below)
+    "bin/setup", # bin/setup is included so it can be copied by kettle:dev:install task
     "lib/**/*.rb",
     "lib/**/*.rake",
     # Signatures
