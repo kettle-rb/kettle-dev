@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- typos in CONTRIBUTING.md used for templating
+
 ### Security
 
 ## [1.1.42] - 2025-10-29
