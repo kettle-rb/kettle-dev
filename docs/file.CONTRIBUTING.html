@@ -187,10 +187,8 @@ They are created and updated with the commands:</p>
 <h3 id="spec-organization-required">Spec organization (required)</h3>
 
 <ul>
-  <li>One spec file per class/module. For each class or module under <code>lib/</code>, keep all of its unit tests in a single spec file under <code>spec/</code> that mirrors the path and file name exactly: <code>lib/kettle/dev/release_cli.rb</code> -&gt; <code>spec/kettle/dev/release_cli_spec.rb</code>.</li>
-  <li>Never add a second spec file for the same class/module. Examples of disallowed names: <code>*_more_spec.rb</code>, <code>*_extra_spec.rb</code>, <code>*_status_spec.rb</code>, or any other suffix that still targets the same class. If you find yourself wanting a second file, merge those examples into the canonical spec file for that class/module.</li>
+  <li>One spec file per class/module. For each class or module under <code>lib/</code>, keep all of its unit tests in a single spec file under <code>spec/</code> that mirrors the path and file name exactly: <code>lib/kettle/dev/my_class.rb</code> -&gt; <code>spec/kettle/dev/my_class_spec.rb</code>.</li>
   <li>Exception: Integration specs that intentionally span multiple classes. Place these under <code>spec/integration/</code> (or a clearly named integration folder), and do not directly mirror a single class. Name them after the scenario, not a class.</li>
-  <li>Migration note: If a duplicate spec file exists, move all examples into the canonical file and delete the duplicate. Do not leave stubs or empty files behind.</li>
 </ul>
 
 <h2 id="lint-it">Lint It</h2>
@@ -307,7 +305,7 @@ push git commits and tags, and push the <code>.gem</code> file to the gem host c
 </div></div>
 
       <div id="footer">
-  Generated on Wed Oct 29 15:30:47 2025 by
+  Generated on Thu Oct 30 01:08:41 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.7).
 </div>
