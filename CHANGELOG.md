@@ -27,10 +27,11 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Removed
 
 - `exe/*` from `spec.files`, because it is redundant with `spec.bindir` & `spec.executables`
+- prepare-commit-msg.example: no longer needed
 
 ### Fixed
 
-### Security
+- prepare-commit-msg git hook: incompatibility between direnv and mise by removing `direnv exec`
 
 ## [1.1.43] - 2025-10-30
 
