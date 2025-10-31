@@ -26,6 +26,19 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Removed
 
+### Fixed
+
+### Security
+
+## [1.1.44] - 2025-10-31
+
+- TAG: [v1.1.44][1.1.44t]
+- COVERAGE: 96.04% -- 3949/4112 lines in 26 files
+- BRANCH COVERAGE: 80.85% -- 1634/2021 branches in 26 files
+- 79.68% documented
+
+### Removed
+
 - `exe/*` from `spec.files`, because it is redundant with `spec.bindir` & `spec.executables`
 - prepare-commit-msg.example: no longer needed
 
@@ -1228,7 +1241,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.43...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.44...HEAD
+[1.1.44]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.43...v1.1.44
+[1.1.44t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.44
 [1.1.43]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.42...v1.1.43
 [1.1.43t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.43
 [1.1.42]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.41...v1.1.42
