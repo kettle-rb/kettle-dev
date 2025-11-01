@@ -22,8 +22,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
-- floss-funding related documentation improvements
-
 ### Deprecated
 
 ### Removed
@@ -31,6 +29,17 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Fixed
 
 ### Security
+
+## [1.1.45] - 2025-10-31
+
+- TAG: [v1.1.45][1.1.45t]
+- COVERAGE: 96.33% -- 3961/4112 lines in 26 files
+- BRANCH COVERAGE: 81.00% -- 1637/2021 branches in 26 files
+- 79.68% documented
+
+### Changed
+
+- floss-funding related documentation improvements
 
 ## [1.1.44] - 2025-10-31
 
@@ -1243,7 +1252,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.44...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.45...HEAD
+[1.1.45]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.44...v1.1.45
+[1.1.45t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.45
 [1.1.44]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.43...v1.1.44
 [1.1.44t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.44
 [1.1.43]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.42...v1.1.43
