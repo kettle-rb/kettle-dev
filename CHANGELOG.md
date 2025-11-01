@@ -22,6 +22,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- floss-funding related documentation improvements
+
 ### Deprecated
 
 ### Removed
