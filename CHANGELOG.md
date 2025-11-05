@@ -20,6 +20,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- Validate RBS Types within style workflow
+
 ### Changed
 
 ### Deprecated
@@ -27,6 +29,8 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Removed
 
 ### Fixed
+
+- typos in README.md
 
 ### Security
 
