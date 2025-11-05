@@ -13,7 +13,7 @@ GIT
 PATH
   remote: .
   specs:
-    kettle-dev (1.1.45)
+    kettle-dev (1.1.46)
 
 GEM
   remote: https://gem.coop/
