@@ -100,4 +100,3 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
     end
   end
 end
-

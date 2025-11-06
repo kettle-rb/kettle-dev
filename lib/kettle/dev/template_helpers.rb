@@ -284,7 +284,11 @@ module Kettle
         # preserve destination-only blocks and comments/preamble.
         begin
           if dest_exists && File.basename(dest_path.to_s) == "Appraisals" && File.file?(dest_path.to_s)
-            existing = File.read(dest_path) rescue ""
+            existing = begin
+              File.read(dest_path)
+            rescue
+              ""
+            end
             content = merge_appraisals(content, existing)
           end
         rescue StandardError => e
@@ -418,7 +422,7 @@ module Kettle
                       body: body_lines.dup,
                       end_line: end_line,
                       raw_order: blocks.length,
-                      original_indices: (j ? (j+1)..i : i)
+                      original_indices: (j ? (j + 1)..i : i),
                     }
                     break
                   else
@@ -469,7 +473,7 @@ module Kettle
                 merged_body += additions
               end
               header = tb[:header].any? ? tb[:header] : db[:header]
-              block_text = "".dup
+              block_text = +""
               block_text << "\n" unless merged_blocks_strings.empty?
               header.each { |hl| block_text << hl } if header.any?
               block_text << "appraise \"#{tb[:name]}\" do\n"
@@ -479,7 +483,7 @@ module Kettle
               dest_by_name.delete(tb[:name])
             else
               # New block from template
-              block_text = "".dup
+              block_text = +""
               block_text << "\n" unless merged_blocks_strings.empty?
               tb[:header].each { |hl| block_text << hl } if tb[:header].any?
               block_text << "appraise \"#{tb[:name]}\" do\n"
@@ -491,7 +495,7 @@ module Kettle
           # Append destination-only blocks preserving their original text
           dest_remaining_order = dest_blocks.select { |b| dest_by_name.key?(b[:name]) }
           dest_remaining_order.each do |b|
-            block_text = "".dup
+            block_text = +""
             block_text << "\n" unless merged_blocks_strings.empty?
             b[:header].each { |hl| block_text << hl } if b[:header].any?
             block_text << "appraise \"#{b[:name]}\" do\n"
