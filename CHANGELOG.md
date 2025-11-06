@@ -20,6 +20,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- Handle custom dependencies in Gemfiles gracefully
+
 ### Changed
 
 ### Deprecated

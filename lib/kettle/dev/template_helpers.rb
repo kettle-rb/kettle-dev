@@ -277,6 +277,29 @@ module Kettle
           Kettle::Dev.debug_error(e, __method__)
           # If replacement fails unexpectedly, proceed with content as-is
         end
+
+        # If updating a Gemfile or modular .gemfile and the destination already exists,
+        # merge dependency lines from the source into the destination to preserve any
+        # user-defined gem entries. We append missing `gem "name"` lines; we never
+        # alter or remove existing gem lines in the destination.
+        begin
+          if dest_exists
+            dest_str = dest_path.to_s
+            is_gemfile_like = File.basename(dest_str) == "Gemfile" || dest_str.end_with?(".gemfile")
+            if is_gemfile_like && File.file?(dest_str)
+              begin
+                existing = File.read(dest_str)
+                content = merge_gemfile_dependencies(content, existing)
+              rescue StandardError => e
+                Kettle::Dev.debug_error(e, __method__)
+                # If merging fails, fall back to writing generated content
+              end
+            end
+          end
+        rescue StandardError => e
+          Kettle::Dev.debug_error(e, __method__)
+        end
+
         write_file(dest_path, content)
         begin
           # Ensure executable bit for git hook scripts when writing under .git-hooks
@@ -289,6 +312,50 @@ module Kettle
         end
         record_template_result(dest_path, dest_exists ? :replace : :create)
         puts "Wrote #{dest_path}"
+      end
+
+      # Merge gem dependency lines from a source Gemfile-like content into an existing
+      # destination Gemfile-like content. Existing gem lines in the destination win;
+      # we only append missing gem declarations from the source at the end of the file.
+      # This is deliberately conservative and avoids attempting to relocate gems inside
+      # group/platform blocks or reconcile version constraints.
+      # @param src_content [String]
+      # @param dest_content [String]
+      # @return [String] merged content
+      def merge_gemfile_dependencies(src_content, dest_content)
+        begin
+          gem_re = /^\s*gem\s+['"]([^'"\s]+)['"].*$/
+          # Collect first occurrence of each gem line in source
+          src_gems = {}
+          src_content.each_line do |ln|
+            next if ln.strip.start_with?("#")
+            if (m = ln.match(gem_re))
+              name = m[1]
+              src_gems[name] ||= ln.rstrip
+            end
+          end
+
+          # Index existing gems in destination
+          dest_gems = {}
+          dest_content.each_line do |ln|
+            next if ln.strip.start_with?("#")
+            if (m = ln.match(gem_re))
+              dest_gems[m[1]] = true
+            end
+          end
+
+          missing = src_gems.keys.reject { |n| dest_gems.key?(n) }
+          return dest_content if missing.empty?
+
+          out = dest_content.dup
+          out << "\n" unless out.end_with?("\n") || out.empty?
+          out << missing.map { |n| src_gems[n] }.join("\n")
+          out << "\n"
+          out
+        rescue StandardError => e
+          Kettle::Dev.debug_error(e, __method__)
+          dest_content
+        end
       end
 
       # Copy a directory tree, prompting before creating or overwriting.
