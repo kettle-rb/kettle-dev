@@ -20,9 +20,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
-- Handle custom dependencies in Gemfiles gracefully
-- Intelligent templating of Appraisals
-
 ### Changed
 
 ### Deprecated
@@ -31,9 +28,23 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Typos in funding links
-
 ### Security
+
+## [1.1.47] - 2025-11-06
+
+- TAG: [v1.1.47][1.1.47t]
+- COVERAGE: 95.68% -- 4054/4237 lines in 26 files
+- BRANCH COVERAGE: 80.45% -- 1675/2082 branches in 26 files
+- 79.89% documented
+
+### Added
+
+- Handle custom dependencies in Gemfiles gracefully
+- Intelligent templating of Appraisals
+
+### Fixed
+
+- Typos in funding links
 
 ## [1.1.46] - 2025-11-04
 
@@ -1272,7 +1283,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.46...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.47...HEAD
+[1.1.47]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.46...v1.1.47
+[1.1.47t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.47
 [1.1.46]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.45...v1.1.46
 [1.1.46t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.46
 [1.1.45]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.44...v1.1.45
