@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Typos in funding links
+
 ### Security
 
 ## [1.1.46] - 2025-11-04
