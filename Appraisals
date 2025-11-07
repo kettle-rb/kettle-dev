@@ -136,6 +136,8 @@ appraise "coverage" do
   eval_gemfile "modular/optional.gemfile"
   eval_gemfile "modular/recording/r3/recording.gemfile"
   eval_gemfile "modular/x_std_libs.gemfile"
+  # Normally style is included in coverage runs only, but we need it for the test suite to get full coverage
+  eval_gemfile "modular/style.gemfile"
   # Dependencies injected by the kettle-dev-setup script & kettle:dev:install rake task
   #  eval_gemfile "modular/injected.gemfile"
 end
