@@ -28,10 +28,19 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [1.1.48] - 2025-11-06
+
+- TAG: [v1.1.48][1.1.48t]
+- COVERAGE: 94.39% -- 4038/4278 lines in 26 files
+- BRANCH COVERAGE: 78.93% -- 1663/2107 branches in 26 files
+- 79.89% documented
+
+### Fixed
+
 - Typo in markdown link
 - Handling of pre-existing gemfile
-
-### Security
 
 ## [1.1.47] - 2025-11-06
 
@@ -1286,7 +1295,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.47...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.48...HEAD
+[1.1.48]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.47...v1.1.48
+[1.1.48t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.48
 [1.1.47]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.46...v1.1.47
 [1.1.47t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.47
 [1.1.46]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.45...v1.1.46

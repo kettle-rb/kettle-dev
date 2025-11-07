@@ -713,78 +713,78 @@ Values: Hash with keys: :action (Symbol, one of :create, :replace, :skip, :dir_c
       <pre class="lines">
 
 
-686
-687
-688
-689
-690
-691
-692
-693
-694
-695
-696
-697
-698
-699
-700
-701
-702
-703
-704
-705
-706
-707
-708
-709
-710
-711
-712
-713
-714
-715
-716
-717
-718
-719
-720
-721
-722
-723
-724
-725
-726
-727
-728
-729
-730
-731
-732
-733
-734
-735
-736
-737
-738
-739
-740
-741
-742
-743
-744
-745
-746
-747
-748
-749
-750
-751
-752
-753
-754</pre>
+766
+767
+768
+769
+770
+771
+772
+773
+774
+775
+776
+777
+778
+779
+780
+781
+782
+783
+784
+785
+786
+787
+788
+789
+790
+791
+792
+793
+794
+795
+796
+797
+798
+799
+800
+801
+802
+803
+804
+805
+806
+807
+808
+809
+810
+811
+812
+813
+814
+815
+816
+817
+818
+819
+820
+821
+822
+823
+824
+825
+826
+827
+828
+829
+830
+831
+832
+833
+834</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 686</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 766</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_apply_common_replacements'>apply_common_replacements</span><span class='lparen'>(</span><span class='id identifier rubyid_content'>content</span><span class='comma'>,</span> <span class='label'>org:</span><span class='comma'>,</span> <span class='label'>gem_name:</span><span class='comma'>,</span> <span class='label'>namespace:</span><span class='comma'>,</span> <span class='label'>namespace_shield:</span><span class='comma'>,</span> <span class='label'>gem_shield:</span><span class='comma'>,</span> <span class='label'>funding_org:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>min_ruby:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="Error.html" title="Kettle::Dev::Error (class)">Error</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Org could not be derived</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_org'>org</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_org'>org</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
@@ -996,86 +996,6 @@ Values: Hash with keys: :action (Symbol, one of :create, :replace, :skip, :dir_c
       <pre class="lines">
 
 
-523
-524
-525
-526
-527
-528
-529
-530
-531
-532
-533
-534
-535
-536
-537
-538
-539
-540
-541
-542
-543
-544
-545
-546
-547
-548
-549
-550
-551
-552
-553
-554
-555
-556
-557
-558
-559
-560
-561
-562
-563
-564
-565
-566
-567
-568
-569
-570
-571
-572
-573
-574
-575
-576
-577
-578
-579
-580
-581
-582
-583
-584
-585
-586
-587
-588
-589
-590
-591
-592
-593
-594
-595
-596
-597
-598
-599
-600
-601
-602
 603
 604
 605
@@ -1148,10 +1068,90 @@ Values: Hash with keys: :action (Symbol, one of :create, :replace, :skip, :dir_c
 672
 673
 674
-675</pre>
+675
+676
+677
+678
+679
+680
+681
+682
+683
+684
+685
+686
+687
+688
+689
+690
+691
+692
+693
+694
+695
+696
+697
+698
+699
+700
+701
+702
+703
+704
+705
+706
+707
+708
+709
+710
+711
+712
+713
+714
+715
+716
+717
+718
+719
+720
+721
+722
+723
+724
+725
+726
+727
+728
+729
+730
+731
+732
+733
+734
+735
+736
+737
+738
+739
+740
+741
+742
+743
+744
+745
+746
+747
+748
+749
+750
+751
+752
+753
+754
+755</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 523</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 603</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_copy_dir_with_prompt'>copy_dir_with_prompt</span><span class='lparen'>(</span><span class='id identifier rubyid_src_dir'>src_dir</span><span class='comma'>,</span> <span class='id identifier rubyid_dest_dir'>dest_dir</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='const'>Dir</span><span class='period'>.</span><span class='id identifier rubyid_exist?'>exist?</span><span class='lparen'>(</span><span class='id identifier rubyid_src_dir'>src_dir</span><span class='rparen'>)</span>
@@ -1885,12 +1885,12 @@ Calculated relative to lib/kettle/dev/</p>
       <pre class="lines">
 
 
-759
-760
-761</pre>
+839
+840
+841</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 759</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 839</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_gemspec_metadata'>gemspec_metadata</span><span class='lparen'>(</span><span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span> <span class='op'>=</span> <span class='id identifier rubyid_project_root'>project_root</span><span class='rparen'>)</span>
   <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="GemSpecReader.html" title="Kettle::Dev::GemSpecReader (class)">GemSpecReader</a></span></span><span class='period'>.</span><span class='id identifier rubyid_load'><span class='object_link'><a href="GemSpecReader.html#load-class_method" title="Kettle::Dev::GemSpecReader.load (method)">load</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span><span class='rparen'>)</span>
@@ -1940,86 +1940,6 @@ the merged template-ordered blocks.</li>
       <pre class="lines">
 
 
-390
-391
-392
-393
-394
-395
-396
-397
-398
-399
-400
-401
-402
-403
-404
-405
-406
-407
-408
-409
-410
-411
-412
-413
-414
-415
-416
-417
-418
-419
-420
-421
-422
-423
-424
-425
-426
-427
-428
-429
-430
-431
-432
-433
-434
-435
-436
-437
-438
-439
-440
-441
-442
-443
-444
-445
-446
-447
-448
-449
-450
-451
-452
-453
-454
-455
-456
-457
-458
-459
-460
-461
-462
-463
-464
-465
-466
-467
-468
-469
 470
 471
 472
@@ -2069,10 +1989,90 @@ the merged template-ordered blocks.</li>
 516
 517
 518
-519</pre>
+519
+520
+521
+522
+523
+524
+525
+526
+527
+528
+529
+530
+531
+532
+533
+534
+535
+536
+537
+538
+539
+540
+541
+542
+543
+544
+545
+546
+547
+548
+549
+550
+551
+552
+553
+554
+555
+556
+557
+558
+559
+560
+561
+562
+563
+564
+565
+566
+567
+568
+569
+570
+571
+572
+573
+574
+575
+576
+577
+578
+579
+580
+581
+582
+583
+584
+585
+586
+587
+588
+589
+590
+591
+592
+593
+594
+595
+596
+597
+598
+599</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 390</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 470</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_merge_appraisals'>merge_appraisals</span><span class='lparen'>(</span><span class='id identifier rubyid_template_content'>template_content</span><span class='comma'>,</span> <span class='id identifier rubyid_dest_content'>dest_content</span><span class='rparen'>)</span>
   <span class='kw'>begin</span>
@@ -2315,7 +2315,87 @@ group/platform blocks or reconcile version constraints.</p>
 374
 375
 376
-377</pre>
+377
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390
+391
+392
+393
+394
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404
+405
+406
+407
+408
+409
+410
+411
+412
+413
+414
+415
+416
+417
+418
+419
+420
+421
+422
+423
+424
+425
+426
+427
+428
+429
+430
+431
+432
+433
+434
+435
+436
+437
+438
+439
+440
+441
+442
+443
+444
+445
+446
+447
+448
+449
+450
+451
+452
+453
+454
+455
+456
+457</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 343</span>
@@ -2333,9 +2413,84 @@ group/platform blocks or reconcile version constraints.</p>
       <span class='kw'>end</span>
     <span class='kw'>end</span>
 
-    <span class='comment'># Index existing gems in destination
+    <span class='comment'># --- Handle `source` replacement/insertion ---
+</span>    <span class='id identifier rubyid_src_source_line'>src_source_line</span> <span class='op'>=</span> <span class='kw'>nil</span>
+    <span class='id identifier rubyid_src_content'>src_content</span><span class='period'>.</span><span class='id identifier rubyid_each_line'>each_line</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_ln'>ln</span><span class='op'>|</span>
+      <span class='kw'>next</span> <span class='kw'>if</span> <span class='id identifier rubyid_ln'>ln</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>#</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+      <span class='kw'>if</span> <span class='id identifier rubyid_ln'>ln</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^\s*source\s+[&#39;&quot;][^&#39;&quot;]+[&#39;&quot;]\s*$</span><span class='regexp_end'>/</span></span>
+        <span class='id identifier rubyid_src_source_line'>src_source_line</span> <span class='op'>=</span> <span class='id identifier rubyid_ln'>ln</span><span class='period'>.</span><span class='id identifier rubyid_rstrip'>rstrip</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span>
+        <span class='kw'>break</span>
+      <span class='kw'>end</span>
+    <span class='kw'>end</span>
+
+    <span class='id identifier rubyid_dest_lines'>dest_lines</span> <span class='op'>=</span> <span class='id identifier rubyid_dest_content'>dest_content</span><span class='period'>.</span><span class='id identifier rubyid_lines'>lines</span><span class='period'>.</span><span class='id identifier rubyid_dup'>dup</span>
+
+    <span class='kw'>if</span> <span class='id identifier rubyid_src_source_line'>src_source_line</span>
+      <span class='id identifier rubyid_dest_source_idx'>dest_source_idx</span> <span class='op'>=</span> <span class='id identifier rubyid_dest_lines'>dest_lines</span><span class='period'>.</span><span class='id identifier rubyid_index'>index</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_ln'>ln</span><span class='op'>|</span>
+        <span class='op'>!</span><span class='id identifier rubyid_ln'>ln</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>#</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_ln'>ln</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^\s*source\s+[&#39;&quot;][^&#39;&quot;]+[&#39;&quot;]\s*$</span><span class='regexp_end'>/</span></span>
+      <span class='kw'>end</span>
+      <span class='kw'>if</span> <span class='id identifier rubyid_dest_source_idx'>dest_source_idx</span>
+        <span class='id identifier rubyid_dest_lines'>dest_lines</span><span class='lbracket'>[</span><span class='id identifier rubyid_dest_source_idx'>dest_source_idx</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_src_source_line'>src_source_line</span>
+      <span class='kw'>else</span>
+        <span class='comment'># Insert after any leading contiguous comment/blank block at top of file
+</span>        <span class='id identifier rubyid_insert_idx'>insert_idx</span> <span class='op'>=</span> <span class='int'>0</span>
+        <span class='kw'>while</span> <span class='id identifier rubyid_insert_idx'>insert_idx</span> <span class='op'>&lt;</span> <span class='id identifier rubyid_dest_lines'>dest_lines</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span> <span class='op'>&amp;&amp;</span> <span class='lparen'>(</span><span class='id identifier rubyid_dest_lines'>dest_lines</span><span class='lbracket'>[</span><span class='id identifier rubyid_insert_idx'>insert_idx</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span> <span class='op'>||</span> <span class='id identifier rubyid_dest_lines'>dest_lines</span><span class='lbracket'>[</span><span class='id identifier rubyid_insert_idx'>insert_idx</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_lstrip'>lstrip</span><span class='period'>.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>#</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='rparen'>)</span>
+          <span class='id identifier rubyid_insert_idx'>insert_idx</span> <span class='op'>+=</span> <span class='int'>1</span>
+        <span class='kw'>end</span>
+        <span class='id identifier rubyid_dest_lines'>dest_lines</span><span class='period'>.</span><span class='id identifier rubyid_insert'>insert</span><span class='lparen'>(</span><span class='id identifier rubyid_insert_idx'>insert_idx</span><span class='comma'>,</span> <span class='id identifier rubyid_src_source_line'>src_source_line</span><span class='rparen'>)</span>
+      <span class='kw'>end</span>
+    <span class='kw'>end</span>
+
+    <span class='comment'># --- Handle `git_source` replacement/insertion ---
+</span>    <span class='comment'># Collect non-comment git_source lines from source (preserve order)
+</span>    <span class='id identifier rubyid_src_git_lines'>src_git_lines</span> <span class='op'>=</span> <span class='id identifier rubyid_src_content'>src_content</span><span class='period'>.</span><span class='id identifier rubyid_each_line'>each_line</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_ln'>ln</span><span class='op'>|</span> <span class='op'>!</span><span class='id identifier rubyid_ln'>ln</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>#</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_ln'>ln</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^\s*git_source\s*\(</span><span class='regexp_end'>/</span></span> <span class='rbrace'>}</span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_src_git_lines'>src_git_lines</span><span class='period'>.</span><span class='id identifier rubyid_any?'>any?</span>
+      <span class='comment'># Insert new git_source lines in the same order as they appear in the source
+</span>      <span class='comment'># When inserting (not replacing), place them immediately after the source line if present
+</span>      <span class='id identifier rubyid_insert_after_source_idx'>insert_after_source_idx</span> <span class='op'>=</span> <span class='id identifier rubyid_dest_lines'>dest_lines</span><span class='period'>.</span><span class='id identifier rubyid_index'>index</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_ln'>ln</span><span class='op'>|</span> <span class='op'>!</span><span class='id identifier rubyid_ln'>ln</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>#</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_ln'>ln</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^\s*source\s+[&#39;&quot;][^&#39;&quot;]+[&#39;&quot;]\s*$</span><span class='regexp_end'>/</span></span> <span class='rbrace'>}</span>
+
+      <span class='comment'># Iterate source git lines in reverse for insertion so order is preserved when inserting at same index
+</span>      <span class='id identifier rubyid_src_git_lines'>src_git_lines</span><span class='period'>.</span><span class='id identifier rubyid_reverse_each'>reverse_each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_gln'>gln</span><span class='op'>|</span>
+        <span class='comment'># Attempt to extract the git_source &quot;name&quot; (handles forms like git_source(:github) or git_source :github)
+</span>        <span class='id identifier rubyid_name_match'>name_match</span> <span class='op'>=</span> <span class='id identifier rubyid_gln'>gln</span><span class='period'>.</span><span class='id identifier rubyid_match'>match</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^\s*git_source\s*\(?\s*:?(\w+)\b</span><span class='regexp_end'>/</span></span><span class='rparen'>)</span>
+        <span class='id identifier rubyid_name'>name</span> <span class='op'>=</span> <span class='id identifier rubyid_name_match'>name_match</span> <span class='op'>?</span> <span class='id identifier rubyid_name_match'>name_match</span><span class='lbracket'>[</span><span class='int'>1</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span> <span class='op'>:</span> <span class='kw'>nil</span>
+
+        <span class='id identifier rubyid_replaced'>replaced</span> <span class='op'>=</span> <span class='kw'>false</span>
+        <span class='kw'>if</span> <span class='id identifier rubyid_name'>name</span>
+          <span class='comment'># Try to find a git_source in destination with the same name
+</span>          <span class='id identifier rubyid_dest_same_idx'>dest_same_idx</span> <span class='op'>=</span> <span class='id identifier rubyid_dest_lines'>dest_lines</span><span class='period'>.</span><span class='id identifier rubyid_index'>index</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_dln'>dln</span><span class='op'>|</span>
+            <span class='op'>!</span><span class='id identifier rubyid_dln'>dln</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>#</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_dln'>dln</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^\s*git_source\s*\(?\s*:?</span><span class='embexpr_beg'>#{</span><span class='const'>Regexp</span><span class='period'>.</span><span class='id identifier rubyid_escape'>escape</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'>\b</span><span class='regexp_end'>/</span></span>
+          <span class='kw'>end</span>
+          <span class='kw'>if</span> <span class='id identifier rubyid_dest_same_idx'>dest_same_idx</span>
+            <span class='id identifier rubyid_dest_lines'>dest_lines</span><span class='lbracket'>[</span><span class='id identifier rubyid_dest_same_idx'>dest_same_idx</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_gln'>gln</span><span class='period'>.</span><span class='id identifier rubyid_rstrip'>rstrip</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span>
+            <span class='id identifier rubyid_replaced'>replaced</span> <span class='op'>=</span> <span class='kw'>true</span>
+          <span class='kw'>end</span>
+        <span class='kw'>end</span>
+
+        <span class='kw'>unless</span> <span class='id identifier rubyid_replaced'>replaced</span>
+          <span class='comment'># If destination has a github git_source, replace that
+</span>          <span class='id identifier rubyid_dest_github_idx'>dest_github_idx</span> <span class='op'>=</span> <span class='id identifier rubyid_dest_lines'>dest_lines</span><span class='period'>.</span><span class='id identifier rubyid_index'>index</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_dln'>dln</span><span class='op'>|</span>
+            <span class='op'>!</span><span class='id identifier rubyid_dln'>dln</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>#</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_dln'>dln</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^\s*git_source\s*\(?\s*:?github\b</span><span class='regexp_end'>/</span></span>
+          <span class='kw'>end</span>
+          <span class='kw'>if</span> <span class='id identifier rubyid_dest_github_idx'>dest_github_idx</span>
+            <span class='id identifier rubyid_dest_lines'>dest_lines</span><span class='lbracket'>[</span><span class='id identifier rubyid_dest_github_idx'>dest_github_idx</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_gln'>gln</span><span class='period'>.</span><span class='id identifier rubyid_rstrip'>rstrip</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span>
+          <span class='kw'>else</span>
+            <span class='comment'># Insert below the source line if present, otherwise at top (after comments)
+</span>            <span class='id identifier rubyid_insert_idx'>insert_idx</span> <span class='op'>=</span>
+              <span class='kw'>if</span> <span class='id identifier rubyid_insert_after_source_idx'>insert_after_source_idx</span>
+                <span class='id identifier rubyid_insert_after_source_idx'>insert_after_source_idx</span> <span class='op'>+</span> <span class='int'>1</span>
+              <span class='kw'>else</span>
+                <span class='int'>0</span>
+              <span class='kw'>end</span>
+            <span class='id identifier rubyid_dest_lines'>dest_lines</span><span class='period'>.</span><span class='id identifier rubyid_insert'>insert</span><span class='lparen'>(</span><span class='id identifier rubyid_insert_idx'>insert_idx</span><span class='comma'>,</span> <span class='id identifier rubyid_gln'>gln</span><span class='period'>.</span><span class='id identifier rubyid_rstrip'>rstrip</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+          <span class='kw'>end</span>
+        <span class='kw'>end</span>
+      <span class='kw'>end</span>
+    <span class='kw'>end</span>
+
+    <span class='comment'># Index existing gems in destination (after potential source/git_source changes)
 </span>    <span class='id identifier rubyid_dest_gems'>dest_gems</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
-    <span class='id identifier rubyid_dest_content'>dest_content</span><span class='period'>.</span><span class='id identifier rubyid_each_line'>each_line</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_ln'>ln</span><span class='op'>|</span>
+    <span class='id identifier rubyid_dest_lines'>dest_lines</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='period'>.</span><span class='id identifier rubyid_each_line'>each_line</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_ln'>ln</span><span class='op'>|</span>
       <span class='kw'>next</span> <span class='kw'>if</span> <span class='id identifier rubyid_ln'>ln</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>#</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
       <span class='kw'>if</span> <span class='lparen'>(</span><span class='id identifier rubyid_m'>m</span> <span class='op'>=</span> <span class='id identifier rubyid_ln'>ln</span><span class='period'>.</span><span class='id identifier rubyid_match'>match</span><span class='lparen'>(</span><span class='id identifier rubyid_gem_re'>gem_re</span><span class='rparen'>)</span><span class='rparen'>)</span>
         <span class='id identifier rubyid_dest_gems'>dest_gems</span><span class='lbracket'>[</span><span class='id identifier rubyid_m'>m</span><span class='lbracket'>[</span><span class='int'>1</span><span class='rbracket'>]</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='kw'>true</span>
@@ -2343,12 +2498,17 @@ group/platform blocks or reconcile version constraints.</p>
     <span class='kw'>end</span>
 
     <span class='id identifier rubyid_missing'>missing</span> <span class='op'>=</span> <span class='id identifier rubyid_src_gems'>src_gems</span><span class='period'>.</span><span class='id identifier rubyid_keys'>keys</span><span class='period'>.</span><span class='id identifier rubyid_reject'>reject</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_n'>n</span><span class='op'>|</span> <span class='id identifier rubyid_dest_gems'>dest_gems</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='id identifier rubyid_n'>n</span><span class='rparen'>)</span> <span class='rbrace'>}</span>
-    <span class='kw'>return</span> <span class='id identifier rubyid_dest_content'>dest_content</span> <span class='kw'>if</span> <span class='id identifier rubyid_missing'>missing</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+    <span class='comment'># If nothing to change, return original destination content
+</span>    <span class='kw'>if</span> <span class='id identifier rubyid_missing'>missing</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_src_source_line'>src_source_line</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_src_git_lines'>src_git_lines</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+      <span class='kw'>return</span> <span class='id identifier rubyid_dest_content'>dest_content</span>
+    <span class='kw'>end</span>
 
-    <span class='id identifier rubyid_out'>out</span> <span class='op'>=</span> <span class='id identifier rubyid_dest_content'>dest_content</span><span class='period'>.</span><span class='id identifier rubyid_dup'>dup</span>
+    <span class='id identifier rubyid_out'>out</span> <span class='op'>=</span> <span class='id identifier rubyid_dest_lines'>dest_lines</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span>
     <span class='id identifier rubyid_out'>out</span> <span class='op'>&lt;&lt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_out'>out</span><span class='period'>.</span><span class='id identifier rubyid_end_with?'>end_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>||</span> <span class='id identifier rubyid_out'>out</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
-    <span class='id identifier rubyid_out'>out</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_missing'>missing</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_n'>n</span><span class='op'>|</span> <span class='id identifier rubyid_src_gems'>src_gems</span><span class='lbracket'>[</span><span class='id identifier rubyid_n'>n</span><span class='rbracket'>]</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_out'>out</span> <span class='op'>&lt;&lt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_missing'>missing</span><span class='period'>.</span><span class='id identifier rubyid_any?'>any?</span>
+      <span class='id identifier rubyid_out'>out</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_missing'>missing</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_n'>n</span><span class='op'>|</span> <span class='id identifier rubyid_src_gems'>src_gems</span><span class='lbracket'>[</span><span class='id identifier rubyid_n'>n</span><span class='rbracket'>]</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_out'>out</span> <span class='op'>&lt;&lt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span>
+    <span class='kw'>end</span>
     <span class='id identifier rubyid_out'>out</span>
   <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
     <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_error'><span class='object_link'><a href="../Dev.html#debug_error-class_method" title="Kettle::Dev.debug_error (method)">debug_error</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span>
@@ -3005,7 +3165,7 @@ Returns true for opencollective-specific files when opencollective_disabled? is 
 </div>
 
       <div id="footer">
-  Generated on Thu Nov  6 15:46:07 2025 by
+  Generated on Thu Nov  6 18:10:14 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.7).
 </div>
