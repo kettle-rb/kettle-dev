@@ -20,6 +20,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- yard-fence for handling braces in fenced code blocks in yard docs
+
 ### Changed
 
 ### Deprecated

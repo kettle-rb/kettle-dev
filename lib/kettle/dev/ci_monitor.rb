@@ -66,10 +66,12 @@ module Kettle
 
       # Non-aborting collection across GH and GL, returning a compact results hash.
       # Results format:
+      # ```ruby
       #   {
       #     github: [ {workflow: "file.yml", status: "completed", conclusion: "success"|"failure"|nil, url: String} ],
       #     gitlab: { status: "success"|"failed"|"blocked"|"unknown"|nil, url: String }
       #   }
+      # ```
       # @return [Hash]
       def collect_all
         results = {github: [], gitlab: nil}

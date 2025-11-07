@@ -87,11 +87,11 @@
   <div class="discussion">
     <p>Exit/abort indirection layer to allow controllable behavior in tests.</p>
 
-<p>Production/default behavior delegates to Kernel.abort / Kernel.exit,<br />
-which raise SystemExit. Specs can stub these methods to avoid terminating<br />
+<p>Production/default behavior delegates to Kernel.abort / Kernel.exit,
+which raise SystemExit. Specs can stub these methods to avoid terminating
 the process or to assert on arguments without coupling to Kernel.</p>
 
-<p>Example (RSpec):<br />
+<p>Example (RSpec):
   allow(Kettle::Dev::ExitAdapter).to receive(:abort).and_raise(SystemExit.new(1))</p>
 
 <p>This adapter mirrors the “mockable adapter” approach used for GitAdapter.</p>
@@ -183,7 +183,7 @@ the process or to assert on arguments without coupling to Kernel.</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p class="note returns_void">This method returns an undefined value.</p><p>Abort the current execution with a message. By default this calls Kernel.abort,<br />
+    <p class="note returns_void">This method returns an undefined value.</p><p>Abort the current execution with a message. By default this calls Kernel.abort,
 which raises SystemExit after printing the message to STDERR.</p>
 
 
@@ -290,7 +290,7 @@ which raises SystemExit after printing the message to STDERR.</p>
 </div>
 
       <div id="footer">
-  Generated on Thu Nov  6 18:15:57 2025 by
+  Generated on Fri Nov  7 16:34:28 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.7).
 </div>

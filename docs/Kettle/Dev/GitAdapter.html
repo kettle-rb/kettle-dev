@@ -101,16 +101,14 @@
 
 <h2>Overview</h2><div class="docstring">
   <div class="discussion">
-    <p>Minimal Git adapter used by kettle-dev to avoid invoking live shell commands<br />
-directly from the higher-level library code. In tests, mock this adapter’s<br />
+    <p>Minimal Git adapter used by kettle-dev to avoid invoking live shell commands
+directly from the higher-level library code. In tests, mock this adapter’s
 methods to prevent any real network or repository mutations.</p>
 
-<p>Behavior:</p>
-<ul>
-  <li>Prefer the ‘git’ gem when available.</li>
-  <li>If the ‘git’ gem is not present (LoadError), fall back to shelling out to<br />
-the system <code>git</code> executable for the small set of operations we need.</li>
-</ul>
+<p>Behavior:
+- Prefer the ‘git’ gem when available.
+- If the ‘git’ gem is not present (LoadError), fall back to shelling out to
+  the system <code>git</code> executable for the small set of operations we need.</p>
 
 <p>Public API is intentionally small and only includes what we need right now.</p>
 
@@ -515,9 +513,9 @@ the system <code>git</code> executable for the small set of operations we need.<
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Execute a git command and capture its stdout and success flag.<br />
-This is a generic escape hatch used by higher-level code for read-only<br />
-queries that aren’t covered by the explicit adapter API. Tests can stub<br />
+    <p>Execute a git command and capture its stdout and success flag.
+This is a generic escape hatch used by higher-level code for read-only
+queries that aren’t covered by the explicit adapter API. Tests can stub
 this method to avoid shelling out.</p>
 
 
@@ -1194,14 +1192,12 @@ this method to avoid shelling out.</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Push all tags to a remote.<br />
-Notes:</p>
-<ul>
-  <li>The ruby-git gem does not provide a stable API for pushing all tags across<br />
-versions, so we intentionally shell out to <code>git push --tags</code> for both<br />
-backends. Tests should stub this method in higher-level code to avoid<br />
-mutating any repositories.</li>
-</ul>
+    <p>Push all tags to a remote.
+Notes:
+- The ruby-git gem does not provide a stable API for pushing all tags across
+  versions, so we intentionally shell out to <code>git push --tags</code> for both
+  backends. Tests should stub this method in higher-level code to avoid
+  mutating any repositories.</p>
 
 
   </div>
@@ -1220,8 +1216,8 @@ mutating any repositories.</li>
       
       
         &mdash;
-        <div class='inline'><p>The remote name. When nil or empty, uses the<br />
-repository’s default remote (same behavior as running <code>git push --tags</code>)<br />
+        <div class='inline'><p>The remote name. When nil or empty, uses the
+repository’s default remote (same behavior as running <code>git push --tags</code>)
 which typically uses the current branch’s upstream.</p>
 </div>
       
@@ -1567,7 +1563,7 @@ which typically uses the current branch’s upstream.</p>
 </div>
 
       <div id="footer">
-  Generated on Thu Nov  6 18:15:58 2025 by
+  Generated on Fri Nov  7 16:34:28 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.7).
 </div>

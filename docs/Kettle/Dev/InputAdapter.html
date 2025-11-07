@@ -87,12 +87,12 @@
   <div class="discussion">
     <p>Input indirection layer to make interactive prompts safe in tests.</p>
 
-<p>Production/default behavior delegates to $stdin.gets (or Kernel#gets)<br />
-so application code does not read from STDIN directly. In specs, mock<br />
-this adapter’s methods to return deterministic answers without touching<br />
+<p>Production/default behavior delegates to $stdin.gets (or Kernel#gets)
+so application code does not read from STDIN directly. In specs, mock
+this adapter’s methods to return deterministic answers without touching
 global IO.</p>
 
-<p>Example (RSpec):<br />
+<p>Example (RSpec):
   allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return(“y\n”)</p>
 
 <p>This mirrors the “mockable adapter” approach used for GitAdapter and ExitAdapter.</p>
@@ -207,7 +207,7 @@ global IO.</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Read one line from the standard input, including the trailing newline if<br />
+    <p>Read one line from the standard input, including the trailing newline if
 present. Returns nil on EOF, consistent with IO#gets.</p>
 
 
@@ -280,7 +280,7 @@ present. Returns nil on EOF, consistent with IO#gets.</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Read one line from standard input, raising EOFError on end-of-file.<br />
+    <p>Read one line from standard input, raising EOFError on end-of-file.
 Provided for convenience symmetry with IO#readline when needed.</p>
 
 
@@ -415,7 +415,7 @@ Provided for convenience symmetry with IO#readline when needed.</p>
 </div>
 
       <div id="footer">
-  Generated on Thu Nov  6 18:15:57 2025 by
+  Generated on Fri Nov  7 16:34:28 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.7).
 </div>

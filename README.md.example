@@ -78,7 +78,7 @@ Compatible with MRI Ruby {K_D_MIN_RUBY}+, and concordant releases of JRuby, and 
 
 ### Federated DVCS
 
-<details>
+<details markdown="1">
   <summary>Find this repo on federated forges (Coming soon!)</summary>
 
 | Federated [DVCS][💎d-in-dvcs] Repository        | Status                                                                | Issues                    | PRs                      | Wiki                      | CI                       | Discussions                  |
@@ -96,7 +96,7 @@ Compatible with MRI Ruby {K_D_MIN_RUBY}+, and concordant releases of JRuby, and 
 
 Available as part of the Tidelift Subscription.
 
-<details>
+<details markdown="1">
   <summary>Need enterprise-level guarantees?</summary>
 
 The maintainers of this and thousands of other packages are working with Tidelift to deliver commercial support and maintenance for the open source packages you use to build your applications. Save time, reduce risk, and improve code health, while paying the maintainers of the exact packages you use.
@@ -131,7 +131,7 @@ gem install kettle-dev
 
 ### 🔒 Secure Installation
 
-<details>
+<details markdown="1">
   <summary>For Medium or High Security Installations</summary>
 
 This gem is cryptographically signed, and has verifiable [SHA-256 and SHA-512][💎SHA_checksums] checksums by
@@ -301,12 +301,11 @@ For example:
 spec.add_dependency("kettle-dev", "~> 1.0")
 ```
 
-<details>
+<details markdown="1">
 <summary>📌 Is "Platform Support" part of the public API? More details inside.</summary>
 
 SemVer should, IMO, but doesn't explicitly, say that dropping support for specific Platforms
-is a *breaking change* to an API.
-It is obvious to many, but not all, and since the spec is silent, the bike shedding is endless.
+is a *breaking change* to an API, and for that reason the bike shedding is endless.
 
 To get a better understanding of how SemVer is intended to work over a project's lifetime,
 read this article from the creator of SemVer:

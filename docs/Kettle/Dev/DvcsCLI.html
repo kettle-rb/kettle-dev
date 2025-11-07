@@ -101,29 +101,25 @@
 
 <h2>Overview</h2><div class="docstring">
   <div class="discussion">
-    <p>CLI to normalize git remotes across GitHub, GitLab, and Codeberg.</p>
-<ul>
-  <li>Defaults: origin=github, protocol=ssh, gitlab remote name=gl, codeberg remote name=cb</li>
-  <li>Creates/aligns remotes and an ‘all’ remote that pulls only from origin, pushes to all</li>
-</ul>
+    <p>CLI to normalize git remotes across GitHub, GitLab, and Codeberg.
+- Defaults: origin=github, protocol=ssh, gitlab remote name=gl, codeberg remote name=cb
+- Creates/aligns remotes and an ‘all’ remote that pulls only from origin, pushes to all</p>
 
-<p>Usage:<br />
+<p>Usage:
   kettle-dvcs [options] [ORG] [REPO]</p>
 
-<p>Options:<br />
-  –origin [github|gitlab|codeberg]   Choose which forge is origin (default: github)<br />
-  –protocol [ssh|https]              Use git+ssh or HTTPS URLs (default: ssh)<br />
-  –gitlab-name NAME                  Remote name for GitLab (default: gl)<br />
-  –codeberg-name NAME                Remote name for Codeberg (default: cb)<br />
+<p>Options:
+  –origin [github|gitlab|codeberg]   Choose which forge is origin (default: github)
+  –protocol [ssh|https]              Use git+ssh or HTTPS URLs (default: ssh)
+  –gitlab-name NAME                  Remote name for GitLab (default: gl)
+  –codeberg-name NAME                Remote name for Codeberg (default: cb)
   –force                             Accept defaults; non-interactive</p>
 
-<p>Behavior:</p>
-<ul>
-  <li>Aligns or creates remotes for github, gitlab, and codeberg with consistent org/repo and protocol</li>
-  <li>Renames existing remotes to match chosen naming scheme when URLs already match</li>
-  <li>Creates an “all” remote that fetches from origin only and pushes to all three forges</li>
-  <li>Attempts to fetch from each forge to determine availability and updates README federation summary</li>
-</ul>
+<p>Behavior:
+- Aligns or creates remotes for github, gitlab, and codeberg with consistent org/repo and protocol
+- Renames existing remotes to match chosen naming scheme when URLs already match
+- Creates an “all” remote that fetches from origin only and pushes to all three forges
+- Attempts to fetch from each forge to determine availability and updates README federation summary</p>
 
 
   </div>
@@ -329,8 +325,8 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Execute the CLI command.<br />
-Aligns remotes, configures the <code>all</code> remote, prints remotes, attempts fetches,<br />
+    <p>Execute the CLI command.
+Aligns remotes, configures the <code>all</code> remote, prints remotes, attempts fetches,
 and updates README federation status accordingly.</p>
 
 
@@ -466,7 +462,7 @@ and updates README federation status accordingly.</p>
 </div>
 
       <div id="footer">
-  Generated on Thu Nov  6 18:15:58 2025 by
+  Generated on Fri Nov  7 16:34:28 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.7).
 </div>
