@@ -29,6 +29,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Fixed
 
 - Typo in markdown link
+- Handling of pre-existing gemfile
 
 ### Security
 
