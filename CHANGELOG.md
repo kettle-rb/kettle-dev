@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Typo in markdown link
+
 ### Security
 
 ## [1.1.47] - 2025-11-06
