@@ -125,8 +125,8 @@
         <dt id="template_results-classvariable" class="">@@template_results =
           <div class="docstring">
   <div class="discussion">
-    <p>Track results of templating actions across a single process run.
-Keys: absolute destination paths (String)
+    <p>Track results of templating actions across a single process run.<br />
+Keys: absolute destination paths (String)<br />
 Values: Hash with keys: :action (Symbol, one of :create, :replace, :skip, :dir_create, :dir_replace), :timestamp (Time)</p>
 
 
@@ -1322,7 +1322,7 @@ Values: Hash with keys: :action (Symbol, one of :create, :replace, :skip, :dir_c
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p class="note returns_void">This method returns an undefined value.</p><p>Copy a single file with interactive prompts for create/replace.
+    <p class="note returns_void">This method returns an undefined value.</p><p>Copy a single file with interactive prompts for create/replace.<br />
 Yields content for transformation when block given.</p>
 
 
@@ -1595,7 +1595,7 @@ Yields content for transformation when block given.</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p class="note returns_void">This method returns an undefined value.</p><p>Ensure git working tree is clean before making changes in a task.
+    <p class="note returns_void">This method returns an undefined value.</p><p>Ensure git working tree is clean before making changes in a task.<br />
 If not a git repo, this is a no-op.</p>
 
 
@@ -1783,7 +1783,7 @@ If not a git repo, this is a no-op.</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Root of this gem’s checkout (repository root when working from source)
+    <p>Root of this gem’s checkout (repository root when working from source)<br />
 Calculated relative to lib/kettle/dev/</p>
 
 
@@ -1911,17 +1911,22 @@ Calculated relative to lib/kettle/dev/</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Merge Appraisals template into existing Appraisals file.
-Rules:
- - For each appraise “name” block in template:
-    * If destination has same block, ensure all gem/ eval_gemfile lines from template
-      exist in destination (append missing just before end), keep other dest lines.
-      Use template’s contiguous header comment lines (immediately preceding the appraise line)
-      if any; otherwise retain destination’s header comments.
-    * If destination lacks the block, add the full template block (with its header).
- - Preserve destination-only blocks (not present in template) unchanged and after
-   the merged template-ordered blocks.
- - Preamble (content before first appraise) comes from template when present, else destination.</p>
+    <p>Merge Appraisals template into existing Appraisals file.<br />
+Rules:</p>
+<ul>
+  <li>For each appraise “name” block in template:
+    <ul>
+      <li>If destination has same block, ensure all gem/ eval_gemfile lines from template<br />
+exist in destination (append missing just before end), keep other dest lines.<br />
+Use template’s contiguous header comment lines (immediately preceding the appraise line)<br />
+if any; otherwise retain destination’s header comments.</li>
+      <li>If destination lacks the block, add the full template block (with its header).</li>
+    </ul>
+  </li>
+  <li>Preserve destination-only blocks (not present in template) unchanged and after<br />
+the merged template-ordered blocks.</li>
+  <li>Preamble (content before first appraise) comes from template when present, else destination.</li>
+</ul>
 
 
   </div>
@@ -2215,10 +2220,10 @@ Rules:
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Merge gem dependency lines from a source Gemfile-like content into an existing
-destination Gemfile-like content. Existing gem lines in the destination win;
-we only append missing gem declarations from the source at the end of the file.
-This is deliberately conservative and avoids attempting to relocate gems inside
+    <p>Merge gem dependency lines from a source Gemfile-like content into an existing<br />
+destination Gemfile-like content. Existing gem lines in the destination win;<br />
+we only append missing gem declarations from the source at the end of the file.<br />
+This is deliberately conservative and avoids attempting to relocate gems inside<br />
 group/platform blocks or reconcile version constraints.</p>
 
 
@@ -2598,7 +2603,7 @@ group/platform blocks or reconcile version constraints.</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Check if Open Collective is disabled via environment variable.
+    <p>Check if Open Collective is disabled via environment variable.<br />
 Returns true when OPENCOLLECTIVE_HANDLE or FUNDING_ORG is explicitly set to a falsey value.</p>
 
 
@@ -2664,9 +2669,9 @@ Returns true when OPENCOLLECTIVE_HANDLE or FUNDING_ORG is explicitly set to a fa
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Prefer an .example variant for a given source path when present
-For a given intended source path (e.g., “/src/Rakefile”), this will return
-“/src/Rakefile.example” if it exists, otherwise returns the original path.
+    <p>Prefer an .example variant for a given source path when present<br />
+For a given intended source path (e.g., “/src/Rakefile”), this will return<br />
+“/src/Rakefile.example” if it exists, otherwise returns the original path.<br />
 If the given path already ends with .example, it is returned as-is.</p>
 
 
@@ -2739,11 +2744,13 @@ If the given path already ends with .example, it is returned as-is.</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Prefer a .no-osc.example variant when Open Collective is disabled.
-Otherwise, falls back to prefer_example behavior.
-For a given source path, this will return:
-  - “path.no-osc.example” if opencollective_disabled? and it exists
-  - Otherwise delegates to prefer_example</p>
+    <p>Prefer a .no-osc.example variant when Open Collective is disabled.<br />
+Otherwise, falls back to prefer_example behavior.<br />
+For a given source path, this will return:</p>
+<ul>
+  <li>“path.no-osc.example” if opencollective_disabled? and it exists</li>
+  <li>Otherwise delegates to prefer_example</li>
+</ul>
 
 
   </div>
@@ -2956,7 +2963,7 @@ For a given source path, this will return:
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Check if a file should be skipped when Open Collective is disabled.
+    <p>Check if a file should be skipped when Open Collective is disabled.<br />
 Returns true for opencollective-specific files when opencollective_disabled? is true.</p>
 
 
@@ -3158,7 +3165,7 @@ Returns true for opencollective-specific files when opencollective_disabled? is 
 </div>
 
       <div id="footer">
-  Generated on Fri Nov  7 18:29:20 2025 by
+  Generated on Sat Nov  8 02:42:36 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.7).
 </div>

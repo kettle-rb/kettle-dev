@@ -210,7 +210,7 @@ GEM
       rubocop-ast (>= 1.46.0, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 2.4.0, < 4.0)
-    rubocop-ast (1.47.1)
+    rubocop-ast (1.48.0)
       parser (>= 3.3.7.2)
       prism (~> 1.4)
     rubocop-gradual (0.3.6)
@@ -325,7 +325,7 @@ GEM
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
     yard (0.9.37)
-    yard-fence (0.4.0)
+    yard-fence (0.8.0)
       rdoc (~> 6.11)
       version_gem (~> 1.1, >= 1.1.9)
       yard (~> 0.9, >= 0.9.37)
@@ -370,7 +370,7 @@ DEPENDENCIES
   vcr (>= 6)
   webmock (>= 3)
   yard (~> 0.9, >= 0.9.37)
-  yard-fence (~> 0.4)
+  yard-fence (~> 0.8)
   yard-junk (~> 0.0, >= 0.0.10)!
   yard-relative_markdown_links (~> 0.6)
 

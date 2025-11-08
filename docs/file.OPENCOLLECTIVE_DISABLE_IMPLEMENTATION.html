@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  File: OPENCOLLECTIVE_DISABLE_IMPLEMENTATION
+  
+    &mdash; Documentation by YARD 0.9.37
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "OPENCOLLECTIVE_DISABLE_IMPLEMENTATION";
+  relpath = '';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="file_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: OPENCOLLECTIVE_DISABLE_IMPLEMENTATION</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><div id='filecontents'><h1 id="open-collective-disable-implementation">Open Collective Disable Implementation</h1>
+
+<h2 id="summary">Summary</h2>
+
+<p>This document describes the implementation for handling scenarios when <code>OPENCOLLECTIVE_HANDLE</code> is set to a falsey value.</p>
+
+<h2 id="changes-made">Changes Made</h2>
+
+<h3 id="1-created-no-oscexample-template-files">1. Created <code>.no-osc.example</code> Template Files</h3>
+
+<p>Created the following template files that exclude Open Collective references:</p>
+
+<ul>
+  <li>
+<strong><code>.github/FUNDING.yml.no-osc.example</code></strong> - FUNDING.yml without the <code>open_collective</code> line</li>
+  <li>
+<strong><code>README.md.no-osc.example</code></strong> - Already existed (created by user)</li>
+  <li>
+<strong><code>FUNDING.md.no-osc.example</code></strong> - Already existed (created by user)</li>
+</ul>
+
+<h3 id="2-modified-libkettledevtemplate_helpersrb">2. Modified <code>lib/kettle/dev/template_helpers.rb</code>
+</h3>
+
+<p>Added three new helper methods:</p>
+
+<h4 id="opencollective_disabled"><code>opencollective_disabled?</code></h4>
+<p>Returns <code>true</code> when <code>OPENCOLLECTIVE_HANDLE</code> or <code>FUNDING_ORG</code> environment variables are explicitly set to falsey values (<code>false</code>, <code>no</code>, or <code>0</code>).</p>
+
+<pre class="code language-ruby"><code class="language-ruby">def opencollective_disabled?
+  oc_handle = ENV[&quot;OPENCOLLECTIVE_HANDLE&quot;]
+  funding_org = ENV[&quot;FUNDING_ORG&quot;]
+
+  # Check if either variable is explicitly set to false
+  [oc_handle, funding_org].any? do |val|
+    val &amp;&amp; val.to_s.strip.match(Kettle::Dev::ENV_FALSE_RE)
+  end
+end
+</code></pre>
+
+<p><strong>Note</strong>: This method is used centrally by both <code>TemplateHelpers</code> and <code>GemSpecReader</code> to ensure consistent behavior across the codebase.</p>
+
+<h4 id="prefer_example_with_osc_checksrc_path"><code>prefer_example_with_osc_check(src_path)</code></h4>
+<p>Extends the existing <code>prefer_example</code> method to check for <code>.no-osc.example</code> variants when Open Collective is disabled.</p>
+
+<ul>
+  <li>When <code>opencollective_disabled?</code> returns <code>true</code>, it first looks for a <code>.no-osc.example</code> variant</li>
+  <li>Falls back to the standard <code>prefer_example</code> behavior if no <code>.no-osc.example</code> file exists</li>
+</ul>
+
+<h4 id="skip_for_disabled_opencollectiverelative_path"><code>skip_for_disabled_opencollective?(relative_path)</code></h4>
+<p>Determines if a file should be skipped during the template process when Open Collective is disabled.</p>
+
+<p>Returns <code>true</code> for these files when <code>opencollective_disabled?</code> is <code>true</code>:</p>
+<ul>
+  <li><code>.opencollective.yml</code></li>
+  <li><code>.github/workflows/opencollective.yml</code></li>
+</ul>
+
+<h3 id="3-modified-libkettledevtaskstemplate_taskrb">3. Modified <code>lib/kettle/dev/tasks/template_task.rb</code>
+</h3>
+
+<p>Updated the template task to use the new helpers:</p>
+
+<ol>
+  <li>
+<strong>In the <code>.github</code> files section</strong>:
+    <ul>
+      <li>Replaced <code>helpers.prefer_example(orig_src)</code> with <code>helpers.prefer_example_with_osc_check(orig_src)</code>
+</li>
+      <li>Added check to skip opencollective-specific workflow files</li>
+    </ul>
+  </li>
+  <li>
+<strong>In the root files section</strong>:
+    <ul>
+      <li>Replaced <code>helpers.prefer_example(...)</code> with <code>helpers.prefer_example_with_osc_check(...)</code>
+</li>
+      <li>Added check at the start of <code>files_to_copy.each</code> loop to skip opencollective files</li>
+    </ul>
+  </li>
+</ol>
+
+<h3 id="4-modified-libkettledevgem_spec_readerrb">4. Modified <code>lib/kettle/dev/gem_spec_reader.rb</code>
+</h3>
+
+<p>Updated the <code>funding_org</code> detection logic to use the centralized <code>TemplateHelpers.opencollective_disabled?</code> method:</p>
+
+<ul>
+  <li>
+<strong>Removed</strong> the inline check for <code>ENV["FUNDING_ORG"] == "false"</code>
+</li>
+  <li>
+<strong>Replaced</strong> with a call to <code>TemplateHelpers.opencollective_disabled?</code> at the beginning of the funding_org detection block</li>
+  <li>This ensures consistent behavior: when Open Collective is disabled via any supported method (<code>OPENCOLLECTIVE_HANDLE=false</code>, <code>FUNDING_ORG=false</code>, etc.), the <code>funding_org</code> will be set to <code>nil</code>
+</li>
+</ul>
+
+<p><strong>Precedence for funding_org detection:</strong></p>
+<ol>
+  <li>If <code>TemplateHelpers.opencollective_disabled?</code> returns <code>true</code> → <code>funding_org = nil</code>
+</li>
+  <li>Otherwise, if <code>ENV["FUNDING_ORG"]</code> is set and non-empty → use that value</li>
+  <li>Otherwise, attempt to read from <code>.opencollective.yml</code> via <code>OpenCollectiveConfig.handle</code>
+</li>
+  <li>If all above fail → <code>funding_org = nil</code> with a warning</li>
+</ol>
+
+<h2 id="usage">Usage</h2>
+
+<h3 id="to-disable-open-collective">To Disable Open Collective</h3>
+
+<p>Set one of these environment variables to a falsey value:</p>
+
+<pre class="code language-bash"><code class="language-bash"># Option 1: Using OPENCOLLECTIVE_HANDLE
+OPENCOLLECTIVE_HANDLE=false bundle exec rake kettle:dev:template
+
+# Option 2: Using FUNDING_ORG
+FUNDING_ORG=false bundle exec rake kettle:dev:template
+
+# Other accepted falsey values: no, 0 (case-insensitive)
+OPENCOLLECTIVE_HANDLE=no bundle exec rake kettle:dev:template
+OPENCOLLECTIVE_HANDLE=0 bundle exec rake kettle:dev:template
+</code></pre>
+
+<h3 id="expected-behavior">Expected Behavior</h3>
+
+<p>When Open Collective is disabled, the template process will:</p>
+
+<ol>
+  <li>
+<strong>Skip copying</strong> <code>.opencollective.yml</code>
+</li>
+  <li>
+<strong>Skip copying</strong> <code>.github/workflows/opencollective.yml</code>
+</li>
+  <li>
+<strong>Use <code>.no-osc.example</code> variants</strong> for:
+    <ul>
+      <li>
+<code>README.md</code> → Uses <code>README.md.no-osc.example</code>
+</li>
+      <li>
+<code>FUNDING.md</code> → Uses <code>FUNDING.md.no-osc.example</code>
+</li>
+      <li>
+<code>.github/FUNDING.yml</code> → Uses <code>.github/FUNDING.yml.no-osc.example</code>
+</li>
+    </ul>
+  </li>
+  <li>
+<strong>Display skip messages</strong> like:
+    <pre class="code ruby"><code class="ruby">Skipping .opencollective.yml (Open Collective disabled)
+Skipping .github/workflows/opencollective.yml (Open Collective disabled)
+</code></pre>
+  </li>
+</ol>
+
+<h2 id="file-precedence-logic">File Precedence Logic</h2>
+
+<p>For any file being templated, the system now follows this precedence:</p>
+
+<ol>
+  <li>If <code>opencollective_disabled?</code> is <code>true</code>:
+    <ul>
+      <li>First, check for <code>filename.no-osc.example</code>
+</li>
+      <li>If not found, fall through to normal logic</li>
+    </ul>
+  </li>
+  <li>Normal logic (when OC not disabled or no <code>.no-osc.example</code> exists):
+    <ul>
+      <li>Check for <code>filename.example</code>
+</li>
+      <li>Fall back to <code>filename</code>
+</li>
+    </ul>
+  </li>
+</ol>
+
+<h2 id="testing-recommendations">Testing Recommendations</h2>
+
+<p>To test the implementation:</p>
+
+<ol>
+  <li>
+<strong>Test with Open Collective enabled</strong> (default behavior):
+    <pre class="code language-bash"><code class="language-bash">bundle exec rake kettle:dev:template
+</code></pre>
+    <p>Should use regular <code>.example</code> files and copy all opencollective files.</p>
+  </li>
+  <li>
+<strong>Test with Open Collective disabled</strong>:
+    <pre class="code language-bash"><code class="language-bash">OPENCOLLECTIVE_HANDLE=false bundle exec rake kettle:dev:template
+</code></pre>
+    <p>Should skip opencollective files and use <code>.no-osc.example</code> variants.</p>
+  </li>
+  <li>
+<strong>Verify file content</strong>:
+    <ul>
+      <li>Check that <code>.github/FUNDING.yml</code> has no <code>open_collective:</code> line when disabled</li>
+      <li>Check that <code>README.md</code> has no opencollective badges/links when disabled</li>
+      <li>Check that <code>FUNDING.md</code> has no opencollective references when disabled</li>
+    </ul>
+  </li>
+</ol>
+
+<h2 id="automated-tests">Automated Tests</h2>
+
+<p>A comprehensive test suite has been added in <code>spec/kettle/dev/opencollective_disable_spec.rb</code> that covers:</p>
+
+<h3 id="templatehelpers-tests">TemplateHelpers Tests</h3>
+
+<ol>
+  <li>
+<strong><code>opencollective_disabled?</code> method</strong>:
+    <ul>
+      <li>Tests all falsey values: <code>false</code>, <code>False</code>, <code>FALSE</code>, <code>no</code>, <code>NO</code>, <code>0</code>
+</li>
+      <li>Tests both <code>OPENCOLLECTIVE_HANDLE</code> and <code>FUNDING_ORG</code> environment variables</li>
+      <li>Tests behavior when variables are unset, empty, or set to valid org names</li>
+      <li>Verifies that either variable being falsey triggers the disabled state</li>
+    </ul>
+  </li>
+  <li>
+<strong><code>skip_for_disabled_opencollective?</code> method</strong>:
+    <ul>
+      <li>Verifies that <code>.opencollective.yml</code> is skipped when disabled</li>
+      <li>Verifies that <code>.github/workflows/opencollective.yml</code> is skipped when disabled</li>
+      <li>Ensures other files (README.md, FUNDING.md, etc.) are not skipped</li>
+      <li>Tests behavior when Open Collective is enabled</li>
+    </ul>
+  </li>
+  <li>
+<strong><code>prefer_example_with_osc_check</code> method</strong>:
+    <ul>
+      <li>Tests preference for <code>.no-osc.example</code> files when OC is disabled</li>
+      <li>Tests fallback to <code>.example</code> when <code>.no-osc.example</code> doesn’t exist</li>
+      <li>Tests fallback to original file when neither variant exists</li>
+      <li>Handles paths that already end with <code>.example</code>
+</li>
+      <li>Tests normal behavior (prefers <code>.example</code>) when OC is enabled</li>
+    </ul>
+  </li>
+</ol>
+
+<h3 id="gemspecreader-tests">GemSpecReader Tests</h3>
+
+<ol>
+  <li>
+<strong><code>funding_org</code> detection with OPENCOLLECTIVE_HANDLE=false</strong>:
+    <ul>
+      <li>Verifies <code>funding_org</code> is set to <code>nil</code> when disabled</li>
+      <li>Tests all falsey values: <code>false</code>, <code>no</code>, <code>0</code>
+</li>
+      <li>Tests both <code>OPENCOLLECTIVE_HANDLE</code> and <code>FUNDING_ORG</code> variables</li>
+      <li>Ensures <code>.opencollective.yml</code> is ignored when OC is disabled</li>
+    </ul>
+  </li>
+  <li>
+<strong><code>funding_org</code> detection with OPENCOLLECTIVE_HANDLE enabled</strong>:
+    <ul>
+      <li>Tests using <code>OPENCOLLECTIVE_HANDLE</code> value when set</li>
+      <li>Tests using <code>FUNDING_ORG</code> value when set</li>
+      <li>Tests reading from <code>.opencollective.yml</code> when env vars are unset</li>
+    </ul>
+  </li>
+</ol>
+
+<h3 id="running-the-tests">Running the Tests</h3>
+
+<p>Run the Open Collective disable tests:</p>
+<pre class="code language-bash"><code class="language-bash">bundle exec rspec spec/kettle/dev/opencollective_disable_spec.rb
+</code></pre>
+
+<p>Run all tests:</p>
+<pre class="code language-bash"><code class="language-bash">bundle exec rspec
+</code></pre>
+
+<p>Run with documentation format for detailed output:</p>
+<pre class="code language-bash"><code class="language-bash">bundle exec rspec spec/kettle/dev/opencollective_disable_spec.rb --format documentation
+</code></pre>
+</div></div>
+
+      <div id="footer">
+  Generated on Sat Nov  8 02:42:35 2025 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.37 (ruby-3.4.7).
+</div>
+
+    </div>
+  </body>
+</html>

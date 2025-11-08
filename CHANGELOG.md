@@ -20,7 +20,11 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- Update documentation
+
 ### Changed
+
+- Upgrade to yard-fence v0.8.0
 
 ### Deprecated
 
