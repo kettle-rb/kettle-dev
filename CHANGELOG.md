@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- invalid documentation (bad find/replace outcomes during templating)
+
 ### Security
 
 ## [1.1.49] - 2025-11-07
