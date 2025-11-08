@@ -30,6 +30,18 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Security
 
+## [1.1.51] - 2025-11-07
+
+- TAG: [v1.1.51][1.1.51t]
+- COVERAGE: 94.41% -- 4039/4278 lines in 26 files
+- BRANCH COVERAGE: 78.88% -- 1662/2107 branches in 26 files
+- 79.89% documented
+
+### Removed
+
+- unused file removed from template
+  - functionality was replaced by yard-fence gem
+
 ## [1.1.50] - 2025-11-07
 
 - TAG: [v1.1.50][1.1.50t]
@@ -1318,7 +1330,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.50...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.51...HEAD
+[1.1.51]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.50...v1.1.51
+[1.1.51t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.51
 [1.1.50]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.49...v1.1.50
 [1.1.50t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.50
 [1.1.49]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.48...v1.1.49
