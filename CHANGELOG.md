@@ -20,6 +20,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- Template now includes a default `.yardopts` file
+  - Excludes *.gem, pkg/*.gem and .yardoc from documentation generation
+
 ### Changed
 
 ### Deprecated

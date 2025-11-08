@@ -403,6 +403,7 @@ module Kettle
             .simplecov
             .tool-versions
             .yardopts
+            .yardignore
             Appraisal.root.gemfile
             Appraisals
             CHANGELOG.md

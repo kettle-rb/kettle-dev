@@ -101,6 +101,7 @@ Gem::Specification.new do |spec|
     ".simplecov",
     ".tool-versions",
     ".yardopts",
+    ".yardignore",
     "Appraisal.root.gemfile",
     "Appraisals",
     "CHANGELOG.md",

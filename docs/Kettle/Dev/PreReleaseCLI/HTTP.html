@@ -481,4 +481,43 @@ Falls back to GET when HEAD is not allowed.</p>
 
   <span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='id identifier rubyid_http'>http</span><span class='period'>.</span><span class='id identifier rubyid_start'>start</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_h'>h</span><span class='op'>|</span> <span class='id identifier rubyid_h'>h</span><span class='period'>.</span><span class='id identifier rubyid_request'>request</span><span class='lparen'>(</span><span class='id identifier rubyid_request'>request</span><span class='rparen'>)</span> <span class='rbrace'>}</span>
 
-  <span class='kw'>case
+  <span class='kw'>case</span> <span class='id identifier rubyid_response'>response</span>
+  <span class='kw'>when</span> <span class='const'>Net</span><span class='op'>::</span><span class='const'>HTTPRedirection</span>
+    <span class='id identifier rubyid_location'>location</span> <span class='op'>=</span> <span class='id identifier rubyid_response'>response</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>location</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
+    <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='id identifier rubyid_location'>location</span>
+
+    <span class='id identifier rubyid_new_uri'>new_uri</span> <span class='op'>=</span> <span class='id identifier rubyid_parse_http_uri'>parse_http_uri</span><span class='lparen'>(</span><span class='id identifier rubyid_location'>location</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_new_uri'>new_uri</span> <span class='op'>=</span> <span class='id identifier rubyid_uri'>uri</span> <span class='op'>+</span> <span class='id identifier rubyid_location'>location</span> <span class='kw'>if</span> <span class='id identifier rubyid_new_uri'>new_uri</span><span class='period'>.</span><span class='id identifier rubyid_relative?'>relative?</span>
+    <span class='id identifier rubyid_head_ok?'>head_ok?</span><span class='lparen'>(</span><span class='id identifier rubyid_new_uri'>new_uri</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span> <span class='label'>limit:</span> <span class='id identifier rubyid_limit'>limit</span> <span class='op'>-</span> <span class='int'>1</span><span class='comma'>,</span> <span class='label'>timeout:</span> <span class='id identifier rubyid_timeout'>timeout</span><span class='rparen'>)</span>
+  <span class='kw'>when</span> <span class='const'>Net</span><span class='op'>::</span><span class='const'>HTTPSuccess</span>
+    <span class='kw'>true</span>
+  <span class='kw'>else</span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Net</span><span class='op'>::</span><span class='const'>HTTPMethodNotAllowed</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_get_req'>get_req</span> <span class='op'>=</span> <span class='const'>Net</span><span class='op'>::</span><span class='const'>HTTP</span><span class='op'>::</span><span class='const'>Get</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_uri'>uri</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_get_resp'>get_resp</span> <span class='op'>=</span> <span class='id identifier rubyid_http'>http</span><span class='period'>.</span><span class='id identifier rubyid_start'>start</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_h'>h</span><span class='op'>|</span> <span class='id identifier rubyid_h'>h</span><span class='period'>.</span><span class='id identifier rubyid_request'>request</span><span class='lparen'>(</span><span class='id identifier rubyid_get_req'>get_req</span><span class='rparen'>)</span> <span class='rbrace'>}</span>
+      <span class='kw'>return</span> <span class='id identifier rubyid_get_resp'>get_resp</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Net</span><span class='op'>::</span><span class='const'>HTTPSuccess</span><span class='rparen'>)</span>
+    <span class='kw'>end</span>
+    <span class='kw'>false</span>
+  <span class='kw'>end</span>
+<span class='kw'>rescue</span> <span class='const'>Timeout</span><span class='op'>::</span><span class='const'>Error</span><span class='comma'>,</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>ECONNREFUSED</span><span class='comma'>,</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>EHOSTUNREACH</span><span class='comma'>,</span> <span class='const'>SocketError</span><span class='comma'>,</span> <span class='const'>OpenSSL</span><span class='op'>::</span><span class='const'>SSL</span><span class='op'>::</span><span class='const'>SSLError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+  <span class='id identifier rubyid_warn'>warn</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>[kettle-pre-release] HTTP error for </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_uri'>uri</span><span class='embexpr_end'>}</span><span class='tstring_content'>: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='embexpr_end'>}</span><span class='tstring_content'>: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='kw'>false</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+      <div id="footer">
+  Generated on Sat Nov  8 14:16:17 2025 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.37 (ruby-3.4.7).
+</div>
+
+    </div>
+  </body>
+</html>
