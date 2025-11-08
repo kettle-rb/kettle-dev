@@ -402,7 +402,6 @@ module Kettle
             .rubocop_rspec.yml
             .simplecov
             .tool-versions
-            .yard_gfm_support.rb
             .yardopts
             Appraisal.root.gemfile
             Appraisals
