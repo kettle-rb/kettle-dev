@@ -1290,7 +1290,8 @@ All options/IO are controlled via TemplateHelpers and ENV.</p>
 1014
 1015
 1016
-1017</pre>
+1017
+1018</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/kettle/dev/tasks/template_task.rb', line 55</span>
@@ -1635,6 +1636,7 @@ All options/IO are controlled via TemplateHelpers and ENV.</p>
 </span><span class='words_sep'>    </span><span class='tstring_content'>.aiignore</span><span class='words_sep'>
 </span><span class='words_sep'>    </span><span class='tstring_content'>.envrc</span><span class='words_sep'>
 </span><span class='words_sep'>    </span><span class='tstring_content'>.gitignore</span><span class='words_sep'>
+</span><span class='words_sep'>    </span><span class='tstring_content'>.idea/.gitignore</span><span class='words_sep'>
 </span><span class='words_sep'>    </span><span class='tstring_content'>.gitlab-ci.yml</span><span class='words_sep'>
 </span><span class='words_sep'>    </span><span class='tstring_content'>.junie/guidelines-rbs.md</span><span class='words_sep'>
 </span><span class='words_sep'>    </span><span class='tstring_content'>.junie/guidelines.md</span><span class='words_sep'>
@@ -2295,4 +2297,37 @@ All options/IO are controlled via TemplateHelpers and ENV.</p>
   
 </ul>
 
-</div><table 
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+49
+50
+51</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/tasks/template_task.rb', line 49</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_task_abort'>task_abort</span><span class='lparen'>(</span><span class='id identifier rubyid_msg'>msg</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Error.html" title="Kettle::Dev::Error (class)">Error</a></span></span><span class='comma'>,</span> <span class='id identifier rubyid_msg'>msg</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+      <div id="footer">
+  Generated on Mon Nov 10 12:05:09 2025 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.37 (ruby-3.4.7).
+</div>
+
+    </div>
+  </body>
+</html>
