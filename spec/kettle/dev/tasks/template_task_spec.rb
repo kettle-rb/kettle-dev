@@ -599,6 +599,38 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
         end
       end
 
+      it "copies .idea/.gitignore into the project when present" do
+        Dir.mktmpdir do |gem_root|
+          Dir.mktmpdir do |project_root|
+            idea_dir = File.join(gem_root, ".idea")
+            FileUtils.mkdir_p(idea_dir)
+            File.write(File.join(idea_dir, ".gitignore"), "/*.iml\n")
+
+            # Minimal gemspec so metadata scan works
+            File.write(File.join(project_root, "demo.gemspec"), <<~GEMSPEC)
+              Gem::Specification.new do |spec|
+                spec.name = "demo"
+                spec.required_ruby_version = ">= 3.1"
+                spec.homepage = "https://github.com/acme/demo"
+              end
+            GEMSPEC
+
+            allow(helpers).to receive_messages(
+              project_root: project_root,
+              gem_checkout_root: gem_root,
+              ensure_clean_git!: nil,
+              ask: true,
+            )
+
+            described_class.run
+
+            dest = File.join(project_root, ".idea", ".gitignore")
+            expect(File).to exist(dest)
+            expect(File.read(dest)).to include("/*.iml")
+          end
+        end
+      end
+
       it "prints a warning when copying .env.local.example raises", :check_output do
         Dir.mktmpdir do |gem_root|
           Dir.mktmpdir do |project_root|

@@ -75,8 +75,11 @@ Gem::Specification.new do |spec|
     "sig/**/*.rbs",
     # Template-able project assets
     ".devcontainer/**/*",
-    ".github/**/*",
     ".git-hooks/*",
+    ".github/**/*",
+    ".idea/.gitignore",
+    ".junie/guidelines.md",
+    ".junie/guidelines-rbs.md",
     ".qlty/**/*",
     "gemfiles/modular/*.gemfile",
     "gemfiles/modular/erb/**/*.gemfile",
@@ -113,8 +116,6 @@ Gem::Specification.new do |spec|
     "README.md",
     "RUBOCOP.md",
     "SECURITY.md",
-    ".junie/guidelines.md",
-    ".junie/guidelines-rbs.md",
   ]
   # Automatically included with gem package, normally no need to list again in files.
   # But this gem acts as a pseudo-template, so we include some in both places.

@@ -392,6 +392,7 @@ module Kettle
             .aiignore
             .envrc
             .gitignore
+            .idea/.gitignore
             .gitlab-ci.yml
             .junie/guidelines-rbs.md
             .junie/guidelines.md

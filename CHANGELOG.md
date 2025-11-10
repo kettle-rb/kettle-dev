@@ -20,6 +20,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- .idea/.gitignore is now part of template
+
 ### Changed
 
 ### Deprecated
