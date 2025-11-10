@@ -136,7 +136,8 @@ GEM
     language_server-protocol (3.17.0.5)
     lint_roller (1.1.0)
     logger (1.7.0)
-    minitest (5.26.0)
+    matrix (0.4.3)
+    minitest (5.26.1)
     mutex_m (0.3.0)
     nokogiri (1.18.10-x86_64-linux-gnu)
       racc (~> 1.4)
@@ -145,8 +146,13 @@ GEM
     parser (3.3.10.0)
       ast (~> 2.4.1)
       racc
+    pdf-core (0.10.0)
     pp (0.6.3)
       prettyprint
+    prawn (2.5.0)
+      matrix (~> 0.4)
+      pdf-core (~> 0.10.0)
+      ttfunk (~> 1.8)
     prettyprint (0.2.0)
     prism (1.6.0)
     process_executer (4.0.0)
@@ -311,6 +317,8 @@ GEM
       timecop (>= 0.7, < 1)
     track_open_instances (0.1.15)
     tsort (0.2.0)
+    ttfunk (1.8.0)
+      bigdecimal (~> 3.1)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     unicode-display_width (3.2.0)
@@ -324,6 +332,11 @@ GEM
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
+    yaml-converter (0.1.0)
+      kramdown (>= 2.4, < 3)
+      kramdown-parser-gfm (~> 1.1)
+      prawn (>= 2.5, < 3)
+      version_gem (~> 1.1, >= 1.1.9)
     yard (0.9.37)
     yard-fence (0.8.0)
       rdoc (~> 6.11)
@@ -331,6 +344,9 @@ GEM
       yard (~> 0.9, >= 0.9.37)
     yard-relative_markdown_links (0.6.0)
       nokogiri (>= 1.14.3, < 2)
+    yard-yaml (0.1.0)
+      version_gem (~> 1.1, >= 1.1.9)
+      yaml-converter (~> 0.1)
     zeitwerk (2.7.3)
     zlib (3.2.2)
 
@@ -369,10 +385,12 @@ DEPENDENCIES
   stringio (>= 3.0)
   vcr (>= 6)
   webmock (>= 3)
+  yaml-converter (~> 0.1)
   yard (~> 0.9, >= 0.9.37)
   yard-fence (~> 0.8)
   yard-junk (~> 0.0, >= 0.0.10)!
   yard-relative_markdown_links (~> 0.6)
+  yard-yaml (~> 0.1)
 
 BUNDLED WITH
    2.7.2
