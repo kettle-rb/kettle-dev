@@ -20,9 +20,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
-- Template now includes a default `.yardopts` file
-  - Excludes *.gem, pkg/*.gem and .yardoc from documentation generation
-
 ### Changed
 
 ### Deprecated
@@ -32,6 +29,19 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Fixed
 
 ### Security
+
+## [1.1.53] - 2025-11-10
+
+- TAG: [v1.1.53][1.1.53t]
+- COVERAGE: 94.41% -- 4039/4278 lines in 26 files
+- BRANCH COVERAGE: 78.93% -- 1663/2107 branches in 26 files
+- 79.89% documented
+
+### Added
+
+- Template .yardopts now includes yard-yaml plugin (for CITATION.cff)
+- Template now includes a default `.yardopts` file
+  - Excludes *.gem, pkg/*.gem and .yardoc from documentation generation
 
 ## [1.1.52] - 2025-11-08
 
@@ -1348,7 +1358,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.52...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.53...HEAD
+[1.1.53]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.52...v1.1.53
+[1.1.53t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.53
 [1.1.52]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.51...v1.1.52
 [1.1.52t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.52
 [1.1.51]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.50...v1.1.51
