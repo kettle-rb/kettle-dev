@@ -143,15 +143,22 @@ module Kettle
               if File.basename(rel) == "FUNDING.yml"
                 helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true) do |content|
                   c = content.dup
-                  c = c.gsub(/^open_collective:\s+.*$/i) { |line| funding_org ? "open_collective: #{funding_org}" : line }
+                  # Effective funding handle should fall back to forge_org when funding_org is nil.
+                  # This allows tests to stub FUNDING_ORG=false to bypass explicit funding detection
+                  # while still templating the line with the derived organization (e.g., from homepage URL).
+                  effective_funding = funding_org || forge_org
+                  c = if helpers.opencollective_disabled?
+                    c.gsub(/^open_collective:\s+.*$/i) { |line| "open_collective: # Replace with a single Open Collective username" }
+                  else
+                    c.gsub(/^open_collective:\s+.*$/i) { |line| effective_funding ? "open_collective: #{effective_funding}" : line }
+                  end
                   if gem_name && !gem_name.empty?
                     c = c.gsub(/^tidelift:\s+.*$/i, "tidelift: rubygems/#{gem_name}")
                   end
-                  # Also apply common replacements for org/gem/namespace/shields
                   helpers.apply_common_replacements(
                     c,
                     org: forge_org,
-                    funding_org: funding_org,
+                    funding_org: effective_funding, # pass effective funding for downstream tokens
                     gem_name: gem_name,
                     namespace: namespace,
                     namespace_shield: namespace_shield,

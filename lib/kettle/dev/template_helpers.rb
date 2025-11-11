@@ -843,7 +843,7 @@ module Kettle
 
         c = content.dup
         c = c.gsub("kettle-rb", org.to_s)
-        c = c.gsub("{OPENCOLLECTIVE|ORG_NAME}", funding_org)
+        c = c.gsub("{OPENCOLLECTIVE|ORG_NAME}", funding_org || "opencollective")
         # Replace min ruby token if present
         begin
           if min_ruby && !min_ruby.to_s.empty? && c.include?("{K_D_MIN_RUBY}")
