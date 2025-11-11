@@ -86,7 +86,7 @@ workflow:
     - bundle exec appraisal ${APPRAISAL} bin/rake --tasks
     # Run tests, skipping those that won't work in CI
     - >
-      bundle exec appraisal unlocked_deps \
+      bundle exec appraisal ${APPRAISAL} \
         bin/rspec spec \
           --tag \~ci_skip \
           --format progress \
