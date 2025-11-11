@@ -66,7 +66,7 @@ module Kettle
           gem_name = meta[:gem_name]
           min_ruby = meta[:min_ruby]
           forge_org = meta[:forge_org] || meta[:gh_org]
-          funding_org = meta[:funding_org] || forge_org
+          funding_org = helpers.opencollective_disabled? ? nil : meta[:funding_org] || forge_org
           entrypoint_require = meta[:entrypoint_require]
           namespace = meta[:namespace]
           namespace_shield = meta[:namespace_shield]
