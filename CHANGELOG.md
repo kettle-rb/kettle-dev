@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Appraisals template merge with existing header
+- Don't set opencollective in FUNDING.yml when osc is disabled
 - handling of open source collective ENV variables in .envrc templates
 - Don't invent an open collective handle when open collective is not enabled
 
