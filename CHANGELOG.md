@@ -20,8 +20,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
-- .idea/.gitignore is now part of template
-
 ### Changed
 
 ### Deprecated
@@ -31,6 +29,17 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Fixed
 
 ### Security
+
+## [1.1.54] - 2025-11-11
+
+- TAG: [v1.1.54][1.1.54t]
+- COVERAGE: 94.39% -- 4038/4278 lines in 26 files
+- BRANCH COVERAGE: 78.88% -- 1662/2107 branches in 26 files
+- 79.89% documented
+
+### Added
+
+- .idea/.gitignore is now part of template
 
 ## [1.1.53] - 2025-11-10
 
@@ -1360,7 +1369,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.53...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.54...HEAD
+[1.1.54]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.53...v1.1.54
+[1.1.54t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.54
 [1.1.53]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.52...v1.1.53
 [1.1.53t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.53
 [1.1.52]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.51...v1.1.52
