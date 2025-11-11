@@ -20,8 +20,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
-- GitLab Pipelines for Ruby 2.7, 3.0, 3.0
-
 ### Changed
 
 ### Deprecated
@@ -31,6 +29,17 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Fixed
 
 ### Security
+
+## [1.1.55] - 2025-11-11
+
+- TAG: [v1.1.55][1.1.55t]
+- COVERAGE: 94.41% -- 4039/4278 lines in 26 files
+- BRANCH COVERAGE: 78.88% -- 1662/2107 branches in 26 files
+- 79.89% documented
+
+### Added
+
+- GitLab Pipelines for Ruby 2.7, 3.0, 3.0
 
 ## [1.1.54] - 2025-11-11
 
@@ -1371,7 +1380,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.54...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.55...HEAD
+[1.1.55]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.54...v1.1.55
+[1.1.55t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.55
 [1.1.54]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.53...v1.1.54
 [1.1.54t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.54
 [1.1.53]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.52...v1.1.53
