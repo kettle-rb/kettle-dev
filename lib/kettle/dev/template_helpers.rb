@@ -813,6 +813,15 @@ module Kettle
           # ignore
         end
 
+        # Replace target gem name token if present
+        begin
+          token = "{TARGET|GEM|NAME}"
+          c = c.gsub(token, gem_name) if c.include?(token)
+        rescue StandardError => e
+          Kettle::Dev.debug_error(e, __method__)
+          # If replacement fails unexpectedly, proceed with content as-is
+        end
+
         # Special-case: yard-head link uses the gem name as a subdomain and must be dashes-only.
         # Apply this BEFORE other generic replacements so it isn't altered incorrectly.
         begin

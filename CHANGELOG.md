@@ -28,6 +28,7 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- handling of open source collective ENV variables in .envrc templates
 - Don't invent an open collective handle when open collective is not enabled
 
 ### Security
