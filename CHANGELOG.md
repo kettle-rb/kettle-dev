@@ -20,6 +20,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- GitLab Pipelines for Ruby 2.7, 3.0, 3.0
+
 ### Changed
 
 ### Deprecated

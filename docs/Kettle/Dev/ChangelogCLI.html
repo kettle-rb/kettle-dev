@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  Class: Kettle::Dev::ChangelogCLI
+  
+    &mdash; Documentation by YARD 0.9.37
+  
+</title>
+
+  <link rel="stylesheet" href="../../css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="../../css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "Kettle::Dev::ChangelogCLI";
+  relpath = '../../';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="../../class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="../../_index.html">Index (C)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span> &raquo; <span class='title'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span>
+     &raquo; 
+    <span class="title">ChangelogCLI</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../../class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><h1>Class: Kettle::Dev::ChangelogCLI
+  
+  
+  
+</h1>
+<div class="box_info">
+  
+  <dl>
+    <dt>Inherits:</dt>
+    <dd>
+      <span class="inheritName">Object</span>
+      
+        <ul class="fullTree">
+          <li>Object</li>
+          
+            <li class="next">Kettle::Dev::ChangelogCLI</li>
+          
+        </ul>
+        <a href="#" class="inheritanceTree">show all</a>
+      
+    </dd>
+  </dl>
+  
+
+  
+  
+  
+  
+  
+
+  
+
+  
+  <dl>
+    <dt>Defined in:</dt>
+    <dd>lib/kettle/dev/changelog_cli.rb</dd>
+  </dl>
+  
+</div>
+
+
+  
+    <h2>
+      Constant Summary
+      <small><a href="#" class="constants_summary_toggle">collapse</a></small>
+    </h2>
+
+    <dl class="constants">
+      
+        <dt id="UNRELEASED_SECTION_HEADING-constant" class="">UNRELEASED_SECTION_HEADING =
+          
+        </dt>
+        <dd><pre class="code"><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>[Unreleased]:</span><span class='tstring_end'>&quot;</span></span></pre></dd>
+      
+    </dl>
+  
+
+
+
+
+
+
+
+  
+    <h2>
+      Instance Method Summary
+      <small><a href="#" class="summary_toggle">collapse</a></small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#initialize-instance_method" title="#initialize (instance method)">#<strong>initialize</strong>  &#x21d2; ChangelogCLI </a>
+    
+
+    
+  </span>
+  
+  
+    <span class="note title constructor">constructor</span>
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>A new instance of ChangelogCLI.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#run-instance_method" title="#run (instance method)">#<strong>run</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+<div id="constructor_details" class="method_details_list">
+  <h2>Constructor Details</h2>
+  
+    <div class="method_details first">
+  <h3 class="signature first" id="initialize-instance_method">
+  
+    #<strong>initialize</strong>  &#x21d2; <tt><span class='object_link'><a href="" title="Kettle::Dev::ChangelogCLI (class)">ChangelogCLI</a></span></tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Returns a new instance of ChangelogCLI.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+7
+8
+9
+10
+11</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/changelog_cli.rb', line 7</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span>
+  <span class='ivar'>@root</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="CIHelpers.html" title="Kettle::Dev::CIHelpers (module)">CIHelpers</a></span></span><span class='period'>.</span><span class='id identifier rubyid_project_root'><span class='object_link'><a href="CIHelpers.html#project_root-class_method" title="Kettle::Dev::CIHelpers.project_root (method)">project_root</a></span></span>
+  <span class='ivar'>@changelog_path</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='ivar'>@root</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>CHANGELOG.md</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='ivar'>@coverage_path</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='ivar'>@root</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>coverage</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>coverage.json</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+  
+</div>
+
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="run-instance_method">
+  
+    #<strong>run</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/changelog_cli.rb', line 13</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_run'>run</span>
+  <span class='id identifier rubyid_version'>version</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Versioning.html" title="Kettle::Dev::Versioning (module)">Versioning</a></span></span><span class='period'>.</span><span class='id identifier rubyid_detect_version'><span class='object_link'><a href="Versioning.html#detect_version-class_method" title="Kettle::Dev::Versioning.detect_version (method)">detect_version</a></span></span><span class='lparen'>(</span><span class='ivar'>@root</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_today'>today</span> <span class='op'>=</span> <span class='const'>Time</span><span class='period'>.</span><span class='id identifier rubyid_now'>now</span><span class='period'>.</span><span class='id identifier rubyid_strftime'>strftime</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>%Y-%m-%d</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_owner'>owner</span><span class='comma'>,</span> <span class='id identifier rubyid_repo'>repo</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="CIHelpers.html" title="Kettle::Dev::CIHelpers (module)">CIHelpers</a></span></span><span class='period'>.</span><span class='id identifier rubyid_repo_info'><span class='object_link'><a href="CIHelpers.html#repo_info-class_method" title="Kettle::Dev::CIHelpers.repo_info (method)">repo_info</a></span></span>
+  <span class='kw'>unless</span> <span class='id identifier rubyid_owner'>owner</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_repo'>repo</span>
+    <span class='id identifier rubyid_warn'>warn</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Could not determine GitHub owner/repo from origin remote.</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_warn'>warn</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Make sure &#39;origin&#39; points to github.com. Alternatively, set origin or update links manually afterward.</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='id identifier rubyid_line_cov_line'>line_cov_line</span><span class='comma'>,</span> <span class='id identifier rubyid_branch_cov_line'>branch_cov_line</span> <span class='op'>=</span> <span class='id identifier rubyid_coverage_lines'>coverage_lines</span>
+  <span class='id identifier rubyid_yard_line'>yard_line</span> <span class='op'>=</span> <span class='id identifier rubyid_yard_percent_documented'>yard_percent_documented</span>
+
+  <span class='id identifier rubyid_changelog'>changelog</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='lparen'>(</span><span class='ivar'>@changelog_path</span><span class='rparen'>)</span>
+
+  <span class='comment'># If the detected version already exists in the changelog, offer reformat-only mode
+</span>  <span class='kw'>if</span> <span class='id identifier rubyid_changelog'>changelog</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^## \[</span><span class='embexpr_beg'>#{</span><span class='const'>Regexp</span><span class='period'>.</span><span class='id identifier rubyid_escape'>escape</span><span class='lparen'>(</span><span class='id identifier rubyid_version'>version</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'>\]</span><span class='regexp_end'>/</span></span>
+    <span class='id identifier rubyid_warn'>warn</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>CHANGELOG.md already has a section for version </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_version'>version</span><span class='embexpr_end'>}</span><span class='tstring_content'>.</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_warn'>warn</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>It appears the version has not been bumped. You can reformat CHANGELOG.md without adding a new release section.</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_print'>print</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Proceed with reformat only? [y/N]: </span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_ans'>ans</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="InputAdapter.html" title="Kettle::Dev::InputAdapter (module)">InputAdapter</a></span></span><span class='period'>.</span><span class='id identifier rubyid_gets'><span class='object_link'><a href="InputAdapter.html#gets-class_method" title="Kettle::Dev::InputAdapter.gets (method)">gets</a></span></span><span class='op'>&amp;.</span><span class='id identifier rubyid_strip'>strip</span><span class='op'>&amp;.</span><span class='id identifier rubyid_downcase'>downcase</span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_ans'>ans</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>y</span><span class='tstring_end'>&quot;</span></span> <span class='op'>||</span> <span class='id identifier rubyid_ans'>ans</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>yes</span><span class='tstring_end'>&quot;</span></span>
+      <span class='id identifier rubyid_updated'>updated</span> <span class='op'>=</span> <span class='id identifier rubyid_convert_heading_tag_suffix_to_list'>convert_heading_tag_suffix_to_list</span><span class='lparen'>(</span><span class='id identifier rubyid_changelog'>changelog</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_updated'>updated</span> <span class='op'>=</span> <span class='id identifier rubyid_normalize_heading_spacing'>normalize_heading_spacing</span><span class='lparen'>(</span><span class='id identifier rubyid_updated'>updated</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_updated'>updated</span> <span class='op'>=</span> <span class='id identifier rubyid_ensure_footer_spacing'>ensure_footer_spacing</span><span class='lparen'>(</span><span class='id identifier rubyid_updated'>updated</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_updated'>updated</span> <span class='op'>=</span> <span class='id identifier rubyid_updated'>updated</span><span class='period'>.</span><span class='id identifier rubyid_rstrip'>rstrip</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span>
+      <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_write'>write</span><span class='lparen'>(</span><span class='ivar'>@changelog_path</span><span class='comma'>,</span> <span class='id identifier rubyid_updated'>updated</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>CHANGELOG.md reformatted. No new version section added.</span><span class='tstring_end'>&quot;</span></span>
+      <span class='kw'>return</span>
+    <span class='kw'>else</span>
+      <span class='id identifier rubyid_abort'>abort</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Aborting: version not bumped. Re-run after bumping version or answer &#39;y&#39; to reformat-only.</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+
+  <span class='id identifier rubyid_unreleased_block'>unreleased_block</span><span class='comma'>,</span> <span class='id identifier rubyid_before'>before</span><span class='comma'>,</span> <span class='id identifier rubyid_after'>after</span> <span class='op'>=</span> <span class='id identifier rubyid_extract_unreleased'>extract_unreleased</span><span class='lparen'>(</span><span class='id identifier rubyid_changelog'>changelog</span><span class='rparen'>)</span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_unreleased_block'>unreleased_block</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+    <span class='id identifier rubyid_abort'>abort</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Could not find &#39;## [Unreleased]&#39; section in CHANGELOG.md</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='kw'>if</span> <span class='id identifier rubyid_unreleased_block'>unreleased_block</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+    <span class='id identifier rubyid_warn'>warn</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>No entries found under Unreleased. Creating an empty version section anyway.</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='id identifier rubyid_prev_version'>prev_version</span> <span class='op'>=</span> <span class='id identifier rubyid_detect_previous_version'>detect_previous_version</span><span class='lparen'>(</span><span class='id identifier rubyid_after'>after</span><span class='rparen'>)</span>
+
+  <span class='id identifier rubyid_new_section'>new_section</span> <span class='op'>=</span> <span class='op'>+</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span>
+  <span class='id identifier rubyid_new_section'>new_section</span> <span class='op'>&lt;&lt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>## [</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_version'>version</span><span class='embexpr_end'>}</span><span class='tstring_content'>] - </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_today'>today</span><span class='embexpr_end'>}</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span>
+  <span class='id identifier rubyid_new_section'>new_section</span> <span class='op'>&lt;&lt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>- TAG: [v</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_version'>version</span><span class='embexpr_end'>}</span><span class='tstring_content'>][</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_version'>version</span><span class='embexpr_end'>}</span><span class='tstring_content'>t]\n</span><span class='tstring_end'>&quot;</span></span>
+  <span class='id identifier rubyid_new_section'>new_section</span> <span class='op'>&lt;&lt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>- </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_line_cov_line'>line_cov_line</span><span class='embexpr_end'>}</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_line_cov_line'>line_cov_line</span>
+  <span class='id identifier rubyid_new_section'>new_section</span> <span class='op'>&lt;&lt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>- </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_branch_cov_line'>branch_cov_line</span><span class='embexpr_end'>}</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_branch_cov_line'>branch_cov_line</span>
+  <span class='id identifier rubyid_new_section'>new_section</span> <span class='op'>&lt;&lt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>- </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_yard_line'>yard_line</span><span class='embexpr_end'>}</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_yard_line'>yard_line</span>
+  <span class='id identifier rubyid_new_section'>new_section</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_filter_unreleased_sections'>filter_unreleased_sections</span><span class='lparen'>(</span><span class='id identifier rubyid_unreleased_block'>unreleased_block</span><span class='rparen'>)</span>
+  <span class='comment'># Ensure exactly one blank line separates this new section from the next section
+</span>  <span class='id identifier rubyid_new_section'>new_section</span><span class='period'>.</span><span class='id identifier rubyid_rstrip!'>rstrip!</span>
+  <span class='id identifier rubyid_new_section'>new_section</span> <span class='op'>&lt;&lt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n\n</span><span class='tstring_end'>&quot;</span></span>
+
+  <span class='comment'># Reset the Unreleased section to empty category headings
+</span>  <span class='id identifier rubyid_unreleased_reset'>unreleased_reset</span> <span class='op'>=</span> <span class='heredoc_beg'>&lt;&lt;~MD</span>
+<span class='tstring_content'>    ## [Unreleased]
+</span><span class='tstring_content'>    ### Added
+</span><span class='tstring_content'>    ### Changed
+</span><span class='tstring_content'>    ### Deprecated
+</span><span class='tstring_content'>    ### Removed
+</span><span class='tstring_content'>    ### Fixed
+</span><span class='tstring_content'>    ### Security
+</span><span class='heredoc_end'>  MD
+</span>
+  <span class='comment'># Preserve everything from the first released section down to the line containing the [Unreleased] link ref.
+</span>  <span class='comment'># Many real-world changelogs intersperse stray link refs between sections; we should keep them.
+</span>  <span class='id identifier rubyid_updated'>updated</span> <span class='op'>=</span> <span class='id identifier rubyid_before'>before</span> <span class='op'>+</span> <span class='id identifier rubyid_unreleased_reset'>unreleased_reset</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_new_section'>new_section</span>
+  <span class='comment'># Find the [Unreleased]: link-ref line and append everything from the start of the first released section
+</span>  <span class='comment'># through to the end of the file, but if a [Unreleased]: ref exists, ensure we do not duplicate the
+</span>  <span class='comment'># section content above it.
+</span>  <span class='kw'>if</span> <span class='id identifier rubyid_after'>after</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_after'>after</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+    <span class='comment'># Split &#39;after&#39; by lines so we can locate the first link-ref to Unreleased
+</span>    <span class='id identifier rubyid_after_lines'>after_lines</span> <span class='op'>=</span> <span class='id identifier rubyid_after'>after</span><span class='period'>.</span><span class='id identifier rubyid_lines'>lines</span>
+    <span class='id identifier rubyid_unreleased_ref_idx'>unreleased_ref_idx</span> <span class='op'>=</span> <span class='id identifier rubyid_after_lines'>after_lines</span><span class='period'>.</span><span class='id identifier rubyid_index'>index</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_l'>l</span><span class='op'>|</span> <span class='id identifier rubyid_l'>l</span><span class='period'>.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="#UNRELEASED_SECTION_HEADING-constant" title="Kettle::Dev::ChangelogCLI::UNRELEASED_SECTION_HEADING (constant)">UNRELEASED_SECTION_HEADING</a></span></span><span class='rparen'>)</span> <span class='rbrace'>}</span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_unreleased_ref_idx'>unreleased_ref_idx</span>
+      <span class='comment'># Keep all content prior to the link-ref (older releases and interspersed refs)
+</span>      <span class='id identifier rubyid_preserved_body'>preserved_body</span> <span class='op'>=</span> <span class='id identifier rubyid_after_lines'>after_lines</span><span class='lbracket'>[</span><span class='int'>0</span><span class='op'>...</span><span class='id identifier rubyid_unreleased_ref_idx'>unreleased_ref_idx</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span>
+      <span class='comment'># Then append the tail starting from the Unreleased link-ref line to preserve the footer refs
+</span>      <span class='id identifier rubyid_preserved_footer'>preserved_footer</span> <span class='op'>=</span> <span class='id identifier rubyid_after_lines'>after_lines</span><span class='lbracket'>[</span><span class='id identifier rubyid_unreleased_ref_idx'>unreleased_ref_idx</span><span class='op'>..</span><span class='op'>-</span><span class='int'>1</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span>
+      <span class='id identifier rubyid_updated'>updated</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_preserved_body'>preserved_body</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_preserved_footer'>preserved_footer</span>
+    <span class='kw'>else</span>
+      <span class='comment'># No Unreleased ref found; just append the remainder as-is
+</span>      <span class='id identifier rubyid_updated'>updated</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_after'>after</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+
+  <span class='id identifier rubyid_updated'>updated</span> <span class='op'>=</span> <span class='id identifier rubyid_update_link_refs'>update_link_refs</span><span class='lparen'>(</span><span class='id identifier rubyid_updated'>updated</span><span class='comma'>,</span> <span class='id identifier rubyid_owner'>owner</span><span class='comma'>,</span> <span class='id identifier rubyid_repo'>repo</span><span class='comma'>,</span> <span class='id identifier rubyid_prev_version'>prev_version</span><span class='comma'>,</span> <span class='id identifier rubyid_version'>version</span><span class='rparen'>)</span>
+
+  <span class='comment'># Transform legacy heading suffix tags into list items under headings
+</span>  <span class='id identifier rubyid_updated'>updated</span> <span class='op'>=</span> <span class='id identifier rubyid_convert_heading_tag_suffix_to_list'>convert_heading_tag_suffix_to_list</span><span class='lparen'>(</span><span class='id identifier rubyid_updated'>updated</span><span class='rparen'>)</span>
+
+  <span class='comment'># Normalize spacing around headings to aid Markdown renderers
+</span>  <span class='id identifier rubyid_updated'>updated</span> <span class='op'>=</span> <span class='id identifier rubyid_normalize_heading_spacing'>normalize_heading_spacing</span><span class='lparen'>(</span><span class='id identifier rubyid_updated'>updated</span><span class='rparen'>)</span>
+
+  <span class='comment'># Ensure exactly one trailing newline at EOF
+</span>  <span class='id identifier rubyid_updated'>updated</span> <span class='op'>=</span> <span class='id identifier rubyid_updated'>updated</span><span class='period'>.</span><span class='id identifier rubyid_rstrip'>rstrip</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span>
+
+  <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_write'>write</span><span class='lparen'>(</span><span class='ivar'>@changelog_path</span><span class='comma'>,</span> <span class='id identifier rubyid_updated'>updated</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>CHANGELOG.md updated with v</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_version'>version</span><span class='embexpr_end'>}</span><span class='tstring_content'> section.</span><span class='tstring_end'>&quot;</span></span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+      <div id="footer">
+  Generated on Tue Nov 11 00:25:57 2025 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.37 (ruby-3.4.7).
+</div>
+
+    </div>
+  </body>
+</html>
