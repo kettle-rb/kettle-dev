@@ -98,5 +98,83 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
       twice = helpers.merge_appraisals(template, once)
       expect(twice).to eq(once)
     end
+
+    it "does not duplicate identical leading headers and does not inject template header into existing header" do
+      template = <<~TPL
+        # frozen_string_literal: true
+        # Template header line
+
+        appraise "foo" do
+          gem "a"
+        end
+      TPL
+
+      dest = <<~DST
+        # frozen_string_literal: true
+        # Template header line
+
+        appraise "foo" do
+          gem "a"
+        end
+      DST
+
+      merged = helpers.merge_appraisals(template, dest)
+
+      # Should start with the header exactly once
+      expect(merged).to start_with("# frozen_string_literal: true\n# Template header line\n\n")
+      expect(merged.scan(/# Template header line/).size).to eq(1)
+    end
+
+    it "replaces the entire leading header from destination with the template header when different" do
+      template = <<~TPL
+        # frozen_string_literal: true
+        # Template header
+
+        appraise "foo" do
+          gem "a"
+        end
+      TPL
+
+      dest = <<~DST
+        # old header line 1
+        # old header line 2
+
+        appraise "foo" do
+          gem "a"
+        end
+      DST
+
+      merged = helpers.merge_appraisals(template, dest)
+
+      # Template header must appear at the very start
+      expect(merged).to start_with("# frozen_string_literal: true\n# Template header\n\n")
+      # Old header must not be present anywhere in final output
+      expect(merged).not_to include("# old header line 1")
+      expect(merged).not_to include("# old header line 2")
+    end
+
+    it "preserves magic comments from template when present and replaces destination leading header" do
+      template = <<~TPL
+        # frozen_string_literal: true
+        # template-only comment
+
+        appraise "foo" do
+          eval_gemfile "a.gemfile"
+        end
+      TPL
+
+      dest = <<~DST
+        # some legacy header
+
+        appraise "foo" do
+          eval_gemfile "a.gemfile"
+        end
+      DST
+
+      merged = helpers.merge_appraisals(template, dest)
+      # Ensure frozen magic comment from template is present at top
+      expect(merged).to start_with("# frozen_string_literal: true\n# template-only comment\n\n")
+      expect(merged).not_to include("# some legacy header")
+    end
   end
 end

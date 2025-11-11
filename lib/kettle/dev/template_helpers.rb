@@ -469,6 +469,21 @@ module Kettle
       #  - Preamble (content before first appraise) comes from template when present, else destination.
       def merge_appraisals(template_content, dest_content)
         begin
+          # Helper: extract contiguous leading header lines (comments and blank lines)
+          extract_leading_header = lambda do |text|
+            lines = text.lines
+            header_lines = []
+            idx = 0
+            while idx < lines.length
+              ln = lines[idx]
+              break unless ln.strip.empty? || ln.lstrip.start_with?("#")
+              header_lines << ln
+              idx += 1
+            end
+            body = idx < lines.length ? lines[idx..-1].join : ""
+            {header: header_lines.join, body: body}
+          end
+
           parse_blocks = lambda do |text|
             lines = text.lines
             blocks = []
@@ -526,11 +541,25 @@ module Kettle
             {blocks: blocks, preamble: preamble}
           end
 
-          tmpl = parse_blocks.call(template_content)
-          dest = parse_blocks.call(dest_content)
-          tmpl_blocks = tmpl[:blocks]
-          dest_blocks = dest[:blocks]
-          dest_by_name = dest_blocks.map { |b| [b[:name], b] }.to_h
+          # Extract leading headers from template and destination and parse their bodies
+          tmpl_parts = extract_leading_header.call(template_content)
+          dest_parts = extract_leading_header.call(dest_content)
+
+          # If the template does not provide a leading header, preserve the destination as-is
+          # so that per-block adjacent header comments (including those at the top of file)
+          # are still parsed and preserved. Only strip the destination leading header when
+          # the template has a leading header to replace it.
+          dest_parse_source = if tmpl_parts[:header].to_s.strip.empty?
+            dest_content
+          else
+            dest_parts[:body]
+          end
+
+          tmpl = parse_blocks.call(tmpl_parts[:body])
+          dest = parse_blocks.call(dest_parse_source)
+           tmpl_blocks = tmpl[:blocks]
+           dest_blocks = dest[:blocks]
+           dest_by_name = dest_blocks.map { |b| [b[:name], b] }.to_h
 
           merged_blocks_strings = []
           gem_or_eval_re = /^\s*(?:gem|eval_gemfile)\b/
@@ -553,25 +582,33 @@ module Kettle
                 merged_body += additions
               end
               header = tb[:header].any? ? tb[:header] : db[:header]
-              block_text = +""
-              block_text << "\n" unless merged_blocks_strings.empty?
-              header.each { |hl| block_text << hl } if header.any?
-              block_text << "appraise \"#{tb[:name]}\" do\n"
-              merged_body.each { |bl| block_text << bl }
-              block_text << db[:end_line]
-              merged_blocks_strings << block_text
-              dest_by_name.delete(tb[:name])
-            else
-              # New block from template
-              block_text = +""
-              block_text << "\n" unless merged_blocks_strings.empty?
-              tb[:header].each { |hl| block_text << hl } if tb[:header].any?
-              block_text << "appraise \"#{tb[:name]}\" do\n"
-              tb[:body].each { |bl| block_text << bl }
-              block_text << tb[:end_line]
-              merged_blocks_strings << block_text
-            end
-          end
+              # If the template provides no leading header and the destination preamble
+              # already ends with this header, skip emitting the header for this block
+              # to avoid duplicating it (it will already be present at the top of the file).
+              if tmpl_parts[:header].to_s.strip.empty? && !dest[:preamble].to_s.strip.empty? && !header.empty? && dest[:preamble].to_s.end_with?(header.join)
+                header_to_emit = []
+              else
+                header_to_emit = header
+              end
+               block_text = +""
+               block_text << "\n" unless merged_blocks_strings.empty?
+               header_to_emit.each { |hl| block_text << hl } if header_to_emit.any?
+               block_text << "appraise \"#{tb[:name]}\" do\n"
+               merged_body.each { |bl| block_text << bl }
+               block_text << db[:end_line]
+               merged_blocks_strings << block_text
+               dest_by_name.delete(tb[:name])
+             else
+               # New block from template
+               block_text = +""
+               block_text << "\n" unless merged_blocks_strings.empty?
+               tb[:header].each { |hl| block_text << hl } if tb[:header].any?
+               block_text << "appraise \"#{tb[:name]}\" do\n"
+               tb[:body].each { |bl| block_text << bl }
+               block_text << tb[:end_line]
+               merged_blocks_strings << block_text
+             end
+           end
           # Append destination-only blocks preserving their original text
           dest_remaining_order = dest_blocks.select { |b| dest_by_name.key?(b[:name]) }
           dest_remaining_order.each do |b|
@@ -584,7 +621,21 @@ module Kettle
             merged_blocks_strings << block_text
           end
 
-          preamble = tmpl[:preamble].to_s.strip.empty? ? dest[:preamble] : tmpl[:preamble]
+          # Build final preamble:
+          # - If template provides a leading header, use that header and then prefer the
+          #   template's body preamble when present, otherwise fall back to the
+          #   destination's body preamble.
+          # - If template does NOT provide a leading header, leave the destination
+          #   preamble (including any leading header/comments) intact.
+          preamble = +""
+          if tmpl_parts[:header].to_s.strip.empty?
+            preamble << dest[:preamble].to_s
+          else
+            body_preamble = tmpl[:preamble].to_s.strip.empty? ? dest[:preamble].to_s : tmpl[:preamble].to_s
+            preamble << tmpl_parts[:header].to_s
+            preamble << body_preamble.to_s
+          end
+
           out = +""
           out << preamble unless preamble.nil? || preamble.empty?
           out << "\n" unless out.end_with?("\n")
