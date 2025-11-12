@@ -480,7 +480,7 @@ module Kettle
               header_lines << ln
               idx += 1
             end
-            body = idx < lines.length ? lines[idx..-1].join : ""
+            body = (idx < lines.length) ? lines[idx..-1].join : ""
             {header: header_lines.join, body: body}
           end
 
@@ -557,9 +557,9 @@ module Kettle
 
           tmpl = parse_blocks.call(tmpl_parts[:body])
           dest = parse_blocks.call(dest_parse_source)
-           tmpl_blocks = tmpl[:blocks]
-           dest_blocks = dest[:blocks]
-           dest_by_name = dest_blocks.map { |b| [b[:name], b] }.to_h
+          tmpl_blocks = tmpl[:blocks]
+          dest_blocks = dest[:blocks]
+          dest_by_name = dest_blocks.map { |b| [b[:name], b] }.to_h
 
           merged_blocks_strings = []
           gem_or_eval_re = /^\s*(?:gem|eval_gemfile)\b/
@@ -585,30 +585,30 @@ module Kettle
               # If the template provides no leading header and the destination preamble
               # already ends with this header, skip emitting the header for this block
               # to avoid duplicating it (it will already be present at the top of the file).
-              if tmpl_parts[:header].to_s.strip.empty? && !dest[:preamble].to_s.strip.empty? && !header.empty? && dest[:preamble].to_s.end_with?(header.join)
-                header_to_emit = []
+              header_to_emit = if tmpl_parts[:header].to_s.strip.empty? && !dest[:preamble].to_s.strip.empty? && !header.empty? && dest[:preamble].to_s.end_with?(header.join)
+                []
               else
-                header_to_emit = header
+                header
               end
-               block_text = +""
-               block_text << "\n" unless merged_blocks_strings.empty?
-               header_to_emit.each { |hl| block_text << hl } if header_to_emit.any?
-               block_text << "appraise \"#{tb[:name]}\" do\n"
-               merged_body.each { |bl| block_text << bl }
-               block_text << db[:end_line]
-               merged_blocks_strings << block_text
-               dest_by_name.delete(tb[:name])
-             else
-               # New block from template
-               block_text = +""
-               block_text << "\n" unless merged_blocks_strings.empty?
-               tb[:header].each { |hl| block_text << hl } if tb[:header].any?
-               block_text << "appraise \"#{tb[:name]}\" do\n"
-               tb[:body].each { |bl| block_text << bl }
-               block_text << tb[:end_line]
-               merged_blocks_strings << block_text
-             end
-           end
+              block_text = +""
+              block_text << "\n" unless merged_blocks_strings.empty?
+              header_to_emit.each { |hl| block_text << hl } if header_to_emit.any?
+              block_text << "appraise \"#{tb[:name]}\" do\n"
+              merged_body.each { |bl| block_text << bl }
+              block_text << db[:end_line]
+              merged_blocks_strings << block_text
+              dest_by_name.delete(tb[:name])
+            else
+              # New block from template
+              block_text = +""
+              block_text << "\n" unless merged_blocks_strings.empty?
+              tb[:header].each { |hl| block_text << hl } if tb[:header].any?
+              block_text << "appraise \"#{tb[:name]}\" do\n"
+              tb[:body].each { |bl| block_text << bl }
+              block_text << tb[:end_line]
+              merged_blocks_strings << block_text
+            end
+          end
           # Append destination-only blocks preserving their original text
           dest_remaining_order = dest_blocks.select { |b| dest_by_name.key?(b[:name]) }
           dest_remaining_order.each do |b|

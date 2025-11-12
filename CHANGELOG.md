@@ -28,12 +28,21 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [1.1.56] - 2025-11-11
+
+- TAG: [v1.1.56][1.1.56t]
+- COVERAGE: 94.38% -- 4066/4308 lines in 26 files
+- BRANCH COVERAGE: 78.77% -- 1673/2124 branches in 26 files
+- 79.89% documented
+
+### Fixed
+
 - Appraisals template merge with existing header
 - Don't set opencollective in FUNDING.yml when osc is disabled
 - handling of open source collective ENV variables in .envrc templates
 - Don't invent an open collective handle when open collective is not enabled
-
-### Security
 
 ## [1.1.55] - 2025-11-11
 
@@ -1385,7 +1394,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.55...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.56...HEAD
+[1.1.56]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.55...v1.1.56
+[1.1.56t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.56
 [1.1.55]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.54...v1.1.55
 [1.1.55t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.55
 [1.1.54]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.53...v1.1.54

@@ -122,7 +122,7 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
 
       # Should start with the header exactly once
       expect(merged).to start_with("# frozen_string_literal: true\n# Template header line\n\n")
-      expect(merged.scan(/# Template header line/).size).to eq(1)
+      expect(merged.scan("# Template header line").size).to eq(1)
     end
 
     it "replaces the entire leading header from destination with the template header when different" do

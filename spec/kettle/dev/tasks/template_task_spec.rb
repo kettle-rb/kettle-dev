@@ -56,6 +56,9 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
               ask: true,
             )
 
+            # Override global funding disable for this example to allow customization
+            stub_env("FUNDING_ORG" => "")
+
             # Exercise
             expect { described_class.run }.not_to raise_error
 
