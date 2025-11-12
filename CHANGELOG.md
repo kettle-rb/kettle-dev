@@ -20,6 +20,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- Improved .env.local.example template
+
 ### Changed
 
 ### Deprecated
