@@ -632,7 +632,7 @@ module Kettle
 
                 c
               end
-            elsif ["CHANGELOG.md", "CITATION.cff", "CONTRIBUTING.md", ".opencollective.yml", "FUNDING.md", ".junie/guidelines.md"].include?(rel)
+            elsif ["CHANGELOG.md", "CITATION.cff", "CONTRIBUTING.md", ".opencollective.yml", "FUNDING.md", ".junie/guidelines.md", ".envrc"].include?(rel)
               helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true) do |content|
                 c = helpers.apply_common_replacements(
                   content,

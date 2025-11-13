@@ -103,6 +103,55 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
         end
       end
 
+      it "replaces {TARGET|GEM|NAME} token in .envrc files" do
+        Dir.mktmpdir do |gem_root|
+          Dir.mktmpdir do |project_root|
+            # Create .envrc.example with the token
+            File.write(File.join(gem_root, ".envrc.example"), <<~ENVRC)
+              export DEBUG=false
+              # If {TARGET|GEM|NAME} does not have an open source collective set these to false.
+              export OPENCOLLECTIVE_HANDLE={OPENCOLLECTIVE|ORG_NAME}
+              export FUNDING_ORG={OPENCOLLECTIVE|ORG_NAME}
+              dotenv_if_exists .env.local
+            ENVRC
+
+            # Provide gemspec in project
+            File.write(File.join(project_root, "my-awesome-gem.gemspec"), <<~GEMSPEC)
+              Gem::Specification.new do |spec|
+                spec.name = "my-awesome-gem"
+                spec.required_ruby_version = ">= 3.1"
+                spec.homepage = "https://github.com/coolorg/my-awesome-gem"
+              end
+            GEMSPEC
+
+            allow(helpers).to receive_messages(
+              project_root: project_root,
+              gem_checkout_root: gem_root,
+              ensure_clean_git!: nil,
+              ask: true,
+            )
+
+            # Override funding org for this test
+            stub_env("FUNDING_ORG" => "")
+
+            expect { described_class.run }.not_to raise_error
+
+            # Assert .envrc was copied
+            envrc_dest = File.join(project_root, ".envrc")
+            expect(File).to exist(envrc_dest)
+
+            # Assert {TARGET|GEM|NAME} was replaced with the actual gem name
+            envrc_content = File.read(envrc_dest)
+            expect(envrc_content).to include("# If my-awesome-gem does not have an open source collective")
+            expect(envrc_content).not_to include("{TARGET|GEM|NAME}")
+
+            # Assert other tokens were also replaced (from apply_common_replacements)
+            expect(envrc_content).to include("export OPENCOLLECTIVE_HANDLE=coolorg")
+            expect(envrc_content).to include("export FUNDING_ORG=coolorg")
+          end
+        end
+      end
+
       it "updates style.gemfile rubocop-lts constraint based on min_ruby", :check_output do
         Dir.mktmpdir do |gem_root|
           Dir.mktmpdir do |project_root|
