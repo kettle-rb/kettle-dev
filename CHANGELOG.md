@@ -20,6 +20,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- Ignore more .idea plugin artifacts
+
 ### Changed
 
 ### Deprecated
@@ -27,6 +29,8 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Removed
 
 ### Fixed
+
+- bin/rake yard no longer overrides the .yardignore for checksums
 
 ### Security
 

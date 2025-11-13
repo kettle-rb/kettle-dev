@@ -13,8 +13,8 @@ begin
       "*.cff",
       "*.md",
       "*.txt",
-      "checksums/**/*.sha256",
-      "checksums/**/*.sha512",
+      # NOTE: checksums/**/* removed - it's in .yardignore and was causing
+      # file.<gem>.html pages to be generated for each checksum file
       "REEK",
       "sig/**/*.rbs",
     ]
