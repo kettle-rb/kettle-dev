@@ -31,6 +31,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- .yardignore more comprehensively ignores directories that are not relevant to documentation
+
 ### Security
 
 ## [1.1.56] - 2025-11-11
