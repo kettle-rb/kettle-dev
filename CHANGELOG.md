@@ -22,6 +22,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- Improved default devcontainer with common dependencies of most Ruby projects
+
 ### Deprecated
 
 ### Removed
