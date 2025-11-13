@@ -20,9 +20,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
-- New Rake task: `appraisal:reset` — deletes all Appraisal lockfiles (`gemfiles/*.gemfile.lock`).
-- Improved .env.local.example template
-
 ### Changed
 
 ### Deprecated
@@ -31,9 +28,23 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- .yardignore more comprehensively ignores directories that are not relevant to documentation
-
 ### Security
+
+## [1.1.57] - 2025-11-13
+
+- TAG: [v1.1.57][1.1.57t]
+- COVERAGE: 94.36% -- 4065/4308 lines in 26 files
+- BRANCH COVERAGE: 78.81% -- 1674/2124 branches in 26 files
+- 79.89% documented
+
+### Added
+
+- New Rake task: `appraisal:reset` — deletes all Appraisal lockfiles (`gemfiles/*.gemfile.lock`).
+- Improved .env.local.example template
+
+### Fixed
+
+- .yardignore more comprehensively ignores directories that are not relevant to documentation
 
 ## [1.1.56] - 2025-11-11
 
@@ -1399,7 +1410,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.56...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.57...HEAD
+[1.1.57]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.56...v1.1.57
+[1.1.57t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.57
 [1.1.56]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.55...v1.1.56
 [1.1.56t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.56
 [1.1.55]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.54...v1.1.55
