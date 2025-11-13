@@ -20,6 +20,7 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- New Rake task: `appraisal:reset` — deletes all Appraisal lockfiles (`gemfiles/*.gemfile.lock`).
 - Improved .env.local.example template
 
 ### Changed

@@ -362,6 +362,11 @@ Common flows
   - `bundle exec rake reek` or `bundle exec rake reek:update`
   - `bundle exec rake yard`
 
+[Appraisals][💎appraisal2] helpers
+- `bundle exec rake appraisal:isntall` — First time Appraisal setup.
+- `bundle exec rake appraisal:update` — Update Appraisal gemfiles and run RuboCop Gradual autocorrect.
+- `bundle exec rake appraisal:reset` — Delete all Appraisal lockfiles in gemfiles/ (*.gemfile.lock). Useful before regenerating appraisals or when switching Ruby versions.
+
 GitHub Actions local runner helper
 - `bundle exec rake ci:act` — interactive menu shows workflows from `.github/workflows` with live status and short codes (first 3 letters of file name). Type a number or short code.
 - Non-interactive: `bundle exec rake ci:act[loc]` (short code), or `bundle exec rake ci:act[locked_deps.yml]` (filename).
@@ -374,7 +379,7 @@ Setup tokens for API status (GitHub and GitLab)
     - Classic (fallback): “Tokens (classic)” → Generate new token
   - Minimum permissions:
     - Fine-grained: Repository access: Read-only for the target repository (or your org); Permissions → Actions: Read
-    - Classic: For public repos, no scopes are strictly required but rate limits are very low; for private repos, include the repo scope
+    - Classic: For public repos, no scopes are strictly required, but rate limits are very low; for private repos, include the repo scope
   - Add to environment (.env.local via direnv):
     - GITHUB_TOKEN=your_token_here  (or GH_TOKEN=…)
 - GitLab token:

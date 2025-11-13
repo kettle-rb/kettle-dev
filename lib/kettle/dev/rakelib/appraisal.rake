@@ -61,6 +61,43 @@ begin
       run_in_unbundled.call
     end
   end
+
+  # Delete all Appraisal lockfiles in gemfiles/ (*.gemfile.lock)
+  desc("Delete Appraisal lockfiles (gemfiles/*.gemfile.lock)")
+  task("appraisal:reset") do
+    run_in_unbundled = proc do
+      lock_glob = File.join("gemfiles", "*.gemfile.lock")
+      locks = Dir.glob(lock_glob)
+
+      if locks.empty?
+        puts("[kettle-dev][appraisal:reset] no files matching #{lock_glob}")
+      else
+        failures = []
+        locks.each do |f|
+          begin
+            File.delete(f)
+          rescue Errno::ENOENT
+            # Ignore if already gone
+          rescue StandardError => e
+            failures << [f, e]
+          end
+        end
+
+        unless failures.empty?
+          failed_list = failures.map { |(f, e)| "#{f} (#{e.class}: #{e.message})" }.join(", ")
+          abort("appraisal:reset failed: unable to delete #{failed_list}")
+        end
+
+        puts("[kettle-dev][appraisal:reset] deleted #{locks.size} file(s)")
+      end
+    end
+
+    if defined?(Bundler)
+      Bundler.with_unbundled_env(&run_in_unbundled)
+    else
+      run_in_unbundled.call
+    end
+  end
 rescue LoadError
   warn("[kettle-dev][appraisal.rake] failed to load appraisal/tasks") if Kettle::Dev::DEBUGGING
 end

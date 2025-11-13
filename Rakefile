@@ -11,7 +11,8 @@
 #
 # Sets up tasks for appraisal, floss_funding, rspec, minitest, rubocop, reek, yard, and stone_checksums.
 #
-# rake appraisal:update                       # Update Appraisal gemfiles and run RuboCop...
+# rake appraisal:install                      # Install Appraisal gemfiles (initial setup...
+# rake appraisal:reset                        # Delete Appraisal lockfiles (gemfiles/*.gemfile.lock)
 # rake bench                                  # Run all benchmarks (alias for bench:run)
 # rake bench:list                             # List available benchmark scripts
 # rake bench:run                              # Run all benchmark scripts (skips on CI)
