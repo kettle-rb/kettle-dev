@@ -201,8 +201,8 @@
     [557, 9, 29, "RSpec/AnyInstance: Avoid stubbing using `allow_any_instance_of`.", 440176922],
     [570, 9, 29, "RSpec/AnyInstance: Avoid stubbing using `allow_any_instance_of`.", 440176922]
   ],
-  "spec/kettle/dev/tasks/template_task_spec.rb:4020325927": [
-    [689, 15, 24, "RSpec/ContextWording: Context description should match /^when\\b/, /^with\\b/, or /^without\\b/.", 196765058]
+  "spec/kettle/dev/tasks/template_task_spec.rb:3118876030": [
+    [738, 15, 24, "RSpec/ContextWording: Context description should match /^when\\b/, /^with\\b/, or /^without\\b/.", 196765058]
   ],
   "spec/kettle/dev/versioning_spec.rb:3465928905": [
     [53, 7, 53, "RSpec/PredicateMatcher: Prefer using `be_epic_major` matcher over `epic_major?`.", 200417834]

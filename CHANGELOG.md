@@ -22,17 +22,28 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
-- Improved default devcontainer with common dependencies of most Ruby projects
-
 ### Deprecated
 
 ### Removed
 
 ### Fixed
 
-- token replacement of {TARGET|GEM|NAME}
-
 ### Security
+
+## [1.1.59] - 2025-11-13
+
+- TAG: [v1.1.59][1.1.59t]
+- COVERAGE: 94.38% -- 4066/4308 lines in 26 files
+- BRANCH COVERAGE: 78.77% -- 1673/2124 branches in 26 files
+- 79.89% documented
+
+### Changed
+
+- Improved default devcontainer with common dependencies of most Ruby projects
+
+### Fixed
+
+- token replacement of {TARGET|GEM|NAME}
 
 ## [1.1.58] - 2025-11-13
 
@@ -1429,7 +1440,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.58...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.59...HEAD
+[1.1.59]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.58...v1.1.59
+[1.1.59t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.59
 [1.1.58]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.57...v1.1.58
 [1.1.58t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.58
 [1.1.57]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.56...v1.1.57
