@@ -21,6 +21,8 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Added
 
 - Add KETTLE_DEV_DEBUG to direnv defaults
+- Documentation of the explicit policy violations of RubyGems.org leadership toward open source projects they funded
+  - https://www.reddit.com/r/ruby/comments/1ove9vp/rubycentral_hates_this_one_fact/
 
 ### Changed
 
