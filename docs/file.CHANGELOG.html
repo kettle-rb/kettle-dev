@@ -72,6 +72,15 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 
 <h3 id="added">Added</h3>
 
+<ul>
+  <li>Add KETTLE_DEV_DEBUG to direnv defaults</li>
+  <li>Documentation of the explicit policy violations of RubyGems.org leadership toward open source projects they funded
+    <ul>
+      <li>https://www.reddit.com/r/ruby/comments/1ove9vp/rubycentral_hates_this_one_fact/</li>
+    </ul>
+  </li>
+</ul>
+
 <h3 id="changed">Changed</h3>
 
 <h3 id="deprecated">Deprecated</h3>
@@ -79,6 +88,14 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 <h3 id="removed">Removed</h3>
 
 <h3 id="fixed">Fixed</h3>
+
+<ul>
+  <li>Prevent double test runs by ensuring only one of test/coverage/spec are in default task
+    <ul>
+      <li>Add debugging when more than one registered</li>
+    </ul>
+  </li>
+</ul>
 
 <h3 id="security">Security</h3>
 
@@ -2348,7 +2365,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Sun Nov 23 18:45:11 2025 by
+  Generated on Sun Nov 23 19:33:46 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.7).
 </div>
