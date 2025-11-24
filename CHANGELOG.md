@@ -20,6 +20,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- Add KETTLE_DEV_DEBUG to direnv defaults
+- Documentation of the explicit policy violations of RubyGems.org leadership toward open source projects they funded
+  - https://www.reddit.com/r/ruby/comments/1ove9vp/rubycentral_hates_this_one_fact/
+
 ### Changed
 
 ### Deprecated
@@ -27,6 +31,9 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Removed
 
 ### Fixed
+
+- Prevent double test runs by ensuring only one of test/coverage/spec are in default task
+  - Add debugging when more than one registered
 
 ### Security
 

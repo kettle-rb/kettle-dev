@@ -672,4 +672,183 @@
         <span class='id identifier rubyid_bump'>bump</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Versioning.html" title="Kettle::Dev::Versioning (module)">Versioning</a></span></span><span class='period'>.</span><span class='id identifier rubyid_classify_bump'><span class='object_link'><a href="Versioning.html#classify_bump-class_method" title="Kettle::Dev::Versioning.classify_bump (method)">classify_bump</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_target'>target</span><span class='comma'>,</span> <span class='id identifier rubyid_version'>version</span><span class='rparen'>)</span>
         <span class='kw'>case</span> <span class='id identifier rubyid_bump'>bump</span>
         <span class='kw'>when</span> <span class='symbol'>:same</span>
-          <span class='id identifier rubyid_series'>series</span>
+          <span class='id identifier rubyid_series'>series</span> <span class='op'>=</span> <span class='id identifier rubyid_cur_series'>cur_series</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>.</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+          <span class='id identifier rubyid_warn'>warn</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>version.rb (</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_version'>version</span><span class='embexpr_end'>}</span><span class='tstring_content'>) matches the latest released version for series </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_series'>series</span><span class='embexpr_end'>}</span><span class='tstring_content'> (</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_target'>target</span><span class='embexpr_end'>}</span><span class='tstring_content'>).</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+          <span class='id identifier rubyid_abort'>abort</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Aborting: version bump required. Bump PATCH/MINOR/MAJOR/EPIC.</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+        <span class='kw'>when</span> <span class='symbol'>:downgrade</span>
+          <span class='id identifier rubyid_series'>series</span> <span class='op'>=</span> <span class='id identifier rubyid_cur_series'>cur_series</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>.</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+          <span class='id identifier rubyid_warn'>warn</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>version.rb (</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_version'>version</span><span class='embexpr_end'>}</span><span class='tstring_content'>) is lower than the latest released version for series </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_series'>series</span><span class='embexpr_end'>}</span><span class='tstring_content'> (</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_target'>target</span><span class='embexpr_end'>}</span><span class='tstring_content'>).</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+          <span class='id identifier rubyid_abort'>abort</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Aborting: version must be bumped above </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_target'>target</span><span class='embexpr_end'>}</span><span class='tstring_content'>.</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+        <span class='kw'>else</span>
+          <span class='id identifier rubyid_label'>label</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='label'>epic:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>EPIC</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='label'>major:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>MAJOR</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='label'>minor:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>MINOR</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='label'>patch:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>PATCH</span><span class='tstring_end'>&quot;</span></span><span class='rbrace'>}</span><span class='lbracket'>[</span><span class='id identifier rubyid_bump'>bump</span><span class='rbracket'>]</span> <span class='op'>||</span> <span class='id identifier rubyid_bump'>bump</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_upcase'>upcase</span>
+          <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Proposed bump type: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_label'>label</span><span class='embexpr_end'>}</span><span class='tstring_content'> (from </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_target'>target</span><span class='embexpr_end'>}</span><span class='tstring_content'> -&gt; </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_version'>version</span><span class='embexpr_end'>}</span><span class='tstring_content'>)</span><span class='tstring_end'>&quot;</span></span>
+        <span class='kw'>end</span>
+      <span class='kw'>else</span>
+        <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Could not determine latest released version from RubyGems (offline?). Proceeding without sanity check.</span><span class='tstring_end'>&quot;</span></span>
+      <span class='kw'>end</span>
+    <span class='kw'>else</span>
+      <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Could not determine latest released version from RubyGems (offline?). Proceeding without sanity check.</span><span class='tstring_end'>&quot;</span></span>
+    <span class='kw'>end</span>
+
+    <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Have you updated lib/**/version.rb and CHANGELOG.md for v</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_version'>version</span><span class='embexpr_end'>}</span><span class='tstring_content'>? [y/N]</span><span class='tstring_end'>&quot;</span></span>
+    <span class='id identifier rubyid_print'>print</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>&gt; </span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_ans'>ans</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="InputAdapter.html" title="Kettle::Dev::InputAdapter (module)">InputAdapter</a></span></span><span class='period'>.</span><span class='id identifier rubyid_gets'><span class='object_link'><a href="InputAdapter.html#gets-class_method" title="Kettle::Dev::InputAdapter.gets (method)">gets</a></span></span><span class='op'>&amp;.</span><span class='id identifier rubyid_strip'>strip</span>
+    <span class='id identifier rubyid_abort'>abort</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Aborted: please update version.rb and CHANGELOG.md, then re-run.</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='kw'>unless</span> <span class='id identifier rubyid_ans'>ans</span><span class='op'>&amp;.</span><span class='id identifier rubyid_downcase'>downcase</span><span class='op'>&amp;.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>y</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+
+    <span class='comment'># Initial validation: Ensure README.md and LICENSE.txt have identical sets of copyright years; also ensure current year present when matched
+</span>    <span class='id identifier rubyid_validate_copyright_years!'>validate_copyright_years!</span>
+
+    <span class='comment'># Ensure README KLOC badge reflects current CHANGELOG coverage denominator
+</span>    <span class='kw'>begin</span>
+      <span class='id identifier rubyid_update_readme_kloc_badge!'>update_readme_kloc_badge!</span>
+    <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+      <span class='id identifier rubyid_warn'>warn</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Failed to update KLOC badge in README: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='embexpr_end'>}</span><span class='tstring_content'>: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+    <span class='kw'>end</span>
+
+    <span class='comment'># Update Rakefile.example header banner with current version and date
+</span>    <span class='kw'>begin</span>
+      <span class='id identifier rubyid_update_rakefile_example_header!'>update_rakefile_example_header!</span><span class='lparen'>(</span><span class='id identifier rubyid_version'>version</span><span class='rparen'>)</span>
+    <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+      <span class='id identifier rubyid_warn'>warn</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Failed to update Rakefile.example header: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='embexpr_end'>}</span><span class='tstring_content'>: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># 3. bin/setup
+</span>  <span class='id identifier rubyid_run_cmd!'>run_cmd!</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>bin/setup</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='ivar'>@start_step</span> <span class='op'>&lt;=</span> <span class='int'>3</span>
+  <span class='comment'># 4. bin/rake
+</span>  <span class='id identifier rubyid_run_cmd!'>run_cmd!</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>bin/rake</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='ivar'>@start_step</span> <span class='op'>&lt;=</span> <span class='int'>4</span>
+
+  <span class='comment'># 5. appraisal:update (optional)
+</span>  <span class='kw'>if</span> <span class='ivar'>@start_step</span> <span class='op'>&lt;=</span> <span class='int'>5</span>
+    <span class='id identifier rubyid_appraisals_path'>appraisals_path</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='ivar'>@root</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Appraisals</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+    <span class='kw'>if</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_file?'>file?</span><span class='lparen'>(</span><span class='id identifier rubyid_appraisals_path'>appraisals_path</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Appraisals detected at </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_appraisals_path'>appraisals_path</span><span class='embexpr_end'>}</span><span class='tstring_content'>. Running: bin/rake appraisal:update</span><span class='tstring_end'>&quot;</span></span>
+      <span class='id identifier rubyid_run_cmd!'>run_cmd!</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>bin/rake appraisal:update</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+    <span class='kw'>else</span>
+      <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>No Appraisals file found; skipping appraisal:update</span><span class='tstring_end'>&quot;</span></span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># 6. git user + commit release prep
+</span>  <span class='kw'>if</span> <span class='ivar'>@start_step</span> <span class='op'>&lt;=</span> <span class='int'>6</span>
+    <span class='id identifier rubyid_ensure_git_user!'>ensure_git_user!</span>
+    <span class='id identifier rubyid_version'>version</span> <span class='op'>||=</span> <span class='id identifier rubyid_detect_version'>detect_version</span>
+    <span class='id identifier rubyid_committed'>committed</span> <span class='op'>=</span> <span class='id identifier rubyid_commit_release_prep!'>commit_release_prep!</span><span class='lparen'>(</span><span class='id identifier rubyid_version'>version</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># 7. optional local CI via act
+</span>  <span class='id identifier rubyid_maybe_run_local_ci_before_push!'>maybe_run_local_ci_before_push!</span><span class='lparen'>(</span><span class='id identifier rubyid_committed'>committed</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='ivar'>@start_step</span> <span class='op'>&lt;=</span> <span class='int'>7</span>
+
+  <span class='comment'># 8. ensure trunk synced
+</span>  <span class='kw'>if</span> <span class='ivar'>@start_step</span> <span class='op'>&lt;=</span> <span class='int'>8</span>
+    <span class='id identifier rubyid_trunk'>trunk</span> <span class='op'>=</span> <span class='id identifier rubyid_detect_trunk_branch'>detect_trunk_branch</span>
+    <span class='id identifier rubyid_feature'>feature</span> <span class='op'>=</span> <span class='id identifier rubyid_current_branch'>current_branch</span>
+    <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Trunk branch detected: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_trunk'>trunk</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+    <span class='id identifier rubyid_ensure_trunk_synced_before_push!'>ensure_trunk_synced_before_push!</span><span class='lparen'>(</span><span class='id identifier rubyid_trunk'>trunk</span><span class='comma'>,</span> <span class='id identifier rubyid_feature'>feature</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># 9. push branches
+</span>  <span class='id identifier rubyid_push!'>push!</span> <span class='kw'>if</span> <span class='ivar'>@start_step</span> <span class='op'>&lt;=</span> <span class='int'>9</span>
+
+  <span class='comment'># 10. monitor CI after push
+</span>  <span class='id identifier rubyid_monitor_workflows_after_push!'>monitor_workflows_after_push!</span> <span class='kw'>if</span> <span class='ivar'>@start_step</span> <span class='op'>&lt;=</span> <span class='int'>10</span>
+
+  <span class='comment'># 11. merge feature into trunk and push
+</span>  <span class='kw'>if</span> <span class='ivar'>@start_step</span> <span class='op'>&lt;=</span> <span class='int'>11</span>
+    <span class='id identifier rubyid_trunk'>trunk</span> <span class='op'>||=</span> <span class='id identifier rubyid_detect_trunk_branch'>detect_trunk_branch</span>
+    <span class='id identifier rubyid_feature'>feature</span> <span class='op'>||=</span> <span class='id identifier rubyid_current_branch'>current_branch</span>
+    <span class='id identifier rubyid_merge_feature_into_trunk_and_push!'>merge_feature_into_trunk_and_push!</span><span class='lparen'>(</span><span class='id identifier rubyid_trunk'>trunk</span><span class='comma'>,</span> <span class='id identifier rubyid_feature'>feature</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># 12. checkout trunk and pull
+</span>  <span class='kw'>if</span> <span class='ivar'>@start_step</span> <span class='op'>&lt;=</span> <span class='int'>12</span>
+    <span class='id identifier rubyid_trunk'>trunk</span> <span class='op'>||=</span> <span class='id identifier rubyid_detect_trunk_branch'>detect_trunk_branch</span>
+    <span class='id identifier rubyid_checkout!'>checkout!</span><span class='lparen'>(</span><span class='id identifier rubyid_trunk'>trunk</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_pull!'>pull!</span><span class='lparen'>(</span><span class='id identifier rubyid_trunk'>trunk</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># 13. signing guidance and checks
+</span>  <span class='kw'>if</span> <span class='ivar'>@start_step</span> <span class='op'>&lt;=</span> <span class='int'>13</span>
+    <span class='kw'>if</span> <span class='const'>ENV</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SKIP_GEM_SIGNING</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>false</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_casecmp'>casecmp</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>false</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_zero?'>zero?</span>
+      <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>TIP: For local dry-runs or testing the release workflow, set SKIP_GEM_SIGNING=true to avoid PEM password prompts.</span><span class='tstring_end'>&quot;</span></span>
+      <span class='kw'>if</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="InputAdapter.html" title="Kettle::Dev::InputAdapter (module)">InputAdapter</a></span></span><span class='period'>.</span><span class='id identifier rubyid_tty?'><span class='object_link'><a href="InputAdapter.html#tty%3F-class_method" title="Kettle::Dev::InputAdapter.tty? (method)">tty?</a></span></span>
+        <span class='comment'># In CI, avoid interactive prompts when no TTY is present (e.g., act or GitHub Actions &quot;CI validation&quot;).
+</span>        <span class='comment'># Non-interactive CI runs should not abort here; later signing checks are either stubbed in tests
+</span>        <span class='comment'># or will be handled explicitly by ensure_signing_setup_or_skip!.
+</span>        <span class='id identifier rubyid_print'>print</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Proceed with signing enabled? This may hang waiting for a PEM password. [y/N]: </span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+        <span class='id identifier rubyid_ans'>ans</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="InputAdapter.html" title="Kettle::Dev::InputAdapter (module)">InputAdapter</a></span></span><span class='period'>.</span><span class='id identifier rubyid_gets'><span class='object_link'><a href="InputAdapter.html#gets-class_method" title="Kettle::Dev::InputAdapter.gets (method)">gets</a></span></span><span class='op'>&amp;.</span><span class='id identifier rubyid_strip'>strip</span>
+        <span class='kw'>unless</span> <span class='id identifier rubyid_ans'>ans</span><span class='op'>&amp;.</span><span class='id identifier rubyid_downcase'>downcase</span><span class='op'>&amp;.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>y</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+          <span class='id identifier rubyid_abort'>abort</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Aborted. Re-run with SKIP_GEM_SIGNING=true bundle exec kettle-release (or set it in your environment).</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+        <span class='kw'>end</span>
+      <span class='kw'>else</span>
+        <span class='id identifier rubyid_warn'>warn</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Non-interactive shell detected (non-TTY); skipping interactive signing confirmation.</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+      <span class='kw'>end</span>
+    <span class='kw'>end</span>
+
+    <span class='id identifier rubyid_ensure_signing_setup_or_skip!'>ensure_signing_setup_or_skip!</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># 14. build
+</span>  <span class='kw'>if</span> <span class='ivar'>@start_step</span> <span class='op'>&lt;=</span> <span class='int'>14</span>
+    <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Running build (you may be prompted for the signing key password)...</span><span class='tstring_end'>&quot;</span></span>
+    <span class='id identifier rubyid_run_cmd!'>run_cmd!</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>bundle exec rake build</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># 15. release and tag
+</span>  <span class='kw'>if</span> <span class='ivar'>@start_step</span> <span class='op'>&lt;=</span> <span class='int'>15</span>
+    <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Running release (you may be prompted for signing key password and RubyGems MFA OTP)...</span><span class='tstring_end'>&quot;</span></span>
+    <span class='id identifier rubyid_run_cmd!'>run_cmd!</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>bundle exec rake release</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># 16. generate checksums
+</span>  <span class='comment'>#    Checksums are generated after release to avoid including checksums/ in gem package
+</span>  <span class='comment'>#    Rationale: Running gem_checksums before release may commit checksums/ and cause Bundler&#39;s
+</span>  <span class='comment'>#    release build to include them in the gem, thus altering the artifact, and invalidating the checksums.
+</span>  <span class='kw'>if</span> <span class='ivar'>@start_step</span> <span class='op'>&lt;=</span> <span class='int'>16</span>
+    <span class='comment'># Generate checksums for the just-built artifact, commit them, then validate
+</span>    <span class='id identifier rubyid_run_cmd!'>run_cmd!</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>bin/gem_checksums</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_version'>version</span> <span class='op'>||=</span> <span class='id identifier rubyid_detect_version'>detect_version</span>
+    <span class='id identifier rubyid_validate_checksums!'>validate_checksums!</span><span class='lparen'>(</span><span class='id identifier rubyid_version'>version</span><span class='comma'>,</span> <span class='label'>stage:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>after release</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># 17. push checksum commit (gem_checksums already commits)
+</span>  <span class='id identifier rubyid_push!'>push!</span> <span class='kw'>if</span> <span class='ivar'>@start_step</span> <span class='op'>&lt;=</span> <span class='int'>17</span>
+
+  <span class='comment'># 18. create GitHub release (optional)
+</span>  <span class='kw'>if</span> <span class='ivar'>@start_step</span> <span class='op'>&lt;=</span> <span class='int'>18</span>
+    <span class='id identifier rubyid_version'>version</span> <span class='op'>||=</span> <span class='id identifier rubyid_detect_version'>detect_version</span>
+    <span class='id identifier rubyid_maybe_create_github_release!'>maybe_create_github_release!</span><span class='lparen'>(</span><span class='id identifier rubyid_version'>version</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># 19. push tags to remotes (final step)
+</span>  <span class='id identifier rubyid_push_tags!'>push_tags!</span> <span class='kw'>if</span> <span class='ivar'>@start_step</span> <span class='op'>&lt;=</span> <span class='int'>19</span>
+
+  <span class='comment'># Final success message
+</span>  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_version'>version</span> <span class='op'>||=</span> <span class='id identifier rubyid_detect_version'>detect_version</span>
+    <span class='id identifier rubyid_gem_name'>gem_name</span> <span class='op'>=</span> <span class='id identifier rubyid_detect_gem_name'>detect_gem_name</span>
+    <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n🚀 Release </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_gem_name'>gem_name</span><span class='embexpr_end'>}</span><span class='tstring_content'> v</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_version'>version</span><span class='embexpr_end'>}</span><span class='tstring_content'> Complete 🚀</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_error'><span class='object_link'><a href="../Dev.html#debug_error-class_method" title="Kettle::Dev.debug_error (method)">debug_error</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span>
+    <span class='comment'># Fallback if detection fails for any reason
+</span>    <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n🚀 Release v</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_version'>version</span> <span class='op'>||</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>unknown</span><span class='tstring_end'>&quot;</span></span><span class='embexpr_end'>}</span><span class='tstring_content'> Complete 🚀</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+      <div id="footer">
+  Generated on Sun Nov 23 18:45:11 2025 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.37 (ruby-3.4.7).
+</div>
+
+    </div>
+  </body>
+</html>

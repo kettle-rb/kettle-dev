@@ -28,6 +28,7 @@ export K_SOUP_COV_MULTI_FORMATTERS=true
 export K_SOUP_COV_OPEN_BIN= # Means don't try to open coverage results in browser
 export MAX_ROWS=1 # Setting for simplecov-console gem for tty output, limits to the worst N rows of bad coverage
 export KETTLE_TEST_SILENT=true
+export KETTLE_DEV_DEBUG=false
 
 # Internal Debugging Controls
 export DEBUG=false # do not allow byebug statements (override in .env.local)
