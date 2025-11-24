@@ -20,10 +20,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
-- Add KETTLE_DEV_DEBUG to direnv defaults
-- Documentation of the explicit policy violations of RubyGems.org leadership toward open source projects they funded
-  - https://www.reddit.com/r/ruby/comments/1ove9vp/rubycentral_hates_this_one_fact/
-
 ### Changed
 
 ### Deprecated
@@ -32,10 +28,25 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [1.1.60] - 2025-11-23
+
+- TAG: [v1.1.60][1.1.60t]
+- COVERAGE: 94.38% -- 4066/4308 lines in 26 files
+- BRANCH COVERAGE: 78.86% -- 1675/2124 branches in 26 files
+- 79.89% documented
+
+### Added
+
+- Add KETTLE_DEV_DEBUG to direnv defaults
+- Documentation of the explicit policy violations of RubyGems.org leadership toward open source projects they funded
+  - https://www.reddit.com/r/ruby/comments/1ove9vp/rubycentral_hates_this_one_fact/
+
+### Fixed
+
 - Prevent double test runs by ensuring only one of test/coverage/spec are in default task
   - Add debugging when more than one registered
-
-### Security
 
 ## [1.1.59] - 2025-11-13
 
@@ -1447,7 +1458,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.59...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.60...HEAD
+[1.1.60]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.59...v1.1.60
+[1.1.60t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.60
 [1.1.59]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.58...v1.1.59
 [1.1.59t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.59
 [1.1.58]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.57...v1.1.58
