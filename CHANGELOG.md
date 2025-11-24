@@ -20,6 +20,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- Add KETTLE_DEV_DEBUG to direnv defaults
+
 ### Changed
 
 ### Deprecated
