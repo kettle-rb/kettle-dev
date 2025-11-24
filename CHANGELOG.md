@@ -30,6 +30,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Prevent double test runs by ensuring only one of test/coverage/spec are in default task
+  - Add debugging when more than one registered
+
 ### Security
 
 ## [1.1.59] - 2025-11-13
