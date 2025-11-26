@@ -12,7 +12,7 @@ RSpec.describe Kettle::Dev::ModularGemfiles do
         # Create a minimal source tree for modular files
         src_dir = File.join(gemroot, described_class::MODULAR_GEMFILE_DIR)
         FileUtils.mkdir_p(src_dir)
-        %w[coverage debug documentation injected optional runtime_heads x_std_libs].each do |base|
+        %w[coverage debug documentation injected optional runtime_heads templating x_std_libs].each do |base|
           File.write(File.join(src_dir, "#{base}.gemfile"), "# #{base}\n")
         end
         File.write(File.join(src_dir, "style.gemfile"), "gem 'rubocop-lts', '{RUBOCOP|LTS|CONSTRAINT}'\n# {RUBOCOP|RUBY|GEM}\n")

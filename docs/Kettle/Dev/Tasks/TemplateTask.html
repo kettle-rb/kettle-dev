@@ -1298,7 +1298,17 @@ All options/IO are controlled via TemplateHelpers and ENV.</p>
 1022
 1023
 1024
-1025</pre>
+1025
+1026
+1027
+1028
+1029
+1030
+1031
+1032
+1033
+1034
+1035</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/kettle/dev/tasks/template_task.rb', line 55</span>
@@ -1503,7 +1513,8 @@ All options/IO are controlled via TemplateHelpers and ENV.</p>
 
       <span class='comment'># If a destination gemspec already exists, get metadata from GemSpecReader via helpers
 </span>      <span class='id identifier rubyid_orig_meta'>orig_meta</span> <span class='op'>=</span> <span class='kw'>nil</span>
-      <span class='kw'>if</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_exist?'>exist?</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_gemspec'>dest_gemspec</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_dest_existed'>dest_existed</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_exist?'>exist?</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_gemspec'>dest_gemspec</span><span class='rparen'>)</span>
+      <span class='kw'>if</span> <span class='id identifier rubyid_dest_existed'>dest_existed</span>
         <span class='kw'>begin</span>
           <span class='id identifier rubyid_orig_meta'>orig_meta</span> <span class='op'>=</span> <span class='id identifier rubyid_helpers'>helpers</span><span class='period'>.</span><span class='id identifier rubyid_gemspec_metadata'>gemspec_metadata</span><span class='lparen'>(</span><span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_dirname'>dirname</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_gemspec'>dest_gemspec</span><span class='rparen'>)</span><span class='rparen'>)</span>
         <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
@@ -1637,6 +1648,15 @@ All options/IO are controlled via TemplateHelpers and ENV.</p>
           <span class='const'><span class='object_link'><a href="../../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_error'><span class='object_link'><a href="../../Dev.html#debug_error-class_method" title="Kettle::Dev.debug_error (method)">debug_error</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span>
           <span class='comment'># If anything goes wrong, keep the content as-is rather than failing the task
 </span>        <span class='kw'>end</span>
+
+        <span class='kw'>if</span> <span class='id identifier rubyid_dest_existed'>dest_existed</span>
+          <span class='kw'>begin</span>
+            <span class='id identifier rubyid_merged'>merged</span> <span class='op'>=</span> <span class='id identifier rubyid_helpers'>helpers</span><span class='period'>.</span><span class='id identifier rubyid_apply_strategy'>apply_strategy</span><span class='lparen'>(</span><span class='id identifier rubyid_c'>c</span><span class='comma'>,</span> <span class='id identifier rubyid_dest_gemspec'>dest_gemspec</span><span class='rparen'>)</span>
+            <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='id identifier rubyid_merged'>merged</span> <span class='kw'>if</span> <span class='id identifier rubyid_merged'>merged</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>String</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_merged'>merged</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+          <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+            <span class='const'><span class='object_link'><a href="../../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_error'><span class='object_link'><a href="../../Dev.html#debug_error-class_method" title="Kettle::Dev.debug_error (method)">debug_error</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span>
+          <span class='kw'>end</span>
+        <span class='kw'>end</span>
 
         <span class='id identifier rubyid_c'>c</span>
       <span class='kw'>end</span>
@@ -2337,7 +2357,7 @@ All options/IO are controlled via TemplateHelpers and ENV.</p>
 </div>
 
       <div id="footer">
-  Generated on Sun Nov 23 19:35:41 2025 by
+  Generated on Tue Nov 25 17:23:43 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.7).
 </div>

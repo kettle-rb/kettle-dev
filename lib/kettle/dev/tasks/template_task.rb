@@ -252,7 +252,8 @@ module Kettle
 
               # If a destination gemspec already exists, get metadata from GemSpecReader via helpers
               orig_meta = nil
-              if File.exist?(dest_gemspec)
+              dest_existed = File.exist?(dest_gemspec)
+              if dest_existed
                 begin
                   orig_meta = helpers.gemspec_metadata(File.dirname(dest_gemspec))
                 rescue StandardError => e
@@ -385,6 +386,15 @@ module Kettle
                 rescue StandardError => e
                   Kettle::Dev.debug_error(e, __method__)
                   # If anything goes wrong, keep the content as-is rather than failing the task
+                end
+
+                if dest_existed
+                  begin
+                    merged = helpers.apply_strategy(c, dest_gemspec)
+                    c = merged if merged.is_a?(String) && !merged.empty?
+                  rescue StandardError => e
+                    Kettle::Dev.debug_error(e, __method__)
+                  end
                 end
 
                 c

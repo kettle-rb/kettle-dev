@@ -1,0 +1,72 @@
+# TypeProf 0.21.11
+
+module Kettle
+  module Dev
+    # AST-driven merger for Appraisals files using Prism
+    module AppraisalsAstMerger
+      TRACKED_METHODS: Array[Symbol]
+
+      # Merge template and destination Appraisals files preserving comments
+      def self.merge: (String template_content, String dest_content) -> String
+
+      # Extract blocks and preamble from parse result
+      def self.extract_blocks: (
+        Prism::ParseResult parse_result,
+        String source_content
+      ) -> [Array[Prism::Comment], Array[Hash[Symbol, untyped]]]
+
+      # Check if node is an appraise call
+      def self.appraise_call?: (Prism::Node node) -> bool
+
+      # Extract appraise block name from node
+      def self.extract_appraise_name: (Prism::Node? node) -> String?
+
+      # Merge preamble comments from template and destination
+      def self.merge_preambles: (
+        Array[Prism::Comment] tmpl_comments,
+        Array[Prism::Comment] dest_comments
+      ) -> Array[String]
+
+      # Extract block header comments
+      def self.extract_block_header: (
+        Prism::Node node,
+        Array[String] source_lines,
+        Array[Hash[Symbol, untyped]] previous_blocks
+      ) -> String
+
+      # Merge blocks from template and destination
+      def self.merge_blocks: (
+        Array[Hash[Symbol, untyped]] tmpl_blocks,
+        Array[Hash[Symbol, untyped]] dest_blocks,
+        Prism::ParseResult tmpl_result,
+        Prism::ParseResult dest_result
+      ) -> Array[Hash[Symbol, untyped]]
+
+      # Merge statements within a block
+      def self.merge_block_statements: (
+        Prism::Node? tmpl_body,
+        Prism::Node? dest_body,
+        Prism::ParseResult dest_result
+      ) -> Array[Hash[Symbol, untyped]]
+
+      # Generate statement key for deduplication
+      def self.statement_key: (Prism::Node node) -> [Symbol, String?]?
+
+      # Build output from preamble and blocks
+      def self.build_output: (
+        Array[String] preamble_lines,
+        Array[Hash[Symbol, untyped]] blocks
+      ) -> String
+
+      # Normalize statement to use parentheses
+      def self.normalize_statement: (Prism::Node node) -> String
+
+      # Normalize argument to canonical format
+      def self.normalize_argument: (Prism::Node arg) -> String
+
+      # Extract original statements from node
+      def self.extract_original_statements: (Prism::Node node) -> Array[Hash[Symbol, untyped]]
+    end
+  end
+end
+

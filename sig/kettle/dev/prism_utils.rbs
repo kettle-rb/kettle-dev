@@ -1,0 +1,56 @@
+# TypeProf 0.21.11
+
+module Kettle
+  module Dev
+    # Shared utilities for working with Prism AST nodes
+    module PrismUtils
+      # Parse Ruby source code and return Prism parse result with comments
+      def self.parse_with_comments: (String source) -> Prism::ParseResult
+
+      # Extract statements from a Prism body node
+      def self.extract_statements: (Prism::Node? body_node) -> Array[Prism::Node]
+
+      # Generate a unique key for a statement node to identify equivalent statements
+      def self.statement_key: (
+        Prism::Node node,
+        ?tracked_methods: Array[Symbol]
+      ) -> [Symbol, String?]?
+
+      # Extract literal value from string or symbol nodes
+      def self.extract_literal_value: (Prism::Node? node) -> (String | Symbol)?
+
+      # Extract qualified constant name from a constant node
+      def self.extract_const_name: (Prism::Node? node) -> String?
+
+      # Find leading comments for a statement node
+      def self.find_leading_comments: (
+        Prism::ParseResult parse_result,
+        Prism::Node current_stmt,
+        Prism::Node? prev_stmt,
+        Prism::Node body_node
+      ) -> Array[Prism::Comment]
+
+      # Find inline comments for a statement node
+      def self.inline_comments_for_node: (
+        Prism::ParseResult parse_result,
+        Prism::Node stmt
+      ) -> Array[Prism::Comment]
+
+      # Convert a Prism AST node to Ruby source code
+      def self.node_to_source: (Prism::Node? node) -> String
+
+      # Normalize a call node to use parentheses format
+      def self.normalize_call_node: (Prism::Node node) -> String
+
+      # Normalize an argument node to canonical format
+      def self.normalize_argument: (Prism::Node arg) -> String
+
+      # Check if a node is a specific method call
+      def self.call_to?: (Prism::Node node, Symbol method_name) -> bool
+
+      # Check if a node is a block call to a specific method
+      def self.block_call_to?: (Prism::Node node, Symbol method_name) -> bool
+    end
+  end
+end
+

@@ -1,0 +1,21 @@
+# TypeProf 0.21.11
+
+module Kettle
+  module Dev
+    # Shared helpers for version detection and bump classification
+    module Versioning
+      # Detects a unique VERSION constant declared under lib/**/version.rb
+      def self.detect_version: (String root) -> String
+
+      # Classify the bump type from prev -> cur
+      def self.classify_bump: (String prev, String cur) -> Symbol
+
+      # Whether MAJOR is an EPIC version (strictly > 1000)
+      def self.epic_major?: (Integer major) -> bool
+
+      # Abort via ExitAdapter if available; otherwise Kernel.abort
+      def self.abort!: (String msg) -> void
+    end
+  end
+end
+

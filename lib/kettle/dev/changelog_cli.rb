@@ -2,14 +2,27 @@
 
 module Kettle
   module Dev
+    # CLI for updating CHANGELOG.md with new version sections
+    #
+    # Automatically extracts unreleased changes, formats them into a new version section,
+    # includes coverage and YARD stats, and updates link references.
     class ChangelogCLI
       UNRELEASED_SECTION_HEADING = "[Unreleased]:"
+
+      # Initialize the changelog CLI
+      # Sets up paths for CHANGELOG.md and coverage.json
       def initialize
         @root = Kettle::Dev::CIHelpers.project_root
         @changelog_path = File.join(@root, "CHANGELOG.md")
         @coverage_path = File.join(@root, "coverage", "coverage.json")
       end
 
+      # Main entry point to update CHANGELOG.md
+      #
+      # Detects current version, extracts unreleased changes, formats them into
+      # a new version section with coverage/YARD stats, and updates all link references.
+      #
+      # @return [void]
       def run
         version = Kettle::Dev::Versioning.detect_version(@root)
         today = Time.now.strftime("%Y-%m-%d")

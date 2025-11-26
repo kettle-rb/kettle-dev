@@ -3,11 +3,14 @@
 # External stdlibs
 require "find"
 require "set"
+require "yaml"
 
 module Kettle
   module Dev
     # Helpers shared by kettle:dev Rake tasks for templating and file ops.
     module TemplateHelpers
+      require "kettle/dev/appraisals_ast_merger"
+
       # Track results of templating actions across a single process run.
       # Keys: absolute destination paths (String)
       # Values: Hash with keys: :action (Symbol, one of :create, :replace, :skip, :dir_create, :dir_replace), :timestamp (Time)
@@ -16,6 +19,12 @@ module Kettle
       EXECUTABLE_GIT_HOOKS_RE = %r{[\\/]\.git-hooks[\\/](commit-msg|prepare-commit-msg)\z}
       # The minimum Ruby supported by setup-ruby GHA
       MIN_SETUP_RUBY = Gem::Version.create("2.3")
+
+      TEMPLATE_MANIFEST_PATH = File.expand_path("../../..", __dir__) + "/template_manifest.yml"
+      RUBY_BASENAMES = %w[Gemfile Rakefile Appraisals Appraisal.root.gemfile].freeze
+      RUBY_SUFFIXES = %w[.gemspec .gemfile].freeze
+      RUBY_EXTENSIONS = %w[.rb .rake].freeze
+      @@manifestation = nil
 
       module_function
 
@@ -279,43 +288,15 @@ module Kettle
           # If replacement fails unexpectedly, proceed with content as-is
         end
 
-        # If updating the Appraisals file and a destination already exists,
-        # merge appraise blocks: augment matching blocks with missing gem/eval_gemfile lines,
-        # preserve destination-only blocks and comments/preamble.
-        begin
-          if dest_exists && File.basename(dest_path.to_s) == "Appraisals" && File.file?(dest_path.to_s)
-            existing = begin
-              File.read(dest_path)
-            rescue
-              ""
-            end
-            content = merge_appraisals(content, existing)
+        basename = File.basename(dest_path.to_s)
+        content = apply_appraisals_merge(content, dest_path) if basename == "Appraisals"
+        if basename == "Appraisal.root.gemfile" && File.exist?(dest_path)
+          begin
+            prior = File.read(dest_path)
+            content = merge_gemfile_dependencies(content, prior)
+          rescue StandardError => e
+            Kettle::Dev.debug_error(e, __method__)
           end
-        rescue StandardError => e
-          Kettle::Dev.debug_error(e, __method__)
-          # On any error, fall back to generated content
-        end
-
-        # If updating a Gemfile or modular .gemfile and the destination already exists,
-        # merge dependency lines from the source into the destination to preserve any
-        # user-defined gem entries. We append missing `gem "name"` lines; we never
-        # alter or remove existing gem lines in the destination.
-        begin
-          if dest_exists
-            dest_str = dest_path.to_s
-            is_gemfile_like = File.basename(dest_str) == "Gemfile" || dest_str.end_with?(".gemfile")
-            if is_gemfile_like && File.file?(dest_str)
-              begin
-                existing = File.read(dest_str)
-                content = merge_gemfile_dependencies(content, existing)
-              rescue StandardError => e
-                Kettle::Dev.debug_error(e, __method__)
-                # If merging fails, fall back to writing generated content
-              end
-            end
-          end
-        rescue StandardError => e
-          Kettle::Dev.debug_error(e, __method__)
         end
 
         write_file(dest_path, content)
@@ -456,197 +437,17 @@ module Kettle
         end
       end
 
-      # Merge Appraisals template into existing Appraisals file.
-      # Rules:
-      #  - For each appraise "name" block in template:
-      #     * If destination has same block, ensure all gem/ eval_gemfile lines from template
-      #       exist in destination (append missing just before end), keep other dest lines.
-      #       Use template's contiguous header comment lines (immediately preceding the appraise line)
-      #       if any; otherwise retain destination's header comments.
-      #     * If destination lacks the block, add the full template block (with its header).
-      #  - Preserve destination-only blocks (not present in template) unchanged and after
-      #    the merged template-ordered blocks.
-      #  - Preamble (content before first appraise) comes from template when present, else destination.
-      def merge_appraisals(template_content, dest_content)
-        begin
-          # Helper: extract contiguous leading header lines (comments and blank lines)
-          extract_leading_header = lambda do |text|
-            lines = text.lines
-            header_lines = []
-            idx = 0
-            while idx < lines.length
-              ln = lines[idx]
-              break unless ln.strip.empty? || ln.lstrip.start_with?("#")
-              header_lines << ln
-              idx += 1
-            end
-            body = (idx < lines.length) ? lines[idx..-1].join : ""
-            {header: header_lines.join, body: body}
-          end
-
-          parse_blocks = lambda do |text|
-            lines = text.lines
-            blocks = []
-            i = 0
-            while i < lines.length
-              line = lines[i]
-              if line =~ /^\s*appraise\s+["']([^"']+)["']\s+do\s*$/
-                name = $1
-                # collect header comment lines immediately preceding (contiguous, no blank between comment group and appraise line)
-                header_lines = []
-                j = i - 1
-                while j >= 0
-                  prev = lines[j]
-                  break if prev.strip.empty?
-                  if prev.lstrip.start_with?("#")
-                    header_lines.unshift(prev)
-                    j -= 1
-                  else
-                    break
-                  end
-                end
-                body_lines = []
-                i += 1
-                while i < lines.length
-                  l2 = lines[i]
-                  if l2 =~ /^\s*end\s*$/
-                    end_line = l2
-                    blocks << {
-                      name: name,
-                      header: header_lines.dup,
-                      body: body_lines.dup,
-                      end_line: end_line,
-                      raw_order: blocks.length,
-                      original_indices: (j ? (j + 1)..i : i),
-                    }
-                    break
-                  else
-                    body_lines << l2
-                  end
-                  i += 1
-                end
-              end
-              i += 1
-            end
-            preamble = if blocks.empty?
-              text
-            else
-              # preamble = lines from start up to first block start (exclusive)
-              first_block = blocks.first
-              # Take lines up to first occurrence of the appraise line (supports either quote type)
-              re = /^\s*appraise\s+["']#{Regexp.escape(first_block[:name])}["']\s+do\s*$/
-              idx = lines.index { |l| l =~ re } || 0
-              lines[0...idx].join
-            end
-            {blocks: blocks, preamble: preamble}
-          end
-
-          # Extract leading headers from template and destination and parse their bodies
-          tmpl_parts = extract_leading_header.call(template_content)
-          dest_parts = extract_leading_header.call(dest_content)
-
-          # If the template does not provide a leading header, preserve the destination as-is
-          # so that per-block adjacent header comments (including those at the top of file)
-          # are still parsed and preserved. Only strip the destination leading header when
-          # the template has a leading header to replace it.
-          dest_parse_source = if tmpl_parts[:header].to_s.strip.empty?
-            dest_content
-          else
-            dest_parts[:body]
-          end
-
-          tmpl = parse_blocks.call(tmpl_parts[:body])
-          dest = parse_blocks.call(dest_parse_source)
-          tmpl_blocks = tmpl[:blocks]
-          dest_blocks = dest[:blocks]
-          dest_by_name = dest_blocks.map { |b| [b[:name], b] }.to_h
-
-          merged_blocks_strings = []
-          gem_or_eval_re = /^\s*(?:gem|eval_gemfile)\b/
-
-          tmpl_blocks.each do |tb|
-            if (db = dest_by_name[tb[:name]])
-              # Merge lines
-              existing_lines = db[:body].map(&:rstrip)
-              existing_set = existing_lines.to_set
-              # Collect template gem/eval lines
-              tmpl_needed = tb[:body].select { |l| gem_or_eval_re =~ l }
-              additions = []
-              tmpl_needed.each do |l|
-                line_key = l.rstrip
-                additions << l unless existing_set.include?(line_key)
-              end
-              merged_body = db[:body].dup
-              unless additions.empty?
-                # insert before end (just append; body excludes 'end')
-                merged_body += additions
-              end
-              header = tb[:header].any? ? tb[:header] : db[:header]
-              # If the template provides no leading header and the destination preamble
-              # already ends with this header, skip emitting the header for this block
-              # to avoid duplicating it (it will already be present at the top of the file).
-              header_to_emit = if tmpl_parts[:header].to_s.strip.empty? && !dest[:preamble].to_s.strip.empty? && !header.empty? && dest[:preamble].to_s.end_with?(header.join)
-                []
-              else
-                header
-              end
-              block_text = +""
-              block_text << "\n" unless merged_blocks_strings.empty?
-              header_to_emit.each { |hl| block_text << hl } if header_to_emit.any?
-              block_text << "appraise \"#{tb[:name]}\" do\n"
-              merged_body.each { |bl| block_text << bl }
-              block_text << db[:end_line]
-              merged_blocks_strings << block_text
-              dest_by_name.delete(tb[:name])
-            else
-              # New block from template
-              block_text = +""
-              block_text << "\n" unless merged_blocks_strings.empty?
-              tb[:header].each { |hl| block_text << hl } if tb[:header].any?
-              block_text << "appraise \"#{tb[:name]}\" do\n"
-              tb[:body].each { |bl| block_text << bl }
-              block_text << tb[:end_line]
-              merged_blocks_strings << block_text
-            end
-          end
-          # Append destination-only blocks preserving their original text
-          dest_remaining_order = dest_blocks.select { |b| dest_by_name.key?(b[:name]) }
-          dest_remaining_order.each do |b|
-            block_text = +""
-            block_text << "\n" unless merged_blocks_strings.empty?
-            b[:header].each { |hl| block_text << hl } if b[:header].any?
-            block_text << "appraise \"#{b[:name]}\" do\n"
-            b[:body].each { |bl| block_text << bl }
-            block_text << b[:end_line]
-            merged_blocks_strings << block_text
-          end
-
-          # Build final preamble:
-          # - If template provides a leading header, use that header and then prefer the
-          #   template's body preamble when present, otherwise fall back to the
-          #   destination's body preamble.
-          # - If template does NOT provide a leading header, leave the destination
-          #   preamble (including any leading header/comments) intact.
-          preamble = +""
-          if tmpl_parts[:header].to_s.strip.empty?
-            preamble << dest[:preamble].to_s
-          else
-            body_preamble = tmpl[:preamble].to_s.strip.empty? ? dest[:preamble].to_s : tmpl[:preamble].to_s
-            preamble << tmpl_parts[:header].to_s
-            preamble << body_preamble.to_s
-          end
-
-          out = +""
-          out << preamble unless preamble.nil? || preamble.empty?
-          out << "\n" unless out.end_with?("\n")
-          out << merged_blocks_strings.join
-          out << "\n" unless out.end_with?("\n")
-          out
-        rescue StandardError => e
-          Kettle::Dev.debug_error(e, __method__)
-          # Fallback: prefer destination (user changes) and append template content to allow manual reconciliation
-          dest_content + "\n# --- TEMPLATE APPRAISALS (unmerged) ---\n" + template_content
+      def apply_appraisals_merge(content, dest_path)
+        dest = dest_path.to_s
+        existing = if File.exist?(dest)
+          File.read(dest)
+        else
+          ""
         end
+        Kettle::Dev::AppraisalsAstMerger.merge(content, existing)
+      rescue StandardError => e
+        Kettle::Dev.debug_error(e, __method__)
+        content
       end
 
       # Copy a directory tree, prompting before creating or overwriting.
@@ -898,6 +699,49 @@ module Kettle
       # @return [Hash]
       def gemspec_metadata(root = project_root)
         Kettle::Dev::GemSpecReader.load(root)
+      end
+
+      def apply_strategy(content, dest_path)
+        return content unless ruby_template?(dest_path)
+        strategy = strategy_for(dest_path)
+        dest_content = File.exist?(dest_path) ? File.read(dest_path) : ""
+        Kettle::Dev::SourceMerger.apply(strategy: strategy, src: content, dest: dest_content, path: rel_path(dest_path))
+      end
+
+      def manifestation
+        @@manifestation ||= load_manifest
+      end
+
+      def strategy_for(dest_path)
+        relative = rel_path(dest_path)
+        manifestation.find do |entry|
+          File.fnmatch?(entry[:path], relative, File::FNM_PATHNAME | File::FNM_EXTGLOB | File::FNM_DOTMATCH)
+        end&.fetch(:strategy, :skip) || :skip
+      end
+
+      def rel_path(path)
+        project = project_root.to_s
+        path.to_s.sub(/^#{Regexp.escape(project)}\/?/, "")
+      end
+
+      def ruby_template?(dest_path)
+        base = File.basename(dest_path.to_s)
+        return true if RUBY_BASENAMES.include?(base)
+        return true if RUBY_SUFFIXES.any? { |suffix| base.end_with?(suffix) }
+        ext = File.extname(base)
+        RUBY_EXTENSIONS.include?(ext)
+      end
+
+      def load_manifest
+        raw = YAML.load_file(TEMPLATE_MANIFEST_PATH)
+        raw.map do |entry|
+          {
+            path: entry["path"],
+            strategy: entry["strategy"].to_s.strip.downcase.to_sym,
+          }
+        end
+      rescue Errno::ENOENT
+        []
       end
     end
   end

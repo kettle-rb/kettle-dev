@@ -574,41 +574,84 @@ What it does:
   - Stages and commits any bootstrap changes with message: `🎨 Template bootstrap by kettle-dev-setup v<version>`.
   - Executes `bin/rake kettle:dev:install` with the parsed passthrough args.
 
+### Template Manifest and AST Strategies
+
+`kettle:dev:template` looks at `template_manifest.yml` to determine how each file should be updated. Each entry has a `path` (exact file or glob) and a `strategy`:
+
+| Strategy | Behavior |
+| --- | --- |
+| `skip` | Legacy behavior: template content is copied with token replacements and any bespoke merge logic already in place. |
+| `replace` | Template AST replaces the destination outside of `kettle-dev:freeze` sections. |
+| `append` | Only missing AST nodes (e.g., `gem` or `task` declarations) are appended; existing nodes remain untouched. |
+| `merge` | Destination nodes are updated in-place using the template AST (used for `Gemfile`, `*.gemspec`, and `Rakefile`). |
+
+All Ruby files receive this reminder (inserted after shebang/frozen-string-literal lines):
+
+```
+# To force retention during kettle-dev templating:
+#     kettle-dev:freeze
+#     # ... your code
+#     kettle-dev:unfreeze
+```
+
+Wrap any code you never want rewritten between `kettle-dev:freeze` / `kettle-dev:unfreeze` comments. When an AST merge fails, the task emits an error asking you to file an issue at https://github.com/kettle-rb/kettle-dev/issues and then aborts—there is no regex fallback.
+
+### Template Example
+
+Here is an example `template_manifest.yml`:
+
+```yaml
+# For each file or glob, specify a strategy for how it should be managed.
+# See https://github.com/kettle-rb/kettle-dev/blob/main/docs/README.md#template-manifest-and-ast-strategies
+# for details on each strategy.
+files:
+  - path: "Gemfile"
+    strategy: "merge"
+  - path: "*.gemspec"
+    strategy: "merge"
+  - path: "Rakefile"
+    strategy: "merge"
+  - path: "README.md"
+    strategy: "replace"
+  - path: ".env.local"
+    strategy: "skip"
+```
+
 ### Open Collective README updater
 
 - Script: `exe/kettle-readme-backers` (run as `kettle-readme-backers`)
 - Purpose: Updates README sections for Open Collective backers (individuals) and sponsors (organizations) by fetching live data from your collective.
 - Tags updated in README.md (first match wins for backers):
-  - The default tag prefix is `OPENCOLLECTIVE`, and it is configurable:
-    - ENV: `KETTLE_DEV_BACKER_README_OSC_TAG="OPENCOLLECTIVE"`
-    - YAML (.opencollective.yml): `readme-osc-tag: "OPENCOLLECTIVE"`
-    - The resulting markers become: `<!-- <TAG>:START --> … <!-- <TAG>:END -->`, `<!-- <TAG>-INDIVIDUALS:START --> … <!-- <TAG>-INDIVIDUALS:END -->`, and `<!-- <TAG>-ORGANIZATIONS:START --> … <!-- <TAG>-ORGANIZATIONS:END -->`.
-    - ENV overrides YAML.
-  - Backers (Individuals): `<!-- <TAG>:START --> … <!-- <TAG>:END -->` or `<!-- <TAG>-INDIVIDUALS:START --> … <!-- <TAG>-INDIVIDUALS:END -->`
-  - Sponsors (Organizations): `<!-- <TAG>-ORGANIZATIONS:START --> … <!-- <TAG>-ORGANIZATIONS:END -->`
+    - The default tag prefix is `OPENCOLLECTIVE`, and it is configurable:
+        - ENV: `KETTLE_DEV_BACKER_README_OSC_TAG="OPENCOLLECTIVE"`
+        - YAML (.opencollective.yml): `readme-osc-tag: "OPENCOLLECTIVE"`
+        - The resulting markers become: `<!-- <TAG>:START --> … <!-- <TAG>:END -->`, `<!-- <TAG>-INDIVIDUALS:START --> … <!-- <TAG>-INDIVIDUALS:END -->`, and `<!-- <TAG>-ORGANIZATIONS:START --> … <!-- <TAG>-ORGANIZATIONS:END -->`.
+        - ENV overrides YAML.
+    - Backers (Individuals): `<!-- <TAG>:START --> … <!-- <TAG>:END -->` or `<!-- <TAG>-INDIVIDUALS:START --> … <!-- <TAG>-INDIVIDUALS:END -->`
+    - Sponsors (Organizations): `<!-- <TAG>-ORGANIZATIONS:START --> … <!-- <TAG>-ORGANIZATIONS:END -->`
 - Handle resolution:
-  1. `OPENCOLLECTIVE_HANDLE` environment variable, if set
-  2. `opencollective.yml` in the project root (e.g., `collective: "kettle-rb"` in this repo)
+    1. `OPENCOLLECTIVE_HANDLE` environment variable, if set
+    2. `opencollective.yml` in the project root (e.g., `collective: "kettle-rb"` in this repo)
 - Usage:
-  - `exe/kettle-readme-backers`
-  - `OPENCOLLECTIVE_HANDLE=my-collective exe/kettle-readme-backers`
+    - `exe/kettle-readme-backers`
+    - `OPENCOLLECTIVE_HANDLE=my-collective exe/kettle-readme-backers`
 - Behavior:
-  - Writes to README.md only if content between the tags would change.
-  - If neither the backers nor sponsors tags are present, prints a helpful warning and exits with status 2.
-  - When there are no entries, inserts a friendly placeholder: "No backers yet. Be the first!" or "No sponsors yet. Be the first!".
-  - When updates are written and the repository is a git work tree, the script stages README.md and commits with a message thanking new backers and subscribers, including mentions for any newly added backers and subscribers (GitHub @handles when their website/profile is a github.com URL; otherwise their name).
-  - Customize the commit subject via env var: `KETTLE_README_BACKERS_COMMIT_SUBJECT="💸 Thanks 🙏 to our new backers 🎒 and subscribers 📜"`.
-    - Or via .opencollective.yml: set `readme-backers-commit-subject: "💸 Thanks 🙏 to our new backers 🎒 and subscribers 📜"`.
-    - Precedence: ENV overrides .opencollective.yml; if neither is set, a sensible default is used.
-    - Note: When used with the provided `.git-hooks`, the subject should start with a gitmoji character (see [gitmoji][📌gitmoji]).
+    - Writes to README.md only if content between the tags would change.
+    - If neither the backers nor sponsors tags are present, prints a helpful warning and exits with status 2.
+    - When there are no entries, inserts a friendly placeholder: "No backers yet. Be the first!" or "No sponsors yet. Be the first!".
+    - When updates are written and the repository is a git work tree, the script stages README.md and commits with a message thanking new backers and subscribers, including mentions for any newly added backers and subscribers (GitHub @handles when their website/profile is a github.com URL; otherwise their name).
+    - Customize the commit subject via env var: `KETTLE_README_BACKERS_COMMIT_SUBJECT="💸 Thanks 🙏 to our new backers 🎒 and subscribers 📜"`.
+        - Or via .opencollective.yml: set `readme-backers-commit-subject: "💸 Thanks 🙏 to our new backers 🎒 and subscribers 📜"`.
+        - Precedence: ENV overrides .opencollective.yml; if neither is set, a sensible default is used.
+        - Note: When used with the provided `.git-hooks`, the subject should start with a gitmoji character (see [gitmoji][📌gitmoji]).
 - Tip:
-  - Run this locally before committing to keep your README current, or schedule it in CI to refresh periodically.
-  - It runs automatically on a once-a-week schedule by the .github/workflows/opencollective.yml workflow that is part of the kettle-dev template.
+    - Run this locally before committing to keep your README current, or schedule it in CI to refresh periodically.
+    - It runs automatically on a once-a-week schedule by the .github/workflows/opencollective.yml workflow that is part of the kettle-dev template.
 - Authentication requirement:
-  - When running in CI with the provided workflow, you must provide an organization-level Actions secret named `README_UPDATER_TOKEN`.
-    - Create it under your GitHub organization settings: `https://github.com/organizations/<YOUR_ORG>/settings/secrets/actions`.
-    - The updater will look for `REPO` or `GITHUB_REPOSITORY` (both usually set by GitHub Actions) to infer `<YOUR_ORG>` for guidance.
-    - If `README_UPDATER_TOKEN` is missing, the tool prints a helpful error to STDERR and aborts, including a direct link to the expected org settings page.
+    - When running in CI with the provided workflow, you must provide an organization-level Actions secret named `README_UPDATER_TOKEN`.
+        - Create it under your GitHub organization settings: `https://github.com/organizations/<YOUR_ORG>/settings/secrets/actions`.
+        - The updater will look for `REPO` or `GITHUB_REPOSITORY` (both usually set by GitHub Actions) to infer `<YOUR_ORG>` for guidance.
+        - If `README_UPDATER_TOKEN` is missing, the tool prints a helpful error to STDERR and aborts, including a direct link to the expected org settings page.
 
 ## 🦷 FLOSS Funding
 
@@ -678,6 +721,12 @@ or use the gem and think about how it could be better.
 We [![Keep A Changelog][📗keep-changelog-img]][📗keep-changelog] so if you make changes, remember to update it.
 
 See [CONTRIBUTING.md][🤝contributing] for more detailed instructions.
+
+### Roadmap
+
+- [ ] Template the RSpec test harness.
+- [ ] Enhance gitlab pipeline configuration.
+- [ ] Add focused, packaged, named, templating strategies, allowing, for example, only refreshing the Appraisals related template files.
 
 ### 🚀 Release Instructions
 

@@ -1,0 +1,64 @@
+# TypeProf 0.21.11
+
+module Kettle
+  module Dev
+    # CLI for updating CHANGELOG.md with new version sections
+    class ChangelogCLI
+      UNRELEASED_SECTION_HEADING: String
+
+      @root: String
+      @changelog_path: String
+      @coverage_path: String
+
+      def initialize: () -> void
+
+      # Main entry point that updates CHANGELOG.md
+      def run: () -> void
+
+      private
+
+      # Abort with error message
+      def abort: (String msg) -> void
+
+      # Detect version from lib/**/version.rb
+      def detect_version: () -> String
+
+      # Extract unreleased section from changelog
+      def extract_unreleased: (String content) -> [String?, String?, String?]
+
+      # Detect previous version from after text
+      def detect_previous_version: (String after_text) -> String?
+
+      # Filter unreleased sections keeping only those with content
+      def filter_unreleased_sections: (String unreleased_block) -> String
+
+      # Get coverage lines from coverage.json
+      def coverage_lines: () -> [String?, String?]
+
+      # Get YARD documentation percentage
+      def yard_percent_documented: () -> String?
+
+      # Convert legacy heading tag suffix to list format
+      def convert_heading_tag_suffix_to_list: (String text) -> String
+
+      # Update link references in changelog
+      def update_link_refs: (
+        String content,
+        String? owner,
+        String? repo,
+        String? prev_version,
+        String new_version
+      ) -> String
+
+      # Normalize spacing around headings
+      def normalize_heading_spacing: (String text) -> String
+
+      # Ensure proper footer spacing
+      def ensure_footer_spacing: (String text) -> String
+
+      # Detect initial compare base from changelog
+      def detect_initial_compare_base: (Array[String] lines) -> String
+    end
+  end
+end
+

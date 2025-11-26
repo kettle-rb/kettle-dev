@@ -30,6 +30,18 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Security
 
+## [1.2.0] - 2025-11-25
+
+- TAG: [v1.2.0][1.2.0t]
+- COVERAGE: 94.38% -- 4066/4308 lines in 26 files
+- BRANCH COVERAGE: 78.81% -- 1674/2124 branches in 26 files
+- 69.14% documented
+
+### Changed
+
+- Source merging switched from Regex-based string manipulation to Prism AST-based manipulation
+  - Comments are preserved in the resulting file
+
 ## [1.1.60] - 2025-11-23
 
 - TAG: [v1.1.60][1.1.60t]
@@ -1458,7 +1470,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.60...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.60...v1.2.0
+[1.2.0t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.2.0
 [1.1.60]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.59...v1.1.60
 [1.1.60t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.60
 [1.1.59]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.58...v1.1.59

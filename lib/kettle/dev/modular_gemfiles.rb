@@ -22,25 +22,31 @@ module Kettle
       def sync!(helpers:, project_root:, gem_checkout_root:, min_ruby: nil)
         # 4a) gemfiles/modular/*.gemfile except style.gemfile (handled below)
         # Note: `injected.gemfile` is only intended for testing this gem, and isn't even actively used there. It is not part of the template.
+        # Note: `style.gemfile` is handled separately below.
         modular_gemfiles = %w[
           coverage
           debug
           documentation
           optional
           runtime_heads
+          templating
           x_std_libs
         ]
         modular_gemfiles.each do |base|
           modular_gemfile = "#{base}.gemfile"
           src = helpers.prefer_example(File.join(gem_checkout_root, MODULAR_GEMFILE_DIR, modular_gemfile))
           dest = File.join(project_root, MODULAR_GEMFILE_DIR, modular_gemfile)
-          helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true)
+          existing = File.exist?(dest) ? File.read(dest) : nil
+          helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true) do |content|
+            existing ? helpers.merge_gemfile_dependencies(content, existing) : content
+          end
         end
 
         # 4b) gemfiles/modular/style.gemfile with dynamic rubocop constraints
         modular_gemfile = "style.gemfile"
         src = helpers.prefer_example(File.join(gem_checkout_root, MODULAR_GEMFILE_DIR, modular_gemfile))
         dest = File.join(project_root, MODULAR_GEMFILE_DIR, modular_gemfile)
+        existing_style = File.exist?(dest) ? File.read(dest) : nil
         if File.basename(src).sub(/\.example\z/, "") == "style.gemfile"
           helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true) do |content|
             # Adjust rubocop-lts constraint based on min_ruby
@@ -92,10 +98,12 @@ module Kettle
               token = "{RUBOCOP|RUBY|GEM}"
               content.gsub!(token, "rubocop-ruby#{rubocop_ruby_gem_version}") if content.include?(token)
             end
-            content
+            existing_style ? helpers.merge_gemfile_dependencies(content, existing_style) : content
           end
         else
-          helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true)
+          helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true) do |content|
+            existing_style ? helpers.merge_gemfile_dependencies(content, existing_style) : content
+          end
         end
 
         # 4c) Copy modular directories with nested/versioned files
