@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="US-ASCII">
+    <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>
-  File: kettle-dev
+  File: versioning
   
     &mdash; Documentation by YARD 0.9.37
   
@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="css/common.css" type="text/css" />
 
 <script type="text/javascript">
-  pathId = "kettle-dev";
+  pathId = "versioning";
   relpath = '';
 </script>
 
@@ -37,7 +37,7 @@
         <div id="menu">
   
     <a href="_index.html">Index</a> &raquo; 
-    <span class="title">File: kettle-dev</span>
+    <span class="title">File: versioning</span>
   
 </div>
 
@@ -57,7 +57,25 @@
         <div class="clear"></div>
       </div>
 
-      <div id="content"><div id='filecontents'>
+      <div id="content"><div id='filecontents'><h1 id="typeprof-02111">TypeProf 0.21.11</h1>
+
+<p>module Kettle<br>
+  module Dev<br>
+    # Shared helpers for version detection and bump classification<br>
+    module Versioning<br>
+      # Detects a unique VERSION constant declared under lib/**/version.rb<br>
+      def self.detect_version: (String root) -&gt; String</p>
+
+<pre class="code ruby"><code class="ruby">  # Classify the bump type from prev -&gt; cur
+  def self.classify_bump: (String prev, String cur) -&gt; Symbol
+
+  # Whether MAJOR is an EPIC version (strictly &gt; 1000)
+  def self.epic_major?: (Integer major) -&gt; bool
+
+  # Abort via ExitAdapter if available; otherwise Kernel.abort
+  def self.abort!: (String msg) -&gt; void
+end   end end
+</code></pre>
 </div></div>
 
       <div id="footer">
