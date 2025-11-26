@@ -36,9 +36,9 @@ module Kettle
           modular_gemfile = "#{base}.gemfile"
           src = helpers.prefer_example(File.join(gem_checkout_root, MODULAR_GEMFILE_DIR, modular_gemfile))
           dest = File.join(project_root, MODULAR_GEMFILE_DIR, modular_gemfile)
-          existing = File.exist?(dest) ? File.read(dest) : nil
           helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true) do |content|
-            existing ? helpers.merge_gemfile_dependencies(content, existing) : content
+            # Use apply_strategy for proper AST-based merging with Prism
+            helpers.apply_strategy(content, dest)
           end
         end
 
@@ -46,7 +46,6 @@ module Kettle
         modular_gemfile = "style.gemfile"
         src = helpers.prefer_example(File.join(gem_checkout_root, MODULAR_GEMFILE_DIR, modular_gemfile))
         dest = File.join(project_root, MODULAR_GEMFILE_DIR, modular_gemfile)
-        existing_style = File.exist?(dest) ? File.read(dest) : nil
         if File.basename(src).sub(/\.example\z/, "") == "style.gemfile"
           helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true) do |content|
             # Adjust rubocop-lts constraint based on min_ruby
@@ -98,11 +97,13 @@ module Kettle
               token = "{RUBOCOP|RUBY|GEM}"
               content.gsub!(token, "rubocop-ruby#{rubocop_ruby_gem_version}") if content.include?(token)
             end
-            existing_style ? helpers.merge_gemfile_dependencies(content, existing_style) : content
+            # Use apply_strategy for proper AST-based merging with Prism
+            helpers.apply_strategy(content, dest)
           end
         else
           helpers.copy_file_with_prompt(src, dest, allow_create: true, allow_replace: true) do |content|
-            existing_style ? helpers.merge_gemfile_dependencies(content, existing_style) : content
+            # Use apply_strategy for proper AST-based merging with Prism
+            helpers.apply_strategy(content, dest)
           end
         end
 

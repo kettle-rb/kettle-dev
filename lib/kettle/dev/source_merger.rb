@@ -3,7 +3,6 @@
 require "yaml"
 require "set"
 require "prism"
-require "kettle/dev/prism_utils"
 
 module Kettle
   module Dev
@@ -235,12 +234,69 @@ module Kettle
         src_result = PrismUtils.parse_with_comments(src_content)
         dest_result = PrismUtils.parse_with_comments(dest_content)
 
+        # If src parsing failed, return src unchanged to avoid losing content
+        unless src_result.success?
+          puts "WARNING: Source content parse failed, returning unchanged"
+          return src_content
+        end
+
         src_nodes = extract_nodes_with_comments(src_result)
         dest_nodes = extract_nodes_with_comments(dest_result)
 
+
         merged_nodes = yield(src_nodes, dest_nodes, src_result, dest_result)
 
-        build_source_from_nodes(merged_nodes)
+        # Extract magic comments from source (frozen_string_literal, etc.)
+        magic_comments = extract_magic_comments(src_result)
+
+        # Extract file-level leading comments (comments before first statement)
+        file_leading_comments = extract_file_leading_comments(src_result)
+
+        build_source_from_nodes(merged_nodes, magic_comments: magic_comments, file_leading_comments: file_leading_comments)
+      end
+
+      def extract_magic_comments(parse_result)
+        return [] unless parse_result.success?
+
+        magic_comments = []
+        source_lines = parse_result.source.lines
+
+        # Magic comments appear at the very top of the file (possibly after shebang)
+        # They must be on the first or second line
+        source_lines.first(2).each do |line|
+          stripped = line.strip
+          # Check for shebang
+          if stripped.start_with?("#!")
+            magic_comments << line.rstrip
+          # Check for magic comments like frozen_string_literal, encoding, etc.
+          elsif stripped.start_with?("#") &&
+                (stripped.include?("frozen_string_literal:") ||
+                 stripped.include?("encoding:") ||
+                 stripped.include?("warn_indent:") ||
+                 stripped.include?("shareable_constant_value:"))
+            magic_comments << line.rstrip
+          end
+        end
+
+        magic_comments
+      end
+
+      def extract_file_leading_comments(parse_result)
+        return [] unless parse_result.success?
+
+        statements = PrismUtils.extract_statements(parse_result.value.statements)
+        return [] if statements.empty?
+
+        first_stmt = statements.first
+        first_stmt_line = first_stmt.location.start_line
+
+        # Extract file-level comments that appear after magic comments (line 1-2)
+        # but before the first executable statement. These are typically documentation
+        # comments describing the file's purpose.
+        parse_result.comments.select do |comment|
+          comment.location.start_line > 2 &&
+            comment.location.start_line < first_stmt_line
+        end.map { |comment| comment.slice.rstrip }
       end
 
       def extract_nodes_with_comments(parse_result)
@@ -249,23 +305,81 @@ module Kettle
         statements = PrismUtils.extract_statements(parse_result.value.statements)
         return [] if statements.empty?
 
+        source_lines = parse_result.source.lines
+
         statements.map.with_index do |stmt, idx|
           prev_stmt = (idx > 0) ? statements[idx - 1] : nil
           body_node = parse_result.value.statements
+
+          # Count blank lines before this statement
+          blank_lines_before = count_blank_lines_before(source_lines, stmt, prev_stmt, body_node)
 
           {
             node: stmt,
             leading_comments: PrismUtils.find_leading_comments(parse_result, stmt, prev_stmt, body_node),
             inline_comments: PrismUtils.inline_comments_for_node(parse_result, stmt),
+            blank_lines_before: blank_lines_before,
           }
         end
       end
 
-      def build_source_from_nodes(node_infos)
+      def count_blank_lines_before(source_lines, current_stmt, prev_stmt, body_node)
+        # Determine the starting line to search from
+        start_line = if prev_stmt
+          prev_stmt.location.end_line
+        else
+          # For the first statement, start from the beginning of the body
+          body_node.location.start_line
+        end
+
+        end_line = current_stmt.location.start_line
+
+        # Count consecutive blank lines before the current statement
+        # (after any comments and the previous statement)
+        blank_count = 0
+        (start_line...end_line).each do |line_num|
+          line_idx = line_num - 1
+          next if line_idx < 0 || line_idx >= source_lines.length
+
+          line = source_lines[line_idx]
+          # Skip comment lines (they're handled separately)
+          next if line.strip.start_with?("#")
+
+          # Count blank lines
+          if line.strip.empty?
+            blank_count += 1
+          else
+            # Reset count if we hit a non-blank, non-comment line
+            # This ensures we only count consecutive blank lines immediately before the statement
+            blank_count = 0
+          end
+        end
+
+        blank_count
+      end
+
+      def build_source_from_nodes(node_infos, magic_comments: [], file_leading_comments: [])
         return "" if node_infos.empty?
 
         lines = []
+
+        # Add magic comments at the top (frozen_string_literal, etc.)
+        if magic_comments.any?
+          lines.concat(magic_comments)
+          lines << "" # Add blank line after magic comments
+        end
+
+        # Add file-level leading comments (comments before first statement)
+        if file_leading_comments.any?
+          lines.concat(file_leading_comments)
+          lines << "" # Add blank line after file-level comments
+        end
+
         node_infos.each do |node_info|
+          # Add blank lines before this statement (for visual grouping)
+          blank_lines = node_info[:blank_lines_before] || 0
+          blank_lines.times { lines << "" }
+
           # Add leading comments
           node_info[:leading_comments].each do |comment|
             lines << comment.slice.rstrip

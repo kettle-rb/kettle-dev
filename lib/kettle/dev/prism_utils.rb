@@ -53,9 +53,24 @@ module Kettle
       # @param node [Prism::Node, nil] Node to extract from
       # @return [String, Symbol, nil] Literal value or nil
       def extract_literal_value(node)
+        return nil unless node
         case node
         when Prism::StringNode then node.unescaped
         when Prism::SymbolNode then node.unescaped
+        else
+          # Attempt to handle array literals
+          if node.respond_to?(:elements) && node.elements
+            arr = node.elements.map do |el|
+              case el
+              when Prism::StringNode then el.unescaped
+              when Prism::SymbolNode then el.unescaped
+              else
+                nil
+              end
+            end
+            return arr if arr.all?
+          end
+          nil
         end
       end
 

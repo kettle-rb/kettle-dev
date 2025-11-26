@@ -20,6 +20,11 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- Prism AST-based manipulation of ruby during templating
+  - Gemfiles
+  - gemspecs
+  - .simplecov
+
 ### Changed
 
 ### Deprecated
@@ -30,7 +35,7 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Security
 
-## [1.2.0] - 2025-11-25
+## [1.2.1] - 2025-11-25
 
 - TAG: [v1.2.0][1.2.0t]
 - COVERAGE: 94.38% -- 4066/4308 lines in 26 files

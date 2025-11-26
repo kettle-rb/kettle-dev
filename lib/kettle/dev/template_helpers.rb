@@ -9,8 +9,6 @@ module Kettle
   module Dev
     # Helpers shared by kettle:dev Rake tasks for templating and file ops.
     module TemplateHelpers
-      require "kettle/dev/appraisals_ast_merger"
-
       # Track results of templating actions across a single process run.
       # Keys: absolute destination paths (String)
       # Values: Hash with keys: :action (Symbol, one of :create, :replace, :skip, :dir_create, :dir_replace), :timestamp (Time)
@@ -21,7 +19,7 @@ module Kettle
       MIN_SETUP_RUBY = Gem::Version.create("2.3")
 
       TEMPLATE_MANIFEST_PATH = File.expand_path("../../..", __dir__) + "/template_manifest.yml"
-      RUBY_BASENAMES = %w[Gemfile Rakefile Appraisals Appraisal.root.gemfile].freeze
+      RUBY_BASENAMES = %w[Gemfile Rakefile Appraisals Appraisal.root.gemfile .simplecov].freeze
       RUBY_SUFFIXES = %w[.gemspec .gemfile].freeze
       RUBY_EXTENSIONS = %w[.rb .rake].freeze
       @@manifestation = nil
@@ -279,13 +277,14 @@ module Kettle
 
         content = File.read(src_path)
         content = yield(content) if block_given?
-        # Final global replacements that must occur AFTER normal replacements
+        # Replace the explicit template token with the literal "kettle-dev"
+        # after upstream/template-specific replacements (i.e. after the yield),
+        # so the token itself is not altered by those replacements.
         begin
           token = "{KETTLE|DEV|GEM}"
           content = content.gsub(token, "kettle-dev") if content.include?(token)
         rescue StandardError => e
           Kettle::Dev.debug_error(e, __method__)
-          # If replacement fails unexpectedly, proceed with content as-is
         end
 
         basename = File.basename(dest_path.to_s)
@@ -323,114 +322,7 @@ module Kettle
       # @return [String] merged content
       def merge_gemfile_dependencies(src_content, dest_content)
         begin
-          gem_re = /^\s*gem\s+['"]([^'"\s]+)['"].*$/
-          # Collect first occurrence of each gem line in source
-          src_gems = {}
-          src_content.each_line do |ln|
-            next if ln.strip.start_with?("#")
-            if (m = ln.match(gem_re))
-              name = m[1]
-              src_gems[name] ||= ln.rstrip
-            end
-          end
-
-          # --- Handle `source` replacement/insertion ---
-          src_source_line = nil
-          src_content.each_line do |ln|
-            next if ln.strip.start_with?("#")
-            if ln =~ /^\s*source\s+['"][^'"]+['"]\s*$/
-              src_source_line = ln.rstrip + "\n"
-              break
-            end
-          end
-
-          dest_lines = dest_content.lines.dup
-
-          if src_source_line
-            dest_source_idx = dest_lines.index do |ln|
-              !ln.strip.start_with?("#") && ln =~ /^\s*source\s+['"][^'"]+['"]\s*$/
-            end
-            if dest_source_idx
-              dest_lines[dest_source_idx] = src_source_line
-            else
-              # Insert after any leading contiguous comment/blank block at top of file
-              insert_idx = 0
-              while insert_idx < dest_lines.length && (dest_lines[insert_idx].strip.empty? || dest_lines[insert_idx].lstrip.start_with?("#"))
-                insert_idx += 1
-              end
-              dest_lines.insert(insert_idx, src_source_line)
-            end
-          end
-
-          # --- Handle `git_source` replacement/insertion ---
-          # Collect non-comment git_source lines from source (preserve order)
-          src_git_lines = src_content.each_line.select { |ln| !ln.strip.start_with?("#") && ln =~ /^\s*git_source\s*\(/ }
-          if src_git_lines.any?
-            # Insert new git_source lines in the same order as they appear in the source
-            # When inserting (not replacing), place them immediately after the source line if present
-            insert_after_source_idx = dest_lines.index { |ln| !ln.strip.start_with?("#") && ln =~ /^\s*source\s+['"][^'"]+['"]\s*$/ }
-
-            # Iterate source git lines in reverse for insertion so order is preserved when inserting at same index
-            src_git_lines.reverse_each do |gln|
-              # Attempt to extract the git_source "name" (handles forms like git_source(:github) or git_source :github)
-              name_match = gln.match(/^\s*git_source\s*\(?\s*:?(\w+)\b/)
-              name = name_match ? name_match[1].to_s : nil
-
-              replaced = false
-              if name
-                # Try to find a git_source in destination with the same name
-                dest_same_idx = dest_lines.index do |dln|
-                  !dln.strip.start_with?("#") && dln =~ /^\s*git_source\s*\(?\s*:?#{Regexp.escape(name)}\b/
-                end
-                if dest_same_idx
-                  dest_lines[dest_same_idx] = gln.rstrip + "\n"
-                  replaced = true
-                end
-              end
-
-              unless replaced
-                # If destination has a github git_source, replace that
-                dest_github_idx = dest_lines.index do |dln|
-                  !dln.strip.start_with?("#") && dln =~ /^\s*git_source\s*\(?\s*:?github\b/
-                end
-                if dest_github_idx
-                  dest_lines[dest_github_idx] = gln.rstrip + "\n"
-                else
-                  # Insert below the source line if present, otherwise at top (after comments)
-                  insert_idx =
-                    if insert_after_source_idx
-                      insert_after_source_idx + 1
-                    else
-                      0
-                    end
-                  dest_lines.insert(insert_idx, gln.rstrip + "\n")
-                end
-              end
-            end
-          end
-
-          # Index existing gems in destination (after potential source/git_source changes)
-          dest_gems = {}
-          dest_lines.join.each_line do |ln|
-            next if ln.strip.start_with?("#")
-            if (m = ln.match(gem_re))
-              dest_gems[m[1]] = true
-            end
-          end
-
-          missing = src_gems.keys.reject { |n| dest_gems.key?(n) }
-          # If nothing to change, return original destination content
-          if missing.empty? && src_source_line.nil? && src_git_lines.empty?
-            return dest_content
-          end
-
-          out = dest_lines.join
-          out << "\n" unless out.end_with?("\n") || out.empty?
-          if missing.any?
-            out << missing.map { |n| src_gems[n] }.join("\n")
-            out << "\n"
-          end
-          out
+          Kettle::Dev::PrismGemfile.merge_gem_calls(src_content.to_s, dest_content.to_s)
         rescue StandardError => e
           Kettle::Dev.debug_error(e, __method__)
           dest_content
@@ -444,7 +336,7 @@ module Kettle
         else
           ""
         end
-        Kettle::Dev::AppraisalsAstMerger.merge(content, existing)
+        Kettle::Dev::PrismAppraisals.merge(content, existing)
       rescue StandardError => e
         Kettle::Dev.debug_error(e, __method__)
         content
@@ -684,14 +576,14 @@ module Kettle
           # ignore
         end
 
-        # Replace occurrences of the template gem name in text, including inside
-        # markdown reference labels like [🖼️kettle-dev] and identifiers like kettle-dev-i
+        # Replace occurrences of the literal template gem name ("kettle-dev")
+        # with the destination gem name.
         c = c.gsub("kettle-dev", gem_name)
-        c = c.gsub(/\bKettle::Dev\b/u, namespace) unless namespace.empty?
-        c = c.gsub("Kettle%3A%3ADev", namespace_shield) unless namespace_shield.empty?
-        c = c.gsub("kettle--dev", gem_shield)
-        # Replace require and path structures with gem_name, modifying - to / if needed
-        c.gsub("kettle/dev", gem_name.tr("-", "/"))
+         c = c.gsub(/\bKettle::Dev\b/u, namespace) unless namespace.empty?
+         c = c.gsub("Kettle%3A%3ADev", namespace_shield) unless namespace_shield.empty?
+         c = c.gsub("kettle--dev", gem_shield)
+         # Replace require and path structures with gem_name, modifying - to / if needed
+         c.gsub("kettle/dev", gem_name.tr("-", "/"))
       end
 
       # Parse gemspec metadata and derive useful strings

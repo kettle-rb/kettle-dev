@@ -47,7 +47,7 @@
 - path: ".rubocop_rspec.yml"
   strategy: skip
 - path: ".simplecov"
-  strategy: skip
+  strategy: merge
 - path: ".tool-versions"
   strategy: skip
 - path: ".yardopts"

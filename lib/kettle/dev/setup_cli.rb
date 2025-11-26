@@ -197,37 +197,26 @@ module Kettle
           end
         end
 
-        modified = target.dup
-        wanted.each do |gem_name, desired_line|
-          lines = modified.lines
-          found = false
-          lines.map! do |ln|
-            if ln =~ /add_development_dependency\s*\(?\s*["']#{Regexp.escape(gem_name)}["']/
-              found = true
-              indent = ln[/^\s*/] || ""
-              "#{indent}#{desired_line.strip}\n"
-            else
-              ln
-            end
+        # Use Prism-based gemspec edit to ensure development dependencies match
+        begin
+          modified = Kettle::Dev::PrismGemspec.ensure_development_dependencies(target, wanted)
+          # Check if any actual changes were made to development dependency declarations.
+          # Extract dependency lines from both and compare sets to avoid false positives
+          # from whitespace/formatting differences.
+          extract_deps = lambda do |content|
+            content.to_s.lines.select { |ln| ln =~ /add_development_dependency\s*\(?/ }.map(&:strip).sort
           end
-          modified = lines.join
-
-          next if found
-
-          if (idx = modified.rindex(/\nend\s*\z/))
-            before = modified[0...idx]
-            after = modified[idx..-1]
-            insertion = "\n  #{desired_line.strip}\n"
-            modified = before + insertion + after
+          target_deps = extract_deps.call(target)
+          modified_deps = extract_deps.call(modified)
+          if modified_deps != target_deps
+            File.write(@gemspec_path, modified)
+            say("Updated development dependencies in #{@gemspec_path}.")
           else
-            modified << "\n#{desired_line}\n"
+            say("Development dependencies already up to date.")
           end
-        end
-
-        if modified != target
-          File.write(@gemspec_path, modified)
-          say("Updated development dependencies in #{@gemspec_path}.")
-        else
+        rescue StandardError => e
+          Kettle::Dev.debug_error(e, __method__)
+          # Fall back to previous behavior: write nothing and report up-to-date
           say("Development dependencies already up to date.")
         end
       end

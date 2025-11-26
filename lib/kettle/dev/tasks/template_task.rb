@@ -282,88 +282,28 @@ module Kettle
                 end
 
                 if orig_meta
-                  # Replace a scalar string assignment like: spec.field = "..."
-                  replace_string_field = lambda do |txt, field, value|
-                    v = value.to_s
-                    txt.gsub(/(\bspec\.#{Regexp.escape(field)}\s*=\s*)(["']).*?(\2)/) do
-                      pre = Regexp.last_match(1)
-                      q = '"'
-                      pre + q + v.gsub('"', '\\"') + q
-                    end
+                  # Build replacements using AST-aware helper to carry over fields
+                  repl = {}
+                  if (name = orig_meta[:gem_name]) && !name.to_s.empty?
+                    repl[:name] = name.to_s
                   end
-
-                  # Replace an array assignment like: spec.field = ["a", "b"]
-                  replace_array_field = lambda do |txt, field, ary|
-                    ary = Array(ary).compact.map(&:to_s).reject(&:empty?).uniq
-                    # literal = "[" + arr.map { |e| '"' + e.gsub('"', '\\"') + '"' }.join(", ") + "]"
-                    literal = ary.inspect
-                    if txt =~ /(\bspec\.#{Regexp.escape(field)}\s*=\s*)\[[^\]]*\]/
-                      txt.gsub(/(\bspec\.#{Regexp.escape(field)}\s*=\s*)\[[^\]]*\]/, "\\1#{literal}")
-                    else
-                      # If no existing assignment, insert a new line after spec.version if possible
-                      insert_after = (txt =~ /^\s*spec\.version\s*=.*$/) ? :version : nil
-                      if insert_after == :version
-                        txt.sub(/^(\s*spec\.version\s*=.*$)/) { |line| line + "\n  spec.#{field} = #{literal}" }
-                      else
-                        txt + "\n  spec.#{field} = #{literal}\n"
-                      end
-                    end
+                  repl[:authors] = Array(orig_meta[:authors]).map(&:to_s) if orig_meta[:authors]
+                  repl[:email] = Array(orig_meta[:email]).map(&:to_s) if orig_meta[:email]
+                  repl[:summary] = orig_meta[:summary].to_s if orig_meta[:summary]
+                  repl[:description] = orig_meta[:description].to_s if orig_meta[:description]
+                  repl[:licenses] = Array(orig_meta[:licenses]).map(&:to_s) if orig_meta[:licenses]
+                  if orig_meta[:required_ruby_version]
+                    repl[:required_ruby_version] = orig_meta[:required_ruby_version].to_s
                   end
+                  repl[:require_paths] = Array(orig_meta[:require_paths]).map(&:to_s) if orig_meta[:require_paths]
+                  repl[:bindir] = orig_meta[:bindir].to_s if orig_meta[:bindir]
+                  repl[:executables] = Array(orig_meta[:executables]).map(&:to_s) if orig_meta[:executables]
 
                   begin
-                    # 1. spec.name — retain original
-                    if (name = orig_meta[:gem_name]) && !name.to_s.empty?
-                      c = replace_string_field.call(c, "name", name)
-                    end
-
-                    # 2. spec.authors — retain original, normalize to array
-                    orig_auth = orig_meta[:authors]
-                    c = replace_array_field.call(c, "authors", orig_auth)
-
-                    # 3. spec.email — retain original, normalize to array
-                    orig_email = orig_meta[:email]
-                    c = replace_array_field.call(c, "email", orig_email)
-
-                    # 4. spec.summary — retain original; grapheme emoji prefix handled by "install" task
-                    if (sum = orig_meta[:summary]) && !sum.to_s.empty?
-                      c = replace_string_field.call(c, "summary", sum)
-                    end
-
-                    # 5. spec.description — retain original; grapheme emoji prefix handled by "install" task
-                    if (desc = orig_meta[:description]) && !desc.to_s.empty?
-                      c = replace_string_field.call(c, "description", desc)
-                    end
-
-                    # 6. spec.licenses — retain original, normalize to array
-                    lic = orig_meta[:licenses]
-                    if lic && !lic.empty?
-                      c = replace_array_field.call(c, "licenses", lic)
-                    end
-
-                    # 7. spec.required_ruby_version — retain original
-                    if (rrv = orig_meta[:required_ruby_version].to_s) && !rrv.empty?
-                      c = replace_string_field.call(c, "required_ruby_version", rrv)
-                    end
-
-                    # 8. spec.require_paths — retain original, normalize to array
-                    req_paths = orig_meta[:require_paths]
-                    unless req_paths.empty?
-                      c = replace_array_field.call(c, "require_paths", req_paths)
-                    end
-
-                    # 9. spec.bindir — retain original
-                    if (bd = orig_meta[:bindir]) && !bd.to_s.empty?
-                      c = replace_string_field.call(c, "bindir", bd)
-                    end
-
-                    # 10. spec.executables — retain original, normalize to array
-                    exes = orig_meta[:executables]
-                    unless exes.empty?
-                      c = replace_array_field.call(c, "executables", exes)
-                    end
+                    c = Kettle::Dev::PrismGemspec.replace_gemspec_fields(c, repl)
                   rescue StandardError => e
                     Kettle::Dev.debug_error(e, __method__)
-                    # Best-effort carry-over; ignore any individual failure
+                    # Best-effort carry-over; ignore failure and keep c as-is
                   end
                 end
 
@@ -373,15 +313,11 @@ module Kettle
                 # Strip any dependency lines that name the destination gem.
                 begin
                   if gem_name && !gem_name.to_s.empty?
-                    name_escaped = Regexp.escape(gem_name)
-                    # Matches both runtime and development dependency lines, with or without parentheses.
-                    # Examples matched:
-                    #   spec.add_dependency("my-gem", "~> 1.0")
-                    #   spec.add_dependency 'my-gem'
-                    #   spec.add_development_dependency "my-gem"
-                    #   spec.add_development_dependency 'my-gem', ">= 0"
-                    self_dep_re = /\A\s*spec\.add_(?:development_)?dependency(?:\s*\(|\s+)\s*["']#{name_escaped}["'][^\n]*\)?\s*\z/
-                    c = c.lines.reject { |ln| self_dep_re =~ ln }.join
+                    begin
+                      c = Kettle::Dev::PrismGemspec.remove_spec_dependency(c, gem_name)
+                    rescue StandardError => e
+                      Kettle::Dev.debug_error(e, __method__)
+                    end
                   end
                 rescue StandardError => e
                   Kettle::Dev.debug_error(e, __method__)

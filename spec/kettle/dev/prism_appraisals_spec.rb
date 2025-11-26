@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 require "spec_helper"
-require "kettle/dev/appraisals_ast_merger"
+require "kettle/dev/prism_appraisals"
 
-RSpec.describe Kettle::Dev::AppraisalsAstMerger do
+RSpec.describe Kettle::Dev::PrismAppraisals do
   describe ".merge" do
     subject(:merged) { described_class.merge(template, dest) }
 

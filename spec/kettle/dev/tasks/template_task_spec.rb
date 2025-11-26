@@ -546,7 +546,9 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
             txt = File.read(dest)
             # Replacements applied (namespace, org, etc.). With no gem_name, namespace remains derived from empty -> should still replace Kettle::Dev
             expect(txt).to include("existing")
-            expect(txt).not_to include("kettle-dev")
+            # Allow "kettle-dev" in freeze reminder comments, but verify actual code was replaced
+            expect(txt).not_to include('spec.name = "kettle-dev"')
+            expect(txt).not_to include("Kettle::Dev")
           end
         end
       end
@@ -2211,9 +2213,13 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
             dest = File.join(project_root, "existing.gemspec")
             expect(File).to exist(dest)
             txt = File.read(dest)
-            # Replacements applied (namespace, org, etc.). With no gem_name, namespace remains derived from empty -> should still replace Kettle::Dev
+            # Allow "kettle-dev" in freeze reminder comments, but verify actual code was replaced
+            expect(txt).not_to include('spec.name = "kettle-dev"')
+            expect(txt).not_to include("Kettle::Dev")
             expect(txt).to include("existing")
-            expect(txt).not_to include("kettle-dev")
+            # Allow "kettle-dev" in freeze reminder comments, but verify actual code was replaced
+            expect(txt).not_to include('spec.name = "kettle-dev"')
+            expect(txt).not_to include("Kettle::Dev")
           end
         end
       end
