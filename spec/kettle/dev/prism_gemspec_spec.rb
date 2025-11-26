@@ -20,11 +20,11 @@ RSpec.describe Kettle::Dev::PrismGemspec do
         end
       RUBY
 
-      out = described_class.replace_gemspec_fields(src, {name: "my-gem", authors: ["A","B"]})
+      out = described_class.replace_gemspec_fields(src, {name: "my-gem", authors: ["A", "B"]})
       expect(out).to include('spec.name = "my-gem"')
       expect(out).to include('spec.authors = ["A", "B"]')
       # ensure comment preserved
-      expect(out).to include('# original comment')
+      expect(out).to include("# original comment")
     end
 
     it "removes self-dependency when _remove_self_dependency provided" do
@@ -36,9 +36,9 @@ RSpec.describe Kettle::Dev::PrismGemspec do
         end
       RUBY
 
-      out = Kettle::Dev::PrismGemspec.replace_gemspec_fields(src, {_remove_self_dependency: 'kettle-dev'})
+      out = Kettle::Dev::PrismGemspec.replace_gemspec_fields(src, {_remove_self_dependency: "kettle-dev"})
       expect(out).not_to include('add_dependency "kettle-dev"')
-      expect(out).to include('add_development_dependency')
+      expect(out).to include("add_development_dependency")
     end
 
     it "handles a different block param name" do
@@ -47,7 +47,7 @@ RSpec.describe Kettle::Dev::PrismGemspec do
           s.name = "old"
         end
       RUBY
-      out = described_class.replace_gemspec_fields(src, {name: 'new'})
+      out = described_class.replace_gemspec_fields(src, {name: "new"})
       expect(out).to include('s.name = "new"')
     end
 
@@ -57,7 +57,7 @@ RSpec.describe Kettle::Dev::PrismGemspec do
           spec.name = "a"
         end
       RUBY
-      out = described_class.replace_gemspec_fields(src, {authors: ['X']})
+      out = described_class.replace_gemspec_fields(src, {authors: ["X"]})
       expect(out).to include('spec.authors = ["X"]')
     end
 
@@ -68,7 +68,7 @@ RSpec.describe Kettle::Dev::PrismGemspec do
           spec.add_dependency "other"
         end
       RUBY
-      out = described_class.replace_gemspec_fields(src, {_remove_self_dependency: 'kettle-dev'})
+      out = described_class.replace_gemspec_fields(src, {_remove_self_dependency: "kettle-dev"})
       expect(out).to include('# spec.add_dependency "kettle-dev"')
       expect(out).to include('spec.add_dependency "other"')
     end
@@ -79,8 +79,8 @@ RSpec.describe Kettle::Dev::PrismGemspec do
           spec.name = generate_name
         end
       RUBY
-      out = described_class.replace_gemspec_fields(src, {name: 'x'})
-      expect(out).to include('spec.name = generate_name')
+      out = described_class.replace_gemspec_fields(src, {name: "x"})
+      expect(out).to include("spec.name = generate_name")
       expect(out).not_to include('spec.name = "x"')
     end
   end

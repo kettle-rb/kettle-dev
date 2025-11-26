@@ -275,7 +275,7 @@ module Kettle
 
             inline = stmt_info[:inline_comments] || []
             inline_str = inline.map { |c| c.slice.strip }.join(" ")
-            output << "  #{line}#{' ' + inline_str unless inline_str.empty?}"
+            output << "  #{line}#{" " + inline_str unless inline_str.empty?}"
           end
 
           output << "}"
@@ -304,4 +304,3 @@ module Kettle
     end
   end
 end
-

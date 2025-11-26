@@ -79,15 +79,30 @@ module Kettle
     @defaults = []
 
     class << self
-      # Emit a debug warning for rescued errors when DEBUG=true.
+      # Emit a debug warning for rescued errors when kettle-dev debugging is enabled.
+      # Controlled by KETTLE_DEV_DEBUG=true (or DEBUG=true as fallback).
       # @param error [Exception]
       # @param context [String, Symbol, nil] optional label, often __method__
       # @return [void]
       def debug_error(error, context = nil)
         return unless DEBUGGING
-        ctx = context ? context.to_s : "rescue"
+
+        ctx = context ? context.to_s : "KETTLE-DEV-RESCUE"
         Kernel.warn("[#{ctx}] #{error.class}: #{error.message}")
-      rescue Exception
+      rescue StandardError
+        # never raise from debug logging
+      end
+
+      # Emit a debug log line when kettle-dev debugging is enabled.
+      # Controlled by KETTLE_DEV_DEBUG=true (or DEBUG=true as fallback).
+      # @param msg [String]
+      # @return [void]
+      def debug_log(msg, context = nil)
+        return unless DEBUGGING
+
+        ctx = context ? context.to_s : "KETTLE-DEV-DEBUG"
+        Kernel.warn("[#{ctx}] #{msg}")
+      rescue StandardError
         # never raise from debug logging
       end
 

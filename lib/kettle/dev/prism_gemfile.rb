@@ -70,7 +70,7 @@ module Kettle
             # (this mirrors previous behavior in template_helpers which favored replacing
             # a github git_source when inserting others).
             unless replaced
-              dest_github_idx = dest_stmts.index { |d| PrismUtils.statement_key(d) && PrismUtils.statement_key(d)[0] == :git_source && PrismUtils.statement_key(d)[1] == 'github' }
+              dest_github_idx = dest_stmts.index { |d| PrismUtils.statement_key(d) && PrismUtils.statement_key(d)[0] == :git_source && PrismUtils.statement_key(d)[1] == "github" }
               if dest_github_idx
                 out = out.sub(dest_stmts[dest_github_idx].slice, gnode.slice)
                 replaced = true
@@ -78,19 +78,19 @@ module Kettle
             end
 
             unless replaced
-               # Insert below source line if present, else at top after comments
-               dest_lines = out.lines
-               insert_idx = dest_lines.index { |ln| !ln.strip.start_with?("#") && ln =~ /^\s*source\s+/ } || 0
-               insert_idx = insert_idx + 1 if insert_idx
-               dest_lines.insert(insert_idx, gnode.slice.rstrip + "\n")
-               out = dest_lines.join
-             end
+              # Insert below source line if present, else at top after comments
+              dest_lines = out.lines
+              insert_idx = dest_lines.index { |ln| !ln.strip.start_with?("#") && ln =~ /^\s*source\s+/ } || 0
+              insert_idx += 1 if insert_idx
+              dest_lines.insert(insert_idx, gnode.slice.rstrip + "\n")
+              out = dest_lines.join
+            end
 
-             # Recompute dest_stmts for subsequent iterations
-             dest_res = PrismUtils.parse_with_comments(out)
-             dest_stmts = PrismUtils.extract_statements(dest_res.value.statements)
-           end
-         end
+            # Recompute dest_stmts for subsequent iterations
+            dest_res = PrismUtils.parse_with_comments(out)
+            dest_stmts = PrismUtils.extract_statements(dest_res.value.statements)
+          end
+        end
 
         # Collect gem names present in dest (top-level only)
         dest_res = PrismUtils.parse_with_comments(out)
@@ -106,7 +106,11 @@ module Kettle
           out << "\n" unless out.end_with?("\n") || out.empty?
           missing_nodes.each do |n|
             # Preserve inline comments for the source node when appending
-            inline = PrismUtils.inline_comments_for_node(src_res, n) rescue []
+            inline = begin
+              PrismUtils.inline_comments_for_node(src_res, n)
+            rescue
+              []
+            end
             line = n.slice.rstrip
             if inline && inline.any?
               inline_text = inline.map { |c| c.slice.strip }.join(" ")

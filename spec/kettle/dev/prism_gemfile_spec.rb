@@ -21,7 +21,7 @@ RSpec.describe Kettle::Dev::PrismGemfile do
       expect(out).to include('source "https://rubygems.org"')
       expect(out).to include('gem "b"')
       # a should not be duplicated
-      expect(out.scan(/gem \"a\"/).length).to eq(1)
+      expect(out.scan('gem "a"').length).to eq(1)
     end
 
     it "replaces matching git_source by name and inserts when missing" do
@@ -30,14 +30,14 @@ RSpec.describe Kettle::Dev::PrismGemfile do
       RUBY
       dest = ""
       out = described_class.merge_gem_calls(src, dest)
-      expect(out).to include('git_source(:github)')
+      expect(out).to include("git_source(:github)")
 
       dest2 = <<~'RUBY'
         git_source(:gitlab) { |repo| "https://gitlab.com/#{repo}.git" }
       RUBY
       out2 = described_class.merge_gem_calls(src, dest2)
       # should replace the existing gitlab/generic with the github one if no same-name present
-      expect(out2).to include('git_source(:github)')
+      expect(out2).to include("git_source(:github)")
     end
 
     it "does not move gems inside groups to top-level" do
@@ -51,7 +51,7 @@ RSpec.describe Kettle::Dev::PrismGemfile do
       RUBY
       out = described_class.merge_gem_calls(src, dest)
       # top-level should only contain `a` and not `dev-only`
-      expect(out.scan(/gem \"dev-only\"/).length).to eq(0)
+      expect(out.scan('gem "dev-only"').length).to eq(0)
     end
 
     # --- Additional edge-case tests ---
@@ -100,8 +100,8 @@ RSpec.describe Kettle::Dev::PrismGemfile do
       RUBY
       out = described_class.merge_gem_calls(src, dest)
       expect(out).to include('source "https://new.example"')
-      expect(out).to include('git_source(:github)')
-      expect(out).to include('git_source(:private)')
+      expect(out).to include("git_source(:github)")
+      expect(out).to include("git_source(:private)")
       # ensure gem x appended
       expect(out).to include('gem "x"')
     end

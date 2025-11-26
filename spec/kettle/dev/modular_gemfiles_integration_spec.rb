@@ -12,11 +12,11 @@ RSpec.describe "ModularGemfiles Integration" do
         # Create source directory and copy the actual example file
         src_dir = File.join(gemroot, Kettle::Dev::ModularGemfiles::MODULAR_GEMFILE_DIR)
         FileUtils.mkdir_p(src_dir)
-        
+
         # Copy the actual style.gemfile.example from the gem
         actual_example = File.join(__dir__, "../../../gemfiles/modular/style.gemfile.example")
         FileUtils.cp(actual_example, File.join(src_dir, "style.gemfile.example"))
-        
+
         # Create empty subdirectories required by sync!
         %w[erb mutex_m stringio x_std_libs].each do |dir|
           FileUtils.mkdir_p(File.join(src_dir, dir))
@@ -26,7 +26,7 @@ RSpec.describe "ModularGemfiles Integration" do
         # This simulates the scenario described in the issue
         dest_dir = File.join(proj, Kettle::Dev::ModularGemfiles::MODULAR_GEMFILE_DIR)
         FileUtils.mkdir_p(dest_dir)
-        
+
         dest_content = <<~RUBY
           gem "reek", "~> 6.4"
           gem "rubocop", "~> 1.73", ">= 1.73.2"
@@ -89,7 +89,7 @@ RSpec.describe "ModularGemfiles Integration" do
         #   gem "benchmark", "~> 0.4", ">= 0.4.1" # Removed from Std Lib in Ruby 3.5
         #     gem "rubocop-lts", path: "#{home}/src/rubocop-lts/rubocop-lts"
         # (note the incorrect indentation and lack of if statement)
-        
+
         # Verify the structure is valid Ruby by parsing it
         expect { Prism.parse(result) }.not_to raise_error
         parse_result = Prism.parse(result)
@@ -98,4 +98,3 @@ RSpec.describe "ModularGemfiles Integration" do
     end
   end
 end
-

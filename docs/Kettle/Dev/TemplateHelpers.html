@@ -130,7 +130,7 @@
         <dt id="RUBY_BASENAMES-constant" class="">RUBY_BASENAMES =
           
         </dt>
-        <dd><pre class="code"><span class='qwords_beg'>%w[</span><span class='tstring_content'>Gemfile</span><span class='words_sep'> </span><span class='tstring_content'>Rakefile</span><span class='words_sep'> </span><span class='tstring_content'>Appraisals</span><span class='words_sep'> </span><span class='tstring_content'>Appraisal.root.gemfile</span><span class='tstring_end'>]</span></span><span class='period'>.</span><span class='id identifier rubyid_freeze'>freeze</span></pre></dd>
+        <dd><pre class="code"><span class='qwords_beg'>%w[</span><span class='tstring_content'>Gemfile</span><span class='words_sep'> </span><span class='tstring_content'>Rakefile</span><span class='words_sep'> </span><span class='tstring_content'>Appraisals</span><span class='words_sep'> </span><span class='tstring_content'>Appraisal.root.gemfile</span><span class='words_sep'> </span><span class='tstring_content'>.simplecov</span><span class='tstring_end'>]</span></span><span class='period'>.</span><span class='id identifier rubyid_freeze'>freeze</span></pre></dd>
       
         <dt id="RUBY_SUFFIXES-constant" class="">RUBY_SUFFIXES =
           
@@ -757,21 +757,21 @@ Values: Hash with keys: :action (Symbol, one of :create, :replace, :skip, :dir_c
       <pre class="lines">
 
 
-440
-441
-442
-443
-444
-445
-446
-447
-448
-449
-450
-451</pre>
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 440</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 332</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_apply_appraisals_merge'>apply_appraisals_merge</span><span class='lparen'>(</span><span class='id identifier rubyid_content'>content</span><span class='comma'>,</span> <span class='id identifier rubyid_dest_path'>dest_path</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_dest'>dest</span> <span class='op'>=</span> <span class='id identifier rubyid_dest_path'>dest_path</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
@@ -780,7 +780,7 @@ Values: Hash with keys: :action (Symbol, one of :create, :replace, :skip, :dir_c
   <span class='kw'>else</span>
     <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span>
   <span class='kw'>end</span>
-  <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="AppraisalsAstMerger.html" title="Kettle::Dev::AppraisalsAstMerger (module)">AppraisalsAstMerger</a></span></span><span class='period'>.</span><span class='id identifier rubyid_merge'><span class='object_link'><a href="AppraisalsAstMerger.html#merge-class_method" title="Kettle::Dev::AppraisalsAstMerger.merge (method)">merge</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_content'>content</span><span class='comma'>,</span> <span class='id identifier rubyid_existing'>existing</span><span class='rparen'>)</span>
+  <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="PrismAppraisals.html" title="Kettle::Dev::PrismAppraisals (module)">PrismAppraisals</a></span></span><span class='period'>.</span><span class='id identifier rubyid_merge'><span class='object_link'><a href="PrismAppraisals.html#merge-class_method" title="Kettle::Dev::PrismAppraisals.merge (method)">merge</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_content'>content</span><span class='comma'>,</span> <span class='id identifier rubyid_existing'>existing</span><span class='rparen'>)</span>
 <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
   <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_error'><span class='object_link'><a href="../Dev.html#debug_error-class_method" title="Kettle::Dev.debug_error (method)">debug_error</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_content'>content</span>
@@ -924,398 +924,6 @@ Values: Hash with keys: :action (Symbol, one of :create, :replace, :skip, :dir_c
       <pre class="lines">
 
 
-618
-619
-620
-621
-622
-623
-624
-625
-626
-627
-628
-629
-630
-631
-632
-633
-634
-635
-636
-637
-638
-639
-640
-641
-642
-643
-644
-645
-646
-647
-648
-649
-650
-651
-652
-653
-654
-655
-656
-657
-658
-659
-660
-661
-662
-663
-664
-665
-666
-667
-668
-669
-670
-671
-672
-673
-674
-675
-676
-677
-678
-679
-680
-681
-682
-683
-684
-685
-686
-687
-688
-689
-690
-691
-692
-693
-694
-695</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 618</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_apply_common_replacements'>apply_common_replacements</span><span class='lparen'>(</span><span class='id identifier rubyid_content'>content</span><span class='comma'>,</span> <span class='label'>org:</span><span class='comma'>,</span> <span class='label'>gem_name:</span><span class='comma'>,</span> <span class='label'>namespace:</span><span class='comma'>,</span> <span class='label'>namespace_shield:</span><span class='comma'>,</span> <span class='label'>gem_shield:</span><span class='comma'>,</span> <span class='label'>funding_org:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>min_ruby:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="Error.html" title="Kettle::Dev::Error (class)">Error</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Org could not be derived</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_org'>org</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_org'>org</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
-  <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="Error.html" title="Kettle::Dev::Error (class)">Error</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Gem name could not be derived</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_gem_name'>gem_name</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_gem_name'>gem_name</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
-
-  <span class='id identifier rubyid_funding_org'>funding_org</span> <span class='op'>||=</span> <span class='id identifier rubyid_org'>org</span>
-  <span class='comment'># Derive min_ruby if not provided
-</span>  <span class='id identifier rubyid_mr'>mr</span> <span class='op'>=</span> <span class='kw'>begin</span>
-    <span class='id identifier rubyid_meta'>meta</span> <span class='op'>=</span> <span class='id identifier rubyid_gemspec_metadata'>gemspec_metadata</span>
-    <span class='id identifier rubyid_meta'>meta</span><span class='lbracket'>[</span><span class='symbol'>:min_ruby</span><span class='rbracket'>]</span>
-  <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-    <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_error'><span class='object_link'><a href="../Dev.html#debug_error-class_method" title="Kettle::Dev.debug_error (method)">debug_error</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span>
-    <span class='comment'># leave min_ruby as-is (possibly nil)
-</span>  <span class='kw'>end</span>
-  <span class='kw'>if</span> <span class='id identifier rubyid_min_ruby'>min_ruby</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>||</span> <span class='id identifier rubyid_min_ruby'>min_ruby</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
-    <span class='id identifier rubyid_min_ruby'>min_ruby</span> <span class='op'>=</span> <span class='id identifier rubyid_mr'>mr</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:to_s</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_mr'>mr</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span> <span class='op'>:</span> <span class='id identifier rubyid_mr'>mr</span>
-  <span class='kw'>end</span>
-
-  <span class='comment'># Derive min_dev_ruby from min_ruby
-</span>  <span class='comment'># min_dev_ruby is the greater of min_dev_ruby and ruby 2.3,
-</span>  <span class='comment'>#   because ruby 2.3 is the minimum ruby supported by setup-ruby GHA
-</span>  <span class='id identifier rubyid_min_dev_ruby'>min_dev_ruby</span> <span class='op'>=</span> <span class='kw'>begin</span>
-    <span class='lbracket'>[</span><span class='id identifier rubyid_mr'>mr</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="#MIN_SETUP_RUBY-constant" title="Kettle::Dev::TemplateHelpers::MIN_SETUP_RUBY (constant)">MIN_SETUP_RUBY</a></span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_max'>max</span>
-  <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-    <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_error'><span class='object_link'><a href="../Dev.html#debug_error-class_method" title="Kettle::Dev.debug_error (method)">debug_error</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span>
-    <span class='const'><span class='object_link'><a href="#MIN_SETUP_RUBY-constant" title="Kettle::Dev::TemplateHelpers::MIN_SETUP_RUBY (constant)">MIN_SETUP_RUBY</a></span></span>
-  <span class='kw'>end</span>
-
-  <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='id identifier rubyid_content'>content</span><span class='period'>.</span><span class='id identifier rubyid_dup'>dup</span>
-  <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>kettle-rb</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_org'>org</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>{OPENCOLLECTIVE|ORG_NAME}</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_funding_org'>funding_org</span> <span class='op'>||</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>opencollective</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-  <span class='comment'># Replace min ruby token if present
-</span>  <span class='kw'>begin</span>
-    <span class='kw'>if</span> <span class='id identifier rubyid_min_ruby'>min_ruby</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_min_ruby'>min_ruby</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>{K_D_MIN_RUBY}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-      <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>{K_D_MIN_RUBY}</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_min_ruby'>min_ruby</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span>
-    <span class='kw'>end</span>
-  <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-    <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_error'><span class='object_link'><a href="../Dev.html#debug_error-class_method" title="Kettle::Dev.debug_error (method)">debug_error</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span>
-    <span class='comment'># ignore
-</span>  <span class='kw'>end</span>
-
-  <span class='comment'># Replace min ruby dev token if present
-</span>  <span class='kw'>begin</span>
-    <span class='kw'>if</span> <span class='id identifier rubyid_min_dev_ruby'>min_dev_ruby</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_min_dev_ruby'>min_dev_ruby</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>{K_D_MIN_DEV_RUBY}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-      <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>{K_D_MIN_DEV_RUBY}</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_min_dev_ruby'>min_dev_ruby</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span>
-    <span class='kw'>end</span>
-  <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-    <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_error'><span class='object_link'><a href="../Dev.html#debug_error-class_method" title="Kettle::Dev.debug_error (method)">debug_error</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span>
-    <span class='comment'># ignore
-</span>  <span class='kw'>end</span>
-
-  <span class='comment'># Replace target gem name token if present
-</span>  <span class='kw'>begin</span>
-    <span class='id identifier rubyid_token'>token</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>{TARGET|GEM|NAME}</span><span class='tstring_end'>&quot;</span></span>
-    <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='id identifier rubyid_token'>token</span><span class='comma'>,</span> <span class='id identifier rubyid_gem_name'>gem_name</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
-  <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-    <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_error'><span class='object_link'><a href="../Dev.html#debug_error-class_method" title="Kettle::Dev.debug_error (method)">debug_error</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span>
-    <span class='comment'># If replacement fails unexpectedly, proceed with content as-is
-</span>  <span class='kw'>end</span>
-
-  <span class='comment'># Special-case: yard-head link uses the gem name as a subdomain and must be dashes-only.
-</span>  <span class='comment'># Apply this BEFORE other generic replacements so it isn&#39;t altered incorrectly.
-</span>  <span class='kw'>begin</span>
-    <span class='id identifier rubyid_dashed'>dashed</span> <span class='op'>=</span> <span class='id identifier rubyid_gem_name'>gem_name</span><span class='period'>.</span><span class='id identifier rubyid_tr'>tr</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>_</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>-</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>[🚎yard-head]: https://kettle-dev.galtzo.com</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>[🚎yard-head]: https://</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_dashed'>dashed</span><span class='embexpr_end'>}</span><span class='tstring_content'>.galtzo.com</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-  <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-    <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_error'><span class='object_link'><a href="../Dev.html#debug_error-class_method" title="Kettle::Dev.debug_error (method)">debug_error</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span>
-    <span class='comment'># ignore
-</span>  <span class='kw'>end</span>
-
-  <span class='comment'># Replace occurrences of the template gem name in text, including inside
-</span>  <span class='comment'># markdown reference labels like [🖼️kettle-dev] and identifiers like kettle-dev-i
-</span>  <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>kettle-dev</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_gem_name'>gem_name</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\bKettle::Dev\b</span><span class='regexp_end'>/u</span></span><span class='comma'>,</span> <span class='id identifier rubyid_namespace'>namespace</span><span class='rparen'>)</span> <span class='kw'>unless</span> <span class='id identifier rubyid_namespace'>namespace</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
-  <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Kettle%3A%3ADev</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_namespace_shield'>namespace_shield</span><span class='rparen'>)</span> <span class='kw'>unless</span> <span class='id identifier rubyid_namespace_shield'>namespace_shield</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
-  <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>kettle--dev</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_gem_shield'>gem_shield</span><span class='rparen'>)</span>
-  <span class='comment'># Replace require and path structures with gem_name, modifying - to / if needed
-</span>  <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>kettle/dev</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_gem_name'>gem_name</span><span class='period'>.</span><span class='id identifier rubyid_tr'>tr</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>-</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='rparen'>)</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="apply_strategy-class_method">
-  
-    .<strong>apply_strategy</strong>(content, dest_path)  &#x21d2; <tt>Object</tt> 
-  
-
-  
-
-  
-</h3><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-704
-705
-706
-707
-708
-709</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 704</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_apply_strategy'>apply_strategy</span><span class='lparen'>(</span><span class='id identifier rubyid_content'>content</span><span class='comma'>,</span> <span class='id identifier rubyid_dest_path'>dest_path</span><span class='rparen'>)</span>
-  <span class='kw'>return</span> <span class='id identifier rubyid_content'>content</span> <span class='kw'>unless</span> <span class='id identifier rubyid_ruby_template?'>ruby_template?</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_path'>dest_path</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_strategy'>strategy</span> <span class='op'>=</span> <span class='id identifier rubyid_strategy_for'>strategy_for</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_path'>dest_path</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_dest_content'>dest_content</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_exist?'>exist?</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_path'>dest_path</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_path'>dest_path</span><span class='rparen'>)</span> <span class='op'>:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span>
-  <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="SourceMerger.html" title="Kettle::Dev::SourceMerger (module)">SourceMerger</a></span></span><span class='period'>.</span><span class='id identifier rubyid_apply'><span class='object_link'><a href="SourceMerger.html#apply-class_method" title="Kettle::Dev::SourceMerger.apply (method)">apply</a></span></span><span class='lparen'>(</span><span class='label'>strategy:</span> <span class='id identifier rubyid_strategy'>strategy</span><span class='comma'>,</span> <span class='label'>src:</span> <span class='id identifier rubyid_content'>content</span><span class='comma'>,</span> <span class='label'>dest:</span> <span class='id identifier rubyid_dest_content'>dest_content</span><span class='comma'>,</span> <span class='label'>path:</span> <span class='id identifier rubyid_rel_path'>rel_path</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_path'>dest_path</span><span class='rparen'>)</span><span class='rparen'>)</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="ask-class_method">
-  
-    .<strong>ask</strong>(prompt, default)  &#x21d2; <tt>Boolean</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p>Simple yes/no prompt.</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  <p class="tag_title">Parameters:</p>
-<ul class="param">
-  
-    <li>
-      
-        <span class='name'>prompt</span>
-      
-      
-        <span class='type'>(<tt>String</tt>)</span>
-      
-      
-      
-    </li>
-  
-    <li>
-      
-        <span class='name'>default</span>
-      
-      
-        <span class='type'>(<tt>Boolean</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Boolean</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-48
-49
-50
-51
-52
-53
-54
-55
-56
-57
-58
-59
-60
-61
-62
-63
-64
-65
-66</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 48</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_ask'>ask</span><span class='lparen'>(</span><span class='id identifier rubyid_prompt'>prompt</span><span class='comma'>,</span> <span class='id identifier rubyid_default'>default</span><span class='rparen'>)</span>
-  <span class='comment'># Force mode: any prompt resolves to Yes when ENV[&quot;force&quot;] is set truthy
-</span>  <span class='kw'>if</span> <span class='const'>ENV</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>force</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\A(1|true|y|yes)\z</span><span class='regexp_end'>/i</span></span>
-    <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_prompt'>prompt</span><span class='embexpr_end'>}</span><span class='tstring_content'> </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_default'>default</span> <span class='op'>?</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>[Y/n]</span><span class='tstring_end'>&quot;</span></span> <span class='op'>:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>[y/N]</span><span class='tstring_end'>&quot;</span></span><span class='embexpr_end'>}</span><span class='tstring_content'>: Y (forced)</span><span class='tstring_end'>&quot;</span></span>
-    <span class='kw'>return</span> <span class='kw'>true</span>
-  <span class='kw'>end</span>
-  <span class='id identifier rubyid_print'>print</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_prompt'>prompt</span><span class='embexpr_end'>}</span><span class='tstring_content'> </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_default'>default</span> <span class='op'>?</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>[Y/n]</span><span class='tstring_end'>&quot;</span></span> <span class='op'>:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>[y/N]</span><span class='tstring_end'>&quot;</span></span><span class='embexpr_end'>}</span><span class='tstring_content'>: </span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_ans'>ans</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="InputAdapter.html" title="Kettle::Dev::InputAdapter (module)">InputAdapter</a></span></span><span class='period'>.</span><span class='id identifier rubyid_gets'><span class='object_link'><a href="InputAdapter.html#gets-class_method" title="Kettle::Dev::InputAdapter.gets (method)">gets</a></span></span><span class='op'>&amp;.</span><span class='id identifier rubyid_strip'>strip</span>
-  <span class='id identifier rubyid_ans'>ans</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_ans'>ans</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
-  <span class='comment'># Normalize explicit no first
-</span>  <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>if</span> <span class='id identifier rubyid_ans'>ans</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\An(o)?\z</span><span class='regexp_end'>/i</span></span>
-  <span class='kw'>if</span> <span class='id identifier rubyid_default'>default</span>
-    <span class='comment'># Empty -&gt; default true; explicit yes -&gt; true; anything else -&gt; false
-</span>    <span class='id identifier rubyid_ans'>ans</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span> <span class='op'>||</span> <span class='id identifier rubyid_ans'>ans</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\Ay(es)?\z</span><span class='regexp_end'>/i</span></span>
-  <span class='kw'>else</span>
-    <span class='comment'># Empty -&gt; default false; explicit yes -&gt; true; others (including garbage) -&gt; false
-</span>    <span class='id identifier rubyid_ans'>ans</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\Ay(es)?\z</span><span class='regexp_end'>/i</span></span>
-  <span class='kw'>end</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="copy_dir_with_prompt-class_method">
-  
-    .<strong>copy_dir_with_prompt</strong>(src_dir, dest_dir)  &#x21d2; <tt>void</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p class="note returns_void">This method returns an undefined value.</p><p>Copy a directory tree, prompting before creating or overwriting.</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-455
-456
-457
-458
-459
-460
-461
-462
-463
-464
-465
-466
-467
-468
-469
-470
-471
-472
-473
-474
-475
-476
-477
-478
-479
-480
-481
-482
-483
-484
-485
-486
-487
-488
-489
-490
-491
-492
-493
-494
-495
-496
-497
-498
-499
-500
-501
-502
-503
-504
-505
-506
-507
-508
-509
 510
 511
 512
@@ -1393,30 +1001,422 @@ Values: Hash with keys: :action (Symbol, one of :create, :replace, :skip, :dir_c
 584
 585
 586
-587
-588
-589
-590
-591
-592
-593
-594
-595
+587</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 510</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_apply_common_replacements'>apply_common_replacements</span><span class='lparen'>(</span><span class='id identifier rubyid_content'>content</span><span class='comma'>,</span> <span class='label'>org:</span><span class='comma'>,</span> <span class='label'>gem_name:</span><span class='comma'>,</span> <span class='label'>namespace:</span><span class='comma'>,</span> <span class='label'>namespace_shield:</span><span class='comma'>,</span> <span class='label'>gem_shield:</span><span class='comma'>,</span> <span class='label'>funding_org:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>min_ruby:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="Error.html" title="Kettle::Dev::Error (class)">Error</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Org could not be derived</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_org'>org</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_org'>org</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+  <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="Error.html" title="Kettle::Dev::Error (class)">Error</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Gem name could not be derived</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_gem_name'>gem_name</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_gem_name'>gem_name</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+
+  <span class='id identifier rubyid_funding_org'>funding_org</span> <span class='op'>||=</span> <span class='id identifier rubyid_org'>org</span>
+  <span class='comment'># Derive min_ruby if not provided
+</span>  <span class='id identifier rubyid_mr'>mr</span> <span class='op'>=</span> <span class='kw'>begin</span>
+    <span class='id identifier rubyid_meta'>meta</span> <span class='op'>=</span> <span class='id identifier rubyid_gemspec_metadata'>gemspec_metadata</span>
+    <span class='id identifier rubyid_meta'>meta</span><span class='lbracket'>[</span><span class='symbol'>:min_ruby</span><span class='rbracket'>]</span>
+  <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_error'><span class='object_link'><a href="../Dev.html#debug_error-class_method" title="Kettle::Dev.debug_error (method)">debug_error</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span>
+    <span class='comment'># leave min_ruby as-is (possibly nil)
+</span>  <span class='kw'>end</span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_min_ruby'>min_ruby</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>||</span> <span class='id identifier rubyid_min_ruby'>min_ruby</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+    <span class='id identifier rubyid_min_ruby'>min_ruby</span> <span class='op'>=</span> <span class='id identifier rubyid_mr'>mr</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:to_s</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_mr'>mr</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span> <span class='op'>:</span> <span class='id identifier rubyid_mr'>mr</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Derive min_dev_ruby from min_ruby
+</span>  <span class='comment'># min_dev_ruby is the greater of min_dev_ruby and ruby 2.3,
+</span>  <span class='comment'>#   because ruby 2.3 is the minimum ruby supported by setup-ruby GHA
+</span>  <span class='id identifier rubyid_min_dev_ruby'>min_dev_ruby</span> <span class='op'>=</span> <span class='kw'>begin</span>
+    <span class='lbracket'>[</span><span class='id identifier rubyid_mr'>mr</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="#MIN_SETUP_RUBY-constant" title="Kettle::Dev::TemplateHelpers::MIN_SETUP_RUBY (constant)">MIN_SETUP_RUBY</a></span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_max'>max</span>
+  <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_error'><span class='object_link'><a href="../Dev.html#debug_error-class_method" title="Kettle::Dev.debug_error (method)">debug_error</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span>
+    <span class='const'><span class='object_link'><a href="#MIN_SETUP_RUBY-constant" title="Kettle::Dev::TemplateHelpers::MIN_SETUP_RUBY (constant)">MIN_SETUP_RUBY</a></span></span>
+  <span class='kw'>end</span>
+
+  <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='id identifier rubyid_content'>content</span><span class='period'>.</span><span class='id identifier rubyid_dup'>dup</span>
+  <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>kettle-rb</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_org'>org</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>{OPENCOLLECTIVE|ORG_NAME}</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_funding_org'>funding_org</span> <span class='op'>||</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>opencollective</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='comment'># Replace min ruby token if present
+</span>  <span class='kw'>begin</span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_min_ruby'>min_ruby</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_min_ruby'>min_ruby</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>{K_D_MIN_RUBY}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>{K_D_MIN_RUBY}</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_min_ruby'>min_ruby</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span>
+    <span class='kw'>end</span>
+  <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_error'><span class='object_link'><a href="../Dev.html#debug_error-class_method" title="Kettle::Dev.debug_error (method)">debug_error</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span>
+    <span class='comment'># ignore
+</span>  <span class='kw'>end</span>
+
+  <span class='comment'># Replace min ruby dev token if present
+</span>  <span class='kw'>begin</span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_min_dev_ruby'>min_dev_ruby</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_min_dev_ruby'>min_dev_ruby</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>{K_D_MIN_DEV_RUBY}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>{K_D_MIN_DEV_RUBY}</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_min_dev_ruby'>min_dev_ruby</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span>
+    <span class='kw'>end</span>
+  <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_error'><span class='object_link'><a href="../Dev.html#debug_error-class_method" title="Kettle::Dev.debug_error (method)">debug_error</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span>
+    <span class='comment'># ignore
+</span>  <span class='kw'>end</span>
+
+  <span class='comment'># Replace target gem name token if present
+</span>  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_token'>token</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>{TARGET|GEM|NAME}</span><span class='tstring_end'>&quot;</span></span>
+    <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='id identifier rubyid_token'>token</span><span class='comma'>,</span> <span class='id identifier rubyid_gem_name'>gem_name</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
+  <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_error'><span class='object_link'><a href="../Dev.html#debug_error-class_method" title="Kettle::Dev.debug_error (method)">debug_error</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span>
+    <span class='comment'># If replacement fails unexpectedly, proceed with content as-is
+</span>  <span class='kw'>end</span>
+
+  <span class='comment'># Special-case: yard-head link uses the gem name as a subdomain and must be dashes-only.
+</span>  <span class='comment'># Apply this BEFORE other generic replacements so it isn&#39;t altered incorrectly.
+</span>  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_dashed'>dashed</span> <span class='op'>=</span> <span class='id identifier rubyid_gem_name'>gem_name</span><span class='period'>.</span><span class='id identifier rubyid_tr'>tr</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>_</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>-</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>[🚎yard-head]: https://kettle-dev.galtzo.com</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>[🚎yard-head]: https://</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_dashed'>dashed</span><span class='embexpr_end'>}</span><span class='tstring_content'>.galtzo.com</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_error'><span class='object_link'><a href="../Dev.html#debug_error-class_method" title="Kettle::Dev.debug_error (method)">debug_error</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span>
+    <span class='comment'># ignore
+</span>  <span class='kw'>end</span>
+
+  <span class='comment'># Replace occurrences of the literal template gem name (&quot;kettle-dev&quot;)
+</span>  <span class='comment'># with the destination gem name.
+</span>  <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>kettle-dev</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_gem_name'>gem_name</span><span class='rparen'>)</span>
+   <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\bKettle::Dev\b</span><span class='regexp_end'>/u</span></span><span class='comma'>,</span> <span class='id identifier rubyid_namespace'>namespace</span><span class='rparen'>)</span> <span class='kw'>unless</span> <span class='id identifier rubyid_namespace'>namespace</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+   <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Kettle%3A%3ADev</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_namespace_shield'>namespace_shield</span><span class='rparen'>)</span> <span class='kw'>unless</span> <span class='id identifier rubyid_namespace_shield'>namespace_shield</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+   <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>kettle--dev</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_gem_shield'>gem_shield</span><span class='rparen'>)</span>
+   <span class='comment'># Replace require and path structures with gem_name, modifying - to / if needed
+</span>   <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>kettle/dev</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_gem_name'>gem_name</span><span class='period'>.</span><span class='id identifier rubyid_tr'>tr</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>-</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="apply_strategy-class_method">
+  
+    .<strong>apply_strategy</strong>(content, dest_path)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
 596
 597
 598
 599
 600
-601
-602
-603
-604
-605
-606
-607</pre>
+601</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 455</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 596</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_apply_strategy'>apply_strategy</span><span class='lparen'>(</span><span class='id identifier rubyid_content'>content</span><span class='comma'>,</span> <span class='id identifier rubyid_dest_path'>dest_path</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='id identifier rubyid_content'>content</span> <span class='kw'>unless</span> <span class='id identifier rubyid_ruby_template?'>ruby_template?</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_path'>dest_path</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_strategy'>strategy</span> <span class='op'>=</span> <span class='id identifier rubyid_strategy_for'>strategy_for</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_path'>dest_path</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_dest_content'>dest_content</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_exist?'>exist?</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_path'>dest_path</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_path'>dest_path</span><span class='rparen'>)</span> <span class='op'>:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span>
+  <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="SourceMerger.html" title="Kettle::Dev::SourceMerger (module)">SourceMerger</a></span></span><span class='period'>.</span><span class='id identifier rubyid_apply'><span class='object_link'><a href="SourceMerger.html#apply-class_method" title="Kettle::Dev::SourceMerger.apply (method)">apply</a></span></span><span class='lparen'>(</span><span class='label'>strategy:</span> <span class='id identifier rubyid_strategy'>strategy</span><span class='comma'>,</span> <span class='label'>src:</span> <span class='id identifier rubyid_content'>content</span><span class='comma'>,</span> <span class='label'>dest:</span> <span class='id identifier rubyid_dest_content'>dest_content</span><span class='comma'>,</span> <span class='label'>path:</span> <span class='id identifier rubyid_rel_path'>rel_path</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_path'>dest_path</span><span class='rparen'>)</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="ask-class_method">
+  
+    .<strong>ask</strong>(prompt, default)  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Simple yes/no prompt.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>prompt</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>default</span>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 46</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_ask'>ask</span><span class='lparen'>(</span><span class='id identifier rubyid_prompt'>prompt</span><span class='comma'>,</span> <span class='id identifier rubyid_default'>default</span><span class='rparen'>)</span>
+  <span class='comment'># Force mode: any prompt resolves to Yes when ENV[&quot;force&quot;] is set truthy
+</span>  <span class='kw'>if</span> <span class='const'>ENV</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>force</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\A(1|true|y|yes)\z</span><span class='regexp_end'>/i</span></span>
+    <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_prompt'>prompt</span><span class='embexpr_end'>}</span><span class='tstring_content'> </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_default'>default</span> <span class='op'>?</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>[Y/n]</span><span class='tstring_end'>&quot;</span></span> <span class='op'>:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>[y/N]</span><span class='tstring_end'>&quot;</span></span><span class='embexpr_end'>}</span><span class='tstring_content'>: Y (forced)</span><span class='tstring_end'>&quot;</span></span>
+    <span class='kw'>return</span> <span class='kw'>true</span>
+  <span class='kw'>end</span>
+  <span class='id identifier rubyid_print'>print</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_prompt'>prompt</span><span class='embexpr_end'>}</span><span class='tstring_content'> </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_default'>default</span> <span class='op'>?</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>[Y/n]</span><span class='tstring_end'>&quot;</span></span> <span class='op'>:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>[y/N]</span><span class='tstring_end'>&quot;</span></span><span class='embexpr_end'>}</span><span class='tstring_content'>: </span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_ans'>ans</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="InputAdapter.html" title="Kettle::Dev::InputAdapter (module)">InputAdapter</a></span></span><span class='period'>.</span><span class='id identifier rubyid_gets'><span class='object_link'><a href="InputAdapter.html#gets-class_method" title="Kettle::Dev::InputAdapter.gets (method)">gets</a></span></span><span class='op'>&amp;.</span><span class='id identifier rubyid_strip'>strip</span>
+  <span class='id identifier rubyid_ans'>ans</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_ans'>ans</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+  <span class='comment'># Normalize explicit no first
+</span>  <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>if</span> <span class='id identifier rubyid_ans'>ans</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\An(o)?\z</span><span class='regexp_end'>/i</span></span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_default'>default</span>
+    <span class='comment'># Empty -&gt; default true; explicit yes -&gt; true; anything else -&gt; false
+</span>    <span class='id identifier rubyid_ans'>ans</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span> <span class='op'>||</span> <span class='id identifier rubyid_ans'>ans</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\Ay(es)?\z</span><span class='regexp_end'>/i</span></span>
+  <span class='kw'>else</span>
+    <span class='comment'># Empty -&gt; default false; explicit yes -&gt; true; others (including garbage) -&gt; false
+</span>    <span class='id identifier rubyid_ans'>ans</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\Ay(es)?\z</span><span class='regexp_end'>/i</span></span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="copy_dir_with_prompt-class_method">
+  
+    .<strong>copy_dir_with_prompt</strong>(src_dir, dest_dir)  &#x21d2; <tt>void</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p class="note returns_void">This method returns an undefined value.</p><p>Copy a directory tree, prompting before creating or overwriting.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390
+391
+392
+393
+394
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404
+405
+406
+407
+408
+409
+410
+411
+412
+413
+414
+415
+416
+417
+418
+419
+420
+421
+422
+423
+424
+425
+426
+427
+428
+429
+430
+431
+432
+433
+434
+435
+436
+437
+438
+439
+440
+441
+442
+443
+444
+445
+446
+447
+448
+449
+450
+451
+452
+453
+454
+455
+456
+457
+458
+459
+460
+461
+462
+463
+464
+465
+466
+467
+468
+469
+470
+471
+472
+473
+474
+475
+476
+477
+478
+479
+480
+481
+482
+483
+484
+485
+486
+487
+488
+489
+490
+491
+492
+493
+494
+495
+496
+497
+498
+499</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 347</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_copy_dir_with_prompt'>copy_dir_with_prompt</span><span class='lparen'>(</span><span class='id identifier rubyid_src_dir'>src_dir</span><span class='comma'>,</span> <span class='id identifier rubyid_dest_dir'>dest_dir</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='const'>Dir</span><span class='period'>.</span><span class='id identifier rubyid_exist?'>exist?</span><span class='lparen'>(</span><span class='id identifier rubyid_src_dir'>src_dir</span><span class='rparen'>)</span>
@@ -1602,6 +1602,8 @@ Yields content for transformation when block given.</p>
       <pre class="lines">
 
 
+222
+223
 224
 225
 226
@@ -1691,11 +1693,10 @@ Yields content for transformation when block given.</p>
 310
 311
 312
-313
-314</pre>
+313</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 224</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 222</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_copy_file_with_prompt'>copy_file_with_prompt</span><span class='lparen'>(</span><span class='id identifier rubyid_src_path'>src_path</span><span class='comma'>,</span> <span class='id identifier rubyid_dest_path'>dest_path</span><span class='comma'>,</span> <span class='label'>allow_create:</span> <span class='kw'>true</span><span class='comma'>,</span> <span class='label'>allow_replace:</span> <span class='kw'>true</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_exist?'>exist?</span><span class='lparen'>(</span><span class='id identifier rubyid_src_path'>src_path</span><span class='rparen'>)</span>
@@ -1755,14 +1756,15 @@ Yields content for transformation when block given.</p>
 
   <span class='id identifier rubyid_content'>content</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='lparen'>(</span><span class='id identifier rubyid_src_path'>src_path</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_content'>content</span> <span class='op'>=</span> <span class='kw'>yield</span><span class='lparen'>(</span><span class='id identifier rubyid_content'>content</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='id identifier rubyid_block_given?'>block_given?</span>
-  <span class='comment'># Final global replacements that must occur AFTER normal replacements
+  <span class='comment'># Replace the explicit template token with the literal &quot;kettle-dev&quot;
+</span>  <span class='comment'># after upstream/template-specific replacements (i.e. after the yield),
+</span>  <span class='comment'># so the token itself is not altered by those replacements.
 </span>  <span class='kw'>begin</span>
     <span class='id identifier rubyid_token'>token</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>{KETTLE|DEV|GEM}</span><span class='tstring_end'>&quot;</span></span>
     <span class='id identifier rubyid_content'>content</span> <span class='op'>=</span> <span class='id identifier rubyid_content'>content</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='id identifier rubyid_token'>token</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>kettle-dev</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='id identifier rubyid_content'>content</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
   <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
     <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_error'><span class='object_link'><a href="../Dev.html#debug_error-class_method" title="Kettle::Dev.debug_error (method)">debug_error</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span>
-    <span class='comment'># If replacement fails unexpectedly, proceed with content as-is
-</span>  <span class='kw'>end</span>
+  <span class='kw'>end</span>
 
   <span class='id identifier rubyid_basename'>basename</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_basename'>basename</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_path'>dest_path</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_content'>content</span> <span class='op'>=</span> <span class='id identifier rubyid_apply_appraisals_merge'>apply_appraisals_merge</span><span class='lparen'>(</span><span class='id identifier rubyid_content'>content</span><span class='comma'>,</span> <span class='id identifier rubyid_dest_path'>dest_path</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='id identifier rubyid_basename'>basename</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Appraisals</span><span class='tstring_end'>&quot;</span></span>
@@ -1771,1510 +1773,4 @@ Yields content for transformation when block given.</p>
       <span class='id identifier rubyid_prior'>prior</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_path'>dest_path</span><span class='rparen'>)</span>
       <span class='id identifier rubyid_content'>content</span> <span class='op'>=</span> <span class='id identifier rubyid_merge_gemfile_dependencies'>merge_gemfile_dependencies</span><span class='lparen'>(</span><span class='id identifier rubyid_content'>content</span><span class='comma'>,</span> <span class='id identifier rubyid_prior'>prior</span><span class='rparen'>)</span>
     <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-      <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_error'><span class='object_link'><a href="../Dev.html#debug_error-class_method" title="Kettle::Dev.debug_error (method)">debug_error</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span>
-    <span class='kw'>end</span>
-  <span class='kw'>end</span>
-
-  <span class='id identifier rubyid_write_file'>write_file</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_path'>dest_path</span><span class='comma'>,</span> <span class='id identifier rubyid_content'>content</span><span class='rparen'>)</span>
-  <span class='kw'>begin</span>
-    <span class='comment'># Ensure executable bit for git hook scripts when writing under .git-hooks
-</span>    <span class='kw'>if</span> <span class='const'><span class='object_link'><a href="#EXECUTABLE_GIT_HOOKS_RE-constant" title="Kettle::Dev::TemplateHelpers::EXECUTABLE_GIT_HOOKS_RE (constant)">EXECUTABLE_GIT_HOOKS_RE</a></span></span> <span class='op'>=~</span> <span class='id identifier rubyid_dest_path'>dest_path</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
-      <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_chmod'>chmod</span><span class='lparen'>(</span><span class='int'>0o755</span><span class='comma'>,</span> <span class='id identifier rubyid_dest_path'>dest_path</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_exist?'>exist?</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_path'>dest_path</span><span class='rparen'>)</span>
-    <span class='kw'>end</span>
-  <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-    <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_error'><span class='object_link'><a href="../Dev.html#debug_error-class_method" title="Kettle::Dev.debug_error (method)">debug_error</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span>
-    <span class='comment'># ignore permission issues
-</span>  <span class='kw'>end</span>
-  <span class='id identifier rubyid_record_template_result'>record_template_result</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_path'>dest_path</span><span class='comma'>,</span> <span class='id identifier rubyid_dest_exists'>dest_exists</span> <span class='op'>?</span> <span class='symbol'>:replace</span> <span class='op'>:</span> <span class='symbol'>:create</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Wrote </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_dest_path'>dest_path</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="ensure_clean_git!-class_method">
-  
-    .<strong>ensure_clean_git!</strong>(root:, task_label:)  &#x21d2; <tt>void</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p class="note returns_void">This method returns an undefined value.</p><p>Ensure git working tree is clean before making changes in a task.<br />
-If not a git repo, this is a no-op.</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  <p class="tag_title">Parameters:</p>
-<ul class="param">
-  
-    <li>
-      
-        <span class='name'>root</span>
-      
-      
-        <span class='type'>(<tt>String</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>project root to run git commands in</p>
-</div>
-      
-    </li>
-  
-    <li>
-      
-        <span class='name'>task_label</span>
-      
-      
-        <span class='type'>(<tt>String</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>name of the rake task for user-facing messages (e.g., “kettle:dev:install”)</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-<p class="tag_title">Raises:</p>
-<ul class="raise">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt><span class='object_link'><a href="Error.html" title="Kettle::Dev::Error (class)">Kettle::Dev::Error</a></span></tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-167
-168
-169
-170
-171
-172
-173
-174
-175
-176
-177
-178
-179
-180
-181
-182
-183
-184
-185
-186
-187
-188
-189
-190
-191
-192
-193
-194
-195
-196
-197
-198
-199
-200
-201
-202
-203
-204
-205
-206
-207
-208
-209
-210
-211
-212
-213
-214
-215
-216
-217
-218
-219</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 167</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_ensure_clean_git!'>ensure_clean_git!</span><span class='lparen'>(</span><span class='label'>root:</span><span class='comma'>,</span> <span class='label'>task_label:</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_inside_repo'>inside_repo</span> <span class='op'>=</span> <span class='kw'>begin</span>
-    <span class='id identifier rubyid_system'>system</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>git</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>-C</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>rev-parse</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>--is-inside-work-tree</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='label'>out:</span> <span class='const'>File</span><span class='op'>::</span><span class='const'>NULL</span><span class='comma'>,</span> <span class='label'>err:</span> <span class='const'>File</span><span class='op'>::</span><span class='const'>NULL</span><span class='rparen'>)</span>
-  <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-    <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_error'><span class='object_link'><a href="../Dev.html#debug_error-class_method" title="Kettle::Dev.debug_error (method)">debug_error</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span>
-    <span class='kw'>false</span>
-  <span class='kw'>end</span>
-  <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_inside_repo'>inside_repo</span>
-
-  <span class='comment'># Prefer GitAdapter for cleanliness check; fallback to porcelain output
-</span>  <span class='id identifier rubyid_clean'>clean</span> <span class='op'>=</span> <span class='kw'>begin</span>
-    <span class='const'>Dir</span><span class='period'>.</span><span class='id identifier rubyid_chdir'>chdir</span><span class='lparen'>(</span><span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span> <span class='lbrace'>{</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="GitAdapter.html" title="Kettle::Dev::GitAdapter (class)">GitAdapter</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="GitAdapter.html#initialize-instance_method" title="Kettle::Dev::GitAdapter#initialize (method)">new</a></span></span><span class='period'>.</span><span class='id identifier rubyid_clean?'>clean?</span> <span class='rbrace'>}</span>
-  <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-    <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_error'><span class='object_link'><a href="../Dev.html#debug_error-class_method" title="Kettle::Dev.debug_error (method)">debug_error</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span>
-    <span class='kw'>nil</span>
-  <span class='kw'>end</span>
-
-  <span class='kw'>if</span> <span class='id identifier rubyid_clean'>clean</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
-    <span class='comment'># Fallback to using the GitAdapter to get both status and preview
-</span>    <span class='id identifier rubyid_status_output'>status_output</span> <span class='op'>=</span> <span class='kw'>begin</span>
-      <span class='id identifier rubyid_ga'>ga</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="GitAdapter.html" title="Kettle::Dev::GitAdapter (class)">GitAdapter</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="GitAdapter.html#initialize-instance_method" title="Kettle::Dev::GitAdapter#initialize (method)">new</a></span></span>
-      <span class='id identifier rubyid_out'>out</span><span class='comma'>,</span> <span class='id identifier rubyid_ok'>ok</span> <span class='op'>=</span> <span class='id identifier rubyid_ga'>ga</span><span class='period'>.</span><span class='id identifier rubyid_capture'>capture</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>-C</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>status</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>--porcelain</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='rparen'>)</span> <span class='comment'># adapter can use CLI safely
-</span>      <span class='id identifier rubyid_ok'>ok</span> <span class='op'>?</span> <span class='id identifier rubyid_out'>out</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span> <span class='op'>:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span>
-    <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-      <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_error'><span class='object_link'><a href="../Dev.html#debug_error-class_method" title="Kettle::Dev.debug_error (method)">debug_error</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span>
-      <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span>
-    <span class='kw'>end</span>
-    <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_status_output'>status_output</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
-    <span class='id identifier rubyid_preview'>preview</span> <span class='op'>=</span> <span class='id identifier rubyid_status_output'>status_output</span><span class='period'>.</span><span class='id identifier rubyid_lines'>lines</span><span class='period'>.</span><span class='id identifier rubyid_take'>take</span><span class='lparen'>(</span><span class='int'>10</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:rstrip</span><span class='rparen'>)</span>
-  <span class='kw'>else</span>
-    <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_clean'>clean</span>
-    <span class='comment'># For messaging, provide a small preview using GitAdapter even when using the adapter
-</span>    <span class='id identifier rubyid_status_output'>status_output</span> <span class='op'>=</span> <span class='kw'>begin</span>
-      <span class='id identifier rubyid_ga'>ga</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="GitAdapter.html" title="Kettle::Dev::GitAdapter (class)">GitAdapter</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="GitAdapter.html#initialize-instance_method" title="Kettle::Dev::GitAdapter#initialize (method)">new</a></span></span>
-      <span class='id identifier rubyid_out'>out</span><span class='comma'>,</span> <span class='id identifier rubyid_ok'>ok</span> <span class='op'>=</span> <span class='id identifier rubyid_ga'>ga</span><span class='period'>.</span><span class='id identifier rubyid_capture'>capture</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>-C</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>status</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>--porcelain</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='rparen'>)</span> <span class='comment'># read-only query
-</span>      <span class='id identifier rubyid_ok'>ok</span> <span class='op'>?</span> <span class='id identifier rubyid_out'>out</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span> <span class='op'>:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span>
-    <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-      <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_error'><span class='object_link'><a href="../Dev.html#debug_error-class_method" title="Kettle::Dev.debug_error (method)">debug_error</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span>
-      <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span>
-    <span class='kw'>end</span>
-    <span class='id identifier rubyid_preview'>preview</span> <span class='op'>=</span> <span class='id identifier rubyid_status_output'>status_output</span><span class='period'>.</span><span class='id identifier rubyid_lines'>lines</span><span class='period'>.</span><span class='id identifier rubyid_take'>take</span><span class='lparen'>(</span><span class='int'>10</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:rstrip</span><span class='rparen'>)</span>
-  <span class='kw'>end</span>
-
-  <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>ERROR: Your git working tree has uncommitted changes.</span><span class='tstring_end'>&quot;</span></span>
-  <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_task_label'>task_label</span><span class='embexpr_end'>}</span><span class='tstring_content'> may modify files (e.g., .github/, .gitignore, *.gemspec).</span><span class='tstring_end'>&quot;</span></span>
-  <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Please commit or stash your changes, then re-run: rake </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_task_label'>task_label</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
-  <span class='kw'>unless</span> <span class='id identifier rubyid_preview'>preview</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
-    <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Detected changes:</span><span class='tstring_end'>&quot;</span></span>
-    <span class='id identifier rubyid_preview'>preview</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_l'>l</span><span class='op'>|</span> <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>  </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_l'>l</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='rbrace'>}</span>
-    <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>(showing up to first 10 lines)</span><span class='tstring_end'>&quot;</span></span>
-  <span class='kw'>end</span>
-  <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Error.html" title="Kettle::Dev::Error (class)">Error</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Aborting: git working tree is not clean.</span><span class='tstring_end'>&quot;</span></span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="gem_checkout_root-class_method">
-  
-    .<strong>gem_checkout_root</strong>  &#x21d2; <tt>String</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p>Root of this gem’s checkout (repository root when working from source)<br />
-Calculated relative to lib/kettle/dev/</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>String</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-40
-41
-42</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 40</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_gem_checkout_root'>gem_checkout_root</span>
-  <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_expand_path'>expand_path</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>../../..</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid___dir__'>__dir__</span><span class='rparen'>)</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="gemspec_metadata-class_method">
-  
-    .<strong>gemspec_metadata</strong>(root = project_root)  &#x21d2; <tt>Hash</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p>Parse gemspec metadata and derive useful strings</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  <p class="tag_title">Parameters:</p>
-<ul class="param">
-  
-    <li>
-      
-        <span class='name'>root</span>
-      
-      
-        <span class='type'>(<tt>String</tt>)</span>
-      
-      
-        <em class="default">(defaults to: <tt>project_root</tt>)</em>
-      
-      
-        &mdash;
-        <div class='inline'><p>project root</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Hash</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-700
-701
-702</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 700</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_gemspec_metadata'>gemspec_metadata</span><span class='lparen'>(</span><span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span> <span class='op'>=</span> <span class='id identifier rubyid_project_root'>project_root</span><span class='rparen'>)</span>
-  <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="GemSpecReader.html" title="Kettle::Dev::GemSpecReader (class)">GemSpecReader</a></span></span><span class='period'>.</span><span class='id identifier rubyid_load'><span class='object_link'><a href="GemSpecReader.html#load-class_method" title="Kettle::Dev::GemSpecReader.load (method)">load</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span><span class='rparen'>)</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="load_manifest-class_method">
-  
-    .<strong>load_manifest</strong>  &#x21d2; <tt>Object</tt> 
-  
-
-  
-
-  
-</h3><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-735
-736
-737
-738
-739
-740
-741
-742
-743
-744
-745</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 735</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_load_manifest'>load_manifest</span>
-  <span class='id identifier rubyid_raw'>raw</span> <span class='op'>=</span> <span class='const'>YAML</span><span class='period'>.</span><span class='id identifier rubyid_load_file'>load_file</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="#TEMPLATE_MANIFEST_PATH-constant" title="Kettle::Dev::TemplateHelpers::TEMPLATE_MANIFEST_PATH (constant)">TEMPLATE_MANIFEST_PATH</a></span></span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_raw'>raw</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_entry'>entry</span><span class='op'>|</span>
-    <span class='lbrace'>{</span>
-      <span class='label'>path:</span> <span class='id identifier rubyid_entry'>entry</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>path</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
-      <span class='label'>strategy:</span> <span class='id identifier rubyid_entry'>entry</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>strategy</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_downcase'>downcase</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='comma'>,</span>
-    <span class='rbrace'>}</span>
-  <span class='kw'>end</span>
-<span class='kw'>rescue</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>ENOENT</span>
-  <span class='lbracket'>[</span><span class='rbracket'>]</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="manifestation-class_method">
-  
-    .<strong>manifestation</strong>  &#x21d2; <tt>Object</tt> 
-  
-
-  
-
-  
-</h3><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-711
-712
-713</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 711</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_manifestation'>manifestation</span>
-  <span class='cvar'>@@manifestation</span> <span class='op'>||=</span> <span class='id identifier rubyid_load_manifest'>load_manifest</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="merge_gemfile_dependencies-class_method">
-  
-    .<strong>merge_gemfile_dependencies</strong>(src_content, dest_content)  &#x21d2; <tt>String</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p>Merge gem dependency lines from a source Gemfile-like content into an existing<br />
-destination Gemfile-like content. Existing gem lines in the destination win;<br />
-we only append missing gem declarations from the source at the end of the file.<br />
-This is deliberately conservative and avoids attempting to relocate gems inside<br />
-group/platform blocks or reconcile version constraints.</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  <p class="tag_title">Parameters:</p>
-<ul class="param">
-  
-    <li>
-      
-        <span class='name'>src_content</span>
-      
-      
-        <span class='type'>(<tt>String</tt>)</span>
-      
-      
-      
-    </li>
-  
-    <li>
-      
-        <span class='name'>dest_content</span>
-      
-      
-        <span class='type'>(<tt>String</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>String</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>merged content</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-324
-325
-326
-327
-328
-329
-330
-331
-332
-333
-334
-335
-336
-337
-338
-339
-340
-341
-342
-343
-344
-345
-346
-347
-348
-349
-350
-351
-352
-353
-354
-355
-356
-357
-358
-359
-360
-361
-362
-363
-364
-365
-366
-367
-368
-369
-370
-371
-372
-373
-374
-375
-376
-377
-378
-379
-380
-381
-382
-383
-384
-385
-386
-387
-388
-389
-390
-391
-392
-393
-394
-395
-396
-397
-398
-399
-400
-401
-402
-403
-404
-405
-406
-407
-408
-409
-410
-411
-412
-413
-414
-415
-416
-417
-418
-419
-420
-421
-422
-423
-424
-425
-426
-427
-428
-429
-430
-431
-432
-433
-434
-435
-436
-437
-438</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 324</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_merge_gemfile_dependencies'>merge_gemfile_dependencies</span><span class='lparen'>(</span><span class='id identifier rubyid_src_content'>src_content</span><span class='comma'>,</span> <span class='id identifier rubyid_dest_content'>dest_content</span><span class='rparen'>)</span>
-  <span class='kw'>begin</span>
-    <span class='id identifier rubyid_gem_re'>gem_re</span> <span class='op'>=</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^\s*gem\s+[&#39;&quot;]([^&#39;&quot;\s]+)[&#39;&quot;].*$</span><span class='regexp_end'>/</span></span>
-    <span class='comment'># Collect first occurrence of each gem line in source
-</span>    <span class='id identifier rubyid_src_gems'>src_gems</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
-    <span class='id identifier rubyid_src_content'>src_content</span><span class='period'>.</span><span class='id identifier rubyid_each_line'>each_line</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_ln'>ln</span><span class='op'>|</span>
-      <span class='kw'>next</span> <span class='kw'>if</span> <span class='id identifier rubyid_ln'>ln</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>#</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-      <span class='kw'>if</span> <span class='lparen'>(</span><span class='id identifier rubyid_m'>m</span> <span class='op'>=</span> <span class='id identifier rubyid_ln'>ln</span><span class='period'>.</span><span class='id identifier rubyid_match'>match</span><span class='lparen'>(</span><span class='id identifier rubyid_gem_re'>gem_re</span><span class='rparen'>)</span><span class='rparen'>)</span>
-        <span class='id identifier rubyid_name'>name</span> <span class='op'>=</span> <span class='id identifier rubyid_m'>m</span><span class='lbracket'>[</span><span class='int'>1</span><span class='rbracket'>]</span>
-        <span class='id identifier rubyid_src_gems'>src_gems</span><span class='lbracket'>[</span><span class='id identifier rubyid_name'>name</span><span class='rbracket'>]</span> <span class='op'>||=</span> <span class='id identifier rubyid_ln'>ln</span><span class='period'>.</span><span class='id identifier rubyid_rstrip'>rstrip</span>
-      <span class='kw'>end</span>
-    <span class='kw'>end</span>
-
-    <span class='comment'># --- Handle `source` replacement/insertion ---
-</span>    <span class='id identifier rubyid_src_source_line'>src_source_line</span> <span class='op'>=</span> <span class='kw'>nil</span>
-    <span class='id identifier rubyid_src_content'>src_content</span><span class='period'>.</span><span class='id identifier rubyid_each_line'>each_line</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_ln'>ln</span><span class='op'>|</span>
-      <span class='kw'>next</span> <span class='kw'>if</span> <span class='id identifier rubyid_ln'>ln</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>#</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-      <span class='kw'>if</span> <span class='id identifier rubyid_ln'>ln</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^\s*source\s+[&#39;&quot;][^&#39;&quot;]+[&#39;&quot;]\s*$</span><span class='regexp_end'>/</span></span>
-        <span class='id identifier rubyid_src_source_line'>src_source_line</span> <span class='op'>=</span> <span class='id identifier rubyid_ln'>ln</span><span class='period'>.</span><span class='id identifier rubyid_rstrip'>rstrip</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span>
-        <span class='kw'>break</span>
-      <span class='kw'>end</span>
-    <span class='kw'>end</span>
-
-    <span class='id identifier rubyid_dest_lines'>dest_lines</span> <span class='op'>=</span> <span class='id identifier rubyid_dest_content'>dest_content</span><span class='period'>.</span><span class='id identifier rubyid_lines'>lines</span><span class='period'>.</span><span class='id identifier rubyid_dup'>dup</span>
-
-    <span class='kw'>if</span> <span class='id identifier rubyid_src_source_line'>src_source_line</span>
-      <span class='id identifier rubyid_dest_source_idx'>dest_source_idx</span> <span class='op'>=</span> <span class='id identifier rubyid_dest_lines'>dest_lines</span><span class='period'>.</span><span class='id identifier rubyid_index'>index</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_ln'>ln</span><span class='op'>|</span>
-        <span class='op'>!</span><span class='id identifier rubyid_ln'>ln</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>#</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_ln'>ln</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^\s*source\s+[&#39;&quot;][^&#39;&quot;]+[&#39;&quot;]\s*$</span><span class='regexp_end'>/</span></span>
-      <span class='kw'>end</span>
-      <span class='kw'>if</span> <span class='id identifier rubyid_dest_source_idx'>dest_source_idx</span>
-        <span class='id identifier rubyid_dest_lines'>dest_lines</span><span class='lbracket'>[</span><span class='id identifier rubyid_dest_source_idx'>dest_source_idx</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_src_source_line'>src_source_line</span>
-      <span class='kw'>else</span>
-        <span class='comment'># Insert after any leading contiguous comment/blank block at top of file
-</span>        <span class='id identifier rubyid_insert_idx'>insert_idx</span> <span class='op'>=</span> <span class='int'>0</span>
-        <span class='kw'>while</span> <span class='id identifier rubyid_insert_idx'>insert_idx</span> <span class='op'>&lt;</span> <span class='id identifier rubyid_dest_lines'>dest_lines</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span> <span class='op'>&amp;&amp;</span> <span class='lparen'>(</span><span class='id identifier rubyid_dest_lines'>dest_lines</span><span class='lbracket'>[</span><span class='id identifier rubyid_insert_idx'>insert_idx</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span> <span class='op'>||</span> <span class='id identifier rubyid_dest_lines'>dest_lines</span><span class='lbracket'>[</span><span class='id identifier rubyid_insert_idx'>insert_idx</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_lstrip'>lstrip</span><span class='period'>.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>#</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='rparen'>)</span>
-          <span class='id identifier rubyid_insert_idx'>insert_idx</span> <span class='op'>+=</span> <span class='int'>1</span>
-        <span class='kw'>end</span>
-        <span class='id identifier rubyid_dest_lines'>dest_lines</span><span class='period'>.</span><span class='id identifier rubyid_insert'>insert</span><span class='lparen'>(</span><span class='id identifier rubyid_insert_idx'>insert_idx</span><span class='comma'>,</span> <span class='id identifier rubyid_src_source_line'>src_source_line</span><span class='rparen'>)</span>
-      <span class='kw'>end</span>
-    <span class='kw'>end</span>
-
-    <span class='comment'># --- Handle `git_source` replacement/insertion ---
-</span>    <span class='comment'># Collect non-comment git_source lines from source (preserve order)
-</span>    <span class='id identifier rubyid_src_git_lines'>src_git_lines</span> <span class='op'>=</span> <span class='id identifier rubyid_src_content'>src_content</span><span class='period'>.</span><span class='id identifier rubyid_each_line'>each_line</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_ln'>ln</span><span class='op'>|</span> <span class='op'>!</span><span class='id identifier rubyid_ln'>ln</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>#</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_ln'>ln</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^\s*git_source\s*\(</span><span class='regexp_end'>/</span></span> <span class='rbrace'>}</span>
-    <span class='kw'>if</span> <span class='id identifier rubyid_src_git_lines'>src_git_lines</span><span class='period'>.</span><span class='id identifier rubyid_any?'>any?</span>
-      <span class='comment'># Insert new git_source lines in the same order as they appear in the source
-</span>      <span class='comment'># When inserting (not replacing), place them immediately after the source line if present
-</span>      <span class='id identifier rubyid_insert_after_source_idx'>insert_after_source_idx</span> <span class='op'>=</span> <span class='id identifier rubyid_dest_lines'>dest_lines</span><span class='period'>.</span><span class='id identifier rubyid_index'>index</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_ln'>ln</span><span class='op'>|</span> <span class='op'>!</span><span class='id identifier rubyid_ln'>ln</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>#</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_ln'>ln</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^\s*source\s+[&#39;&quot;][^&#39;&quot;]+[&#39;&quot;]\s*$</span><span class='regexp_end'>/</span></span> <span class='rbrace'>}</span>
-
-      <span class='comment'># Iterate source git lines in reverse for insertion so order is preserved when inserting at same index
-</span>      <span class='id identifier rubyid_src_git_lines'>src_git_lines</span><span class='period'>.</span><span class='id identifier rubyid_reverse_each'>reverse_each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_gln'>gln</span><span class='op'>|</span>
-        <span class='comment'># Attempt to extract the git_source &quot;name&quot; (handles forms like git_source(:github) or git_source :github)
-</span>        <span class='id identifier rubyid_name_match'>name_match</span> <span class='op'>=</span> <span class='id identifier rubyid_gln'>gln</span><span class='period'>.</span><span class='id identifier rubyid_match'>match</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^\s*git_source\s*\(?\s*:?(\w+)\b</span><span class='regexp_end'>/</span></span><span class='rparen'>)</span>
-        <span class='id identifier rubyid_name'>name</span> <span class='op'>=</span> <span class='id identifier rubyid_name_match'>name_match</span> <span class='op'>?</span> <span class='id identifier rubyid_name_match'>name_match</span><span class='lbracket'>[</span><span class='int'>1</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span> <span class='op'>:</span> <span class='kw'>nil</span>
-
-        <span class='id identifier rubyid_replaced'>replaced</span> <span class='op'>=</span> <span class='kw'>false</span>
-        <span class='kw'>if</span> <span class='id identifier rubyid_name'>name</span>
-          <span class='comment'># Try to find a git_source in destination with the same name
-</span>          <span class='id identifier rubyid_dest_same_idx'>dest_same_idx</span> <span class='op'>=</span> <span class='id identifier rubyid_dest_lines'>dest_lines</span><span class='period'>.</span><span class='id identifier rubyid_index'>index</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_dln'>dln</span><span class='op'>|</span>
-            <span class='op'>!</span><span class='id identifier rubyid_dln'>dln</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>#</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_dln'>dln</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^\s*git_source\s*\(?\s*:?</span><span class='embexpr_beg'>#{</span><span class='const'>Regexp</span><span class='period'>.</span><span class='id identifier rubyid_escape'>escape</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'>\b</span><span class='regexp_end'>/</span></span>
-          <span class='kw'>end</span>
-          <span class='kw'>if</span> <span class='id identifier rubyid_dest_same_idx'>dest_same_idx</span>
-            <span class='id identifier rubyid_dest_lines'>dest_lines</span><span class='lbracket'>[</span><span class='id identifier rubyid_dest_same_idx'>dest_same_idx</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_gln'>gln</span><span class='period'>.</span><span class='id identifier rubyid_rstrip'>rstrip</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span>
-            <span class='id identifier rubyid_replaced'>replaced</span> <span class='op'>=</span> <span class='kw'>true</span>
-          <span class='kw'>end</span>
-        <span class='kw'>end</span>
-
-        <span class='kw'>unless</span> <span class='id identifier rubyid_replaced'>replaced</span>
-          <span class='comment'># If destination has a github git_source, replace that
-</span>          <span class='id identifier rubyid_dest_github_idx'>dest_github_idx</span> <span class='op'>=</span> <span class='id identifier rubyid_dest_lines'>dest_lines</span><span class='period'>.</span><span class='id identifier rubyid_index'>index</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_dln'>dln</span><span class='op'>|</span>
-            <span class='op'>!</span><span class='id identifier rubyid_dln'>dln</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>#</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_dln'>dln</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^\s*git_source\s*\(?\s*:?github\b</span><span class='regexp_end'>/</span></span>
-          <span class='kw'>end</span>
-          <span class='kw'>if</span> <span class='id identifier rubyid_dest_github_idx'>dest_github_idx</span>
-            <span class='id identifier rubyid_dest_lines'>dest_lines</span><span class='lbracket'>[</span><span class='id identifier rubyid_dest_github_idx'>dest_github_idx</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_gln'>gln</span><span class='period'>.</span><span class='id identifier rubyid_rstrip'>rstrip</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span>
-          <span class='kw'>else</span>
-            <span class='comment'># Insert below the source line if present, otherwise at top (after comments)
-</span>            <span class='id identifier rubyid_insert_idx'>insert_idx</span> <span class='op'>=</span>
-              <span class='kw'>if</span> <span class='id identifier rubyid_insert_after_source_idx'>insert_after_source_idx</span>
-                <span class='id identifier rubyid_insert_after_source_idx'>insert_after_source_idx</span> <span class='op'>+</span> <span class='int'>1</span>
-              <span class='kw'>else</span>
-                <span class='int'>0</span>
-              <span class='kw'>end</span>
-            <span class='id identifier rubyid_dest_lines'>dest_lines</span><span class='period'>.</span><span class='id identifier rubyid_insert'>insert</span><span class='lparen'>(</span><span class='id identifier rubyid_insert_idx'>insert_idx</span><span class='comma'>,</span> <span class='id identifier rubyid_gln'>gln</span><span class='period'>.</span><span class='id identifier rubyid_rstrip'>rstrip</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-          <span class='kw'>end</span>
-        <span class='kw'>end</span>
-      <span class='kw'>end</span>
-    <span class='kw'>end</span>
-
-    <span class='comment'># Index existing gems in destination (after potential source/git_source changes)
-</span>    <span class='id identifier rubyid_dest_gems'>dest_gems</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
-    <span class='id identifier rubyid_dest_lines'>dest_lines</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='period'>.</span><span class='id identifier rubyid_each_line'>each_line</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_ln'>ln</span><span class='op'>|</span>
-      <span class='kw'>next</span> <span class='kw'>if</span> <span class='id identifier rubyid_ln'>ln</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>#</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-      <span class='kw'>if</span> <span class='lparen'>(</span><span class='id identifier rubyid_m'>m</span> <span class='op'>=</span> <span class='id identifier rubyid_ln'>ln</span><span class='period'>.</span><span class='id identifier rubyid_match'>match</span><span class='lparen'>(</span><span class='id identifier rubyid_gem_re'>gem_re</span><span class='rparen'>)</span><span class='rparen'>)</span>
-        <span class='id identifier rubyid_dest_gems'>dest_gems</span><span class='lbracket'>[</span><span class='id identifier rubyid_m'>m</span><span class='lbracket'>[</span><span class='int'>1</span><span class='rbracket'>]</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='kw'>true</span>
-      <span class='kw'>end</span>
-    <span class='kw'>end</span>
-
-    <span class='id identifier rubyid_missing'>missing</span> <span class='op'>=</span> <span class='id identifier rubyid_src_gems'>src_gems</span><span class='period'>.</span><span class='id identifier rubyid_keys'>keys</span><span class='period'>.</span><span class='id identifier rubyid_reject'>reject</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_n'>n</span><span class='op'>|</span> <span class='id identifier rubyid_dest_gems'>dest_gems</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='id identifier rubyid_n'>n</span><span class='rparen'>)</span> <span class='rbrace'>}</span>
-    <span class='comment'># If nothing to change, return original destination content
-</span>    <span class='kw'>if</span> <span class='id identifier rubyid_missing'>missing</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_src_source_line'>src_source_line</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_src_git_lines'>src_git_lines</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
-      <span class='kw'>return</span> <span class='id identifier rubyid_dest_content'>dest_content</span>
-    <span class='kw'>end</span>
-
-    <span class='id identifier rubyid_out'>out</span> <span class='op'>=</span> <span class='id identifier rubyid_dest_lines'>dest_lines</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span>
-    <span class='id identifier rubyid_out'>out</span> <span class='op'>&lt;&lt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_out'>out</span><span class='period'>.</span><span class='id identifier rubyid_end_with?'>end_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>||</span> <span class='id identifier rubyid_out'>out</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
-    <span class='kw'>if</span> <span class='id identifier rubyid_missing'>missing</span><span class='period'>.</span><span class='id identifier rubyid_any?'>any?</span>
-      <span class='id identifier rubyid_out'>out</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_missing'>missing</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_n'>n</span><span class='op'>|</span> <span class='id identifier rubyid_src_gems'>src_gems</span><span class='lbracket'>[</span><span class='id identifier rubyid_n'>n</span><span class='rbracket'>]</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-      <span class='id identifier rubyid_out'>out</span> <span class='op'>&lt;&lt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span>
-    <span class='kw'>end</span>
-    <span class='id identifier rubyid_out'>out</span>
-  <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-    <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_error'><span class='object_link'><a href="../Dev.html#debug_error-class_method" title="Kettle::Dev.debug_error (method)">debug_error</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_dest_content'>dest_content</span>
-  <span class='kw'>end</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="modified_by_template?-class_method">
-  
-    .<strong>modified_by_template?</strong>(dest_path)  &#x21d2; <tt>Boolean</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p>Returns true if the given path was created or replaced by the template task in this run</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  <p class="tag_title">Parameters:</p>
-<ul class="param">
-  
-    <li>
-      
-        <span class='name'>dest_path</span>
-      
-      
-        <span class='type'>(<tt>String</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Boolean</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-156
-157
-158
-159
-160</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 156</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_modified_by_template?'>modified_by_template?</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_path'>dest_path</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_rec'>rec</span> <span class='op'>=</span> <span class='cvar'>@@template_results</span><span class='lbracket'>[</span><span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_expand_path'>expand_path</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_path'>dest_path</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span><span class='rbracket'>]</span>
-  <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='id identifier rubyid_rec'>rec</span>
-  <span class='lbracket'>[</span><span class='symbol'>:create</span><span class='comma'>,</span> <span class='symbol'>:replace</span><span class='comma'>,</span> <span class='symbol'>:dir_create</span><span class='comma'>,</span> <span class='symbol'>:dir_replace</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_rec'>rec</span><span class='lbracket'>[</span><span class='symbol'>:action</span><span class='rbracket'>]</span><span class='rparen'>)</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="opencollective_disabled?-class_method">
-  
-    .<strong>opencollective_disabled?</strong>  &#x21d2; <tt>Boolean</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p>Check if Open Collective is disabled via environment variable.<br />
-Returns true when OPENCOLLECTIVE_HANDLE or FUNDING_ORG is explicitly set to a falsey value.</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Boolean</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-92
-93
-94
-95
-96
-97
-98
-99
-100</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 92</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_opencollective_disabled?'>opencollective_disabled?</span>
-  <span class='id identifier rubyid_oc_handle'>oc_handle</span> <span class='op'>=</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>OPENCOLLECTIVE_HANDLE</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
-  <span class='id identifier rubyid_funding_org'>funding_org</span> <span class='op'>=</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>FUNDING_ORG</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
-
-  <span class='comment'># Check if either variable is explicitly set to false
-</span>  <span class='lbracket'>[</span><span class='id identifier rubyid_oc_handle'>oc_handle</span><span class='comma'>,</span> <span class='id identifier rubyid_funding_org'>funding_org</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_any?'>any?</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_val'>val</span><span class='op'>|</span>
-    <span class='id identifier rubyid_val'>val</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_val'>val</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_match'>match</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html#ENV_FALSE_RE-constant" title="Kettle::Dev::ENV_FALSE_RE (constant)">ENV_FALSE_RE</a></span></span><span class='rparen'>)</span>
-  <span class='kw'>end</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="prefer_example-class_method">
-  
-    .<strong>prefer_example</strong>(src_path)  &#x21d2; <tt>String</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p>Prefer an .example variant for a given source path when present<br />
-For a given intended source path (e.g., “/src/Rakefile”), this will return<br />
-“/src/Rakefile.example” if it exists, otherwise returns the original path.<br />
-If the given path already ends with .example, it is returned as-is.</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  <p class="tag_title">Parameters:</p>
-<ul class="param">
-  
-    <li>
-      
-        <span class='name'>src_path</span>
-      
-      
-        <span class='type'>(<tt>String</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>String</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-83
-84
-85
-86
-87</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 83</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_prefer_example'>prefer_example</span><span class='lparen'>(</span><span class='id identifier rubyid_src_path'>src_path</span><span class='rparen'>)</span>
-  <span class='kw'>return</span> <span class='id identifier rubyid_src_path'>src_path</span> <span class='kw'>if</span> <span class='id identifier rubyid_src_path'>src_path</span><span class='period'>.</span><span class='id identifier rubyid_end_with?'>end_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>.example</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_example'>example</span> <span class='op'>=</span> <span class='id identifier rubyid_src_path'>src_path</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>.example</span><span class='tstring_end'>&quot;</span></span>
-  <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_exist?'>exist?</span><span class='lparen'>(</span><span class='id identifier rubyid_example'>example</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_example'>example</span> <span class='op'>:</span> <span class='id identifier rubyid_src_path'>src_path</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="prefer_example_with_osc_check-class_method">
-  
-    .<strong>prefer_example_with_osc_check</strong>(src_path)  &#x21d2; <tt>String</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p>Prefer a .no-osc.example variant when Open Collective is disabled.<br />
-Otherwise, falls back to prefer_example behavior.<br />
-For a given source path, this will return:</p>
-<ul>
-  <li>“path.no-osc.example” if opencollective_disabled? and it exists</li>
-  <li>Otherwise delegates to prefer_example</li>
-</ul>
-
-
-  </div>
-</div>
-<div class="tags">
-  <p class="tag_title">Parameters:</p>
-<ul class="param">
-  
-    <li>
-      
-        <span class='name'>src_path</span>
-      
-      
-        <span class='type'>(<tt>String</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>String</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-109
-110
-111
-112
-113
-114
-115
-116
-117</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 109</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_prefer_example_with_osc_check'>prefer_example_with_osc_check</span><span class='lparen'>(</span><span class='id identifier rubyid_src_path'>src_path</span><span class='rparen'>)</span>
-  <span class='kw'>if</span> <span class='id identifier rubyid_opencollective_disabled?'>opencollective_disabled?</span>
-    <span class='comment'># Try .no-osc.example first
-</span>    <span class='id identifier rubyid_base'>base</span> <span class='op'>=</span> <span class='id identifier rubyid_src_path'>src_path</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\.example\z</span><span class='regexp_end'>/</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_no_osc'>no_osc</span> <span class='op'>=</span> <span class='id identifier rubyid_base'>base</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>.no-osc.example</span><span class='tstring_end'>&quot;</span></span>
-    <span class='kw'>return</span> <span class='id identifier rubyid_no_osc'>no_osc</span> <span class='kw'>if</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_exist?'>exist?</span><span class='lparen'>(</span><span class='id identifier rubyid_no_osc'>no_osc</span><span class='rparen'>)</span>
-  <span class='kw'>end</span>
-  <span class='id identifier rubyid_prefer_example'>prefer_example</span><span class='lparen'>(</span><span class='id identifier rubyid_src_path'>src_path</span><span class='rparen'>)</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="project_root-class_method">
-  
-    .<strong>project_root</strong>  &#x21d2; <tt>String</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p>Root of the host project where Rake was invoked</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>String</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-33
-34
-35</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 33</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_project_root'>project_root</span>
-  <span class='const'><span class='object_link'><a href="CIHelpers.html" title="Kettle::Dev::CIHelpers (module)">CIHelpers</a></span></span><span class='period'>.</span><span class='id identifier rubyid_project_root'><span class='object_link'><a href="CIHelpers.html#project_root-class_method" title="Kettle::Dev::CIHelpers.project_root (method)">project_root</a></span></span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="record_template_result-class_method">
-  
-    .<strong>record_template_result</strong>(dest_path, action)  &#x21d2; <tt>void</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p class="note returns_void">This method returns an undefined value.</p><p>Record a template action for a destination path</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  <p class="tag_title">Parameters:</p>
-<ul class="param">
-  
-    <li>
-      
-        <span class='name'>dest_path</span>
-      
-      
-        <span class='type'>(<tt>String</tt>)</span>
-      
-      
-      
-    </li>
-  
-    <li>
-      
-        <span class='name'>action</span>
-      
-      
-        <span class='type'>(<tt>Symbol</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>one of :create, :replace, :skip, :dir_create, :dir_replace</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-138
-139
-140
-141
-142
-143
-144
-145</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 138</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_record_template_result'>record_template_result</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_path'>dest_path</span><span class='comma'>,</span> <span class='id identifier rubyid_action'>action</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_abs'>abs</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_expand_path'>expand_path</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_path'>dest_path</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span>
-  <span class='kw'>if</span> <span class='id identifier rubyid_action'>action</span> <span class='op'>==</span> <span class='symbol'>:skip</span> <span class='op'>&amp;&amp;</span> <span class='cvar'>@@template_results</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='id identifier rubyid_abs'>abs</span><span class='rparen'>)</span>
-    <span class='comment'># Preserve the last meaningful action; do not downgrade to :skip
-</span>    <span class='kw'>return</span>
-  <span class='kw'>end</span>
-  <span class='cvar'>@@template_results</span><span class='lbracket'>[</span><span class='id identifier rubyid_abs'>abs</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='label'>action:</span> <span class='id identifier rubyid_action'>action</span><span class='comma'>,</span> <span class='label'>timestamp:</span> <span class='const'>Time</span><span class='period'>.</span><span class='id identifier rubyid_now'>now</span><span class='rbrace'>}</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="rel_path-class_method">
-  
-    .<strong>rel_path</strong>(path)  &#x21d2; <tt>Object</tt> 
-  
-
-  
-
-  
-</h3><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-722
-723
-724
-725</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 722</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_rel_path'>rel_path</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_project'>project</span> <span class='op'>=</span> <span class='id identifier rubyid_project_root'>project_root</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
-  <span class='id identifier rubyid_path'>path</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^</span><span class='embexpr_beg'>#{</span><span class='const'>Regexp</span><span class='period'>.</span><span class='id identifier rubyid_escape'>escape</span><span class='lparen'>(</span><span class='id identifier rubyid_project'>project</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'>\/?</span><span class='regexp_end'>/</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="ruby_template?-class_method">
-  
-    .<strong>ruby_template?</strong>(dest_path)  &#x21d2; <tt>Boolean</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Boolean</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-727
-728
-729
-730
-731
-732
-733</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 727</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_ruby_template?'>ruby_template?</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_path'>dest_path</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_base'>base</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_basename'>basename</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_path'>dest_path</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span>
-  <span class='kw'>return</span> <span class='kw'>true</span> <span class='kw'>if</span> <span class='const'><span class='object_link'><a href="#RUBY_BASENAMES-constant" title="Kettle::Dev::TemplateHelpers::RUBY_BASENAMES (constant)">RUBY_BASENAMES</a></span></span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_base'>base</span><span class='rparen'>)</span>
-  <span class='kw'>return</span> <span class='kw'>true</span> <span class='kw'>if</span> <span class='const'><span class='object_link'><a href="#RUBY_SUFFIXES-constant" title="Kettle::Dev::TemplateHelpers::RUBY_SUFFIXES (constant)">RUBY_SUFFIXES</a></span></span><span class='period'>.</span><span class='id identifier rubyid_any?'>any?</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_suffix'>suffix</span><span class='op'>|</span> <span class='id identifier rubyid_base'>base</span><span class='period'>.</span><span class='id identifier rubyid_end_with?'>end_with?</span><span class='lparen'>(</span><span class='id identifier rubyid_suffix'>suffix</span><span class='rparen'>)</span> <span class='rbrace'>}</span>
-  <span class='id identifier rubyid_ext'>ext</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_extname'>extname</span><span class='lparen'>(</span><span class='id identifier rubyid_base'>base</span><span class='rparen'>)</span>
-  <span class='const'><span class='object_link'><a href="#RUBY_EXTENSIONS-constant" title="Kettle::Dev::TemplateHelpers::RUBY_EXTENSIONS (constant)">RUBY_EXTENSIONS</a></span></span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_ext'>ext</span><span class='rparen'>)</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="skip_for_disabled_opencollective?-class_method">
-  
-    .<strong>skip_for_disabled_opencollective?</strong>(relative_path)  &#x21d2; <tt>Boolean</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p>Check if a file should be skipped when Open Collective is disabled.<br />
-Returns true for opencollective-specific files when opencollective_disabled? is true.</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  <p class="tag_title">Parameters:</p>
-<ul class="param">
-  
-    <li>
-      
-        <span class='name'>relative_path</span>
-      
-      
-        <span class='type'>(<tt>String</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>relative path from gem checkout root</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Boolean</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-123
-124
-125
-126
-127
-128
-129
-130
-131
-132</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 123</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_skip_for_disabled_opencollective?'>skip_for_disabled_opencollective?</span><span class='lparen'>(</span><span class='id identifier rubyid_relative_path'>relative_path</span><span class='rparen'>)</span>
-  <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='id identifier rubyid_opencollective_disabled?'>opencollective_disabled?</span>
-
-  <span class='id identifier rubyid_opencollective_files'>opencollective_files</span> <span class='op'>=</span> <span class='lbracket'>[</span>
-    <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>.opencollective.yml</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
-    <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>.github/workflows/opencollective.yml</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
-  <span class='rbracket'>]</span>
-
-  <span class='id identifier rubyid_opencollective_files'>opencollective_files</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_relative_path'>relative_path</span><span class='rparen'>)</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="strategy_for-class_method">
-  
-    .<strong>strategy_for</strong>(dest_path)  &#x21d2; <tt>Object</tt> 
-  
-
-  
-
-  
-</h3><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-715
-716
-717
-718
-719
-720</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 715</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_strategy_for'>strategy_for</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_path'>dest_path</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_relative'>relative</span> <span class='op'>=</span> <span class='id identifier rubyid_rel_path'>rel_path</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_path'>dest_path</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_manifestation'>manifestation</span><span class='period'>.</span><span class='id identifier rubyid_find'>find</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_entry'>entry</span><span class='op'>|</span>
-    <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_fnmatch?'>fnmatch?</span><span class='lparen'>(</span><span class='id identifier rubyid_entry'>entry</span><span class='lbracket'>[</span><span class='symbol'>:path</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_relative'>relative</span><span class='comma'>,</span> <span class='const'>File</span><span class='op'>::</span><span class='const'>FNM_PATHNAME</span> <span class='op'>|</span> <span class='const'>File</span><span class='op'>::</span><span class='const'>FNM_EXTGLOB</span> <span class='op'>|</span> <span class='const'>File</span><span class='op'>::</span><span class='const'>FNM_DOTMATCH</span><span class='rparen'>)</span>
-  <span class='kw'>end</span><span class='op'>&amp;.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:strategy</span><span class='comma'>,</span> <span class='symbol'>:skip</span><span class='rparen'>)</span> <span class='op'>||</span> <span class='symbol'>:skip</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="template_results-class_method">
-  
-    .<strong>template_results</strong>  &#x21d2; <tt>Hash</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p>Access all template results (read-only clone)</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Hash</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-149
-150
-151</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 149</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_template_results'>template_results</span>
-  <span class='cvar'>@@template_results</span><span class='period'>.</span><span class='id identifier rubyid_clone'>clone</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="write_file-class_method">
-  
-    .<strong>write_file</strong>(dest_path, content)  &#x21d2; <tt>void</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p class="note returns_void">This method returns an undefined value.</p><p>Write file content creating directories as needed</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  <p class="tag_title">Parameters:</p>
-<ul class="param">
-  
-    <li>
-      
-        <span class='name'>dest_path</span>
-      
-      
-        <span class='type'>(<tt>String</tt>)</span>
-      
-      
-      
-    </li>
-  
-    <li>
-      
-        <span class='name'>content</span>
-      
-      
-        <span class='type'>(<tt>String</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-72
-73
-74
-75</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/template_helpers.rb', line 72</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_write_file'>write_file</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_path'>dest_path</span><span class='comma'>,</span> <span class='id identifier rubyid_content'>content</span><span class='rparen'>)</span>
-  <span class='const'>FileUtils</span><span class='period'>.</span><span class='id identifier rubyid_mkdir_p'>mkdir_p</span><span class='lparen'>(</span><span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_dirname'>dirname</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_path'>dest_path</span><span class='rparen'>)</span><span class='rparen'>)</span>
-  <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_open'>open</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_path'>dest_path</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>w</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_f'>f</span><span class='op'>|</span> <span class='id identifier rubyid_f'>f</span><span class='period'>.</span><span class='id identifier rubyid_write'>write</span><span class='lparen'>(</span><span class='id identifier rubyid_content'>content</span><span class='rparen'>)</span> <span class='rbrace'>}</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-  </div>
-
-</div>
-
-      <div id="footer">
-  Generated on Tue Nov 25 17:37:59 2025 by
-  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.37 (ruby-3.4.7).
-</div>
-
-    </div>
-  </body>
-</html>
+      <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" ti

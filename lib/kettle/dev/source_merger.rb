@@ -243,7 +243,6 @@ module Kettle
         src_nodes = extract_nodes_with_comments(src_result)
         dest_nodes = extract_nodes_with_comments(dest_result)
 
-
         merged_nodes = yield(src_nodes, dest_nodes, src_result, dest_result)
 
         # Extract magic comments from source (frozen_string_literal, etc.)
@@ -270,10 +269,10 @@ module Kettle
             magic_comments << line.rstrip
           # Check for magic comments like frozen_string_literal, encoding, etc.
           elsif stripped.start_with?("#") &&
-                (stripped.include?("frozen_string_literal:") ||
-                 stripped.include?("encoding:") ||
-                 stripped.include?("warn_indent:") ||
-                 stripped.include?("shareable_constant_value:"))
+              (stripped.include?("frozen_string_literal:") ||
+               stripped.include?("encoding:") ||
+               stripped.include?("warn_indent:") ||
+               stripped.include?("shareable_constant_value:"))
             magic_comments << line.rstrip
           end
         end

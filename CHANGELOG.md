@@ -24,6 +24,8 @@ Please file a bug if you notice a violation of semantic versioning.
   - Gemfiles
   - gemspecs
   - .simplecov
+- Stop rescuing Exception in certain scenarios (just StandardError)
+- Refactored logging logic and documentation
 
 ### Changed
 

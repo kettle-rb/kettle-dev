@@ -33,10 +33,7 @@ module Kettle
       # @param msg [String]
       # @return [void]
       def debug_log(msg)
-        return unless Kettle::Dev::DEBUGGING
-        Kernel.warn("[readme_backers] #{msg}")
-      rescue StandardError
-        # never raise from a standard error within debug logging
+        Kettle::Dev.debug_log(msg)
       end
 
       public

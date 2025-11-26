@@ -1,17 +1,27 @@
 {
-  "lib/kettle/dev.rb:1365930356": [
-    [76, 17, 2, "ThreadSafety/MutableClassInstanceVariable: Freeze mutable objects assigned to class instance variables.", 5862883],
-    [87, 7, 16, "Lint/RescueException: Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?", 2127134117]
+  "lib/kettle/dev.rb:39253844": [
+    [79, 17, 2, "ThreadSafety/MutableClassInstanceVariable: Freeze mutable objects assigned to class instance variables.", 5862883]
+  ],
+  "lib/kettle/dev/prism_gemfile.rb:1519469496": [
+    [33, 13, 22, "Style/IdenticalConditionalBranches: Move `dest_lines = out.lines` out of the conditional.", 469203201],
+    [42, 13, 22, "Style/IdenticalConditionalBranches: Move `dest_lines = out.lines` out of the conditional.", 469203201],
+    [115, 16, 21, "Style/SafeNavigation: Use safe navigation (`&.`) instead of checking if an object exists before calling the method.", 2906893698]
+  ],
+  "lib/kettle/dev/prism_gemspec.rb:2079753481": [
+    [37, 14, 47, "Style/SafeNavigation: Use safe navigation (`&.`) instead of checking if an object exists before calling the method.", 3509917367],
+    [44, 42, 25, "Style/SafeNavigation: Use safe navigation (`&.`) instead of checking if an object exists before calling the method.", 2110407389],
+    [100, 27, 29, "Style/SafeNavigation: Use safe navigation (`&.`) instead of checking if an object exists before calling the method.", 4280101207],
+    [102, 15, 43, "Style/SafeNavigation: Use safe navigation (`&.`) instead of checking if an object exists before calling the method.", 673952306]
   ],
   "lib/kettle/dev/tasks/ci_task.rb:33477548": [
     [268, 26, 10, "ThreadSafety/NewThread: Avoid starting new threads.", 3411682361],
     [271, 13, 329, "Lint/RescueException: Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?", 2809878728],
     [284, 24, 60, "ThreadSafety/NewThread: Avoid starting new threads.", 1884163423]
   ],
-  "lib/kettle/dev/template_helpers.rb:2164362620": [
-    [178, 11, 20, "ThreadSafety/DirChdir: Avoid using `Dir.chdir` due to its process-wide effect.", 645000286],
-    [195, 11, 52, "Style/IdenticalConditionalBranches: Move `preview = status_output.lines.take(10).map(&:rstrip)` out of the conditional.", 311333201],
-    [207, 11, 52, "Style/IdenticalConditionalBranches: Move `preview = status_output.lines.take(10).map(&:rstrip)` out of the conditional.", 311333201]
+  "lib/kettle/dev/template_helpers.rb:1702881994": [
+    [176, 11, 20, "ThreadSafety/DirChdir: Avoid using `Dir.chdir` due to its process-wide effect.", 645000286],
+    [193, 11, 52, "Style/IdenticalConditionalBranches: Move `preview = status_output.lines.take(10).map(&:rstrip)` out of the conditional.", 311333201],
+    [205, 11, 52, "Style/IdenticalConditionalBranches: Move `preview = status_output.lines.take(10).map(&:rstrip)` out of the conditional.", 311333201]
   ],
   "spec/kettle/dev/changelog_cli_spec.rb:775033188": [
     [39, 9, 72, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [40].", 1904128172],
@@ -137,6 +147,9 @@
     [319, 9, 13, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2024371388],
     [325, 9, 13, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2024371388]
   ],
+  "spec/kettle/dev/modular_gemfiles_integration_spec.rb:2587652597": [
+    [3, 16, 29, "RSpec/DescribeClass: The first argument to describe should be the class or module being tested.", 1686596109]
+  ],
   "spec/kettle/dev/pre_release_cli_spec.rb:3795621826": [
     [163, 9, 50, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [165].", 2390041128],
     [165, 9, 50, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [163].", 2805541288],
@@ -144,6 +157,9 @@
     [184, 9, 52, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [182].", 135676864],
     [239, 19, 26, "RSpec/DescribedClass: Use `described_class` instead of `Kettle::Dev::PreReleaseCLI`.", 1843931869],
     [255, 19, 26, "RSpec/DescribedClass: Use `described_class` instead of `Kettle::Dev::PreReleaseCLI`.", 1843931869]
+  ],
+  "spec/kettle/dev/prism_gemspec_spec.rb:95132064": [
+    [39, 13, 25, "RSpec/DescribedClass: Use `described_class` instead of `Kettle::Dev::PrismGemspec`.", 3607433866]
   ],
   "spec/kettle/dev/readme_backers_spec.rb:136637659": [
     [95, 9, 66, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [98].", 798457357],

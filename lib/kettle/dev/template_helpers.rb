@@ -579,11 +579,11 @@ module Kettle
         # Replace occurrences of the literal template gem name ("kettle-dev")
         # with the destination gem name.
         c = c.gsub("kettle-dev", gem_name)
-         c = c.gsub(/\bKettle::Dev\b/u, namespace) unless namespace.empty?
-         c = c.gsub("Kettle%3A%3ADev", namespace_shield) unless namespace_shield.empty?
-         c = c.gsub("kettle--dev", gem_shield)
-         # Replace require and path structures with gem_name, modifying - to / if needed
-         c.gsub("kettle/dev", gem_name.tr("-", "/"))
+        c = c.gsub(/\bKettle::Dev\b/u, namespace) unless namespace.empty?
+        c = c.gsub("Kettle%3A%3ADev", namespace_shield) unless namespace_shield.empty?
+        c = c.gsub("kettle--dev", gem_shield)
+        # Replace require and path structures with gem_name, modifying - to / if needed
+        c.gsub("kettle/dev", gem_name.tr("-", "/"))
       end
 
       # Parse gemspec metadata and derive useful strings
