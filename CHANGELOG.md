@@ -28,6 +28,9 @@ Please file a bug if you notice a violation of semantic versioning.
 - Refactored logging logic and documentation
 - Prevent self-referential gemfile injection
   - in Gemfiles, gemspecs, and Appraisals
+- Improve reliability of coverage and documentation stats
+  - in the changelog version heading
+  - fails hard when unable to generate stats, unless `--no-strict` provided
 
 ### Changed
 
@@ -1479,7 +1482,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.2.2...HEAD
+[1.2.2]: https://github.com/kettle-rb/kettle-dev/compare/v1.2.1...v1.2.2
+[1.2.2t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.2.2
 [1.2.0]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.60...v1.2.0
 [1.2.0t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.2.0
 [1.1.60]: https://github.com/kettle-rb/kettle-dev/compare/v1.1.59...v1.1.60

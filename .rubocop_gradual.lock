@@ -23,7 +23,7 @@
     [193, 11, 52, "Style/IdenticalConditionalBranches: Move `preview = status_output.lines.take(10).map(&:rstrip)` out of the conditional.", 311333201],
     [205, 11, 52, "Style/IdenticalConditionalBranches: Move `preview = status_output.lines.take(10).map(&:rstrip)` out of the conditional.", 311333201]
   ],
-  "spec/kettle/dev/changelog_cli_spec.rb:775033188": [
+  "spec/kettle/dev/changelog_cli_spec.rb:1786529028": [
     [39, 9, 72, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [40].", 1904128172],
     [40, 9, 75, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [39].", 2496915125],
     [487, 7, 60, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [488].", 1941286627],

@@ -41,7 +41,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
         t = Time.new(2025, 8, 31)
         allow(Time).to receive(:now).and_return(t)
 
-        cli = described_class.new
+        cli = described_class.new(strict: false)
         expect { cli.run }.not_to raise_error
         updated = File.read(File.join(root, "CHANGELOG.md"))
         expect(updated).to include("## [1.2.3] - 2025-08-31")
@@ -64,7 +64,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
         MD
         allow(Kettle::Dev::CIHelpers).to receive_messages(project_root: root, repo_info: ["o", "r"])
         allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("n\n")
-        cli = described_class.new
+        cli = described_class.new(strict: false)
         expect { cli.run }.to raise_error(MockSystemExit, /Aborting: version not bumped/)
       end
     end
@@ -87,7 +87,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
         MD
         allow(Kettle::Dev::CIHelpers).to receive_messages(project_root: root, repo_info: ["o", "r"])
         allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("y\n")
-        cli = described_class.new
+        cli = described_class.new(strict: false)
         expect { cli.run }.not_to raise_error
         updated = File.read(File.join(root, "CHANGELOG.md"))
         # Should not add another 1.2.3 section
@@ -107,7 +107,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
         File.write(File.join(root, "coverage", "coverage.json"), {"coverage" => {}}.to_json)
         File.write(File.join(root, "CHANGELOG.md"), "# no unreleased here\n")
         allow(Kettle::Dev::CIHelpers).to receive_messages(project_root: root, repo_info: ["o", "r"])
-        cli = described_class.new
+        cli = described_class.new(strict: false)
         expect { cli.run }.to raise_error(MockSystemExit, /Could not find '## \[Unreleased\]'/)
       end
     end
@@ -115,7 +115,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
 
   describe "#detect_initial_compare_base (private)" do
     it "extracts historical base from first compare link when present" do
-      cli = described_class.new
+      cli = described_class.new(strict: false)
       lines = [
         "[Unreleased]: https://github.com/acme/demo/compare/v1.2.3...HEAD\n",
         "[1.0.0]: https://github.com/acme/demo/compare/abc123...v1.0.0\n",
@@ -124,7 +124,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
     end
 
     it "defaults to HEAD^ when no historical base found" do
-      cli = described_class.new
+      cli = described_class.new(strict: false)
       lines = [
         "[Unreleased]: https://github.com/acme/demo/compare/v2.0.0...HEAD\n",
         "[2.0.0]: https://github.com/acme/demo/compare/v1.9.9...v2.0.0\n",
@@ -137,7 +137,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
     it "errors when no version.rb present" do
       mkproj do |root|
         allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
-        cli = described_class.new
+        cli = described_class.new(strict: false)
         expect { cli.send(:detect_version) }.to raise_error(MockSystemExit, /Could not find version.rb/)
       end
     end
@@ -147,7 +147,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
         FileUtils.mkdir_p(File.join(root, "lib", "x"))
         File.write(File.join(root, "lib", "x", "version.rb"), "module X; end\n")
         allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
-        cli = described_class.new
+        cli = described_class.new(strict: false)
         expect { cli.send(:detect_version) }.to raise_error(MockSystemExit, /VERSION constant not found/)
       end
     end
@@ -159,7 +159,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
         File.write(File.join(root, "lib", "a", "version.rb"), "module A; VERSION='1.0.0'; end\n")
         File.write(File.join(root, "lib", "b", "version.rb"), "module B; VERSION='2.0.0'; end\n")
         allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
-        cli = described_class.new
+        cli = described_class.new(strict: false)
         expect { cli.send(:detect_version) }.to raise_error(MockSystemExit, /Multiple VERSION constants/)
       end
     end
@@ -169,7 +169,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
         FileUtils.mkdir_p(File.join(root, "lib", "a"))
         File.write(File.join(root, "lib", "a", "version.rb"), "module A; VERSION='3.2.1'; end\n")
         allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
-        cli = described_class.new
+        cli = described_class.new(strict: false)
         expect(cli.send(:detect_version)).to eq("3.2.1")
       end
     end
@@ -177,7 +177,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
 
   describe "#extract_unreleased and #detect_previous_version" do
     it "returns nils when Unreleased heading missing and previous_version nil when not matched" do
-      cli = described_class.new
+      cli = described_class.new(strict: false)
       unreleased, before, after = cli.send(:extract_unreleased, "# Changelog\n")
       expect(unreleased).to be_nil
       expect(before).to be_nil
@@ -188,7 +188,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
 
   describe "#filter_unreleased_sections" do
     it "keeps only sections with content and trims trailing blanks" do
-      cli = described_class.new
+      cli = described_class.new(strict: false)
       block = <<~BLK
         noise outside
         ### Added
@@ -212,7 +212,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
     it "warns and returns nils when coverage.json missing" do
       mkproj do |root|
         allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
-        cli = described_class.new
+        cli = described_class.new(strict: false)
         line_cov, branch_cov = cli.send(:coverage_lines)
         expect(line_cov).to be_nil
         expect(branch_cov).to be_nil
@@ -224,7 +224,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
         FileUtils.mkdir_p(File.join(root, "coverage"))
         File.write(File.join(root, "coverage", "coverage.json"), "not json")
         allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
-        cli = described_class.new
+        cli = described_class.new(strict: false)
         line_cov, branch_cov = cli.send(:coverage_lines)
         expect(line_cov).to be_nil
         expect(branch_cov).to be_nil
@@ -260,7 +260,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
             },
           }
           File.write(File.join(root, "coverage", "coverage.json"), JSON.pretty_generate(data))
-          cli = described_class.new
+          cli = described_class.new(strict: false)
           line_cov, branch_cov = cli.send(:coverage_lines)
           expect(line_cov).to eq("COVERAGE: 40.00% -- 2/5 lines in 2 files")
           expect(branch_cov).to eq("BRANCH COVERAGE: 25.00% -- 1/4 branches in 2 files")
@@ -288,7 +288,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
             },
           }
           File.write(File.join(root, "coverage", "coverage.json"), JSON.pretty_generate(data))
-          cli = described_class.new
+          cli = described_class.new(strict: false)
           line_cov, branch_cov = cli.send(:coverage_lines)
           # lines: 1 relevant, 1 covered, 1 file
           expect(line_cov).to eq("COVERAGE: 100.00% -- 1/1 lines in 1 files")
@@ -303,7 +303,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
     it "warns and returns nil when bin/yard not executable" do
       mkproj do |root|
         allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
-        cli = described_class.new
+        cli = described_class.new(strict: false)
         expect(cli.send(:yard_percent_documented)).to be_nil
       end
     end
@@ -321,7 +321,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
         allow(File).to receive(:executable?).and_call_original
         allow(File).to receive(:executable?).with(cmd).and_return(true)
         allow(Open3).to receive(:capture2).and_return(["nothing documented line\n", double("ps")])
-        cli = described_class.new
+        cli = described_class.new(strict: false)
         expect(cli.send(:yard_percent_documented)).to be_nil
       end
     end
@@ -335,7 +335,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
         FileUtils.chmod(0o755, cmd)
         allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
         allow(Open3).to receive(:capture2).and_raise(StandardError.new("boom"))
-        cli = described_class.new
+        cli = described_class.new(strict: false)
         expect(cli.send(:yard_percent_documented)).to be_nil
       end
     end
@@ -343,7 +343,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
 
   describe "#update_link_refs GitLab conversion and owner/repo behavior" do
     it "converts GitLab compare and tag links to GitHub using captured owner/repo when nil provided" do
-      cli = described_class.new
+      cli = described_class.new(strict: false)
       input = <<~TXT
         ## [Unreleased]
         Something
@@ -358,7 +358,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
     end
 
     it "appends new compare and tag refs only when owner/repo present and handles missing Unreleased ref" do
-      cli = described_class.new
+      cli = described_class.new(strict: false)
       input = <<~TXT
         ## [Unreleased]
         Notes
@@ -375,7 +375,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
 
   describe "#update_link_refs GitLab compare owner override and multiple entries" do
     it "uses provided owner/repo instead of captured ones when present (compare links)" do
-      cli = described_class.new
+      cli = described_class.new(strict: false)
       input = <<~TXT
         [1.2.3]: https://gitlab.com/foo/bar/-/compare/deadbeef...v1.2.3
       TXT
@@ -386,7 +386,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
     end
 
     it "converts multiple GitLab compare links using captured groups when owner/repo are nil" do
-      cli = described_class.new
+      cli = described_class.new(strict: false)
       input = <<~TXT
         [0.9.0]: https://gitlab.com/one/repo/-/compare/abc123...v0.9.0
         [1.0.0]: https://gitlab.com/two/other/-/compare/def456...v1.0.0
@@ -399,7 +399,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
 
   describe "#detect_initial_compare_base" do
     it "extracts base from first 1.0.0 compare ref when present" do
-      cli = described_class.new
+      cli = described_class.new(strict: false)
       lines = [
         "[1.0.0]: https://github.com/acme/x/compare/abc123...v1.0.0\n",
         "[1.1.0]: https://github.com/acme/x/compare/v1.0.0...v1.1.0\n",
@@ -408,7 +408,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
     end
 
     it "defaults to HEAD^ when no suitable ref found" do
-      cli = described_class.new
+      cli = described_class.new(strict: false)
       lines = ["[foo]: https://example.com\n"]
       expect(cli.send(:detect_initial_compare_base, lines)).to eq("HEAD^")
     end
@@ -437,7 +437,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       t = Time.new(2025, 8, 30)
       allow(Time).to receive(:now).and_return(t)
 
-      cli = described_class.new
+      cli = described_class.new(strict: false)
       expect { cli.run }.not_to raise_error
 
       updated = File.read(File.join(root, "CHANGELOG.md"))
@@ -492,7 +492,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       allow(Time).to receive(:now).and_return(t)
 
       # Run the CLI
-      cli = Kettle::Dev::ChangelogCLI.new
+      cli = Kettle::Dev::ChangelogCLI.new(strict: false)
       expect { cli.run }.not_to raise_error
 
       updated = File.read(File.join(root, "CHANGELOG.md"))
@@ -541,7 +541,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       t = Time.new(2025, 8, 30)
       allow(Time).to receive(:now).and_return(t)
 
-      cli = Kettle::Dev::ChangelogCLI.new
+      cli = Kettle::Dev::ChangelogCLI.new(strict: false)
       expect { cli.run }.not_to raise_error
 
       updated = File.read(File.join(root, "CHANGELOG.md"))
@@ -588,7 +588,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       t = Time.new(2025, 8, 30)
       allow(Time).to receive(:now).and_return(t)
 
-      cli = described_class.new
+      cli = described_class.new(strict: false)
       expect { cli.run }.not_to raise_error
 
       updated = File.read(File.join(root, "CHANGELOG.md"))
@@ -618,7 +618,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
         allow(File).to receive(:executable?).and_call_original
         allow(File).to receive(:executable?).with(cmd).and_return(true)
         allow(Open3).to receive(:capture2).and_return(["Some header\n95.5% documented\nMore lines\n", double("ps")])
-        cli = described_class.new
+        cli = described_class.new(strict: false)
         expect(cli.send(:yard_percent_documented)).to eq("95.5% documented")
       end
     end
@@ -626,7 +626,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
 
   describe "#detect_previous_version positive" do
     it "extracts the next released version heading after Unreleased" do
-      cli = described_class.new
+      cli = described_class.new(strict: false)
       after_text = <<~TXT
         ## [2.1.0] - 2025-07-07
         notes
@@ -637,7 +637,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
 
   describe "#update_link_refs without owner/repo" do
     it "does not append new refs when owner and repo are nil" do
-      cli = described_class.new
+      cli = described_class.new(strict: false)
       input = <<~TXT
         # Changelog
         ## [Unreleased]
@@ -656,7 +656,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
 
   describe "#update_link_refs spacing around footer" do
     it "ensures a blank line before the link-ref block and retains a trailing blank line" do
-      cli = described_class.new
+      cli = described_class.new(strict: false)
       input = <<~TXT
         ## [Unreleased]
         Changelog body
@@ -673,7 +673,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
 
   describe "tag suffix transformation" do
     it "moves ([tag][Xt]) from heading suffix into first list item under heading using fixtures" do
-      cli = described_class.new
+      cli = described_class.new(strict: false)
       heading_style = File.read(File.join(__dir__, "..", "..", "support", "fixtures", "CHANGELOG_HEADING_TAGS.md"))
       list_style = File.read(File.join(__dir__, "..", "..", "support", "fixtures", "CHANGELOG_LIST_TAGS.md"))
       transformed = cli.send(:convert_heading_tag_suffix_to_list, heading_style)

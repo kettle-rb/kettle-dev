@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "open3"
+
 module Kettle
   module Dev
     # CLI for updating CHANGELOG.md with new version sections
@@ -11,10 +13,12 @@ module Kettle
 
       # Initialize the changelog CLI
       # Sets up paths for CHANGELOG.md and coverage.json
-      def initialize
+      # @param strict [Boolean] when true (default), require coverage and yard data; raise errors if unavailable
+      def initialize(strict: true)
         @root = Kettle::Dev::CIHelpers.project_root
         @changelog_path = File.join(@root, "CHANGELOG.md")
         @coverage_path = File.join(@root, "coverage", "coverage.json")
+        @strict = strict
       end
 
       # Main entry point to update CHANGELOG.md
@@ -215,11 +219,49 @@ module Kettle
       end
 
       def coverage_lines
-        unless File.file?(@coverage_path)
-          warn("Coverage JSON not found at #{@coverage_path}.")
-          warn("Run: K_SOUP_COV_FORMATTERS=\"json\" bin/rspec")
-          return [nil, nil]
+        if @strict
+          # Always generate fresh coverage data in strict mode
+          # Delete old coverage files to ensure we get current data
+          coverage_dir = File.dirname(@coverage_path)
+          if Dir.exist?(coverage_dir)
+            puts "Cleaning old coverage data from #{coverage_dir}..."
+            Dir.glob(File.join(coverage_dir, "*")).each do |file|
+              File.delete(file) if File.file?(file)
+            end
+          end
+
+          puts "Generating fresh coverage data by running: bin/rake coverage"
+
+          # Run bin/rake coverage to generate coverage.json
+          rake_cmd = File.join(@root, "bin", "rake")
+          unless File.executable?(rake_cmd)
+            raise "bin/rake not found or not executable; cannot generate coverage data"
+          end
+
+          # Run the command exactly as the user would run it manually
+          # The coverage task knows how to configure itself properly
+          success = system(rake_cmd, "coverage", chdir: @root)
+
+          unless success
+            raise "bin/rake coverage failed with exit status #{$?.exitstatus || "unknown"}"
+          end
+
+          puts "Coverage generation complete."
+
+          # Check if coverage.json was generated
+          unless File.file?(@coverage_path)
+            raise "Coverage JSON not found at #{@coverage_path} after running bin/rake coverage"
+          end
+        else
+          # Non-strict mode: check if coverage.json exists, warn if not
+          unless File.file?(@coverage_path)
+            warn("Coverage JSON not found at #{@coverage_path}.")
+            warn("Run: bin/rake coverage to generate it")
+            return [nil, nil]
+          end
         end
+
+        # Parse the coverage data
         data = JSON.parse(File.read(@coverage_path))
         files = data["coverage"] || {}
         file_count = 0
@@ -252,31 +294,55 @@ module Kettle
         line_str = format("COVERAGE: %.2f%% -- %d/%d lines in %d files", line_pct, covered_lines, total_lines, file_count)
         branch_str = format("BRANCH COVERAGE: %.2f%% -- %d/%d branches in %d files", branch_pct, covered_branches, total_branches, file_count)
         [line_str, branch_str]
+      rescue JSON::ParserError => e
+        if @strict
+          raise "Failed to parse coverage JSON at #{@coverage_path}: #{e.class}: #{e.message}"
+        else
+          warn("Failed to parse coverage: #{e.class}: #{e.message}")
+          [nil, nil]
+        end
       rescue StandardError => e
-        warn("Failed to parse coverage: #{e.class}: #{e.message}")
-        [nil, nil]
+        if @strict
+          raise "Failed to get coverage data: #{e.class}: #{e.message}"
+        else
+          warn("Failed to get coverage data: #{e.class}: #{e.message}")
+          [nil, nil]
+        end
       end
 
       def yard_percent_documented
         cmd = File.join(@root, "bin", "yard")
         unless File.executable?(cmd)
-          warn("bin/yard not found or not executable; ensure yard is installed via bundler")
-          return
+          if @strict
+            raise "bin/yard not found or not executable; ensure yard is installed via bundler"
+          else
+            warn("bin/yard not found or not executable; ensure yard is installed via bundler")
+            return
+          end
         end
-        out, _ = Open3.capture2(cmd)
-        # Look for a line containing e.g., "95.35% documented"
-        line = out.lines.find { |l| l =~ /\d+(?:\.\d+)?%\s+documented/ }
-        if line
-          line = line.strip
-          # Return exactly as requested: e.g. "95.35% documented"
-          line
-        else
-          warn("Could not find documented percentage in bin/yard output.")
-          nil
+
+        begin
+          # Run bin/yard to get documentation percentage
+          out, _ = Open3.capture2(cmd, {chdir: @root})
+          # Look for a line containing e.g., "95.35% documented"
+          line = out.lines.find { |l| l =~ /\d+(?:\.\d+)?%\s+documented/ }
+
+          if line
+            line.strip
+          elsif @strict
+            raise "Could not find documented percentage in bin/yard output"
+          else
+            warn("Could not find documented percentage in bin/yard output.")
+            nil
+          end
+        rescue StandardError => e
+          if @strict
+            raise "Failed to run bin/yard: #{e.class}: #{e.message}"
+          else
+            warn("Failed to run bin/yard: #{e.class}: #{e.message}")
+            nil
+          end
         end
-      rescue StandardError => e
-        warn("Failed to run bin/yard: #{e.class}: #{e.message}")
-        nil
       end
 
       # Transform legacy release headings that include a tag suffix, e.g.:

@@ -50,22 +50,37 @@ end
 begin
   if ARGV.include?("-h") || ARGV.include?("--help")
     puts <<~USAGE
-      Usage: kettle-changelog
+      Usage: kettle-changelog [--no-strict]
 
       Generates a new CHANGELOG.md entry for the current version detected from lib/**/version.rb.
       Moves entries from [Unreleased] into the new section, adds coverage and documentation stats,
       and updates bottom link references to GitHub style, adding new compare/tag links.
 
+      Options:
+        --no-strict               Allow missing coverage and yard data (warnings only, no errors)
+
+      Environment:
+        K_CHANGELOG_STRICT=false  Disable strict mode (equivalent to --no-strict flag)
+
       Prerequisites:
-        - coverage/coverage.json present (run: K_SOUP_COV_FORMATTERS="json" bin/rspec)
+        - coverage/coverage.json present (run: bin/rake coverage to generate)
         - yard installed and available via bin/yard
+
+      By default (strict mode), if coverage.json or yard stats are missing, the script will:
+        1. Attempt to generate them by running bin/rake coverage and bin/rake yard
+        2. Fail with an error if generation fails or data is still unavailable
+
+      Use --no-strict or K_CHANGELOG_STRICT=false to allow missing data (backward compatible behavior).
     USAGE
     exit(0)
   end
 end
 
 begin
-  Kettle::Dev::ChangelogCLI.new.run
+  # Determine if strict mode is enabled (default: true)
+  strict_mode = !ARGV.include?("--no-strict") && ENV.fetch("K_CHANGELOG_STRICT", "true").downcase != "false"
+
+  Kettle::Dev::ChangelogCLI.new(strict: strict_mode).run
 rescue LoadError => e
   warn("#{script_basename}: could not load dependency: #{e.class}: #{e.message}")
   warn(e.backtrace.join("\n")) if ENV["DEBUG"]
