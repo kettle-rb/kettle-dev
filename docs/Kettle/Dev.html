@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  Module: Kettle::Dev
+  
+    &mdash; Documentation by YARD 0.9.37
+  
+</title>
+
+  <link rel="stylesheet" href="../css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="../css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "Kettle::Dev";
+  relpath = '../';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="../class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="../_index.html">Index (D)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../Kettle.html" title="Kettle (module)">Kettle</a></span></span>
+     &raquo; 
+    <span class="title">Dev</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><h1>Module: Kettle::Dev
+  
+  
+  
+</h1>
+<div class="box_info">
+  
+
+  
+  
+  
+  
+  
+
+  
+
+  
+  <dl>
+    <dt>Defined in:</dt>
+    <dd>lib/kettle/dev.rb<span class="defines">,<br />
+  lib/kettle/dev/version.rb,<br /> lib/kettle/dev/dvcs_cli.rb,<br /> lib/kettle/dev/setup_cli.rb,<br /> lib/kettle/dev/ci_helpers.rb,<br /> lib/kettle/dev/ci_monitor.rb,<br /> lib/kettle/dev/commit_msg.rb,<br /> lib/kettle/dev/versioning.rb,<br /> lib/kettle/dev/git_adapter.rb,<br /> lib/kettle/dev/prism_utils.rb,<br /> lib/kettle/dev/release_cli.rb,<br /> lib/kettle/dev/exit_adapter.rb,<br /> lib/kettle/dev/changelog_cli.rb,<br /> lib/kettle/dev/input_adapter.rb,<br /> lib/kettle/dev/prism_gemfile.rb,<br /> lib/kettle/dev/prism_gemspec.rb,<br /> lib/kettle/dev/source_merger.rb,<br /> lib/kettle/dev/tasks/ci_task.rb,<br /> lib/kettle/dev/readme_backers.rb,<br /> lib/kettle/dev/gem_spec_reader.rb,<br /> lib/kettle/dev/pre_release_cli.rb,<br /> lib/kettle/dev/modular_gemfiles.rb,<br /> lib/kettle/dev/prism_appraisals.rb,<br /> lib/kettle/dev/template_helpers.rb,<br /> lib/kettle/dev/git_commit_footer.rb,<br /> lib/kettle/dev/tasks/install_task.rb,<br /> lib/kettle/dev/tasks/template_task.rb,<br /> lib/kettle/dev/open_collective_config.rb</span>
+</dd>
+  </dl>
+  
+</div>
+
+<h2>Defined Under Namespace</h2>
+<p class="children">
+  
+    
+      <strong class="modules">Modules:</strong> <span class='object_link'><a href="Dev/CIHelpers.html" title="Kettle::Dev::CIHelpers (module)">CIHelpers</a></span>, <span class='object_link'><a href="Dev/CIMonitor.html" title="Kettle::Dev::CIMonitor (module)">CIMonitor</a></span>, <span class='object_link'><a href="Dev/CommitMsg.html" title="Kettle::Dev::CommitMsg (module)">CommitMsg</a></span>, <span class='object_link'><a href="Dev/ExitAdapter.html" title="Kettle::Dev::ExitAdapter (module)">ExitAdapter</a></span>, <span class='object_link'><a href="Dev/InputAdapter.html" title="Kettle::Dev::InputAdapter (module)">InputAdapter</a></span>, <span class='object_link'><a href="Dev/ModularGemfiles.html" title="Kettle::Dev::ModularGemfiles (module)">ModularGemfiles</a></span>, <span class='object_link'><a href="Dev/OpenCollectiveConfig.html" title="Kettle::Dev::OpenCollectiveConfig (module)">OpenCollectiveConfig</a></span>, <span class='object_link'><a href="Dev/PrismAppraisals.html" title="Kettle::Dev::PrismAppraisals (module)">PrismAppraisals</a></span>, <span class='object_link'><a href="Dev/PrismGemfile.html" title="Kettle::Dev::PrismGemfile (module)">PrismGemfile</a></span>, <span class='object_link'><a href="Dev/PrismGemspec.html" title="Kettle::Dev::PrismGemspec (module)">PrismGemspec</a></span>, <span class='object_link'><a href="Dev/PrismUtils.html" title="Kettle::Dev::PrismUtils (module)">PrismUtils</a></span>, <span class='object_link'><a href="Dev/SourceMerger.html" title="Kettle::Dev::SourceMerger (module)">SourceMerger</a></span>, <span class='object_link'><a href="Dev/Tasks.html" title="Kettle::Dev::Tasks (module)">Tasks</a></span>, <span class='object_link'><a href="Dev/TemplateHelpers.html" title="Kettle::Dev::TemplateHelpers (module)">TemplateHelpers</a></span>, <span class='object_link'><a href="Dev/Version.html" title="Kettle::Dev::Version (module)">Version</a></span>, <span class='object_link'><a href="Dev/Versioning.html" title="Kettle::Dev::Versioning (module)">Versioning</a></span>
+    
+  
+    
+      <strong class="classes">Classes:</strong> <span class='object_link'><a href="Dev/ChangelogCLI.html" title="Kettle::Dev::ChangelogCLI (class)">ChangelogCLI</a></span>, <span class='object_link'><a href="Dev/DvcsCLI.html" title="Kettle::Dev::DvcsCLI (class)">DvcsCLI</a></span>, <span class='object_link'><a href="Dev/Error.html" title="Kettle::Dev::Error (class)">Error</a></span>, <span class='object_link'><a href="Dev/GemSpecReader.html" title="Kettle::Dev::GemSpecReader (class)">GemSpecReader</a></span>, <span class='object_link'><a href="Dev/GitAdapter.html" title="Kettle::Dev::GitAdapter (class)">GitAdapter</a></span>, <span class='object_link'><a href="Dev/GitCommitFooter.html" title="Kettle::Dev::GitCommitFooter (class)">GitCommitFooter</a></span>, <span class='object_link'><a href="Dev/PreReleaseCLI.html" title="Kettle::Dev::PreReleaseCLI (class)">PreReleaseCLI</a></span>, <span class='object_link'><a href="Dev/ReadmeBackers.html" title="Kettle::Dev::ReadmeBackers (class)">ReadmeBackers</a></span>, <span class='object_link'><a href="Dev/ReleaseCLI.html" title="Kettle::Dev::ReleaseCLI (class)">ReleaseCLI</a></span>, <span class='object_link'><a href="Dev/SetupCLI.html" title="Kettle::Dev::SetupCLI (class)">SetupCLI</a></span>
+    
+  
+</p>
+
+  
+    <h2>
+      Constant Summary
+      <small><a href="#" class="constants_summary_toggle">collapse</a></small>
+    </h2>
+
+    <dl class="constants">
+      
+        <dt id="DEBUGGING-constant" class="">DEBUGGING =
+          <div class="docstring">
+  <div class="discussion">
+    <p>Whether debug logging is enabled for kettle-dev internals.<br />
+KETTLE_DEV_DEBUG overrides DEBUG.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div>
+        </dt>
+        <dd><pre class="code"><span class='const'>ENV</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>KETTLE_DEV_DEBUG</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='const'>ENV</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>DEBUG</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>false</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_casecmp'>casecmp</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>true</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_zero?'>zero?</span></pre></dd>
+      
+        <dt id="IS_CI-constant" class="">IS_CI =
+          <div class="docstring">
+  <div class="discussion">
+    <p>Whether we are running on CI.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div>
+        </dt>
+        <dd><pre class="code"><span class='const'>ENV</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>CI</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>false</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_casecmp'>casecmp</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>true</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>==</span> <span class='int'>0</span></pre></dd>
+      
+        <dt id="REQUIRE_BENCH-constant" class="">REQUIRE_BENCH =
+          <div class="docstring">
+  <div class="discussion">
+    <p>Whether to benchmark requires with require_bench.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div>
+        </dt>
+        <dd><pre class="code"><span class='const'>ENV</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>REQUIRE_BENCH</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>false</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_casecmp'>casecmp</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>true</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_zero?'>zero?</span></pre></dd>
+      
+        <dt id="RUNNING_AS-constant" class="">RUNNING_AS =
+          <div class="docstring">
+  <div class="discussion">
+    <p>The current program name (e.g., “rake”, “rspec”).<br />
+Used to decide whether to auto-load rake tasks at the bottom of this file.<br />
+Normally tasks are loaded in the host project’s Rakefile, but when running<br />
+under this gem’s own test suite we need precise coverage; so we only<br />
+auto-install tasks when invoked via the rake executable.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div>
+        </dt>
+        <dd><pre class="code"><span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_basename'>basename</span><span class='lparen'>(</span><span class='gvar'>$PROGRAM_NAME</span><span class='rparen'>)</span></pre></dd>
+      
+        <dt id="ENV_TRUE_RE-constant" class="">ENV_TRUE_RE =
+          <div class="docstring">
+  <div class="discussion">
+    <p>A case-insensitive regular expression that matches common truthy ENV values.<br />
+Accepts 1, true, y, yes (any case).</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Regexp</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div>
+        </dt>
+        <dd><pre class="code"><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\A(1|true|y|yes)\z</span><span class='regexp_end'>/i</span></span></pre></dd>
+      
+        <dt id="ENV_FALSE_RE-constant" class="">ENV_FALSE_RE =
+          <div class="docstring">
+  <div class="discussion">
+    <p>A case-insensitive regular expression that matches common falsy ENV values.<br />
+Accepts false, n, no, 0 (any case).</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Regexp</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div>
+        </dt>
+        <dd><pre class="code"><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\A(false|n|no|0)\z</span><span class='regexp_end'>/i</span></span></pre></dd>
+      
+        <dt id="GEM_ROOT-constant" class="">GEM_ROOT =
+          <div class="docstring">
+  <div class="discussion">
+    <p>Absolute path to the root of the kettle-dev gem (repository root when working from source)</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div>
+        </dt>
+        <dd><pre class="code"><span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_expand_path'>expand_path</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>../..</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid___dir__'>__dir__</span><span class='rparen'>)</span></pre></dd>
+      
+    </dl>
+  
+
+
+
+
+  <h2>Class Attribute Summary <small><a href="#" class="summary_toggle">collapse</a></small></h2>
+  <ul class="summary">
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#defaults-class_method" title="defaults (class method)">.<strong>defaults</strong>  &#x21d2; Array&lt;String&gt; </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+      <span class="note title readonly">readonly</span>
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Registry for tasks that should be prerequisites of the default task.</p>
+</div></span>
+  
+</li>
+
+    
+  </ul>
+
+
+
+
+  
+    <h2>
+      Class Method Summary
+      <small><a href="#" class="summary_toggle">collapse</a></small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#debug_error-class_method" title="debug_error (class method)">.<strong>debug_error</strong>(error, context = nil)  &#x21d2; void </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Emit a debug warning for rescued errors when kettle-dev debugging is enabled.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#debug_log-class_method" title="debug_log (class method)">.<strong>debug_log</strong>(msg, context = nil)  &#x21d2; void </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Emit a debug log line when kettle-dev debugging is enabled.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#default_registered%3F-class_method" title="default_registered? (class method)">.<strong>default_registered?</strong>(task_name)  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#install_tasks-class_method" title="install_tasks (class method)">.<strong>install_tasks</strong>  &#x21d2; void </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Install Rake tasks useful for development and tests.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#register_default-class_method" title="register_default (class method)">.<strong>register_default</strong>(task_name)  &#x21d2; Array&lt;String&gt; </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Register a task name to be run by the default task.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+  <div id="class_attr_details" class="attr_details">
+    <h2>Class Attribute Details</h2>
+    
+      
+      <span id=""></span>
+      <div class="method_details first">
+  <h3 class="signature first" id="defaults-class_method">
+  
+    .<strong>defaults</strong>  &#x21d2; <tt>Array&lt;String&gt;</tt>  <span class="extras">(readonly)</span>
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Registry for tasks that should be prerequisites of the default task</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array&lt;String&gt;</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+122
+123
+124</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 122</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_defaults'>defaults</span>
+  <span class='ivar'>@defaults</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+
+  <div id="class_method_details" class="method_details_list">
+    <h2>Class Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="debug_error-class_method">
+  
+    .<strong>debug_error</strong>(error, context = nil)  &#x21d2; <tt>void</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p class="note returns_void">This method returns an undefined value.</p><p>Emit a debug warning for rescued errors when kettle-dev debugging is enabled.<br />
+Controlled by KETTLE_DEV_DEBUG=true (or DEBUG=true as fallback).</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>error</span>
+      
+      
+        <span class='type'>(<tt>Exception</tt>)</span>
+      
+      
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>context</span>
+      
+      
+        <span class='type'>(<tt>String</tt>, <tt>Symbol</tt>, <tt>nil</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>nil</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>optional label, often <strong>method</strong></p>
+</div>
+      
+    </li>
+  
+</ul>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+87
+88
+89
+90
+91
+92
+93
+94</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 87</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_debug_error'>debug_error</span><span class='lparen'>(</span><span class='id identifier rubyid_error'>error</span><span class='comma'>,</span> <span class='id identifier rubyid_context'>context</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='kw'>unless</span> <span class='const'><span class='object_link'><a href="#DEBUGGING-constant" title="Kettle::Dev::DEBUGGING (constant)">DEBUGGING</a></span></span>
+
+  <span class='id identifier rubyid_ctx'>ctx</span> <span class='op'>=</span> <span class='id identifier rubyid_context'>context</span> <span class='op'>?</span> <span class='id identifier rubyid_context'>context</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span> <span class='op'>:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>KETTLE-DEV-RESCUE</span><span class='tstring_end'>&quot;</span></span>
+  <span class='const'>Kernel</span><span class='period'>.</span><span class='id identifier rubyid_warn'>warn</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>[</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_ctx'>ctx</span><span class='embexpr_end'>}</span><span class='tstring_content'>] </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_error'>error</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='embexpr_end'>}</span><span class='tstring_content'>: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_error'>error</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+<span class='kw'>rescue</span> <span class='const'>StandardError</span>
+  <span class='comment'># never raise from debug logging
+</span><span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="debug_log-class_method">
+  
+    .<strong>debug_log</strong>(msg, context = nil)  &#x21d2; <tt>void</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p class="note returns_void">This method returns an undefined value.</p><p>Emit a debug log line when kettle-dev debugging is enabled.<br />
+Controlled by KETTLE_DEV_DEBUG=true (or DEBUG=true as fallback).</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>msg</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+100
+101
+102
+103
+104
+105
+106
+107</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 100</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_debug_log'>debug_log</span><span class='lparen'>(</span><span class='id identifier rubyid_msg'>msg</span><span class='comma'>,</span> <span class='id identifier rubyid_context'>context</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='kw'>unless</span> <span class='const'><span class='object_link'><a href="#DEBUGGING-constant" title="Kettle::Dev::DEBUGGING (constant)">DEBUGGING</a></span></span>
+
+  <span class='id identifier rubyid_ctx'>ctx</span> <span class='op'>=</span> <span class='id identifier rubyid_context'>context</span> <span class='op'>?</span> <span class='id identifier rubyid_context'>context</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span> <span class='op'>:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>KETTLE-DEV-DEBUG</span><span class='tstring_end'>&quot;</span></span>
+  <span class='const'>Kernel</span><span class='period'>.</span><span class='id identifier rubyid_warn'>warn</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>[</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_ctx'>ctx</span><span class='embexpr_end'>}</span><span class='tstring_content'>] </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_msg'>msg</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+<span class='kw'>rescue</span> <span class='const'>StandardError</span>
+  <span class='comment'># never raise from debug logging
+</span><span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="default_registered?-class_method">
+  
+    .<strong>default_registered?</strong>(task_name)  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+143
+144
+145</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 143</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_default_registered?'>default_registered?</span><span class='lparen'>(</span><span class='id identifier rubyid_task_name'>task_name</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_defaults'>defaults</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_task_name'>task_name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="install_tasks-class_method">
+  
+    .<strong>install_tasks</strong>  &#x21d2; <tt>void</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p class="note returns_void">This method returns an undefined value.</p><p>Install Rake tasks useful for development and tests.</p>
+
+<p>Adds RuboCop-LTS tasks, coverage tasks, and loads the<br />
+gem-shipped rakelib directory so host projects get tasks from this gem.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+114
+115
+116
+117
+118</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 114</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_install_tasks'>install_tasks</span>
+  <span class='id identifier rubyid_linting_tasks'>linting_tasks</span>
+  <span class='id identifier rubyid_coverage_tasks'>coverage_tasks</span>
+  <span class='id identifier rubyid_load'>load</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>kettle/dev/tasks.rb</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="register_default-class_method">
+  
+    .<strong>register_default</strong>(task_name)  &#x21d2; <tt>Array&lt;String&gt;</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Register a task name to be run by the default task.<br />
+Also enhances the :default task immediately if it exists.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>task_name</span>
+      
+      
+        <span class='type'>(<tt>String</tt>, <tt>Symbol</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array&lt;String&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>the updated defaults registry</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 128</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_register_default'>register_default</span><span class='lparen'>(</span><span class='id identifier rubyid_task_name'>task_name</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_task_name'>task_name</span> <span class='op'>=</span> <span class='id identifier rubyid_task_name'>task_name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
+  <span class='kw'>unless</span> <span class='id identifier rubyid_defaults'>defaults</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_task_name'>task_name</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_defaults'>defaults</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_task_name'>task_name</span>
+    <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='const'>Rake</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='const'>Rake</span><span class='op'>::</span><span class='const'>Task</span><span class='period'>.</span><span class='id identifier rubyid_task_defined?'>task_defined?</span><span class='lparen'>(</span><span class='symbol'>:default</span><span class='rparen'>)</span>
+      <span class='kw'>begin</span>
+        <span class='const'>Rake</span><span class='op'>::</span><span class='const'>Task</span><span class='lbracket'>[</span><span class='symbol'>:default</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_enhance'>enhance</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='id identifier rubyid_task_name'>task_name</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+      <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+        <span class='const'>Kernel</span><span class='period'>.</span><span class='id identifier rubyid_warn'>warn</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>kettle-dev: failed to enhance :default with </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_task_name'>task_name</span><span class='embexpr_end'>}</span><span class='tstring_content'>: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='const'><span class='object_link'><a href="#DEBUGGING-constant" title="Kettle::Dev::DEBUGGING (constant)">DEBUGGING</a></span></span>
+      <span class='kw'>end</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+  <span class='id identifier rubyid_defaults'>defaults</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+      <div id="footer">
+  Generated on Thu Nov 27 03:36:46 2025 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.37 (ruby-3.4.7).
+</div>
+
+    </div>
+  </body>
+</html>
