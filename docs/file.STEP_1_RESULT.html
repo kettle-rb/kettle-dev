@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  File: STEP_1_RESULT
+  
+    &mdash; Documentation by YARD 0.9.37
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "STEP_1_RESULT";
+  relpath = '';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="file_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: STEP_1_RESULT</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><div id='filecontents'><h1 id="step-1-result--template-target-inventory">Step 1 Result — Template Target Inventory</h1>
+
+<p>This document records the outcomes of Step 1 from <code>AST_IMPLEMENTATION.md</code>: cataloging the files and directories currently templated by <code>kettle:dev:template</code> (directly or via helpers). This preserves context for future sessions before we proceed with manifest wiring and AST merges.</p>
+
+<h2 id="files-copied-via-templatehelperscopy_file_with_prompt">Files Copied via <code>TemplateHelpers.copy_file_with_prompt</code>
+</h2>
+<ul>
+  <li>Root/config files (token replacements only unless noted):
+    <ul>
+      <li>
+<code>.aiignore</code>, <code>.envrc</code>, <code>.gitignore</code>, <code>.idea/.gitignore</code>, <code>.gitlab-ci.yml</code>, <code>.junie/guidelines-rbs.md</code>, <code>.junie/guidelines.md</code>, <code>.licenserc.yaml</code>, <code>.opencollective.yml</code>, <code>.rspec</code>, <code>.rubocop.yml</code>, <code>.rubocop_rspec.yml</code>, <code>.simplecov</code>, <code>.tool-versions</code>, <code>.yardopts</code>, <code>.yardignore</code>.</li>
+    </ul>
+  </li>
+  <li>Documentation &amp; policy files:
+    <ul>
+      <li>
+<code>CHANGELOG.md</code> (custom “Unreleased” merge), <code>CITATION.cff</code>, <code>CODE_OF_CONDUCT.md</code>, <code>CONTRIBUTING.md</code>, <code>FUNDING.md</code>, <code>README.md</code> (section merge + H1 preservation), <code>RUBOCOP.md</code>, <code>SECURITY.md</code>.</li>
+    </ul>
+  </li>
+  <li>Ruby-focused files (candidates for AST merging):
+    <ul>
+      <li>
+<code>Appraisal.root.gemfile</code>, <code>Appraisals</code> (block merge via <code>merge_appraisals</code>), <code>Gemfile</code>, <code>Rakefile</code>, destination gemspec (<code>kettle-dev.gemspec.example</code> → <code>&lt;gem_name&gt;.gemspec</code>), any modular <code>.gemfile</code> copied via <code>Kettle::Dev::ModularGemfiles.sync!</code>.</li>
+    </ul>
+  </li>
+  <li>Special cases handled outside standard copy flow:
+    <ul>
+      <li>
+<code>.env.local.example</code> (copied directly; <code>.env.local</code> never touched).</li>
+      <li>
+<code>.envrc</code> &amp; <code>.env.local.example</code> trigger post-copy safety prompt.</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="modular-gemfiles-libkettledevmodular_gemfilesrb">Modular Gemfiles (<code>lib/kettle/dev/modular_gemfiles.rb</code>)</h2>
+<ul>
+  <li>Plain modular gemfiles templated: <code>gemfiles/modular/{coverage,debug,documentation,optional,runtime_heads,x_std_libs}.gemfile</code>.</li>
+  <li>
+<code>gemfiles/modular/style.gemfile</code> has min-Ruby-dependent token replacement.</li>
+  <li>Supporting directories copied wholesale: <code>gemfiles/modular/{erb,mutex_m,stringio,x_std_libs}/**/*</code>.</li>
+</ul>
+
+<h2 id="other-copy-operations-context-only">Other Copy Operations (context only)</h2>
+<ul>
+  <li>
+<code>.devcontainer/**</code>, <code>.github/**/*.yml(.example)</code> (with FUNDING.yml customization and include filters), <code>.qlty/qlty.toml</code>, <code>.git-hooks</code> templates/scripts (prompt-driven), and <code>spec/spec_helper.rb</code> tweaks.</li>
+</ul>
+
+<h2 id="existing-mergecarry-over-logic-summary">Existing Merge/Carry-Over Logic Summary</h2>
+<ul>
+  <li>README: section merge, note preservation, H1 override.</li>
+  <li>CHANGELOG: canonical <code>Unreleased</code> reconstruction with existing entries.</li>
+  <li>Appraisals: per-block merge in <code>merge_appraisals</code>.</li>
+  <li>Gemfiles/modular <code>.gemfile</code>s: <code>merge_gemfile_dependencies</code> (regex-based today).</li>
+  <li>Gemspec: field carry-over + self-dependency removal.</li>
+</ul>
+
+<p>This inventory is the definitive starting point for <code>template_manifest.yml</code> entries and for deciding which Ruby files require AST-based merging in subsequent steps.</p>
+</div></div>
+
+      <div id="footer">
+  Generated on Thu Nov 27 03:32:23 2025 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.37 (ruby-3.4.7).
+</div>
+
+    </div>
+  </body>
+</html>

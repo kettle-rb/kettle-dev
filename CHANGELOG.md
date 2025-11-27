@@ -20,6 +20,25 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [1.2.2] - 2025-11-27
+
+- TAG: [v1.2.2][1.2.2t]
+- COVERAGE: 93.28% -- 4596/4927 lines in 31 files
+- BRANCH COVERAGE: 76.45% -- 1883/2463 branches in 31 files
+- 70.00% documented
+
+### Added
+
 - Prism AST-based manipulation of ruby during templating
   - Gemfiles
   - gemspecs
@@ -31,16 +50,6 @@ Please file a bug if you notice a violation of semantic versioning.
 - Improve reliability of coverage and documentation stats
   - in the changelog version heading
   - fails hard when unable to generate stats, unless `--no-strict` provided
-
-### Changed
-
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
 
 ## [1.2.1] - 2025-11-25
 
