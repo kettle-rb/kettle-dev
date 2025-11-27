@@ -298,6 +298,19 @@ module Kettle
           end
         end
 
+        # Apply self-dependency removal for all gem-related files
+        # This ensures we don't introduce a self-dependency when templating
+        begin
+          meta = gemspec_metadata
+          gem_name = meta[:gem_name]
+          if gem_name && !gem_name.to_s.empty?
+            content = remove_self_dependency(content, gem_name, dest_path)
+          end
+        rescue StandardError => e
+          Kettle::Dev.debug_error(e, __method__)
+          # If metadata extraction or removal fails, proceed with content as-is
+        end
+
         write_file(dest_path, content)
         begin
           # Ensure executable bit for git hook scripts when writing under .git-hooks
@@ -340,6 +353,38 @@ module Kettle
       rescue StandardError => e
         Kettle::Dev.debug_error(e, __method__)
         content
+      end
+
+      # Remove self-referential gem dependencies from content based on file type.
+      # Applies to gemspec, Gemfile, modular gemfiles, Appraisal.root.gemfile, and Appraisals.
+      # @param content [String] file content
+      # @param gem_name [String] the gem name to remove
+      # @param file_path [String] path to the file (used to determine type)
+      # @return [String] content with self-dependencies removed
+      def remove_self_dependency(content, gem_name, file_path)
+        return content if gem_name.to_s.strip.empty?
+
+        basename = File.basename(file_path.to_s)
+
+        begin
+          case basename
+          when /\.gemspec$/
+            # Use PrismGemspec for gemspec files
+            Kettle::Dev::PrismGemspec.remove_spec_dependency(content, gem_name)
+          when "Gemfile", "Appraisal.root.gemfile", /\.gemfile$/
+            # Use PrismGemfile for Gemfile-like files
+            Kettle::Dev::PrismGemfile.remove_gem_dependency(content, gem_name)
+          when "Appraisals"
+            # Use PrismAppraisals for Appraisals files
+            Kettle::Dev::PrismAppraisals.remove_gem_dependency(content, gem_name)
+          else
+            # Return content unchanged for unknown file types
+            content
+          end
+        rescue StandardError => e
+          Kettle::Dev.debug_error(e, __method__)
+          content
+        end
       end
 
       # Copy a directory tree, prompting before creating or overwriting.

@@ -26,6 +26,8 @@ Please file a bug if you notice a violation of semantic versioning.
   - .simplecov
 - Stop rescuing Exception in certain scenarios (just StandardError)
 - Refactored logging logic and documentation
+- Prevent self-referential gemfile injection
+  - in Gemfiles, gemspecs, and Appraisals
 
 ### Changed
 

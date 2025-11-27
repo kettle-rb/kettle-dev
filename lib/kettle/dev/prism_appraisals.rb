@@ -301,6 +301,51 @@ module Kettle
         statements = body.is_a?(Prism::StatementsNode) ? body.body : [body]
         statements.compact.map { |stmt| {node: stmt, inline_comments: [], leading_comments: []} }
       end
+
+      # Remove gem calls that reference the given gem name (to prevent self-dependency).
+      # Works by locating gem() call nodes within appraise blocks where the first argument matches gem_name.
+      # @param content [String] Appraisals content
+      # @param gem_name [String] the gem name to remove
+      # @return [String] modified content with self-referential gem calls removed
+      def remove_gem_dependency(content, gem_name)
+        return content if gem_name.to_s.strip.empty?
+
+        result = PrismUtils.parse_with_comments(content)
+        root = result.value
+        return content unless root&.statements&.body
+
+        out = content.dup
+
+        # Iterate through all appraise blocks
+        root.statements.body.each do |node|
+          next unless appraise_call?(node)
+          next unless node.block&.body
+
+          body_stmts = PrismUtils.extract_statements(node.block.body)
+
+          # Find gem call nodes within this appraise block where first argument matches gem_name
+          body_stmts.each do |stmt|
+            next unless stmt.is_a?(Prism::CallNode) && stmt.name == :gem
+
+            first_arg = stmt.arguments&.arguments&.first
+            arg_val = begin
+              PrismUtils.extract_literal_value(first_arg)
+            rescue StandardError
+              nil
+            end
+
+            if arg_val && arg_val.to_s == gem_name.to_s
+              # Remove this gem call from content
+              out = out.sub(stmt.slice, "")
+            end
+          end
+        end
+
+        out
+      rescue StandardError => e
+        Kettle::Dev.debug_error(e, __method__) if defined?(Kettle::Dev.debug_error)
+        content
+      end
     end
   end
 end

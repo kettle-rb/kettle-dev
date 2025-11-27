@@ -131,6 +131,47 @@ module Kettle
         end
         dest_content
       end
+
+      # Remove gem calls that reference the given gem name (to prevent self-dependency).
+      # Works by locating gem() call nodes where the first argument matches gem_name.
+      # @param content [String] Gemfile-like content
+      # @param gem_name [String] the gem name to remove
+      # @return [String] modified content with self-referential gem calls removed
+      def remove_gem_dependency(content, gem_name)
+        return content if gem_name.to_s.strip.empty?
+
+        result = PrismUtils.parse_with_comments(content)
+        stmts = PrismUtils.extract_statements(result.value.statements)
+
+        # Find gem call nodes where first argument matches gem_name
+        gem_nodes = stmts.select do |n|
+          next false unless n.is_a?(Prism::CallNode) && n.name == :gem
+
+          first_arg = n.arguments&.arguments&.first
+          arg_val = begin
+            PrismUtils.extract_literal_value(first_arg)
+          rescue StandardError
+            nil
+          end
+          arg_val && arg_val.to_s == gem_name.to_s
+        end
+
+        # Remove each matching gem call from content
+        out = content.dup
+        gem_nodes.each do |gn|
+          # Remove the entire line(s) containing this node
+          out = out.sub(gn.slice, "")
+        end
+
+        out
+      rescue StandardError => e
+        if defined?(Kettle::Dev) && Kettle::Dev.respond_to?(:debug_error)
+          Kettle::Dev.debug_error(e, __method__)
+        else
+          Kernel.warn("[#{__method__}] #{e.class}: #{e.message}")
+        end
+        content
+      end
     end
   end
 end
