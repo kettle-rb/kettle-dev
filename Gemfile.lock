@@ -383,7 +383,7 @@ DEPENDENCIES
   rubocop-on-rbs (~> 1.8)
   rubocop-packaging (~> 0.6, >= 0.6.0)
   rubocop-rspec (~> 3.6)
-  rubocop-ruby2_3 (~> 2.0)
+  rubocop-ruby2_3
   ruby-progressbar (~> 1.13)
   standard (>= 1.50)
   stone_checksums (~> 1.0, >= 1.0.3)
