@@ -114,7 +114,7 @@ module Kettle
         cursor = 0
         lines = content.lines
         lines.each do |line|
-          break unless shebang?(line) || frozen_comment?(line)
+          break unless shebang?(line) || magic_comment?(line)
           cursor += line.length
         end
         cursor
@@ -122,6 +122,13 @@ module Kettle
 
       def shebang?(line)
         line.start_with?("#!")
+      end
+
+      def magic_comment?(line)
+        line.match?(/#\s*frozen_string_literal:/) ||
+          line.match?(/#\s*encoding:/) ||
+          line.match?(/#\s*coding:/) ||
+          line.match?(/#.*-\*-.*coding:.*-\*-/)
       end
 
       def frozen_comment?(line)
@@ -201,8 +208,8 @@ module Kettle
         result = []
         i = 0
 
-        # Process magic comments (shebang and frozen_string_literal)
-        while i < lines.length && (shebang?(lines[i] + "\n") || frozen_comment?(lines[i] + "\n"))
+        # Process magic comments (shebang and various Ruby magic comments)
+        while i < lines.length && (shebang?(lines[i] + "\n") || magic_comment?(lines[i] + "\n"))
           result << lines[i]
           i += 1
         end

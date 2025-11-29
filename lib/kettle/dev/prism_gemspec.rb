@@ -57,19 +57,10 @@ module Kettle
 
         # Extract AST-level statements inside the block body when available
         body_node = gemspec_call.block&.body
-        body_src = ""
-        begin
-          # Try to extract the textual body from call_src using the do|...| ... end capture
-          body_src = if (m = call_src.match(/do\b[^\n]*\|[^|]*\|\s*(.*)end\s*\z/m))
-            m[1]
-          else
-            # Last resort: attempt to take slice of body node
-            body_node ? body_node.slice : ""
-          end
-        rescue StandardError
-          body_src = body_node ? body_node.slice : ""
-        end
+        return content unless body_node
 
+        # Get the actual body content using Prism's slice
+        body_src = body_node.slice
         new_body = body_src.dup
 
         # Helper: build literal text for replacement values
@@ -82,8 +73,20 @@ module Kettle
           end
         end
 
+        # Helper: check if a value is a placeholder (just emoji + space or just emoji)
+        is_placeholder = lambda do |v|
+          return false unless v.is_a?(String)
+          # Match emoji followed by optional space and nothing else
+          # Simple heuristic: 1-4 bytes of non-ASCII followed by optional space
+          v.strip.match?(/\A[^\x00-\x7F]{1,4}\s*\z/)
+        end
+
         # Extract existing statement nodes for more precise matching
         stmt_nodes = PrismUtils.extract_statements(body_node)
+
+        # Build a list of edits as (offset, length, replacement_text) tuples
+        # We'll apply them in reverse order to avoid offset shifts
+        edits = []
 
         replacements.each do |field_sym, value|
           # Skip special internal keys that are not actual gemspec fields
@@ -91,14 +94,12 @@ module Kettle
 
           field = field_sym.to_s
 
-          # Find an existing assignment node for this field: look for call nodes where
-          # receiver slice matches the block param and method name matches assignment
+          # Find an existing assignment node for this field
           found_node = stmt_nodes.find do |n|
             next false unless n.is_a?(Prism::CallNode)
             begin
               recv = n.receiver
               recv_name = recv ? recv.slice.strip : nil
-              # match receiver variable name or literal slice
               recv_name && recv_name.end_with?(blk_param) && n.name.to_s.start_with?(field)
             rescue StandardError
               false
@@ -106,18 +107,27 @@ module Kettle
           end
 
           if found_node
-            # Do not replace if the existing RHS is non-literal (e.g., computed expression)
+            # Extract existing value to check if we should skip replacement
             existing_arg = found_node.arguments&.arguments&.first
             existing_literal = begin
               PrismUtils.extract_literal_value(existing_arg)
             rescue
               nil
             end
+
+            # For summary and description fields: don't replace real content with placeholders
+            if [:summary, :description].include?(field_sym)
+              if is_placeholder.call(value) && existing_literal && !is_placeholder.call(existing_literal)
+                next
+              end
+            end
+
+            # Do not replace if the existing RHS is non-literal (e.g., computed expression)
             if existing_literal.nil? && !value.nil?
-              # Skip replacing a non-literal RHS to avoid altering computed expressions.
               debug_error(StandardError.new("Skipping replacement for #{field} because existing RHS is non-literal"), __method__)
             else
-              # Replace the found node's slice in the body text with the updated assignment
+              # Schedule replacement using location offsets
+              loc = found_node.location
               indent = begin
                 found_node.slice.lines.first.match(/^(\s*)/)[1]
               rescue
@@ -125,31 +135,35 @@ module Kettle
               end
               rhs = build_literal.call(value)
               replacement = "#{indent}#{blk_param}.#{field} = #{rhs}"
-              new_body = new_body.sub(found_node.slice, replacement)
+              edits << [loc.start_offset - body_node.location.start_offset, loc.end_offset - loc.start_offset, replacement]
             end
           else
-            # No existing assignment; insert after spec.version if present, else append
+            # No existing assignment; we'll insert after spec.version if present
+            # But skip inserting placeholders for summary/description if not present
+            if [:summary, :description].include?(field_sym) && is_placeholder.call(value)
+              next
+            end
+
             version_node = stmt_nodes.find do |n|
               n.is_a?(Prism::CallNode) && n.name.to_s.start_with?("version", "version=") && n.receiver && n.receiver.slice.strip.end_with?(blk_param)
             end
 
             insert_line = "  #{blk_param}.#{field} = #{build_literal.call(value)}\n"
-            new_body = if version_node
-              # Insert after the version node slice
-              new_body.sub(version_node.slice, version_node.slice + "\n" + insert_line)
-            elsif new_body.rstrip.end_with?('\n')
-              # Append before the final newline if present, else just append
-              new_body.rstrip + "\n" + insert_line
+            if version_node
+              # Insert after version node
+              insert_offset = version_node.location.end_offset - body_node.location.start_offset
+              edits << [insert_offset, 0, "\n" + insert_line]
             else
-              new_body.rstrip + "\n" + insert_line
+              # Append at end of body
+              insert_offset = body_src.rstrip.length
+              edits << [insert_offset, 0, "\n" + insert_line]
             end
           end
         end
 
-        # Handle removal of self-dependency if requested via :_remove_self_dependency
+        # Handle removal of self-dependency
         if replacements[:_remove_self_dependency]
           name_to_remove = replacements[:_remove_self_dependency].to_s
-          # Find dependency call nodes to remove (add_dependency/add_development_dependency)
           dep_nodes = stmt_nodes.select do |n|
             next false unless n.is_a?(Prism::CallNode)
             recv = begin
@@ -160,8 +174,8 @@ module Kettle
             next false unless recv && recv.slice.strip.end_with?(blk_param)
             [:add_dependency, :add_development_dependency].include?(n.name)
           end
+
           dep_nodes.each do |dn|
-            # Check first argument literal
             first_arg = dn.arguments&.arguments&.first
             arg_val = begin
               PrismUtils.extract_literal_value(first_arg)
@@ -169,15 +183,45 @@ module Kettle
               nil
             end
             if arg_val && arg_val.to_s == name_to_remove
-              # Remove this node's slice from new_body
-              new_body = new_body.sub(dn.slice, "")
+              loc = dn.location
+              # Remove entire line including newline if present
+              relative_start = loc.start_offset - body_node.location.start_offset
+              relative_end = loc.end_offset - body_node.location.start_offset
+
+              line_start = body_src.rindex("\n", relative_start)
+              line_start = line_start ? line_start + 1 : 0
+
+              line_end = body_src.index("\n", relative_end)
+              line_end = line_end ? line_end + 1 : body_src.length
+
+              edits << [line_start, line_end - line_start, ""]
             end
           end
         end
 
-        # Reassemble call source by replacing the captured body portion
-        new_call_src = call_src.sub(body_src, new_body)
-        content.sub(call_src, new_call_src)
+        # Apply edits in reverse order by offset to avoid offset shifts
+        edits.sort_by! { |offset, _len, _repl| -offset }
+        new_body = body_src.dup
+        edits.each do |offset, length, replacement|
+          # Validate offset, length, and replacement
+          next unless offset && length && offset >= 0 && length >= 0
+          next if offset > new_body.length
+          next if replacement.nil?
+
+          new_body[offset, length] = replacement
+        end
+
+        # Reassemble the gemspec call by replacing just the body
+        call_start = gemspec_call.location.start_offset
+        call_end = gemspec_call.location.end_offset
+        body_start = body_node.location.start_offset
+        body_end = body_node.location.end_offset
+
+        # Build the new gemspec call
+        new_call = content[call_start...body_start] + new_body + content[body_end...call_end]
+
+        # Replace in original content
+        content[0...call_start] + new_call + content[call_end..-1]
       rescue StandardError => e
         debug_error(e, __method__)
         content
