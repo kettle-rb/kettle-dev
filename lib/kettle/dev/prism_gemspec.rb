@@ -303,10 +303,15 @@ module Kettle
         edits.each do |offset, length, replacement|
           # Validate offset, length, and replacement
           next if offset.nil? || length.nil? || offset < 0 || length < 0
-          next if offset > new_body.length
+          next if offset > new_body.bytesize
           next if replacement.nil?
 
-          new_body[offset, length] = replacement
+          # CRITICAL: Prism uses byte offsets, not character offsets!
+          # Must use byteslice and byte-aware string manipulation to handle multi-byte UTF-8 (emojis, etc.)
+          # Using character-based String#[]= with byte offsets causes mangled output and duplicated content
+          before = offset > 0 ? new_body.byteslice(0, offset) : ""
+          after = (offset + length) < new_body.bytesize ? new_body.byteslice(offset + length..-1) : ""
+          new_body = before + replacement + after
         end
 
         # Reassemble the gemspec call by replacing just the body

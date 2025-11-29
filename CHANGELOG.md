@@ -34,6 +34,12 @@ Please file a bug if you notice a violation of semantic versioning.
   - Example: if ENV["FOO"] blocks with different bodies now correctly merge instead of duplicating
   - Prevents `bin/kettle-dev-setup` from creating duplicate if/else blocks in gemfiles
   - Added comprehensive specs for conditional merging behavior and idempotency
+- Fixed `PrismGemspec.replace_gemspec_fields` to use byte-aware string operations
+  - **CRITICAL**: Was using character-based `String#[]=` with Prism's byte offsets
+  - This caused catastrophic corruption when emojis or multi-byte UTF-8 characters were present
+  - Symptoms: gemspec blocks duplicated/fragmented, statements escaped outside blocks
+  - Now uses `byteslice` and byte-aware concatenation for all edit operations
+  - Prevents gemspec templating from producing mangled output with duplicated Gem::Specification blocks
 - Fixed `PrismGemspec.replace_gemspec_fields` to correctly handle multi-byte UTF-8 characters (e.g., emojis)
   - Prism uses byte offsets, not character offsets, when parsing Ruby code
   - Changed string slicing from `String#[]` to `String#byteslice` for all offset-based operations
@@ -1175,7 +1181,7 @@ Please file a bug if you notice a violation of semantic versioning.
   - <!-- RELEASE-NOTES-FOOTER-END -->
 - truffle workflow: Repeat attempts for bundle install and appraisal bundle before failure
 - global token replacement during kettle:dev:install
-  - {KETTLE|DEV|GEM} => kettle-dev
+  - kettle-dev => kettle-dev
   - {RUBOCOP|LTS|CONSTRAINT} => dynamic
   - {RUBOCOP|RUBY|GEM} => dynamic
   - default to rubocop-ruby1_8 if no minimum ruby specified
