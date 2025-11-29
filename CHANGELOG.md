@@ -28,6 +28,12 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Fixed comment deduplication in `restore_custom_leading_comments` to prevent accumulation across multiple template runs
+  - Comments from destination are now deduplicated before being merged back into result
+  - Fixes issue where `:replace` strategy (used by `kettle-dev-setup --force`) would accumulate duplicate comments
+  - Ensures truly idempotent behavior when running templating multiple times on the same file
+  - Example: `frozen_string_literal` comments no longer multiply from 1→4→5→6 on repeated runs
+
 ### Security
 
 ## [1.2.3] - 2025-11-28

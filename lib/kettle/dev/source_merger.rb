@@ -590,21 +590,54 @@ module Kettle
       end
 
       def restore_custom_leading_comments(dest_content, merged_content)
-        block = leading_comment_block(dest_content)
-        return merged_content if block.strip.empty?
+        # Extract and deduplicate leading comments from dest
+        dest_block = leading_comment_block(dest_content)
+        return merged_content if dest_block.strip.empty?
 
-        # Check if the merged content already starts with this block
-        # Use normalized comparison to handle whitespace differences
+        # Parse and deduplicate the dest leading comments
+        dest_deduplicated = deduplicate_leading_comment_block(dest_block)
+        return merged_content if dest_deduplicated.strip.empty?
+
+        # Get the merged content's leading comments
         merged_leading = leading_comment_block(merged_content)
 
-        # If merged already has the same or more comprehensive leading comments, don't add
-        return merged_content if merged_leading.strip == block.strip
-        return merged_content if merged_content.include?(block.strip)
+        # Parse both blocks to compare individual comments
+        dest_comments = extract_comment_lines(dest_deduplicated)
+        merged_comments = extract_comment_lines(merged_leading)
 
-        # Insert after shebang / frozen string literal comments (same place reminder goes)
+        # Find comments in dest that aren't in merged (by normalized text)
+        merged_set = Set.new(merged_comments.map { |c| normalize_comment(c) })
+        unique_dest_comments = dest_comments.reject { |c| merged_set.include?(normalize_comment(c)) }
+
+        return merged_content if unique_dest_comments.empty?
+
+        # Add unique dest comments after the insertion point
         insertion_index = reminder_insertion_index(merged_content)
-        block = ensure_trailing_newline(block)
-        merged_content.dup.insert(insertion_index, block)
+        new_comments = unique_dest_comments.join + "\n"
+        merged_content.dup.insert(insertion_index, new_comments)
+      end
+
+      def deduplicate_leading_comment_block(block)
+        # Parse the block as if it were a Ruby file with just comments
+        # This allows us to use the same deduplication logic
+        parse_result = PrismUtils.parse_with_comments(block)
+        return block unless parse_result.success?
+
+        tuples = create_comment_tuples(parse_result)
+        deduplicated_tuples = deduplicate_comment_sequences(tuples)
+
+        # Rebuild the comment block from deduplicated tuples
+        deduplicated_tuples.map { |tuple| tuple[2] + "\n" }.join
+      end
+
+      def extract_comment_lines(block)
+        lines = block.to_s.lines
+        lines.select { |line| line.strip.start_with?("#") }
+      end
+
+      def normalize_comment(comment)
+        # Normalize by removing trailing whitespace and standardizing spacing
+        comment.strip
       end
 
       def leading_comment_block(content)
