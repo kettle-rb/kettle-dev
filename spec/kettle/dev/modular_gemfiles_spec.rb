@@ -1,10 +1,6 @@
 # frozen_string_literal: true
 
 RSpec.describe Kettle::Dev::ModularGemfiles do
-  before do
-    require "kettle/dev"
-  end
-
   it "exposes sync! and performs copy calls via helpers" do
     helpers = Kettle::Dev::TemplateHelpers
     Dir.mktmpdir do |proj|

@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "tmpdir"
-require "kettle/dev/dvcs_cli"
 
 RSpec.describe Kettle::Dev::DvcsCLI do
   include_context "with mocked git adapter"

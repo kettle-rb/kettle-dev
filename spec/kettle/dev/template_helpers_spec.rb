@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "kettle/dev/template_helpers"
-
 RSpec.describe Kettle::Dev::TemplateHelpers do
   describe ".merge_gemfile_dependencies" do
     it "replaces source line and github git_source with template values" do

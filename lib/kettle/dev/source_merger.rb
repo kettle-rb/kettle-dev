@@ -48,7 +48,7 @@ module Kettle
         content =
           case strategy
           when :skip
-            src_with_reminder
+            normalize_source(src_with_reminder)
           when :replace
             normalize_source(src_with_reminder)
           when :append
@@ -81,17 +81,22 @@ module Kettle
         [before, snippet, after].join
       end
 
-      # Normalize source code while preserving formatting
+      # Normalize source code by parsing and rebuilding to deduplicate comments
       #
       # @param source [String] Ruby source code
-      # @return [String] Normalized source with trailing newline
+      # @return [String] Normalized source with trailing newline and deduplicated comments
       # @api private
       def normalize_source(source)
         parse_result = PrismUtils.parse_with_comments(source)
         return ensure_trailing_newline(source) unless parse_result.success?
 
-        # Use Prism's slice to preserve original formatting
-        ensure_trailing_newline(source)
+        # Extract and deduplicate comments
+        magic_comments = extract_magic_comments(parse_result)
+        file_leading_comments = extract_file_leading_comments(parse_result)
+        node_infos = extract_nodes_with_comments(parse_result)
+
+        # Rebuild source with deduplicated comments
+        build_source_from_nodes(node_infos, magic_comments: magic_comments, file_leading_comments: file_leading_comments)
       end
 
       def reminder_present?(content)
@@ -231,8 +236,8 @@ module Kettle
       end
 
       def prism_merge(src_content, dest_content)
-        src_result = PrismUtils.parse_with_comments(src_content)
-        dest_result = PrismUtils.parse_with_comments(dest_content)
+        src_result = Kettle::Dev::PrismUtils.parse_with_comments(src_content)
+        dest_result = Kettle::Dev::PrismUtils.parse_with_comments(dest_content)
 
         # If src parsing failed, return src unchanged to avoid losing content
         unless src_result.success?
@@ -245,11 +250,48 @@ module Kettle
 
         merged_nodes = yield(src_nodes, dest_nodes, src_result, dest_result)
 
-        # Extract magic comments from source (frozen_string_literal, etc.)
-        magic_comments = extract_magic_comments(src_result)
+        # Extract and deduplicate comments from src and dest SEPARATELY
+        # This allows sequence detection to work within each source
+        src_tuples = create_comment_tuples(src_result)
+        src_deduplicated = deduplicate_comment_sequences(src_tuples)
 
-        # Extract file-level leading comments (comments before first statement)
-        file_leading_comments = extract_file_leading_comments(src_result)
+        dest_tuples = dest_result.success? ? create_comment_tuples(dest_result) : []
+        dest_deduplicated = deduplicate_comment_sequences(dest_tuples)
+
+        # Now merge the deduplicated tuples by hash+type only (ignore line numbers)
+        seen_hash_type = Set.new
+        final_tuples = []
+
+        # Add all deduplicated src tuples
+        src_deduplicated.each do |tuple|
+          hash_val = tuple[0]
+          type = tuple[1]
+          key = [hash_val, type]
+          unless seen_hash_type.include?(key)
+            final_tuples << tuple
+            seen_hash_type << key
+          end
+        end
+
+        # Add deduplicated dest tuples that don't duplicate src (by hash+type)
+        dest_deduplicated.each do |tuple|
+          hash_val = tuple[0]
+          type = tuple[1]
+          key = [hash_val, type]
+          unless seen_hash_type.include?(key)
+            final_tuples << tuple
+            seen_hash_type << key
+          end
+        end
+
+        # Extract magic and file-level comments from final merged tuples
+        magic_comments = final_tuples
+          .select { |tuple| tuple[1] == :magic }
+          .map { |tuple| tuple[2] }
+
+        file_leading_comments = final_tuples
+          .select { |tuple| tuple[1] == :file_level }
+          .map { |tuple| tuple[2] }
 
         build_source_from_nodes(merged_nodes, magic_comments: magic_comments, file_leading_comments: file_leading_comments)
       end
@@ -257,45 +299,155 @@ module Kettle
       def extract_magic_comments(parse_result)
         return [] unless parse_result.success?
 
-        magic_comments = []
-        source_lines = parse_result.source.lines
+        tuples = create_comment_tuples(parse_result)
+        deduplicated = deduplicate_comment_sequences(tuples)
 
-        # Magic comments appear at the very top of the file (possibly after shebang)
-        # They must be on the first or second line
-        source_lines.first(2).each do |line|
-          stripped = line.strip
-          # Check for shebang
-          if stripped.start_with?("#!")
-            magic_comments << line.rstrip
-          # Check for magic comments like frozen_string_literal, encoding, etc.
-          elsif stripped.start_with?("#") &&
-              (stripped.include?("frozen_string_literal:") ||
-               stripped.include?("encoding:") ||
-               stripped.include?("warn_indent:") ||
-               stripped.include?("shareable_constant_value:"))
-            magic_comments << line.rstrip
+        # Filter to only magic comments and return their text
+        deduplicated
+          .select { |tuple| tuple[1] == :magic }
+          .map { |tuple| tuple[2] }
+      end
+
+      # Create a tuple for each comment: [hash, type, text, line_number]
+      # where type is one of: :magic, :file_level, :leading
+      # (inline comments are handled with their associated statements)
+      def create_comment_tuples(parse_result)
+        return [] unless parse_result.success?
+
+        statements = PrismUtils.extract_statements(parse_result.value.statements)
+        first_stmt_line = statements.any? ? statements.first.location.start_line : Float::INFINITY
+
+        tuples = []
+
+        parse_result.comments.each do |comment|
+          comment_line = comment.location.start_line
+          comment_text = comment.slice.strip
+
+          # Determine comment type - magic comments are identified by content, not line number
+          type = if is_magic_comment?(comment_text)
+            :magic
+          elsif comment_line < first_stmt_line
+            :file_level
+          else
+            # This will be handled as a leading or inline comment for a statement
+            :leading
+          end
+
+          # Create hash from normalized comment text (ignoring trailing whitespace)
+          comment_hash = comment_text.hash
+
+          tuples << [comment_hash, type, comment.slice.rstrip, comment_line]
+        end
+
+        tuples
+      end
+
+      def is_magic_comment?(text)
+        text.include?("frozen_string_literal:") ||
+          text.include?("encoding:") ||
+          text.include?("warn_indent:") ||
+          text.include?("shareable_constant_value:")
+      end
+
+      # Two-pass deduplication:
+      # Pass 1: Deduplicate multi-line sequences
+      # Pass 2: Deduplicate single-line duplicates
+      def deduplicate_comment_sequences(tuples)
+        return [] if tuples.empty?
+
+        # Group tuples by type
+        by_type = tuples.group_by { |tuple| tuple[1] }
+
+        result = []
+
+        [:magic, :file_level, :leading].each do |type|
+          type_tuples = by_type[type] || []
+          next if type_tuples.empty?
+
+          # Pass 1: Remove duplicate sequences
+          after_pass1 = deduplicate_sequences_pass1(type_tuples)
+
+          # Pass 2: Remove single-line duplicates
+          after_pass2 = deduplicate_singles_pass2(after_pass1)
+
+          result.concat(after_pass2)
+        end
+
+        result
+      end
+
+      # Pass 1: Find and remove duplicate multi-line comment sequences
+      # A sequence is defined by consecutive comments (ignoring blank lines in between)
+      def deduplicate_sequences_pass1(tuples)
+        return tuples if tuples.length <= 1
+
+        # Group tuples into sequences (consecutive comments, allowing gaps for blank lines)
+        sequences = []
+        current_seq = []
+        prev_line = nil
+
+        tuples.each do |tuple|
+          line_num = tuple[3]
+
+          # If this is consecutive with previous (allowing reasonable gaps for blank lines)
+          if prev_line.nil? || (line_num - prev_line) <= 3
+            current_seq << tuple
+          else
+            # Start new sequence
+            sequences << current_seq if current_seq.any?
+            current_seq = [tuple]
+          end
+
+          prev_line = line_num
+        end
+        sequences << current_seq if current_seq.any?
+
+        # Find duplicate sequences by comparing hash signatures
+        seen_seq_signatures = Set.new
+        unique_tuples = []
+
+        sequences.each do |seq|
+          # Create signature from hashes and sequence length
+          seq_signature = seq.map { |t| t[0] }.join(",")
+
+          unless seen_seq_signatures.include?(seq_signature)
+            seen_seq_signatures << seq_signature
+            unique_tuples.concat(seq)
           end
         end
 
-        magic_comments
+        unique_tuples
+      end
+
+      # Pass 2: Remove single-line duplicates from already sequence-deduplicated tuples
+      def deduplicate_singles_pass2(tuples)
+        return tuples if tuples.length <= 1
+
+        seen_hashes = Set.new
+        unique_tuples = []
+
+        tuples.each do |tuple|
+          comment_hash = tuple[0]
+
+          unless seen_hashes.include?(comment_hash)
+            seen_hashes << comment_hash
+            unique_tuples << tuple
+          end
+        end
+
+        unique_tuples
       end
 
       def extract_file_leading_comments(parse_result)
         return [] unless parse_result.success?
 
-        statements = PrismUtils.extract_statements(parse_result.value.statements)
-        return [] if statements.empty?
+        tuples = create_comment_tuples(parse_result)
+        deduplicated = deduplicate_comment_sequences(tuples)
 
-        first_stmt = statements.first
-        first_stmt_line = first_stmt.location.start_line
-
-        # Extract file-level comments that appear after magic comments (line 1-2)
-        # but before the first executable statement. These are typically documentation
-        # comments describing the file's purpose.
-        parse_result.comments.select do |comment|
-          comment.location.start_line > 2 &&
-            comment.location.start_line < first_stmt_line
-        end.map { |comment| comment.slice.rstrip }
+        # Filter to only file-level comments and return their text
+        deduplicated
+          .select { |tuple| tuple[1] == :file_level }
+          .map { |tuple| tuple[2] }
       end
 
       def extract_nodes_with_comments(parse_result)
@@ -358,8 +510,6 @@ module Kettle
       end
 
       def build_source_from_nodes(node_infos, magic_comments: [], file_leading_comments: [])
-        return "" if node_infos.empty?
-
         lines = []
 
         # Add magic comments at the top (frozen_string_literal, etc.)
@@ -371,8 +521,15 @@ module Kettle
         # Add file-level leading comments (comments before first statement)
         if file_leading_comments.any?
           lines.concat(file_leading_comments)
-          lines << "" # Add blank line after file-level comments
+          # Only add blank line if there are statements following
+          lines << "" if node_infos.any?
         end
+
+        # If there are no statements and no comments, return empty string
+        return "" if node_infos.empty? && lines.empty?
+
+        # If there are only comments and no statements, return the comments
+        return lines.join("\n") if node_infos.empty?
 
         node_infos.each do |node_info|
           # Add blank lines before this statement (for visual grouping)
@@ -435,7 +592,14 @@ module Kettle
       def restore_custom_leading_comments(dest_content, merged_content)
         block = leading_comment_block(dest_content)
         return merged_content if block.strip.empty?
-        return merged_content if merged_content.start_with?(block)
+
+        # Check if the merged content already starts with this block
+        # Use normalized comparison to handle whitespace differences
+        merged_leading = leading_comment_block(merged_content)
+
+        # If merged already has the same or more comprehensive leading comments, don't add
+        return merged_content if merged_leading.strip == block.strip
+        return merged_content if merged_content.include?(block.strip)
 
         # Insert after shebang / frozen string literal comments (same place reminder goes)
         insertion_index = reminder_insertion_index(merged_content)
