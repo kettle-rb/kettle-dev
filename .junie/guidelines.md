@@ -12,8 +12,8 @@ This document captures project-specific knowledge to streamline setup, testing, 
     - See .env.local.example for an example of what to put in .env.local.
     - See CONTRIBUTING.md for details on how to set up your local environment.
 - Ruby and Bundler
-  - Runtime supports Ruby >= 1.9.2.
-  - Development tooling targets Ruby >= 2.3 (minimum supported by setup-ruby GHA).
+  - Runtime supports Ruby >= 2.3.0
+  - Development tooling targets Ruby >= 2.3.0 (minimum supported by setup-ruby GHA).
   - Use a recent Ruby (>= 3.4 recommended) for fastest setup and to exercise modern coverage behavior.
   - Install dependencies via Bundler in project root:
     - bundle install
@@ -48,12 +48,11 @@ This document captures project-specific knowledge to streamline setup, testing, 
     - silent_stream: STDOUT is silenced by default for examples to keep logs clean.
       - To explicitly test console output, tag the example or group with :check_output.
     - DEBUG toggle: Set DEBUG=true to require 'debug' and avoid silencing output during your run.
-    - ENV seeding: The suite sets ENV["FLOSS_FUNDING_FLOSS_FUNDING"] = "Free-as-in-beer" so that the library’s own namespace is considered activated (avoids noisy warnings).
     - Coverage: kettle-soup-cover integrates SimpleCov; .simplecov is invoked from spec_helper when enabled by Kettle::Soup::Cover::DO_COV, which is controlled by K_SOUP_COV_DO being set to true / false.
     - RSpec.describe usage:
       - Use `describe "#<method_name>"` to contain a block of specs that test instance method behavior.
       - Use `describe "::<method_name>"` to contain a block of specs that test class method behavior.
-      - Do not use `describe ".<method_name>"` because the dot is ambiguous w.r.t instance vs. class methods. 
+      - Do not use `describe ".<method_name>"` because the dot is ambiguous w.r.t instance vs. class methods.
     - When adding new code or modifying existing code always add tests to cover the updated behavior, including branches, and different types of expected and unexpected inputs.
   - Additional test utilities:
     - rspec-stubbed_env: Use stub_env to control ENV safely within examples.
@@ -94,7 +93,9 @@ This document captures project-specific knowledge to streamline setup, testing, 
       include_context 'with stubbed env'
     - in a before hook, or in an example:
       stub_env("FLOSS_FUNDING_MY_NS" => "Free-as-in-beer")
+
       # example code continues
+
   - If your spec needs to assert on console output, tag it with :check_output. By default, STDOUT is silenced.
   - Use Timecop for deterministic time-sensitive behavior as needed (require config/timecop is already done by spec_helper).
 
