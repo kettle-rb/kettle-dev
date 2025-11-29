@@ -147,9 +147,6 @@
     [319, 9, 13, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2024371388],
     [325, 9, 13, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2024371388]
   ],
-  "spec/kettle/dev/modular_gemfiles_integration_spec.rb:2587652597": [
-    [3, 16, 29, "RSpec/DescribeClass: The first argument to describe should be the class or module being tested.", 1686596109]
-  ],
   "spec/kettle/dev/pre_release_cli_spec.rb:3795621826": [
     [163, 9, 50, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [165].", 2390041128],
     [165, 9, 50, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [163].", 2805541288],
@@ -223,11 +220,5 @@
   "spec/kettle/dev_spec.rb:3559647913": [
     [18, 7, 20, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 794029890],
     [88, 9, 18, "RSpec/LeakyConstantDeclaration: Stub module constant instead of declaring explicitly.", 3236815244]
-  ],
-  "spec/kettle/entry_points_spec.rb:847894159": [
-    [3, 16, 14, "RSpec/DescribeClass: The first argument to describe should be the class or module being tested.", 3581131150]
-  ],
-  "spec/kettle_dev_file_spec.rb:1811427211": [
-    [3, 16, 25, "RSpec/DescribeClass: The first argument to describe should be the class or module being tested.", 3060513619]
   ]
 }
