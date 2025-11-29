@@ -12,7 +12,7 @@ RSpec.describe "Kettle::Dev::Tasks file" do # rubocop:disable RSpec/DescribeClas
       called_with = arg
     end
 
-    path = File.expand_path("../../..", __dir__)
+    path = File.expand_path("../..", __dir__)
     file_to_load = File.join(path, "lib", "kettle", "dev", "tasks.rb")
 
     # load instead of require so the file body executes in spec context

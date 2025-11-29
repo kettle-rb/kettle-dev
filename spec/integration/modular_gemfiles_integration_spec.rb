@@ -14,7 +14,7 @@ RSpec.describe "ModularGemfiles Integration" do
         FileUtils.mkdir_p(src_dir)
 
         # Copy the actual style.gemfile.example from the gem
-        actual_example = File.join(__dir__, "../../../gemfiles/modular/style.gemfile.example")
+        actual_example = File.join(__dir__, "../../gemfiles/modular/style.gemfile.example")
         FileUtils.cp(actual_example, File.join(src_dir, "style.gemfile.example"))
 
         # Create empty subdirectories required by sync!

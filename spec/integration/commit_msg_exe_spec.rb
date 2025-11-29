@@ -19,7 +19,7 @@ RSpec.describe "exe/kettle-commit-msg" do
       )
 
       ruby = RbConfig.ruby
-      cmd = [ruby, File.expand_path("../../../exe/kettle-commit-msg", __dir__), commit_file]
+      cmd = [ruby, File.expand_path("../../exe/kettle-commit-msg", __dir__), commit_file]
 
       # Simulate a context where Bundler is not set up; also clear RUBYOPT of -rbundler/setup
       env = {
