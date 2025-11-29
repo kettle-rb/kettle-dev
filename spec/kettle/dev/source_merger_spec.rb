@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "spec_helper"
-require "kettle/dev/source_merger"
 RSpec.describe Kettle::Dev::SourceMerger do
   describe ".apply" do
     let(:path) { "Gemfile" }

@@ -28,6 +28,13 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Fixed Gemfile parsing to properly deduplicate comments across multiple template runs
+  - Implemented two-pass comment deduplication: sequences first, then individual lines
+  - Magic comments (frozen_string_literal, encoding, etc.) are now properly deduplicated by content, not line position
+  - File-level comments are deduplicated while preserving leading comments attached to statements
+  - Ensures idempotent behavior when running templating multiple times on the same file
+  - Prevents accumulation of duplicate frozen_string_literal comments and comment blocks
+
 ### Security
 
 ## [1.2.2] - 2025-11-27
