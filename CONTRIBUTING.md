@@ -24,9 +24,10 @@ Follow these instructions:
 
 ## Executables vs Rake tasks
 
-Executables shipped by kettle-dev can be used with or without generating the binstubs.
-They will work when kettle-dev is installed globally (i.e., `gem install kettle-dev`) and do not require that kettle-dev be in your bundle.
+Executables shipped by dependencies, such as kettle-dev, and stone_checksums, are available
+after running `bin/setup`. These include:
 
+- gem_checksums
 - kettle-changelog
 - kettle-commit-msg
 - kettle-dev-setup
@@ -35,20 +36,10 @@ They will work when kettle-dev is installed globally (i.e., `gem install kettle-
 - kettle-readme-backers
 - kettle-release
 
-However, the rake tasks provided by kettle-dev do require kettle-dev to be added as a development dependency and loaded in your Rakefile.
-See the full list of rake tasks in head of Rakefile
+There are many Rake tasks available as well. You can see them by running:
 
-**Gemfile**
-```ruby
-group :development do
-  gem "kettle-dev", require: false
-end
-```
-
-**Rakefile**
-```ruby
-# Rakefile
-require "kettle/dev"
+```shell
+bin/rake -T
 ```
 
 ## Environment Variables for Local Development
@@ -77,7 +68,9 @@ GitHub API and CI helpers
 Releasing and signing
 - SKIP_GEM_SIGNING: If set, skip gem signing during build/release
 - GEM_CERT_USER: Username for selecting your public cert in `certs/<USER>.pem` (defaults to $USER)
-- SOURCE_DATE_EPOCH: Reproducible build timestamp. `kettle-release` will set this automatically for the session.
+- SOURCE_DATE_EPOCH: Reproducible build timestamp.
+  - `kettle-release` will set this automatically for the session.
+  - Not needed on bundler >= 2.7.0, as reproducible builds have become the default.
 
 Git hooks and commit message helpers (exe/kettle-commit-msg)
 - GIT_HOOK_BRANCH_VALIDATE: Branch name validation mode (e.g., `jira`) or `false` to disable
@@ -148,7 +141,7 @@ For more detailed information about using RuboCop in this project, please see th
 Never add `# rubocop:disable ...` / `# rubocop:enable ...` comments to code or specs (except when following the few existing `rubocop:disable` patterns for a rule already being disabled elsewhere in the code). Instead:
 
 - Prefer configuration-based exclusions when a rule should not apply to certain paths or files (e.g., via `.rubocop.yml`).
-- When a violation is temporary and you plan to fix it later, record it in `.rubocop_gradual.lock` using the gradual workflow:
+- When a violation is temporary, and you plan to fix it later, record it in `.rubocop_gradual.lock` using the gradual workflow:
   - `bundle exec rake rubocop_gradual:autocorrect` (preferred)
   - `bundle exec rake rubocop_gradual:force_update` (only when you cannot fix the violations immediately)
 
@@ -183,6 +176,7 @@ NOTE: To build without signing the gem set `SKIP_GEM_SIGNING` to any value in th
 1. Update version.rb to contain the correct version-to-be-released.
 2. Run `bundle exec kettle-changelog`.
 3. Run `bundle exec kettle-release`.
+4. Stay awake and monitor the release process for any errors, and answer any prompts.
 
 #### Manual process
 
