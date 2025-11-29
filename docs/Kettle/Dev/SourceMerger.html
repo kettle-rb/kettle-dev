@@ -126,10 +126,12 @@ preservation of inline and leading comments throughout the merge process.</p>
           
         </dt>
         <dd><pre class="code"><span class='heredoc_beg'>&lt;&lt;~RUBY</span>
-<span class='tstring_content'>  # To retain during kettle-dev templating:
+<span class='tstring_content'>
+</span><span class='tstring_content'>  # To retain during kettle-dev templating:
 </span><span class='tstring_content'>  #     kettle-dev:freeze
 </span><span class='tstring_content'>  #     # ... your code
 </span><span class='tstring_content'>  #     kettle-dev:unfreeze
+</span><span class='tstring_content'>  #
 </span><span class='heredoc_end'>RUBY</span></pre></dd>
       
         <dt id="BUG_URL-constant" class="">BUG_URL =
@@ -732,6 +734,29 @@ preservation of inline and leading comments throughout the merge process.</p>
         <li class="public ">
   <span class="summary_signature">
     
+      <a href="#normalize_newlines-class_method" title="normalize_newlines (class method)">.<strong>normalize_newlines</strong>(content)  &#x21d2; String </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  <span class="private note title">private</span>
+
+  
+    <span class="summary_desc"><div class='inline'><p>Normalize newlines in the content according to templating rules: 1.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
       <a href="#normalize_source-class_method" title="normalize_source (class method)">.<strong>normalize_source</strong>(source)  &#x21d2; String </a>
     
 
@@ -1058,8 +1083,6 @@ preservation of inline and leading comments throughout the merge process.</p>
       <pre class="lines">
 
 
-44
-45
 46
 47
 48
@@ -1081,10 +1104,13 @@ preservation of inline and leading comments throughout the merge process.</p>
 64
 65
 66
-67</pre>
+67
+68
+69
+70</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 44</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 46</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_apply'>apply</span><span class='lparen'>(</span><span class='label'>strategy:</span><span class='comma'>,</span> <span class='label'>src:</span><span class='comma'>,</span> <span class='label'>dest:</span><span class='comma'>,</span> <span class='label'>path:</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_strategy'>strategy</span> <span class='op'>=</span> <span class='id identifier rubyid_normalize_strategy'>normalize_strategy</span><span class='lparen'>(</span><span class='id identifier rubyid_strategy'>strategy</span><span class='rparen'>)</span>
@@ -1105,6 +1131,7 @@ preservation of inline and leading comments throughout the merge process.</p>
     <span class='kw'>end</span>
   <span class='id identifier rubyid_content'>content</span> <span class='op'>=</span> <span class='id identifier rubyid_merge_freeze_blocks'>merge_freeze_blocks</span><span class='lparen'>(</span><span class='id identifier rubyid_content'>content</span><span class='comma'>,</span> <span class='id identifier rubyid_dest'>dest</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_content'>content</span> <span class='op'>=</span> <span class='id identifier rubyid_restore_custom_leading_comments'>restore_custom_leading_comments</span><span class='lparen'>(</span><span class='id identifier rubyid_dest'>dest</span><span class='comma'>,</span> <span class='id identifier rubyid_content'>content</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_content'>content</span> <span class='op'>=</span> <span class='id identifier rubyid_normalize_newlines'>normalize_newlines</span><span class='lparen'>(</span><span class='id identifier rubyid_content'>content</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_ensure_trailing_newline'>ensure_trailing_newline</span><span class='lparen'>(</span><span class='id identifier rubyid_content'>content</span><span class='rparen'>)</span>
 <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_error'>error</span>
   <span class='id identifier rubyid_warn_bug'>warn_bug</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='comma'>,</span> <span class='id identifier rubyid_error'>error</span><span class='rparen'>)</span>
@@ -1130,22 +1157,22 @@ preservation of inline and leading comments throughout the merge process.</p>
       <pre class="lines">
 
 
-182
-183
-184
-185
-186
-187
-188
-189
-190
-191
-192
-193
-194</pre>
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 182</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 243</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_apply_append'>apply_append</span><span class='lparen'>(</span><span class='id identifier rubyid_src_content'>src_content</span><span class='comma'>,</span> <span class='id identifier rubyid_dest_content'>dest_content</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_prism_merge'>prism_merge</span><span class='lparen'>(</span><span class='id identifier rubyid_src_content'>src_content</span><span class='comma'>,</span> <span class='id identifier rubyid_dest_content'>dest_content</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_src_nodes'>src_nodes</span><span class='comma'>,</span> <span class='id identifier rubyid_dest_nodes'>dest_nodes</span><span class='comma'>,</span> <span class='id identifier rubyid__src_result'>_src_result</span><span class='comma'>,</span> <span class='id identifier rubyid__dest_result'>_dest_result</span><span class='op'>|</span>
@@ -1180,33 +1207,33 @@ preservation of inline and leading comments throughout the merge process.</p>
       <pre class="lines">
 
 
-196
-197
-198
-199
-200
-201
-202
-203
-204
-205
-206
-207
-208
-209
-210
-211
-212
-213
-214
-215
-216
-217
-218
-219</pre>
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 196</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 257</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_apply_merge'>apply_merge</span><span class='lparen'>(</span><span class='id identifier rubyid_src_content'>src_content</span><span class='comma'>,</span> <span class='id identifier rubyid_dest_content'>dest_content</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_prism_merge'>prism_merge</span><span class='lparen'>(</span><span class='id identifier rubyid_src_content'>src_content</span><span class='comma'>,</span> <span class='id identifier rubyid_dest_content'>dest_content</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_src_nodes'>src_nodes</span><span class='comma'>,</span> <span class='id identifier rubyid_dest_nodes'>dest_nodes</span><span class='comma'>,</span> <span class='id identifier rubyid__src_result'>_src_result</span><span class='comma'>,</span> <span class='id identifier rubyid__dest_result'>_dest_result</span><span class='op'>|</span>
@@ -1252,55 +1279,55 @@ preservation of inline and leading comments throughout the merge process.</p>
       <pre class="lines">
 
 
-512
-513
-514
-515
-516
-517
-518
-519
-520
-521
-522
-523
-524
-525
-526
-527
-528
-529
-530
-531
-532
-533
-534
-535
-536
-537
-538
-539
-540
-541
-542
-543
-544
-545
-546
-547
-548
-549
-550
-551
-552
-553
-554
-555
-556
-557</pre>
+573
+574
+575
+576
+577
+578
+579
+580
+581
+582
+583
+584
+585
+586
+587
+588
+589
+590
+591
+592
+593
+594
+595
+596
+597
+598
+599
+600
+601
+602
+603
+604
+605
+606
+607
+608
+609
+610
+611
+612
+613
+614
+615
+616
+617
+618</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 512</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 573</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_build_source_from_nodes'>build_source_from_nodes</span><span class='lparen'>(</span><span class='id identifier rubyid_node_infos'>node_infos</span><span class='comma'>,</span> <span class='label'>magic_comments:</span> <span class='lbracket'>[</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='label'>file_leading_comments:</span> <span class='lbracket'>[</span><span class='rbracket'>]</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_lines'>lines</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
@@ -1368,43 +1395,43 @@ preservation of inline and leading comments throughout the merge process.</p>
       <pre class="lines">
 
 
-477
-478
-479
-480
-481
-482
-483
-484
-485
-486
-487
-488
-489
-490
-491
-492
-493
-494
-495
-496
-497
-498
-499
-500
-501
-502
-503
-504
-505
-506
-507
-508
-509
-510</pre>
+538
+539
+540
+541
+542
+543
+544
+545
+546
+547
+548
+549
+550
+551
+552
+553
+554
+555
+556
+557
+558
+559
+560
+561
+562
+563
+564
+565
+566
+567
+568
+569
+570
+571</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 477</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 538</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_count_blank_lines_before'>count_blank_lines_before</span><span class='lparen'>(</span><span class='id identifier rubyid_source_lines'>source_lines</span><span class='comma'>,</span> <span class='id identifier rubyid_current_stmt'>current_stmt</span><span class='comma'>,</span> <span class='id identifier rubyid_prev_stmt'>prev_stmt</span><span class='comma'>,</span> <span class='id identifier rubyid_body_node'>body_node</span><span class='rparen'>)</span>
   <span class='comment'># Determine the starting line to search from
@@ -1472,39 +1499,39 @@ where type is one of: :magic, :file_level, :leading<br />
       <pre class="lines">
 
 
-314
-315
-316
-317
-318
-319
-320
-321
-322
-323
-324
-325
-326
-327
-328
-329
-330
-331
-332
-333
-334
-335
-336
-337
-338
-339
-340
-341
-342
-343</pre>
+375
+376
+377
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390
+391
+392
+393
+394
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 314</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 375</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_create_comment_tuples'>create_comment_tuples</span><span class='lparen'>(</span><span class='id identifier rubyid_parse_result'>parse_result</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='lbracket'>[</span><span class='rbracket'>]</span> <span class='kw'>unless</span> <span class='id identifier rubyid_parse_result'>parse_result</span><span class='period'>.</span><span class='id identifier rubyid_success?'>success?</span>
@@ -1568,32 +1595,32 @@ Pass 2: Deduplicate single-line duplicates</p>
       <pre class="lines">
 
 
-355
-356
-357
-358
-359
-360
-361
-362
-363
-364
-365
-366
-367
-368
-369
-370
-371
-372
-373
-374
-375
-376
-377</pre>
+416
+417
+418
+419
+420
+421
+422
+423
+424
+425
+426
+427
+428
+429
+430
+431
+432
+433
+434
+435
+436
+437
+438</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 355</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 416</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_deduplicate_comment_sequences'>deduplicate_comment_sequences</span><span class='lparen'>(</span><span class='id identifier rubyid_tuples'>tuples</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='lbracket'>[</span><span class='rbracket'>]</span> <span class='kw'>if</span> <span class='id identifier rubyid_tuples'>tuples</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
@@ -1638,21 +1665,21 @@ Pass 2: Deduplicate single-line duplicates</p>
       <pre class="lines">
 
 
-620
-621
-622
-623
-624
-625
-626
-627
-628
-629
-630
-631</pre>
+681
+682
+683
+684
+685
+686
+687
+688
+689
+690
+691
+692</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 620</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 681</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_deduplicate_leading_comment_block'>deduplicate_leading_comment_block</span><span class='lparen'>(</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
   <span class='comment'># Parse the block as if it were a Ruby file with just comments
@@ -1697,49 +1724,49 @@ A sequence is defined by consecutive comments (ignoring blank lines in between)<
       <pre class="lines">
 
 
-381
-382
-383
-384
-385
-386
-387
-388
-389
-390
-391
-392
-393
-394
-395
-396
-397
-398
-399
-400
-401
-402
-403
-404
-405
-406
-407
-408
-409
-410
-411
-412
-413
-414
-415
-416
-417
-418
-419
-420</pre>
+442
+443
+444
+445
+446
+447
+448
+449
+450
+451
+452
+453
+454
+455
+456
+457
+458
+459
+460
+461
+462
+463
+464
+465
+466
+467
+468
+469
+470
+471
+472
+473
+474
+475
+476
+477
+478
+479
+480
+481</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 381</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 442</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_deduplicate_sequences_pass1'>deduplicate_sequences_pass1</span><span class='lparen'>(</span><span class='id identifier rubyid_tuples'>tuples</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='id identifier rubyid_tuples'>tuples</span> <span class='kw'>if</span> <span class='id identifier rubyid_tuples'>tuples</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span> <span class='op'>&lt;=</span> <span class='int'>1</span>
@@ -1811,26 +1838,26 @@ A sequence is defined by consecutive comments (ignoring blank lines in between)<
       <pre class="lines">
 
 
-423
-424
-425
-426
-427
-428
-429
-430
-431
-432
-433
-434
-435
-436
-437
-438
-439</pre>
+484
+485
+486
+487
+488
+489
+490
+491
+492
+493
+494
+495
+496
+497
+498
+499
+500</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 423</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 484</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_deduplicate_singles_pass2'>deduplicate_singles_pass2</span><span class='lparen'>(</span><span class='id identifier rubyid_tuples'>tuples</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='id identifier rubyid_tuples'>tuples</span> <span class='kw'>if</span> <span class='id identifier rubyid_tuples'>tuples</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span> <span class='op'>&lt;=</span> <span class='int'>1</span>
@@ -1919,18 +1946,18 @@ A sequence is defined by consecutive comments (ignoring blank lines in between)<
       <pre class="lines">
 
 
-74
-75
-76
 77
 78
 79
 80
 81
-82</pre>
+82
+83
+84
+85</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 74</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 77</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_ensure_reminder'>ensure_reminder</span><span class='lparen'>(</span><span class='id identifier rubyid_content'>content</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='id identifier rubyid_content'>content</span> <span class='kw'>if</span> <span class='id identifier rubyid_reminder_present?'>reminder_present?</span><span class='lparen'>(</span><span class='id identifier rubyid_content'>content</span><span class='rparen'>)</span>
@@ -1961,13 +1988,13 @@ A sequence is defined by consecutive comments (ignoring blank lines in between)<
       <pre class="lines">
 
 
-177
-178
-179
-180</pre>
+184
+185
+186
+187</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 177</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 184</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_ensure_trailing_newline'>ensure_trailing_newline</span><span class='lparen'>(</span><span class='id identifier rubyid_text'>text</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_text'>text</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -1993,13 +2020,13 @@ A sequence is defined by consecutive comments (ignoring blank lines in between)<
       <pre class="lines">
 
 
-633
-634
-635
-636</pre>
+694
+695
+696
+697</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 633</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 694</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_extract_comment_lines'>extract_comment_lines</span><span class='lparen'>(</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_lines'>lines</span> <span class='op'>=</span> <span class='id identifier rubyid_block'>block</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_lines'>lines</span>
@@ -2025,20 +2052,20 @@ A sequence is defined by consecutive comments (ignoring blank lines in between)<
       <pre class="lines">
 
 
-441
-442
-443
-444
-445
-446
-447
-448
-449
-450
-451</pre>
+502
+503
+504
+505
+506
+507
+508
+509
+510
+511
+512</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 441</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 502</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_extract_file_leading_comments'>extract_file_leading_comments</span><span class='lparen'>(</span><span class='id identifier rubyid_parse_result'>parse_result</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='lbracket'>[</span><span class='rbracket'>]</span> <span class='kw'>unless</span> <span class='id identifier rubyid_parse_result'>parse_result</span><span class='period'>.</span><span class='id identifier rubyid_success?'>success?</span>
@@ -2071,20 +2098,20 @@ A sequence is defined by consecutive comments (ignoring blank lines in between)<
       <pre class="lines">
 
 
-299
-300
-301
-302
-303
-304
-305
-306
-307
-308
-309</pre>
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 299</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 360</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_extract_magic_comments'>extract_magic_comments</span><span class='lparen'>(</span><span class='id identifier rubyid_parse_result'>parse_result</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='lbracket'>[</span><span class='rbracket'>]</span> <span class='kw'>unless</span> <span class='id identifier rubyid_parse_result'>parse_result</span><span class='period'>.</span><span class='id identifier rubyid_success?'>success?</span>
@@ -2117,32 +2144,32 @@ A sequence is defined by consecutive comments (ignoring blank lines in between)<
       <pre class="lines">
 
 
-453
-454
-455
-456
-457
-458
-459
-460
-461
-462
-463
-464
-465
-466
-467
-468
-469
-470
-471
-472
-473
-474
-475</pre>
+514
+515
+516
+517
+518
+519
+520
+521
+522
+523
+524
+525
+526
+527
+528
+529
+530
+531
+532
+533
+534
+535
+536</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 453</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 514</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_extract_nodes_with_comments'>extract_nodes_with_comments</span><span class='lparen'>(</span><span class='id identifier rubyid_parse_result'>parse_result</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='lbracket'>[</span><span class='rbracket'>]</span> <span class='kw'>unless</span> <span class='id identifier rubyid_parse_result'>parse_result</span><span class='period'>.</span><span class='id identifier rubyid_success?'>success?</span>
@@ -2187,23 +2214,23 @@ A sequence is defined by consecutive comments (ignoring blank lines in between)<
       <pre class="lines">
 
 
-152
-153
-154
-155
-156
-157
-158
 159
 160
 161
 162
 163
 164
-165</pre>
+165
+166
+167
+168
+169
+170
+171
+172</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 152</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 159</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_freeze_blocks'>freeze_blocks</span><span class='lparen'>(</span><span class='id identifier rubyid_text'>text</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='lbracket'>[</span><span class='rbracket'>]</span> <span class='kw'>unless</span> <span class='id identifier rubyid_text'>text</span><span class='op'>&amp;.</span><span class='id identifier rubyid_match?'>match?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="#FREEZE_START-constant" title="Kettle::Dev::SourceMerger::FREEZE_START (constant)">FREEZE_START</a></span></span><span class='rparen'>)</span>
@@ -2262,12 +2289,12 @@ A sequence is defined by consecutive comments (ignoring blank lines in between)<
       <pre class="lines">
 
 
-120
-121
-122</pre>
+127
+128
+129</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 120</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 127</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_frozen_comment?'>frozen_comment?</span><span class='lparen'>(</span><span class='id identifier rubyid_line'>line</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_line'>line</span><span class='period'>.</span><span class='id identifier rubyid_match?'>match?</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>#\s*frozen_string_literal:</span><span class='regexp_end'>/</span></span><span class='rparen'>)</span>
@@ -2315,15 +2342,15 @@ A sequence is defined by consecutive comments (ignoring blank lines in between)<
       <pre class="lines">
 
 
-345
-346
-347
-348
-349
-350</pre>
+406
+407
+408
+409
+410
+411</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 345</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 406</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_is_magic_comment?'>is_magic_comment?</span><span class='lparen'>(</span><span class='id identifier rubyid_text'>text</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_text'>text</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>frozen_string_literal:</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>||</span>
@@ -2351,19 +2378,19 @@ A sequence is defined by consecutive comments (ignoring blank lines in between)<
       <pre class="lines">
 
 
-643
-644
-645
-646
-647
-648
-649
-650
-651
-652</pre>
+704
+705
+706
+707
+708
+709
+710
+711
+712
+713</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 643</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 704</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_leading_comment_block'>leading_comment_block</span><span class='lparen'>(</span><span class='id identifier rubyid_content'>content</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_lines'>lines</span> <span class='op'>=</span> <span class='id identifier rubyid_content'>content</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_lines'>lines</span>
@@ -2395,15 +2422,15 @@ A sequence is defined by consecutive comments (ignoring blank lines in between)<
       <pre class="lines">
 
 
-231
-232
-233
-234
-235
-236</pre>
+292
+293
+294
+295
+296
+297</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 231</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 292</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_merge_block_node_info'>merge_block_node_info</span><span class='lparen'>(</span><span class='id identifier rubyid_src_node_info'>src_node_info</span><span class='rparen'>)</span>
   <span class='comment'># For block merging, we need to merge the statements within the block
@@ -2497,13 +2524,6 @@ Preserves user customizations wrapped in freeze/unfreeze markers</p>
       <pre class="lines">
 
 
-131
-132
-133
-134
-135
-136
-137
 138
 139
 140
@@ -2516,10 +2536,17 @@ Preserves user customizations wrapped in freeze/unfreeze markers</p>
 147
 148
 149
-150</pre>
+150
+151
+152
+153
+154
+155
+156
+157</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 131</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 138</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_merge_freeze_blocks'>merge_freeze_blocks</span><span class='lparen'>(</span><span class='id identifier rubyid_src_content'>src_content</span><span class='comma'>,</span> <span class='id identifier rubyid_dest_content'>dest_content</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_dest_blocks'>dest_blocks</span> <span class='op'>=</span> <span class='id identifier rubyid_freeze_blocks'>freeze_blocks</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_content'>dest_content</span><span class='rparen'>)</span>
@@ -2561,18 +2588,18 @@ Preserves user customizations wrapped in freeze/unfreeze markers</p>
       <pre class="lines">
 
 
-221
-222
-223
-224
-225
-226
-227
-228
-229</pre>
+282
+283
+284
+285
+286
+287
+288
+289
+290</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 221</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 282</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_merge_node_info'>merge_node_info</span><span class='lparen'>(</span><span class='id identifier rubyid_signature'>signature</span><span class='comma'>,</span> <span class='id identifier rubyid__dest_node_info'>_dest_node_info</span><span class='comma'>,</span> <span class='id identifier rubyid_src_node_info'>src_node_info</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='id identifier rubyid_src_node_info'>src_node_info</span> <span class='kw'>unless</span> <span class='id identifier rubyid_signature'>signature</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Array</span><span class='rparen'>)</span>
@@ -2603,41 +2630,41 @@ Preserves user customizations wrapped in freeze/unfreeze markers</p>
       <pre class="lines">
 
 
-559
-560
-561
-562
-563
-564
-565
-566
-567
-568
-569
-570
-571
-572
-573
-574
-575
-576
-577
-578
-579
-580
-581
-582
-583
-584
-585
-586
-587
-588
-589
-590</pre>
+620
+621
+622
+623
+624
+625
+626
+627
+628
+629
+630
+631
+632
+633
+634
+635
+636
+637
+638
+639
+640
+641
+642
+643
+644
+645
+646
+647
+648
+649
+650
+651</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 559</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 620</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_node_signature'>node_signature</span><span class='lparen'>(</span><span class='id identifier rubyid_node'>node</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='lbracket'>[</span><span class='symbol'>:nil</span><span class='rbracket'>]</span> <span class='kw'>unless</span> <span class='id identifier rubyid_node'>node</span>
@@ -2669,587 +2696,4 @@ Preserves user customizations wrapped in freeze/unfreeze markers</p>
   <span class='kw'>else</span>
     <span class='comment'># Other node types
 </span>    <span class='lbracket'>[</span><span class='id identifier rubyid_node'>node</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>::</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_last'>last</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='comma'>,</span> <span class='id identifier rubyid_node'>node</span><span class='period'>.</span><span class='id identifier rubyid_slice'>slice</span><span class='rbracket'>]</span>
-  <span class='kw'>end</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="normalize_comment-class_method">
-  
-    .<strong>normalize_comment</strong>(comment)  &#x21d2; <tt>Object</tt> 
-  
-
-  
-
-  
-</h3><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-638
-639
-640
-641</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 638</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_normalize_comment'>normalize_comment</span><span class='lparen'>(</span><span class='id identifier rubyid_comment'>comment</span><span class='rparen'>)</span>
-  <span class='comment'># Normalize by removing trailing whitespace and standardizing spacing
-</span>  <span class='id identifier rubyid_comment'>comment</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="normalize_source-class_method">
-  
-    .<strong>normalize_source</strong>(source)  &#x21d2; <tt>String</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p class="note private">
-  <strong>This method is part of a private API.</strong>
-  You should avoid using this method if possible, as it may be removed or be changed in the future.
-</p>
-<p>Normalize source code by parsing and rebuilding to deduplicate comments</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  <p class="tag_title">Parameters:</p>
-<ul class="param">
-  
-    <li>
-      
-        <span class='name'>source</span>
-      
-      
-        <span class='type'>(<tt>String</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>Ruby source code</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>String</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>Normalized source with trailing newline and deduplicated comments</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-89
-90
-91
-92
-93
-94
-95
-96
-97
-98
-99
-100</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 89</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_normalize_source'>normalize_source</span><span class='lparen'>(</span><span class='id identifier rubyid_source'>source</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_parse_result'>parse_result</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="PrismUtils.html" title="Kettle::Dev::PrismUtils (module)">PrismUtils</a></span></span><span class='period'>.</span><span class='id identifier rubyid_parse_with_comments'><span class='object_link'><a href="PrismUtils.html#parse_with_comments-class_method" title="Kettle::Dev::PrismUtils.parse_with_comments (method)">parse_with_comments</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_source'>source</span><span class='rparen'>)</span>
-  <span class='kw'>return</span> <span class='id identifier rubyid_ensure_trailing_newline'>ensure_trailing_newline</span><span class='lparen'>(</span><span class='id identifier rubyid_source'>source</span><span class='rparen'>)</span> <span class='kw'>unless</span> <span class='id identifier rubyid_parse_result'>parse_result</span><span class='period'>.</span><span class='id identifier rubyid_success?'>success?</span>
-
-  <span class='comment'># Extract and deduplicate comments
-</span>  <span class='id identifier rubyid_magic_comments'>magic_comments</span> <span class='op'>=</span> <span class='id identifier rubyid_extract_magic_comments'>extract_magic_comments</span><span class='lparen'>(</span><span class='id identifier rubyid_parse_result'>parse_result</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_file_leading_comments'>file_leading_comments</span> <span class='op'>=</span> <span class='id identifier rubyid_extract_file_leading_comments'>extract_file_leading_comments</span><span class='lparen'>(</span><span class='id identifier rubyid_parse_result'>parse_result</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_node_infos'>node_infos</span> <span class='op'>=</span> <span class='id identifier rubyid_extract_nodes_with_comments'>extract_nodes_with_comments</span><span class='lparen'>(</span><span class='id identifier rubyid_parse_result'>parse_result</span><span class='rparen'>)</span>
-
-  <span class='comment'># Rebuild source with deduplicated comments
-</span>  <span class='id identifier rubyid_build_source_from_nodes'>build_source_from_nodes</span><span class='lparen'>(</span><span class='id identifier rubyid_node_infos'>node_infos</span><span class='comma'>,</span> <span class='label'>magic_comments:</span> <span class='id identifier rubyid_magic_comments'>magic_comments</span><span class='comma'>,</span> <span class='label'>file_leading_comments:</span> <span class='id identifier rubyid_file_leading_comments'>file_leading_comments</span><span class='rparen'>)</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="normalize_strategy-class_method">
-  
-    .<strong>normalize_strategy</strong>(strategy)  &#x21d2; <tt>Object</tt> 
-  
-
-  
-
-  
-</h3><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-167
-168
-169
-170</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 167</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_normalize_strategy'>normalize_strategy</span><span class='lparen'>(</span><span class='id identifier rubyid_strategy'>strategy</span><span class='rparen'>)</span>
-  <span class='kw'>return</span> <span class='symbol'>:skip</span> <span class='kw'>if</span> <span class='id identifier rubyid_strategy'>strategy</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
-  <span class='id identifier rubyid_strategy'>strategy</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_downcase'>downcase</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="prism_merge-class_method">
-  
-    .<strong>prism_merge</strong>(src_content, dest_content)  &#x21d2; <tt>Object</tt> 
-  
-
-  
-
-  
-</h3><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-238
-239
-240
-241
-242
-243
-244
-245
-246
-247
-248
-249
-250
-251
-252
-253
-254
-255
-256
-257
-258
-259
-260
-261
-262
-263
-264
-265
-266
-267
-268
-269
-270
-271
-272
-273
-274
-275
-276
-277
-278
-279
-280
-281
-282
-283
-284
-285
-286
-287
-288
-289
-290
-291
-292
-293
-294
-295
-296
-297</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 238</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_prism_merge'>prism_merge</span><span class='lparen'>(</span><span class='id identifier rubyid_src_content'>src_content</span><span class='comma'>,</span> <span class='id identifier rubyid_dest_content'>dest_content</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_src_result'>src_result</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="PrismUtils.html" title="Kettle::Dev::PrismUtils (module)">PrismUtils</a></span></span><span class='period'>.</span><span class='id identifier rubyid_parse_with_comments'><span class='object_link'><a href="PrismUtils.html#parse_with_comments-class_method" title="Kettle::Dev::PrismUtils.parse_with_comments (method)">parse_with_comments</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_src_content'>src_content</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_dest_result'>dest_result</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="PrismUtils.html" title="Kettle::Dev::PrismUtils (module)">PrismUtils</a></span></span><span class='period'>.</span><span class='id identifier rubyid_parse_with_comments'><span class='object_link'><a href="PrismUtils.html#parse_with_comments-class_method" title="Kettle::Dev::PrismUtils.parse_with_comments (method)">parse_with_comments</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_dest_content'>dest_content</span><span class='rparen'>)</span>
-
-  <span class='comment'># If src parsing failed, return src unchanged to avoid losing content
-</span>  <span class='kw'>unless</span> <span class='id identifier rubyid_src_result'>src_result</span><span class='period'>.</span><span class='id identifier rubyid_success?'>success?</span>
-    <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>WARNING: Source content parse failed, returning unchanged</span><span class='tstring_end'>&quot;</span></span>
-    <span class='kw'>return</span> <span class='id identifier rubyid_src_content'>src_content</span>
-  <span class='kw'>end</span>
-
-  <span class='id identifier rubyid_src_nodes'>src_nodes</span> <span class='op'>=</span> <span class='id identifier rubyid_extract_nodes_with_comments'>extract_nodes_with_comments</span><span class='lparen'>(</span><span class='id identifier rubyid_src_result'>src_result</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_dest_nodes'>dest_nodes</span> <span class='op'>=</span> <span class='id identifier rubyid_extract_nodes_with_comments'>extract_nodes_with_comments</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_result'>dest_result</span><span class='rparen'>)</span>
-
-  <span class='id identifier rubyid_merged_nodes'>merged_nodes</span> <span class='op'>=</span> <span class='kw'>yield</span><span class='lparen'>(</span><span class='id identifier rubyid_src_nodes'>src_nodes</span><span class='comma'>,</span> <span class='id identifier rubyid_dest_nodes'>dest_nodes</span><span class='comma'>,</span> <span class='id identifier rubyid_src_result'>src_result</span><span class='comma'>,</span> <span class='id identifier rubyid_dest_result'>dest_result</span><span class='rparen'>)</span>
-
-  <span class='comment'># Extract and deduplicate comments from src and dest SEPARATELY
-</span>  <span class='comment'># This allows sequence detection to work within each source
-</span>  <span class='id identifier rubyid_src_tuples'>src_tuples</span> <span class='op'>=</span> <span class='id identifier rubyid_create_comment_tuples'>create_comment_tuples</span><span class='lparen'>(</span><span class='id identifier rubyid_src_result'>src_result</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_src_deduplicated'>src_deduplicated</span> <span class='op'>=</span> <span class='id identifier rubyid_deduplicate_comment_sequences'>deduplicate_comment_sequences</span><span class='lparen'>(</span><span class='id identifier rubyid_src_tuples'>src_tuples</span><span class='rparen'>)</span>
-
-  <span class='id identifier rubyid_dest_tuples'>dest_tuples</span> <span class='op'>=</span> <span class='id identifier rubyid_dest_result'>dest_result</span><span class='period'>.</span><span class='id identifier rubyid_success?'>success?</span> <span class='op'>?</span> <span class='id identifier rubyid_create_comment_tuples'>create_comment_tuples</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_result'>dest_result</span><span class='rparen'>)</span> <span class='op'>:</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
-  <span class='id identifier rubyid_dest_deduplicated'>dest_deduplicated</span> <span class='op'>=</span> <span class='id identifier rubyid_deduplicate_comment_sequences'>deduplicate_comment_sequences</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_tuples'>dest_tuples</span><span class='rparen'>)</span>
-
-  <span class='comment'># Now merge the deduplicated tuples by hash+type only (ignore line numbers)
-</span>  <span class='id identifier rubyid_seen_hash_type'>seen_hash_type</span> <span class='op'>=</span> <span class='const'>Set</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
-  <span class='id identifier rubyid_final_tuples'>final_tuples</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
-
-  <span class='comment'># Add all deduplicated src tuples
-</span>  <span class='id identifier rubyid_src_deduplicated'>src_deduplicated</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_tuple'>tuple</span><span class='op'>|</span>
-    <span class='id identifier rubyid_hash_val'>hash_val</span> <span class='op'>=</span> <span class='id identifier rubyid_tuple'>tuple</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span>
-    <span class='id identifier rubyid_type'>type</span> <span class='op'>=</span> <span class='id identifier rubyid_tuple'>tuple</span><span class='lbracket'>[</span><span class='int'>1</span><span class='rbracket'>]</span>
-    <span class='id identifier rubyid_key'>key</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='id identifier rubyid_hash_val'>hash_val</span><span class='comma'>,</span> <span class='id identifier rubyid_type'>type</span><span class='rbracket'>]</span>
-    <span class='kw'>unless</span> <span class='id identifier rubyid_seen_hash_type'>seen_hash_type</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_key'>key</span><span class='rparen'>)</span>
-      <span class='id identifier rubyid_final_tuples'>final_tuples</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_tuple'>tuple</span>
-      <span class='id identifier rubyid_seen_hash_type'>seen_hash_type</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_key'>key</span>
-    <span class='kw'>end</span>
-  <span class='kw'>end</span>
-
-  <span class='comment'># Add deduplicated dest tuples that don&#39;t duplicate src (by hash+type)
-</span>  <span class='id identifier rubyid_dest_deduplicated'>dest_deduplicated</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_tuple'>tuple</span><span class='op'>|</span>
-    <span class='id identifier rubyid_hash_val'>hash_val</span> <span class='op'>=</span> <span class='id identifier rubyid_tuple'>tuple</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span>
-    <span class='id identifier rubyid_type'>type</span> <span class='op'>=</span> <span class='id identifier rubyid_tuple'>tuple</span><span class='lbracket'>[</span><span class='int'>1</span><span class='rbracket'>]</span>
-    <span class='id identifier rubyid_key'>key</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='id identifier rubyid_hash_val'>hash_val</span><span class='comma'>,</span> <span class='id identifier rubyid_type'>type</span><span class='rbracket'>]</span>
-    <span class='kw'>unless</span> <span class='id identifier rubyid_seen_hash_type'>seen_hash_type</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_key'>key</span><span class='rparen'>)</span>
-      <span class='id identifier rubyid_final_tuples'>final_tuples</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_tuple'>tuple</span>
-      <span class='id identifier rubyid_seen_hash_type'>seen_hash_type</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_key'>key</span>
-    <span class='kw'>end</span>
-  <span class='kw'>end</span>
-
-  <span class='comment'># Extract magic and file-level comments from final merged tuples
-</span>  <span class='id identifier rubyid_magic_comments'>magic_comments</span> <span class='op'>=</span> <span class='id identifier rubyid_final_tuples'>final_tuples</span>
-    <span class='period'>.</span><span class='id identifier rubyid_select'>select</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_tuple'>tuple</span><span class='op'>|</span> <span class='id identifier rubyid_tuple'>tuple</span><span class='lbracket'>[</span><span class='int'>1</span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='symbol'>:magic</span> <span class='rbrace'>}</span>
-    <span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_tuple'>tuple</span><span class='op'>|</span> <span class='id identifier rubyid_tuple'>tuple</span><span class='lbracket'>[</span><span class='int'>2</span><span class='rbracket'>]</span> <span class='rbrace'>}</span>
-
-  <span class='id identifier rubyid_file_leading_comments'>file_leading_comments</span> <span class='op'>=</span> <span class='id identifier rubyid_final_tuples'>final_tuples</span>
-    <span class='period'>.</span><span class='id identifier rubyid_select'>select</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_tuple'>tuple</span><span class='op'>|</span> <span class='id identifier rubyid_tuple'>tuple</span><span class='lbracket'>[</span><span class='int'>1</span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='symbol'>:file_level</span> <span class='rbrace'>}</span>
-    <span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_tuple'>tuple</span><span class='op'>|</span> <span class='id identifier rubyid_tuple'>tuple</span><span class='lbracket'>[</span><span class='int'>2</span><span class='rbracket'>]</span> <span class='rbrace'>}</span>
-
-  <span class='id identifier rubyid_build_source_from_nodes'>build_source_from_nodes</span><span class='lparen'>(</span><span class='id identifier rubyid_merged_nodes'>merged_nodes</span><span class='comma'>,</span> <span class='label'>magic_comments:</span> <span class='id identifier rubyid_magic_comments'>magic_comments</span><span class='comma'>,</span> <span class='label'>file_leading_comments:</span> <span class='id identifier rubyid_file_leading_comments'>file_leading_comments</span><span class='rparen'>)</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="reminder_insertion_index-class_method">
-  
-    .<strong>reminder_insertion_index</strong>(content)  &#x21d2; <tt>Object</tt> 
-  
-
-  
-
-  
-</h3><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-106
-107
-108
-109
-110
-111
-112
-113
-114</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 106</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_reminder_insertion_index'>reminder_insertion_index</span><span class='lparen'>(</span><span class='id identifier rubyid_content'>content</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_cursor'>cursor</span> <span class='op'>=</span> <span class='int'>0</span>
-  <span class='id identifier rubyid_lines'>lines</span> <span class='op'>=</span> <span class='id identifier rubyid_content'>content</span><span class='period'>.</span><span class='id identifier rubyid_lines'>lines</span>
-  <span class='id identifier rubyid_lines'>lines</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_line'>line</span><span class='op'>|</span>
-    <span class='kw'>break</span> <span class='kw'>unless</span> <span class='id identifier rubyid_shebang?'>shebang?</span><span class='lparen'>(</span><span class='id identifier rubyid_line'>line</span><span class='rparen'>)</span> <span class='op'>||</span> <span class='id identifier rubyid_frozen_comment?'>frozen_comment?</span><span class='lparen'>(</span><span class='id identifier rubyid_line'>line</span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_cursor'>cursor</span> <span class='op'>+=</span> <span class='id identifier rubyid_line'>line</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span>
-  <span class='kw'>end</span>
-  <span class='id identifier rubyid_cursor'>cursor</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="reminder_present?-class_method">
-  
-    .<strong>reminder_present?</strong>(content)  &#x21d2; <tt>Boolean</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Boolean</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-102
-103
-104</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 102</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_reminder_present?'>reminder_present?</span><span class='lparen'>(</span><span class='id identifier rubyid_content'>content</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_content'>content</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="#FREEZE_REMINDER-constant" title="Kettle::Dev::SourceMerger::FREEZE_REMINDER (constant)">FREEZE_REMINDER</a></span></span><span class='period'>.</span><span class='id identifier rubyid_lines'>lines</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='rparen'>)</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="restore_custom_leading_comments-class_method">
-  
-    .<strong>restore_custom_leading_comments</strong>(dest_content, merged_content)  &#x21d2; <tt>Object</tt> 
-  
-
-  
-
-  
-</h3><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-592
-593
-594
-595
-596
-597
-598
-599
-600
-601
-602
-603
-604
-605
-606
-607
-608
-609
-610
-611
-612
-613
-614
-615
-616
-617
-618</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 592</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_restore_custom_leading_comments'>restore_custom_leading_comments</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_content'>dest_content</span><span class='comma'>,</span> <span class='id identifier rubyid_merged_content'>merged_content</span><span class='rparen'>)</span>
-  <span class='comment'># Extract and deduplicate leading comments from dest
-</span>  <span class='id identifier rubyid_dest_block'>dest_block</span> <span class='op'>=</span> <span class='id identifier rubyid_leading_comment_block'>leading_comment_block</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_content'>dest_content</span><span class='rparen'>)</span>
-  <span class='kw'>return</span> <span class='id identifier rubyid_merged_content'>merged_content</span> <span class='kw'>if</span> <span class='id identifier rubyid_dest_block'>dest_block</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
-
-  <span class='comment'># Parse and deduplicate the dest leading comments
-</span>  <span class='id identifier rubyid_dest_deduplicated'>dest_deduplicated</span> <span class='op'>=</span> <span class='id identifier rubyid_deduplicate_leading_comment_block'>deduplicate_leading_comment_block</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_block'>dest_block</span><span class='rparen'>)</span>
-  <span class='kw'>return</span> <span class='id identifier rubyid_merged_content'>merged_content</span> <span class='kw'>if</span> <span class='id identifier rubyid_dest_deduplicated'>dest_deduplicated</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
-
-  <span class='comment'># Get the merged content&#39;s leading comments
-</span>  <span class='id identifier rubyid_merged_leading'>merged_leading</span> <span class='op'>=</span> <span class='id identifier rubyid_leading_comment_block'>leading_comment_block</span><span class='lparen'>(</span><span class='id identifier rubyid_merged_content'>merged_content</span><span class='rparen'>)</span>
-
-  <span class='comment'># Parse both blocks to compare individual comments
-</span>  <span class='id identifier rubyid_dest_comments'>dest_comments</span> <span class='op'>=</span> <span class='id identifier rubyid_extract_comment_lines'>extract_comment_lines</span><span class='lparen'>(</span><span class='id identifier rubyid_dest_deduplicated'>dest_deduplicated</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_merged_comments'>merged_comments</span> <span class='op'>=</span> <span class='id identifier rubyid_extract_comment_lines'>extract_comment_lines</span><span class='lparen'>(</span><span class='id identifier rubyid_merged_leading'>merged_leading</span><span class='rparen'>)</span>
-
-  <span class='comment'># Find comments in dest that aren&#39;t in merged (by normalized text)
-</span>  <span class='id identifier rubyid_merged_set'>merged_set</span> <span class='op'>=</span> <span class='const'>Set</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_merged_comments'>merged_comments</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_c'>c</span><span class='op'>|</span> <span class='id identifier rubyid_normalize_comment'>normalize_comment</span><span class='lparen'>(</span><span class='id identifier rubyid_c'>c</span><span class='rparen'>)</span> <span class='rbrace'>}</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_unique_dest_comments'>unique_dest_comments</span> <span class='op'>=</span> <span class='id identifier rubyid_dest_comments'>dest_comments</span><span class='period'>.</span><span class='id identifier rubyid_reject'>reject</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_c'>c</span><span class='op'>|</span> <span class='id identifier rubyid_merged_set'>merged_set</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_normalize_comment'>normalize_comment</span><span class='lparen'>(</span><span class='id identifier rubyid_c'>c</span><span class='rparen'>)</span><span class='rparen'>)</span> <span class='rbrace'>}</span>
-
-  <span class='kw'>return</span> <span class='id identifier rubyid_merged_content'>merged_content</span> <span class='kw'>if</span> <span class='id identifier rubyid_unique_dest_comments'>unique_dest_comments</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
-
-  <span class='comment'># Add unique dest comments after the insertion point
-</span>  <span class='id identifier rubyid_insertion_index'>insertion_index</span> <span class='op'>=</span> <span class='id identifier rubyid_reminder_insertion_index'>reminder_insertion_index</span><span class='lparen'>(</span><span class='id identifier rubyid_merged_content'>merged_content</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_new_comments'>new_comments</span> <span class='op'>=</span> <span class='id identifier rubyid_unique_dest_comments'>unique_dest_comments</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span>
-  <span class='id identifier rubyid_merged_content'>merged_content</span><span class='period'>.</span><span class='id identifier rubyid_dup'>dup</span><span class='period'>.</span><span class='id identifier rubyid_insert'>insert</span><span class='lparen'>(</span><span class='id identifier rubyid_insertion_index'>insertion_index</span><span class='comma'>,</span> <span class='id identifier rubyid_new_comments'>new_comments</span><span class='rparen'>)</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="shebang?-class_method">
-  
-    .<strong>shebang?</strong>(line)  &#x21d2; <tt>Boolean</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Boolean</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-116
-117
-118</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 116</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_shebang?'>shebang?</span><span class='lparen'>(</span><span class='id identifier rubyid_line'>line</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_line'>line</span><span class='period'>.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>#!</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="warn_bug-class_method">
-  
-    .<strong>warn_bug</strong>(path, error)  &#x21d2; <tt>Object</tt> 
-  
-
-  
-
-  
-</h3><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-172
-173
-174
-175</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 172</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_warn_bug'>warn_bug</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='comma'>,</span> <span class='id identifier rubyid_error'>error</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>ERROR: kettle-dev templating failed for </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_path'>path</span><span class='embexpr_end'>}</span><span class='tstring_content'>: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_error'>error</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
-  <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Please file a bug at </span><span class='embexpr_beg'>#{</span><span class='const'><span class='object_link'><a href="#BUG_URL-constant" title="Kettle::Dev::SourceMerger::BUG_URL (constant)">BUG_URL</a></span></span><span class='embexpr_end'>}</span><span class='tstring_content'> with the file contents so we can improve the AST merger.</span><span class='tstring_end'>&quot;</span></span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-  </div>
-
-</div>
-
-      <div id="footer">
-  Generated on Fri Nov 28 20:48:17 2025 by
-  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.37 (ruby-3.4.7).
-</div>
-
-    </div>
-  </body>
-</html>
+ 

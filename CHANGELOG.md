@@ -20,6 +20,25 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [1.2.5] - 2025-11-28
+
+- TAG: [v1.2.5][1.2.5t]
+- COVERAGE: 93.53% -- 4726/5053 lines in 31 files
+- BRANCH COVERAGE: 76.62% -- 1924/2511 branches in 31 files
+- 69.89% documented
+
+### Added
+
 - Comprehensive newline normalization in templated Ruby files:
   - Magic comments (frozen_string_literal, encoding, etc.) always followed by single blank line
   - No more than one consecutive blank line anywhere in file
@@ -30,15 +49,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - Updated `FREEZE_REMINDER` constant to include blank line before and empty comment line after
 
-### Deprecated
-
-### Removed
-
 ### Fixed
 
 - Fixed `reminder_present?` to correctly detect freeze reminder when it has leading blank line
-
-### Security
 
 ## [1.2.4] - 2025-11-28
 
@@ -1532,7 +1545,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.2.4...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.2.5...HEAD
+[1.2.5]: https://github.com/kettle-rb/kettle-dev/compare/v1.2.4...v1.2.5
+[1.2.5t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.2.5
 [1.2.4]: https://github.com/kettle-rb/kettle-dev/compare/v1.2.3...v1.2.4
 [1.2.4t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.2.4
 [1.2.3]: https://github.com/kettle-rb/kettle-dev/compare/v1.2.2...v1.2.3
