@@ -20,13 +20,23 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- Comprehensive newline normalization in templated Ruby files:
+  - Magic comments (frozen_string_literal, encoding, etc.) always followed by single blank line
+  - No more than one consecutive blank line anywhere in file
+  - Single newline at end of file (no trailing blank lines)
+  - Freeze reminder block now includes blank line before and empty comment line after for better visual separation
+
 ### Changed
+
+- Updated `FREEZE_REMINDER` constant to include blank line before and empty comment line after
 
 ### Deprecated
 
 ### Removed
 
 ### Fixed
+
+- Fixed `reminder_present?` to correctly detect freeze reminder when it has leading blank line
 
 ### Security
 
@@ -45,7 +55,7 @@ Please file a bug if you notice a violation of semantic versioning.
   - Ensures truly idempotent behavior when running templating multiple times on the same file
   - Example: `frozen_string_literal` comments no longer multiply from 1→4→5→6 on repeated runs
 
-## [1.2.3] - 2025-11-28
+## [1.2.3] - 2025-11-28vari
 
 - TAG: [v1.2.3][1.2.3t]
 - COVERAGE: 93.43% -- 4681/5010 lines in 31 files

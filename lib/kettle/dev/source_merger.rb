@@ -17,10 +17,12 @@ module Kettle
       FREEZE_END = /#\s*kettle-dev:unfreeze/i
       FREEZE_BLOCK = Regexp.new("(#{FREEZE_START.source}).*?(#{FREEZE_END.source})", Regexp::IGNORECASE | Regexp::MULTILINE)
       FREEZE_REMINDER = <<~RUBY
+
         # To retain during kettle-dev templating:
         #     kettle-dev:freeze
         #     # ... your code
         #     kettle-dev:unfreeze
+        #
       RUBY
       BUG_URL = "https://github.com/kettle-rb/kettle-dev/issues"
 
@@ -60,6 +62,7 @@ module Kettle
           end
         content = merge_freeze_blocks(content, dest)
         content = restore_custom_leading_comments(dest, content)
+        content = normalize_newlines(content)
         ensure_trailing_newline(content)
       rescue StandardError => error
         warn_bug(path, error)
@@ -100,7 +103,11 @@ module Kettle
       end
 
       def reminder_present?(content)
-        content.include?(FREEZE_REMINDER.lines.first.strip)
+        # Skip the leading blank line in FREEZE_REMINDER to find the actual comment line
+        reminder_lines = FREEZE_REMINDER.lines.map(&:strip).reject(&:empty?)
+        return false if reminder_lines.empty?
+
+        content.include?(reminder_lines.first)
       end
 
       def reminder_insertion_index(content)
@@ -177,6 +184,60 @@ module Kettle
       def ensure_trailing_newline(text)
         return "" if text.nil?
         text.end_with?("\n") ? text : text + "\n"
+      end
+
+      # Normalize newlines in the content according to templating rules:
+      # 1. Magic comments followed by single blank line
+      # 2. No more than single blank line anywhere
+      # 3. Single blank line at end of file (handled by ensure_trailing_newline)
+      #
+      # @param content [String] Ruby source content
+      # @return [String] Content with normalized newlines
+      # @api private
+      def normalize_newlines(content)
+        return content if content.nil? || content.empty?
+
+        lines = content.lines(chomp: true)
+        result = []
+        i = 0
+
+        # Process magic comments (shebang and frozen_string_literal)
+        while i < lines.length && (shebang?(lines[i] + "\n") || frozen_comment?(lines[i] + "\n"))
+          result << lines[i]
+          i += 1
+        end
+
+        # Ensure single blank line after magic comments if there are any and more content follows
+        if result.any? && i < lines.length
+          result << ""
+          # Skip any existing blank lines
+          i += 1 while i < lines.length && lines[i].strip.empty?
+        end
+
+        # Process remaining lines, collapsing multiple blank lines to single
+        prev_blank = false
+        while i < lines.length
+          line = lines[i]
+          is_blank = line.strip.empty?
+
+          if is_blank
+            # Only add blank line if previous wasn't blank
+            unless prev_blank
+              result << ""
+              prev_blank = true
+            end
+          else
+            result << line
+            prev_blank = false
+          end
+
+          i += 1
+        end
+
+        # Remove trailing blank lines (ensure_trailing_newline will add exactly one newline)
+        result.pop while result.any? && result.last.strip.empty?
+
+        result.join("\n") + "\n"
       end
 
       def apply_append(src_content, dest_content)
