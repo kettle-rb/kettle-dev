@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-
 RSpec.describe "Gemfile parsing idempotency" do
   describe "SourceMerger idempotency with duplicate sections" do
     let(:initial_gemfile_with_duplicates) do
@@ -58,7 +57,7 @@ RSpec.describe "Gemfile parsing idempotency" do
         strategy: :skip,
         src: initial_gemfile_with_duplicates,
         dest: "",
-        path: path
+        path: path,
       )
 
       # Second run - should be idempotent (no changes)
@@ -66,7 +65,7 @@ RSpec.describe "Gemfile parsing idempotency" do
         strategy: :skip,
         src: first_result,
         dest: "",
-        path: path
+        path: path,
       )
 
       # Third run for good measure
@@ -74,7 +73,7 @@ RSpec.describe "Gemfile parsing idempotency" do
         strategy: :skip,
         src: second_result,
         dest: "",
-        path: path
+        path: path,
       )
 
       # Verify results are stable after first consolidation
@@ -82,11 +81,11 @@ RSpec.describe "Gemfile parsing idempotency" do
       expect(third_result).to eq(second_result), "Third run should not change the file"
 
       # Verify duplicate frozen_string_literal comments are consolidated
-      frozen_literal_count = first_result.scan(/# frozen_string_literal: true/).count
+      frozen_literal_count = first_result.scan("# frozen_string_literal: true").count
       expect(frozen_literal_count).to eq(1), "Should have exactly one frozen_string_literal comment"
 
       # Verify duplicate comment sections are consolidated
-      coverage_comment_count = first_result.scan(/# We run code coverage on the latest version of Ruby only\./).count
+      coverage_comment_count = first_result.scan("# We run code coverage on the latest version of Ruby only.").count
       expect(coverage_comment_count).to eq(1), "Should have exactly one coverage comment"
     end
 
@@ -98,21 +97,21 @@ RSpec.describe "Gemfile parsing idempotency" do
         strategy: :merge,
         src: initial_gemfile_with_duplicates,
         dest: "",
-        path: path
+        path: path,
       )
 
       second_merge = Kettle::Dev::SourceMerger.apply(
         strategy: :merge,
         src: first_merge,
         dest: first_merge,
-        path: path
+        path: path,
       )
 
       third_merge = Kettle::Dev::SourceMerger.apply(
         strategy: :merge,
         src: second_merge,
         dest: second_merge,
-        path: path
+        path: path,
       )
 
       # Results should stabilize
@@ -134,10 +133,10 @@ RSpec.describe "Gemfile parsing idempotency" do
         strategy: :skip,
         src: content,
         dest: "",
-        path: path
+        path: path,
       )
 
-      frozen_count = result.scan(/# frozen_string_literal: true/).count
+      frozen_count = result.scan("# frozen_string_literal: true").count
       expect(frozen_count).to eq(1), "Should consolidate to single frozen_string_literal comment"
     end
 
@@ -160,14 +159,14 @@ RSpec.describe "Gemfile parsing idempotency" do
         strategy: :skip,
         src: content_with_whitespace_variations,
         dest: "",
-        path: path
+        path: path,
       )
 
       # Should only have one occurrence of the comment block
-      important_comment_count = result.scan(/# Important comment/).count
+      important_comment_count = result.scan("# Important comment").count
       expect(important_comment_count).to eq(1), "Should consolidate duplicate comment blocks"
 
-      second_line_count = result.scan(/# Second line/).count
+      second_line_count = result.scan("# Second line").count
       expect(second_line_count).to eq(1), "Should consolidate second line of comment block"
     end
 
@@ -193,10 +192,10 @@ RSpec.describe "Gemfile parsing idempotency" do
         strategy: :skip,
         src: content,
         dest: "",
-        path: path
+        path: path,
       )
 
-      reminder_count = result.scan(/# To retain during kettle-dev templating:/).count
+      reminder_count = result.scan("# To retain during kettle-dev templating:").count
       expect(reminder_count).to eq(1), "Should have exactly one freeze reminder"
     end
 
@@ -226,15 +225,15 @@ RSpec.describe "Gemfile parsing idempotency" do
         strategy: :skip,
         src: complex_content,
         dest: "",
-        path: path
+        path: path,
       )
 
       # Frozen literal should be consolidated
-      frozen_count = result.scan(/# frozen_string_literal: true/).count
+      frozen_count = result.scan("# frozen_string_literal: true").count
       expect(frozen_count).to eq(1)
 
       # Section A comment appears before each gem (leading comments are preserved per statement)
-      section_a_count = result.scan(/# Section A/).count
+      section_a_count = result.scan("# Section A").count
       expect(section_a_count).to eq(3), "Leading comments for each statement should be preserved"
 
       # All gems should still be present
@@ -267,14 +266,14 @@ RSpec.describe "Gemfile parsing idempotency" do
         strategy: :skip,
         src: content,
         dest: "",
-        path: path
+        path: path,
       )
 
       # Leading comments are attached to their statements and should NOT be deduplicated
-      expect(result.scan(/# This comment describes foo/).count).to eq(2),
+      expect(result.scan("# This comment describes foo").count).to eq(2),
         "Each statement keeps its own leading comment even if text is identical"
 
-      expect(result.scan(/# Common comment/).count).to eq(2),
+      expect(result.scan("# Common comment").count).to eq(2),
         "Multi-line leading comments are preserved per statement"
 
       # All gems should be present
@@ -306,7 +305,7 @@ RSpec.describe "Gemfile parsing idempotency" do
         strategy: :merge,
         src: content,
         dest: "",
-        path: path
+        path: path,
       )
 
       # Duplicate statements should be deduplicated (only first occurrence kept)
@@ -317,14 +316,14 @@ RSpec.describe "Gemfile parsing idempotency" do
         "Duplicate gem statements should be deduplicated"
 
       # Only the first occurrence's comment should remain
-      expect(result).to include('# This is the first foo'),
+      expect(result).to include("# This is the first foo"),
         "First occurrence's comment should be preserved"
-      expect(result).not_to include('# This is the second foo'),
+      expect(result).not_to include("# This is the second foo"),
         "Duplicate statement's comment should be removed with the statement"
 
-      expect(result).to include('# This is bar'),
+      expect(result).to include("# This is bar"),
         "First occurrence's comment should be preserved"
-      expect(result).not_to include('# Another bar comment'),
+      expect(result).not_to include("# Another bar comment"),
         "Duplicate statement's comment should be removed with the statement"
     end
 
@@ -344,7 +343,7 @@ RSpec.describe "Gemfile parsing idempotency" do
         strategy: :skip,
         src: content,
         dest: "",
-        path: path
+        path: path,
       )
 
       # Skip strategy only normalizes and deduplicates file-level comments
@@ -352,8 +351,8 @@ RSpec.describe "Gemfile parsing idempotency" do
       expect(result.scan(/gem ["']foo["']/).count).to eq(2),
         "Skip strategy preserves all statements, even duplicates"
 
-      expect(result).to include('# Comment for first foo')
-      expect(result).to include('# Comment for second foo')
+      expect(result).to include("# Comment for first foo")
+      expect(result).to include("# Comment for second foo")
     end
 
     it "append strategy deduplicates duplicate statements from source" do
@@ -380,7 +379,7 @@ RSpec.describe "Gemfile parsing idempotency" do
         strategy: :append,
         src: src_with_dupes,
         dest: dest,
-        path: path
+        path: path,
       )
 
       # Should have deduplicated foo in src, then appended to dest
@@ -391,8 +390,8 @@ RSpec.describe "Gemfile parsing idempotency" do
       expect(result.scan(/gem ["']baz["']/).count).to eq(1)
 
       # Only first foo's comment should remain
-      expect(result).to include('# First foo')
-      expect(result).not_to include('# Second foo (duplicate)')
+      expect(result).to include("# First foo")
+      expect(result).not_to include("# Second foo (duplicate)")
     end
   end
 
@@ -456,7 +455,7 @@ RSpec.describe "Gemfile parsing idempotency" do
 
       # Note: PrismGemfile doesn't handle comment deduplication - that's SourceMerger's job
       # But we should verify it doesn't make things worse
-      frozen_count = result.scan(/# frozen_string_literal: true/).count
+      frozen_count = result.scan("# frozen_string_literal: true").count
       expect(frozen_count).to be <= 2, "Should not add more frozen_string_literal comments than input"
     end
   end
@@ -485,7 +484,7 @@ RSpec.describe "Gemfile parsing idempotency" do
         strategy: :merge,
         src: template_source,
         dest: "",
-        path: path
+        path: path,
       )
 
       # Simulate second template run (file already exists)
@@ -493,7 +492,7 @@ RSpec.describe "Gemfile parsing idempotency" do
         strategy: :merge,
         src: template_source,
         dest: first_run,
-        path: path
+        path: path,
       )
 
       # Simulate third template run
@@ -501,7 +500,7 @@ RSpec.describe "Gemfile parsing idempotency" do
         strategy: :merge,
         src: template_source,
         dest: second_run,
-        path: path
+        path: path,
       )
 
       # Simulate fourth template run
@@ -509,7 +508,7 @@ RSpec.describe "Gemfile parsing idempotency" do
         strategy: :merge,
         src: template_source,
         dest: third_run,
-        path: path
+        path: path,
       )
 
       # All runs after the first should produce identical output
@@ -518,15 +517,14 @@ RSpec.describe "Gemfile parsing idempotency" do
       expect(fourth_run).to eq(third_run), "Fourth template run should not modify stable file"
 
       # Verify no accumulation of duplicate content
-      frozen_count = fourth_run.scan(/# frozen_string_literal: true/).count
+      frozen_count = fourth_run.scan("# frozen_string_literal: true").count
       expect(frozen_count).to eq(1), "Should maintain single frozen_string_literal after multiple runs"
 
-      coverage_count = fourth_run.scan(/# Coverage/).count
+      coverage_count = fourth_run.scan("# Coverage").count
       expect(coverage_count).to eq(1), "Should maintain single Coverage comment after multiple runs"
 
-      reminder_count = fourth_run.scan(/# To retain during kettle-dev templating:/).count
+      reminder_count = fourth_run.scan("# To retain during kettle-dev templating:").count
       expect(reminder_count).to eq(1), "Should maintain single reminder block after multiple runs"
     end
   end
 end
-
