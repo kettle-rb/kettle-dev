@@ -28,6 +28,12 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Fixed `SourceMerger` conditional block duplication during merge operations
+  - `node_signature` now identifies conditional nodes (if/unless/case) by their predicate only
+  - Previously used full source text, causing duplicate blocks when template updates conditional bodies
+  - Example: if ENV["FOO"] blocks with different bodies now correctly merge instead of duplicating
+  - Prevents `bin/kettle-dev-setup` from creating duplicate if/else blocks in gemfiles
+  - Added comprehensive specs for conditional merging behavior and idempotency
 - Fixed `PrismGemspec.replace_gemspec_fields` to correctly handle multi-byte UTF-8 characters (e.g., emojis)
   - Prism uses byte offsets, not character offsets, when parsing Ruby code
   - Changed string slicing from `String#[]` to `String#byteslice` for all offset-based operations

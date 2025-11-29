@@ -624,6 +624,24 @@ module Kettle
         lines.join("\n")
       end
 
+      # Generate a signature for a node to determine if two nodes should be considered "the same"
+      # during merge operations. The signature is used to:
+      # 1. Identify duplicate nodes in append mode (skip adding if already present)
+      # 2. Match nodes for replacement in merge mode (replace dest with src when signatures match)
+      #
+      # Signature strategies by node type:
+      # - gem/source calls: Use method name + first argument (e.g., [:send, :gem, "foo"])
+      #   This allows merging/replacing gem declarations with same name but different versions
+      # - Block calls: Use method name + first argument + full source for non-standard blocks
+      #   Special cases: Gem::Specification.new, task, git_source use simpler signatures
+      # - Conditionals (if/unless/case): Use predicate/condition only, NOT full source
+      #   This prevents duplication when template updates conditional body but keeps same condition
+      #   Example: if ENV["FOO"] blocks with different bodies are treated as same statement
+      # - Other nodes: Use class name + full source (fallback for unhandled types)
+      #
+      # @param node [Prism::Node] AST node to generate signature for
+      # @return [Array] Signature array used as hash key for node identity
+      # @api private
       def node_signature(node)
         return [:nil] unless node
 
@@ -651,8 +669,28 @@ module Kettle
           else
             [:send, method_name, node.slice]
           end
+        when Prism::IfNode
+          # For if/elsif/else nodes, create signature based ONLY on the predicate (condition).
+          # This is critical: two if blocks with the same condition but different bodies
+          # should be treated as the same statement, allowing the template to update the body.
+          # Without this, we get duplicate if blocks when the template differs from destination.
+          # Example: Template has 'ENV["HOME"] || Dir.home', dest has 'ENV["HOME"]' ->
+          #          both should match and dest body should be replaced, not duplicated.
+          predicate_signature = node.predicate ? node.predicate.slice : nil
+          [:if, predicate_signature]
+        when Prism::UnlessNode
+          # Similar logic to IfNode - match by condition only
+          predicate_signature = node.predicate ? node.predicate.slice : nil
+          [:unless, predicate_signature]
+        when Prism::CaseNode
+          # For case statements, use the predicate/subject to match
+          # Allows template to update case branches while matching on the case expression
+          predicate_signature = node.predicate ? node.predicate.slice : nil
+          [:case, predicate_signature]
         else
-          # Other node types
+          # Other node types - use full source as last resort
+          # This may cause issues with nodes that should match by structure rather than content
+          # Future enhancement: add specific handlers for while/until/for loops, class/module defs, etc.
           [node.class.name.split("::").last.to_sym, node.slice]
         end
       end
