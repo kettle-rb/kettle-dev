@@ -182,13 +182,26 @@ RSpec.describe "Gemspec Templating Integration" do
   end
 
   describe "emoji extraction from README" do
-    # This will test the logic for extracting emoji from README.md H1 heading
-    # and using it in summary/description
-
     it "uses emoji from README H1 if available" do
-      # This test documents expected future behavior
-      # For now, we'll skip it since the implementation doesn't exist yet
-      skip "Emoji extraction from README not yet implemented"
+      readme = <<~MD
+        # 🍲 Kettle Soup Cover
+
+        A test project.
+      MD
+
+      emoji = Kettle::Dev::PrismGemspec.extract_readme_h1_emoji(readme)
+      expect(emoji).to eq("🍲")
+    end
+
+    it "returns nil when README has no emoji" do
+      readme = <<~MD
+        # Project Without Emoji
+
+        Description.
+      MD
+
+      emoji = Kettle::Dev::PrismGemspec.extract_readme_h1_emoji(readme)
+      expect(emoji).to be_nil
     end
   end
 

@@ -28,6 +28,14 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Fixed `PrismGemspec.replace_gemspec_fields` to correctly handle multi-byte UTF-8 characters (e.g., emojis)
+  - Prism uses byte offsets, not character offsets, when parsing Ruby code
+  - Changed string slicing from `String#[]` to `String#byteslice` for all offset-based operations
+  - Added validation to use `String#bytesize` instead of `String#length` for offset bounds checking
+  - Prevents `TypeError: no implicit conversion of nil into String` when gemspecs contain emojis
+  - Ensures gemspec field carryover works correctly with emoji in summary/description fields
+  - Enhanced error reporting to show backtraces when debug mode is enabled
+
 ### Security
 
 ## [1.2.5] - 2025-11-28

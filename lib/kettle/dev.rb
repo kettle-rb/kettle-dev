@@ -89,6 +89,7 @@ module Kettle
 
         ctx = context ? context.to_s : "KETTLE-DEV-RESCUE"
         Kernel.warn("[#{ctx}] #{error.class}: #{error.message}")
+        Kernel.warn(error.backtrace.first(5).join("\n")) if error.respond_to?(:backtrace) && error.backtrace
       rescue StandardError
         # never raise from debug logging
       end

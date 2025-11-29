@@ -15,6 +15,102 @@ module Kettle
         Kettle::Dev.debug_error(error, context)
       end
 
+      # Extract leading emoji from text using Unicode grapheme clusters
+      # @param text [String, nil] Text to extract emoji from
+      # @return [String, nil] The first emoji grapheme cluster, or nil if none found
+      def extract_leading_emoji(text)
+        return nil unless text && text.respond_to?(:scan)
+        return nil if text.empty?
+
+        # Get first grapheme cluster
+        first = text.scan(/\X/u).first
+        return nil unless first
+
+        # Check if it's an emoji using Unicode emoji property
+        begin
+          emoji_re = Kettle::EmojiRegex::REGEX
+          first if first.match?(/\A#{emoji_re.source}/u)
+        rescue StandardError => e
+          debug_error(e, __method__)
+          # Fallback: check if it's non-ASCII (simple heuristic)
+          first if first.match?(/[^\x00-\x7F]/)
+        end
+      end
+
+      # Extract emoji from README H1 heading
+      # @param readme_content [String, nil] README content
+      # @return [String, nil] The emoji from the first H1, or nil if none found
+      def extract_readme_h1_emoji(readme_content)
+        return nil unless readme_content && !readme_content.empty?
+
+        lines = readme_content.lines
+        h1_line = lines.find { |ln| ln =~ /^#\s+/ }
+        return nil unless h1_line
+
+        # Extract text after "# "
+        text = h1_line.sub(/^#\s+/, "")
+        extract_leading_emoji(text)
+      end
+
+      # Extract emoji from gemspec summary or description
+      # @param gemspec_content [String] Gemspec content
+      # @return [String, nil] The emoji from summary/description, or nil if none found
+      def extract_gemspec_emoji(gemspec_content)
+        return nil unless gemspec_content
+
+        # Try to extract from summary first, then description
+        if gemspec_content =~ /spec\.summary\s*=\s*["']([^"']+)["']/
+          emoji = extract_leading_emoji(Regexp.last_match(1))
+          return emoji if emoji
+        end
+
+        if gemspec_content =~ /spec\.description\s*=\s*["']([^"']+)["']/
+          emoji = extract_leading_emoji(Regexp.last_match(1))
+          return emoji if emoji
+        end
+
+        nil
+      end
+
+      # Synchronize README H1 emoji with gemspec emoji
+      # @param readme_content [String] README content
+      # @param gemspec_content [String] Gemspec content
+      # @return [String] Updated README content
+      def sync_readme_h1_emoji(readme_content:, gemspec_content:)
+        return readme_content unless readme_content && gemspec_content
+
+        gemspec_emoji = extract_gemspec_emoji(gemspec_content)
+        return readme_content unless gemspec_emoji
+
+        lines = readme_content.lines
+        h1_idx = lines.index { |ln| ln =~ /^#\s+/ }
+        return readme_content unless h1_idx
+
+        h1_line = lines[h1_idx]
+        text = h1_line.sub(/^#\s+/, "")
+
+        # Remove any existing leading emoji(s)
+        begin
+          emoji_re = Kettle::EmojiRegex::REGEX
+          while text =~ /\A#{emoji_re.source}/u
+            cluster = text[/\A\X/u]
+            text = text[cluster.length..-1].to_s
+          end
+          text = text.sub(/\A\s+/, "")
+        rescue StandardError => e
+          debug_error(e, __method__)
+          # Simple fallback
+          text = text.sub(/\A[^\x00-\x7F]+\s*/, "")
+        end
+
+        # Build new H1 with gemspec emoji
+        new_h1 = "# #{gemspec_emoji} #{text}"
+        new_h1 += "\n" unless new_h1.end_with?("\n")
+
+        lines[h1_idx] = new_h1
+        lines.join
+      end
+
       # Replace scalar or array assignments inside a Gem::Specification.new block.
       # `replacements` is a hash mapping symbol field names to string or array values.
       # Operates only inside the Gem::Specification block to avoid accidental matches.
@@ -91,6 +187,8 @@ module Kettle
         replacements.each do |field_sym, value|
           # Skip special internal keys that are not actual gemspec fields
           next if field_sym == :_remove_self_dependency
+          # Skip nil values
+          next if value.nil?
 
           field = field_sym.to_s
 
@@ -204,7 +302,7 @@ module Kettle
         new_body = body_src.dup
         edits.each do |offset, length, replacement|
           # Validate offset, length, and replacement
-          next unless offset && length && offset >= 0 && length >= 0
+          next if offset.nil? || length.nil? || offset < 0 || length < 0
           next if offset > new_body.length
           next if replacement.nil?
 
@@ -217,11 +315,36 @@ module Kettle
         body_start = body_node.location.start_offset
         body_end = body_node.location.end_offset
 
-        # Build the new gemspec call
-        new_call = content[call_start...body_start] + new_body + content[body_end...call_end]
+        # Validate all offsets before string operations
+        if call_start.nil? || call_end.nil? || body_start.nil? || body_end.nil?
+          debug_error(StandardError.new("Nil offset detected: call_start=#{call_start.inspect}, call_end=#{call_end.inspect}, body_start=#{body_start.inspect}, body_end=#{body_end.inspect}"), __method__)
+          return content
+        end
 
-        # Replace in original content
-        content[0...call_start] + new_call + content[call_end..-1]
+        # Validate offset relationships
+        if call_start > call_end || body_start > body_end || call_start > body_start || body_end > call_end
+          debug_error(StandardError.new("Invalid offset relationships: call[#{call_start}...#{call_end}], body[#{body_start}...#{body_end}]"), __method__)
+          return content
+        end
+
+        # Validate content length (Prism uses byte offsets, not character offsets)
+        content_length = content.bytesize
+        if call_end > content_length || body_end > content_length
+          debug_error(StandardError.new("Offsets exceed content bytesize (#{content_length}): call_end=#{call_end}, body_end=#{body_end}, char_length=#{content.length}"), __method__)
+          debug_error(StandardError.new("Content snippet: #{content[-50..-1].inspect}"), __method__)
+          return content
+        end
+
+        # Build the new gemspec call with safe string slicing using byte offsets
+        # Note: We need to use byteslice for byte offsets, not regular slicing
+        prefix = content.byteslice(call_start...body_start) || ""
+        suffix = content.byteslice(body_end...call_end) || ""
+        new_call = prefix + new_body + suffix
+
+        # Replace in original content using byte offsets
+        result_prefix = content.byteslice(0...call_start) || ""
+        result_suffix = content.byteslice(call_end..-1) || ""
+        result_prefix + new_call + result_suffix
       rescue StandardError => e
         debug_error(e, __method__)
         content

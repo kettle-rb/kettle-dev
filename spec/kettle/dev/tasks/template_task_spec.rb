@@ -3037,13 +3037,13 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
   end
 
   # Consolidated from template_task_carryover_spec.rb and template_task_env_spec.rb
-  describe "carryover/env behaviors (part 2)" do
+  describe "gemspec field preservation" do
     let(:helpers) { Kettle::Dev::TemplateHelpers }
 
-    describe "carryover of gemspec fields (part 2)" do
+    describe "when applying template to existing gemspec" do
       before { stub_env("allowed" => "true") }
 
-      it "carries over key fields from original gemspec when overwriting with example (after replacements)" do
+      it "preserves original project's gemspec field values after template replacements" do
         Dir.mktmpdir do |gem_root|
           Dir.mktmpdir do |project_root|
             File.write(File.join(gem_root, "kettle-dev.gemspec.example"), <<~GEMSPEC)
