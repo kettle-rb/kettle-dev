@@ -28,13 +28,22 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [1.2.4] - 2025-11-28
+
+- TAG: [v1.2.4][1.2.4t]
+- COVERAGE: 93.53% -- 4701/5026 lines in 31 files
+- BRANCH COVERAGE: 76.61% -- 1913/2497 branches in 31 files
+- 69.78% documented
+
+### Fixed
+
 - Fixed comment deduplication in `restore_custom_leading_comments` to prevent accumulation across multiple template runs
   - Comments from destination are now deduplicated before being merged back into result
   - Fixes issue where `:replace` strategy (used by `kettle-dev-setup --force`) would accumulate duplicate comments
   - Ensures truly idempotent behavior when running templating multiple times on the same file
   - Example: `frozen_string_literal` comments no longer multiply from 1→4→5→6 on repeated runs
-
-### Security
 
 ## [1.2.3] - 2025-11-28
 
@@ -1513,7 +1522,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.2.3...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.2.4...HEAD
+[1.2.4]: https://github.com/kettle-rb/kettle-dev/compare/v1.2.3...v1.2.4
+[1.2.4t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.2.4
 [1.2.3]: https://github.com/kettle-rb/kettle-dev/compare/v1.2.2...v1.2.3
 [1.2.3t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.2.3
 [1.2.2]: https://github.com/kettle-rb/kettle-dev/compare/v1.2.1...v1.2.2

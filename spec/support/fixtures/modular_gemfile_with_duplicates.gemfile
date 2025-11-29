@@ -1,7 +1,4 @@
 # frozen_string_literal: true
-# frozen_string_literal: true
-# frozen_string_literal: true
-# frozen_string_literal: true
 
 # We run code coverage on the latest version of Ruby only.
 
@@ -12,7 +9,6 @@
 #     # ... your code
 #     kettle-dev:unfreeze
 
-
 # We run code coverage on the latest version of Ruby only.
 
 # Coverage
@@ -22,11 +18,9 @@
 #     # ... your code
 #     kettle-dev:unfreeze
 
-
 # We run code coverage on the latest version of Ruby only.
 
 # Coverage
-
 
 # To retain during kettle-dev templating:
 #     kettle-dev:freeze
@@ -34,5 +28,3 @@
 #     kettle-dev:unfreeze
 # We run code coverage on the latest version of Ruby only.
 # Coverage
-
-

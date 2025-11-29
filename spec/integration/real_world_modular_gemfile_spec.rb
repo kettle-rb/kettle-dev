@@ -25,7 +25,7 @@ RSpec.describe "Real-world modular gemfile deduplication" do
         strategy: :replace,
         src: template_source_content,
         dest: fixture_content,
-        path: "gemfiles/modular/coverage.gemfile"
+        path: "gemfiles/modular/coverage.gemfile",
       )
 
       # Should have exactly 1 frozen_string_literal
@@ -41,7 +41,7 @@ RSpec.describe "Real-world modular gemfile deduplication" do
         strategy: :replace,
         src: template_source_content,
         dest: result,
-        path: "gemfiles/modular/coverage.gemfile"
+        path: "gemfiles/modular/coverage.gemfile",
       )
 
       expect(second_result).to eq(result), "Second run should produce identical output"
@@ -107,7 +107,7 @@ RSpec.describe "Real-world modular gemfile deduplication" do
         strategy: :replace,
         src: template,
         dest: starting_dest,
-        path: "gemfiles/modular/coverage.gemfile"
+        path: "gemfiles/modular/coverage.gemfile",
       )
 
       frozen_count = first_run.scan("# frozen_string_literal: true").count
@@ -118,7 +118,7 @@ RSpec.describe "Real-world modular gemfile deduplication" do
         strategy: :replace,
         src: template,
         dest: first_run,
-        path: "gemfiles/modular/coverage.gemfile"
+        path: "gemfiles/modular/coverage.gemfile",
       )
 
       frozen_count_2 = second_run.scan("# frozen_string_literal: true").count
@@ -129,4 +129,3 @@ RSpec.describe "Real-world modular gemfile deduplication" do
     end
   end
 end
-
