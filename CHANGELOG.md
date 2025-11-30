@@ -28,6 +28,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Fixed `PrismGemspec.replace_gemspec_fields` block parameter extraction to use Prism AST
+  - **CRITICAL**: Was using regex fallback that incorrectly captured entire block body as parameter name
+  - Removed buggy regex fallback in favor of pure Prism AST traversal
+  - Now properly extracts block parameter from Prism::BlockParametersNode → Prism::ParametersNode → Prism::RequiredParameterNode
 - Fixed `PrismGemspec.replace_gemspec_fields` insert offset calculation for emoji-containing gemspecs
   - **CRITICAL**: Was using character length (`String#length`) instead of byte length (`String#bytesize`) to calculate insert offset
   - When gemspecs contain multi-byte UTF-8 characters (emojis like 🍲), character length != byte length

@@ -127,29 +127,50 @@ module Kettle
 
         call_src = gemspec_call.slice
 
-        # Try to detect block parameter name (e.g., |spec|)
+        # Extract block parameter name from Prism AST (e.g., |spec|)
         blk_param = nil
-        begin
-          if gemspec_call.block && gemspec_call.block.params
-            # Attempt a few defensive ways to extract a param name
-            if gemspec_call.block.params.respond_to?(:parameters) && gemspec_call.block.params.parameters.respond_to?(:first)
-              p = gemspec_call.block.params.parameters.first
-              blk_param = p.name.to_s if p.respond_to?(:name)
-            elsif gemspec_call.block.params.respond_to?(:first)
-              p = gemspec_call.block.params.first
-              blk_param = p.name.to_s if p && p.respond_to?(:name)
+        if gemspec_call.block && gemspec_call.block.parameters
+          # Prism::BlockNode has a parameters property which is a Prism::BlockParametersNode
+          # BlockParametersNode has a parameters property which is a Prism::ParametersNode
+          # ParametersNode has a requireds array containing Prism::RequiredParameterNode objects
+          params_node = gemspec_call.block.parameters
+          Kettle::Dev.debug_log("PrismGemspec params_node class: #{params_node.class.name}")
+
+          if params_node.respond_to?(:parameters) && params_node.parameters
+            inner_params = params_node.parameters
+            Kettle::Dev.debug_log("PrismGemspec inner_params class: #{inner_params.class.name}")
+
+            if inner_params.respond_to?(:requireds) && inner_params.requireds && inner_params.requireds.any?
+              first_param = inner_params.requireds.first
+              Kettle::Dev.debug_log("PrismGemspec first_param class: #{first_param.class.name}")
+
+              # RequiredParameterNode has a name property that's a Symbol
+              if first_param.respond_to?(:name)
+                param_name = first_param.name
+                Kettle::Dev.debug_log("PrismGemspec param_name: #{param_name.inspect} (class: #{param_name.class.name})")
+                blk_param = param_name.to_s if param_name
+              end
             end
           end
-        rescue StandardError
-          blk_param = nil
         end
 
-        # Fallback to crude parse of the call_src header
-        unless blk_param && !blk_param.to_s.empty?
-          hdr_m = call_src.match(/do\b[^\n]*\|([^|]+)\|/m)
-          blk_param = (hdr_m && hdr_m[1]) ? hdr_m[1].strip.split(/,\s*/).first : "spec"
-        end
+        Kettle::Dev.debug_log("PrismGemspec blk_param after Prism extraction: #{blk_param.inspect}")
+
+        # FALLBACK DISABLED - We should be able to extract from Prism AST
+        # # Fallback to crude parse of the call_src header
+        # unless blk_param && !blk_param.to_s.empty?
+        #   Kettle::Dev.debug_log("PrismGemspec call_src for regex: #{call_src[0..200].inspect}")
+        #   hdr_m = call_src.match(/do\b[^\n]*\|([^|]+)\|/m)
+        #   Kettle::Dev.debug_log("PrismGemspec regex match: #{hdr_m.inspect}")
+        #   Kettle::Dev.debug_log("PrismGemspec regex capture [1]: #{hdr_m[1].inspect[0..100] if hdr_m}")
+        #   blk_param = (hdr_m && hdr_m[1]) ? hdr_m[1].strip.split(/,\s*/).first : "spec"
+        #   Kettle::Dev.debug_log("PrismGemspec blk_param after fallback regex: #{blk_param.inspect[0..100]}")
+        # end
+
+        # Default to "spec" if extraction failed
         blk_param = "spec" if blk_param.nil? || blk_param.empty?
+
+        Kettle::Dev.debug_log("PrismGemspec final blk_param: #{blk_param.inspect}")
 
         # Extract AST-level statements inside the block body when available
         body_node = gemspec_call.block&.body
@@ -198,11 +219,22 @@ module Kettle
             begin
               recv = n.receiver
               recv_name = recv ? recv.slice.strip : nil
-              recv_name && recv_name.end_with?(blk_param) && n.name.to_s.start_with?(field)
+              matches = recv_name && recv_name.end_with?(blk_param) && n.name.to_s.start_with?(field)
+
+              if matches
+                Kettle::Dev.debug_log("PrismGemspec found_node for #{field}:")
+                Kettle::Dev.debug_log("  recv_name=#{recv_name.inspect}")
+                Kettle::Dev.debug_log("  n.name=#{n.name.inspect}")
+                Kettle::Dev.debug_log("  n.slice[0..100]=#{n.slice[0..100].inspect}")
+              end
+
+              matches
             rescue StandardError
               false
             end
           end
+
+          Kettle::Dev.debug_log("PrismGemspec processing field #{field}: found_node=#{found_node ? 'YES' : 'NO'}")
 
           if found_node
             # Extract existing value to check if we should skip replacement
@@ -259,6 +291,12 @@ module Kettle
             end
 
             insert_line = "  #{blk_param}.#{field} = #{build_literal.call(value)}\n"
+
+            Kettle::Dev.debug_log("PrismGemspec insert for #{field}:")
+            Kettle::Dev.debug_log("  blk_param=#{blk_param.inspect}, field=#{field.inspect}")
+            Kettle::Dev.debug_log("  value=#{value.inspect[0..100]}")
+            Kettle::Dev.debug_log("  insert_line=#{insert_line.inspect[0..200]}")
+
             if version_node
               # Insert after version node
               insert_offset = version_node.location.end_offset - body_node.location.start_offset
@@ -268,6 +306,9 @@ module Kettle
               # CRITICAL: Must use bytesize, not length, for byte-offset calculations!
               # body_src may contain multi-byte UTF-8 characters (emojis), making length != bytesize
               insert_offset = body_src.rstrip.bytesize
+
+              Kettle::Dev.debug_log("  Appending at end: offset=#{insert_offset}, body_src.bytesize=#{body_src.bytesize}")
+
               edits << [insert_offset, 0, "\n" + insert_line]
             end
           end
