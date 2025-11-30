@@ -28,6 +28,14 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Fixed `SourceMerger` variable assignment duplication during merge operations
+  - `node_signature` now identifies variable/constant assignments by name only, not full source
+  - Previously used full source text as signature, causing duplicates when assignment bodies differed
+  - Added specific handlers for: LocalVariableWriteNode, InstanceVariableWriteNode, ClassVariableWriteNode, ConstantWriteNode, GlobalVariableWriteNode
+  - Also added handlers for ClassNode and ModuleNode to match by name
+  - Example: `gem_version = ...` assignments with different bodies now correctly merge instead of duplicating
+  - Prevents `bin/kettle-dev-setup` from creating duplicate variable assignments in gemspecs and other files
+  - Added comprehensive specs for variable assignment deduplication and idempotency
 - Fixed `SourceMerger` conditional block duplication during merge operations
   - `node_signature` now identifies conditional nodes (if/unless/case) by their predicate only
   - Previously used full source text, causing duplicate blocks when template updates conditional bodies

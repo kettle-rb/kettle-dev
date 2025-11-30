@@ -229,5 +229,76 @@ RSpec.describe Kettle::Dev::SourceMerger do
         expect(comment_idx).to be < custom_idx if custom_idx && comment_idx
       end
     end
+
+    context "with variable assignments" do
+      it "does not duplicate variable assignments when bodies differ" do
+        # This test addresses the gemspec duplication issue where gem_version
+        # assignment was duplicated because dest had extra commented code
+        src = <<~RUBY
+          gem_version = if RUBY_VERSION >= "3.1"
+            "1.0.0"
+          else
+            "0.9.0"
+          end
+          
+          Gem::Specification.new do |spec|
+            spec.name = "my-gem"
+            spec.version = gem_version
+          end
+        RUBY
+        dest = <<~RUBY
+          gem_version = if RUBY_VERSION >= "3.1"
+            "1.0.0"
+          else
+            "0.9.0"
+            # Additional commented code in dest
+            # require_relative "lib/version"
+          end
+          
+          Gem::Specification.new do |spec|
+            spec.name = "my-gem"
+            spec.version = gem_version
+            spec.description = "Custom description"
+          end
+        RUBY
+        merged = described_class.apply(strategy: :merge, src: src, dest: dest, path: "my-gem.gemspec")
+
+        # Count occurrences of gem_version assignment
+        gem_version_count = merged.scan(/^gem_version\s*=/).length
+        expect(gem_version_count).to eq(1), "Expected 1 gem_version assignment, found #{gem_version_count}"
+
+        # Should preserve the spec block
+        expect(merged).to include("Gem::Specification.new")
+        expect(merged).to include("spec.name = \"my-gem\"")
+      end
+
+      it "matches local variable assignments by name not content" do
+        src = <<~RUBY
+          foo = "template value"
+        RUBY
+        dest = <<~RUBY
+          foo = "destination value"
+        RUBY
+        merged = described_class.apply(strategy: :merge, src: src, dest: dest, path: path)
+
+        foo_count = merged.scan(/^foo\s*=/).length
+        expect(foo_count).to eq(1)
+        expect(merged).to include("foo = \"template value\"")
+      end
+
+      it "matches constant assignments by name not content" do
+        src = <<~RUBY
+          VERSION = "2.0.0"
+        RUBY
+        dest = <<~RUBY
+          VERSION = "1.0.0"
+        RUBY
+        merged = described_class.apply(strategy: :merge, src: src, dest: dest, path: path)
+
+        version_count = merged.scan(/^VERSION\s*=/).length
+        expect(version_count).to eq(1)
+        expect(merged).to include("VERSION = \"2.0.0\"")
+      end
+    end
   end
 end

@@ -687,6 +687,30 @@ module Kettle
           # Allows template to update case branches while matching on the case expression
           predicate_signature = node.predicate ? node.predicate.slice : nil
           [:case, predicate_signature]
+        when Prism::LocalVariableWriteNode
+          # Match local variable assignments by variable name, not full source
+          # This prevents duplication when assignment bodies differ between template and destination
+          [:local_var_write, node.name]
+        when Prism::InstanceVariableWriteNode
+          # Match instance variable assignments by variable name
+          [:instance_var_write, node.name]
+        when Prism::ClassVariableWriteNode
+          # Match class variable assignments by variable name
+          [:class_var_write, node.name]
+        when Prism::ConstantWriteNode
+          # Match constant assignments by constant name
+          [:constant_write, node.name]
+        when Prism::GlobalVariableWriteNode
+          # Match global variable assignments by variable name
+          [:global_var_write, node.name]
+        when Prism::ClassNode
+          # Match class definitions by name
+          class_name = PrismUtils.extract_const_name(node.constant_path)
+          [:class, class_name]
+        when Prism::ModuleNode
+          # Match module definitions by name
+          module_name = PrismUtils.extract_const_name(node.constant_path)
+          [:module, module_name]
         else
           # Other node types - use full source as last resort
           # This may cause issues with nodes that should match by structure rather than content
