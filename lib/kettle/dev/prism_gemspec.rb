@@ -233,7 +233,19 @@ module Kettle
               end
               rhs = build_literal.call(value)
               replacement = "#{indent}#{blk_param}.#{field} = #{rhs}"
-              edits << [loc.start_offset - body_node.location.start_offset, loc.end_offset - loc.start_offset, replacement]
+
+              # Calculate offsets relative to body_node
+              relative_start = loc.start_offset - body_node.location.start_offset
+              relative_length = loc.end_offset - loc.start_offset
+
+              Kettle::Dev.debug_log("PrismGemspec edit for #{field}:")
+              Kettle::Dev.debug_log("  loc.start_offset=#{loc.start_offset}, loc.end_offset=#{loc.end_offset}")
+              Kettle::Dev.debug_log("  body_node.location.start_offset=#{body_node.location.start_offset}")
+              Kettle::Dev.debug_log("  relative_start=#{relative_start}, relative_length=#{relative_length}")
+              Kettle::Dev.debug_log("  replacement=#{replacement.inspect}")
+              Kettle::Dev.debug_log("  found_node.slice=#{found_node.slice.inspect}")
+
+              edits << [relative_start, relative_length, replacement]
             end
           else
             # No existing assignment; we'll insert after spec.version if present
@@ -253,7 +265,9 @@ module Kettle
               edits << [insert_offset, 0, "\n" + insert_line]
             else
               # Append at end of body
-              insert_offset = body_src.rstrip.length
+              # CRITICAL: Must use bytesize, not length, for byte-offset calculations!
+              # body_src may contain multi-byte UTF-8 characters (emojis), making length != bytesize
+              insert_offset = body_src.rstrip.bytesize
               edits << [insert_offset, 0, "\n" + insert_line]
             end
           end
@@ -299,12 +313,20 @@ module Kettle
 
         # Apply edits in reverse order by offset to avoid offset shifts
         edits.sort_by! { |offset, _len, _repl| -offset }
+
+        Kettle::Dev.debug_log("PrismGemspec applying #{edits.length} edits")
+        Kettle::Dev.debug_log("body_src.bytesize=#{body_src.bytesize}, body_src.length=#{body_src.length}")
+
         new_body = body_src.dup
-        edits.each do |offset, length, replacement|
+        edits.each_with_index do |(offset, length, replacement), idx|
           # Validate offset, length, and replacement
           next if offset.nil? || length.nil? || offset < 0 || length < 0
           next if offset > new_body.bytesize
           next if replacement.nil?
+
+          Kettle::Dev.debug_log("Edit #{idx}: offset=#{offset}, length=#{length}")
+          Kettle::Dev.debug_log("  Replacing: #{new_body.byteslice(offset, length).inspect}")
+          Kettle::Dev.debug_log("  With: #{replacement.inspect}")
 
           # CRITICAL: Prism uses byte offsets, not character offsets!
           # Must use byteslice and byte-aware string manipulation to handle multi-byte UTF-8 (emojis, etc.)
@@ -312,6 +334,8 @@ module Kettle
           before = offset > 0 ? new_body.byteslice(0, offset) : ""
           after = (offset + length) < new_body.bytesize ? new_body.byteslice(offset + length..-1) : ""
           new_body = before + replacement + after
+
+          Kettle::Dev.debug_log("  new_body.bytesize after edit=#{new_body.bytesize}")
         end
 
         # Reassemble the gemspec call by replacing just the body

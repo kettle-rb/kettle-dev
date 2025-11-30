@@ -28,6 +28,13 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Fixed `PrismGemspec.replace_gemspec_fields` insert offset calculation for emoji-containing gemspecs
+  - **CRITICAL**: Was using character length (`String#length`) instead of byte length (`String#bytesize`) to calculate insert offset
+  - When gemspecs contain multi-byte UTF-8 characters (emojis like 🍲), character length != byte length
+  - This caused fields to be inserted at wrong byte positions, resulting in truncated strings and massive corruption
+  - Changed `body_src.rstrip.length` to `body_src.rstrip.bytesize` for correct byte-offset calculations
+  - Prevents gemspec templating from producing corrupted output with truncated dependency lines
+  - Added comprehensive debug logging to trace byte offset calculations and edit operations
 - Fixed `SourceMerger` variable assignment duplication during merge operations
   - `node_signature` now identifies variable/constant assignments by name only, not full source
   - Previously used full source text as signature, causing duplicates when assignment bodies differed
