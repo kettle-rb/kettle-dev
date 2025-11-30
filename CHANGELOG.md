@@ -28,6 +28,13 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Fixed `PrismGemspec` and `PrismGemfile` to use pure Prism AST traversal instead of regex fallbacks
+  - Removed regex-based `extract_gemspec_emoji` that parsed `spec.summary =` and `spec.description =` with regex
+  - Now traverses Prism AST to find Gem::Specification block, extracts summary/description nodes, and gets literal values
+  - Removed regex-based source line detection in `PrismGemfile.merge_gem_calls`
+  - Now uses `PrismUtils.statement_key` to find source statements via AST instead of `ln =~ /^\s*source\s+/`
+  - Aligns with project goal: move away from regex parsing toward proper AST manipulation with Prism
+  - All functionality preserved, tested, and working correctly
 - Fixed `PrismGemspec.replace_gemspec_fields` block parameter extraction to use Prism AST
   - **CRITICAL**: Was using regex fallback that incorrectly captured entire block body as parameter name
   - Removed buggy regex fallback in favor of pure Prism AST traversal

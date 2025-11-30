@@ -58,15 +58,55 @@ module Kettle
       def extract_gemspec_emoji(gemspec_content)
         return nil unless gemspec_content
 
+        # Parse with Prism to find summary/description assignments
+        parse_result = PrismUtils.parse_with_comments(gemspec_content)
+        return nil unless parse_result.success?
+
+        statements = PrismUtils.extract_statements(parse_result.value.statements)
+
+        # Find Gem::Specification.new block
+        gemspec_call = statements.find do |s|
+          s.is_a?(Prism::CallNode) &&
+            s.block &&
+            PrismUtils.extract_const_name(s.receiver) == "Gem::Specification" &&
+            s.name == :new
+        end
+        return nil unless gemspec_call
+
+        body_node = gemspec_call.block&.body
+        return nil unless body_node
+
+        body_stmts = PrismUtils.extract_statements(body_node)
+
         # Try to extract from summary first, then description
-        if gemspec_content =~ /spec\.summary\s*=\s*["']([^"']+)["']/
-          emoji = extract_leading_emoji(Regexp.last_match(1))
-          return emoji if emoji
+        summary_node = body_stmts.find do |n|
+          n.is_a?(Prism::CallNode) &&
+            n.name.to_s.start_with?("summary") &&
+            n.receiver
         end
 
-        if gemspec_content =~ /spec\.description\s*=\s*["']([^"']+)["']/
-          emoji = extract_leading_emoji(Regexp.last_match(1))
-          return emoji if emoji
+        if summary_node
+          first_arg = summary_node.arguments&.arguments&.first
+          summary_value = PrismUtils.extract_literal_value(first_arg) rescue nil
+          if summary_value
+            emoji = extract_leading_emoji(summary_value)
+            return emoji if emoji
+          end
+        end
+
+        description_node = body_stmts.find do |n|
+          n.is_a?(Prism::CallNode) &&
+            n.name.to_s.start_with?("description") &&
+            n.receiver
+        end
+
+        if description_node
+          first_arg = description_node.arguments&.arguments&.first
+          description_value = PrismUtils.extract_literal_value(first_arg) rescue nil
+          if description_value
+            emoji = extract_leading_emoji(description_value)
+            return emoji if emoji
+          end
         end
 
         nil

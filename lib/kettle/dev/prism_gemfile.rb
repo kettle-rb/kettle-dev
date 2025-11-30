@@ -79,11 +79,29 @@ module Kettle
 
             unless replaced
               # Insert below source line if present, else at top after comments
-              dest_lines = out.lines
-              insert_idx = dest_lines.index { |ln| !ln.strip.start_with?("#") && ln =~ /^\s*source\s+/ } || 0
-              insert_idx += 1 if insert_idx
-              dest_lines.insert(insert_idx, gnode.slice.rstrip + "\n")
-              out = dest_lines.join
+              # Find the source statement using Prism instead of regex
+              source_stmt_idx = dest_stmts.index { |d|
+                key = PrismUtils.statement_key(d)
+                key && key[0] == :source
+              }
+
+              if source_stmt_idx && source_stmt_idx >= 0
+                # Insert after the source statement
+                source_stmt = dest_stmts[source_stmt_idx]
+                source_end_offset = source_stmt.location.end_offset
+
+                # Find line end after source statement
+                insert_pos = out.index("\n", source_end_offset)
+                insert_pos = insert_pos ? insert_pos + 1 : out.length
+
+                out = out[0...insert_pos] + gnode.slice.rstrip + "\n" + out[insert_pos..-1]
+              else
+                # No source line found, insert at top (after any leading comments)
+                dest_lines = out.lines
+                first_non_comment_idx = dest_lines.index { |ln| !ln.strip.start_with?("#") && !ln.strip.empty? } || 0
+                dest_lines.insert(first_non_comment_idx, gnode.slice.rstrip + "\n")
+                out = dest_lines.join
+              end
             end
 
             # Recompute dest_stmts for subsequent iterations
