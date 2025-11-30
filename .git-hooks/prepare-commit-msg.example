@@ -5,4 +5,4 @@ set -eu
 
 # We are not using direnv exec here because mise and direnv can result in conflicting PATH settings:
 # See: https://mise.jdx.dev/direnv.html
-exec "bin/kettle-commit-msg" "$@"
+exec "kettle-commit-msg" "$@"
