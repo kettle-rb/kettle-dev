@@ -28,6 +28,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Fixed `TemplateTask` to not override template summary/description with empty strings from destination gemspec
+  - Only carries over summary/description when they contain actual content (non-empty)
+  - Allows token replacements to work correctly (e.g., `kettle-dev summary` → `my-gem summary`)
+  - Prevents empty destination fields from erasing meaningful template values
 - Fixed `SourceMerger` magic comment ordering and freeze block protection
   - Magic comments now preserve original order
   - No blank lines inserted between consecutive magic comments

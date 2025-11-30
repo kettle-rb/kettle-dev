@@ -289,8 +289,9 @@ module Kettle
                   end
                   repl[:authors] = Array(orig_meta[:authors]).map(&:to_s) if orig_meta[:authors]
                   repl[:email] = Array(orig_meta[:email]).map(&:to_s) if orig_meta[:email]
-                  repl[:summary] = orig_meta[:summary].to_s if orig_meta[:summary]
-                  repl[:description] = orig_meta[:description].to_s if orig_meta[:description]
+                  # Only carry over summary/description if they have actual content (not empty strings)
+                  repl[:summary] = orig_meta[:summary].to_s if orig_meta[:summary] && !orig_meta[:summary].to_s.strip.empty?
+                  repl[:description] = orig_meta[:description].to_s if orig_meta[:description] && !orig_meta[:description].to_s.strip.empty?
                   repl[:licenses] = Array(orig_meta[:licenses]).map(&:to_s) if orig_meta[:licenses]
                   if orig_meta[:required_ruby_version]
                     repl[:required_ruby_version] = orig_meta[:required_ruby_version].to_s
