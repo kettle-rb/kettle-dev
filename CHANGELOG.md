@@ -28,6 +28,13 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Fixed `SourceMerger` freeze block location preservation
+  - Freeze blocks now stay in their original location in the file structure
+  - Skip normalization for files with existing freeze blocks to prevent movement
+  - Only include contiguous comments immediately before freeze markers (no arbitrary 3-line lookback)
+  - Don't add freeze reminder to files that already have freeze/unfreeze blocks
+  - Prevents unrelated comments from being incorrectly captured in freeze block ranges
+  - Added comprehensive test coverage for multiple freeze blocks at different nesting levels
 - Fixed `TemplateTask` to not override template summary/description with empty strings from destination gemspec
   - Only carries over summary/description when they contain actual content (non-empty)
   - Allows token replacements to work correctly (e.g., `kettle-dev summary` → `my-gem summary`)

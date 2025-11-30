@@ -47,12 +47,17 @@ module Kettle
         strategy = normalize_strategy(strategy)
         dest ||= ""
         src_with_reminder = ensure_reminder(src)
+
+        # If source already has freeze blocks, skip normalization to preserve their location
+        # Normalization can move freeze blocks around since they're treated as file-level comments
+        has_freeze_blocks = src_with_reminder.match?(FREEZE_START) && src_with_reminder.match?(FREEZE_END)
+
         content =
           case strategy
           when :skip
-            normalize_source(src_with_reminder)
+            has_freeze_blocks ? src_with_reminder : normalize_source(src_with_reminder)
           when :replace
-            normalize_source(src_with_reminder)
+            has_freeze_blocks ? src_with_reminder : normalize_source(src_with_reminder)
           when :append
             apply_append(src_with_reminder, dest)
           when :merge
@@ -76,6 +81,9 @@ module Kettle
       # @api private
       def ensure_reminder(content)
         return content if reminder_present?(content)
+        # Don't add reminder if content already has actual freeze/unfreeze blocks
+        # The reminder is only for files that don't have any freeze blocks yet
+        return content if content.match?(FREEZE_START) && content.match?(FREEZE_END)
         insertion_index = reminder_insertion_index(content)
         before = content[0...insertion_index]
         after = content[insertion_index..-1]
@@ -443,6 +451,9 @@ module Kettle
         kettle_dev_magics = parse_result.magic_comments.select { |mc| mc.key == "kettle-dev" }
         ranges = []
 
+        # Get source lines for checking blank lines
+        source_lines = parse_result.source.lines
+
         # Match freeze/unfreeze pairs
         i = 0
         while i < kettle_dev_magics.length
@@ -457,27 +468,30 @@ module Kettle
                 freeze_line = magic.key_loc.start_line
                 unfreeze_line = next_magic.key_loc.start_line
 
-                # Find the start of the freeze block by looking for comments before the freeze marker
-                # We want to include the header comment (e.g., "# To retain...") but not magic comments
-                # Look backwards through comments to find where the freeze block actually starts
+                # Find the start of the freeze block by looking for contiguous comments before freeze marker
+                # Only include comments that are immediately adjacent (no blank lines or code between them)
                 start_line = freeze_line
 
-                # Check comments before the freeze marker
-                parse_result.comments.each do |comment|
-                  comment_line = comment.location.start_line
-                  # If this comment is within a few lines before freeze and isn't a Ruby magic comment
-                  if comment_line < freeze_line && comment_line >= freeze_line - 3
-                    # Check if it's not a Ruby magic comment (we already filtered those)
-                    is_ruby_magic = parse_result.magic_comments.any? do |mc|
-                      %w[frozen_string_literal encoding coding warn_indent shareable_constant_value].include?(mc.key) &&
-                        mc.key_loc.start_line == comment_line
-                    end
 
-                    unless is_ruby_magic
-                      # This is part of the freeze block header
-                      start_line = [start_line, comment_line].min
-                    end
+                # Find comments immediately before the freeze marker
+                # Work backwards from freeze_line - 1, stopping at first non-comment line
+                candidate_line = freeze_line - 1
+                while candidate_line >= 1
+                  line_content = source_lines[candidate_line - 1]&.strip || ""
+
+                  # Stop if we hit a blank line or non-comment line
+                  break if line_content.empty? || !line_content.start_with?("#")
+
+                  # Check if this line is a Ruby magic comment - if so, stop
+                  is_ruby_magic = parse_result.magic_comments.any? do |mc|
+                    %w[frozen_string_literal encoding coding warn_indent shareable_constant_value].include?(mc.key) &&
+                      mc.key_loc.start_line == candidate_line
                   end
+                  break if is_ruby_magic
+
+                  # This is a valid comment in the freeze block header
+                  start_line = candidate_line
+                  candidate_line -= 1
                 end
 
                 # Extend slightly after unfreeze to catch trailing blank comment lines
