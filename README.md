@@ -724,12 +724,6 @@ We [![Keep A Changelog][📗keep-changelog-img]][📗keep-changelog] so if you m
 
 See [CONTRIBUTING.md][🤝contributing] for more detailed instructions.
 
-### Roadmap
-
-- [ ] Template the RSpec test harness.
-- [ ] Enhance gitlab pipeline configuration.
-- [ ] Add focused, packaged, named, templating strategies, allowing, for example, only refreshing the Appraisals related template files.
-
 ### 🚀 Release Instructions
 
 See [CONTRIBUTING.md][🤝contributing].
