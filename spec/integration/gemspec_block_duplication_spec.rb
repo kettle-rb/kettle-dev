@@ -3,7 +3,7 @@
 RSpec.describe "Gemspec templating duplication bug" do
   describe "replace_gemspec_fields followed by SourceMerger" do
     let(:template_with_placeholders) do
-      <<~'RUBY'
+      <<~RUBY
         # frozen_string_literal: true
 
         Gem::Specification.new do |spec|
@@ -26,7 +26,7 @@ RSpec.describe "Gemspec templating duplication bug" do
     end
 
     let(:destination_existing) do
-      <<~'RUBY'
+      <<~RUBY
         # frozen_string_literal: true
 
         Gem::Specification.new do |spec|
@@ -59,12 +59,12 @@ RSpec.describe "Gemspec templating duplication bug" do
         licenses: ["Apache-2.0"],
         required_ruby_version: ">= 2.5.0",
         executables: ["my-command"],
-        _remove_self_dependency: "my-gem"
+        _remove_self_dependency: "my-gem",
       }
 
       after_field_replacement = Kettle::Dev::PrismGemspec.replace_gemspec_fields(
         template_with_placeholders,
-        replacements
+        replacements,
       )
 
       # Verify the output is valid Ruby
@@ -89,7 +89,7 @@ RSpec.describe "Gemspec templating duplication bug" do
         strategy: :merge,
         src: after_field_replacement,
         dest: destination_existing,
-        path: "test.gemspec"
+        path: "test.gemspec",
       )
 
       # Verify merged output is valid Ruby
@@ -117,7 +117,7 @@ RSpec.describe "Gemspec templating duplication bug" do
     it "handles the exact kettle-dev gemspec scenario with emojis" do
       # This reproduces the exact bug from the user report where emojis in summary/description
       # combined with byte vs character offset confusion caused massive duplication
-      template = <<~'RUBY'
+      template = <<~RUBY
         # coding: utf-8
         # frozen_string_literal: true
 
@@ -179,4 +179,3 @@ RSpec.describe "Gemspec templating duplication bug" do
     end
   end
 end
-

@@ -67,11 +67,11 @@ RSpec.describe "style.gemfile conditional block duplication fix" do
         strategy: :merge,
         src: source_template,
         dest: destination_existing,
-        path: "gemfiles/modular/style.gemfile"
+        path: "gemfiles/modular/style.gemfile",
       )
 
       # Count occurrences of the if statement
-      if_count = result.scan(/if ENV\.fetch\("RUBOCOP_LTS_LOCAL"/).size
+      if_count = result.scan('if ENV.fetch("RUBOCOP_LTS_LOCAL"').size
 
       expect(if_count).to eq(1),
         "Expected exactly 1 if block, got #{if_count}.\n\nResult:\n#{result}"
@@ -94,21 +94,21 @@ RSpec.describe "style.gemfile conditional block duplication fix" do
         strategy: :merge,
         src: source_template,
         dest: destination_existing,
-        path: "gemfiles/modular/style.gemfile"
+        path: "gemfiles/modular/style.gemfile",
       )
 
       second_merge = Kettle::Dev::SourceMerger.apply(
         strategy: :merge,
         src: source_template,
         dest: first_merge,
-        path: "gemfiles/modular/style.gemfile"
+        path: "gemfiles/modular/style.gemfile",
       )
 
       third_merge = Kettle::Dev::SourceMerger.apply(
         strategy: :merge,
         src: source_template,
         dest: second_merge,
-        path: "gemfiles/modular/style.gemfile"
+        path: "gemfiles/modular/style.gemfile",
       )
 
       # All merges should produce the same result
@@ -118,7 +118,7 @@ RSpec.describe "style.gemfile conditional block duplication fix" do
         "Third merge should be identical to first"
 
       # Verify no duplication
-      if_count = third_merge.scan(/if ENV\.fetch\("RUBOCOP_LTS_LOCAL"/).size
+      if_count = third_merge.scan('if ENV.fetch("RUBOCOP_LTS_LOCAL"').size
       expect(if_count).to eq(1),
         "Expected exactly 1 if block after multiple merges, got #{if_count}"
     end
@@ -178,12 +178,12 @@ RSpec.describe "style.gemfile conditional block duplication fix" do
         strategy: :merge,
         src: source_template,
         dest: destination_existing,
-        path: "gemfiles/modular/style.gemfile"
+        path: "gemfiles/modular/style.gemfile",
       )
 
       # The buggy result has 2 if blocks - our fix should only produce 1
-      buggy_if_count = buggy_result.scan(/if ENV\.fetch\("RUBOCOP_LTS_LOCAL"/).size
-      fixed_if_count = result.scan(/if ENV\.fetch\("RUBOCOP_LTS_LOCAL"/).size
+      buggy_if_count = buggy_result.scan('if ENV.fetch("RUBOCOP_LTS_LOCAL"').size
+      fixed_if_count = result.scan('if ENV.fetch("RUBOCOP_LTS_LOCAL"').size
 
       expect(buggy_if_count).to eq(2), "Sanity check: buggy result should have 2 if blocks"
       expect(fixed_if_count).to eq(1), "Fixed result should have only 1 if block"
@@ -191,4 +191,3 @@ RSpec.describe "style.gemfile conditional block duplication fix" do
     end
   end
 end
-

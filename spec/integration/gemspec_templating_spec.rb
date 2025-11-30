@@ -80,12 +80,12 @@ RSpec.describe "Gemspec Templating Integration" do
       replacements = {
         name: "my-gem",
         summary: "🥘 ",
-        description: "🥘 "
+        description: "🥘 ",
       }
 
       result = Kettle::Dev::PrismGemspec.replace_gemspec_fields(
         destination_with_content,
-        replacements
+        replacements,
       )
 
       # Should NOT overwrite with template defaults
@@ -102,8 +102,8 @@ RSpec.describe "Gemspec Templating Integration" do
         fixture_content,
         {
           summary: "🥘 ",
-          description: "🥘 "
-        }
+          description: "🥘 ",
+        },
       )
 
       # Original values from fixture should be preserved
@@ -119,8 +119,8 @@ RSpec.describe "Gemspec Templating Integration" do
         {
           name: "test-gem",
           authors: ["Test Author"],
-          summary: "🥘 Test summary"
-        }
+          summary: "🥘 Test summary",
+        },
       )
 
       # Count occurrences of spec.name
@@ -137,22 +137,22 @@ RSpec.describe "Gemspec Templating Integration" do
         fixture_content,
         {
           name: "test-gem",
-          version: "1.0.0"
-        }
+          version: "1.0.0",
+        },
       )
 
       # Parse with Prism to ensure valid syntax
       parse_result = Prism.parse(result)
       expect(parse_result.success?).to be(true),
-        "Generated gemspec should be valid Ruby. Errors: #{parse_result.errors.map(&:message).join(', ')}"
+        "Generated gemspec should be valid Ruby. Errors: #{parse_result.errors.map(&:message).join(", ")}"
     end
 
     it "correctly identifies the end of Gem::Specification.new block" do
       result = Kettle::Dev::PrismGemspec.replace_gemspec_fields(
         fixture_content,
         {
-          name: "test-gem"
-        }
+          name: "test-gem",
+        },
       )
 
       # The file should end with 'end' and a newline, not have content after it
@@ -167,8 +167,8 @@ RSpec.describe "Gemspec Templating Integration" do
       result = Kettle::Dev::PrismGemspec.replace_gemspec_fields(
         fixture_content,
         {
-          name: "test-gem"
-        }
+          name: "test-gem",
+        },
       )
 
       # The gem_version variable should remain intact
@@ -213,12 +213,12 @@ RSpec.describe "Gemspec Templating Integration" do
         authors: ["Peter Boling"],
         email: ["floss@galtzo.com"],
         summary: "🥘 ", # Template default - should NOT overwrite
-        description: "🥘 " # Template default - should NOT overwrite
+        description: "🥘 ", # Template default - should NOT overwrite
       }
 
       result = Kettle::Dev::PrismGemspec.replace_gemspec_fields(
         fixture_content,
-        replacements
+        replacements,
       )
 
       # Verify no corruption
@@ -235,4 +235,3 @@ RSpec.describe "Gemspec Templating Integration" do
     end
   end
 end
-

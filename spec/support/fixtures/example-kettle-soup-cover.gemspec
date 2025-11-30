@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 gem_version =
-  if RUBY_VERSION >= "3.1"
+  if RUBY_VERSION >= "3.1" # rubocop:disable Gemspec/RubyVersionGlobalsUsage
     # Loading version into an anonymous module allows version.rb to get code coverage from SimpleCov!
     # See: https://github.com/simplecov-ruby/simplecov/issues/557#issuecomment-2630782358
     Module.new.tap { |mod| Kernel.load("lib/kettle/soup/cover/version.rb", mod) }::Kettle::Soup::Cover::Version::VERSION
@@ -9,7 +9,7 @@ gem_version =
     # TODO: Remove this hack once support for Ruby 3.0 and below is removed
     Kernel.load("lib/kettle/soup/cover/version.rb")
     g_ver = Kettle::Soup::Cover::Version::VERSION
-    Kettle::Soup::Cover::Version.send(:remove_const, :VERSION)
+    Kettle::Soup::Cover::Version.send(:remove_const, :VERSION) # rubocop:disable RSpec/RemoveConst
     g_ver
   end
 
@@ -111,7 +111,6 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency("kettle-dev", "~> 1.2")                           # ruby >= 2.3.0
   # ruby >= 2.3.0
-
 
   # Release Tasks
   spec.add_development_dependency("rake", "~> 13.0")                                # ruby >= 2.2.0

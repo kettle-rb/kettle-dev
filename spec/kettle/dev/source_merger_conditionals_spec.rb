@@ -33,7 +33,7 @@ RSpec.describe Kettle::Dev::SourceMerger do
         merged = described_class.apply(strategy: :merge, src: src, dest: dest, path: path)
 
         # Count occurrences of the if statement
-        if_count = merged.scan(/if ENV\.fetch\("RUBOCOP_LTS_LOCAL"/).size
+        if_count = merged.scan('if ENV.fetch("RUBOCOP_LTS_LOCAL"').size
         expect(if_count).to eq(1), "Expected 1 if block, got #{if_count}. Content:\n#{merged}"
 
         # Should have the source version (with || Dir.home)
@@ -55,7 +55,7 @@ RSpec.describe Kettle::Dev::SourceMerger do
         RUBY
 
         merged = described_class.apply(strategy: :append, src: src, dest: dest, path: path)
-        if_count = merged.scan(/if ENV\["DEBUG"\]/).size
+        if_count = merged.scan('if ENV["DEBUG"]').size
         expect(if_count).to eq(1)
       end
 
@@ -95,7 +95,7 @@ RSpec.describe Kettle::Dev::SourceMerger do
         RUBY
 
         merged = described_class.apply(strategy: :merge, src: src, dest: dest, path: path)
-        outer_count = merged.scan(/if ENV\["OUTER"\]/).size
+        outer_count = merged.scan('if ENV["OUTER"]').size
         expect(outer_count).to eq(1)
         expect(merged).to include("gem \"nested\"")
       end
@@ -116,7 +116,7 @@ RSpec.describe Kettle::Dev::SourceMerger do
         RUBY
 
         merged = described_class.apply(strategy: :merge, src: src, dest: dest, path: path)
-        unless_count = merged.scan(/unless ENV\["SKIP"\]/).size
+        unless_count = merged.scan('unless ENV["SKIP"]').size
         expect(unless_count).to eq(1)
         expect(merged).to include('"~> 2.0"')
         expect(merged).not_to include('"~> 1.0"')
@@ -142,7 +142,7 @@ RSpec.describe Kettle::Dev::SourceMerger do
         RUBY
 
         merged = described_class.apply(strategy: :merge, src: src, dest: dest, path: path)
-        case_count = merged.scan(/case ENV\["MODE"\]/).size
+        case_count = merged.scan('case ENV["MODE"]').size
         expect(case_count).to eq(1)
         expect(merged).to include('gem "dev-gem"')
         expect(merged).to include('gem "prod-gem"')
@@ -172,7 +172,7 @@ RSpec.describe Kettle::Dev::SourceMerger do
       end
     end
 
-    context "edge cases" do
+    context "with edge cases" do
       it "handles if statements with complex predicates" do
         src = <<~RUBY
           if ENV.fetch("A", "false") == "true" && ENV["B"] != "false"
@@ -187,7 +187,7 @@ RSpec.describe Kettle::Dev::SourceMerger do
         RUBY
 
         merged = described_class.apply(strategy: :merge, src: src, dest: dest, path: path)
-        if_count = merged.scan(/if ENV\.fetch\("A"/).size
+        if_count = merged.scan('if ENV.fetch("A"').size
         expect(if_count).to eq(1)
         expect(merged).to include('gem "complex"')
         expect(merged).not_to include('gem "old-complex"')
@@ -206,10 +206,9 @@ RSpec.describe Kettle::Dev::SourceMerger do
         merged2 = described_class.apply(strategy: :merge, src: src, dest: merged1, path: path)
 
         expect(merged1).to eq(merged2)
-        if_count = merged2.scan(/if ENV\["TEST"\]/).size
+        if_count = merged2.scan('if ENV["TEST"]').size
         expect(if_count).to eq(1)
       end
     end
   end
 end
-

@@ -28,6 +28,13 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Fixed `SourceMerger` magic comment ordering and freeze block protection
+  - Magic comments now preserve original order
+  - No blank lines inserted between consecutive magic comments
+  - Freeze reminder block properly separated from magic comments (not merged)
+  - Leverages Prism's built-in `parse_result.magic_comments` API for accurate detection
+  - Detects `kettle-dev:freeze/unfreeze` pairs using Prism, then reclassifies as file-level comments to keep blocks intact
+  - Removed obsolete `is_magic_comment?` method in favor of Prism's native detection
 - Fixed `PrismGemspec` and `PrismGemfile` to use pure Prism AST traversal instead of regex fallbacks
   - Removed regex-based `extract_gemspec_emoji` that parsed `spec.summary =` and `spec.description =` with regex
   - Now traverses Prism AST to find Gem::Specification block, extracts summary/description nodes, and gets literal values

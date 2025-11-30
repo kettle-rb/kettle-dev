@@ -385,14 +385,35 @@ module Kettle
         statements = PrismUtils.extract_statements(parse_result.value.statements)
         first_stmt_line = statements.any? ? statements.first.location.start_line : Float::INFINITY
 
+        # Build set of magic comment line numbers from Prism's magic_comments
+        # Filter to only actual Ruby magic comments (not kettle-dev directives)
+        magic_comment_lines = Set.new
+        parse_result.magic_comments.each do |magic_comment|
+          key = magic_comment.key
+          # Only recognize actual Ruby magic comments
+          if %w[frozen_string_literal encoding coding warn_indent shareable_constant_value].include?(key)
+            magic_comment_lines << magic_comment.key_loc.start_line
+          end
+        end
+
+        # Identify kettle-dev freeze/unfreeze blocks using Prism's magic comment detection
+        # Comments within these ranges should be treated as file_level to keep them together
+        freeze_block_ranges = find_freeze_block_ranges(parse_result)
+
         tuples = []
 
         parse_result.comments.each do |comment|
           comment_line = comment.location.start_line
           comment_text = comment.slice.strip
 
-          # Determine comment type - magic comments are identified by content, not line number
-          type = if is_magic_comment?(comment_text)
+          # Check if this comment is within a freeze block range
+          in_freeze_block = freeze_block_ranges.any? { |range| range.cover?(comment_line) }
+
+          # Determine comment type
+          type = if in_freeze_block
+            # All comments within freeze blocks are file_level to keep them together
+            :file_level
+          elsif magic_comment_lines.include?(comment_line)
             :magic
           elsif comment_line < first_stmt_line
             :file_level
@@ -410,11 +431,69 @@ module Kettle
         tuples
       end
 
-      def is_magic_comment?(text)
-        text.include?("frozen_string_literal:") ||
-          text.include?("encoding:") ||
-          text.include?("warn_indent:") ||
-          text.include?("shareable_constant_value:")
+      # Find kettle-dev freeze/unfreeze block line ranges using Prism's magic comment detection
+      # Returns an array of ranges representing protected freeze blocks
+      # Includes comments immediately before the freeze marker (within consecutive comment lines)
+      # @param parse_result [Prism::ParseResult] Parse result with magic comments
+      # @return [Array<Range>] Array of line number ranges for freeze blocks
+      # @api private
+      def find_freeze_block_ranges(parse_result)
+        return [] unless parse_result.success?
+
+        kettle_dev_magics = parse_result.magic_comments.select { |mc| mc.key == "kettle-dev" }
+        ranges = []
+
+        # Match freeze/unfreeze pairs
+        i = 0
+        while i < kettle_dev_magics.length
+          magic = kettle_dev_magics[i]
+          if magic.value == "freeze"
+            # Look for the matching unfreeze
+            j = i + 1
+            while j < kettle_dev_magics.length
+              next_magic = kettle_dev_magics[j]
+              if next_magic.value == "unfreeze"
+                # Found a matching pair
+                freeze_line = magic.key_loc.start_line
+                unfreeze_line = next_magic.key_loc.start_line
+
+                # Find the start of the freeze block by looking for comments before the freeze marker
+                # We want to include the header comment (e.g., "# To retain...") but not magic comments
+                # Look backwards through comments to find where the freeze block actually starts
+                start_line = freeze_line
+
+                # Check comments before the freeze marker
+                parse_result.comments.each do |comment|
+                  comment_line = comment.location.start_line
+                  # If this comment is within a few lines before freeze and isn't a Ruby magic comment
+                  if comment_line < freeze_line && comment_line >= freeze_line - 3
+                    # Check if it's not a Ruby magic comment (we already filtered those)
+                    is_ruby_magic = parse_result.magic_comments.any? do |mc|
+                      %w[frozen_string_literal encoding coding warn_indent shareable_constant_value].include?(mc.key) &&
+                        mc.key_loc.start_line == comment_line
+                    end
+
+                    unless is_ruby_magic
+                      # This is part of the freeze block header
+                      start_line = [start_line, comment_line].min
+                    end
+                  end
+                end
+
+                # Extend slightly after unfreeze to catch trailing blank comment lines
+                end_line = unfreeze_line + 1
+
+                ranges << (start_line..end_line)
+                i = j # Skip to after the unfreeze
+                break
+              end
+              j += 1
+            end
+          end
+          i += 1
+        end
+
+        ranges
       end
 
       # Two-pass deduplication:
@@ -676,16 +755,16 @@ module Kettle
           # Without this, we get duplicate if blocks when the template differs from destination.
           # Example: Template has 'ENV["HOME"] || Dir.home', dest has 'ENV["HOME"]' ->
           #          both should match and dest body should be replaced, not duplicated.
-          predicate_signature = node.predicate ? node.predicate.slice : nil
+          predicate_signature = node.predicate&.slice
           [:if, predicate_signature]
         when Prism::UnlessNode
           # Similar logic to IfNode - match by condition only
-          predicate_signature = node.predicate ? node.predicate.slice : nil
+          predicate_signature = node.predicate&.slice
           [:unless, predicate_signature]
         when Prism::CaseNode
           # For case statements, use the predicate/subject to match
           # Allows template to update case branches while matching on the case expression
-          predicate_signature = node.predicate ? node.predicate.slice : nil
+          predicate_signature = node.predicate&.slice
           [:case, predicate_signature]
         when Prism::LocalVariableWriteNode
           # Match local variable assignments by variable name, not full source

@@ -94,8 +94,8 @@ RSpec.describe "Emoji/Grapheme Extraction and Synchronization" do
         fixture_content,
         {
           summary: "🥘 ",
-          description: "🥘 "
-        }
+          description: "🥘 ",
+        },
       )
 
       # Should preserve the actual content from fixture
@@ -117,7 +117,7 @@ RSpec.describe "Emoji/Grapheme Extraction and Synchronization" do
 
       result = Kettle::Dev::PrismGemspec.sync_readme_h1_emoji(
         readme_content: readme_no_emoji,
-        gemspec_content: fixture_content
+        gemspec_content: fixture_content,
       )
 
       expect(result).to include("# 🍲 Project Title")
@@ -139,7 +139,7 @@ RSpec.describe "Emoji/Grapheme Extraction and Synchronization" do
 
       result = Kettle::Dev::PrismGemspec.sync_readme_h1_emoji(
         readme_content: readme_without_emoji,
-        gemspec_content: gemspec_with_emoji
+        gemspec_content: gemspec_with_emoji,
       )
 
       expect(result).to include("# 🍲 My Project")
@@ -159,7 +159,7 @@ RSpec.describe "Emoji/Grapheme Extraction and Synchronization" do
 
       result = Kettle::Dev::PrismGemspec.sync_readme_h1_emoji(
         readme_content: readme_with_emoji,
-        gemspec_content: gemspec_with_emoji
+        gemspec_content: gemspec_with_emoji,
       )
 
       expect(result).to eq(readme_with_emoji)
@@ -177,7 +177,7 @@ RSpec.describe "Emoji/Grapheme Extraction and Synchronization" do
 
       result = Kettle::Dev::PrismGemspec.sync_readme_h1_emoji(
         readme_content: readme_different_emoji,
-        gemspec_content: gemspec_with_emoji
+        gemspec_content: gemspec_with_emoji,
       )
 
       expect(result).to include("# 🍲 My Project")
@@ -185,4 +185,3 @@ RSpec.describe "Emoji/Grapheme Extraction and Synchronization" do
     end
   end
 end
-

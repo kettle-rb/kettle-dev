@@ -19,12 +19,12 @@ module Kettle
       # @param text [String, nil] Text to extract emoji from
       # @return [String, nil] The first emoji grapheme cluster, or nil if none found
       def extract_leading_emoji(text)
-        return nil unless text && text.respond_to?(:scan)
-        return nil if text.empty?
+        return unless text&.respond_to?(:scan)
+        return if text.empty?
 
         # Get first grapheme cluster
         first = text.scan(/\X/u).first
-        return nil unless first
+        return unless first
 
         # Check if it's an emoji using Unicode emoji property
         begin
@@ -41,11 +41,11 @@ module Kettle
       # @param readme_content [String, nil] README content
       # @return [String, nil] The emoji from the first H1, or nil if none found
       def extract_readme_h1_emoji(readme_content)
-        return nil unless readme_content && !readme_content.empty?
+        return unless readme_content && !readme_content.empty?
 
         lines = readme_content.lines
         h1_line = lines.find { |ln| ln =~ /^#\s+/ }
-        return nil unless h1_line
+        return unless h1_line
 
         # Extract text after "# "
         text = h1_line.sub(/^#\s+/, "")
@@ -56,11 +56,11 @@ module Kettle
       # @param gemspec_content [String] Gemspec content
       # @return [String, nil] The emoji from summary/description, or nil if none found
       def extract_gemspec_emoji(gemspec_content)
-        return nil unless gemspec_content
+        return unless gemspec_content
 
         # Parse with Prism to find summary/description assignments
         parse_result = PrismUtils.parse_with_comments(gemspec_content)
-        return nil unless parse_result.success?
+        return unless parse_result.success?
 
         statements = PrismUtils.extract_statements(parse_result.value.statements)
 
@@ -71,10 +71,10 @@ module Kettle
             PrismUtils.extract_const_name(s.receiver) == "Gem::Specification" &&
             s.name == :new
         end
-        return nil unless gemspec_call
+        return unless gemspec_call
 
         body_node = gemspec_call.block&.body
-        return nil unless body_node
+        return unless body_node
 
         body_stmts = PrismUtils.extract_statements(body_node)
 
@@ -87,7 +87,11 @@ module Kettle
 
         if summary_node
           first_arg = summary_node.arguments&.arguments&.first
-          summary_value = PrismUtils.extract_literal_value(first_arg) rescue nil
+          summary_value = begin
+            PrismUtils.extract_literal_value(first_arg)
+          rescue
+            nil
+          end
           if summary_value
             emoji = extract_leading_emoji(summary_value)
             return emoji if emoji
@@ -102,7 +106,11 @@ module Kettle
 
         if description_node
           first_arg = description_node.arguments&.arguments&.first
-          description_value = PrismUtils.extract_literal_value(first_arg) rescue nil
+          description_value = begin
+            PrismUtils.extract_literal_value(first_arg)
+          rescue
+            nil
+          end
           if description_value
             emoji = extract_leading_emoji(description_value)
             return emoji if emoji
@@ -165,11 +173,11 @@ module Kettle
         end
         return content unless gemspec_call
 
-        call_src = gemspec_call.slice
+        gemspec_call.slice
 
         # Extract block parameter name from Prism AST (e.g., |spec|)
         blk_param = nil
-        if gemspec_call.block && gemspec_call.block.parameters
+        if gemspec_call.block&.parameters
           # Prism::BlockNode has a parameters property which is a Prism::BlockParametersNode
           # BlockParametersNode has a parameters property which is a Prism::ParametersNode
           # ParametersNode has a requireds array containing Prism::RequiredParameterNode objects
@@ -180,7 +188,7 @@ module Kettle
             inner_params = params_node.parameters
             Kettle::Dev.debug_log("PrismGemspec inner_params class: #{inner_params.class.name}")
 
-            if inner_params.respond_to?(:requireds) && inner_params.requireds && inner_params.requireds.any?
+            if inner_params.respond_to?(:requireds) && inner_params.requireds&.any?
               first_param = inner_params.requireds.first
               Kettle::Dev.debug_log("PrismGemspec first_param class: #{first_param.class.name}")
 
@@ -274,7 +282,7 @@ module Kettle
             end
           end
 
-          Kettle::Dev.debug_log("PrismGemspec processing field #{field}: found_node=#{found_node ? 'YES' : 'NO'}")
+          Kettle::Dev.debug_log("PrismGemspec processing field #{field}: found_node=#{found_node ? "YES" : "NO"}")
 
           if found_node
             # Extract existing value to check if we should skip replacement
@@ -337,20 +345,21 @@ module Kettle
             Kettle::Dev.debug_log("  value=#{value.inspect[0..100]}")
             Kettle::Dev.debug_log("  insert_line=#{insert_line.inspect[0..200]}")
 
-            if version_node
+            insert_offset = if version_node
               # Insert after version node
-              insert_offset = version_node.location.end_offset - body_node.location.start_offset
-              edits << [insert_offset, 0, "\n" + insert_line]
+              version_node.location.end_offset - body_node.location.start_offset
             else
               # Append at end of body
               # CRITICAL: Must use bytesize, not length, for byte-offset calculations!
               # body_src may contain multi-byte UTF-8 characters (emojis), making length != bytesize
-              insert_offset = body_src.rstrip.bytesize
+              offset = body_src.rstrip.bytesize
 
-              Kettle::Dev.debug_log("  Appending at end: offset=#{insert_offset}, body_src.bytesize=#{body_src.bytesize}")
+              Kettle::Dev.debug_log("  Appending at end: offset=#{offset}, body_src.bytesize=#{body_src.bytesize}")
 
-              edits << [insert_offset, 0, "\n" + insert_line]
+              offset
             end
+
+            edits << [insert_offset, 0, "\n" + insert_line]
           end
         end
 
@@ -412,8 +421,8 @@ module Kettle
           # CRITICAL: Prism uses byte offsets, not character offsets!
           # Must use byteslice and byte-aware string manipulation to handle multi-byte UTF-8 (emojis, etc.)
           # Using character-based String#[]= with byte offsets causes mangled output and duplicated content
-          before = offset > 0 ? new_body.byteslice(0, offset) : ""
-          after = (offset + length) < new_body.bytesize ? new_body.byteslice(offset + length..-1) : ""
+          before = (offset > 0) ? new_body.byteslice(0, offset) : ""
+          after = ((offset + length) < new_body.bytesize) ? new_body.byteslice(offset + length..-1) : ""
           new_body = before + replacement + after
 
           Kettle::Dev.debug_log("  new_body.bytesize after edit=#{new_body.bytesize}")
