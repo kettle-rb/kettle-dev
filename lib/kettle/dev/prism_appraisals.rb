@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "prism"
+require "set"
 
 module Kettle
   module Dev
@@ -23,13 +24,51 @@ module Kettle
         tmpl_result = PrismUtils.parse_with_comments(template_content)
         dest_result = PrismUtils.parse_with_comments(dest_content)
 
-        tmpl_preamble, tmpl_blocks = extract_blocks(tmpl_result, template_content)
-        dest_preamble, dest_blocks = extract_blocks(dest_result, dest_content)
+        tmpl_preamble_comments, tmpl_blocks = extract_blocks(tmpl_result, template_content)
+        dest_preamble_comments, dest_blocks = extract_blocks(dest_result, dest_content)
+
+        tmpl_preamble = preamble_lines_from_comments(tmpl_preamble_comments, template_content.lines)
+        dest_preamble = preamble_lines_from_comments(dest_preamble_comments, dest_content.lines)
 
         merged_preamble = merge_preambles(tmpl_preamble, dest_preamble)
         merged_blocks = merge_blocks(tmpl_blocks, dest_blocks, tmpl_result, dest_result)
 
         build_output(merged_preamble, merged_blocks)
+      end
+
+      def preamble_lines_from_comments(comments, source_lines)
+        return [] if comments.empty?
+
+        covered = Set.new
+        comments.each do |comment|
+          ((comment.location.start_line - 1)..(comment.location.end_line - 1)).each do |idx|
+            covered << idx
+          end
+        end
+
+        return [] if covered.empty?
+
+        extracted = []
+        sorted = covered.sort
+        cursor = sorted.first
+
+        sorted.each do |line_idx|
+          while cursor < line_idx
+            line = source_lines[cursor]
+            extracted << "" if line&.strip&.empty?
+            cursor += 1
+          end
+          line = source_lines[line_idx]
+          extracted << line.to_s.chomp if line
+          cursor = line_idx + 1
+        end
+
+        while cursor < source_lines.length && source_lines[cursor]&.strip&.empty?
+          extracted << ""
+          cursor += 1
+        end
+
+        extracted
       end
 
       # ...existing helper methods copied from original AppraisalsAstMerger...
@@ -38,6 +77,7 @@ module Kettle
         return [[], []] unless root&.statements&.body
 
         source_lines = source_content.lines
+        source_line_types = classify_source_lines(source_lines)
         blocks = []
         first_appraise_line = nil
 
@@ -47,7 +87,7 @@ module Kettle
             name = extract_appraise_name(node)
             next unless name
 
-            block_header = extract_block_header(node, source_lines, blocks)
+            block_header = extract_block_header(node, source_lines, source_line_types, blocks)
 
             blocks << {
               node: node,
@@ -78,50 +118,62 @@ module Kettle
         PrismUtils.extract_literal_value(node.arguments&.arguments&.first)
       end
 
-      def merge_preambles(tmpl_comments, dest_comments)
-        tmpl_lines = tmpl_comments.map { |c| c.slice.strip }
-        dest_lines = dest_comments.map { |c| c.slice.strip }
-
-        magic_pattern = /^#.*frozen_string_literal/
-        if tmpl_lines.any? { |line| line.match?(magic_pattern) }
-          dest_lines.reject! { |line| line.match?(magic_pattern) }
-        end
+      def merge_preambles(tmpl_lines, dest_lines)
+        return tmpl_lines.dup if dest_lines.empty?
+        return dest_lines.dup if tmpl_lines.empty?
 
         merged = []
         seen = Set.new
 
-        (tmpl_lines + dest_lines).each do |line|
-          normalized = line.downcase
-          unless seen.include?(normalized)
-            merged << line
-            seen << normalized
+        [tmpl_lines, dest_lines].each do |source|
+          source.each do |line|
+            append_structural_line(merged, line, seen)
           end
         end
 
+        merged << "" unless merged.empty? || merged.last.empty?
         merged
       end
 
-      def extract_block_header(node, source_lines, previous_blocks)
-        begin_line = node.location.start_line
-        min_line = if previous_blocks.empty?
-          1
-        else
-          previous_blocks.last[:node].location.end_line + 1
+      def classify_source_lines(source_lines)
+        source_lines.map do |line|
+          stripped = line.to_s.strip
+          if stripped.empty?
+            :blank
+          elsif stripped.start_with?("#")
+            body = stripped.sub(/^#/, "").strip
+            body.empty? ? :empty_comment : :comment
+          else
+            :code
+          end
         end
+      end
+
+      def extract_block_header(node, source_lines, source_line_types, previous_blocks)
+        begin_line = node.location.start_line
+        min_line = previous_blocks.empty? ? 1 : previous_blocks.last[:node].location.end_line + 1
         check_line = begin_line - 2
         header_lines = []
+        header_started = false
+
         while check_line >= 0 && (check_line + 1) >= min_line
           line = source_lines[check_line]
           break unless line
-          if line.strip.empty?
-            break
-          elsif line.lstrip.start_with?("#")
+
+          case source_line_types[check_line]
+          when :comment, :empty_comment
+            header_started = true
             header_lines.unshift(line)
-            check_line -= 1
+          when :blank
+            break unless header_started
+            header_lines.unshift(line)
           else
             break
           end
+
+          check_line -= 1
         end
+
         header_lines.join
       rescue StandardError => e
         Kettle::Dev.debug_error(e, __method__) if defined?(Kettle::Dev.debug_error)
@@ -179,17 +231,15 @@ module Kettle
       end
 
       def merge_block_headers(tmpl_header, dest_header)
-        tmpl_lines = tmpl_header.to_s.lines.map(&:strip).reject(&:empty?)
-        dest_lines = dest_header.to_s.lines.map(&:strip).reject(&:empty?)
         merged = []
         seen = Set.new
-        (tmpl_lines + dest_lines).each do |line|
-          normalized = line.downcase
-          unless seen.include?(normalized)
-            merged << line
-            seen << normalized
+
+        [tmpl_header, dest_header].each do |header|
+          structured_lines(header).each do |line|
+            append_structural_line(merged, line, seen)
           end
         end
+
         return "" if merged.empty?
         merged.join("\n") + "\n"
       end
@@ -243,47 +293,58 @@ module Kettle
         merged
       end
 
+      def structured_lines(header)
+        header.to_s.each_line.map { |line| line.chomp }
+      end
+
+      def append_structural_line(buffer, line, seen)
+        return if line.nil?
+
+        if line.strip.empty?
+          buffer << "" unless buffer.last&.empty?
+        else
+          key = line.strip.downcase
+          return if seen.include?(key)
+          buffer << line
+          seen << key
+        end
+      end
+
       def statement_key(node)
         PrismUtils.statement_key(node, tracked_methods: TRACKED_METHODS)
       end
 
       def build_output(preamble_lines, blocks)
         output = []
-        preamble_lines.each { |line| output << line }
-        output << "" unless preamble_lines.empty?
+        output.concat(preamble_lines)
 
         blocks.each do |block|
-          header = block[:header]
-          if header && !header.strip.empty?
-            output << header.rstrip
-          end
+          header_lines = structured_lines(block[:header])
+          header_lines.each { |line| output << line }
 
-          name = block[:name]
-          output << "appraise(\"#{name}\") {"
+          output << "appraise(\"#{block[:name]}\") {"
 
           statements = block[:statements] || extract_original_statements(block[:node])
           statements.each do |stmt_info|
             leading = stmt_info[:leading_comments] || []
             leading.each do |comment|
-              output << "  #{comment.slice.strip}"
+              output << "  #{comment.slice.rstrip}"
             end
 
             node = stmt_info[:node]
             line = normalize_statement(node)
-            # Remove any leading whitespace/newlines from the normalized line
             line = line.to_s.sub(/\A\s+/, "")
 
             inline = stmt_info[:inline_comments] || []
             inline_str = inline.map { |c| c.slice.strip }.join(" ")
-            output << "  #{line}#{" " + inline_str unless inline_str.empty?}"
+            output << ["  #{line}", (inline_str.empty? ? nil : inline_str)].compact.join(" ")
           end
 
           output << "}"
           output << ""
         end
 
-        build = output.join("\n").strip + "\n"
-        build
+        output.join("\n").gsub(/\n{3,}/, "\n\n").sub(/\n+\z/, "\n")
       end
 
       def normalize_statement(node)

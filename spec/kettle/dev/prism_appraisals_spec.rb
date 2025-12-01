@@ -186,6 +186,7 @@ RSpec.describe Kettle::Dev::PrismAppraisals do
       it "appends destination header, without duplicating the magic comment, when template provides one" do
         template = <<~TPL
           # frozen_string_literal: true
+
           # Template header
 
           appraise "foo" do
@@ -195,6 +196,7 @@ RSpec.describe Kettle::Dev::PrismAppraisals do
 
         dest = <<~DST
           # frozen_string_literal: true
+
           # old header line 1
           # old header line 2
 
@@ -205,7 +207,9 @@ RSpec.describe Kettle::Dev::PrismAppraisals do
 
         result = <<~RESULT
           # frozen_string_literal: true
+
           # Template header
+
           # old header line 1
           # old header line 2
 
@@ -215,7 +219,7 @@ RSpec.describe Kettle::Dev::PrismAppraisals do
         RESULT
 
         merged = described_class.merge(template, dest)
-        expect(merged).to start_with("# frozen_string_literal: true\n# Template header\n# old header line 1\n")
+        expect(merged).to start_with("# frozen_string_literal: true\n\n# Template header\n\n# old header line 1\n")
         expect(merged).to include("# old header line 2")
         expect(merged).to eq(result)
       end
@@ -223,6 +227,7 @@ RSpec.describe Kettle::Dev::PrismAppraisals do
       it "preserves template magic comments, and appends destination header" do
         template = <<~TPL
           # frozen_string_literal: true
+
           # template-only comment
 
           appraise "foo" do
@@ -240,7 +245,9 @@ RSpec.describe Kettle::Dev::PrismAppraisals do
 
         result = <<~RESULT
           # frozen_string_literal: true
+
           # template-only comment
+
           # some legacy header
 
           appraise("foo") {
@@ -249,7 +256,7 @@ RSpec.describe Kettle::Dev::PrismAppraisals do
         RESULT
 
         merged = described_class.merge(template, dest)
-        expect(merged).to start_with("# frozen_string_literal: true\n# template-only comment\n# some legacy header\n")
+        expect(merged).to start_with("# frozen_string_literal: true\n\n# template-only comment\n\n# some legacy header\n")
         expect(merged).to eq(result)
       end
     end
