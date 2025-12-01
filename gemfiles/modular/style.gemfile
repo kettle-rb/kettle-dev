@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
+# We run rubocop on the latest version of Ruby,
+#   but in support of the oldest supported version of Ruby
 # To retain during kettle-dev templating:
 #     kettle-dev:freeze
 #     # ... your code
 #     kettle-dev:unfreeze
 #
-# We run rubocop on the latest version of Ruby,
-#   but in support of the oldest supported version of Ruby
 
 gem "reek", "~> 6.5"
 # gem "rubocop", "~> 1.73", ">= 1.73.2" # constrained by standard
