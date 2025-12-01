@@ -7,6 +7,7 @@ module Kettle
       # for testability. The rake task should only call this method.
       module TemplateTask
         MODULAR_GEMFILE_DIR = "gemfiles/modular"
+        MARKDOWN_HEADING_EXTENSIONS = %w[.md .markdown].freeze
 
         module_function
 
@@ -43,6 +44,11 @@ module Kettle
             collapsed << l
           end
           collapsed.join("\n")
+        end
+
+        def markdown_heading_file?(relative_path)
+          ext = File.extname(relative_path.to_s).downcase
+          MARKDOWN_HEADING_EXTENSIONS.include?(ext)
         end
 
         # Abort wrapper that avoids terminating the entire process during specs
@@ -758,7 +764,7 @@ module Kettle
                   end
                 end
                 # Normalize spacing around Markdown headings for broad renderer compatibility
-                c = normalize_heading_spacing(c)
+                c = normalize_heading_spacing(c) if markdown_heading_file?(rel)
                 c
               end
             else
