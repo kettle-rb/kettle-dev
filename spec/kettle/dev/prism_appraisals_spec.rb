@@ -56,6 +56,7 @@ RSpec.describe Kettle::Dev::PrismAppraisals do
       <<~RESULT
         # preamble from template
         # a second line
+
         # preamble from dest
 
         # Header for unlocked
@@ -153,6 +154,7 @@ RSpec.describe Kettle::Dev::PrismAppraisals do
       it "keeps a single header copy when template and destination already match" do
         template = <<~TPL
           # frozen_string_literal: true
+
           # Template header line
 
           appraise "foo" do
@@ -171,6 +173,7 @@ RSpec.describe Kettle::Dev::PrismAppraisals do
 
         result = <<~RESULT
           # frozen_string_literal: true
+
           # Template header line
 
           appraise("foo") {

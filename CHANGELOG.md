@@ -28,6 +28,15 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Fixed `PrismAppraisals` various comment chunk spacing
+  - extract_block_header:
+    - skips the blank spacer immediately above an `appraise` block
+    - treats any following blank line as the stop boundary once comment lines have been collected
+    - prevents preamble comments from being pulled into the first block’s header
+  - restores expected ordering:
+    - magic comments and their blank line stay at the top
+    - block headers remain adjacent to their blocks
+    - preserves blank lines between comment chunks
 - Fixed `SourceMerger` freeze block location preservation
   - Freeze blocks now stay in their original location in the file structure
   - Skip normalization for files with existing freeze blocks to prevent movement

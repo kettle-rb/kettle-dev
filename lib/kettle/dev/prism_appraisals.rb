@@ -154,7 +154,6 @@ module Kettle
         min_line = previous_blocks.empty? ? 1 : previous_blocks.last[:node].location.end_line + 1
         check_line = begin_line - 2
         header_lines = []
-        header_started = false
 
         while check_line >= 0 && (check_line + 1) >= min_line
           line = source_lines[check_line]
@@ -162,11 +161,15 @@ module Kettle
 
           case source_line_types[check_line]
           when :comment, :empty_comment
-            header_started = true
             header_lines.unshift(line)
           when :blank
-            break unless header_started
-            header_lines.unshift(line)
+            # Skip a blank gap immediately above the block, but use it as a hard
+            # boundary once we have already collected comment lines.
+            if header_lines.empty?
+              check_line -= 1
+              next
+            end
+            break
           else
             break
           end
