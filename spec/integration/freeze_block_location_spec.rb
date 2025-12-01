@@ -294,31 +294,6 @@ RSpec.describe "Freeze Block Location Preservation" do
       end
     end
 
-    context "when file has no freeze blocks" do
-      it "adds freeze reminder at top after magic comments" do
-        input = <<~RUBY
-          # frozen_string_literal: true
-
-          gem "foo"
-        RUBY
-
-        result = Kettle::Dev::SourceMerger.apply(
-          strategy: :skip,
-          src: input,
-          dest: "",
-          path: "Gemfile"
-        )
-
-        lines = result.lines
-
-        # Should have magic comment, blank line, then freeze reminder
-        expect(lines[0]).to include("# frozen_string_literal:")
-        expect(lines[1].strip).to be_empty
-        expect(lines[2]).to include("# To retain during kettle-dev templating:")
-        expect(lines[3]).to include("#     kettle-dev:freeze")
-      end
-    end
-
     context "when file has only freeze reminder (no actual freeze blocks)" do
       it "keeps the freeze reminder in place" do
         input = <<~RUBY

@@ -16,15 +16,15 @@ module Kettle
       FREEZE_START = /#\s*kettle-dev:freeze/i
       FREEZE_END = /#\s*kettle-dev:unfreeze/i
       FREEZE_BLOCK = Regexp.new("(#{FREEZE_START.source}).*?(#{FREEZE_END.source})", Regexp::IGNORECASE | Regexp::MULTILINE)
-      FREEZE_REMINDER = <<~RUBY
-
-        # To retain during kettle-dev templating:
-        #     kettle-dev:freeze
-        #     # ... your code
-        #     kettle-dev:unfreeze
-        #
-      RUBY
       BUG_URL = "https://github.com/kettle-rb/kettle-dev/issues"
+
+      RUBY_MAGIC_COMMENT_KEYS = %w[frozen_string_literal encoding coding].freeze
+      MAGIC_COMMENT_REGEXES = [
+        /#\s*frozen_string_literal:/,
+        /#\s*encoding:/,
+        /#\s*coding:/,
+        /#.*-\*-.+coding:.+-\*-/,
+      ].freeze
 
       module_function
 
@@ -46,50 +46,30 @@ module Kettle
       def apply(strategy:, src:, dest:, path:)
         strategy = normalize_strategy(strategy)
         dest ||= ""
-        src_with_reminder = ensure_reminder(src)
+        src_content = src.to_s
+        dest_content = dest
 
-        # If source already has freeze blocks, skip normalization to preserve their location
-        # Normalization can move freeze blocks around since they're treated as file-level comments
-        has_freeze_blocks = src_with_reminder.match?(FREEZE_START) && src_with_reminder.match?(FREEZE_END)
+        has_freeze_blocks = src_content.match?(FREEZE_START) && src_content.match?(FREEZE_END)
 
         content =
           case strategy
           when :skip
-            has_freeze_blocks ? src_with_reminder : normalize_source(src_with_reminder)
+            has_freeze_blocks ? src_content : normalize_source(src_content)
           when :replace
-            has_freeze_blocks ? src_with_reminder : normalize_source(src_with_reminder)
+            has_freeze_blocks ? src_content : normalize_source(src_content)
           when :append
-            apply_append(src_with_reminder, dest)
+            apply_append(src_content, dest_content)
           when :merge
-            apply_merge(src_with_reminder, dest)
+            apply_merge(src_content, dest_content)
           else
             raise Kettle::Dev::Error, "Unknown templating strategy '#{strategy}' for #{path}."
           end
-        content = merge_freeze_blocks(content, dest)
-        content = restore_custom_leading_comments(dest, content)
+        content = merge_freeze_blocks(content, dest_content)
         content = normalize_newlines(content)
         ensure_trailing_newline(content)
       rescue StandardError => error
         warn_bug(path, error)
         raise Kettle::Dev::Error, "Template merge failed for #{path}: #{error.message}"
-      end
-
-      # Ensure freeze reminder comment is present at the top of content
-      #
-      # @param content [String] Ruby source content
-      # @return [String] Content with freeze reminder prepended if missing
-      # @api private
-      def ensure_reminder(content)
-        return content if reminder_present?(content)
-        # Don't add reminder if content already has actual freeze/unfreeze blocks
-        # The reminder is only for files that don't have any freeze blocks yet
-        return content if content.match?(FREEZE_START) && content.match?(FREEZE_END)
-        insertion_index = reminder_insertion_index(content)
-        before = content[0...insertion_index]
-        after = content[insertion_index..-1]
-        snippet = FREEZE_REMINDER
-        snippet += "\n" unless snippet.end_with?("\n\n")
-        [before, snippet, after].join
       end
 
       # Normalize source code by parsing and rebuilding to deduplicate comments
@@ -110,38 +90,19 @@ module Kettle
         build_source_from_nodes(node_infos, magic_comments: magic_comments, file_leading_comments: file_leading_comments)
       end
 
-      def reminder_present?(content)
-        # Skip the leading blank line in FREEZE_REMINDER to find the actual comment line
-        reminder_lines = FREEZE_REMINDER.lines.map(&:strip).reject(&:empty?)
-        return false if reminder_lines.empty?
-
-        content.include?(reminder_lines.first)
-      end
-
-      def reminder_insertion_index(content)
-        cursor = 0
-        lines = content.lines
-        lines.each do |line|
-          break unless shebang?(line) || magic_comment?(line)
-          cursor += line.length
-        end
-        cursor
-      end
-
       def shebang?(line)
         line.start_with?("#!")
       end
 
       def magic_comment?(line)
-        line.match?(/#\s*frozen_string_literal:/) ||
-          line.match?(/#\s*encoding:/) ||
-          line.match?(/#\s*coding:/) ||
-          line.match?(/#.*-\*-.*coding:.*-\*-/)
+        return false unless line
+        MAGIC_COMMENT_REGEXES.any? { |regex| line.match?(regex) }
       end
 
-      def frozen_comment?(line)
-        line.match?(/#\s*frozen_string_literal:/)
+      def ruby_magic_comment_key?(key)
+        RUBY_MAGIC_COMMENT_KEYS.include?(key)
       end
+
 
       # Merge kettle-dev:freeze blocks from destination into source content
       # Preserves user customizations wrapped in freeze/unfreeze markers
@@ -151,24 +112,52 @@ module Kettle
       # @return [String] Merged content with freeze blocks from destination
       # @api private
       def merge_freeze_blocks(src_content, dest_content)
-        dest_blocks = freeze_blocks(dest_content)
-        return src_content if dest_blocks.empty?
+        manifests = freeze_block_manifests(dest_content)
+        freeze_debug("manifests=#{manifests.length}")
+        manifests.each_with_index { |manifest, idx| freeze_debug("manifest[#{idx}]=#{manifest.inspect}") }
+        return src_content if manifests.empty?
         src_blocks = freeze_blocks(src_content)
         updated = src_content.dup
-        # Replace matching freeze sections by textual markers rather than index ranges
-        dest_blocks.each do |dest_block|
-          marker = dest_block[:text]
-          next if updated.include?(marker)
-          # If the template had a placeholder block, replace the first occurrence of a freeze stub
-          placeholder = src_blocks.find { |blk| blk[:start_marker] == dest_block[:start_marker] }
+        manifests.each_with_index do |manifest, idx|
+          freeze_debug("processing manifest[#{idx}]")
+          updated_blocks = freeze_blocks(updated)
+          if freeze_block_present?(updated_blocks, manifest)
+            freeze_debug("manifest[#{idx}] already present; skipping")
+            next
+          end
+          block_text = manifest[:text]
+          placeholder = src_blocks.find do |blk|
+            blk[:start_marker] == manifest[:start_marker] &&
+              (blk[:before_context] == manifest[:before_context] || blk[:after_context] == manifest[:after_context])
+          end
           if placeholder
-            updated.sub!(placeholder[:text], marker)
+            freeze_debug("manifest[#{idx}] replacing placeholder at #{placeholder[:range]}")
+            updated.sub!(placeholder[:text], block_text)
+            next
+          end
+          insertion_result = insert_freeze_block_by_manifest(updated, manifest)
+          if insertion_result
+            freeze_debug("manifest[#{idx}] inserted via context")
+            updated = insertion_result
+          elsif (estimated_index = manifest[:original_index]) && estimated_index <= updated.length
+            freeze_debug("manifest[#{idx}] inserted via original_index=#{estimated_index}")
+            updated.insert([estimated_index, updated.length].min, ensure_trailing_newline(block_text))
           else
-            updated << "\n" unless updated.end_with?("\n")
-            updated << marker
+            freeze_debug("manifest[#{idx}] appended to EOF")
+            updated = append_freeze_block(updated, block_text)
           end
         end
-        updated
+        enforce_unique_freeze_blocks(updated)
+      end
+
+      def freeze_block_present?(blocks, manifest)
+        blocks.any? do |blk|
+          match = blk[:start_marker] == manifest[:start_marker] &&
+            (blk[:before_context] == manifest[:before_context] || blk[:after_context] == manifest[:after_context])
+          freeze_debug("checking block start=#{blk[:start_marker]} matches=#{match}")
+          return true if match
+        end
+        false
       end
 
       def freeze_blocks(text)
@@ -181,7 +170,19 @@ module Kettle
           next unless start_idx && end_idx
           segment = match[0]
           start_marker = segment.lines.first&.strip
-          blocks << {range: start_idx...end_idx, text: segment, start_marker: start_marker}
+          before_context = freeze_block_context_line(text, start_idx, direction: :before)
+          after_context = freeze_block_context_line(text, end_idx, direction: :after)
+          blocks << {
+            range: start_idx...end_idx,
+            text: segment,
+            start_marker: start_marker,
+            before_context: before_context,
+            after_context: after_context,
+          }
+        end
+        freeze_debug("freeze_blocks count=#{blocks.length}")
+        blocks.each_with_index do |blk, idx|
+          freeze_debug("block[#{idx}] start=#{blk[:start_marker]} before=#{blk[:before_context].inspect} after=#{blk[:after_context].inspect}")
         end
         blocks
       end
@@ -398,8 +399,7 @@ module Kettle
         magic_comment_lines = Set.new
         parse_result.magic_comments.each do |magic_comment|
           key = magic_comment.key
-          # Only recognize actual Ruby magic comments
-          if %w[frozen_string_literal encoding coding warn_indent shareable_constant_value].include?(key)
+          if ruby_magic_comment_key?(key)
             magic_comment_lines << magic_comment.key_loc.start_line
           end
         end
@@ -484,7 +484,7 @@ module Kettle
 
                   # Check if this line is a Ruby magic comment - if so, stop
                   is_ruby_magic = parse_result.magic_comments.any? do |mc|
-                    %w[frozen_string_literal encoding coding warn_indent shareable_constant_value].include?(mc.key) &&
+                    ruby_magic_comment_key?(mc.key) &&
                       mc.key_loc.start_line == candidate_line
                   end
                   break if is_ruby_magic
@@ -872,6 +872,92 @@ module Kettle
           collected << line
         end
         collected.join
+      end
+
+      def append_freeze_block(content, block_text)
+        snippet = ensure_trailing_newline(block_text)
+        snippet = "\n" + snippet unless content.end_with?("\n")
+        content + snippet
+      end
+
+      def insert_freeze_block_by_manifest(content, manifest)
+        snippet = ensure_trailing_newline(manifest[:text])
+        if (before_context = manifest[:before_context])
+          index = content.index(before_context)
+          if index
+            insert_at = index + before_context.length
+            return insert_with_spacing(content, insert_at, snippet)
+          end
+        end
+        if (after_context = manifest[:after_context])
+          index = content.index(after_context)
+          if index
+            insert_at = [index - snippet.length, 0].max
+            return insert_with_spacing(content, insert_at, snippet)
+          end
+        end
+        nil
+      end
+
+      def insert_with_spacing(content, insert_at, snippet)
+        buffer = content.dup
+        buffer.insert(insert_at, snippet)
+      end
+
+      def freeze_block_manifests(text)
+        seen = Set.new
+        freeze_blocks(text).map do |block|
+          next if seen.include?(block[:text])
+          seen << block[:text]
+          {
+            text: block[:text],
+            start_marker: block[:start_marker],
+            before_context: freeze_block_context_line(text, block[:range].begin, direction: :before),
+            after_context: freeze_block_context_line(text, block[:range].end, direction: :after),
+            original_index: block[:range].begin,
+          }
+        end.compact
+      end
+
+      def enforce_unique_freeze_blocks(content)
+        seen = Set.new
+        result = content.dup
+        result.to_enum(:scan, FREEZE_BLOCK).each do
+          match = Regexp.last_match
+          block_text = match[0]
+          next unless block_text
+          next if seen.add?(block_text)
+          range = match.begin(0)...match.end(0)
+          result[range] = ""
+        end
+        result
+      end
+
+      def freeze_block_context_line(text, index, direction:)
+        lines = text.lines
+        return nil if lines.empty?
+        line_number = text[0...index].count("\n")
+        cursor = direction == :before ? line_number - 1 : line_number
+        step = direction == :before ? -1 : 1
+        while cursor >= 0 && cursor < lines.length
+          raw_line = lines[cursor]
+          stripped = raw_line.strip
+          cursor += step
+          next if stripped.empty?
+          # Avoid anchoring to the freeze/unfreeze markers themselves
+          next if stripped.match?(FREEZE_START) || stripped.match?(FREEZE_END)
+          return raw_line
+        end
+        nil
+      end
+
+      def freeze_debug(message)
+        return unless freeze_debug?
+        puts("[kettle-dev:freeze] #{message}")
+      end
+
+      def freeze_debug?
+        ENV["KETTLE_DEV_DEBUG_FREEZE"] == "1"
       end
     end
   end

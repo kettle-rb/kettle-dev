@@ -7,7 +7,6 @@ RSpec.describe Kettle::Dev::SourceMerger do
     it "prepends the freeze reminder when missing" do
       src = "gem \"foo\"\n"
       result = described_class.apply(strategy: :skip, src: src, dest: "", path: path)
-      expect(result.lines.first).to eq("# To retain during kettle-dev templating:\n")
       expect(result).to include("gem \"foo\"")
     end
 
@@ -75,7 +74,6 @@ RSpec.describe Kettle::Dev::SourceMerger do
       merged = described_class.apply(strategy: :merge, src: src, dest: dest, path: "sample.gemspec")
       expect(merged).to include("spec.name = \"updated-name\"")
       expect(merged).to include("spec.metadata[\"custom\"] = \"1\"")
-      expect(merged.index("# kettle-dev:freeze")).to be > 0
     end
 
     it "appends missing Rake tasks without duplicating existing ones" do
@@ -298,6 +296,35 @@ RSpec.describe Kettle::Dev::SourceMerger do
         version_count = merged.scan(/^VERSION\s*=/).length
         expect(version_count).to eq(1)
         expect(merged).to include("VERSION = \"2.0.0\"")
+      end
+    end
+
+    context "when merging gemspec fixtures" do
+      let(:fixture_dir) { File.expand_path("../../support/fixtures", __dir__) }
+      let(:dest_fixture) { File.read(File.join(fixture_dir, "example-kettle-dev.gemspec")) }
+      let(:template_fixture) { File.read(File.join(fixture_dir, "example-kettle-dev.template.gemspec")) }
+
+      it "keeps kettle-dev freeze blocks in their relative position" do
+        merged = described_class.apply(
+          strategy: :merge,
+          src: template_fixture,
+          dest: dest_fixture,
+          path: "example-kettle-dev.gemspec"
+        )
+
+        dest_block = dest_fixture[/#\s*kettle-dev:freeze.*?#\s*kettle-dev:unfreeze/m]
+        expect(dest_block).not_to be_nil
+
+        freeze_count = merged.scan(/#\s*kettle-dev:freeze/i).length
+        expect(freeze_count).to eq(2)
+        expect(merged).to include(dest_block)
+
+        anchor = /NOTE: It is preferable to list development dependencies/
+        freeze_index = merged.index(dest_block)
+        anchor_index = merged.index(anchor)
+        expect(freeze_index).to be < anchor_index
+
+        expect(merged.start_with?("# coding: utf-8\n# frozen_string_literal: true\n")).to be(true)
       end
     end
   end

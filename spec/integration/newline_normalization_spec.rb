@@ -91,31 +91,6 @@ RSpec.describe "Newline normalization in templating" do
       expect(result).not_to end_with("\n\n")
     end
 
-    it "freeze reminder has proper spacing" do
-      content = <<~RUBY
-        # frozen_string_literal: true
-        # Comment
-        gem "foo"
-      RUBY
-
-      result = Kettle::Dev::SourceMerger.apply(
-        strategy: :skip,
-        src: content,
-        dest: "",
-        path: "test.rb",
-      )
-
-      # Freeze reminder should be present when there are statements
-      expect(result).to include("# To retain during kettle-dev templating:")
-      expect(result).to include("#     kettle-dev:unfreeze")
-      # The last line of the freeze block should be an empty comment
-      last_freeze_idx = result.lines.index { |l| l.include?("kettle-dev:unfreeze") }
-      if last_freeze_idx
-        next_line = result.lines[last_freeze_idx + 1]
-        expect(next_line.strip).to eq("#"), "Line after unfreeze should be empty comment, got: #{next_line.inspect}"
-      end
-    end
-
     it "matches template spacing when merging" do
       template = <<~RUBY
         # frozen_string_literal: true

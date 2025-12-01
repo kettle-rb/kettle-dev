@@ -7,7 +7,6 @@ module Kettle
       FREEZE_START: Regexp
       FREEZE_END: Regexp
       FREEZE_BLOCK: Regexp
-      FREEZE_REMINDER: String
       BUG_URL: String
 
       # Apply a templating strategy to merge source and destination Ruby files
@@ -17,9 +16,6 @@ module Kettle
         dest: String,
         path: String
       ) -> String
-
-      # Ensure freeze reminder comment is present at the top of content
-      def self.ensure_reminder: (String content) -> String
 
       # Normalize source code while preserving formatting
       def self.normalize_source: (String source) -> String

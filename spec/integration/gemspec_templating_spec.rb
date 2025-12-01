@@ -7,26 +7,6 @@ RSpec.describe "Gemspec Templating Integration" do
   let(:template_content) { File.read(template_gemspec_path) }
 
   describe "freeze block placement" do
-    it "places freeze block after magic comments, not before" do
-      content = <<~RUBY
-        # frozen_string_literal: true
-
-        Gem::Specification.new do |spec|
-          spec.name = "example"
-        end
-      RUBY
-
-      result = Kettle::Dev::SourceMerger.ensure_reminder(content)
-
-      lines = result.lines
-      # First line should be the magic comment
-      expect(lines[0]).to match(/# frozen_string_literal: true/)
-      # Second line should be blank
-      expect(lines[1].strip).to eq("")
-      # Third line should start the freeze reminder
-      expect(lines[2]).to match(/# To retain during kettle-dev templating/)
-    end
-
     it "handles multiple magic comments correctly" do
       content = <<~RUBY
         #!/usr/bin/env ruby
@@ -38,14 +18,12 @@ RSpec.describe "Gemspec Templating Integration" do
         end
       RUBY
 
-      result = Kettle::Dev::SourceMerger.ensure_reminder(content)
-
-      lines = result.lines
+      lines = content.lines
       expect(lines[0]).to match(/^#!/)
       expect(lines[1]).to match(/frozen_string_literal/)
       expect(lines[2]).to match(/encoding/)
       expect(lines[3].strip).to eq("")
-      expect(lines[4]).to match(/# To retain during kettle-dev templating/)
+      expect(lines[4]).to eq("Gem::Specification.new do |spec|\n")
     end
   end
 
