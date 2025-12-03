@@ -6,15 +6,12 @@ require "set"
 module Kettle
   module Dev
     # Prism-based AST merging for templated Ruby files.
-    # Handles universal freeze reminders, kettle-dev:freeze blocks, and
-    # strategy dispatch (skip/replace/append/merge).
+    # Handles strategy dispatch (skip/replace/append/merge).
     #
     # Uses Prism for parsing with first-class comment support, enabling
     # preservation of inline and leading comments throughout the merge process.
+    # Freeze blocks are handled natively by prism-merge.
     module SourceMerger
-      FREEZE_START = /#\s*kettle-dev:freeze/i
-      FREEZE_END = /#\s*kettle-dev:unfreeze/i
-      FREEZE_BLOCK = Regexp.new("(#{FREEZE_START.source}).*?(#{FREEZE_END.source})", Regexp::IGNORECASE | Regexp::MULTILINE)
       BUG_URL = "https://github.com/kettle-rb/kettle-dev/issues"
 
       RUBY_MAGIC_COMMENT_KEYS = %w[frozen_string_literal encoding coding].freeze
@@ -33,7 +30,7 @@ module Kettle
       # @param src [String] Template source content
       # @param dest [String] Destination file content
       # @param path [String] File path (for error messages)
-      # @return [String] Merged content with freeze blocks and comments preserved
+      # @return [String] Merged content with comments preserved
       # @raise [Kettle::Dev::Error] If strategy is unknown or merge fails
       # @example
       #   SourceMerger.apply(
@@ -48,22 +45,37 @@ module Kettle
         src_content = src.to_s
         dest_content = dest
 
-        has_freeze_blocks = src_content.match?(FREEZE_START) && src_content.match?(FREEZE_END)
-
         content =
           case strategy
           when :skip
-            has_freeze_blocks ? src_content : normalize_source(src_content)
+            # For skip, if no destination just normalize the source
+            if dest_content.empty?
+              normalize_source(src_content)
+            else
+              # If destination exists, merge to preserve freeze blocks
+              # Trust prism-merge's output without additional normalization
+              result = apply_merge(src_content, dest_content)
+              return ensure_trailing_newline(result)
+            end
           when :replace
-            has_freeze_blocks ? src_content : normalize_source(src_content)
+            # For replace, always use merge (even with empty dest) to ensure consistent behavior
+            # Trust prism-merge's output without additional normalization
+            result = apply_merge(src_content, dest_content)
+            return ensure_trailing_newline(result)
           when :append
-            apply_append(src_content, dest_content)
+            # Prism::Merge handles freeze blocks automatically
+            # Trust prism-merge's output without additional normalization
+            result = apply_append(src_content, dest_content)
+            return ensure_trailing_newline(result)
           when :merge
-            apply_merge(src_content, dest_content)
+            # Prism::Merge handles freeze blocks automatically
+            # Trust prism-merge's output without additional normalization
+            result = apply_merge(src_content, dest_content)
+            return ensure_trailing_newline(result)
           else
             raise Kettle::Dev::Error, "Unknown templating strategy '#{strategy}' for #{path}."
           end
-        content = merge_freeze_blocks(content, dest_content)
+        
         content = normalize_newlines(content)
         ensure_trailing_newline(content)
       rescue StandardError => error
@@ -100,90 +112,6 @@ module Kettle
 
       def ruby_magic_comment_key?(key)
         RUBY_MAGIC_COMMENT_KEYS.include?(key)
-      end
-
-
-      # Merge kettle-dev:freeze blocks from destination into source content
-      # Preserves user customizations wrapped in freeze/unfreeze markers
-      #
-      # @param src_content [String] Template source content
-      # @param dest_content [String] Destination file content
-      # @return [String] Merged content with freeze blocks from destination
-      # @api private
-      def merge_freeze_blocks(src_content, dest_content)
-        manifests = freeze_block_manifests(dest_content)
-        freeze_debug("manifests=#{manifests.length}")
-        manifests.each_with_index { |manifest, idx| freeze_debug("manifest[#{idx}]=#{manifest.inspect}") }
-        return src_content if manifests.empty?
-        src_blocks = freeze_blocks(src_content)
-        updated = src_content.dup
-        manifests.each_with_index do |manifest, idx|
-          freeze_debug("processing manifest[#{idx}]")
-          updated_blocks = freeze_blocks(updated)
-          if freeze_block_present?(updated_blocks, manifest)
-            freeze_debug("manifest[#{idx}] already present; skipping")
-            next
-          end
-          block_text = manifest[:text]
-          placeholder = src_blocks.find do |blk|
-            blk[:start_marker] == manifest[:start_marker] &&
-              (blk[:before_context] == manifest[:before_context] || blk[:after_context] == manifest[:after_context])
-          end
-          if placeholder
-            freeze_debug("manifest[#{idx}] replacing placeholder at #{placeholder[:range]}")
-            updated.sub!(placeholder[:text], block_text)
-            next
-          end
-          insertion_result = insert_freeze_block_by_manifest(updated, manifest)
-          if insertion_result
-            freeze_debug("manifest[#{idx}] inserted via context")
-            updated = insertion_result
-          elsif (estimated_index = manifest[:original_index]) && estimated_index <= updated.length
-            freeze_debug("manifest[#{idx}] inserted via original_index=#{estimated_index}")
-            updated.insert([estimated_index, updated.length].min, ensure_trailing_newline(block_text))
-          else
-            freeze_debug("manifest[#{idx}] appended to EOF")
-            updated = append_freeze_block(updated, block_text)
-          end
-        end
-        enforce_unique_freeze_blocks(updated)
-      end
-
-      def freeze_block_present?(blocks, manifest)
-        blocks.any? do |blk|
-          match = blk[:start_marker] == manifest[:start_marker] &&
-            (blk[:before_context] == manifest[:before_context] || blk[:after_context] == manifest[:after_context])
-          freeze_debug("checking block start=#{blk[:start_marker]} matches=#{match}")
-          return true if match
-        end
-        false
-      end
-
-      def freeze_blocks(text)
-        return [] unless text&.match?(FREEZE_START)
-        blocks = []
-        text.to_enum(:scan, FREEZE_BLOCK).each do
-          match = Regexp.last_match
-          start_idx = match&.begin(0)
-          end_idx = match&.end(0)
-          next unless start_idx && end_idx
-          segment = match[0]
-          start_marker = segment.lines.first&.strip
-          before_context = freeze_block_context_line(text, start_idx, direction: :before)
-          after_context = freeze_block_context_line(text, end_idx, direction: :after)
-          blocks << {
-            range: start_idx...end_idx,
-            text: segment,
-            start_marker: start_marker,
-            before_context: before_context,
-            after_context: after_context,
-          }
-        end
-        freeze_debug("freeze_blocks count=#{blocks.length}")
-        blocks.each_with_index do |blk, idx|
-          freeze_debug("block[#{idx}] start=#{blk[:start_marker]} before=#{blk[:before_context].inspect} after=#{blk[:after_context].inspect}")
-        end
-        blocks
       end
 
       def normalize_strategy(strategy)
@@ -256,120 +184,123 @@ module Kettle
       end
 
       def apply_append(src_content, dest_content)
-        prism_merge(src_content, dest_content) do |src_nodes, dest_nodes, _src_result, _dest_result|
-          existing = Set.new(dest_nodes.map { |node| node_signature(node[:node]) })
-          appended = dest_nodes.dup
-          src_nodes.each do |node_info|
-            sig = node_signature(node_info[:node])
-            next if existing.include?(sig)
-            appended << node_info
-            existing << sig
-          end
-          appended
-        end
-      end
-
-      def apply_merge(src_content, dest_content)
-        prism_merge(src_content, dest_content) do |src_nodes, dest_nodes, _src_result, _dest_result|
-          src_map = src_nodes.each_with_object({}) do |node_info, memo|
-            sig = node_signature(node_info[:node])
-            memo[sig] ||= node_info
-          end
-          merged = dest_nodes.map do |node_info|
-            sig = node_signature(node_info[:node])
-            if (src_node_info = src_map[sig])
-              merge_node_info(sig, node_info, src_node_info)
-            else
-              node_info
-            end
-          end
-          existing = merged.map { |ni| node_signature(ni[:node]) }.to_set
-          src_nodes.each do |node_info|
-            sig = node_signature(node_info[:node])
-            next if existing.include?(sig)
-            merged << node_info
-            existing << sig
-          end
-          merged
-        end
-      end
-
-      def merge_node_info(signature, _dest_node_info, src_node_info)
-        return src_node_info unless signature.is_a?(Array)
-        case signature[1]
-        when :gem_specification
-          merge_block_node_info(src_node_info)
-        else
-          src_node_info
-        end
-      end
-
-      def merge_block_node_info(src_node_info)
-        # For block merging, we need to merge the statements within the block
-        # This is complex - for now, prefer template version
-        # TODO: Implement deep block statement merging with comment preservation
-        src_node_info
-      end
-
-      def prism_merge(src_content, dest_content)
-        src_result = Kettle::Dev::PrismUtils.parse_with_comments(src_content)
-        dest_result = Kettle::Dev::PrismUtils.parse_with_comments(dest_content)
-
-        # If src parsing failed, return src unchanged to avoid losing content
-        unless src_result.success?
-          puts "WARNING: Source content parse failed, returning unchanged"
+        # Lazy load prism-merge (Ruby 2.7+ requirement)
+        begin
+          require "prism/merge" unless defined?(Prism::Merge)
+        rescue LoadError
+          puts "WARNING: prism-merge gem not available, falling back to source content"
           return src_content
         end
 
-        src_nodes = extract_nodes_with_comments(src_result)
-        dest_nodes = extract_nodes_with_comments(dest_result)
+        # Custom signature generator that handles various Ruby constructs
+        signature_generator = create_signature_generator
 
-        merged_nodes = yield(src_nodes, dest_nodes, src_result, dest_result)
+        merger = Prism::Merge::SmartMerger.new(
+          src_content,
+          dest_content,
+          signature_match_preference: :destination,
+          add_template_only_nodes: true,
+          signature_generator: signature_generator,
+          freeze_token: "kettle-dev"
+        )
+        merger.merge
+      rescue Prism::Merge::Error => e
+        puts "WARNING: Prism::Merge failed for append strategy: #{e.message}"
+        src_content
+      end
 
-        # Extract and deduplicate comments from src and dest SEPARATELY
-        # This allows sequence detection to work within each source
-        src_tuples = create_comment_tuples(src_result)
-        src_deduplicated = deduplicate_comment_sequences(src_tuples)
-
-        dest_tuples = dest_result.success? ? create_comment_tuples(dest_result) : []
-        dest_deduplicated = deduplicate_comment_sequences(dest_tuples)
-
-        # Now merge the deduplicated tuples by hash+type only (ignore line numbers)
-        seen_hash_type = Set.new
-        final_tuples = []
-
-        # Add all deduplicated src tuples
-        src_deduplicated.each do |tuple|
-          hash_val = tuple[0]
-          type = tuple[1]
-          key = [hash_val, type]
-          unless seen_hash_type.include?(key)
-            final_tuples << tuple
-            seen_hash_type << key
-          end
+      def apply_merge(src_content, dest_content)
+        # Lazy load prism-merge (Ruby 2.7+ requirement)
+        begin
+          require "prism/merge" unless defined?(Prism::Merge)
+        rescue LoadError
+          puts "WARNING: prism-merge gem not available, falling back to source content"
+          return src_content
         end
 
-        # Add deduplicated dest tuples that don't duplicate src (by hash+type)
-        dest_deduplicated.each do |tuple|
-          hash_val = tuple[0]
-          type = tuple[1]
-          key = [hash_val, type]
-          unless seen_hash_type.include?(key)
-            final_tuples << tuple
-            seen_hash_type << key
+        # Custom signature generator that handles various Ruby constructs
+        signature_generator = create_signature_generator
+
+        merger = Prism::Merge::SmartMerger.new(
+          src_content,
+          dest_content,
+          signature_match_preference: :template,
+          add_template_only_nodes: true,
+          signature_generator: signature_generator,
+          freeze_token: "kettle-dev"
+        )
+        merger.merge
+      rescue Prism::Merge::Error => e
+        puts "WARNING: Prism::Merge failed for merge strategy: #{e.message}"
+        src_content
+      end
+
+      # Create a signature generator that handles various Ruby node types
+      # This ensures proper matching during merge/append operations
+      def create_signature_generator
+        ->(node) do
+          case node
+          when Prism::CallNode
+            # For source(), there should only be one, so signature is just [:source]
+            return [:source] if node.name == :source
+
+            method_name = node.name.to_s
+            receiver_name = node.receiver.is_a?(Prism::CallNode) ? node.receiver.name.to_s : node.receiver&.slice
+
+            # For assignment methods (like spec.homepage = "url"), match by receiver
+            # and method name only - don't include the value being assigned.
+            # This ensures spec.homepage = "url1" matches spec.homepage = "url2"
+            if method_name.end_with?("=")
+              return [:call, node.name, receiver_name]
+            end
+
+            # For non-assignment methods, include the first argument for matching
+            # e.g. spec.add_dependency("gem_name", "~> 1.0") -> [:add_dependency, "gem_name"]
+            first_arg = node.arguments&.arguments&.first
+            arg_value = case first_arg
+                        when Prism::StringNode
+                          first_arg.unescaped.to_s
+                        when Prism::SymbolNode
+                          first_arg.unescaped.to_sym
+                        else
+                          nil
+                        end
+
+            arg_value ? [node.name, arg_value] : [:call, node.name, receiver_name]
+
+          when Prism::IfNode
+            # Match if statements by their predicate
+            predicate_source = node.predicate.slice.strip
+            [:if, predicate_source]
+
+          when Prism::UnlessNode
+            # Match unless statements by their predicate
+            predicate_source = node.predicate.slice.strip
+            [:unless, predicate_source]
+
+          when Prism::CaseNode
+            # Match case statements by their predicate
+            predicate_source = node.predicate ? node.predicate.slice.strip : nil
+            [:case, predicate_source]
+
+          when Prism::LocalVariableWriteNode
+            # Match local variable assignments by variable name
+            [:local_var, node.name]
+
+          when Prism::ConstantWriteNode
+            # Match constant assignments by constant name
+            [:constant, node.name]
+
+          when Prism::ConstantPathWriteNode
+            # Match constant path assignments (like Foo::Bar = ...)
+            [:constant_path, node.target.slice]
+
+          else
+            # For other node types, use a generic signature based on node type
+            # This allows matching of similar structures
+            [node.class.name.split("::").last.to_sym, node.slice.strip[0..50]]
           end
         end
-
-        # Extract magic and file-level comments from final merged tuples
-        magic_comments = final_tuples
-          .select { |tuple| tuple[1] == :magic }
-          .map { |tuple| tuple[2] }
-
-        file_leading_comments = final_tuples
-          .select { |tuple| tuple[1] == :file_level }
-          .map { |tuple| tuple[2] }
-
-        build_source_from_nodes(merged_nodes, magic_comments: magic_comments, file_leading_comments: file_leading_comments)
       end
 
       def extract_magic_comments(parse_result)
@@ -381,6 +312,18 @@ module Kettle
         # Filter to only magic comments and return their text
         deduplicated
           .select { |tuple| tuple[1] == :magic }
+          .map { |tuple| tuple[2] }
+      end
+
+      def extract_file_leading_comments(parse_result)
+        return [] unless parse_result.success?
+
+        tuples = create_comment_tuples(parse_result)
+        deduplicated = deduplicate_comment_sequences(tuples)
+
+        # Filter to only file-level comments and return their text
+        deduplicated
+          .select { |tuple| tuple[1] == :file_level }
           .map { |tuple| tuple[2] }
       end
 
@@ -403,24 +346,14 @@ module Kettle
           end
         end
 
-        # Identify kettle-dev freeze/unfreeze blocks using Prism's magic comment detection
-        # Comments within these ranges should be treated as file_level to keep them together
-        freeze_block_ranges = find_freeze_block_ranges(parse_result)
-
         tuples = []
 
         parse_result.comments.each do |comment|
           comment_line = comment.location.start_line
           comment_text = comment.slice.strip
 
-          # Check if this comment is within a freeze block range
-          in_freeze_block = freeze_block_ranges.any? { |range| range.cover?(comment_line) }
-
           # Determine comment type
-          type = if in_freeze_block
-            # All comments within freeze blocks are file_level to keep them together
-            :file_level
-          elsif magic_comment_lines.include?(comment_line)
+          type = if magic_comment_lines.include?(comment_line)
             :magic
           elsif comment_line < first_stmt_line
             :file_level
@@ -436,77 +369,6 @@ module Kettle
         end
 
         tuples
-      end
-
-      # Find kettle-dev freeze/unfreeze block line ranges using Prism's magic comment detection
-      # Returns an array of ranges representing protected freeze blocks
-      # Includes comments immediately before the freeze marker (within consecutive comment lines)
-      # @param parse_result [Prism::ParseResult] Parse result with magic comments
-      # @return [Array<Range>] Array of line number ranges for freeze blocks
-      # @api private
-      def find_freeze_block_ranges(parse_result)
-        return [] unless parse_result.success?
-
-        kettle_dev_magics = parse_result.magic_comments.select { |mc| mc.key == "kettle-dev" }
-        ranges = []
-
-        # Get source lines for checking blank lines
-        source_lines = parse_result.source.lines
-
-        # Match freeze/unfreeze pairs
-        i = 0
-        while i < kettle_dev_magics.length
-          magic = kettle_dev_magics[i]
-          if magic.value == "freeze"
-            # Look for the matching unfreeze
-            j = i + 1
-            while j < kettle_dev_magics.length
-              next_magic = kettle_dev_magics[j]
-              if next_magic.value == "unfreeze"
-                # Found a matching pair
-                freeze_line = magic.key_loc.start_line
-                unfreeze_line = next_magic.key_loc.start_line
-
-                # Find the start of the freeze block by looking for contiguous comments before freeze marker
-                # Only include comments that are immediately adjacent (no blank lines or code between them)
-                start_line = freeze_line
-
-
-                # Find comments immediately before the freeze marker
-                # Work backwards from freeze_line - 1, stopping at first non-comment line
-                candidate_line = freeze_line - 1
-                while candidate_line >= 1
-                  line_content = source_lines[candidate_line - 1]&.strip || ""
-
-                  # Stop if we hit a blank line or non-comment line
-                  break if line_content.empty? || !line_content.start_with?("#")
-
-                  # Check if this line is a Ruby magic comment - if so, stop
-                  is_ruby_magic = parse_result.magic_comments.any? do |mc|
-                    ruby_magic_comment_key?(mc.key) &&
-                      mc.key_loc.start_line == candidate_line
-                  end
-                  break if is_ruby_magic
-
-                  # This is a valid comment in the freeze block header
-                  start_line = candidate_line
-                  candidate_line -= 1
-                end
-
-                # Extend slightly after unfreeze to catch trailing blank comment lines
-                end_line = unfreeze_line + 1
-
-                ranges << (start_line..end_line)
-                i = j # Skip to after the unfreeze
-                break
-              end
-              j += 1
-            end
-          end
-          i += 1
-        end
-
-        ranges
       end
 
       # Two-pass deduplication:
@@ -669,6 +531,30 @@ module Kettle
         blank_count
       end
 
+      def extract_magic_comments(parse_result)
+        return [] unless parse_result.success?
+
+        tuples = create_comment_tuples(parse_result)
+        deduplicated = deduplicate_comment_sequences(tuples)
+
+        # Filter to only magic comments and return their text
+        deduplicated
+          .select { |tuple| tuple[1] == :magic }
+          .map { |tuple| tuple[2] }
+      end
+
+      def extract_file_leading_comments(parse_result)
+        return [] unless parse_result.success?
+
+        tuples = create_comment_tuples(parse_result)
+        deduplicated = deduplicate_comment_sequences(tuples)
+
+        # Filter to only file-level comments and return their text
+        deduplicated
+          .select { |tuple| tuple[1] == :file_level }
+          .map { |tuple| tuple[2] }
+      end
+
       def build_source_from_nodes(node_infos, magic_comments: [], file_leading_comments: [])
         lines = []
 
@@ -714,101 +600,6 @@ module Kettle
         end
 
         lines.join("\n")
-      end
-
-      # Generate a signature for a node to determine if two nodes should be considered "the same"
-      # during merge operations. The signature is used to:
-      # 1. Identify duplicate nodes in append mode (skip adding if already present)
-      # 2. Match nodes for replacement in merge mode (replace dest with src when signatures match)
-      #
-      # Signature strategies by node type:
-      # - gem/source calls: Use method name + first argument (e.g., [:send, :gem, "foo"])
-      #   This allows merging/replacing gem declarations with same name but different versions
-      # - Block calls: Use method name + first argument + full source for non-standard blocks
-      #   Special cases: Gem::Specification.new, task, git_source use simpler signatures
-      # - Conditionals (if/unless/case): Use predicate/condition only, NOT full source
-      #   This prevents duplication when template updates conditional body but keeps same condition
-      #   Example: if ENV["FOO"] blocks with different bodies are treated as same statement
-      # - Other nodes: Use class name + full source (fallback for unhandled types)
-      #
-      # @param node [Prism::Node] AST node to generate signature for
-      # @return [Array] Signature array used as hash key for node identity
-      # @api private
-      def node_signature(node)
-        return [:nil] unless node
-
-        case node
-        when Prism::CallNode
-          method_name = node.name
-          if node.block
-            # Block call
-            first_arg = PrismUtils.extract_literal_value(node.arguments&.arguments&.first)
-            receiver_name = PrismUtils.extract_const_name(node.receiver)
-
-            if receiver_name == "Gem::Specification" && method_name == :new
-              [:block, :gem_specification]
-            elsif method_name == :task
-              [:block, :task, first_arg]
-            elsif method_name == :git_source
-              [:block, :git_source, first_arg]
-            else
-              [:block, method_name, first_arg, node.slice]
-            end
-          elsif [:source, :git_source, :gem, :eval_gemfile].include?(method_name)
-            # Simple call
-            first_literal = PrismUtils.extract_literal_value(node.arguments&.arguments&.first)
-            [:send, method_name, first_literal]
-          else
-            [:send, method_name, node.slice]
-          end
-        when Prism::IfNode
-          # For if/elsif/else nodes, create signature based ONLY on the predicate (condition).
-          # This is critical: two if blocks with the same condition but different bodies
-          # should be treated as the same statement, allowing the template to update the body.
-          # Without this, we get duplicate if blocks when the template differs from destination.
-          # Example: Template has 'ENV["HOME"] || Dir.home', dest has 'ENV["HOME"]' ->
-          #          both should match and dest body should be replaced, not duplicated.
-          predicate_signature = node.predicate&.slice
-          [:if, predicate_signature]
-        when Prism::UnlessNode
-          # Similar logic to IfNode - match by condition only
-          predicate_signature = node.predicate&.slice
-          [:unless, predicate_signature]
-        when Prism::CaseNode
-          # For case statements, use the predicate/subject to match
-          # Allows template to update case branches while matching on the case expression
-          predicate_signature = node.predicate&.slice
-          [:case, predicate_signature]
-        when Prism::LocalVariableWriteNode
-          # Match local variable assignments by variable name, not full source
-          # This prevents duplication when assignment bodies differ between template and destination
-          [:local_var_write, node.name]
-        when Prism::InstanceVariableWriteNode
-          # Match instance variable assignments by variable name
-          [:instance_var_write, node.name]
-        when Prism::ClassVariableWriteNode
-          # Match class variable assignments by variable name
-          [:class_var_write, node.name]
-        when Prism::ConstantWriteNode
-          # Match constant assignments by constant name
-          [:constant_write, node.name]
-        when Prism::GlobalVariableWriteNode
-          # Match global variable assignments by variable name
-          [:global_var_write, node.name]
-        when Prism::ClassNode
-          # Match class definitions by name
-          class_name = PrismUtils.extract_const_name(node.constant_path)
-          [:class, class_name]
-        when Prism::ModuleNode
-          # Match module definitions by name
-          module_name = PrismUtils.extract_const_name(node.constant_path)
-          [:module, module_name]
-        else
-          # Other node types - use full source as last resort
-          # This may cause issues with nodes that should match by structure rather than content
-          # Future enhancement: add specific handlers for while/until/for loops, class/module defs, etc.
-          [node.class.name.split("::").last.to_sym, node.slice]
-        end
       end
 
       def restore_custom_leading_comments(dest_content, merged_content)
@@ -871,92 +662,6 @@ module Kettle
           collected << line
         end
         collected.join
-      end
-
-      def append_freeze_block(content, block_text)
-        snippet = ensure_trailing_newline(block_text)
-        snippet = "\n" + snippet unless content.end_with?("\n")
-        content + snippet
-      end
-
-      def insert_freeze_block_by_manifest(content, manifest)
-        snippet = ensure_trailing_newline(manifest[:text])
-        if (before_context = manifest[:before_context])
-          index = content.index(before_context)
-          if index
-            insert_at = index + before_context.length
-            return insert_with_spacing(content, insert_at, snippet)
-          end
-        end
-        if (after_context = manifest[:after_context])
-          index = content.index(after_context)
-          if index
-            insert_at = [index - snippet.length, 0].max
-            return insert_with_spacing(content, insert_at, snippet)
-          end
-        end
-        nil
-      end
-
-      def insert_with_spacing(content, insert_at, snippet)
-        buffer = content.dup
-        buffer.insert(insert_at, snippet)
-      end
-
-      def freeze_block_manifests(text)
-        seen = Set.new
-        freeze_blocks(text).map do |block|
-          next if seen.include?(block[:text])
-          seen << block[:text]
-          {
-            text: block[:text],
-            start_marker: block[:start_marker],
-            before_context: freeze_block_context_line(text, block[:range].begin, direction: :before),
-            after_context: freeze_block_context_line(text, block[:range].end, direction: :after),
-            original_index: block[:range].begin,
-          }
-        end.compact
-      end
-
-      def enforce_unique_freeze_blocks(content)
-        seen = Set.new
-        result = content.dup
-        result.to_enum(:scan, FREEZE_BLOCK).each do
-          match = Regexp.last_match
-          block_text = match[0]
-          next unless block_text
-          next if seen.add?(block_text)
-          range = match.begin(0)...match.end(0)
-          result[range] = ""
-        end
-        result
-      end
-
-      def freeze_block_context_line(text, index, direction:)
-        lines = text.lines
-        return nil if lines.empty?
-        line_number = text[0...index].count("\n")
-        cursor = direction == :before ? line_number - 1 : line_number
-        step = direction == :before ? -1 : 1
-        while cursor >= 0 && cursor < lines.length
-          raw_line = lines[cursor]
-          stripped = raw_line.strip
-          cursor += step
-          next if stripped.empty?
-          # Avoid anchoring to the freeze/unfreeze markers themselves
-          next if stripped.match?(FREEZE_START) || stripped.match?(FREEZE_END)
-          return raw_line
-        end
-        nil
-      end
-
-      def freeze_debug(message)
-        return unless freeze_debug?
-        puts("[kettle-dev:freeze] #{message}")
-      end
-
-      def freeze_debug?
-        ENV["KETTLE_DEV_DEBUG_FREEZE"] == "1"
       end
     end
   end

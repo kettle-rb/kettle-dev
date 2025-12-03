@@ -10,144 +10,145 @@ module Kettle
       # - Replaces dest `source` call with src's if present.
       # - Replaces or inserts non-comment `git_source` definitions.
       # - Appends missing `gem` calls (by name) from src to dest preserving dest content and newlines.
-      # This is a conservative, comment-preserving approach using Prism to detect call nodes.
+      # Uses Prism::Merge with pre-filtering to only merge top-level statements.
       def merge_gem_calls(src_content, dest_content)
-        src_res = PrismUtils.parse_with_comments(src_content)
-        dest_res = PrismUtils.parse_with_comments(dest_content)
-
-        src_stmts = PrismUtils.extract_statements(src_res.value.statements)
-        dest_stmts = PrismUtils.extract_statements(dest_res.value.statements)
-
-        # Find source nodes
-        src_source_node = src_stmts.find { |n| PrismUtils.call_to?(n, :source) }
-        dest_source_node = dest_stmts.find { |n| PrismUtils.call_to?(n, :source) }
-
-        out = dest_content.dup
-        dest_lines = out.lines
-
-        # Replace or insert source line
-        if src_source_node
-          src_src = src_source_node.slice
-          if dest_source_node
-            out = out.sub(dest_source_node.slice, src_src)
-            dest_lines = out.lines
-          else
-            # insert after any leading comment/blank block
-            insert_idx = 0
-            while insert_idx < dest_lines.length && (dest_lines[insert_idx].strip.empty? || dest_lines[insert_idx].lstrip.start_with?("#"))
-              insert_idx += 1
-            end
-            dest_lines.insert(insert_idx, src_src.rstrip + "\n")
-            out = dest_lines.join
-            dest_lines = out.lines
-          end
+        # Lazy load prism-merge (Ruby 2.7+ requirement)
+        begin
+          require "prism/merge" unless defined?(Prism::Merge)
+        rescue LoadError
+          Kernel.warn("[#{__method__}] prism-merge gem not available, returning dest_content")
+          return dest_content
         end
 
-        # --- Handle git_source replacement/insertion ---
-        src_git_nodes = src_stmts.select { |n| PrismUtils.call_to?(n, :git_source) }
-        if src_git_nodes.any?
-          # We'll operate on dest_lines for insertion; recompute dest_stmts if we changed out
-          dest_res = PrismUtils.parse_with_comments(out)
-          dest_stmts = PrismUtils.extract_statements(dest_res.value.statements)
+        # Pre-filter: Extract only top-level gem-related calls from src
+        # This prevents nested gems (in groups, conditionals) from being added
+        src_filtered = filter_to_top_level_gems(src_content)
+        
+        # Always remove :github git_source from dest as it's built-in to Bundler
+        dest_processed = remove_github_git_source(dest_content)
+        
+        # Custom signature generator that normalizes string quotes to prevent
+        # duplicates when gem "foo" and gem 'foo' are present.
+        signature_generator = ->(node) do
+          return nil unless node.is_a?(Prism::CallNode)
+          return nil unless [:gem, :source, :git_source].include?(node.name)
 
-          # Iterate in reverse when inserting so that inserting at the same index
-          # preserves the original order from the source (we insert at a fixed index).
-          src_git_nodes.reverse_each do |gnode|
-            key = PrismUtils.statement_key(gnode) # => [:git_source, name]
-            name = key && key[1]
-            replaced = false
+          # For source(), there should only be one, so signature is just [:source]
+          return [:source] if node.name == :source
 
-            if name
-              dest_same_idx = dest_stmts.index { |d| PrismUtils.statement_key(d) && PrismUtils.statement_key(d)[0] == :git_source && PrismUtils.statement_key(d)[1] == name }
-              if dest_same_idx
-                # Replace the matching dest node slice
-                out = out.sub(dest_stmts[dest_same_idx].slice, gnode.slice)
-                replaced = true
-              end
-            end
+          first_arg = node.arguments&.arguments&.first
+          
+          # Normalize string quotes using unescaped value
+          arg_value = case first_arg
+                      when Prism::StringNode
+                        first_arg.unescaped.to_s
+                      when Prism::SymbolNode
+                        first_arg.unescaped.to_sym
+                      else
+                        nil
+                      end
 
-            # If not replaced, prefer to replace an existing github entry in destination
-            # (this mirrors previous behavior in template_helpers which favored replacing
-            # a github git_source when inserting others).
-            unless replaced
-              dest_github_idx = dest_stmts.index { |d| PrismUtils.statement_key(d) && PrismUtils.statement_key(d)[0] == :git_source && PrismUtils.statement_key(d)[1] == "github" }
-              if dest_github_idx
-                out = out.sub(dest_stmts[dest_github_idx].slice, gnode.slice)
-                replaced = true
-              end
-            end
-
-            unless replaced
-              # Insert below source line if present, else at top after comments
-              # Find the source statement using Prism instead of regex
-              source_stmt_idx = dest_stmts.index { |d|
-                key = PrismUtils.statement_key(d)
-                key && key[0] == :source
-              }
-
-              if source_stmt_idx && source_stmt_idx >= 0
-                # Insert after the source statement
-                source_stmt = dest_stmts[source_stmt_idx]
-                source_end_offset = source_stmt.location.end_offset
-
-                # Find line end after source statement
-                insert_pos = out.index("\n", source_end_offset)
-                insert_pos = insert_pos ? insert_pos + 1 : out.length
-
-                out = out[0...insert_pos] + gnode.slice.rstrip + "\n" + out[insert_pos..-1]
-              else
-                # No source line found, insert at top (after any leading comments)
-                dest_lines = out.lines
-                first_non_comment_idx = dest_lines.index { |ln| !ln.strip.start_with?("#") && !ln.strip.empty? } || 0
-                dest_lines.insert(first_non_comment_idx, gnode.slice.rstrip + "\n")
-                out = dest_lines.join
-              end
-            end
-
-            # Recompute dest_stmts for subsequent iterations
-            dest_res = PrismUtils.parse_with_comments(out)
-            dest_stmts = PrismUtils.extract_statements(dest_res.value.statements)
-          end
+          arg_value ? [node.name, arg_value] : nil
         end
-
-        # Collect gem names present in dest (top-level only)
-        dest_res = PrismUtils.parse_with_comments(out)
-        dest_stmts = PrismUtils.extract_statements(dest_res.value.statements)
-        dest_gem_names = dest_stmts.map { |n| PrismUtils.statement_key(n) }.compact.select { |k| k[0] == :gem }.map { |k| k[1] }.to_set
-
-        # Find gem call nodes in src and append missing ones (top-level only)
-        missing_nodes = src_stmts.select do |n|
-          k = PrismUtils.statement_key(n)
-          k && k.first == :gem && !dest_gem_names.include?(k[1])
-        end
-        if missing_nodes.any?
-          out << "\n" unless out.end_with?("\n") || out.empty?
-          missing_nodes.each do |n|
-            # Preserve inline comments for the source node when appending
-            inline = begin
-              PrismUtils.inline_comments_for_node(src_res, n)
-            rescue
-              []
-            end
-            line = n.slice.rstrip
-            if inline && inline.any?
-              inline_text = inline.map { |c| c.slice.strip }.join(" ")
-              # Only append the inline text if it's not already part of the slice
-              line = line + " " + inline_text unless line.include?(inline_text)
-            end
-            out << line + "\n"
-          end
-        end
-
-        out
-      rescue StandardError => e
+        
+        # Use Prism::Merge with template preference for source/git_source replacement
+        merger = Prism::Merge::SmartMerger.new(
+          src_filtered,
+          dest_processed,
+          signature_match_preference: :template,
+          add_template_only_nodes: true,
+          signature_generator: signature_generator
+        )
+        merger.merge
+      rescue Prism::Merge::Error => e
         # Use debug_log if available, otherwise Kettle::Dev.debug_error
         if defined?(Kettle::Dev) && Kettle::Dev.respond_to?(:debug_error)
           Kettle::Dev.debug_error(e, __method__)
         else
-          Kernel.warn("[#{__method__}] #{e.class}: #{e.message}")
+          Kernel.warn("[#{__method__}] Prism::Merge failed: #{e.class}: #{e.message}")
         end
         dest_content
+      end
+
+      # Filter source content to only include top-level gem-related calls
+      # Excludes gems inside groups, conditionals, blocks, etc.
+      def filter_to_top_level_gems(content)
+        parse_result = PrismUtils.parse_with_comments(content)
+        return content unless parse_result.success?
+
+        # Extract only top-level statements (not nested in blocks)
+        top_level_stmts = PrismUtils.extract_statements(parse_result.value.statements)
+        
+        # Filter to only SIMPLE gem-related calls (not blocks, conditionals, etc.)
+        # We want to exclude:
+        # - group { ... } blocks (CallNode with a block)
+        # - if/unless conditionals (IfNode, UnlessNode)
+        # - any other compound structures
+        filtered_stmts = top_level_stmts.select do |stmt|
+          # Skip blocks (group, if, unless, etc.)
+          next false if stmt.is_a?(Prism::IfNode) || stmt.is_a?(Prism::UnlessNode)
+          
+          # Only process CallNodes
+          next false unless stmt.is_a?(Prism::CallNode)
+          
+          # Skip calls that have blocks (like `group :development do ... end`),
+          # but allow `git_source` which is commonly defined with a block.
+          next false if stmt.block && stmt.name != :git_source
+          
+          # Only include gem-related methods
+          [:gem, :source, :git_source, :eval_gemfile].include?(stmt.name)
+        end
+        
+        return "" if filtered_stmts.empty?
+        
+        # Build filtered content by extracting slices with proper newlines.
+        # Preserve inline comments that Prism separates into comment nodes.
+        filtered_stmts.map do |stmt|
+          src = stmt.slice.rstrip
+          inline = PrismUtils.inline_comments_for_node(parse_result, stmt) rescue []
+          if inline && inline.any?
+            # append inline comments (they already include leading `#` and spacing)
+            src + " " + inline.map(&:slice).map(&:strip).join(" ")
+          else
+            src
+          end
+        end.join("\n") + "\n"
+      rescue StandardError => e
+        # If filtering fails, return original content
+        if defined?(Kettle::Dev) && Kettle::Dev.respond_to?(:debug_error)
+          Kettle::Dev.debug_error(e, __method__)
+        end
+        content
+      end
+
+      # Remove git_source(:github) from content to allow template git_sources to replace it.
+      # This is special handling because :github is the default and templates typically
+      # want to replace it with their own git_source definitions.
+      # @param content [String] Gemfile-like content
+      # @return [String] content with git_source(:github) removed
+      def remove_github_git_source(content)
+        result = PrismUtils.parse_with_comments(content)
+        return content unless result.success?
+
+        stmts = PrismUtils.extract_statements(result.value.statements)
+        
+        # Find git_source(:github) node
+        github_node = stmts.find do |n|
+          next false unless n.is_a?(Prism::CallNode) && n.name == :git_source
+          
+          first_arg = n.arguments&.arguments&.first
+          first_arg.is_a?(Prism::SymbolNode) && first_arg.unescaped == "github"
+        end
+
+        return content unless github_node
+
+        # Remove the node's slice from content
+        content.sub(github_node.slice, "")
+      rescue StandardError => e
+        if defined?(Kettle::Dev) && Kettle::Dev.respond_to?(:debug_error)
+          Kettle::Dev.debug_error(e, __method__)
+        end
+        content
       end
 
       # Remove gem calls that reference the given gem name (to prevent self-dependency).

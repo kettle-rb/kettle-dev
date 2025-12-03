@@ -5,4 +5,4 @@
 #
 # Ruby parsing for advanced templating
 
-gem "prism-merge", "~> 1.0"
+gem "prism-merge", "~> 1.1", ">= 1.1.3"  # ruby >= 2.7.0
