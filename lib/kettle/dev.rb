@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 # External gems
+
 # It's not reasonable to test this ENV variable
 # :nocov:
 require "require_bench" if ENV.fetch("REQUIRE_BENCH", "false").casecmp("true").zero?

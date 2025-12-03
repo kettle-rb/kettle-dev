@@ -5,5 +5,4 @@
 #
 # Ruby parsing for advanced templating
 
-gem "prism", "~> 1.6"
-gem "unparser", "~> 0.8", ">= 0.8.1"
+gem "prism-merge", "~> 1.0"

@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "prism"
 
 module Kettle
   module Dev
@@ -18,6 +17,7 @@ module Kettle
       # @param source [String] Ruby source code
       # @return [Prism::ParseResult] Parse result containing AST and comments
       def parse_with_comments(source)
+        require "prism" unless defined?(Prism)
         Prism.parse(source)
       end
 

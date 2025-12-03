@@ -2,7 +2,6 @@
 
 require "yaml"
 require "set"
-require "prism"
 
 module Kettle
   module Dev
