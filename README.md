@@ -576,7 +576,7 @@ What it does:
 
 ### Template Manifest and AST Strategies
 
-`kettle:dev:template` looks at `template_manifest.yml` to determine how each file should be updated. Each entry has a `path` (exact file or glob) and a `strategy`:
+`kettle:dev:template` looks at `.kettle-dev.yml` to determine how each file should be updated. The config supports a hybrid format: a list of ordered glob `patterns` used as fallbacks and a `files` nested map for per-file configurations. Each entry ultimately exposes a `strategy` (and optional merge options for Ruby files).
 
 | Strategy | Behavior |
 | --- | --- |
@@ -598,23 +598,37 @@ Wrap any code you never want rewritten between `kettle-dev:freeze` / `kettle-dev
 
 ### Template Example
 
-Here is an example `template_manifest.yml`:
+Here is an example `.kettle-dev.yml` (hybrid format):
 
 ```yaml
-# For each file or glob, specify a strategy for how it should be managed.
-# See https://github.com/kettle-rb/kettle-dev/blob/main/docs/README.md#template-manifest-and-ast-strategies
-# for details on each strategy.
-files:
-  - path: "Gemfile"
-    strategy: "merge"
+# Defaults applied to per-file merge options when strategy: merge
+defaults:
+  signature_match_preference: "template"
+  add_template_only_nodes: true
+
+# Ordered glob patterns (first match wins)
+patterns:
   - path: "*.gemspec"
-    strategy: "merge"
-  - path: "Rakefile"
-    strategy: "merge"
-  - path: "README.md"
-    strategy: "replace"
-  - path: ".env.local"
-    strategy: "skip"
+    strategy: merge
+  - path: "gemfiles/modular/erb/**"
+    strategy: merge
+  - path: ".github/**/*.yml"
+    strategy: skip
+
+# Per-file nested configuration (overrides patterns)
+files:
+  "Gemfile":
+    strategy: merge
+    add_template_only_nodes: true
+
+  "Rakefile":
+    strategy: merge
+
+  "README.md":
+    strategy: replace
+
+  ".env.local":
+    strategy: skip
 ```
 
 ### Open Collective README updater

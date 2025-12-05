@@ -18,11 +18,12 @@ module Kettle
       # The minimum Ruby supported by setup-ruby GHA
       MIN_SETUP_RUBY = Gem::Version.create("2.3")
 
-      TEMPLATE_MANIFEST_PATH = File.expand_path("../../..", __dir__) + "/template_manifest.yml"
+      KETTLE_DEV_CONFIG_PATH = File.expand_path("../../..", __dir__) + "/.kettle-dev.yml"
       RUBY_BASENAMES = %w[Gemfile Rakefile Appraisals Appraisal.root.gemfile .simplecov].freeze
       RUBY_SUFFIXES = %w[.gemspec .gemfile].freeze
       RUBY_EXTENSIONS = %w[.rb .rake].freeze
       @@manifestation = nil
+      @@kettle_config = nil
 
       module_function
 
@@ -651,9 +652,65 @@ module Kettle
 
       def strategy_for(dest_path)
         relative = rel_path(dest_path)
+        config_for(relative)&.fetch(:strategy, :skip) || :skip
+      end
+
+      # Get full configuration for a file path including merge options
+      # @param relative_path [String] Path relative to project root
+      # @return [Hash, nil] Configuration hash with :strategy and optional merge options
+      def config_for(relative_path)
+        # First check individual file configs (highest priority)
+        file_config = find_file_config(relative_path)
+        return file_config if file_config
+
+        # Fall back to pattern matching
         manifestation.find do |entry|
-          File.fnmatch?(entry[:path], relative, File::FNM_PATHNAME | File::FNM_EXTGLOB | File::FNM_DOTMATCH)
-        end&.fetch(:strategy, :skip) || :skip
+          File.fnmatch?(entry[:path], relative_path, File::FNM_PATHNAME | File::FNM_EXTGLOB | File::FNM_DOTMATCH)
+        end
+      end
+
+      # Find configuration for a specific file in the nested files structure
+      # @param relative_path [String] Path relative to project root (e.g., "gemfiles/modular/coverage.gemfile")
+      # @return [Hash, nil] Configuration hash or nil if not found
+      def find_file_config(relative_path)
+        config = kettle_config
+        return nil unless config && config["files"]
+
+        parts = relative_path.split("/")
+        current = config["files"]
+
+        parts.each do |part|
+          return nil unless current.is_a?(Hash) && current.key?(part)
+          current = current[part]
+        end
+
+        # Check if we reached a leaf config node (has "strategy" key)
+        return nil unless current.is_a?(Hash) && current.key?("strategy")
+
+        # Merge with defaults for merge strategy
+        build_config_entry(nil, current)
+      end
+
+      # Build a config entry hash, merging with defaults as appropriate
+      # @param path [String, nil] The path (for pattern entries) or nil (for file entries)
+      # @param entry [Hash] The raw config entry
+      # @return [Hash] Normalized config entry
+      def build_config_entry(path, entry)
+        config = kettle_config
+        defaults = config&.fetch("defaults", {}) || {}
+
+        result = { strategy: entry["strategy"].to_s.strip.downcase.to_sym }
+        result[:path] = path if path
+
+        # For merge strategy, include merge options (from entry or defaults)
+        if result[:strategy] == :merge
+          %w[signature_match_preference add_template_only_nodes freeze_token max_recursion_depth].each do |opt|
+            value = entry.key?(opt) ? entry[opt] : defaults[opt]
+            result[opt.to_sym] = value unless value.nil?
+          end
+        end
+
+        result
       end
 
       def rel_path(path)
@@ -669,14 +726,20 @@ module Kettle
         RUBY_EXTENSIONS.include?(ext)
       end
 
+      # Load the raw kettle-dev config file
+      # @return [Hash] Parsed YAML config
+      def kettle_config
+        @@kettle_config ||= YAML.load_file(KETTLE_DEV_CONFIG_PATH)
+      rescue Errno::ENOENT
+        {}
+      end
+
+      # Load manifest entries from patterns section of config
+      # @return [Array<Hash>] Array of pattern entries with :path and :strategy
       def load_manifest
-        raw = YAML.load_file(TEMPLATE_MANIFEST_PATH)
-        raw.map do |entry|
-          {
-            path: entry["path"],
-            strategy: entry["strategy"].to_s.strip.downcase.to_sym,
-          }
-        end
+        config = kettle_config
+        patterns = config["patterns"] || []
+        patterns.map { |entry| build_config_entry(entry["path"], entry) }
       rescue Errno::ENOENT
         []
       end

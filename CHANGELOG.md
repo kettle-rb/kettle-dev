@@ -20,8 +20,19 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- Added `.kettle-dev.yml` configuration file for per-file merge options
+  - Hybrid format: `defaults` for shared merge options, `patterns` for glob fallbacks, `files` for per-file config
+  - Nested directory structure under `files` allows individual file configuration
+  - Supports all `Prism::Merge::SmartMerger` options: `signature_match_preference`, `add_template_only_nodes`, `freeze_token`, `max_recursion_depth`
+  - Added `TemplateHelpers.kettle_config`, `.config_for`, `.find_file_config` methods
+  - Added spec coverage in `template_helpers_config_spec.rb`
+
 ### Changed
 
+- **BREAKING**: Replaced `template_manifest.yml` with `.kettle-dev.yml`
+  - New hybrid format supports both glob patterns and per-file configuration
+  - `TemplateHelpers.load_manifest` now reads from `.kettle-dev.yml` patterns section
+  - `TemplateHelpers.strategy_for` checks explicit file configs before falling back to patterns
 - **BREAKING**: Simplified `SourceMerger` to fully rely on prism-merge for AST merging
   - Reduced from ~610 lines to ~175 lines (71% reduction)
   - Removed custom newline normalization - prism-merge preserves original formatting
