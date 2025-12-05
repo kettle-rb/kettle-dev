@@ -7,6 +7,7 @@ module Kettle
       # for testability. The rake task should only call this method.
       module TemplateTask
         MODULAR_GEMFILE_DIR = "gemfiles/modular"
+        MARKDOWN_HEADING_EXTENSIONS = %w[.md .markdown].freeze
 
         module_function
 
@@ -43,6 +44,11 @@ module Kettle
             collapsed << l
           end
           collapsed.join("\n")
+        end
+
+        def markdown_heading_file?(relative_path)
+          ext = File.extname(relative_path.to_s).downcase
+          MARKDOWN_HEADING_EXTENSIONS.include?(ext)
         end
 
         # Abort wrapper that avoids terminating the entire process during specs
@@ -289,8 +295,9 @@ module Kettle
                   end
                   repl[:authors] = Array(orig_meta[:authors]).map(&:to_s) if orig_meta[:authors]
                   repl[:email] = Array(orig_meta[:email]).map(&:to_s) if orig_meta[:email]
-                  repl[:summary] = orig_meta[:summary].to_s if orig_meta[:summary]
-                  repl[:description] = orig_meta[:description].to_s if orig_meta[:description]
+                  # Only carry over summary/description if they have actual content (not empty strings)
+                  repl[:summary] = orig_meta[:summary].to_s if orig_meta[:summary] && !orig_meta[:summary].to_s.strip.empty?
+                  repl[:description] = orig_meta[:description].to_s if orig_meta[:description] && !orig_meta[:description].to_s.strip.empty?
                   repl[:licenses] = Array(orig_meta[:licenses]).map(&:to_s) if orig_meta[:licenses]
                   if orig_meta[:required_ruby_version]
                     repl[:required_ruby_version] = orig_meta[:required_ruby_version].to_s
@@ -757,7 +764,7 @@ module Kettle
                   end
                 end
                 # Normalize spacing around Markdown headings for broad renderer compatibility
-                c = normalize_heading_spacing(c)
+                c = normalize_heading_spacing(c) if markdown_heading_file?(rel)
                 c
               end
             else

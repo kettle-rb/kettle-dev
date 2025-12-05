@@ -1,6 +1,12 @@
 # frozen_string_literal: true
 
-# kettle-dev Rakefile v1.0.18 - 2025-08-29
+# kettle-dev:freeze
+# To retain chunks of comments & code during kettle-dev templating:
+# Wrap custom sections with freeze markers (e.g., as above and below this comment chunk).
+# kettle-dev will then preserve content between those markers across template runs.
+# kettle-dev:unfreeze
+
+# kettle-dev Rakefile v1.2.5 - 2025-11-28
 # Ruby 2.3 (Safe Navigation) or higher required
 #
 # MIT License (see License.txt)
@@ -13,6 +19,7 @@
 #
 # rake appraisal:install                      # Install Appraisal gemfiles (initial setup...
 # rake appraisal:reset                        # Delete Appraisal lockfiles (gemfiles/*.gemfile.lock)
+# rake appraisal:update                       # Update Appraisal gemfiles and run RuboCop...
 # rake bench                                  # Run all benchmarks (alias for bench:run)
 # rake bench:list                             # List available benchmark scripts
 # rake bench:run                              # Run all benchmark scripts (skips on CI)

@@ -5,7 +5,7 @@ require "kettle/dev/prism_gemfile"
 
 RSpec.describe Kettle::Dev::PrismGemfile do
   describe ".merge_gem_calls" do
-    it "replaces source and appends missing gem calls" do
+    it "replaces source and appends missing gem calls", :prism_merge_only do
       src = <<~RUBY
         source "https://rubygems.org"
         gem "a"
@@ -24,7 +24,7 @@ RSpec.describe Kettle::Dev::PrismGemfile do
       expect(out.scan('gem "a"').length).to eq(1)
     end
 
-    it "replaces matching git_source by name and inserts when missing" do
+    it "replaces matching git_source by name and inserts when missing", :prism_merge_only do
       src = <<~'RUBY'
         git_source(:github) { |repo| "https://github.com/#{repo}.git" }
       RUBY
@@ -56,7 +56,7 @@ RSpec.describe Kettle::Dev::PrismGemfile do
 
     # --- Additional edge-case tests ---
 
-    it "appends gem with options (hash / version) and preserves options" do
+    it "appends gem with options (hash / version) and preserves options", :prism_merge_only do
       src = <<~RUBY
         gem "with_opts", "~> 1.2", require: false
       RUBY
@@ -78,7 +78,7 @@ RSpec.describe Kettle::Dev::PrismGemfile do
       expect(out.scan(/gem \"dupme\"|gem 'dupme'/).length).to eq(1)
     end
 
-    it "preserves inline comments on appended gem lines" do
+    it "preserves inline comments on appended gem lines", :prism_merge_only do
       src = <<~RUBY
         gem "c" # important comment
       RUBY
@@ -87,7 +87,7 @@ RSpec.describe Kettle::Dev::PrismGemfile do
       expect(out).to include('gem "c" # important comment')
     end
 
-    it "replaces source and multiple git_source nodes and keeps insertion order" do
+    it "replaces source and multiple git_source nodes and keeps insertion order", :prism_merge_only do
       src = <<~'RUBY'
         source "https://new.example"
         git_source(:github) { |repo| "https://github.com/#{repo}.git" }

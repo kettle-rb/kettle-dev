@@ -228,7 +228,7 @@ bin/kettle-release
 
 <h3 id="compatibility">Compatibility</h3>
 
-<p>Compatible with MRI Ruby 2.3+, and concordant releases of JRuby, and TruffleRuby.</p>
+<p>Compatible with MRI Ruby 2.3.0+, and concordant releases of JRuby, and TruffleRuby.</p>
 
 <table>
   <thead>
@@ -354,11 +354,11 @@ bin/kettle-release
 <details>
   <summary>For Medium or High Security Installations</summary>
 
-  <p>This gem is cryptographically signed, and has verifiable <a href="https://gitlab.com/kettle-rb/kettle-dev/-/tree/main/checksums">SHA-256 and SHA-512</a> checksums by
+  <p>This gem is cryptographically signed and has verifiable <a href="https://gitlab.com/kettle-rb/kettle-dev/-/tree/main/checksums">SHA-256 and SHA-512</a> checksums by
 <a href="https://github.com/galtzo-floss/stone_checksums">stone_checksums</a>. Be sure the gem you install hasn’t been tampered with
 by following the instructions below.</p>
 
-  <p>Add my public key (if you haven’t already, expires 2045-04-29) as a trusted certificate:</p>
+  <p>Add my public key (if you haven’t already; key expires 2045-04-29) as a trusted certificate:</p>
 
   <pre class="code language-console"><code class="language-console">gem cert --add &lt;(curl -Ls https://raw.github.com/galtzo-floss/certs/main/pboling.pem)
 </code></pre>
@@ -990,7 +990,7 @@ Tip: When running a single spec file locally, you may want <code>K_SOUP_COV_MIN_
 
 <h3 id="template-manifest-and-ast-strategies">Template Manifest and AST Strategies</h3>
 
-<p><code>kettle:dev:template</code> looks at <code>template_manifest.yml</code> to determine how each file should be updated. Each entry has a <code>path</code> (exact file or glob) and a <code>strategy</code>:</p>
+<p><code>kettle:dev:template</code> looks at <code>.kettle-dev.yml</code> to determine how each file should be updated. The config supports a hybrid format: a list of ordered glob <code>patterns</code> used as fallbacks and a <code>files</code> nested map for per-file configurations. Each entry ultimately exposes a <code>strategy</code> (and optional merge options for Ruby files).</p>
 
 <table>
   <thead>
@@ -1031,22 +1031,36 @@ Tip: When running a single spec file locally, you may want <code>K_SOUP_COV_MIN_
 
 <h3 id="template-example">Template Example</h3>
 
-<p>Here is an example <code>template_manifest.yml</code>:</p>
+<p>Here is an example <code>.kettle-dev.yml</code> (hybrid format):</p>
 
-<pre class="code language-yaml"><code class="language-yaml"># For each file or glob, specify a strategy for how it should be managed.
-# See https://github.com/kettle-rb/kettle-dev/blob/main/docs/README.md#template-manifest-and-ast-strategies
-# for details on each strategy.
-files:
-  - path: &quot;Gemfile&quot;
-    strategy: &quot;merge&quot;
+<pre class="code language-yaml"><code class="language-yaml"># Defaults applied to per-file merge options when strategy: merge
+defaults:
+  signature_match_preference: &quot;template&quot;
+  add_template_only_nodes: true
+
+# Ordered glob patterns (first match wins)
+patterns:
   - path: &quot;*.gemspec&quot;
-    strategy: &quot;merge&quot;
-  - path: &quot;Rakefile&quot;
-    strategy: &quot;merge&quot;
-  - path: &quot;README.md&quot;
-    strategy: &quot;replace&quot;
-  - path: &quot;.env.local&quot;
-    strategy: &quot;skip&quot;
+    strategy: merge
+  - path: &quot;gemfiles/modular/erb/**&quot;
+    strategy: merge
+  - path: &quot;.github/**/*.yml&quot;
+    strategy: skip
+
+# Per-file nested configuration (overrides patterns)
+files:
+  &quot;Gemfile&quot;:
+    strategy: merge
+    add_template_only_nodes: true
+
+  &quot;Rakefile&quot;:
+    strategy: merge
+
+  &quot;README.md&quot;:
+    strategy: replace
+
+  &quot;.env.local&quot;:
+    strategy: skip
 </code></pre>
 
 <h3 id="open-collective-readme-updater">Open Collective README updater</h3>
@@ -1156,7 +1170,7 @@ and <a href="https://tidelift.com/subscription/pkg/rubygems-kettle-dev?utm_sourc
 
 <p>Support us with a monthly donation and help us continue our activities. [<a href="https://opencollective.com/kettle-rb#backer">Become a backer</a>]</p>
 
-<p>NOTE: [kettle-readme-backers][kettle-readme-backers] updates this list every day, automatically.</p>
+<p>NOTE: <a href="https://github.com/kettle-rb/kettle-dev/blob/main/exe/kettle-readme-backers">kettle-readme-backers</a> updates this list every day, automatically.</p>
 
 <!-- OPENCOLLECTIVE-INDIVIDUALS:START -->
 <p>No backers yet. Be the first!<br>
@@ -1166,7 +1180,7 @@ and <a href="https://tidelift.com/subscription/pkg/rubygems-kettle-dev?utm_sourc
 
 <p>Become a sponsor and get your logo on our README on GitHub with a link to your site. [<a href="https://opencollective.com/kettle-rb#sponsor">Become a sponsor</a>]</p>
 
-<p>NOTE: [kettle-readme-backers][kettle-readme-backers] updates this list every day, automatically.</p>
+<p>NOTE: <a href="https://github.com/kettle-rb/kettle-dev/blob/main/exe/kettle-readme-backers">kettle-readme-backers</a> updates this list every day, automatically.</p>
 
 <!-- OPENCOLLECTIVE-ORGANIZATIONS:START -->
 <p>No sponsors yet. Be the first!<br>
@@ -1197,17 +1211,6 @@ or use the gem and think about how it could be better.</p>
 <p>We <a href="https://keepachangelog.com/en/1.0.0/"><img src="https://img.shields.io/badge/keep--a--changelog-1.0.0-34495e.svg?style=flat" alt="Keep A Changelog"></a> so if you make changes, remember to update it.</p>
 
 <p>See <a href="file.CONTRIBUTING.html" title="CONTRIBUTING.md">CONTRIBUTING.md</a> for more detailed instructions.</p>
-
-<h3 id="roadmap">Roadmap</h3>
-
-<ul class="task-list">
-  <li class="task-list-item">
-<input type="checkbox" class="task-list-item-checkbox" disabled>Template the RSpec test harness.</li>
-  <li class="task-list-item">
-<input type="checkbox" class="task-list-item-checkbox" disabled>Enhance gitlab pipeline configuration.</li>
-  <li class="task-list-item">
-<input type="checkbox" class="task-list-item-checkbox" disabled>Add focused, packaged, named, templating strategies, allowing, for example, only refreshing the Appraisals related template files.</li>
-</ul>
 
 <h3 id="-release-instructions">🚀 Release Instructions</h3>
 
@@ -1331,7 +1334,7 @@ Please consider sponsoring me or the project.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Fri Nov 28 22:23:55 2025 by
+  Generated on Fri Dec  5 13:45:04 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.37 (ruby-3.4.7).
 </div>

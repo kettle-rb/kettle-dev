@@ -20,13 +20,116 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- Added `.kettle-dev.yml` configuration file for per-file merge options
+  - Hybrid format: `defaults` for shared merge options, `patterns` for glob fallbacks, `files` for per-file config
+  - Nested directory structure under `files` allows individual file configuration
+  - Supports all `Prism::Merge::SmartMerger` options: `signature_match_preference`, `add_template_only_nodes`, `freeze_token`, `max_recursion_depth`
+  - Added `TemplateHelpers.kettle_config`, `.config_for`, `.find_file_config` methods
+  - Added spec coverage in `template_helpers_config_spec.rb`
+
 ### Changed
+
+- **BREAKING**: Replaced `template_manifest.yml` with `.kettle-dev.yml`
+  - New hybrid format supports both glob patterns and per-file configuration
+  - `TemplateHelpers.load_manifest` now reads from `.kettle-dev.yml` patterns section
+  - `TemplateHelpers.strategy_for` checks explicit file configs before falling back to patterns
+- **BREAKING**: Simplified `SourceMerger` to fully rely on prism-merge for AST merging
+  - Reduced from ~610 lines to ~175 lines (71% reduction)
+  - Removed custom newline normalization - prism-merge preserves original formatting
+  - Removed custom comment deduplication logic - prism-merge handles this natively
+  - All strategies (`:skip`, `:replace`, `:append`, `:merge`) now use prism-merge consistently
+  - Freeze blocks (`kettle-dev:freeze` / `kettle-dev:unfreeze`) handled by prism-merge's `freeze_token` option
 
 ### Deprecated
 
 ### Removed
 
+- Removed unused methods from `SourceMerger`:
+  - `normalize_source` - replaced by prism-merge
+  - `normalize_newlines` - prism-merge preserves original formatting
+  - `shebang?`, `magic_comment?`, `ruby_magic_comment_key?` - no longer needed
+  - Comment extraction/deduplication: `extract_magic_comments`, `extract_file_leading_comments`,
+    `create_comment_tuples`, `deduplicate_comment_sequences`, `deduplicate_sequences_pass1`,
+    `deduplicate_singles_pass2`, `extract_nodes_with_comments`, `count_blank_lines_before`,
+    `build_source_from_nodes`
+  - Unused comment restoration: `restore_custom_leading_comments`, `deduplicate_leading_comment_block`,
+    `extract_comment_lines`, `normalize_comment`, `leading_comment_block`
+- Removed unused constants: `RUBY_MAGIC_COMMENT_KEYS`, `MAGIC_COMMENT_REGEXES`
+
 ### Fixed
+
+- Fixed `PrismAppraisals` various comment chunk spacing
+  - extract_block_header:
+    - skips the blank spacer immediately above an `appraise` block
+    - treats any following blank line as the stop boundary once comment lines have been collected
+    - prevents preamble comments from being pulled into the first block’s header
+  - restores expected ordering:
+    - magic comments and their blank line stay at the top
+    - block headers remain adjacent to their blocks
+    - preserves blank lines between comment chunks
+- Fixed `SourceMerger` freeze block location preservation
+  - Freeze blocks now stay in their original location in the file structure
+  - Skip normalization for files with existing freeze blocks to prevent movement
+  - Only include contiguous comments immediately before freeze markers (no arbitrary 3-line lookback)
+  - Don't add freeze reminder to files that already have freeze/unfreeze blocks
+  - Prevents unrelated comments from being incorrectly captured in freeze block ranges
+  - Added comprehensive test coverage for multiple freeze blocks at different nesting levels
+- Fixed `TemplateTask` to not override template summary/description with empty strings from destination gemspec
+  - Only carries over summary/description when they contain actual content (non-empty)
+  - Allows token replacements to work correctly (e.g., `kettle-dev summary` → `my-gem summary`)
+  - Prevents empty destination fields from erasing meaningful template values
+- Fixed `SourceMerger` magic comment ordering and freeze block protection
+  - Magic comments now preserve original order
+  - No blank lines inserted between consecutive magic comments
+  - Freeze reminder block properly separated from magic comments (not merged)
+  - Leverages Prism's built-in `parse_result.magic_comments` API for accurate detection
+  - Detects `kettle-dev:freeze/unfreeze` pairs using Prism, then reclassifies as file-level comments to keep blocks intact
+  - Removed obsolete `is_magic_comment?` method in favor of Prism's native detection
+- Fixed `PrismGemspec` and `PrismGemfile` to use pure Prism AST traversal instead of regex fallbacks
+  - Removed regex-based `extract_gemspec_emoji` that parsed `spec.summary =` and `spec.description =` with regex
+  - Now traverses Prism AST to find Gem::Specification block, extracts summary/description nodes, and gets literal values
+  - Removed regex-based source line detection in `PrismGemfile.merge_gem_calls`
+  - Now uses `PrismUtils.statement_key` to find source statements via AST instead of `ln =~ /^\s*source\s+/`
+  - Aligns with project goal: move away from regex parsing toward proper AST manipulation with Prism
+  - All functionality preserved, tested, and working correctly
+- Fixed `PrismGemspec.replace_gemspec_fields` block parameter extraction to use Prism AST
+  - **CRITICAL**: Was using regex fallback that incorrectly captured entire block body as parameter name
+  - Removed buggy regex fallback in favor of pure Prism AST traversal
+  - Now properly extracts block parameter from Prism::BlockParametersNode → Prism::ParametersNode → Prism::RequiredParameterNode
+- Fixed `PrismGemspec.replace_gemspec_fields` insert offset calculation for emoji-containing gemspecs
+  - **CRITICAL**: Was using character length (`String#length`) instead of byte length (`String#bytesize`) to calculate insert offset
+  - When gemspecs contain multi-byte UTF-8 characters (emojis like 🍲), character length != byte length
+  - This caused fields to be inserted at wrong byte positions, resulting in truncated strings and massive corruption
+  - Changed `body_src.rstrip.length` to `body_src.rstrip.bytesize` for correct byte-offset calculations
+  - Prevents gemspec templating from producing corrupted output with truncated dependency lines
+  - Added comprehensive debug logging to trace byte offset calculations and edit operations
+- Fixed `SourceMerger` variable assignment duplication during merge operations
+  - `node_signature` now identifies variable/constant assignments by name only, not full source
+  - Previously used full source text as signature, causing duplicates when assignment bodies differed
+  - Added specific handlers for: LocalVariableWriteNode, InstanceVariableWriteNode, ClassVariableWriteNode, ConstantWriteNode, GlobalVariableWriteNode
+  - Also added handlers for ClassNode and ModuleNode to match by name
+  - Example: `gem_version = ...` assignments with different bodies now correctly merge instead of duplicating
+  - Prevents `bin/kettle-dev-setup` from creating duplicate variable assignments in gemspecs and other files
+  - Added comprehensive specs for variable assignment deduplication and idempotency
+- Fixed `SourceMerger` conditional block duplication during merge operations
+  - `node_signature` now identifies conditional nodes (if/unless/case) by their predicate only
+  - Previously used full source text, causing duplicate blocks when template updates conditional bodies
+  - Example: if ENV["FOO"] blocks with different bodies now correctly merge instead of duplicating
+  - Prevents `bin/kettle-dev-setup` from creating duplicate if/else blocks in gemfiles
+  - Added comprehensive specs for conditional merging behavior and idempotency
+- Fixed `PrismGemspec.replace_gemspec_fields` to use byte-aware string operations
+  - **CRITICAL**: Was using character-based `String#[]=` with Prism's byte offsets
+  - This caused catastrophic corruption when emojis or multi-byte UTF-8 characters were present
+  - Symptoms: gemspec blocks duplicated/fragmented, statements escaped outside blocks
+  - Now uses `byteslice` and byte-aware concatenation for all edit operations
+  - Prevents gemspec templating from producing mangled output with duplicated Gem::Specification blocks
+- Fixed `PrismGemspec.replace_gemspec_fields` to correctly handle multi-byte UTF-8 characters (e.g., emojis)
+  - Prism uses byte offsets, not character offsets, when parsing Ruby code
+  - Changed string slicing from `String#[]` to `String#byteslice` for all offset-based operations
+  - Added validation to use `String#bytesize` instead of `String#length` for offset bounds checking
+  - Prevents `TypeError: no implicit conversion of nil into String` when gemspecs contain emojis
+  - Ensures gemspec field carryover works correctly with emoji in summary/description fields
+  - Enhanced error reporting to show backtraces when debug mode is enabled
 
 ### Security
 
@@ -1161,7 +1264,7 @@ Please file a bug if you notice a violation of semantic versioning.
   - <!-- RELEASE-NOTES-FOOTER-END -->
 - truffle workflow: Repeat attempts for bundle install and appraisal bundle before failure
 - global token replacement during kettle:dev:install
-  - {KETTLE|DEV|GEM} => kettle-dev
+  - kettle-dev => kettle-dev
   - {RUBOCOP|LTS|CONSTRAINT} => dynamic
   - {RUBOCOP|RUBY|GEM} => dynamic
   - default to rubocop-ruby1_8 if no minimum ruby specified

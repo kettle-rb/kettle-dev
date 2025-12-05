@@ -1,3 +1,11 @@
+# frozen_string_literal: true
+
+# To retain during kettle-dev templating:
+#     kettle-dev:freeze
+#     # ... your code
+#     kettle-dev:unfreeze
+#
+
 # NOTE: It is preferable to list development dependencies in the gemspec due to increased
 #       visibility and discoverability on the gem server.
 #       However, this gem sits underneath all my other gems, and also "depends on" many of them.

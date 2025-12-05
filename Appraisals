@@ -1,5 +1,11 @@
 # frozen_string_literal: true
 
+# kettle-dev:freeze
+# To retain chunks of comments & code during kettle-dev templating:
+# Wrap custom sections with freeze markers (e.g., as above and below this comment chunk).
+# kettle-dev will then preserve content between those markers across template runs.
+# kettle-dev:unfreeze
+
 # HOW TO UPDATE APPRAISALS (will run rubocop_gradual's autocorrect afterward):
 #   bin/rake appraisals:update
 
@@ -25,127 +31,105 @@ appraise "unlocked_deps" do
   eval_gemfile "modular/optional.gemfile"
   eval_gemfile "modular/recording/r3/recording.gemfile"
   eval_gemfile "modular/style.gemfile"
+  eval_gemfile "modular/templating.gemfile"
   eval_gemfile "modular/x_std_libs.gemfile"
-  # Dependencies injected by the kettle-dev-setup script & kettle:dev:install rake task
-  #  eval_gemfile "modular/injected.gemfile"
 end
 
 # Used for head (nightly) releases of ruby, truffleruby, and jruby.
 # Split into discrete appraisals if one of them needs a dependency locked discretely.
 appraise "head" do
+  # Why is gem "cgi" here? See: https://github.com/vcr/vcr/issues/1057
+  #  gem "cgi", ">= 0.5"
   gem "benchmark", "~> 0.4", ">= 0.4.1"
-  # Why is cgi gem here? See: https://github.com/vcr/vcr/issues/1057
-  gem "cgi", ">= 0.5"
   eval_gemfile "modular/recording/r3/recording.gemfile"
+  eval_gemfile "modular/templating.gemfile"
   eval_gemfile "modular/x_std_libs.gemfile"
-  # Dependencies injected by the kettle-dev-setup script & kettle:dev:install rake task
-  #  eval_gemfile "modular/injected.gemfile"
+  # Why is cgi gem here? See: https://github.com/vcr/vcr/issues/1057
+  gem("cgi", ">= 0.5")
 end
 
 # Used for current releases of ruby, truffleruby, and jruby.
 # Split into discrete appraisals if one of them needs a dependency locked discretely.
 appraise "current" do
   eval_gemfile "modular/recording/r3/recording.gemfile"
+  eval_gemfile "modular/templating.gemfile"
   eval_gemfile "modular/x_std_libs.gemfile"
-  # Dependencies injected by the kettle-dev-setup script & kettle:dev:install rake task
-  #  eval_gemfile "modular/injected.gemfile"
 end
 
 # Test current Rubies against head versions of runtime dependencies
 appraise "dep-heads" do
   eval_gemfile "modular/runtime_heads.gemfile"
+  eval_gemfile "modular/templating.gemfile"
 end
 
 appraise "ruby-2-3" do
   eval_gemfile "modular/recording/r2.3/recording.gemfile"
   eval_gemfile "modular/x_std_libs/r2.3/libs.gemfile"
-  # Dependencies injected by the kettle-dev-setup script & kettle:dev:install rake task
-  #  eval_gemfile "modular/injected.gemfile"
 end
 
 appraise "ruby-2-4" do
   eval_gemfile "modular/recording/r2.4/recording.gemfile"
   eval_gemfile "modular/x_std_libs/r2.4/libs.gemfile"
-  # Dependencies injected by the kettle-dev-setup script & kettle:dev:install rake task
-  #  eval_gemfile "modular/injected.gemfile"
 end
 
 appraise "ruby-2-5" do
   eval_gemfile "modular/recording/r2.5/recording.gemfile"
   eval_gemfile "modular/x_std_libs/r2.6/libs.gemfile"
-  # Dependencies injected by the kettle-dev-setup script & kettle:dev:install rake task
-  #  eval_gemfile "modular/injected.gemfile"
 end
 
 appraise "ruby-2-6" do
   eval_gemfile "modular/recording/r2.5/recording.gemfile"
   eval_gemfile "modular/x_std_libs/r2.6/libs.gemfile"
-  # Dependencies injected by the kettle-dev-setup script & kettle:dev:install rake task
-  #  eval_gemfile "modular/injected.gemfile"
 end
 
 appraise "ruby-2-7" do
   eval_gemfile "modular/recording/r2.5/recording.gemfile"
+  eval_gemfile "modular/templating.gemfile"
   eval_gemfile "modular/x_std_libs/r2/libs.gemfile"
-  # Dependencies injected by the kettle-dev-setup script & kettle:dev:install rake task
-  #  eval_gemfile "modular/injected.gemfile"
 end
 
 appraise "ruby-3-0" do
   eval_gemfile "modular/recording/r3/recording.gemfile"
+  eval_gemfile "modular/templating.gemfile"
   eval_gemfile "modular/x_std_libs/r3.1/libs.gemfile"
-  # Dependencies injected by the kettle-dev-setup script & kettle:dev:install rake task
-  #  eval_gemfile "modular/injected.gemfile"
 end
 
 appraise "ruby-3-1" do
-  # all versions of git gem are incompatible with truffleruby v23.0, syntactically.
-  # So tests relying on the git gem are skipped, to avoid loading it.
   eval_gemfile "modular/recording/r3/recording.gemfile"
+  eval_gemfile "modular/templating.gemfile"
   eval_gemfile "modular/x_std_libs/r3.1/libs.gemfile"
-  # Dependencies injected by the kettle-dev-setup script & kettle:dev:install rake task
-  #  eval_gemfile "modular/injected.gemfile"
 end
 
 appraise "ruby-3-2" do
-  # all versions of git gem are incompatible with truffleruby v23.1, syntactically.
-  # So tests relying on the git gem are skipped, to avoid loading it.
   eval_gemfile "modular/recording/r3/recording.gemfile"
+  eval_gemfile "modular/templating.gemfile"
   eval_gemfile "modular/x_std_libs/r3/libs.gemfile"
-  # Dependencies injected by the kettle-dev-setup script & kettle:dev:install rake task
-  #  eval_gemfile "modular/injected.gemfile"
 end
 
 appraise "ruby-3-3" do
   eval_gemfile "modular/recording/r3/recording.gemfile"
+  eval_gemfile "modular/templating.gemfile"
   eval_gemfile "modular/x_std_libs/r3/libs.gemfile"
-  # Dependencies injected by the kettle-dev-setup script & kettle:dev:install rake task
-  #  eval_gemfile "modular/injected.gemfile"
 end
 
 # Only run security audit on the latest version of Ruby
 appraise "audit" do
   eval_gemfile "modular/x_std_libs.gemfile"
-  # Dependencies injected by the kettle-dev-setup script & kettle:dev:install rake task
-  #  eval_gemfile "modular/injected.gemfile"
 end
 
 # Only run coverage on the latest version of Ruby
 appraise "coverage" do
   eval_gemfile "modular/coverage.gemfile"
   eval_gemfile "modular/optional.gemfile"
-  eval_gemfile "modular/recording/r3/recording.gemfile"
   eval_gemfile "modular/x_std_libs.gemfile"
+  eval_gemfile "modular/recording/r3/recording.gemfile"
+  eval_gemfile "modular/templating.gemfile"
   # Normally style is included in coverage runs only, but we need it for the test suite to get full coverage
-  eval_gemfile "modular/style.gemfile"
-  # Dependencies injected by the kettle-dev-setup script & kettle:dev:install rake task
-  #  eval_gemfile "modular/injected.gemfile"
+  eval_gemfile("modular/style.gemfile")
 end
 
 # Only run linter on the latest version of Ruby (but, in support of oldest supported Ruby version)
 appraise "style" do
   eval_gemfile "modular/style.gemfile"
   eval_gemfile "modular/x_std_libs.gemfile"
-  # Dependencies injected by the kettle-dev-setup script & kettle:dev:install rake task
-  #  eval_gemfile "modular/injected.gemfile"
 end

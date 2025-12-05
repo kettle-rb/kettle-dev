@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 # External gems
+
 # It's not reasonable to test this ENV variable
 # :nocov:
 require "require_bench" if ENV.fetch("REQUIRE_BENCH", "false").casecmp("true").zero?
@@ -89,6 +90,7 @@ module Kettle
 
         ctx = context ? context.to_s : "KETTLE-DEV-RESCUE"
         Kernel.warn("[#{ctx}] #{error.class}: #{error.message}")
+        Kernel.warn(error.backtrace.first(5).join("\n")) if error.respond_to?(:backtrace) && error.backtrace
       rescue StandardError
         # never raise from debug logging
       end

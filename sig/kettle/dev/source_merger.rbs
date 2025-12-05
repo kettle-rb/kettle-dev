@@ -2,15 +2,24 @@
 
 module Kettle
   module Dev
-    # Prism-based AST merging for templated Ruby files
+    # Prism-based AST merging for templated Ruby files.
+    # Handles strategy dispatch (skip/replace/append/merge).
+    #
+    # Uses prism-merge for AST-aware merging with support for:
+    # - Freeze blocks (kettle-dev:freeze / kettle-dev:unfreeze)
+    # - Comment preservation
+    # - Signature-based node matching
     module SourceMerger
-      FREEZE_START: Regexp
-      FREEZE_END: Regexp
-      FREEZE_BLOCK: Regexp
-      FREEZE_REMINDER: String
       BUG_URL: String
 
       # Apply a templating strategy to merge source and destination Ruby files
+      #
+      # @param strategy [Symbol] Merge strategy - :skip, :replace, :append, or :merge
+      # @param src [String] Template source content
+      # @param dest [String] Destination file content
+      # @param path [String] File path (for error messages)
+      # @return [String] Merged content with comments preserved
+      # @raise [Kettle::Dev::Error] If strategy is unknown or merge fails
       def self.apply: (
         strategy: Symbol,
         src: String,
@@ -18,69 +27,44 @@ module Kettle
         path: String
       ) -> String
 
-      # Ensure freeze reminder comment is present at the top of content
-      def self.ensure_reminder: (String content) -> String
-
-      # Normalize source code while preserving formatting
-      def self.normalize_source: (String source) -> String
-
-      # Check if freeze reminder is present in content
-      def self.reminder_present?: (String content) -> bool
-
-      # Find index where freeze reminder should be inserted
-      def self.reminder_insertion_index: (String content) -> Integer
-
-      # Check if line is a shebang
-      def self.shebang?: (String line) -> bool
-
-      # Check if line is a frozen_string_literal comment
-      def self.frozen_comment?: (String line) -> bool
-
-      # Merge kettle-dev:freeze blocks from destination into source content
-      def self.merge_freeze_blocks: (String src_content, String dest_content) -> String
-
-      # Extract freeze blocks from text
-      def self.freeze_blocks: (String? text) -> Array[Hash[Symbol, untyped]]
-
       # Normalize strategy symbol
+      #
+      # @param strategy [Symbol, nil] Strategy to normalize
+      # @return [Symbol] Normalized strategy (:skip if nil)
       def self.normalize_strategy: (Symbol? strategy) -> Symbol
 
       # Warn about bugs and print error information
+      #
+      # @param path [String] File path that caused the error
+      # @param error [StandardError] The error that occurred
+      # @return [void]
       def self.warn_bug: (String path, StandardError error) -> void
 
       # Ensure text ends with newline
+      #
+      # @param text [String, nil] Text to process
+      # @return [String] Text with trailing newline
       def self.ensure_trailing_newline: (String? text) -> String
 
-      # Apply append strategy
+      # Apply append strategy using prism-merge
+      #
+      # @param src_content [String] Template source content
+      # @param dest_content [String] Destination content
+      # @return [String] Merged content with destination preference
       def self.apply_append: (String src_content, String dest_content) -> String
 
-      # Apply merge strategy
+      # Apply merge strategy using prism-merge
+      #
+      # @param src_content [String] Template source content
+      # @param dest_content [String] Destination content
+      # @return [String] Merged content with template preference
       def self.apply_merge: (String src_content, String dest_content) -> String
 
-      # Merge node information
-      def self.merge_node_info: (Array[untyped] signature, Hash[Symbol, untyped] dest_node_info, Hash[Symbol, untyped] src_node_info) -> Hash[Symbol, untyped]
-
-      # Merge block node information
-      def self.merge_block_node_info: (Hash[Symbol, untyped] src_node_info) -> Hash[Symbol, untyped]
-
-      # Perform Prism-based merge with block
-      def self.prism_merge: (String src_content, String dest_content) { (Array[Hash[Symbol, untyped]], Array[Hash[Symbol, untyped]], Prism::ParseResult, Prism::ParseResult) -> Array[Hash[Symbol, untyped]] } -> String
-
-      # Extract nodes with comments from parse result
-      def self.extract_nodes_with_comments: (Prism::ParseResult parse_result) -> Array[Hash[Symbol, untyped]]
-
-      # Build source from node information array
-      def self.build_source_from_nodes: (Array[Hash[Symbol, untyped]] node_infos) -> String
-
-      # Generate signature for node
-      def self.node_signature: (Prism::Node? node) -> Array[untyped]
-
-      # Restore custom leading comments from destination
-      def self.restore_custom_leading_comments: (String dest_content, String merged_content) -> String
-
-      # Extract leading comment block from content
-      def self.leading_comment_block: (String content) -> String
+      # Create a signature generator for prism-merge
+      # Handles various Ruby node types for proper matching during merge operations
+      #
+      # @return [Proc] Signature generator lambda
+      def self.create_signature_generator: () -> ^(Prism::Node) -> (Array[untyped] | Prism::Node)
     end
   end
 end
-

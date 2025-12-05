@@ -157,6 +157,75 @@
         <li class="public ">
   <span class="summary_signature">
     
+      <a href="#extract_gemspec_emoji-class_method" title="extract_gemspec_emoji (class method)">.<strong>extract_gemspec_emoji</strong>(gemspec_content)  &#x21d2; String<sup>?</sup> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Extract emoji from gemspec summary or description.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#extract_leading_emoji-class_method" title="extract_leading_emoji (class method)">.<strong>extract_leading_emoji</strong>(text)  &#x21d2; String<sup>?</sup> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Extract leading emoji from text using Unicode grapheme clusters.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#extract_readme_h1_emoji-class_method" title="extract_readme_h1_emoji (class method)">.<strong>extract_readme_h1_emoji</strong>(readme_content)  &#x21d2; String<sup>?</sup> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Extract emoji from README H1 heading.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
       <a href="#remove_spec_dependency-class_method" title="remove_spec_dependency (class method)">.<strong>remove_spec_dependency</strong>(content, gem_name)  &#x21d2; Object </a>
     
 
@@ -195,6 +264,29 @@
 
   
     <span class="summary_desc"><div class='inline'><p>Replace scalar or array assignments inside a Gem::Specification.new block.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#sync_readme_h1_emoji-class_method" title="sync_readme_h1_emoji (class method)">.<strong>sync_readme_h1_emoji</strong>(readme_content:, gemspec_content:)  &#x21d2; String </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Synchronize README H1 emoji with gemspec emoji.</p>
 </div></span>
   
 </li>
@@ -309,95 +401,95 @@ Returns the modified gemspec content (or original on error).</p>
       <pre class="lines">
 
 
-196
-197
-198
-199
-200
-201
-202
-203
-204
-205
-206
-207
-208
-209
-210
-211
-212
-213
-214
-215
-216
-217
-218
-219
-220
-221
-222
-223
-224
-225
-226
-227
-228
-229
-230
-231
-232
-233
-234
-235
-236
-237
-238
-239
-240
-241
-242
-243
-244
-245
-246
-247
-248
-249
-250
-251
-252
-253
-254
-255
-256
-257
-258
-259
-260
-261
-262
-263
-264
-265
-266
-267
-268
-269
-270
-271
-272
-273
-274
-275
-276
-277
-278
-279
-280
-281</pre>
+482
+483
+484
+485
+486
+487
+488
+489
+490
+491
+492
+493
+494
+495
+496
+497
+498
+499
+500
+501
+502
+503
+504
+505
+506
+507
+508
+509
+510
+511
+512
+513
+514
+515
+516
+517
+518
+519
+520
+521
+522
+523
+524
+525
+526
+527
+528
+529
+530
+531
+532
+533
+534
+535
+536
+537
+538
+539
+540
+541
+542
+543
+544
+545
+546
+547
+548
+549
+550
+551
+552
+553
+554
+555
+556
+557
+558
+559
+560
+561
+562
+563
+564
+565
+566
+567</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/prism_gemspec.rb', line 196</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/prism_gemspec.rb', line 482</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_ensure_development_dependencies'>ensure_development_dependencies</span><span class='lparen'>(</span><span class='id identifier rubyid_content'>content</span><span class='comma'>,</span> <span class='id identifier rubyid_desired'>desired</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='id identifier rubyid_content'>content</span> <span class='kw'>if</span> <span class='id identifier rubyid_desired'>desired</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>||</span> <span class='id identifier rubyid_desired'>desired</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
@@ -491,52 +583,9 @@ Returns the modified gemspec content (or original on error).</p>
 </div>
     
       <div class="method_details ">
-  <h3 class="signature " id="remove_spec_dependency-class_method">
+  <h3 class="signature " id="extract_gemspec_emoji-class_method">
   
-    .<strong>remove_spec_dependency</strong>(content, gem_name)  &#x21d2; <tt>Object</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p>Remove spec.add_dependency / add_development_dependency calls that name the given gem<br />
-Works by locating the Gem::Specification block and filtering out matching call lines.</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-188
-189
-190
-191</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/prism_gemspec.rb', line 188</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_remove_spec_dependency'>remove_spec_dependency</span><span class='lparen'>(</span><span class='id identifier rubyid_content'>content</span><span class='comma'>,</span> <span class='id identifier rubyid_gem_name'>gem_name</span><span class='rparen'>)</span>
-  <span class='kw'>return</span> <span class='id identifier rubyid_content'>content</span> <span class='kw'>if</span> <span class='id identifier rubyid_gem_name'>gem_name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
-  <span class='id identifier rubyid_replace_gemspec_fields'>replace_gemspec_fields</span><span class='lparen'>(</span><span class='id identifier rubyid_content'>content</span><span class='comma'>,</span> <span class='label'>_remove_self_dependency:</span> <span class='id identifier rubyid_gem_name'>gem_name</span><span class='rparen'>)</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="replace_gemspec_fields-class_method">
-  
-    .<strong>replace_gemspec_fields</strong>(content, replacements = {})  &#x21d2; <tt>Object</tt> 
+    .<strong>extract_gemspec_emoji</strong>(gemspec_content)  &#x21d2; <tt>String</tt><sup>?</sup> 
   
 
   
@@ -544,15 +593,49 @@ Works by locating the Gem::Specification block and filtering out matching call l
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Replace scalar or array assignments inside a Gem::Specification.new block.<br />
-<code>replacements</code> is a hash mapping symbol field names to string or array values.<br />
-Operates only inside the Gem::Specification block to avoid accidental matches.</p>
+    <p>Extract emoji from gemspec summary or description</p>
 
 
   </div>
 </div>
 <div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
   
+    <li>
+      
+        <span class='name'>gemspec_content</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Gemspec content</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>String</tt>, <tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The emoji from summary/description, or nil if none found</p>
+</div>
+      
+    </li>
+  
+</ul>
 
 </div><table class="source_code">
   <tr>
@@ -560,43 +643,6 @@ Operates only inside the Gem::Specification block to avoid accidental matches.</
       <pre class="lines">
 
 
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44
-45
-46
-47
-48
-49
-50
-51
-52
-53
-54
-55
-56
-57
 58
 59
 60
@@ -660,50 +706,348 @@ Operates only inside the Gem::Specification block to avoid accidental matches.</
 118
 119
 120
-121
-122
-123
-124
-125
-126
-127
-128
-129
-130
-131
-132
-133
-134
-135
-136
-137
-138
-139
-140
-141
-142
-143
-144
-145
-146
-147
-148
-149
-150
-151
-152
-153
-154
-155
-156
-157
-158
-159
-160
-161
-162
-163
-164
+121</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/prism_gemspec.rb', line 58</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_extract_gemspec_emoji'>extract_gemspec_emoji</span><span class='lparen'>(</span><span class='id identifier rubyid_gemspec_content'>gemspec_content</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_gemspec_content'>gemspec_content</span>
+
+  <span class='comment'># Parse with Prism to find summary/description assignments
+</span>  <span class='id identifier rubyid_parse_result'>parse_result</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="PrismUtils.html" title="Kettle::Dev::PrismUtils (module)">PrismUtils</a></span></span><span class='period'>.</span><span class='id identifier rubyid_parse_with_comments'><span class='object_link'><a href="PrismUtils.html#parse_with_comments-class_method" title="Kettle::Dev::PrismUtils.parse_with_comments (method)">parse_with_comments</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_gemspec_content'>gemspec_content</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_parse_result'>parse_result</span><span class='period'>.</span><span class='id identifier rubyid_success?'>success?</span>
+
+  <span class='id identifier rubyid_statements'>statements</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="PrismUtils.html" title="Kettle::Dev::PrismUtils (module)">PrismUtils</a></span></span><span class='period'>.</span><span class='id identifier rubyid_extract_statements'><span class='object_link'><a href="PrismUtils.html#extract_statements-class_method" title="Kettle::Dev::PrismUtils.extract_statements (method)">extract_statements</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_parse_result'>parse_result</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_statements'>statements</span><span class='rparen'>)</span>
+
+  <span class='comment'># Find Gem::Specification.new block
+</span>  <span class='id identifier rubyid_gemspec_call'>gemspec_call</span> <span class='op'>=</span> <span class='id identifier rubyid_statements'>statements</span><span class='period'>.</span><span class='id identifier rubyid_find'>find</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_s'>s</span><span class='op'>|</span>
+    <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Prism</span><span class='op'>::</span><span class='const'>CallNode</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span>
+      <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_block'>block</span> <span class='op'>&amp;&amp;</span>
+      <span class='const'><span class='object_link'><a href="PrismUtils.html" title="Kettle::Dev::PrismUtils (module)">PrismUtils</a></span></span><span class='period'>.</span><span class='id identifier rubyid_extract_const_name'><span class='object_link'><a href="PrismUtils.html#extract_const_name-class_method" title="Kettle::Dev::PrismUtils.extract_const_name (method)">extract_const_name</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_receiver'>receiver</span><span class='rparen'>)</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Gem::Specification</span><span class='tstring_end'>&quot;</span></span> <span class='op'>&amp;&amp;</span>
+      <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span> <span class='op'>==</span> <span class='symbol'>:new</span>
+  <span class='kw'>end</span>
+  <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_gemspec_call'>gemspec_call</span>
+
+  <span class='id identifier rubyid_body_node'>body_node</span> <span class='op'>=</span> <span class='id identifier rubyid_gemspec_call'>gemspec_call</span><span class='period'>.</span><span class='id identifier rubyid_block'>block</span><span class='op'>&amp;.</span><span class='id identifier rubyid_body'>body</span>
+  <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_body_node'>body_node</span>
+
+  <span class='id identifier rubyid_body_stmts'>body_stmts</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="PrismUtils.html" title="Kettle::Dev::PrismUtils (module)">PrismUtils</a></span></span><span class='period'>.</span><span class='id identifier rubyid_extract_statements'><span class='object_link'><a href="PrismUtils.html#extract_statements-class_method" title="Kettle::Dev::PrismUtils.extract_statements (method)">extract_statements</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_body_node'>body_node</span><span class='rparen'>)</span>
+
+  <span class='comment'># Try to extract from summary first, then description
+</span>  <span class='id identifier rubyid_summary_node'>summary_node</span> <span class='op'>=</span> <span class='id identifier rubyid_body_stmts'>body_stmts</span><span class='period'>.</span><span class='id identifier rubyid_find'>find</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_n'>n</span><span class='op'>|</span>
+    <span class='id identifier rubyid_n'>n</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Prism</span><span class='op'>::</span><span class='const'>CallNode</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span>
+      <span class='id identifier rubyid_n'>n</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>summary</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span>
+      <span class='id identifier rubyid_n'>n</span><span class='period'>.</span><span class='id identifier rubyid_receiver'>receiver</span>
+  <span class='kw'>end</span>
+
+  <span class='kw'>if</span> <span class='id identifier rubyid_summary_node'>summary_node</span>
+    <span class='id identifier rubyid_first_arg'>first_arg</span> <span class='op'>=</span> <span class='id identifier rubyid_summary_node'>summary_node</span><span class='period'>.</span><span class='id identifier rubyid_arguments'>arguments</span><span class='op'>&amp;.</span><span class='id identifier rubyid_arguments'>arguments</span><span class='op'>&amp;.</span><span class='id identifier rubyid_first'>first</span>
+    <span class='id identifier rubyid_summary_value'>summary_value</span> <span class='op'>=</span> <span class='kw'>begin</span>
+      <span class='const'><span class='object_link'><a href="PrismUtils.html" title="Kettle::Dev::PrismUtils (module)">PrismUtils</a></span></span><span class='period'>.</span><span class='id identifier rubyid_extract_literal_value'><span class='object_link'><a href="PrismUtils.html#extract_literal_value-class_method" title="Kettle::Dev::PrismUtils.extract_literal_value (method)">extract_literal_value</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_first_arg'>first_arg</span><span class='rparen'>)</span>
+    <span class='kw'>rescue</span>
+      <span class='kw'>nil</span>
+    <span class='kw'>end</span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_summary_value'>summary_value</span>
+      <span class='id identifier rubyid_emoji'>emoji</span> <span class='op'>=</span> <span class='id identifier rubyid_extract_leading_emoji'>extract_leading_emoji</span><span class='lparen'>(</span><span class='id identifier rubyid_summary_value'>summary_value</span><span class='rparen'>)</span>
+      <span class='kw'>return</span> <span class='id identifier rubyid_emoji'>emoji</span> <span class='kw'>if</span> <span class='id identifier rubyid_emoji'>emoji</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+
+  <span class='id identifier rubyid_description_node'>description_node</span> <span class='op'>=</span> <span class='id identifier rubyid_body_stmts'>body_stmts</span><span class='period'>.</span><span class='id identifier rubyid_find'>find</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_n'>n</span><span class='op'>|</span>
+    <span class='id identifier rubyid_n'>n</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Prism</span><span class='op'>::</span><span class='const'>CallNode</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span>
+      <span class='id identifier rubyid_n'>n</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>description</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span>
+      <span class='id identifier rubyid_n'>n</span><span class='period'>.</span><span class='id identifier rubyid_receiver'>receiver</span>
+  <span class='kw'>end</span>
+
+  <span class='kw'>if</span> <span class='id identifier rubyid_description_node'>description_node</span>
+    <span class='id identifier rubyid_first_arg'>first_arg</span> <span class='op'>=</span> <span class='id identifier rubyid_description_node'>description_node</span><span class='period'>.</span><span class='id identifier rubyid_arguments'>arguments</span><span class='op'>&amp;.</span><span class='id identifier rubyid_arguments'>arguments</span><span class='op'>&amp;.</span><span class='id identifier rubyid_first'>first</span>
+    <span class='id identifier rubyid_description_value'>description_value</span> <span class='op'>=</span> <span class='kw'>begin</span>
+      <span class='const'><span class='object_link'><a href="PrismUtils.html" title="Kettle::Dev::PrismUtils (module)">PrismUtils</a></span></span><span class='period'>.</span><span class='id identifier rubyid_extract_literal_value'><span class='object_link'><a href="PrismUtils.html#extract_literal_value-class_method" title="Kettle::Dev::PrismUtils.extract_literal_value (method)">extract_literal_value</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_first_arg'>first_arg</span><span class='rparen'>)</span>
+    <span class='kw'>rescue</span>
+      <span class='kw'>nil</span>
+    <span class='kw'>end</span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_description_value'>description_value</span>
+      <span class='id identifier rubyid_emoji'>emoji</span> <span class='op'>=</span> <span class='id identifier rubyid_extract_leading_emoji'>extract_leading_emoji</span><span class='lparen'>(</span><span class='id identifier rubyid_description_value'>description_value</span><span class='rparen'>)</span>
+      <span class='kw'>return</span> <span class='id identifier rubyid_emoji'>emoji</span> <span class='kw'>if</span> <span class='id identifier rubyid_emoji'>emoji</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+
+  <span class='kw'>nil</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="extract_leading_emoji-class_method">
+  
+    .<strong>extract_leading_emoji</strong>(text)  &#x21d2; <tt>String</tt><sup>?</sup> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Extract leading emoji from text using Unicode grapheme clusters</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>text</span>
+      
+      
+        <span class='type'>(<tt>String</tt>, <tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Text to extract emoji from</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>String</tt>, <tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The first emoji grapheme cluster, or nil if none found</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/prism_gemspec.rb', line 21</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_extract_leading_emoji'>extract_leading_emoji</span><span class='lparen'>(</span><span class='id identifier rubyid_text'>text</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_text'>text</span><span class='op'>&amp;.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:scan</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_text'>text</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+
+  <span class='comment'># Get first grapheme cluster
+</span>  <span class='id identifier rubyid_first'>first</span> <span class='op'>=</span> <span class='id identifier rubyid_text'>text</span><span class='period'>.</span><span class='id identifier rubyid_scan'>scan</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\X</span><span class='regexp_end'>/u</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span>
+  <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_first'>first</span>
+
+  <span class='comment'># Check if it&#39;s an emoji using Unicode emoji property
+</span>  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_emoji_re'>emoji_re</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../EmojiRegex.html" title="Kettle::EmojiRegex (module)">EmojiRegex</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../EmojiRegex.html#REGEX-constant" title="Kettle::EmojiRegex::REGEX (constant)">REGEX</a></span></span>
+    <span class='id identifier rubyid_first'>first</span> <span class='kw'>if</span> <span class='id identifier rubyid_first'>first</span><span class='period'>.</span><span class='id identifier rubyid_match?'>match?</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\A</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_emoji_re'>emoji_re</span><span class='period'>.</span><span class='id identifier rubyid_source'>source</span><span class='embexpr_end'>}</span><span class='regexp_end'>/u</span></span><span class='rparen'>)</span>
+  <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_debug_error'>debug_error</span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span>
+    <span class='comment'># Fallback: check if it&#39;s non-ASCII (simple heuristic)
+</span>    <span class='id identifier rubyid_first'>first</span> <span class='kw'>if</span> <span class='id identifier rubyid_first'>first</span><span class='period'>.</span><span class='id identifier rubyid_match?'>match?</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>[^\x00-\x7F]</span><span class='regexp_end'>/</span></span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="extract_readme_h1_emoji-class_method">
+  
+    .<strong>extract_readme_h1_emoji</strong>(readme_content)  &#x21d2; <tt>String</tt><sup>?</sup> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Extract emoji from README H1 heading</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>readme_content</span>
+      
+      
+        <span class='type'>(<tt>String</tt>, <tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>README content</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>String</tt>, <tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The emoji from the first H1, or nil if none found</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/prism_gemspec.rb', line 43</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_extract_readme_h1_emoji'>extract_readme_h1_emoji</span><span class='lparen'>(</span><span class='id identifier rubyid_readme_content'>readme_content</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_readme_content'>readme_content</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_readme_content'>readme_content</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+
+  <span class='id identifier rubyid_lines'>lines</span> <span class='op'>=</span> <span class='id identifier rubyid_readme_content'>readme_content</span><span class='period'>.</span><span class='id identifier rubyid_lines'>lines</span>
+  <span class='id identifier rubyid_h1_line'>h1_line</span> <span class='op'>=</span> <span class='id identifier rubyid_lines'>lines</span><span class='period'>.</span><span class='id identifier rubyid_find'>find</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_ln'>ln</span><span class='op'>|</span> <span class='id identifier rubyid_ln'>ln</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^#\s+</span><span class='regexp_end'>/</span></span> <span class='rbrace'>}</span>
+  <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_h1_line'>h1_line</span>
+
+  <span class='comment'># Extract text after &quot;# &quot;
+</span>  <span class='id identifier rubyid_text'>text</span> <span class='op'>=</span> <span class='id identifier rubyid_h1_line'>h1_line</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^#\s+</span><span class='regexp_end'>/</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_extract_leading_emoji'>extract_leading_emoji</span><span class='lparen'>(</span><span class='id identifier rubyid_text'>text</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="remove_spec_dependency-class_method">
+  
+    .<strong>remove_spec_dependency</strong>(content, gem_name)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Remove spec.add_dependency / add_development_dependency calls that name the given gem<br />
+Works by locating the Gem::Specification block and filtering out matching call lines.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+474
+475
+476
+477</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/prism_gemspec.rb', line 474</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_remove_spec_dependency'>remove_spec_dependency</span><span class='lparen'>(</span><span class='id identifier rubyid_content'>content</span><span class='comma'>,</span> <span class='id identifier rubyid_gem_name'>gem_name</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='id identifier rubyid_content'>content</span> <span class='kw'>if</span> <span class='id identifier rubyid_gem_name'>gem_name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+  <span class='id identifier rubyid_replace_gemspec_fields'>replace_gemspec_fields</span><span class='lparen'>(</span><span class='id identifier rubyid_content'>content</span><span class='comma'>,</span> <span class='label'>_remove_self_dependency:</span> <span class='id identifier rubyid_gem_name'>gem_name</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="replace_gemspec_fields-class_method">
+  
+    .<strong>replace_gemspec_fields</strong>(content, replacements = {})  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Replace scalar or array assignments inside a Gem::Specification.new block.<br />
+<code>replacements</code> is a hash mapping symbol field names to string or array values.<br />
+Operates only inside the Gem::Specification block to avoid accidental matches.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
 165
 166
 167
@@ -723,10 +1067,296 @@ Operates only inside the Gem::Specification block to avoid accidental matches.</
 181
 182
 183
-184</pre>
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390
+391
+392
+393
+394
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404
+405
+406
+407
+408
+409
+410
+411
+412
+413
+414
+415
+416
+417
+418
+419
+420
+421
+422
+423
+424
+425
+426
+427
+428
+429
+430
+431
+432
+433
+434
+435
+436
+437
+438
+439
+440
+441
+442
+443
+444
+445
+446
+447
+448
+449
+450
+451
+452
+453
+454
+455
+456
+457
+458
+459
+460
+461
+462
+463
+464
+465
+466
+467
+468
+469
+470</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/prism_gemspec.rb', line 21</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/prism_gemspec.rb', line 165</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_replace_gemspec_fields'>replace_gemspec_fields</span><span class='lparen'>(</span><span class='id identifier rubyid_content'>content</span><span class='comma'>,</span> <span class='id identifier rubyid_replacements'>replacements</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='id identifier rubyid_content'>content</span> <span class='kw'>if</span> <span class='id identifier rubyid_replacements'>replacements</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>||</span> <span class='id identifier rubyid_replacements'>replacements</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
@@ -739,47 +1369,59 @@ Operates only inside the Gem::Specification block to avoid accidental matches.</
   <span class='kw'>end</span>
   <span class='kw'>return</span> <span class='id identifier rubyid_content'>content</span> <span class='kw'>unless</span> <span class='id identifier rubyid_gemspec_call'>gemspec_call</span>
 
-  <span class='id identifier rubyid_call_src'>call_src</span> <span class='op'>=</span> <span class='id identifier rubyid_gemspec_call'>gemspec_call</span><span class='period'>.</span><span class='id identifier rubyid_slice'>slice</span>
+  <span class='id identifier rubyid_gemspec_call'>gemspec_call</span><span class='period'>.</span><span class='id identifier rubyid_slice'>slice</span>
 
-  <span class='comment'># Try to detect block parameter name (e.g., |spec|)
+  <span class='comment'># Extract block parameter name from Prism AST (e.g., |spec|)
 </span>  <span class='id identifier rubyid_blk_param'>blk_param</span> <span class='op'>=</span> <span class='kw'>nil</span>
-  <span class='kw'>begin</span>
-    <span class='kw'>if</span> <span class='id identifier rubyid_gemspec_call'>gemspec_call</span><span class='period'>.</span><span class='id identifier rubyid_block'>block</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_gemspec_call'>gemspec_call</span><span class='period'>.</span><span class='id identifier rubyid_block'>block</span><span class='period'>.</span><span class='id identifier rubyid_params'>params</span>
-      <span class='comment'># Attempt a few defensive ways to extract a param name
-</span>      <span class='kw'>if</span> <span class='id identifier rubyid_gemspec_call'>gemspec_call</span><span class='period'>.</span><span class='id identifier rubyid_block'>block</span><span class='period'>.</span><span class='id identifier rubyid_params'>params</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:parameters</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_gemspec_call'>gemspec_call</span><span class='period'>.</span><span class='id identifier rubyid_block'>block</span><span class='period'>.</span><span class='id identifier rubyid_params'>params</span><span class='period'>.</span><span class='id identifier rubyid_parameters'>parameters</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:first</span><span class='rparen'>)</span>
-        <span class='id identifier rubyid_p'>p</span> <span class='op'>=</span> <span class='id identifier rubyid_gemspec_call'>gemspec_call</span><span class='period'>.</span><span class='id identifier rubyid_block'>block</span><span class='period'>.</span><span class='id identifier rubyid_params'>params</span><span class='period'>.</span><span class='id identifier rubyid_parameters'>parameters</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span>
-        <span class='id identifier rubyid_blk_param'>blk_param</span> <span class='op'>=</span> <span class='id identifier rubyid_p'>p</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span> <span class='kw'>if</span> <span class='id identifier rubyid_p'>p</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:name</span><span class='rparen'>)</span>
-      <span class='kw'>elsif</span> <span class='id identifier rubyid_gemspec_call'>gemspec_call</span><span class='period'>.</span><span class='id identifier rubyid_block'>block</span><span class='period'>.</span><span class='id identifier rubyid_params'>params</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:first</span><span class='rparen'>)</span>
-        <span class='id identifier rubyid_p'>p</span> <span class='op'>=</span> <span class='id identifier rubyid_gemspec_call'>gemspec_call</span><span class='period'>.</span><span class='id identifier rubyid_block'>block</span><span class='period'>.</span><span class='id identifier rubyid_params'>params</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span>
-        <span class='id identifier rubyid_blk_param'>blk_param</span> <span class='op'>=</span> <span class='id identifier rubyid_p'>p</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span> <span class='kw'>if</span> <span class='id identifier rubyid_p'>p</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_p'>p</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:name</span><span class='rparen'>)</span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_gemspec_call'>gemspec_call</span><span class='period'>.</span><span class='id identifier rubyid_block'>block</span><span class='op'>&amp;.</span><span class='id identifier rubyid_parameters'>parameters</span>
+    <span class='comment'># Prism::BlockNode has a parameters property which is a Prism::BlockParametersNode
+</span>    <span class='comment'># BlockParametersNode has a parameters property which is a Prism::ParametersNode
+</span>    <span class='comment'># ParametersNode has a requireds array containing Prism::RequiredParameterNode objects
+</span>    <span class='id identifier rubyid_params_node'>params_node</span> <span class='op'>=</span> <span class='id identifier rubyid_gemspec_call'>gemspec_call</span><span class='period'>.</span><span class='id identifier rubyid_block'>block</span><span class='period'>.</span><span class='id identifier rubyid_parameters'>parameters</span>
+    <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_log'><span class='object_link'><a href="../Dev.html#debug_log-class_method" title="Kettle::Dev.debug_log (method)">debug_log</a></span></span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>PrismGemspec params_node class: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_params_node'>params_node</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+
+    <span class='kw'>if</span> <span class='id identifier rubyid_params_node'>params_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:parameters</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_params_node'>params_node</span><span class='period'>.</span><span class='id identifier rubyid_parameters'>parameters</span>
+      <span class='id identifier rubyid_inner_params'>inner_params</span> <span class='op'>=</span> <span class='id identifier rubyid_params_node'>params_node</span><span class='period'>.</span><span class='id identifier rubyid_parameters'>parameters</span>
+      <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_log'><span class='object_link'><a href="../Dev.html#debug_log-class_method" title="Kettle::Dev.debug_log (method)">debug_log</a></span></span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>PrismGemspec inner_params class: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_inner_params'>inner_params</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+
+      <span class='kw'>if</span> <span class='id identifier rubyid_inner_params'>inner_params</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:requireds</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_inner_params'>inner_params</span><span class='period'>.</span><span class='id identifier rubyid_requireds'>requireds</span><span class='op'>&amp;.</span><span class='id identifier rubyid_any?'>any?</span>
+        <span class='id identifier rubyid_first_param'>first_param</span> <span class='op'>=</span> <span class='id identifier rubyid_inner_params'>inner_params</span><span class='period'>.</span><span class='id identifier rubyid_requireds'>requireds</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span>
+        <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_log'><span class='object_link'><a href="../Dev.html#debug_log-class_method" title="Kettle::Dev.debug_log (method)">debug_log</a></span></span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>PrismGemspec first_param class: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_first_param'>first_param</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+
+        <span class='comment'># RequiredParameterNode has a name property that&#39;s a Symbol
+</span>        <span class='kw'>if</span> <span class='id identifier rubyid_first_param'>first_param</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:name</span><span class='rparen'>)</span>
+          <span class='id identifier rubyid_param_name'>param_name</span> <span class='op'>=</span> <span class='id identifier rubyid_first_param'>first_param</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span>
+          <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_log'><span class='object_link'><a href="../Dev.html#debug_log-class_method" title="Kettle::Dev.debug_log (method)">debug_log</a></span></span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>PrismGemspec param_name: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_param_name'>param_name</span><span class='period'>.</span><span class='id identifier rubyid_inspect'>inspect</span><span class='embexpr_end'>}</span><span class='tstring_content'> (class: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_param_name'>param_name</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'>)</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+          <span class='id identifier rubyid_blk_param'>blk_param</span> <span class='op'>=</span> <span class='id identifier rubyid_param_name'>param_name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span> <span class='kw'>if</span> <span class='id identifier rubyid_param_name'>param_name</span>
+        <span class='kw'>end</span>
       <span class='kw'>end</span>
     <span class='kw'>end</span>
-  <span class='kw'>rescue</span> <span class='const'>StandardError</span>
-    <span class='id identifier rubyid_blk_param'>blk_param</span> <span class='op'>=</span> <span class='kw'>nil</span>
   <span class='kw'>end</span>
 
-  <span class='comment'># Fallback to crude parse of the call_src header
-</span>  <span class='kw'>unless</span> <span class='id identifier rubyid_blk_param'>blk_param</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_blk_param'>blk_param</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
-    <span class='id identifier rubyid_hdr_m'>hdr_m</span> <span class='op'>=</span> <span class='id identifier rubyid_call_src'>call_src</span><span class='period'>.</span><span class='id identifier rubyid_match'>match</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>do\b[^\n]*\|([^|]+)\|</span><span class='regexp_end'>/m</span></span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_blk_param'>blk_param</span> <span class='op'>=</span> <span class='lparen'>(</span><span class='id identifier rubyid_hdr_m'>hdr_m</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_hdr_m'>hdr_m</span><span class='lbracket'>[</span><span class='int'>1</span><span class='rbracket'>]</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_hdr_m'>hdr_m</span><span class='lbracket'>[</span><span class='int'>1</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>,\s*</span><span class='regexp_end'>/</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span> <span class='op'>:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>spec</span><span class='tstring_end'>&quot;</span></span>
-  <span class='kw'>end</span>
-  <span class='id identifier rubyid_blk_param'>blk_param</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>spec</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_blk_param'>blk_param</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>||</span> <span class='id identifier rubyid_blk_param'>blk_param</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+  <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_log'><span class='object_link'><a href="../Dev.html#debug_log-class_method" title="Kettle::Dev.debug_log (method)">debug_log</a></span></span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>PrismGemspec blk_param after Prism extraction: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_blk_param'>blk_param</span><span class='period'>.</span><span class='id identifier rubyid_inspect'>inspect</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+
+  <span class='comment'># FALLBACK DISABLED - We should be able to extract from Prism AST
+</span>  <span class='comment'># # Fallback to crude parse of the call_src header
+</span>  <span class='comment'># unless blk_param &amp;&amp; !blk_param.to_s.empty?
+</span>  <span class='comment'>#   Kettle::Dev.debug_log(&quot;PrismGemspec call_src for regex: #{call_src[0..200].inspect}&quot;)
+</span>  <span class='comment'>#   hdr_m = call_src.match(/do\b[^\n]*\|([^|]+)\|/m)
+</span>  <span class='comment'>#   Kettle::Dev.debug_log(&quot;PrismGemspec regex match: #{hdr_m.inspect}&quot;)
+</span>  <span class='comment'>#   Kettle::Dev.debug_log(&quot;PrismGemspec regex capture [1]: #{hdr_m[1].inspect[0..100] if hdr_m}&quot;)
+</span>  <span class='comment'>#   blk_param = (hdr_m &amp;&amp; hdr_m[1]) ? hdr_m[1].strip.split(/,\s*/).first : &quot;spec&quot;
+</span>  <span class='comment'>#   Kettle::Dev.debug_log(&quot;PrismGemspec blk_param after fallback regex: #{blk_param.inspect[0..100]}&quot;)
+</span>  <span class='comment'># end
+</span>
+  <span class='comment'># Default to &quot;spec&quot; if extraction failed
+</span>  <span class='id identifier rubyid_blk_param'>blk_param</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>spec</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_blk_param'>blk_param</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>||</span> <span class='id identifier rubyid_blk_param'>blk_param</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+
+  <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_log'><span class='object_link'><a href="../Dev.html#debug_log-class_method" title="Kettle::Dev.debug_log (method)">debug_log</a></span></span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>PrismGemspec final blk_param: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_blk_param'>blk_param</span><span class='period'>.</span><span class='id identifier rubyid_inspect'>inspect</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
 
   <span class='comment'># Extract AST-level statements inside the block body when available
 </span>  <span class='id identifier rubyid_body_node'>body_node</span> <span class='op'>=</span> <span class='id identifier rubyid_gemspec_call'>gemspec_call</span><span class='period'>.</span><span class='id identifier rubyid_block'>block</span><span class='op'>&amp;.</span><span class='id identifier rubyid_body'>body</span>
-  <span class='id identifier rubyid_body_src'>body_src</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span>
-  <span class='kw'>begin</span>
-    <span class='comment'># Try to extract the textual body from call_src using the do|...| ... end capture
-</span>    <span class='id identifier rubyid_body_src'>body_src</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='lparen'>(</span><span class='id identifier rubyid_m'>m</span> <span class='op'>=</span> <span class='id identifier rubyid_call_src'>call_src</span><span class='period'>.</span><span class='id identifier rubyid_match'>match</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>do\b[^\n]*\|[^|]*\|\s*(.*)end\s*\z</span><span class='regexp_end'>/m</span></span><span class='rparen'>)</span><span class='rparen'>)</span>
-      <span class='id identifier rubyid_m'>m</span><span class='lbracket'>[</span><span class='int'>1</span><span class='rbracket'>]</span>
-    <span class='kw'>else</span>
-      <span class='comment'># Last resort: attempt to take slice of body node
-</span>      <span class='id identifier rubyid_body_node'>body_node</span> <span class='op'>?</span> <span class='id identifier rubyid_body_node'>body_node</span><span class='period'>.</span><span class='id identifier rubyid_slice'>slice</span> <span class='op'>:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span>
-    <span class='kw'>end</span>
-  <span class='kw'>rescue</span> <span class='const'>StandardError</span>
-    <span class='id identifier rubyid_body_src'>body_src</span> <span class='op'>=</span> <span class='id identifier rubyid_body_node'>body_node</span> <span class='op'>?</span> <span class='id identifier rubyid_body_node'>body_node</span><span class='period'>.</span><span class='id identifier rubyid_slice'>slice</span> <span class='op'>:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span>
-  <span class='kw'>end</span>
+  <span class='kw'>return</span> <span class='id identifier rubyid_content'>content</span> <span class='kw'>unless</span> <span class='id identifier rubyid_body_node'>body_node</span>
 
+  <span class='comment'># Get the actual body content using Prism&#39;s slice
+</span>  <span class='id identifier rubyid_body_src'>body_src</span> <span class='op'>=</span> <span class='id identifier rubyid_body_node'>body_node</span><span class='period'>.</span><span class='id identifier rubyid_slice'>slice</span>
   <span class='id identifier rubyid_new_body'>new_body</span> <span class='op'>=</span> <span class='id identifier rubyid_body_src'>body_src</span><span class='period'>.</span><span class='id identifier rubyid_dup'>dup</span>
 
   <span class='comment'># Helper: build literal text for replacement values
@@ -792,121 +1434,108 @@ Operates only inside the Gem::Specification block to avoid accidental matches.</
     <span class='kw'>end</span>
   <span class='kw'>end</span>
 
+  <span class='comment'># Helper: check if a value is a placeholder (just emoji + space or just emoji)
+</span>  <span class='id identifier rubyid_is_placeholder'>is_placeholder</span> <span class='op'>=</span> <span class='id identifier rubyid_lambda'>lambda</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_v'>v</span><span class='op'>|</span>
+    <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='id identifier rubyid_v'>v</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>String</span><span class='rparen'>)</span>
+    <span class='comment'># Match emoji followed by optional space and nothing else
+</span>    <span class='comment'># Simple heuristic: 1-4 bytes of non-ASCII followed by optional space
+</span>    <span class='id identifier rubyid_v'>v</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_match?'>match?</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\A[^\x00-\x7F]{1,4}\s*\z</span><span class='regexp_end'>/</span></span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
   <span class='comment'># Extract existing statement nodes for more precise matching
 </span>  <span class='id identifier rubyid_stmt_nodes'>stmt_nodes</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="PrismUtils.html" title="Kettle::Dev::PrismUtils (module)">PrismUtils</a></span></span><span class='period'>.</span><span class='id identifier rubyid_extract_statements'><span class='object_link'><a href="PrismUtils.html#extract_statements-class_method" title="Kettle::Dev::PrismUtils.extract_statements (method)">extract_statements</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_body_node'>body_node</span><span class='rparen'>)</span>
+
+  <span class='comment'># Build a list of edits as (offset, length, replacement_text) tuples
+</span>  <span class='comment'># We&#39;ll apply them in reverse order to avoid offset shifts
+</span>  <span class='id identifier rubyid_edits'>edits</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
 
   <span class='id identifier rubyid_replacements'>replacements</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_field_sym'>field_sym</span><span class='comma'>,</span> <span class='id identifier rubyid_value'>value</span><span class='op'>|</span>
     <span class='comment'># Skip special internal keys that are not actual gemspec fields
 </span>    <span class='kw'>next</span> <span class='kw'>if</span> <span class='id identifier rubyid_field_sym'>field_sym</span> <span class='op'>==</span> <span class='symbol'>:_remove_self_dependency</span>
+    <span class='comment'># Skip nil values
+</span>    <span class='kw'>next</span> <span class='kw'>if</span> <span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
 
     <span class='id identifier rubyid_field'>field</span> <span class='op'>=</span> <span class='id identifier rubyid_field_sym'>field_sym</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
 
-    <span class='comment'># Find an existing assignment node for this field: look for call nodes where
-</span>    <span class='comment'># receiver slice matches the block param and method name matches assignment
+    <span class='comment'># Find an existing assignment node for this field
 </span>    <span class='id identifier rubyid_found_node'>found_node</span> <span class='op'>=</span> <span class='id identifier rubyid_stmt_nodes'>stmt_nodes</span><span class='period'>.</span><span class='id identifier rubyid_find'>find</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_n'>n</span><span class='op'>|</span>
       <span class='kw'>next</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='id identifier rubyid_n'>n</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Prism</span><span class='op'>::</span><span class='const'>CallNode</span><span class='rparen'>)</span>
       <span class='kw'>begin</span>
         <span class='id identifier rubyid_recv'>recv</span> <span class='op'>=</span> <span class='id identifier rubyid_n'>n</span><span class='period'>.</span><span class='id identifier rubyid_receiver'>receiver</span>
         <span class='id identifier rubyid_recv_name'>recv_name</span> <span class='op'>=</span> <span class='id identifier rubyid_recv'>recv</span> <span class='op'>?</span> <span class='id identifier rubyid_recv'>recv</span><span class='period'>.</span><span class='id identifier rubyid_slice'>slice</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span> <span class='op'>:</span> <span class='kw'>nil</span>
-        <span class='comment'># match receiver variable name or literal slice
-</span>        <span class='id identifier rubyid_recv_name'>recv_name</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_recv_name'>recv_name</span><span class='period'>.</span><span class='id identifier rubyid_end_with?'>end_with?</span><span class='lparen'>(</span><span class='id identifier rubyid_blk_param'>blk_param</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_n'>n</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='id identifier rubyid_field'>field</span><span class='rparen'>)</span>
+        <span class='id identifier rubyid_matches'>matches</span> <span class='op'>=</span> <span class='id identifier rubyid_recv_name'>recv_name</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_recv_name'>recv_name</span><span class='period'>.</span><span class='id identifier rubyid_end_with?'>end_with?</span><span class='lparen'>(</span><span class='id identifier rubyid_blk_param'>blk_param</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_n'>n</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='id identifier rubyid_field'>field</span><span class='rparen'>)</span>
+
+        <span class='kw'>if</span> <span class='id identifier rubyid_matches'>matches</span>
+          <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_log'><span class='object_link'><a href="../Dev.html#debug_log-class_method" title="Kettle::Dev.debug_log (method)">debug_log</a></span></span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>PrismGemspec found_node for </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_field'>field</span><span class='embexpr_end'>}</span><span class='tstring_content'>:</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+          <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_log'><span class='object_link'><a href="../Dev.html#debug_log-class_method" title="Kettle::Dev.debug_log (method)">debug_log</a></span></span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>  recv_name=</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_recv_name'>recv_name</span><span class='period'>.</span><span class='id identifier rubyid_inspect'>inspect</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+          <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_log'><span class='object_link'><a href="../Dev.html#debug_log-class_method" title="Kettle::Dev.debug_log (method)">debug_log</a></span></span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>  n.name=</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_n'>n</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_inspect'>inspect</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+          <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_log'><span class='object_link'><a href="../Dev.html#debug_log-class_method" title="Kettle::Dev.debug_log (method)">debug_log</a></span></span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>  n.slice[0..100]=</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_n'>n</span><span class='period'>.</span><span class='id identifier rubyid_slice'>slice</span><span class='lbracket'>[</span><span class='int'>0</span><span class='op'>..</span><span class='int'>100</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_inspect'>inspect</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+        <span class='kw'>end</span>
+
+        <span class='id identifier rubyid_matches'>matches</span>
       <span class='kw'>rescue</span> <span class='const'>StandardError</span>
         <span class='kw'>false</span>
       <span class='kw'>end</span>
     <span class='kw'>end</span>
 
+    <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_log'><span class='object_link'><a href="../Dev.html#debug_log-class_method" title="Kettle::Dev.debug_log (method)">debug_log</a></span></span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>PrismGemspec processing field </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_field'>field</span><span class='embexpr_end'>}</span><span class='tstring_content'>: found_node=</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_found_node'>found_node</span> <span class='op'>?</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>YES</span><span class='tstring_end'>&quot;</span></span> <span class='op'>:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>NO</span><span class='tstring_end'>&quot;</span></span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+
     <span class='kw'>if</span> <span class='id identifier rubyid_found_node'>found_node</span>
-      <span class='comment'># Do not replace if the existing RHS is non-literal (e.g., computed expression)
+      <span class='comment'># Extract existing value to check if we should skip replacement
 </span>      <span class='id identifier rubyid_existing_arg'>existing_arg</span> <span class='op'>=</span> <span class='id identifier rubyid_found_node'>found_node</span><span class='period'>.</span><span class='id identifier rubyid_arguments'>arguments</span><span class='op'>&amp;.</span><span class='id identifier rubyid_arguments'>arguments</span><span class='op'>&amp;.</span><span class='id identifier rubyid_first'>first</span>
       <span class='id identifier rubyid_existing_literal'>existing_literal</span> <span class='op'>=</span> <span class='kw'>begin</span>
         <span class='const'><span class='object_link'><a href="PrismUtils.html" title="Kettle::Dev::PrismUtils (module)">PrismUtils</a></span></span><span class='period'>.</span><span class='id identifier rubyid_extract_literal_value'><span class='object_link'><a href="PrismUtils.html#extract_literal_value-class_method" title="Kettle::Dev::PrismUtils.extract_literal_value (method)">extract_literal_value</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_existing_arg'>existing_arg</span><span class='rparen'>)</span>
       <span class='kw'>rescue</span>
         <span class='kw'>nil</span>
       <span class='kw'>end</span>
-      <span class='kw'>if</span> <span class='id identifier rubyid_existing_literal'>existing_literal</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
-        <span class='comment'># Skip replacing a non-literal RHS to avoid altering computed expressions.
-</span>        <span class='id identifier rubyid_debug_error'>debug_error</span><span class='lparen'>(</span><span class='const'>StandardError</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Skipping replacement for </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_field'>field</span><span class='embexpr_end'>}</span><span class='tstring_content'> because existing RHS is non-literal</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='comma'>,</span> <span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span>
+
+      <span class='comment'># For summary and description fields: don&#39;t replace real content with placeholders
+</span>      <span class='kw'>if</span> <span class='lbracket'>[</span><span class='symbol'>:summary</span><span class='comma'>,</span> <span class='symbol'>:description</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_field_sym'>field_sym</span><span class='rparen'>)</span>
+        <span class='kw'>if</span> <span class='id identifier rubyid_is_placeholder'>is_placeholder</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_existing_literal'>existing_literal</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_is_placeholder'>is_placeholder</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_existing_literal'>existing_literal</span><span class='rparen'>)</span>
+          <span class='kw'>next</span>
+        <span class='kw'>end</span>
+      <span class='kw'>end</span>
+
+      <span class='comment'># Do not replace if the existing RHS is non-literal (e.g., computed expression)
+</span>      <span class='kw'>if</span> <span class='id identifier rubyid_existing_literal'>existing_literal</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+        <span class='id identifier rubyid_debug_error'>debug_error</span><span class='lparen'>(</span><span class='const'>StandardError</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Skipping replacement for </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_field'>field</span><span class='embexpr_end'>}</span><span class='tstring_content'> because existing RHS is non-literal</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='comma'>,</span> <span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span>
       <span class='kw'>else</span>
-        <span class='comment'># Replace the found node&#39;s slice in the body text with the updated assignment
-</span>        <span class='id identifier rubyid_indent'>indent</span> <span class='op'>=</span> <span class='kw'>begin</span>
+        <span class='comment'># Schedule replacement using location offsets
+</span>        <span class='id identifier rubyid_loc'>loc</span> <span class='op'>=</span> <span class='id identifier rubyid_found_node'>found_node</span><span class='period'>.</span><span class='id identifier rubyid_location'>location</span>
+        <span class='id identifier rubyid_indent'>indent</span> <span class='op'>=</span> <span class='kw'>begin</span>
           <span class='id identifier rubyid_found_node'>found_node</span><span class='period'>.</span><span class='id identifier rubyid_slice'>slice</span><span class='period'>.</span><span class='id identifier rubyid_lines'>lines</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span><span class='period'>.</span><span class='id identifier rubyid_match'>match</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^(\s*)</span><span class='regexp_end'>/</span></span><span class='rparen'>)</span><span class='lbracket'>[</span><span class='int'>1</span><span class='rbracket'>]</span>
         <span class='kw'>rescue</span>
           <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>  </span><span class='tstring_end'>&quot;</span></span>
         <span class='kw'>end</span>
         <span class='id identifier rubyid_rhs'>rhs</span> <span class='op'>=</span> <span class='id identifier rubyid_build_literal'>build_literal</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
         <span class='id identifier rubyid_replacement'>replacement</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_indent'>indent</span><span class='embexpr_end'>}</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_blk_param'>blk_param</span><span class='embexpr_end'>}</span><span class='tstring_content'>.</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_field'>field</span><span class='embexpr_end'>}</span><span class='tstring_content'> = </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_rhs'>rhs</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
-        <span class='id identifier rubyid_new_body'>new_body</span> <span class='op'>=</span> <span class='id identifier rubyid_new_body'>new_body</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='id identifier rubyid_found_node'>found_node</span><span class='period'>.</span><span class='id identifier rubyid_slice'>slice</span><span class='comma'>,</span> <span class='id identifier rubyid_replacement'>replacement</span><span class='rparen'>)</span>
+
+        <span class='comment'># Calculate offsets relative to body_node
+</span>        <span class='id identifier rubyid_relative_start'>relative_start</span> <span class='op'>=</span> <span class='id identifier rubyid_loc'>loc</span><span class='period'>.</span><span class='id identifier rubyid_start_offset'>start_offset</span> <span class='op'>-</span> <span class='id identifier rubyid_body_node'>body_node</span><span class='period'>.</span><span class='id identifier rubyid_location'>location</span><span class='period'>.</span><span class='id identifier rubyid_start_offset'>start_offset</span>
+        <span class='id identifier rubyid_relative_length'>relative_length</span> <span class='op'>=</span> <span class='id identifier rubyid_loc'>loc</span><span class='period'>.</span><span class='id identifier rubyid_end_offset'>end_offset</span> <span class='op'>-</span> <span class='id identifier rubyid_loc'>loc</span><span class='period'>.</span><span class='id identifier rubyid_start_offset'>start_offset</span>
+
+        <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_log'><span class='object_link'><a href="../Dev.html#debug_log-class_method" title="Kettle::Dev.debug_log (method)">debug_log</a></span></span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>PrismGemspec edit for </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_field'>field</span><span class='embexpr_end'>}</span><span class='tstring_content'>:</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+        <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_log'><span class='object_link'><a href="../Dev.html#debug_log-class_method" title="Kettle::Dev.debug_log (method)">debug_log</a></span></span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>  loc.start_offset=</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_loc'>loc</span><span class='period'>.</span><span class='id identifier rubyid_start_offset'>start_offset</span><span class='embexpr_end'>}</span><span class='tstring_content'>, loc.end_offset=</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_loc'>loc</span><span class='period'>.</span><span class='id identifier rubyid_end_offset'>end_offset</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+        <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_log'><span class='object_link'><a href="../Dev.html#debug_log-class_method" title="Kettle::Dev.debug_log (method)">debug_log</a></span></span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>  body_node.location.start_offset=</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_body_node'>body_node</span><span class='period'>.</span><span class='id identifier rubyid_location'>location</span><span class='period'>.</span><span class='id identifier rubyid_start_offset'>start_offset</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+        <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_log'><span class='object_link'><a href="../Dev.html#debug_log-class_method" title="Kettle::Dev.debug_log (method)">debug_log</a></span></span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>  relative_start=</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_relative_start'>relative_start</span><span class='embexpr_end'>}</span><span class='tstring_content'>, relative_length=</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_relative_length'>relative_length</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+        <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_log'><span class='object_link'><a href="../Dev.html#debug_log-class_method" title="Kettle::Dev.debug_log (method)">debug_log</a></span></span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>  replacement=</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_replacement'>replacement</span><span class='period'>.</span><span class='id identifier rubyid_inspect'>inspect</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+        <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_log'><span class='object_link'><a href="../Dev.html#debug_log-class_method" title="Kettle::Dev.debug_log (method)">debug_log</a></span></span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>  found_node.slice=</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_found_node'>found_node</span><span class='period'>.</span><span class='id identifier rubyid_slice'>slice</span><span class='period'>.</span><span class='id identifier rubyid_inspect'>inspect</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+
+        <span class='id identifier rubyid_edits'>edits</span> <span class='op'>&lt;&lt;</span> <span class='lbracket'>[</span><span class='id identifier rubyid_relative_start'>relative_start</span><span class='comma'>,</span> <span class='id identifier rubyid_relative_length'>relative_length</span><span class='comma'>,</span> <span class='id identifier rubyid_replacement'>replacement</span><span class='rbracket'>]</span>
       <span class='kw'>end</span>
     <span class='kw'>else</span>
-      <span class='comment'># No existing assignment; insert after spec.version if present, else append
-</span>      <span class='id identifier rubyid_version_node'>version_node</span> <span class='op'>=</span> <span class='id identifier rubyid_stmt_nodes'>stmt_nodes</span><span class='period'>.</span><span class='id identifier rubyid_find'>find</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_n'>n</span><span class='op'>|</span>
+      <span class='comment'># No existing assignment; we&#39;ll insert after spec.version if present
+</span>      <span class='comment'># But skip inserting placeholders for summary/description if not present
+</span>      <span class='kw'>if</span> <span class='lbracket'>[</span><span class='symbol'>:summary</span><span class='comma'>,</span> <span class='symbol'>:description</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_field_sym'>field_sym</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_is_placeholder'>is_placeholder</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
+        <span class='kw'>next</span>
+      <span class='kw'>end</span>
+
+      <span class='id identifier rubyid_version_node'>version_node</span> <span class='op'>=</span> <span class='id identifier rubyid_stmt_nodes'>stmt_nodes</span><span class='period'>.</span><span class='id identifier rubyid_find'>find</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_n'>n</span><span class='op'>|</span>
         <span class='id identifier rubyid_n'>n</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Prism</span><span class='op'>::</span><span class='const'>CallNode</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_n'>n</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>version</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>version=</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_n'>n</span><span class='period'>.</span><span class='id identifier rubyid_receiver'>receiver</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_n'>n</span><span class='period'>.</span><span class='id identifier rubyid_receiver'>receiver</span><span class='period'>.</span><span class='id identifier rubyid_slice'>slice</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_end_with?'>end_with?</span><span class='lparen'>(</span><span class='id identifier rubyid_blk_param'>blk_param</span><span class='rparen'>)</span>
       <span class='kw'>end</span>
 
       <span class='id identifier rubyid_insert_line'>insert_line</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>  </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_blk_param'>blk_param</span><span class='embexpr_end'>}</span><span class='tstring_content'>.</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_field'>field</span><span class='embexpr_end'>}</span><span class='tstring_content'> = </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_build_literal'>build_literal</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span>
-      <span class='id identifier rubyid_new_body'>new_body</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='id identifier rubyid_version_node'>version_node</span>
-        <span class='comment'># Insert after the version node slice
-</span>        <span class='id identifier rubyid_new_body'>new_body</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='id identifier rubyid_version_node'>version_node</span><span class='period'>.</span><span class='id identifier rubyid_slice'>slice</span><span class='comma'>,</span> <span class='id identifier rubyid_version_node'>version_node</span><span class='period'>.</span><span class='id identifier rubyid_slice'>slice</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_insert_line'>insert_line</span><span class='rparen'>)</span>
-      <span class='kw'>elsif</span> <span class='id identifier rubyid_new_body'>new_body</span><span class='period'>.</span><span class='id identifier rubyid_rstrip'>rstrip</span><span class='period'>.</span><span class='id identifier rubyid_end_with?'>end_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
-        <span class='comment'># Append before the final newline if present, else just append
-</span>        <span class='id identifier rubyid_new_body'>new_body</span><span class='period'>.</span><span class='id identifier rubyid_rstrip'>rstrip</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_insert_line'>insert_line</span>
-      <span class='kw'>else</span>
-        <span class='id identifier rubyid_new_body'>new_body</span><span class='period'>.</span><span class='id identifier rubyid_rstrip'>rstrip</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span> <span class='op'>+</span> <span class='id identifier rubyid_insert_line'>insert_line</span>
-      <span class='kw'>end</span>
-    <span class='kw'>end</span>
-  <span class='kw'>end</span>
 
-  <span class='comment'># Handle removal of self-dependency if requested via :_remove_self_dependency
-</span>  <span class='kw'>if</span> <span class='id identifier rubyid_replacements'>replacements</span><span class='lbracket'>[</span><span class='symbol'>:_remove_self_dependency</span><span class='rbracket'>]</span>
-    <span class='id identifier rubyid_name_to_remove'>name_to_remove</span> <span class='op'>=</span> <span class='id identifier rubyid_replacements'>replacements</span><span class='lbracket'>[</span><span class='symbol'>:_remove_self_dependency</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
-    <span class='comment'># Find dependency call nodes to remove (add_dependency/add_development_dependency)
-</span>    <span class='id identifier rubyid_dep_nodes'>dep_nodes</span> <span class='op'>=</span> <span class='id identifier rubyid_stmt_nodes'>stmt_nodes</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_n'>n</span><span class='op'>|</span>
-      <span class='kw'>next</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='id identifier rubyid_n'>n</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Prism</span><span class='op'>::</span><span class='const'>CallNode</span><span class='rparen'>)</span>
-      <span class='id identifier rubyid_recv'>recv</span> <span class='op'>=</span> <span class='kw'>begin</span>
-        <span class='id identifier rubyid_n'>n</span><span class='period'>.</span><span class='id identifier rubyid_receiver'>receiver</span>
-      <span class='kw'>rescue</span>
-        <span class='kw'>nil</span>
-      <span class='kw'>end</span>
-      <span class='kw'>next</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='id identifier rubyid_recv'>recv</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_recv'>recv</span><span class='period'>.</span><span class='id identifier rubyid_slice'>slice</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_end_with?'>end_with?</span><span class='lparen'>(</span><span class='id identifier rubyid_blk_param'>blk_param</span><span class='rparen'>)</span>
-      <span class='lbracket'>[</span><span class='symbol'>:add_dependency</span><span class='comma'>,</span> <span class='symbol'>:add_development_dependency</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_n'>n</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
-    <span class='kw'>end</span>
-    <span class='id identifier rubyid_dep_nodes'>dep_nodes</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_dn'>dn</span><span class='op'>|</span>
-      <span class='comment'># Check first argument literal
-</span>      <span class='id identifier rubyid_first_arg'>first_arg</span> <span class='op'>=</span> <span class='id identifier rubyid_dn'>dn</span><span class='period'>.</span><span class='id identifier rubyid_arguments'>arguments</span><span class='op'>&amp;.</span><span class='id identifier rubyid_arguments'>arguments</span><span class='op'>&amp;.</span><span class='id identifier rubyid_first'>first</span>
-      <span class='id identifier rubyid_arg_val'>arg_val</span> <span class='op'>=</span> <span class='kw'>begin</span>
-        <span class='const'><span class='object_link'><a href="PrismUtils.html" title="Kettle::Dev::PrismUtils (module)">PrismUtils</a></span></span><span class='period'>.</span><span class='id identifier rubyid_extract_literal_value'><span class='object_link'><a href="PrismUtils.html#extract_literal_value-class_method" title="Kettle::Dev::PrismUtils.extract_literal_value (method)">extract_literal_value</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_first_arg'>first_arg</span><span class='rparen'>)</span>
-      <span class='kw'>rescue</span>
-        <span class='kw'>nil</span>
-      <span class='kw'>end</span>
-      <span class='kw'>if</span> <span class='id identifier rubyid_arg_val'>arg_val</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_arg_val'>arg_val</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span> <span class='op'>==</span> <span class='id identifier rubyid_name_to_remove'>name_to_remove</span>
-        <span class='comment'># Remove this node&#39;s slice from new_body
-</span>        <span class='id identifier rubyid_new_body'>new_body</span> <span class='op'>=</span> <span class='id identifier rubyid_new_body'>new_body</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='id identifier rubyid_dn'>dn</span><span class='period'>.</span><span class='id identifier rubyid_slice'>slice</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-      <span class='kw'>end</span>
-    <span class='kw'>end</span>
-  <span class='kw'>end</span>
-
-  <span class='comment'># Reassemble call source by replacing the captured body portion
-</span>  <span class='id identifier rubyid_new_call_src'>new_call_src</span> <span class='op'>=</span> <span class='id identifier rubyid_call_src'>call_src</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='id identifier rubyid_body_src'>body_src</span><span class='comma'>,</span> <span class='id identifier rubyid_new_body'>new_body</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_content'>content</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='id identifier rubyid_call_src'>call_src</span><span class='comma'>,</span> <span class='id identifier rubyid_new_call_src'>new_call_src</span><span class='rparen'>)</span>
-<span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-  <span class='id identifier rubyid_debug_error'>debug_error</span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_content'>content</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-  </div>
-
-</div>
-
-      <div id="footer">
-  Generated on Fri Nov 28 22:23:55 2025 by
-  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.37 (ruby-3.4.7).
-</div>
-
-    </div>
-  </body>
-</html>
+      <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_log'><span class='object_link'><a href="../Dev.html#debug_log-class_method" title="Kettle::Dev.debug_log (method)">debug_log</a></span></span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>PrismGemspec insert for </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_field'>field</span><span class='embexpr_end'>}</span><span class='tstring_content'>:</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+      <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_log'><span class='object_link'><a href="../Dev.html#debug_log-class_method" title="Kettle::Dev.debug_log (method)">debug_log</a></span></span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>  blk_param=</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_blk_param'>blk_param</span><span class='period'>.</span><span class='id identifier rubyid_inspect'>inspect</span><span class='embexpr_end'>}</span><span class='tstring_content'>, field=</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_field'>field</span><span class='period'>.</span><span class='id identifier rubyid_inspect'>inspect</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+      <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><
