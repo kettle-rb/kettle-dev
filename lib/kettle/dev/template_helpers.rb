@@ -674,7 +674,7 @@ module Kettle
       # @return [Hash, nil] Configuration hash or nil if not found
       def find_file_config(relative_path)
         config = kettle_config
-        return nil unless config && config["files"]
+        return unless config && config["files"]
 
         parts = relative_path.split("/")
         current = config["files"]
@@ -685,7 +685,7 @@ module Kettle
         end
 
         # Check if we reached a leaf config node (has "strategy" key)
-        return nil unless current.is_a?(Hash) && current.key?("strategy")
+        return unless current.is_a?(Hash) && current.key?("strategy")
 
         # Merge with defaults for merge strategy
         build_config_entry(nil, current)
@@ -699,7 +699,7 @@ module Kettle
         config = kettle_config
         defaults = config&.fetch("defaults", {}) || {}
 
-        result = { strategy: entry["strategy"].to_s.strip.downcase.to_sym }
+        result = {strategy: entry["strategy"].to_s.strip.downcase.to_sym}
         result[:path] = path if path
 
         # For merge strategy, include merge options (from entry or defaults)

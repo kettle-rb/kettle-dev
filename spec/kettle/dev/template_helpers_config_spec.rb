@@ -141,10 +141,7 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
 
     it "each entry has :path and :strategy" do
       manifest = described_class.load_manifest
-      manifest.each do |entry|
-        expect(entry).to have_key(:path)
-        expect(entry).to have_key(:strategy)
-      end
+      expect(manifest).to all(have_key(:path).and(have_key(:strategy)))
     end
 
     it "merge strategy entries include default merge options" do
