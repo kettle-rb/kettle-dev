@@ -26,7 +26,7 @@ RSpec.describe "Freeze Block Location Preservation" do
           strategy: :skip,
           src: input,
           dest: "",
-          path: "test.gemspec"
+          path: "test.gemspec",
         )
 
         lines = result.lines
@@ -65,7 +65,7 @@ RSpec.describe "Freeze Block Location Preservation" do
           strategy: :skip,
           src: input,
           dest: "",
-          path: "test.gemspec"
+          path: "test.gemspec",
         )
 
         lines = result.lines
@@ -106,7 +106,7 @@ RSpec.describe "Freeze Block Location Preservation" do
           strategy: :skip,
           src: input,
           dest: "",
-          path: "test.gemspec"
+          path: "test.gemspec",
         )
 
         lines = result.lines
@@ -144,7 +144,7 @@ RSpec.describe "Freeze Block Location Preservation" do
           strategy: :skip,
           src: input,
           dest: "",
-          path: "test.gemspec"
+          path: "test.gemspec",
         )
 
         lines = result.lines
@@ -180,7 +180,7 @@ RSpec.describe "Freeze Block Location Preservation" do
           strategy: :skip,
           src: input,
           dest: "",
-          path: "test.gemspec"
+          path: "test.gemspec",
         )
 
         lines = result.lines
@@ -214,7 +214,7 @@ RSpec.describe "Freeze Block Location Preservation" do
           strategy: :skip,
           src: input,
           dest: "",
-          path: "test.gemspec"
+          path: "test.gemspec",
         )
 
         lines = result.lines
@@ -267,7 +267,7 @@ RSpec.describe "Freeze Block Location Preservation" do
           strategy: :skip,
           src: input,
           dest: "",
-          path: "test.gemspec"
+          path: "test.gemspec",
         )
 
         lines = result.lines
@@ -312,7 +312,7 @@ RSpec.describe "Freeze Block Location Preservation" do
           strategy: :skip,
           src: input,
           dest: "",
-          path: "Gemfile"
+          path: "Gemfile",
         )
 
         # Should not duplicate the reminder
@@ -322,4 +322,3 @@ RSpec.describe "Freeze Block Location Preservation" do
     end
   end
 end
-

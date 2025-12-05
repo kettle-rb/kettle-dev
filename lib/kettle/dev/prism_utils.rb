@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-
 module Kettle
   module Dev
     # Shared utilities for working with Prism AST nodes.

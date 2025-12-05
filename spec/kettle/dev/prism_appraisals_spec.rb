@@ -90,15 +90,15 @@ RSpec.describe Kettle::Dev::PrismAppraisals do
         # Prism::Merge uses template preference for signature matches and doesn't add template-only nodes
         # So template preamble wins, and custom destination block is preserved
         expect(merged).to start_with("# preamble from template\n# a second line\n")
-        
+
         # Check that the unlocked block is present
         expect(merged).to include('appraise "unlocked" do')
         expect(merged).to include('eval_gemfile "a.gemfile"')
-        
+
         # Check that custom destination block is preserved
         expect(merged).to include('appraise "custom" do')
         expect(merged).to include('gem "my_custom"')
-        
+
         # Check that pre-existing block is present
         expect(merged).to include('appraise "pre-existing" do')
       end

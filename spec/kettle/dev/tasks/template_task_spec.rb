@@ -1677,7 +1677,6 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
     end
   end
 
-
   # Consolidated from template_task_carryover_spec.rb and template_task_env_spec.rb
   describe "gemspec field preservation" do
     let(:helpers) { Kettle::Dev::TemplateHelpers }

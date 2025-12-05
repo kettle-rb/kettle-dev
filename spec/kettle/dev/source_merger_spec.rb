@@ -315,7 +315,7 @@ RSpec.describe Kettle::Dev::SourceMerger do
           strategy: :merge,
           src: template_fixture,
           dest: dest_fixture,
-          path: "example-kettle-dev.gemspec"
+          path: "example-kettle-dev.gemspec",
         )
 
         dest_block = dest_fixture[/#\s*kettle-dev:freeze.*?#\s*kettle-dev:unfreeze/m]

@@ -1,17 +1,10 @@
 {
-  "lib/kettle/dev.rb:39253844": [
-    [79, 17, 2, "ThreadSafety/MutableClassInstanceVariable: Freeze mutable objects assigned to class instance variables.", 5862883]
+  "lib/kettle/dev.rb:300303735": [
+    [80, 17, 2, "ThreadSafety/MutableClassInstanceVariable: Freeze mutable objects assigned to class instance variables.", 5862883]
   ],
-  "lib/kettle/dev/prism_gemfile.rb:474053330": [
-    [33, 13, 22, "Style/IdenticalConditionalBranches: Move `dest_lines = out.lines` out of the conditional.", 469203201],
-    [42, 13, 22, "Style/IdenticalConditionalBranches: Move `dest_lines = out.lines` out of the conditional.", 469203201],
-    [115, 16, 21, "Style/SafeNavigation: Use safe navigation (`&.`) instead of checking if an object exists before calling the method.", 2906893698]
-  ],
-  "lib/kettle/dev/prism_gemspec.rb:2079753481": [
-    [37, 14, 47, "Style/SafeNavigation: Use safe navigation (`&.`) instead of checking if an object exists before calling the method.", 3509917367],
-    [44, 42, 25, "Style/SafeNavigation: Use safe navigation (`&.`) instead of checking if an object exists before calling the method.", 2110407389],
-    [100, 27, 29, "Style/SafeNavigation: Use safe navigation (`&.`) instead of checking if an object exists before calling the method.", 4280101207],
-    [102, 15, 43, "Style/SafeNavigation: Use safe navigation (`&.`) instead of checking if an object exists before calling the method.", 673952306]
+  "lib/kettle/dev/prism_gemspec.rb:3156923172": [
+    [269, 27, 29, "Style/SafeNavigation: Use safe navigation (`&.`) instead of checking if an object exists before calling the method.", 4280101207],
+    [270, 25, 43, "Style/SafeNavigation: Use safe navigation (`&.`) instead of checking if an object exists before calling the method.", 673952306]
   ],
   "lib/kettle/dev/tasks/ci_task.rb:33477548": [
     [268, 26, 10, "ThreadSafety/NewThread: Avoid starting new threads.", 3411682361],

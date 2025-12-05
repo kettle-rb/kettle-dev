@@ -75,7 +75,7 @@ module Kettle
           else
             raise Kettle::Dev::Error, "Unknown templating strategy '#{strategy}' for #{path}."
           end
-        
+
         content = normalize_newlines(content)
         ensure_trailing_newline(content)
       rescue StandardError => error
@@ -201,7 +201,7 @@ module Kettle
           signature_match_preference: :destination,
           add_template_only_nodes: true,
           signature_generator: signature_generator,
-          freeze_token: "kettle-dev"
+          freeze_token: "kettle-dev",
         )
         merger.merge
       rescue Prism::Merge::Error => e
@@ -227,7 +227,7 @@ module Kettle
           signature_match_preference: :template,
           add_template_only_nodes: true,
           signature_generator: signature_generator,
-          freeze_token: "kettle-dev"
+          freeze_token: "kettle-dev",
         )
         merger.merge
       rescue Prism::Merge::Error => e
@@ -266,13 +266,11 @@ module Kettle
             # e.g. spec.add_dependency("gem_name", "~> 1.0") -> [:add_dependency, "gem_name"]
             first_arg = node.arguments&.arguments&.first
             arg_value = case first_arg
-                        when Prism::StringNode
-                          first_arg.unescaped.to_s
-                        when Prism::SymbolNode
-                          first_arg.unescaped.to_sym
-                        else
-                          nil
-                        end
+            when Prism::StringNode
+              first_arg.unescaped.to_s
+            when Prism::SymbolNode
+              first_arg.unescaped.to_sym
+            end
 
             return [node.name, arg_value] if arg_value
           end
