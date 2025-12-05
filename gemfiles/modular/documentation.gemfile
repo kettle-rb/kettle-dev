@@ -5,8 +5,8 @@
 #     # ... your code
 #     kettle-dev:unfreeze
 #
-# Documentation
 
+# Documentation
 gem "kramdown", "~> 2.5", ">= 2.5.1", require: false # Ruby >= 2.5
 gem "kramdown-parser-gfm", "~> 1.1", require: false # Ruby >= 2.3
 gem "yard", "~> 0.9", ">= 0.9.37", require: false

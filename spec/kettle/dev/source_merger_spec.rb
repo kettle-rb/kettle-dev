@@ -10,7 +10,7 @@ RSpec.describe Kettle::Dev::SourceMerger do
       expect(result).to include("gem \"foo\"")
     end
 
-    it "preserves kettle-dev:freeze blocks from the destination" do
+    it "preserves kettle-dev:freeze blocks from the destination", :prism_merge_only do
       src = <<~RUBY
         source "https://example.com"
         gem "foo"
@@ -61,7 +61,7 @@ RSpec.describe Kettle::Dev::SourceMerger do
       expect(merged).not_to match(/1\.0/)
     end
 
-    it "reconciles gemspec fields while retaining frozen metadata" do
+    it "reconciles gemspec fields while retaining frozen metadata", :prism_merge_only do
       src = <<~RUBY
         Gem::Specification.new do |spec|
           spec.name = "updated-name"
@@ -82,7 +82,7 @@ RSpec.describe Kettle::Dev::SourceMerger do
       expect(merged).to include("spec.metadata[\"custom\"] = \"1\"")
     end
 
-    it "appends missing Rake tasks without duplicating existing ones" do
+    it "appends missing Rake tasks without duplicating existing ones", :prism_merge_only do
       src = <<~RUBY
         task :ci do
           sh "bundle exec rspec"
@@ -101,7 +101,7 @@ RSpec.describe Kettle::Dev::SourceMerger do
     end
 
     context "when preserving comments" do
-      it "preserves inline comments on gem declarations" do
+      it "preserves inline comments on gem declarations", :prism_merge_only do
         src = <<~RUBY
           gem "foo", "~> 2.0"
         RUBY
@@ -115,7 +115,7 @@ RSpec.describe Kettle::Dev::SourceMerger do
         expect(merged).to include("# keep this one")
       end
 
-      it "preserves leading comment blocks before statements" do
+      it "preserves leading comment blocks before statements", :prism_merge_only do
         src = <<~RUBY
           gem "foo"
         RUBY
@@ -148,7 +148,7 @@ RSpec.describe Kettle::Dev::SourceMerger do
         expect(merged).to include("spec.name = \"updated-name\"")
       end
 
-      it "preserves comments in freeze blocks" do
+      it "preserves comments in freeze blocks", :prism_merge_only do
         src = <<~RUBY
           gem "foo"
         RUBY
@@ -165,7 +165,7 @@ RSpec.describe Kettle::Dev::SourceMerger do
         expect(merged).to include("gem \"another\" # local override")
       end
 
-      it "preserves multiline comments" do
+      it "preserves multiline comments", :prism_merge_only do
         src = <<~RUBY
           gem "foo"
         RUBY
@@ -184,7 +184,7 @@ RSpec.describe Kettle::Dev::SourceMerger do
         expect(comment_idx).to be < bar_idx if bar_idx && comment_idx
       end
 
-      it "maintains idempotency with comments" do
+      it "maintains idempotency with comments", :prism_merge_only do
         src = <<~RUBY
           gem "foo"
         RUBY
@@ -202,7 +202,7 @@ RSpec.describe Kettle::Dev::SourceMerger do
         expect(foo_count).to eq(1)
       end
 
-      it "handles empty lines between comments and statements" do
+      it "handles empty lines between comments and statements", :prism_merge_only do
         src = <<~RUBY
           gem "foo"
         RUBY
@@ -215,7 +215,7 @@ RSpec.describe Kettle::Dev::SourceMerger do
         expect(merged).to include("gem \"bar\"")
       end
 
-      it "preserves comments for destination-only statements during merge" do
+      it "preserves comments for destination-only statements during merge", :prism_merge_only do
         src = <<~RUBY
           gem "template_gem"
         RUBY
@@ -310,7 +310,7 @@ RSpec.describe Kettle::Dev::SourceMerger do
       let(:dest_fixture) { File.read(File.join(fixture_dir, "example-kettle-dev.gemspec")) }
       let(:template_fixture) { File.read(File.join(fixture_dir, "example-kettle-dev.template.gemspec")) }
 
-      it "keeps kettle-dev freeze blocks in their relative position" do
+      it "keeps kettle-dev freeze blocks in their relative position", :prism_merge_only do
         merged = described_class.apply(
           strategy: :merge,
           src: template_fixture,

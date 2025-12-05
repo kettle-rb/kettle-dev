@@ -86,7 +86,7 @@ RSpec.describe Kettle::Dev::PrismAppraisals do
     end
 
     context "with AST-based merge" do
-      it "merges matching appraise blocks and preserves destination-only ones" do
+      it "merges matching appraise blocks and preserves destination-only ones", :prism_merge_only do
         # Prism::Merge uses template preference for signature matches and doesn't add template-only nodes
         # So template preamble wins, and custom destination block is preserved
         expect(merged).to start_with("# preamble from template\n# a second line\n")
@@ -103,7 +103,7 @@ RSpec.describe Kettle::Dev::PrismAppraisals do
         expect(merged).to include('appraise "pre-existing" do')
       end
 
-      it "preserves destination header when template omits header" do
+      it "preserves destination header when template omits header", :prism_merge_only do
         template = <<~TPL
           appraise "unlocked" do
             eval_gemfile "a.gemfile"

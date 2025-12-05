@@ -7,6 +7,8 @@ gem "cgi", ">= 0.5"
 
 gemspec path: "../"
 
-eval_gemfile "modular/recording/r3/recording.gemfile"
+eval_gemfile("modular/recording/r3/recording.gemfile")
+
+eval_gemfile("modular/templating.gemfile")
 
 eval_gemfile("modular/x_std_libs.gemfile")

@@ -131,29 +131,4 @@ gemfiles/modular/*.gemfile (specific list: coverage, debug, documentation, optio
   <li>
 <code>append</code>: add nodes missing from destination while leaving existing content untouched.</li>
   <li>
-<code>merge</code>: reconcile template and destination ASTs (e.g., <code>Gemfile</code>, gemspec) respecting freeze blocks.</li>
-</ul>
-
-<h2 id="additional-notes">Additional Notes</h2>
-<ul>
-  <li>Regardless of strategy, every templated Ruby file will receive the reminder comment:
-    <pre class="code language-ruby"><code class="language-ruby"># To retain during kettle-dev templating:
-#     kettle-dev:freeze
-#     # ... your code
-#     kettle-dev:unfreeze
-</code></pre>
-  </li>
-  <li>Parser/unparser failures will emit a bug-report instruction and abort; there is no fallback to regex merges once a file’s strategy changes from <code>skip</code>.</li>
-  <li>The manifest enables gradual migration: update <code>strategy</code> per file once tests confirm AST merging works for that target.</li>
-</ul>
-</div></div>
-
-      <div id="footer">
-  Generated on Fri Dec  5 13:45:04 2025 by
-  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.37 (ruby-3.4.7).
-</div>
-
-    </div>
-  </body>
-</html>
+<code>m

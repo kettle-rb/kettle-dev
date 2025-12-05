@@ -59,7 +59,7 @@ RSpec.describe Kettle::Dev::SourceMerger do
         expect(if_count).to eq(1)
       end
 
-      it "keeps both if blocks when predicates are different" do
+      it "keeps both if blocks when predicates are different", :prism_merge_only do
         src = <<~RUBY
           if ENV["FOO"] == "true"
             gem "foo"
