@@ -239,8 +239,8 @@ module Kettle
       # This ensures proper matching during merge/append operations
       def create_signature_generator
         ->(node) do
-          case node
-          when Prism::CallNode
+          # Only customize CallNode signatures
+          if node.is_a?(Prism::CallNode)
             # For source(), there should only be one, so signature is just [:source]
             return [:source] if node.name == :source
 
@@ -254,7 +254,15 @@ module Kettle
               return [:call, node.name, receiver_name]
             end
 
-            # For non-assignment methods, include the first argument for matching
+            # For gem() calls, match by first argument (gem name)
+            if node.name == :gem
+              first_arg = node.arguments&.arguments&.first
+              if first_arg.is_a?(Prism::StringNode)
+                return [:gem, first_arg.unescaped]
+              end
+            end
+
+            # For other methods with arguments, include the first argument for matching
             # e.g. spec.add_dependency("gem_name", "~> 1.0") -> [:add_dependency, "gem_name"]
             first_arg = node.arguments&.arguments&.first
             arg_value = case first_arg
@@ -266,40 +274,11 @@ module Kettle
                           nil
                         end
 
-            arg_value ? [node.name, arg_value] : [:call, node.name, receiver_name]
-
-          when Prism::IfNode
-            # Match if statements by their predicate
-            predicate_source = node.predicate.slice.strip
-            [:if, predicate_source]
-
-          when Prism::UnlessNode
-            # Match unless statements by their predicate
-            predicate_source = node.predicate.slice.strip
-            [:unless, predicate_source]
-
-          when Prism::CaseNode
-            # Match case statements by their predicate
-            predicate_source = node.predicate ? node.predicate.slice.strip : nil
-            [:case, predicate_source]
-
-          when Prism::LocalVariableWriteNode
-            # Match local variable assignments by variable name
-            [:local_var, node.name]
-
-          when Prism::ConstantWriteNode
-            # Match constant assignments by constant name
-            [:constant, node.name]
-
-          when Prism::ConstantPathWriteNode
-            # Match constant path assignments (like Foo::Bar = ...)
-            [:constant_path, node.target.slice]
-
-          else
-            # For other node types, use a generic signature based on node type
-            # This allows matching of similar structures
-            [node.class.name.split("::").last.to_sym, node.slice.strip[0..50]]
+            return [node.name, arg_value] if arg_value
           end
+
+          # Return the node to fall through to default signature computation
+          node
         end
       end
 
@@ -460,18 +439,6 @@ module Kettle
         unique_tuples
       end
 
-      def extract_file_leading_comments(parse_result)
-        return [] unless parse_result.success?
-
-        tuples = create_comment_tuples(parse_result)
-        deduplicated = deduplicate_comment_sequences(tuples)
-
-        # Filter to only file-level comments and return their text
-        deduplicated
-          .select { |tuple| tuple[1] == :file_level }
-          .map { |tuple| tuple[2] }
-      end
-
       def extract_nodes_with_comments(parse_result)
         return [] unless parse_result.success?
 
@@ -529,30 +496,6 @@ module Kettle
         end
 
         blank_count
-      end
-
-      def extract_magic_comments(parse_result)
-        return [] unless parse_result.success?
-
-        tuples = create_comment_tuples(parse_result)
-        deduplicated = deduplicate_comment_sequences(tuples)
-
-        # Filter to only magic comments and return their text
-        deduplicated
-          .select { |tuple| tuple[1] == :magic }
-          .map { |tuple| tuple[2] }
-      end
-
-      def extract_file_leading_comments(parse_result)
-        return [] unless parse_result.success?
-
-        tuples = create_comment_tuples(parse_result)
-        deduplicated = deduplicate_comment_sequences(tuples)
-
-        # Filter to only file-level comments and return their text
-        deduplicated
-          .select { |tuple| tuple[1] == :file_level }
-          .map { |tuple| tuple[2] }
       end
 
       def build_source_from_nodes(node_infos, magic_comments: [], file_leading_comments: [])
