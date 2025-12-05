@@ -22,9 +22,28 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- **BREAKING**: Simplified `SourceMerger` to fully rely on prism-merge for AST merging
+  - Reduced from ~610 lines to ~175 lines (71% reduction)
+  - Removed custom newline normalization - prism-merge preserves original formatting
+  - Removed custom comment deduplication logic - prism-merge handles this natively
+  - All strategies (`:skip`, `:replace`, `:append`, `:merge`) now use prism-merge consistently
+  - Freeze blocks (`kettle-dev:freeze` / `kettle-dev:unfreeze`) handled by prism-merge's `freeze_token` option
+
 ### Deprecated
 
 ### Removed
+
+- Removed unused methods from `SourceMerger`:
+  - `normalize_source` - replaced by prism-merge
+  - `normalize_newlines` - prism-merge preserves original formatting
+  - `shebang?`, `magic_comment?`, `ruby_magic_comment_key?` - no longer needed
+  - Comment extraction/deduplication: `extract_magic_comments`, `extract_file_leading_comments`,
+    `create_comment_tuples`, `deduplicate_comment_sequences`, `deduplicate_sequences_pass1`,
+    `deduplicate_singles_pass2`, `extract_nodes_with_comments`, `count_blank_lines_before`,
+    `build_source_from_nodes`
+  - Unused comment restoration: `restore_custom_leading_comments`, `deduplicate_leading_comment_block`,
+    `extract_comment_lines`, `normalize_comment`, `leading_comment_block`
+- Removed unused constants: `RUBY_MAGIC_COMMENT_KEYS`, `MAGIC_COMMENT_REGEXES`
 
 ### Fixed
 
