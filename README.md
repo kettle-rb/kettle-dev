@@ -105,6 +105,7 @@ bin/kettle-release
 ### Compatibility
 
 Compatible with MRI Ruby 2.3.0+, and concordant releases of JRuby, and TruffleRuby.
+Certain templating features are only available with Ruby 2.7+, others are Ruby 3.2+, and some in-between, due to reliance on [prism-merge](https://github.com/kettle-rb/prism-merge). It is recommended to run the template tasks / scripts in the latest release of Ruby!
 
 | 🚚 _Amazing_ test matrix was brought to you by | 🔎 appraisal2 🔎 and the color 💚 green 💚             |
 |------------------------------------------------|--------------------------------------------------------|
