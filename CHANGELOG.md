@@ -23,7 +23,7 @@ Please file a bug if you notice a violation of semantic versioning.
 - Added `.kettle-dev.yml` configuration file for per-file merge options
   - Hybrid format: `defaults` for shared merge options, `patterns` for glob fallbacks, `files` for per-file config
   - Nested directory structure under `files` allows individual file configuration
-  - Supports all `Prism::Merge::SmartMerger` options: `signature_match_preference`, `add_template_only_nodes`, `freeze_token`, `max_recursion_depth`
+  - Supports all `Prism::Merge::SmartMerger` options: `preference`, `add_template_only_nodes`, `freeze_token`, `max_recursion_depth`
   - Added `TemplateHelpers.kettle_config`, `.config_for`, `.find_file_config` methods
   - Added spec coverage in `template_helpers_config_spec.rb`
 

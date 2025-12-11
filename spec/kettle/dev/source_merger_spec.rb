@@ -31,7 +31,7 @@ RSpec.describe Kettle::Dev::SourceMerger do
       expect(merged).to include("# kettle-dev:unfreeze")
     end
 
-    it "appends missing gem declarations without duplicates" do
+    it "appends missing gem declarations without duplicates", :prism_merge_only do
       src = <<~RUBY
         source "https://example.com"
         gem "foo"

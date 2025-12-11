@@ -704,7 +704,7 @@ module Kettle
 
         # For merge strategy, include merge options (from entry or defaults)
         if result[:strategy] == :merge
-          %w[signature_match_preference add_template_only_nodes freeze_token max_recursion_depth].each do |opt|
+          %w[preference add_template_only_nodes freeze_token max_recursion_depth].each do |opt|
             value = entry.key?(opt) ? entry[opt] : defaults[opt]
             result[opt.to_sym] = value unless value.nil?
           end

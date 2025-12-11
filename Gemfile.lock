@@ -11,6 +11,60 @@ GIT
       yard
 
 PATH
+  remote: ../..
+  specs:
+    ast-merge (1.0.0)
+      version_gem (~> 1.1, >= 1.1.9)
+
+PATH
+  remote: ../dotenv-merge
+  specs:
+    dotenv-merge (1.0.0)
+      version_gem (~> 1.1, >= 1.1.9)
+
+PATH
+  remote: ../json-merge
+  specs:
+    json-merge (1.0.0)
+      ast-merge (~> 1.0)
+      ruby_tree_sitter (~> 2.0)
+      version_gem (~> 1.1, >= 1.1.9)
+
+PATH
+  remote: ../kettle-jem
+  specs:
+    kettle-jem (1.0.0)
+      ast-merge (~> 1.0)
+      version_gem (~> 1.1, >= 1.1.9)
+
+PATH
+  remote: ../markly-merge
+  specs:
+    markly-merge (1.0.0)
+      markly (~> 0.15)
+      version_gem (~> 1.1, >= 1.1.9)
+
+PATH
+  remote: ../prism-merge
+  specs:
+    prism-merge (1.1.6)
+      prism (~> 1.6)
+      version_gem (~> 1.1, >= 1.1.9)
+
+PATH
+  remote: ../psych-merge
+  specs:
+    psych-merge (1.0.0)
+      version_gem (~> 1.1, >= 1.1.9)
+
+PATH
+  remote: ../rbs-merge
+  specs:
+    rbs-merge (1.0.0)
+      rbs (>= 3.0)
+      version_gem (~> 1.1, >= 1.1.9)
+
+PATH
   remote: .
   specs:
     kettle-dev (1.2.5)
@@ -136,11 +190,13 @@ GEM
     language_server-protocol (3.17.0.5)
     lint_roller (1.1.0)
     logger (1.7.0)
+    markly (0.15.1)
     matrix (0.4.3)
     minitest (5.26.2)
     mutex_m (0.3.0)
     nokogiri (1.18.10-x86_64-linux-gnu)
       racc (~> 1.4)
+    oppen (1.0.0)
     ostruct (0.6.3)
     parallel (1.27.0)
     parser (3.3.10.0)
@@ -155,9 +211,6 @@ GEM
       ttfunk (~> 1.8)
     prettyprint (0.2.0)
     prism (1.6.0)
-    prism-merge (1.1.6)
-      prism (~> 1.6)
-      version_gem (~> 1.1, >= 1.1.9)
     process_executer (4.0.0)
       track_open_instances (~> 0.1)
     psych (5.2.6)
@@ -170,7 +223,7 @@ GEM
     rbs (3.9.5)
       logger
     rchardet (1.10.0)
-    rdoc (6.16.1)
+    rdoc (6.17.0)
       erb
       psych (>= 4.0.0)
       tsort
@@ -242,10 +295,10 @@ GEM
     rubocop-packaging (0.6.0)
       lint_roller (~> 1.1.0)
       rubocop (>= 1.72.1, < 2.0)
-    rubocop-performance (1.25.0)
+    rubocop-performance (1.26.1)
       lint_roller (~> 1.1)
       rubocop (>= 1.75.0, < 2.0)
-      rubocop-ast (>= 1.38.0, < 2.0)
+      rubocop-ast (>= 1.47.1, < 2.0)
     rubocop-rake (0.7.1)
       lint_roller (~> 1.1)
       rubocop (>= 1.72.1)
@@ -268,6 +321,10 @@ GEM
       rubocop-ast (>= 1.44.0, < 2.0)
     ruby-progressbar (1.13.0)
     ruby_engine (2.0.3)
+    ruby_tree_sitter (2.0.0-x86_64-linux-gnu)
+      oppen (~> 1.0)
+      sorbet-runtime
+      zeitwerk
     ruby_version (1.0.3)
     securerandom (0.4.1)
     silent_stream (1.0.12)
@@ -289,6 +346,7 @@ GEM
     simplecov-rcov (0.3.7)
       simplecov (>= 0.4.1)
     simplecov_json_formatter (0.1.4)
+    sorbet-runtime (0.6.12829)
     standard (1.52.0)
       language_server-protocol (~> 3.17.0.2)
       lint_roller (~> 1.0)
@@ -298,9 +356,9 @@ GEM
     standard-custom (1.0.2)
       lint_roller (~> 1.0)
       rubocop (~> 1.50)
-    standard-performance (1.8.0)
+    standard-performance (1.9.0)
       lint_roller (~> 1.1)
-      rubocop-performance (~> 1.25.0)
+      rubocop-performance (~> 1.26.0)
     standard-rubocop-lts (1.0.10)
       rspec-block_is_expected (~> 1.0, >= 1.0.5)
       standard (>= 1.35.1, < 2)
@@ -359,22 +417,29 @@ PLATFORMS
 DEPENDENCIES
   addressable (>= 2.8, < 3)
   appraisal2 (~> 3.0)
+  ast-merge!
   benchmark (~> 0.4, >= 0.4.1)
   bundler-audit (~> 0.9.3)
   debug (>= 1.1)
+  dotenv-merge!
   erb (~> 5.0)
   gem_bench (~> 2.0, >= 2.0.5)
   git (>= 1.19.1)
   gitmoji-regex (~> 1.0, >= 1.0.3)
   irb (~> 1.15, >= 1.15.2)
+  json-merge!
   kettle-dev!
+  kettle-jem!
   kettle-soup-cover (~> 1.0, >= 1.0.10)
   kettle-test (~> 1.0, >= 1.0.7)
   kramdown (~> 2.5, >= 2.5.1)
   kramdown-parser-gfm (~> 1.1)
+  markly-merge!
   mutex_m (~> 0.2)
-  prism-merge (~> 1.1, >= 1.1.6)
+  prism-merge!
+  psych-merge!
   rake (~> 13.0)
+  rbs-merge!
   rdoc (~> 6.11)
   reek (~> 6.5)
   require_bench (~> 1.0, >= 1.0.4)

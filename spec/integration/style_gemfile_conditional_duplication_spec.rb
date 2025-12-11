@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe "style.gemfile conditional block duplication fix" do
+RSpec.describe "style.gemfile conditional block duplication fix", :prism_merge_only do
   describe "merging style.gemfile with if/else blocks" do
     let(:source_template) do
       <<~'GEMFILE'

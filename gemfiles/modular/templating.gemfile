@@ -7,4 +7,15 @@
 #
 
 # Ruby parsing for advanced templating
-gem "prism-merge", "~> 1.1", ">= 1.1.6"  # ruby >= 2.7.0
+if false # released gems are not released yet!
+  gem "prism-merge", "~> 1.1", ">= 1.1.6"  # ruby >= 2.7.0
+else
+  gem "ast-merge", path: "../../../../"
+  gem "dotenv-merge", path: "../../../dotenv-merge"
+  gem "json-merge", path: "../../../json-merge"
+  gem "markly-merge", path: "../../../markly-merge"
+  gem "psych-merge", path: "../../../psych-merge"
+  gem "rbs-merge", path: "../../../rbs-merge"
+  gem "prism-merge", path: "../../../prism-merge"
+  gem "kettle-jem", path: "../../../kettle-jem"
+end

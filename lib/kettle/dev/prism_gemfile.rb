@@ -53,7 +53,7 @@ module Kettle
         merger = Prism::Merge::SmartMerger.new(
           src_filtered,
           dest_processed,
-          signature_match_preference: :template,
+          preference: :template,
           add_template_only_nodes: true,
           signature_generator: signature_generator,
         )

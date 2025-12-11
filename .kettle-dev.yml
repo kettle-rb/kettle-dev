@@ -15,7 +15,7 @@
 #   strategy: "skip" | "merge"
 #     - "skip": Copy file as-is without merging
 #     - "merge": Use AST-aware merging for Ruby files
-#   signature_match_preference: "template" | "destination"
+#   preference: "template" | "destination"
 #     - "template": Template nodes take precedence over destination nodes
 #     - "destination": Destination nodes take precedence over template nodes
 #   add_template_only_nodes: true | false
@@ -28,7 +28,7 @@
 
 # Default options for Ruby files with merge strategy
 defaults:
-  signature_match_preference: "template"
+  preference: "template"
   add_template_only_nodes: true
   freeze_token: "kettle-dev"
 

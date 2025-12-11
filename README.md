@@ -604,7 +604,7 @@ Here is an example `.kettle-dev.yml` (hybrid format):
 ```yaml
 # Defaults applied to per-file merge options when strategy: merge
 defaults:
-  signature_match_preference: "template"
+  preference: "template"
   add_template_only_nodes: true
 
 # Ordered glob patterns (first match wins)
