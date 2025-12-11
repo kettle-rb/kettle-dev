@@ -19,7 +19,6 @@ RSpec.describe Kettle::Dev::SourceMerger do
         source "https://rubygems.org"
         # kettle-dev:freeze
         gem "bar", "~> 1.0"
-        # kettle-dev:unfreeze
       RUBY
       merged = described_class.apply(strategy: :merge, src: src, dest: dest, path: path)
       # With Prism::Merge and template preference, template's source wins
@@ -28,7 +27,6 @@ RSpec.describe Kettle::Dev::SourceMerger do
       expect(merged).to include("gem \"foo\"")
       expect(merged).to include("# kettle-dev:freeze")
       expect(merged).to include("gem \"bar\", \"~> 1.0\"")
-      expect(merged).to include("# kettle-dev:unfreeze")
     end
 
     it "appends missing gem declarations without duplicates", :prism_merge_only do
