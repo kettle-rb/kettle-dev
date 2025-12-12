@@ -36,6 +36,13 @@ PATH
   specs:
     kettle-jem (1.0.0)
       ast-merge (~> 1.0)
+      dotenv-merge (~> 1.0)
+      json-merge (~> 1.0)
+      markdown-merge (~> 1.0)
+      markly-merge (~> 1.0)
+      prism-merge (~> 2.0)
+      psych-merge (~> 1.0)
+      rbs-merge (~> 1.0)
       version_gem (~> 1.1, >= 1.1.9)
 
 PATH
@@ -57,7 +64,7 @@ PATH
 PATH
   remote: ../prism-merge
   specs:
-    prism-merge (1.1.6)
+    prism-merge (2.0.0)
       ast-merge (~> 1.0)
       prism (~> 1.6)
       version_gem (~> 1.1, >= 1.1.9)
