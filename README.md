@@ -597,6 +597,42 @@ All Ruby files receive this reminder (inserted after shebang/frozen-string-liter
 
 Wrap any code you never want rewritten between `kettle-dev:freeze` / `kettle-dev:unfreeze` comments. When an AST merge fails, the task emits an error asking you to file an issue at https://github.com/kettle-rb/kettle-dev/issues and then aborts—there is no regex fallback.
 
+#### Inline Freeze Comments
+
+In addition to block-style freeze markers, you can freeze a **single Ruby statement** by placing a freeze comment immediately before it (without a matching `unfreeze`):
+
+```ruby
+# kettle-dev:freeze
+gem "my-custom-gem", "~> 1.0"
+```
+
+**⚠️ Important:** When a freeze comment precedes a block-based statement (like a class, module, method definition, or DSL block), the **entire block is frozen**, preventing any template updates to that section:
+
+```ruby
+# kettle-dev:freeze
+class MyCustomClass
+  # EVERYTHING inside this class is frozen!
+  # Template changes to this class will be ignored.
+  def custom_method
+    # ...
+  end
+end
+
+# kettle-dev:freeze
+Gem::Specification.new do |spec|
+  # The entire gemspec block is frozen
+  # Use this carefully - it prevents ALL template updates!
+end
+
+# kettle-dev:freeze
+appraise "custom-ruby" do
+  # This entire appraisal block is frozen
+  gem "specific-version", "= 1.2.3"
+end
+```
+
+Frozen statements are matched by their **structural identity** (e.g., gem name, class name, method name), not their content. The destination's frozen version is always preserved, regardless of changes in the template.
+
 ### Template Example
 
 Here is an example `.kettle-dev.yml` (hybrid format):
