@@ -33,10 +33,13 @@ RSpec.describe "Real-world modular gemfile deduplication" do
       frozen_count = result.scan("# frozen_string_literal: true").count
       expect(frozen_count).to eq(1), "Expected 1 frozen_string_literal, got #{frozen_count}\nResult:\n#{result}"
 
-      # Regular comments are NOT deduplicated - prism-merge preserves all content
-      # The fixture has 4 instances and they should all be preserved
+      # With preference: :template, Phase 2 (dest-only nodes) is skipped.
+      # The template has 1 coverage comment, which matches the first dest occurrence.
+      # The other dest occurrences are dest-only (no matching template node),
+      # so they are NOT preserved when preference is :template.
+      # This is the expected "template wins" behavior - template content takes precedence.
       coverage_count = result.scan("# We run code coverage").count
-      expect(coverage_count).to eq(4), "Expected 4 coverage comments (preserved from fixture), got #{coverage_count}\nResult:\n#{result}"
+      expect(coverage_count).to eq(1), "Expected 1 coverage comment (template wins skips dest-only), got #{coverage_count}\nResult:\n#{result}"
 
       # Running again should be idempotent
       second_result = Kettle::Dev::SourceMerger.apply(

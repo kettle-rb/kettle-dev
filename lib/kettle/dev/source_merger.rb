@@ -95,17 +95,17 @@ module Kettle
         require "kettle/jem" unless defined?(Kettle::Jem)
 
         preset_class = case file_type
-                       when :gemfile
-                         Kettle::Jem::Presets::Gemfile
-                       when :appraisals
-                         Kettle::Jem::Presets::Appraisals
-                       when :gemspec
-                         Kettle::Jem::Presets::Gemspec
-                       when :rakefile
-                         Kettle::Jem::Presets::Rakefile
-                       else
-                         Kettle::Jem::Presets::Gemfile # Default to Gemfile behavior
-                       end
+        when :gemfile
+          Kettle::Jem::Presets::Gemfile
+        when :appraisals
+          Kettle::Jem::Presets::Appraisals
+        when :gemspec
+          Kettle::Jem::Presets::Gemspec
+        when :rakefile
+          Kettle::Jem::Presets::Rakefile
+        else
+          Kettle::Jem::Presets::Gemfile # Default to Gemfile behavior
+        end
 
         if preference == :template
           preset_class.template_wins(freeze_token: FREEZE_TOKEN)
@@ -126,23 +126,23 @@ module Kettle
         require "kettle/jem" unless defined?(Kettle::Jem)
 
         preset_class = case file_type
-                       when :gemfile
-                         Kettle::Jem::Presets::Gemfile
-                       when :appraisals
-                         Kettle::Jem::Presets::Appraisals
-                       when :gemspec
-                         Kettle::Jem::Presets::Gemspec
-                       when :rakefile
-                         Kettle::Jem::Presets::Rakefile
-                       else
-                         Kettle::Jem::Presets::Gemfile # Default to Gemfile behavior
-                       end
+        when :gemfile
+          Kettle::Jem::Presets::Gemfile
+        when :appraisals
+          Kettle::Jem::Presets::Appraisals
+        when :gemspec
+          Kettle::Jem::Presets::Gemspec
+        when :rakefile
+          Kettle::Jem::Presets::Rakefile
+        else
+          Kettle::Jem::Presets::Gemfile # Default to Gemfile behavior
+        end
 
         # For append: destination preference + add template-only nodes
         preset_class.custom(
           preference: :destination,
           add_template_only: true,
-          freeze_token: FREEZE_TOKEN
+          freeze_token: FREEZE_TOKEN,
         )
       end
 
@@ -203,7 +203,7 @@ module Kettle
         merger = Prism::Merge::SmartMerger.new(
           src_content,
           dest_content,
-          **config.to_h
+          **config.to_h,
         )
         merger.merge
       rescue Prism::Merge::Error => e
@@ -235,7 +235,7 @@ module Kettle
         merger = Prism::Merge::SmartMerger.new(
           src_content,
           dest_content,
-          **config.to_h
+          **config.to_h,
         )
         merger.merge
       rescue Prism::Merge::Error => e

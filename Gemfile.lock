@@ -20,6 +20,7 @@ PATH
   remote: ../dotenv-merge
   specs:
     dotenv-merge (1.0.0)
+      ast-merge (~> 1.0)
       version_gem (~> 1.1, >= 1.1.9)
 
 PATH
@@ -38,9 +39,18 @@ PATH
       version_gem (~> 1.1, >= 1.1.9)
 
 PATH
+  remote: ../markdown-merge
+  specs:
+    markdown-merge (1.0.0)
+      ast-merge (~> 1.0)
+      version_gem (~> 1.1, >= 1.1.9)
+
+PATH
   remote: ../markly-merge
   specs:
     markly-merge (1.0.0)
+      ast-merge (~> 1.0)
+      markdown-merge (~> 1.0)
       markly (~> 0.15)
       version_gem (~> 1.1, >= 1.1.9)
 
@@ -48,6 +58,7 @@ PATH
   remote: ../prism-merge
   specs:
     prism-merge (1.1.6)
+      ast-merge (~> 1.0)
       prism (~> 1.6)
       version_gem (~> 1.1, >= 1.1.9)
 
@@ -55,12 +66,15 @@ PATH
   remote: ../psych-merge
   specs:
     psych-merge (1.0.0)
+      ast-merge (~> 1.0)
+      psych (~> 5.0)
       version_gem (~> 1.1, >= 1.1.9)
 
 PATH
   remote: ../rbs-merge
   specs:
     rbs-merge (1.0.0)
+      ast-merge (~> 1.0)
       rbs (>= 3.0)
       version_gem (~> 1.1, >= 1.1.9)
 
@@ -105,7 +119,7 @@ GEM
     crack (1.0.1)
       bigdecimal
       rexml
-    date (3.5.0)
+    date (3.5.1)
     debug (1.11.0)
       irb (~> 1.10)
       reline (>= 0.3.8)
@@ -162,7 +176,7 @@ GEM
       pp (>= 0.6.0)
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
-    json (2.17.1)
+    json (2.18.0)
     kettle-soup-cover (1.0.10)
       simplecov (~> 0.22)
       simplecov-cobertura (~> 3.0)
@@ -192,7 +206,7 @@ GEM
     logger (1.7.0)
     markly (0.15.1)
     matrix (0.4.3)
-    minitest (5.26.2)
+    minitest (5.27.0)
     mutex_m (0.3.0)
     nokogiri (1.18.10-x86_64-linux-gnu)
       racc (~> 1.4)
@@ -213,7 +227,7 @@ GEM
     prism (1.6.0)
     process_executer (4.0.0)
       track_open_instances (~> 0.1)
-    psych (5.2.6)
+    psych (5.3.0)
       date
       stringio
     public_suffix (7.0.0)
@@ -346,7 +360,7 @@ GEM
     simplecov-rcov (0.3.7)
       simplecov (>= 0.4.1)
     simplecov_json_formatter (0.1.4)
-    sorbet-runtime (0.6.12829)
+    sorbet-runtime (0.6.12845)
     standard (1.52.0)
       language_server-protocol (~> 3.17.0.2)
       lint_roller (~> 1.0)
@@ -434,6 +448,7 @@ DEPENDENCIES
   kettle-test (~> 1.0, >= 1.0.7)
   kramdown (~> 2.5, >= 2.5.1)
   kramdown-parser-gfm (~> 1.1)
+  markdown-merge!
   markly-merge!
   mutex_m (~> 0.2)
   prism-merge!
