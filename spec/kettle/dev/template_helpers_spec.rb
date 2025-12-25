@@ -11,7 +11,7 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
       dest = <<~'DEST'
         # frozen_string_literal: true
 
-        source "https://rubygems.org"
+        source "https://gem.coop"
 
         git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
 
@@ -56,7 +56,7 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
         # frozen_string_literal: true
 
         # header comment
-        source "https://rubygems.org"
+        source "https://gem.coop"
         # an unrelated comment
         git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
         git_source(:bitbucket) { |repo_name| "https://bitbucket.org/#{repo_name}" }
@@ -118,7 +118,7 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
       SRC
 
       dest = <<~DEST
-        source "https://rubygems.org"
+        source "https://gem.coop"
         gem "foo"
       DEST
 
@@ -136,7 +136,7 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
 
       dest = <<~'DEST'
         # Header
-        source "https://rubygems.org"
+        source "https://gem.coop"
         git_source(:bitbucket) { |repo_name| "https://bb.org/#{repo_name}" }
       DEST
 

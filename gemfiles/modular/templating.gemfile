@@ -7,12 +7,33 @@
 #
 
 # AST parsing for advanced templating
-gem "ast-merge", path: "../../../../"
-gem "dotenv-merge", path: "../../../dotenv-merge"
-gem "json-merge", path: "../../../json-merge"
-gem "kettle-jem", path: "../../../kettle-jem"
-gem "markdown-merge", path: "../../../markdown-merge"
-gem "markly-merge", path: "../../../markly-merge"
-gem "prism-merge", path: "../../../prism-merge"
-gem "psych-merge", path: "../../../psych-merge"
-gem "rbs-merge", path: "../../../rbs-merge"
+if ENV.fetch("KETTLE_RB_DEV", "false").casecmp?("true")
+  # Inner-merge dependencies for CodeBlockMerger
+  # These are loaded on-demand when merging fenced code blocks
+  gem "bash-merge", path: "../../../bash-merge"         # dotenv code blocks
+  gem "dotenv-merge", path: "../../../dotenv-merge"     # dotenv code blocks
+  gem "json-merge", path: "../../../json-merge"         # JSON code blocks
+  gem "jsonc-merge", path: "../../../jsonc-merge"       # JSONC code blocks
+  gem "markdown-merge", path: "../../../markdown-merge" # generic markdown tools
+  gem "markly-merge", path: "../../../markly-merge"     # markly markdown merging
+  gem "prism-merge", path: "../../../prism-merge"       # Ruby code blocks
+  gem "psych-merge", path: "../../../psych-merge"       # YAML code blocks
+  gem "rbs-merge", path: "../../../rbs-merge"           # RBS code blocks
+  gem "toml-merge", path: "../../../toml-merge"         # TOML code blocks
+
+  gem "kettle-jem", path: "../../../kettle-jem"         # Kettle-rb's Merge Recipes
+else
+  gem "bash-merge"      # dotenv code blocks
+  gem "dotenv-merge"    # dotenv code blocks
+  gem "json-merge"      # JSON code blocks
+  gem "jsonc-merge"     # JSONC code blocks
+  gem "markdown-merge"  # generic markdown tools
+  gem "markly-merge"    # markly markdown merging
+  gem "prism-merge"     # Ruby code blocks
+  gem "psych-merge"     # YAML code blocks
+  gem "rbs-merge"       # RBS code blocks
+  gem "toml-merge"      # TOML code blocks
+  gem "toml-merge"      # TOML code blocks
+
+  gem "kettle-jem"      # Kettle-rb's Merge Recipes
+end

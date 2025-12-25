@@ -16,7 +16,7 @@ RSpec.describe Kettle::Dev::SourceMerger do
         gem "foo"
       RUBY
       dest = <<~RUBY
-        source "https://rubygems.org"
+        source "https://gem.coop"
         # kettle-dev:freeze
         gem "bar", "~> 1.0"
       RUBY
