@@ -23,17 +23,18 @@ if ENV.fetch("KETTLE_RB_DEV", "false").casecmp?("true")
 
   gem "kettle-jem", path: "../../../kettle-jem"         # Kettle-rb's Merge Recipes
 else
-  gem "bash-merge"      # dotenv code blocks
-  gem "dotenv-merge"    # dotenv code blocks
-  gem "json-merge"      # JSON code blocks
-  gem "jsonc-merge"     # JSONC code blocks
-  gem "markdown-merge"  # generic markdown tools
-  gem "markly-merge"    # markly markdown merging
-  gem "prism-merge"     # Ruby code blocks
-  gem "psych-merge"     # YAML code blocks
-  gem "rbs-merge"       # RBS code blocks
-  gem "toml-merge"      # TOML code blocks
-  gem "toml-merge"      # TOML code blocks
-
-  gem "kettle-jem"      # Kettle-rb's Merge Recipes
+  # Not all of these are released yet, but eventually we will add integration specs to ensure future changes work with the family.
+  # gem "bash-merge"      # dotenv code blocks
+  # gem "dotenv-merge"    # dotenv code blocks
+  # gem "json-merge"      # JSON code blocks
+  # gem "jsonc-merge"     # JSONC code blocks
+  # gem "markdown-merge"  # generic markdown tools
+  # gem "markly-merge"    # markly markdown merging
+  # gem "prism-merge"     # Ruby code blocks
+  # gem "psych-merge"     # YAML code blocks
+  # gem "rbs-merge"       # RBS code blocks
+  # gem "toml-merge"      # TOML code blocks
+  # gem "toml-merge"      # TOML code blocks
+  #
+  # gem "kettle-jem"      # Kettle-rb's Merge Recipes
 end

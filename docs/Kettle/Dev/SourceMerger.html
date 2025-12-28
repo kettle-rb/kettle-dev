@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  Module: Kettle::Dev::SourceMerger
+  
+    &mdash; Documentation by YARD 0.9.38
+  
+</title>
+
+  <link rel="stylesheet" href="../../css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="../../css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "Kettle::Dev::SourceMerger";
+  relpath = '../../';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="../../class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="../../_index.html">Index (S)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span> &raquo; <span class='title'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span>
+     &raquo; 
+    <span class="title">SourceMerger</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../../class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><h1>Module: Kettle::Dev::SourceMerger
+  
+  
+  
+</h1>
+<div class="box_info">
+  
+
+  
+  
+  
+  
+  
+
+  
+
+  
+  <dl>
+    <dt>Defined in:</dt>
+    <dd>lib/kettle/dev/source_merger.rb</dd>
+  </dl>
+  
+</div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    <p>Prism-based AST merging for templated Ruby files.<br />
+Handles strategy dispatch (skip/replace/append/merge).</p>
+
+<p>Uses prism-merge for AST-aware merging with support for:</p>
+<ul>
+  <li>Freeze blocks (kettle-dev:freeze / kettle-dev:unfreeze)</li>
+  <li>Comment preservation</li>
+  <li>Signature-based node matching</li>
+</ul>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li>for MergerConfig presets</li>
+    
+  </ul>
+
+</div>
+  
+    <h2>
+      Constant Summary
+      <small><a href="#" class="constants_summary_toggle">collapse</a></small>
+    </h2>
+
+    <dl class="constants">
+      
+        <dt id="BUG_URL-constant" class="">BUG_URL =
+          
+        </dt>
+        <dd><pre class="code"><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>https://github.com/kettle-rb/kettle-dev/issues</span><span class='tstring_end'>&quot;</span></span></pre></dd>
+      
+        <dt id="FREEZE_TOKEN-constant" class="">FREEZE_TOKEN =
+          
+        </dt>
+        <dd><pre class="code"><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>kettle-dev</span><span class='tstring_end'>&quot;</span></span></pre></dd>
+      
+    </dl>
+  
+
+
+
+
+
+
+
+  
+    <h2>
+      Class Method Summary
+      <small><a href="#" class="summary_toggle">collapse</a></small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#apply-class_method" title="apply (class method)">.<strong>apply</strong>(strategy:, src:, dest:, path:, file_type: nil)  &#x21d2; String </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Apply a templating strategy to merge source and destination Ruby files.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#apply_append-class_method" title="apply_append (class method)">.<strong>apply_append</strong>(src_content, dest_content, file_type: :ruby)  &#x21d2; String </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  <span class="private note title">private</span>
+
+  
+    <span class="summary_desc"><div class='inline'><p>Apply append strategy using prism-merge.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#apply_merge-class_method" title="apply_merge (class method)">.<strong>apply_merge</strong>(src_content, dest_content, file_type: :ruby)  &#x21d2; String </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  <span class="private note title">private</span>
+
+  
+    <span class="summary_desc"><div class='inline'><p>Apply merge strategy using prism-merge.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#config_for_file_type-class_method" title="config_for_file_type (class method)">.<strong>config_for_file_type</strong>(file_type, preference:)  &#x21d2; Ast::Merge::MergerConfig </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  <span class="private note title">private</span>
+
+  
+    <span class="summary_desc"><div class='inline'><p>Get the appropriate MergerConfig preset for a file type.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#config_for_file_type_append-class_method" title="config_for_file_type_append (class method)">.<strong>config_for_file_type_append</strong>(file_type)  &#x21d2; Ast::Merge::MergerConfig </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  <span class="private note title">private</span>
+
+  
+    <span class="summary_desc"><div class='inline'><p>Get the appropriate MergerConfig preset for append strategy.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#detect_file_type-class_method" title="detect_file_type (class method)">.<strong>detect_file_type</strong>(path)  &#x21d2; Symbol </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  <span class="private note title">private</span>
+
+  
+    <span class="summary_desc"><div class='inline'><p>Detect file type from path for preset selection.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#ensure_trailing_newline-class_method" title="ensure_trailing_newline (class method)">.<strong>ensure_trailing_newline</strong>(text)  &#x21d2; String </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  <span class="private note title">private</span>
+
+  
+    <span class="summary_desc"><div class='inline'><p>Ensure text ends with exactly one newline.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#normalize_strategy-class_method" title="normalize_strategy (class method)">.<strong>normalize_strategy</strong>(strategy)  &#x21d2; Symbol </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  <span class="private note title">private</span>
+
+  
+    <span class="summary_desc"><div class='inline'><p>Normalize strategy to a symbol.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#warn_bug-class_method" title="warn_bug (class method)">.<strong>warn_bug</strong>(path, error)  &#x21d2; void </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  <span class="private note title">private</span>
+
+  
+    <span class="summary_desc"><div class='inline'><p>Log error information for debugging.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+
+  <div id="class_method_details" class="method_details_list">
+    <h2>Class Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="apply-class_method">
+  
+    .<strong>apply</strong>(strategy:, src:, dest:, path:, file_type: nil)  &#x21d2; <tt>String</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Apply a templating strategy to merge source and destination Ruby files</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="Kettle::Dev::SourceMerger (module)">SourceMerger</a></span></span><span class='period'>.</span><span class='id identifier rubyid_apply'>apply</span><span class='lparen'>(</span>
+  <span class='label'>strategy:</span> <span class='symbol'>:merge</span><span class='comma'>,</span>
+  <span class='label'>src:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>gem &quot;foo&quot;</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>dest:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>gem &quot;bar&quot;</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+  <span class='label'>path:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Gemfile</span><span class='tstring_end'>&quot;</span></span>
+<span class='rparen'>)</span></code></pre>
+    
+  </div>
+<p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>strategy</span>
+      
+      
+        <span class='type'>(<tt>Symbol</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Merge strategy - :skip, :replace, :append, or :merge</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>src</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Template source content</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>dest</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Destination file content</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>path</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>File path (for error messages)</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>file_type</span>
+      
+      
+        <span class='type'>(<tt>Symbol</tt>, <tt>nil</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>nil</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>File type hint (:gemfile, :appraisals, :gemspec, :rakefile, nil)</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Merged content with comments preserved</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Raises:</p>
+<ul class="raise">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="Error.html" title="Kettle::Dev::Error (class)">Kettle::Dev::Error</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>If strategy is unknown or merge fails</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 36</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_apply'>apply</span><span class='lparen'>(</span><span class='label'>strategy:</span><span class='comma'>,</span> <span class='label'>src:</span><span class='comma'>,</span> <span class='label'>dest:</span><span class='comma'>,</span> <span class='label'>path:</span><span class='comma'>,</span> <span class='label'>file_type:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_strategy'>strategy</span> <span class='op'>=</span> <span class='id identifier rubyid_normalize_strategy'>normalize_strategy</span><span class='lparen'>(</span><span class='id identifier rubyid_strategy'>strategy</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_dest'>dest</span> <span class='op'>||=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span>
+  <span class='id identifier rubyid_src_content'>src_content</span> <span class='op'>=</span> <span class='id identifier rubyid_src'>src</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
+  <span class='id identifier rubyid_dest_content'>dest_content</span> <span class='op'>=</span> <span class='id identifier rubyid_dest'>dest</span>
+  <span class='id identifier rubyid_detected_type'>detected_type</span> <span class='op'>=</span> <span class='id identifier rubyid_file_type'>file_type</span> <span class='op'>||</span> <span class='id identifier rubyid_detect_file_type'>detect_file_type</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span>
+
+  <span class='id identifier rubyid_result'>result</span> <span class='op'>=</span>
+    <span class='kw'>case</span> <span class='id identifier rubyid_strategy'>strategy</span>
+    <span class='kw'>when</span> <span class='symbol'>:skip</span>
+      <span class='comment'># For skip, use merge to preserve freeze blocks (works with empty dest too)
+</span>      <span class='id identifier rubyid_apply_merge'>apply_merge</span><span class='lparen'>(</span><span class='id identifier rubyid_src_content'>src_content</span><span class='comma'>,</span> <span class='id identifier rubyid_dest_content'>dest_content</span><span class='comma'>,</span> <span class='label'>file_type:</span> <span class='id identifier rubyid_detected_type'>detected_type</span><span class='rparen'>)</span>
+    <span class='kw'>when</span> <span class='symbol'>:replace</span>
+      <span class='comment'># For replace, use merge with template preference
+</span>      <span class='id identifier rubyid_apply_merge'>apply_merge</span><span class='lparen'>(</span><span class='id identifier rubyid_src_content'>src_content</span><span class='comma'>,</span> <span class='id identifier rubyid_dest_content'>dest_content</span><span class='comma'>,</span> <span class='label'>file_type:</span> <span class='id identifier rubyid_detected_type'>detected_type</span><span class='rparen'>)</span>
+    <span class='kw'>when</span> <span class='symbol'>:append</span>
+      <span class='comment'># For append, use merge with destination preference
+</span>      <span class='id identifier rubyid_apply_append'>apply_append</span><span class='lparen'>(</span><span class='id identifier rubyid_src_content'>src_content</span><span class='comma'>,</span> <span class='id identifier rubyid_dest_content'>dest_content</span><span class='comma'>,</span> <span class='label'>file_type:</span> <span class='id identifier rubyid_detected_type'>detected_type</span><span class='rparen'>)</span>
+    <span class='kw'>when</span> <span class='symbol'>:merge</span>
+      <span class='comment'># For merge, use merge with template preference
+</span>      <span class='id identifier rubyid_apply_merge'>apply_merge</span><span class='lparen'>(</span><span class='id identifier rubyid_src_content'>src_content</span><span class='comma'>,</span> <span class='id identifier rubyid_dest_content'>dest_content</span><span class='comma'>,</span> <span class='label'>file_type:</span> <span class='id identifier rubyid_detected_type'>detected_type</span><span class='rparen'>)</span>
+    <span class='kw'>else</span>
+      <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Error.html" title="Kettle::Dev::Error (class)">Error</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Unknown templating strategy &#39;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_strategy'>strategy</span><span class='embexpr_end'>}</span><span class='tstring_content'>&#39; for </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_path'>path</span><span class='embexpr_end'>}</span><span class='tstring_content'>.</span><span class='tstring_end'>&quot;</span></span>
+    <span class='kw'>end</span>
+
+  <span class='id identifier rubyid_ensure_trailing_newline'>ensure_trailing_newline</span><span class='lparen'>(</span><span class='id identifier rubyid_result'>result</span><span class='rparen'>)</span>
+<span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_error'>error</span>
+  <span class='id identifier rubyid_warn_bug'>warn_bug</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='comma'>,</span> <span class='id identifier rubyid_error'>error</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Error.html" title="Kettle::Dev::Error (class)">Error</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Template merge failed for </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_path'>path</span><span class='embexpr_end'>}</span><span class='tstring_content'>: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_error'>error</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="apply_append-class_method">
+  
+    .<strong>apply_append</strong>(src_content, dest_content, file_type: :ruby)  &#x21d2; <tt>String</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Apply append strategy using prism-merge</p>
+
+<p>Uses destination preference for signature matching, which means<br />
+existing nodes in dest are preferred over template nodes.<br />
+Also enables add_template_only_nodes to append missing content from source.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>src_content</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Template source content</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>dest_content</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Destination content</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>file_type</span>
+      
+      
+        <span class='type'>(<tt>Symbol</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>:ruby</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>File type for preset selection</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Merged content</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 191</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_apply_append'>apply_append</span><span class='lparen'>(</span><span class='id identifier rubyid_src_content'>src_content</span><span class='comma'>,</span> <span class='id identifier rubyid_dest_content'>dest_content</span><span class='comma'>,</span> <span class='label'>file_type:</span> <span class='symbol'>:ruby</span><span class='rparen'>)</span>
+  <span class='comment'># Lazy load prism-merge (Ruby 2.7+ requirement)
+</span>  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>prism/merge</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='const'>Prism</span><span class='op'>::</span><span class='const'>Merge</span><span class='rparen'>)</span>
+  <span class='kw'>rescue</span> <span class='const'>LoadError</span>
+    <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>WARNING: prism-merge gem not available, falling back to source content</span><span class='tstring_end'>&quot;</span></span>
+    <span class='kw'>return</span> <span class='id identifier rubyid_src_content'>src_content</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># For append, we want destination preference but also add template-only nodes
+</span>  <span class='id identifier rubyid_config'>config</span> <span class='op'>=</span> <span class='id identifier rubyid_config_for_file_type_append'>config_for_file_type_append</span><span class='lparen'>(</span><span class='id identifier rubyid_file_type'>file_type</span><span class='rparen'>)</span>
+
+  <span class='id identifier rubyid_merger'>merger</span> <span class='op'>=</span> <span class='const'>Prism</span><span class='op'>::</span><span class='const'>Merge</span><span class='op'>::</span><span class='const'>SmartMerger</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span>
+    <span class='id identifier rubyid_src_content'>src_content</span><span class='comma'>,</span>
+    <span class='id identifier rubyid_dest_content'>dest_content</span><span class='comma'>,</span>
+    <span class='op'>**</span><span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_to_h'>to_h</span><span class='comma'>,</span>
+  <span class='rparen'>)</span>
+  <span class='id identifier rubyid_merger'>merger</span><span class='period'>.</span><span class='id identifier rubyid_merge'>merge</span>
+<span class='kw'>rescue</span> <span class='const'>Prism</span><span class='op'>::</span><span class='const'>Merge</span><span class='op'>::</span><span class='const'>Error</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+  <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>WARNING: Prism::Merge failed for append strategy: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+  <span class='id identifier rubyid_src_content'>src_content</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="apply_merge-class_method">
+  
+    .<strong>apply_merge</strong>(src_content, dest_content, file_type: :ruby)  &#x21d2; <tt>String</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Apply merge strategy using prism-merge</p>
+
+<p>Uses template preference for signature matching, which means<br />
+template nodes take precedence over existing destination nodes.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>src_content</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Template source content</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>dest_content</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Destination content</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>file_type</span>
+      
+      
+        <span class='type'>(<tt>Symbol</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>:ruby</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>File type for preset selection</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Merged content</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 224</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_apply_merge'>apply_merge</span><span class='lparen'>(</span><span class='id identifier rubyid_src_content'>src_content</span><span class='comma'>,</span> <span class='id identifier rubyid_dest_content'>dest_content</span><span class='comma'>,</span> <span class='label'>file_type:</span> <span class='symbol'>:ruby</span><span class='rparen'>)</span>
+  <span class='comment'># Lazy load prism-merge (Ruby 2.7+ requirement)
+</span>  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>prism/merge</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='const'>Prism</span><span class='op'>::</span><span class='const'>Merge</span><span class='rparen'>)</span>
+  <span class='kw'>rescue</span> <span class='const'>LoadError</span>
+    <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>WARNING: prism-merge gem not available, falling back to source content</span><span class='tstring_end'>&quot;</span></span>
+    <span class='kw'>return</span> <span class='id identifier rubyid_src_content'>src_content</span>
+  <span class='kw'>end</span>
+
+  <span class='id identifier rubyid_config'>config</span> <span class='op'>=</span> <span class='id identifier rubyid_config_for_file_type'>config_for_file_type</span><span class='lparen'>(</span><span class='id identifier rubyid_file_type'>file_type</span><span class='comma'>,</span> <span class='label'>preference:</span> <span class='symbol'>:template</span><span class='rparen'>)</span>
+
+  <span class='id identifier rubyid_merger'>merger</span> <span class='op'>=</span> <span class='const'>Prism</span><span class='op'>::</span><span class='const'>Merge</span><span class='op'>::</span><span class='const'>SmartMerger</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span>
+    <span class='id identifier rubyid_src_content'>src_content</span><span class='comma'>,</span>
+    <span class='id identifier rubyid_dest_content'>dest_content</span><span class='comma'>,</span>
+    <span class='op'>**</span><span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_to_h'>to_h</span><span class='comma'>,</span>
+  <span class='rparen'>)</span>
+  <span class='id identifier rubyid_merger'>merger</span><span class='period'>.</span><span class='id identifier rubyid_merge'>merge</span>
+<span class='kw'>rescue</span> <span class='const'>Prism</span><span class='op'>::</span><span class='const'>Merge</span><span class='op'>::</span><span class='const'>Error</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+  <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>WARNING: Prism::Merge failed for merge strategy: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+  <span class='id identifier rubyid_src_content'>src_content</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="config_for_file_type-class_method">
+  
+    .<strong>config_for_file_type</strong>(file_type, preference:)  &#x21d2; <tt>Ast::Merge::MergerConfig</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Get the appropriate MergerConfig preset for a file type.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>file_type</span>
+      
+      
+        <span class='type'>(<tt>Symbol</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>File type</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>preference</span>
+      
+      
+        <span class='type'>(<tt>Symbol</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>:template or :destination</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Ast::Merge::MergerConfig</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The config preset</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 94</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_config_for_file_type'>config_for_file_type</span><span class='lparen'>(</span><span class='id identifier rubyid_file_type'>file_type</span><span class='comma'>,</span> <span class='label'>preference:</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>kettle/jem</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'>Jem</span><span class='rparen'>)</span>
+
+  <span class='id identifier rubyid_preset_class'>preset_class</span> <span class='op'>=</span> <span class='kw'>case</span> <span class='id identifier rubyid_file_type'>file_type</span>
+  <span class='kw'>when</span> <span class='symbol'>:gemfile</span>
+    <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'>Jem</span><span class='op'>::</span><span class='const'>Presets</span><span class='op'>::</span><span class='const'>Gemfile</span>
+  <span class='kw'>when</span> <span class='symbol'>:appraisals</span>
+    <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'>Jem</span><span class='op'>::</span><span class='const'>Presets</span><span class='op'>::</span><span class='const'>Appraisals</span>
+  <span class='kw'>when</span> <span class='symbol'>:gemspec</span>
+    <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'>Jem</span><span class='op'>::</span><span class='const'>Presets</span><span class='op'>::</span><span class='const'>Gemspec</span>
+  <span class='kw'>when</span> <span class='symbol'>:rakefile</span>
+    <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'>Jem</span><span class='op'>::</span><span class='const'>Presets</span><span class='op'>::</span><span class='const'>Rakefile</span>
+  <span class='kw'>else</span>
+    <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'>Jem</span><span class='op'>::</span><span class='const'>Presets</span><span class='op'>::</span><span class='const'>Gemfile</span> <span class='comment'># Default to Gemfile behavior
+</span>  <span class='kw'>end</span>
+
+  <span class='kw'>if</span> <span class='id identifier rubyid_preference'>preference</span> <span class='op'>==</span> <span class='symbol'>:template</span>
+    <span class='id identifier rubyid_preset_class'>preset_class</span><span class='period'>.</span><span class='id identifier rubyid_template_wins'>template_wins</span><span class='lparen'>(</span><span class='label'>freeze_token:</span> <span class='const'><span class='object_link'><a href="#FREEZE_TOKEN-constant" title="Kettle::Dev::SourceMerger::FREEZE_TOKEN (constant)">FREEZE_TOKEN</a></span></span><span class='rparen'>)</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_preset_class'>preset_class</span><span class='period'>.</span><span class='id identifier rubyid_destination_wins'>destination_wins</span><span class='lparen'>(</span><span class='label'>freeze_token:</span> <span class='const'><span class='object_link'><a href="#FREEZE_TOKEN-constant" title="Kettle::Dev::SourceMerger::FREEZE_TOKEN (constant)">FREEZE_TOKEN</a></span></span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="config_for_file_type_append-class_method">
+  
+    .<strong>config_for_file_type_append</strong>(file_type)  &#x21d2; <tt>Ast::Merge::MergerConfig</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Get the appropriate MergerConfig preset for append strategy.</p>
+
+<p>Uses destination preference (existing content wins) but also adds<br />
+template-only nodes (content from source that doesn’t exist in dest).</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>file_type</span>
+      
+      
+        <span class='type'>(<tt>Symbol</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>File type</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Ast::Merge::MergerConfig</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The config preset</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 125</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_config_for_file_type_append'>config_for_file_type_append</span><span class='lparen'>(</span><span class='id identifier rubyid_file_type'>file_type</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>kettle/jem</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'>Jem</span><span class='rparen'>)</span>
+
+  <span class='id identifier rubyid_preset_class'>preset_class</span> <span class='op'>=</span> <span class='kw'>case</span> <span class='id identifier rubyid_file_type'>file_type</span>
+  <span class='kw'>when</span> <span class='symbol'>:gemfile</span>
+    <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'>Jem</span><span class='op'>::</span><span class='const'>Presets</span><span class='op'>::</span><span class='const'>Gemfile</span>
+  <span class='kw'>when</span> <span class='symbol'>:appraisals</span>
+    <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'>Jem</span><span class='op'>::</span><span class='const'>Presets</span><span class='op'>::</span><span class='const'>Appraisals</span>
+  <span class='kw'>when</span> <span class='symbol'>:gemspec</span>
+    <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'>Jem</span><span class='op'>::</span><span class='const'>Presets</span><span class='op'>::</span><span class='const'>Gemspec</span>
+  <span class='kw'>when</span> <span class='symbol'>:rakefile</span>
+    <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'>Jem</span><span class='op'>::</span><span class='const'>Presets</span><span class='op'>::</span><span class='const'>Rakefile</span>
+  <span class='kw'>else</span>
+    <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'>Jem</span><span class='op'>::</span><span class='const'>Presets</span><span class='op'>::</span><span class='const'>Gemfile</span> <span class='comment'># Default to Gemfile behavior
+</span>  <span class='kw'>end</span>
+
+  <span class='comment'># For append: destination preference + add template-only nodes
+</span>  <span class='id identifier rubyid_preset_class'>preset_class</span><span class='period'>.</span><span class='id identifier rubyid_custom'>custom</span><span class='lparen'>(</span>
+    <span class='label'>preference:</span> <span class='symbol'>:destination</span><span class='comma'>,</span>
+    <span class='label'>add_template_only:</span> <span class='kw'>true</span><span class='comma'>,</span>
+    <span class='label'>freeze_token:</span> <span class='const'><span class='object_link'><a href="#FREEZE_TOKEN-constant" title="Kettle::Dev::SourceMerger::FREEZE_TOKEN (constant)">FREEZE_TOKEN</a></span></span><span class='comma'>,</span>
+  <span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="detect_file_type-class_method">
+  
+    .<strong>detect_file_type</strong>(path)  &#x21d2; <tt>Symbol</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Detect file type from path for preset selection.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>path</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>File path</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Symbol</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>File type (:gemfile, :appraisals, :gemspec, :rakefile, or :ruby)</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 72</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_detect_file_type'>detect_file_type</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_basename'>basename</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_basename'>basename</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span>
+  <span class='kw'>case</span> <span class='id identifier rubyid_basename'>basename</span>
+  <span class='kw'>when</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\AGemfile</span><span class='regexp_end'>/</span></span><span class='comma'>,</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\.gemfile\z</span><span class='regexp_end'>/</span></span>
+    <span class='symbol'>:gemfile</span>
+  <span class='kw'>when</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\AAppraisals</span><span class='regexp_end'>/</span></span>
+    <span class='symbol'>:appraisals</span>
+  <span class='kw'>when</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\.gemspec\z</span><span class='regexp_end'>/</span></span>
+    <span class='symbol'>:gemspec</span>
+  <span class='kw'>when</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\ARakefile</span><span class='regexp_end'>/</span></span><span class='comma'>,</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\.rake\z</span><span class='regexp_end'>/</span></span>
+    <span class='symbol'>:rakefile</span>
+  <span class='kw'>else</span>
+    <span class='symbol'>:ruby</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="ensure_trailing_newline-class_method">
+  
+    .<strong>ensure_trailing_newline</strong>(text)  &#x21d2; <tt>String</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Ensure text ends with exactly one newline</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>text</span>
+      
+      
+        <span class='type'>(<tt>String</tt>, <tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Text to process</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Text with trailing newline (empty string if nil)</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+175
+176
+177
+178</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 175</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_ensure_trailing_newline'>ensure_trailing_newline</span><span class='lparen'>(</span><span class='id identifier rubyid_text'>text</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_text'>text</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+  <span class='id identifier rubyid_text'>text</span><span class='period'>.</span><span class='id identifier rubyid_end_with?'>end_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_text'>text</span> <span class='op'>:</span> <span class='id identifier rubyid_text'>text</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="normalize_strategy-class_method">
+  
+    .<strong>normalize_strategy</strong>(strategy)  &#x21d2; <tt>Symbol</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Normalize strategy to a symbol</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>strategy</span>
+      
+      
+        <span class='type'>(<tt>Symbol</tt>, <tt>String</tt>, <tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Strategy to normalize</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Symbol</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Normalized strategy (:skip if nil)</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+154
+155
+156
+157</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 154</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_normalize_strategy'>normalize_strategy</span><span class='lparen'>(</span><span class='id identifier rubyid_strategy'>strategy</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='symbol'>:skip</span> <span class='kw'>if</span> <span class='id identifier rubyid_strategy'>strategy</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+  <span class='id identifier rubyid_strategy'>strategy</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_downcase'>downcase</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="warn_bug-class_method">
+  
+    .<strong>warn_bug</strong>(path, error)  &#x21d2; <tt>void</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p class="note returns_void">This method returns an undefined value.</p><p>Log error information for debugging</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>path</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>File path that caused the error</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>error</span>
+      
+      
+        <span class='type'>(<tt>StandardError</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The error that occurred</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+165
+166
+167
+168</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/source_merger.rb', line 165</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_warn_bug'>warn_bug</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='comma'>,</span> <span class='id identifier rubyid_error'>error</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>ERROR: kettle-dev templating failed for </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_path'>path</span><span class='embexpr_end'>}</span><span class='tstring_content'>: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_error'>error</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+  <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Please file a bug at </span><span class='embexpr_beg'>#{</span><span class='const'><span class='object_link'><a href="#BUG_URL-constant" title="Kettle::Dev::SourceMerger::BUG_URL (constant)">BUG_URL</a></span></span><span class='embexpr_end'>}</span><span class='tstring_content'> with the file contents so we can improve the AST merger.</span><span class='tstring_end'>&quot;</span></span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+      <div id="footer">
+  Generated on Sun Dec 28 04:56:15 2025 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.38 (ruby-4.0.0).
+</div>
+
+    </div>
+  </body>
+</html>
