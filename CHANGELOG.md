@@ -35,6 +35,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- Updated documentation on hostile takeover of RubyGems
+  - https://dev.to/galtzo/hostile-takeover-of-rubygems-my-thoughts-5hlo
 - **BREAKING**: Replaced `template_manifest.yml` with `.kettle-dev.yml`
   - New hybrid format supports both glob patterns and per-file configuration
   - `TemplateHelpers.load_manifest` now reads from `.kettle-dev.yml` patterns section

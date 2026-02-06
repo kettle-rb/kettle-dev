@@ -1,36 +1,3 @@
-| 📍 NOTE |
-| --- |
-| RubyGems (the [GitHub org](https://github.com/rubygems/), not the website) [suffered](https://joel.drapper.me/p/ruby-central-security-measures/) a [hostile takeover](https://pup-e.com/blog/goodbye-rubygems/) in September 2025. |
-| Ultimately [4 maintainers](https://www.reddit.com/r/ruby/s/gOk42POCaV) were [hard removed](https://bsky.app/profile/martinemde.com/post/3m3occezxxs2q) and a reason has been given for only 1 of those, while 2 others resigned in protest. |
-| It is a [complicated story](https://joel.drapper.me/p/ruby-central-takeover/) which is difficult to [parse quickly](https://joel.drapper.me/p/ruby-central-fact-check/). |
-| Simply put - there was active policy for adding or removing maintainers/owners of [rubygems](https://github.com/ruby/rubygems/blob/b1ab33a3d52310a84d16b193991af07f5a6a07c0/doc/rubygems/POLICIES.md?plain=1#L187-L196) and [bundler](https://github.com/ruby/rubygems/blob/b1ab33a3d52310a84d16b193991af07f5a6a07c0/doc/bundler/playbooks/TEAM_CHANGES.md), and those [policies were not followed](https://www.reddit.com/r/ruby/comments/1ove9vp/rubycentral_hates_this_one_fact/). |
-| I'm adding notes like this to gems because I [don't condone theft](https://joel.drapper.me/p/ruby-central/) of repositories or gems from their rightful owners. |
-| If a similar theft happened with my repos/gems, I'd hope some would stand up for me. |
-| Disenfranchised former-maintainers have started [gem.coop](https://gem.coop). |
-| Once available I will publish there exclusively; unless RubyCentral makes amends with the community. |
-| The ["Technology for Humans: Joel Draper"](https://youtu.be/_H4qbtC5qzU?si=BvuBU90R2wAqD2E6) podcast episode by [reinteractive](https://reinteractive.com/ruby-on-rails) is the most cogent summary I'm aware of. |
-| See [here](https://github.com/gem-coop/gem.coop/issues/12), [here](https://gem.coop) and [here](https://martinemde.com/2025/10/05/announcing-gem-coop.html) for more info on what comes next. |
-| What I'm doing: A (WIP) proposal for [bundler/gem scopes](https://github.com/galtzo-floss/bundle-namespace), and a (WIP) proposal for a federated [gem server](https://github.com/galtzo-floss/gem-server). |
-
-[rubygems-org]: https://github.com/rubygems/
-[draper-security]: https://joel.drapper.me/p/ruby-central-security-measures/
-[draper-takeover]: https://joel.drapper.me/p/ruby-central-takeover/
-[ellen-takeover]: https://pup-e.com/blog/goodbye-rubygems/
-[simi-removed]: https://www.reddit.com/r/ruby/s/gOk42POCaV
-[martin-removed]: https://bsky.app/profile/martinemde.com/post/3m3occezxxs2q
-[draper-lies]: https://joel.drapper.me/p/ruby-central-fact-check/
-[draper-theft]: https://joel.drapper.me/p/ruby-central/
-[reinteractive]: https://reinteractive.com/ruby-on-rails
-[gem-coop]: https://gem.coop
-[gem-naming]: https://github.com/gem-coop/gem.coop/issues/12
-[martin-ann]: https://martinemde.com/2025/10/05/announcing-gem-coop.html
-[gem-scopes]: https://github.com/galtzo-floss/bundle-namespace
-[gem-server]: https://github.com/galtzo-floss/gem-server
-[reinteractive-podcast]: https://youtu.be/_H4qbtC5qzU?si=BvuBU90R2wAqD2E6
-[bundler-maint-policy]: https://github.com/ruby/rubygems/blob/b1ab33a3d52310a84d16b193991af07f5a6a07c0/doc/bundler/playbooks/TEAM_CHANGES.md
-[rubygems-maint-policy]: https://github.com/ruby/rubygems/blob/b1ab33a3d52310a84d16b193991af07f5a6a07c0/doc/rubygems/POLICIES.md?plain=1#L187-L196
-[policy-fail]: https://www.reddit.com/r/ruby/comments/1ove9vp/rubycentral_hates_this_one_fact/
-
 [![Galtzo FLOSS Logo by Aboling0, CC BY-SA 4.0](https://logos.galtzo.com/assets/images/galtzo-floss/avatar-192px.svg)](https://discord.gg/3qme4XHNKN) [![ruby-lang Logo, Yukihiro Matsumoto, Ruby Visual Identity Team, CC BY-SA 2.5](https://logos.galtzo.com/assets/images/ruby-lang/avatar-192px.svg)](https://www.ruby-lang.org/) [![kettle-dev Logo by Aboling0, CC BY-SA 4.0](https://logos.galtzo.com/assets/images/kettle-rb/kettle-dev/avatar-192px.svg)](https://github.com/kettle-rb/kettle-dev)
 
 [🖼️galtzo-i]: https://logos.galtzo.com/assets/images/galtzo-floss/avatar-192px.svg
@@ -50,6 +17,13 @@
 `if ci_badges.map(&:color).all? { it == "green"}` 👇️ send money so I can do more of this. FLOSS maintenance is now my full-time job.
 
 [![OpenCollective Backers](https://opencollective.com/kettle-rb/backers/badge.svg?style=flat)](https://opencollective.com/kettle-rb#backer) [![OpenCollective Sponsors](https://opencollective.com/kettle-rb/sponsors/badge.svg?style=flat)](https://opencollective.com/kettle-rb#sponsor) [![Sponsor Me on Github](https://img.shields.io/badge/Sponsor_Me!-pboling.svg?style=social&logo=github)](https://github.com/sponsors/pboling) [![Liberapay Goal Progress](https://img.shields.io/liberapay/goal/pboling.svg?logo=liberapay&color=a51611&style=flat)](https://liberapay.com/pboling/donate) [![Donate on PayPal](https://img.shields.io/badge/donate-paypal-a51611.svg?style=flat&logo=paypal)](https://www.paypal.com/paypalme/peterboling) [![Buy me a coffee](https://img.shields.io/badge/buy_me_a_coffee-%E2%9C%93-a51611.svg?style=flat)](https://www.buymeacoffee.com/pboling) [![Donate on Polar](https://img.shields.io/badge/polar-donate-a51611.svg?style=flat)](https://polar.sh/pboling) [![Donate at ko-fi.com](https://img.shields.io/badge/ko--fi-%E2%9C%93-a51611.svg?style=flat)](https://ko-fi.com/O5O86SNP4)
+
+<details>
+    <summary>👣 How will this project approach the September 2025 hostile takeover of RubyGems? 🚑️</summary>
+
+I've summarized my thoughts in [this blog post](https://dev.to/galtzo/hostile-takeover-of-rubygems-my-thoughts-5hlo).
+
+</details>
 
 ## 🌻 Synopsis
 
