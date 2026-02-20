@@ -15,26 +15,31 @@ if ENV.fetch("KETTLE_RB_DEV", "false").casecmp?("true")
   gem "json-merge", path: "../../../json-merge"         # JSON code blocks
   gem "jsonc-merge", path: "../../../jsonc-merge"       # JSONC code blocks
   gem "markdown-merge", path: "../../../markdown-merge" # generic markdown tools
-  gem "markly-merge", path: "../../../markly-merge"     # markly markdown merging
   gem "prism-merge", path: "../../../prism-merge"       # Ruby code blocks
   gem "psych-merge", path: "../../../psych-merge"       # YAML code blocks
   gem "rbs-merge", path: "../../../rbs-merge"           # RBS code blocks
   gem "toml-merge", path: "../../../toml-merge"         # TOML code blocks
 
   gem "kettle-jem", path: "../../../kettle-jem"         # Kettle-rb's Merge Recipes
+
+  platform :mri do
+    gem "markly-merge", path: "../../../markly-merge"     # markly markdown merging
+  end
 else
-  # Not all of these are released yet, but eventually we will add integration specs to ensure future changes work with the family.
-  # gem "bash-merge"      # dotenv code blocks
-  # gem "dotenv-merge"    # dotenv code blocks
-  # gem "json-merge"      # JSON code blocks
-  # gem "jsonc-merge"     # JSONC code blocks
-  # gem "markdown-merge"  # generic markdown tools
-  # gem "markly-merge"    # markly markdown merging
-  # gem "prism-merge"     # Ruby code blocks
-  # gem "psych-merge"     # YAML code blocks
-  # gem "rbs-merge"       # RBS code blocks
-  # gem "toml-merge"      # TOML code blocks
-  # gem "toml-merge"      # TOML code blocks
-  #
-  # gem "kettle-jem"      # Kettle-rb's Merge Recipes
+  gem "bash-merge"      # dotenv code blocks
+  gem "dotenv-merge"    # dotenv code blocks
+  gem "json-merge"      # JSON code blocks
+  gem "jsonc-merge"     # JSONC code blocks
+  gem "markdown-merge"  # generic markdown tools
+  gem "prism-merge"     # Ruby code blocks
+  gem "psych-merge"     # YAML code blocks
+  gem "rbs-merge"       # RBS code blocks
+  gem "toml-merge"      # TOML code blocks
+  gem "toml-merge"      # TOML code blocks
+
+  gem "kettle-jem"      # Kettle-rb's Merge Recipes
+
+  platform :mri do
+    gem "markly-merge"    # markly markdown merging
+  end
 end
