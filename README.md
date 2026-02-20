@@ -1197,7 +1197,7 @@ Thanks for RTFM. ☺️
 [📄license-compat]: https://dev.to/galtzo/how-to-check-license-compatibility-41h0
 [📄license-compat-img]: https://img.shields.io/badge/Apache_Compatible:_Category_A-%E2%9C%93-259D6C.svg?style=flat&logo=Apache
 [📄ilo-declaration]: https://www.ilo.org/declaration/lang--en/index.htm
-[📄ilo-declaration-img]: https://img.shields.io/badge/ILO_Fundamental_Principles-✓-259D6C.svg?style=flat
+[📄ilo-declaration-img]: https://img.shields.io/badge/ILO_Fundamental_Principles-%E2%9C%93-259D6C.svg?style=flat
 [🚎yard-current]: http://rubydoc.info/gems/kettle-dev
 [🚎yard-head]: https://kettle-dev.galtzo.com
 [💎stone_checksums]: https://github.com/galtzo-floss/stone_checksums
