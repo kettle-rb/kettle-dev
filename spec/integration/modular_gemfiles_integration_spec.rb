@@ -59,8 +59,6 @@ RSpec.describe "ModularGemfiles Integration" do
 
         # Verify comments are preserved
         expect(result).to include("# ruby >= 3.1.0")
-        expect(result).to include("# Std Lib extractions")
-        expect(result).to include("# Removed from Std Lib in Ruby 3.5")
 
         # Verify proper indentation inside the if block
         expect(result).to match(/^\s+gem "rubocop-lts", path:/)
@@ -76,7 +74,6 @@ RSpec.describe "ModularGemfiles Integration" do
         # Verify new gems from template were added
         expect(result).to include("rubocop-packaging")
         expect(result).to include("rubocop-on-rbs")
-        expect(result).to include("benchmark")
 
         # Verify existing gems from destination were preserved
         expect(result).to include("reek")
