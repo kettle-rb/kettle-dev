@@ -210,19 +210,19 @@ tree_haver supports multiple parsing backends, but not all backends work on all 
 
 ## 💡 Info you can shake a stick at
 
-| Tokens to Remember | [![Gem name][⛳️name-img]][👽dl-rank] [![Gem namespace][⛳️namespace-img]][📜src-gh] |
-| --- | --- |
-| Works with JRuby | \!\[JRuby 9.1 Compat\]\[💎jruby-9.1i\] \!\[JRuby 9.2 Compat\]\[💎jruby-9.2i\] \!\[JRuby 9.3 Compat\]\[💎jruby-9.3i\] <br/> [\!\[JRuby 9.4 Compat\]\[💎jruby-9.4i\]][🚎10-j-wf] [![JRuby 10.0 Compat][💎jruby-c-i]][🚎11-c-wf] [![JRuby HEAD Compat][💎jruby-headi]][🚎3-hd-wf] |
-| Works with Truffle Ruby | \!\[Truffle Ruby 22.3 Compat\]\[💎truby-22.3i\] \!\[Truffle Ruby 23.0 Compat\]\[💎truby-23.0i\] <br/> [![Truffle Ruby 23.1 Compat][💎truby-23.1i]][🚎9-t-wf] [![Truffle Ruby 24.1 Compat][💎truby-c-i]][🚎11-c-wf] |
-| Works with MRI Ruby 3 | [![Ruby 3.0 Compat][💎ruby-3.0i]][🚎4-lg-wf] [![Ruby 3.1 Compat][💎ruby-3.1i]][🚎6-s-wf] [\!\[Ruby 3.2 Compat\]\[💎ruby-3.2i\]][🚎6-s-wf] [![Ruby 3.3 Compat][💎ruby-3.3i]][🚎6-s-wf] [![Ruby 3.4 Compat][💎ruby-c-i]][🚎11-c-wf] [![Ruby HEAD Compat][💎ruby-headi]][🚎3-hd-wf] |
-| Works with MRI Ruby 2 | [![Ruby 2.3 Compat][💎ruby-2.3i]][🚎1-an-wf] [![Ruby 2.4 Compat][💎ruby-2.4i]][🚎1-an-wf] [![Ruby 2.5 Compat][💎ruby-2.5i]][🚎1-an-wf] [![Ruby 2.6 Compat][💎ruby-2.6i]][🚎7-us-wf] [![Ruby 2.7 Compat][💎ruby-2.7i]][🚎7-us-wf] |
-| Support & Community | [![Join Me on Daily.dev's RubyFriends][✉️ruby-friends-img]][✉️ruby-friends] [![Live Chat on Discord][✉️discord-invite-img-ftb]][🖼️galtzo-discord] [![Get help from me on Upwork][👨🏼‍🏫expsup-upwork-img]][👨🏼‍🏫expsup-upwork] [![Get help from me on Codementor][👨🏼‍🏫expsup-codementor-img]][👨🏼‍🏫expsup-codementor] |
-| Source | [![Source on GitLab.com][📜src-gl-img]][📜src-gl] [![Source on CodeBerg.org][📜src-cb-img]][📜src-cb] [![Source on Github.com][📜src-gh-img]][📜src-gh] [![The best SHA: dQw4w9WgXcQ\!][🧮kloc-img]][🧮kloc] |
-| Documentation | [![Current release on RubyDoc.info][📜docs-cr-rd-img]][🚎yard-current] [![YARD on Galtzo.com][📜docs-head-rd-img]][🚎yard-head] [![Maintainer Blog][🚂maint-blog-img]][🚂maint-blog] [![GitLab Wiki][📜gl-wiki-img]][📜gl-wiki] [![GitHub Wiki][📜gh-wiki-img]][📜gh-wiki] |
-| Compliance | [![License: MIT][📄license-img]][📄license-ref] [![Compatible with Apache Software Projects: Verified by SkyWalking Eyes][📄license-compat-img]][📄license-compat] [![📄ilo-declaration-img][📄ilo-declaration-img]][📄ilo-declaration] [![Security Policy][🔐security-img]][🔐security] [![Contributor Covenant 2.1][🪇conduct-img]][🪇conduct] [![SemVer 2.0.0][📌semver-img]][📌semver] |
-| Style | [![Enforced Code Style Linter][💎rlts-img]][💎rlts] [![Keep-A-Changelog 1.0.0][📗keep-changelog-img]][📗keep-changelog] [![Gitmoji Commits][📌gitmoji-img]][📌gitmoji] [![Compatibility appraised by: appraisal2][💎appraisal2-img]][💎appraisal2] |
-| Maintainer 🎖️ | [![Follow Me on LinkedIn][💖🖇linkedin-img]][💖🖇linkedin] [![Follow Me on Ruby.Social][💖🐘ruby-mast-img]][💖🐘ruby-mast] [![Follow Me on Bluesky][💖🦋bluesky-img]][💖🦋bluesky] [![Contact Maintainer][🚂maint-contact-img]][🚂maint-contact] [![My technical writing][💖💁🏼‍♂️devto-img]][💖💁🏼‍♂️devto] |
-| `...` 💖 | [![Find Me on WellFound:][💖✌️wellfound-img]][💖✌️wellfound] [![Find Me on CrunchBase][💖💲crunchbase-img]][💖💲crunchbase] [![My LinkTree][💖🌳linktree-img]][💖🌳linktree] [![More About Me][💖💁🏼‍♂️aboutme-img]][💖💁🏼‍♂️aboutme] [🧊][💖🧊berg] [🐙][💖🐙hub]  [🛖][💖🛖hut] [🧪][💖🧪lab] |
+| Tokens to Remember      | [![Gem name][⛳️name-img]][👽dl-rank] [![Gem namespace][⛳️namespace-img]][📜src-gh]                                                                                                                                                                                                                                                                                                         |
+|-------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Works with JRuby        | ![JRuby 9.1 Compat][💎jruby-9.1i] ![JRuby 9.2 Compat][💎jruby-9.2i] ![JRuby 9.3 Compat][💎jruby-9.3i] <br/> [![JRuby 9.4 Compat][💎jruby-9.4i]][🚎10-j-wf] [![JRuby 10.0 Compat][💎jruby-c-i]][🚎11-c-wf] [![JRuby HEAD Compat][💎jruby-headi]][🚎3-hd-wf]                                                                                                                                 |
+| Works with Truffle Ruby | ![Truffle Ruby 22.3 Compat][💎truby-22.3i] ![Truffle Ruby 23.0 Compat][💎truby-23.0i] <br/> [![Truffle Ruby 23.1 Compat][💎truby-23.1i]][🚎9-t-wf] [![Truffle Ruby 24.1 Compat][💎truby-c-i]][🚎11-c-wf]                                                                                                                                                                                   |
+| Works with MRI Ruby 3   | [![Ruby 3.0 Compat][💎ruby-3.0i]][🚎4-lg-wf] [![Ruby 3.1 Compat][💎ruby-3.1i]][🚎6-s-wf] [\!\[Ruby 3.2 Compat\]\[💎ruby-3.2i\]][🚎6-s-wf] [![Ruby 3.3 Compat][💎ruby-3.3i]][🚎6-s-wf] [![Ruby 3.4 Compat][💎ruby-c-i]][🚎11-c-wf] [![Ruby HEAD Compat][💎ruby-headi]][🚎3-hd-wf]                                                                                                           |
+| Works with MRI Ruby 2   | [![Ruby 2.3 Compat][💎ruby-2.3i]][🚎1-an-wf] [![Ruby 2.4 Compat][💎ruby-2.4i]][🚎1-an-wf] [![Ruby 2.5 Compat][💎ruby-2.5i]][🚎1-an-wf] [![Ruby 2.6 Compat][💎ruby-2.6i]][🚎7-us-wf] [![Ruby 2.7 Compat][💎ruby-2.7i]][🚎7-us-wf]                                                                                                                                                           |
+| Support & Community     | [![Join Me on Daily.dev's RubyFriends][✉️ruby-friends-img]][✉️ruby-friends] [![Live Chat on Discord][✉️discord-invite-img-ftb]][🖼️galtzo-discord] [![Get help from me on Upwork][👨🏼‍🏫expsup-upwork-img]][👨🏼‍🏫expsup-upwork] [![Get help from me on Codementor][👨🏼‍🏫expsup-codementor-img]][👨🏼‍🏫expsup-codementor]                                                             |
+| Source                  | [![Source on GitLab.com][📜src-gl-img]][📜src-gl] [![Source on CodeBerg.org][📜src-cb-img]][📜src-cb] [![Source on Github.com][📜src-gh-img]][📜src-gh] [![The best SHA: dQw4w9WgXcQ\!][🧮kloc-img]][🧮kloc]                                                                                                                                                                               |
+| Documentation           | [![Current release on RubyDoc.info][📜docs-cr-rd-img]][🚎yard-current] [![YARD on Galtzo.com][📜docs-head-rd-img]][🚎yard-head] [![Maintainer Blog][🚂maint-blog-img]][🚂maint-blog] [![GitLab Wiki][📜gl-wiki-img]][📜gl-wiki] [![GitHub Wiki][📜gh-wiki-img]][📜gh-wiki]                                                                                                                 |
+| Compliance              | [![License: MIT][📄license-img]][📄license-ref] [![Compatible with Apache Software Projects: Verified by SkyWalking Eyes][📄license-compat-img]][📄license-compat] [![📄ilo-declaration-img][📄ilo-declaration-img]][📄ilo-declaration] [![Security Policy][🔐security-img]][🔐security] [![Contributor Covenant 2.1][🪇conduct-img]][🪇conduct] [![SemVer 2.0.0][📌semver-img]][📌semver] |
+| Style                   | [![Enforced Code Style Linter][💎rlts-img]][💎rlts] [![Keep-A-Changelog 1.0.0][📗keep-changelog-img]][📗keep-changelog] [![Gitmoji Commits][📌gitmoji-img]][📌gitmoji] [![Compatibility appraised by: appraisal2][💎appraisal2-img]][💎appraisal2]                                                                                                                                         |
+| Maintainer 🎖️          | [![Follow Me on LinkedIn][💖🖇linkedin-img]][💖🖇linkedin] [![Follow Me on Ruby.Social][💖🐘ruby-mast-img]][💖🐘ruby-mast] [![Follow Me on Bluesky][💖🦋bluesky-img]][💖🦋bluesky] [![Contact Maintainer][🚂maint-contact-img]][🚂maint-contact] [![My technical writing][💖💁🏼‍♂️devto-img]][💖💁🏼‍♂️devto]                                                                             |
+| `...` 💖                | [![Find Me on WellFound:][💖✌️wellfound-img]][💖✌️wellfound] [![Find Me on CrunchBase][💖💲crunchbase-img]][💖💲crunchbase] [![My LinkTree][💖🌳linktree-img]][💖🌳linktree] [![More About Me][💖💁🏼‍♂️aboutme-img]][💖💁🏼‍♂️aboutme] [🧊][💖🧊berg] [🐙][💖🐙hub]  [🛖][💖🛖hut] [🧪][💖🧪lab]                                                                                          |
 
 ### Compatibility
 
@@ -449,32 +449,42 @@ Below are the primary environment variables recognized by kettle-dev (and its in
 
 General/runtime
 
-- DEBUG: Enable extra internal logging for this library (default: false)
-- REQUIRE\_BENCH: Enable `require_bench` to profile requires (default: false)
-- CI: When set to true, adjusts default rake tasks toward CI behavior
-  Coverage (kettle-soup-cover / SimpleCov)
-- K\_SOUP\_COV\_DO: Enable coverage collection (default: true in .envrc)
-- K\_SOUP\_COV\_FORMATTERS: Comma-separated list of formatters (html, xml, rcov, lcov, json, tty)
-- K\_SOUP\_COV\_MIN\_LINE: Minimum line coverage threshold (integer, e.g., 100)
-- K\_SOUP\_COV\_MIN\_BRANCH: Minimum branch coverage threshold (integer, e.g., 100)
-- K\_SOUP\_COV\_MIN\_HARD: Fail the run if thresholds are not met (true/false)
-- K\_SOUP\_COV\_MULTI\_FORMATTERS: Enable multiple formatters at once (true/false)
-- K\_SOUP\_COV\_OPEN\_BIN: Path to browser opener for HTML (empty disables auto-open)
-- MAX\_ROWS: Limit console output rows for simplecov-console (e.g., 1)
-  Tip: When running a single spec file locally, you may want `K_SOUP_COV_MIN_HARD=false` to avoid failing thresholds for a partial run.
-  GitHub API and CI helpers
-- GITHUB\_TOKEN or GH\_TOKEN: Token used by `ci:act` and release workflow checks to query GitHub Actions status at higher rate limits
-- GITLAB\_TOKEN or GL\_TOKEN: Token used by `ci:act` and CI monitor to query GitLab pipeline status
-  Releasing and signing
-- SKIP\_GEM\_SIGNING: If set, skip gem signing during build/release
-- GEM\_CERT\_USER: Username for selecting your public cert in `certs/<USER>.pem` (defaults to $USER)
-- SOURCE\_DATE\_EPOCH: Reproducible build timestamp. `kettle-release` will set this automatically for the session.
-  Git hooks and commit message helpers (exe/kettle-commit-msg)
-- GIT\_HOOK\_BRANCH\_VALIDATE: Branch name validation mode (e.g., `jira`) or `false` to disable
-- GIT\_HOOK\_FOOTER\_APPEND: Append a footer to commit messages when goalie allows (true/false)
-- GIT\_HOOK\_FOOTER\_SENTINEL: Required when footer append is enabled — a unique first-line sentinel to prevent duplicates
-- GIT\_HOOK\_FOOTER\_APPEND\_DEBUG: Extra debug output in the footer template (true/false)
-  For a quick starting point, this repository’s `.envrc` shows sane defaults, and `.env.local` can override them locally.
+- `DEBUG`: Enable extra internal logging for this library (default: false)
+- `REQUIRE_BENCH`: Enable `require_bench` to profile requires (default: false)
+- `CI`: When set to true, adjusts default rake tasks toward CI behavior
+
+Coverage (kettle-soup-cover / SimpleCov)
+
+- `K_SOUP_COV_DO`: Enable coverage collection (default: true in .envrc)
+- `K_SOUP_COV_FORMATTERS`: Comma-separated list of formatters (html, xml, rcov, lcov, json, tty)
+- `K_SOUP_COV_MIN_LINE`: Minimum line coverage threshold (integer, e.g., 100)
+- `K_SOUP_COV_MIN_BRANCH`: Minimum branch coverage threshold (integer, e.g., 100)
+- `K_SOUP_COV_MIN_HARD`: Fail the run if thresholds are not met (true/false)
+- `K_SOUP_COV_MULTI_FORMATTERS`: Enable multiple formatters at once (true/false)
+- `K_SOUP_COV_OPEN_BIN`: Path to browser opener for HTML (empty disables auto-open)
+- `MAX_ROWS`: Limit console output rows for simplecov-console (e.g., 1)
+
+Tip: When running a single spec file locally, you may want `K_SOUP_COV_MIN_HARD=false` to avoid failing thresholds for a partial run.
+
+GitHub API and CI helpers
+
+- `GITHUB_TOKEN` or `GH_TOKEN`: Token used by `ci:act` and release workflow checks to query GitHub Actions status at higher rate limits
+- `GITLAB_TOKEN` or `GL_TOKEN`: Token used by `ci:act` and CI monitor to query GitLab pipeline status
+
+Releasing and signing
+
+- `SKIP_GEM_SIGNING`: If set, skip gem signing during build/release
+- `GEM_CERT_USER`: Username for selecting your public cert in `certs/<USER>.pem` (defaults to $USER)
+- `SOURCE_DATE_EPOCH`: Reproducible build timestamp. `kettle-release` will set this automatically for the session.
+
+Git hooks and commit message helpers (exe/kettle-commit-msg)
+
+- `GIT_HOOK_BRANCH_VALIDATE`: Branch name validation mode (e.g., `jira`) or `false` to disable
+- `GIT_HOOK_FOOTER_APPEND`: Append a footer to commit messages when goalie allows (true/false)
+- `GIT_HOOK_FOOTER_SENTINEL`: Required when footer append is enabled — a unique first-line sentinel to prevent duplicates
+- `GIT_HOOK_FOOTER_APPEND_DEBUG`: Extra debug output in the footer template (true/false)
+
+For a quick starting point, this repository’s `.envrc` shows sane defaults, and `.env.local` can override them locally.
 
 ## 🔧 Basic Usage
 
@@ -508,15 +518,15 @@ Common flows
     - Minimum permissions:
         - Fine-grained: Repository access: Read-only for the target repository (or your org); Permissions → Actions: Read
         - Classic: For public repos, no scopes are strictly required, but rate limits are very low; for private repos, include the repo scope
-    - Add to environment (.env.local via direnv):
-        - GITHUB\_TOKEN=your\_token\_here  (or GH\_TOKEN=…)
+    - Add to environment (`.env.local` via `direnv`):
+        - `GITHUB_TOKEN=your_token_here`  (or `GH_TOKEN=…`)
 - GitLab token:
-    - Where to create (gitlab.com): https://gitlab.com/-/user\_settings/personal\_access\_tokens
-    - Minimum scope: read\_api (sufficient to read pipelines)
+    - Where to create: [gitlab.com](https://gitlab.com/-/user_settings/personal_access_tokens)
+    - Minimum scope: `read_api` (sufficient to read pipelines)
     - Add to environment (.env.local via direnv):
-        - GITLAB\_TOKEN=your\_token\_here  (or GL\_TOKEN=…)
+        - `GITLAB_TOKEN=your_token_here`  (or `GL_TOKEN=…`)
 - Load environment:
-    - Save tokens in .env.local (never commit this file), then run: direnv allow
+    - Save tokens in `.env.local` (never commit this file), then run: `direnv allow`
 - Verify:
     - Run: bundle exec rake ci:act
     - The header will include Repo/Upstream/HEAD; entries will show “Latest GHA …” and “Latest GL … pipeline” with emoji status. On failure to authenticate or rate-limit, you’ll see a brief error/result code.
@@ -607,25 +617,25 @@ What it does:
     - Ensures trunk sync and rebases feature as needed, pushes, monitors GitHub Actions with a progress bar, and merges feature to trunk on success.
     - Exports `SOURCE_DATE_EPOCH`, builds (optionally signed), creates gem checksums, and runs `bundle exec rake release` (prompts for signing key + RubyGems MFA OTP as needed).
 - Options:
-    - start\_step map (skip directly to a phase):
+    - `start_step` map (skip directly to a phase):
         1.  Verify Bundler \>= 2.7 (always runs; start at 1 to do everything)
         2.  Detect version; RubyGems sanity check; confirm CHANGELOG/version; sync copyright years; update badges/headers
         3.  Run bin/setup
         4.  Run bin/rake (default task)
         5.  Run bin/rake appraisal:update if Appraisals present
         6.  Ensure git user configured; commit release prep
-        7.  Optional local CI with `act` (controlled by K\_RELEASE\_LOCAL\_CI)
+        7.  Optional local CI with `act` (controlled by `K_RELEASE_LOCAL_CI`)
         8.  Ensure trunk in sync across remotes; rebase feature as needed
         9.  Push current branch to remotes (or 'all' remote)
         10. Monitor CI after push; abort on failures
         11. Merge feature into trunk and push
         12. Checkout trunk and pull latest
-        13. Gem signing checks/guidance (skip with SKIP\_GEM\_SIGNING=true)
+        13. Gem signing checks/guidance (skip with `SKIP_GEM_SIGNING=true`)
         14. Build gem (bundle exec rake build)
         15. Release gem (bundle exec rake release)
-        16. Generate and validate checksums (bin/gem\_checksums)
+        16. Generate and validate checksums (`bin/gem_checksums`)
         17. Push checksum commit
-        18. Create GitHub Release (requires GITHUB\_TOKEN)
+        18. Create GitHub Release (requires `GITHUB_TOKEN`)
         19. Push tags to remotes (final)
 - Examples:
     - After intermittent CI failure, restart from monitoring: `bundle exec kettle-release start_step=10`
@@ -703,12 +713,12 @@ What it does:
 
 `kettle:dev:template` looks at `.kettle-dev.yml` to determine how each file should be updated. The config supports a hybrid format: a list of ordered glob `patterns` used as fallbacks and a `files` nested map for per-file configurations. Each entry ultimately exposes a `strategy` (and optional merge options for Ruby files).
 
-| Strategy | Behavior |
-| --- | --- |
-| `skip` | Legacy behavior: template content is copied with token replacements and any bespoke merge logic already in place. |
-| `replace` | Template AST replaces the destination outside of `kettle-dev:freeze` sections. |
-| `append` | Only missing AST nodes (e.g., `gem` or `task` declarations) are appended; existing nodes remain untouched. |
-| `merge` | Destination nodes are updated in-place using the template AST (used for `Gemfile`, `*.gemspec`, and `Rakefile`). |
+| Strategy  | Behavior                                                                                                          |
+|-----------|-------------------------------------------------------------------------------------------------------------------|
+| `skip`    | Legacy behavior: template content is copied with token replacements and any bespoke merge logic already in place. |
+| `replace` | Template AST replaces the destination outside of `kettle-dev:freeze` sections.                                    |
+| `append`  | Only missing AST nodes (e.g., `gem` or `task` declarations) are appended; existing nodes remain untouched.        |
+| `merge`   | Destination nodes are updated in-place using the template AST (used for `Gemfile`, `*.gemspec`, and `Rakefile`).  |
 
 All Ruby files receive this reminder (inserted after shebang/frozen-string-literal lines):
 
