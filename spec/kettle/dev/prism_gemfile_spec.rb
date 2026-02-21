@@ -7,7 +7,7 @@ RSpec.describe Kettle::Dev::PrismGemfile do
   describe ".merge_gem_calls" do
     it "replaces source and appends missing gem calls", :prism_merge_only do
       src = <<~RUBY
-        source "https://rubygems.org"
+        source "https://gem.coop"
         gem "a"
         gem "b"
       RUBY
@@ -18,7 +18,7 @@ RSpec.describe Kettle::Dev::PrismGemfile do
       RUBY
 
       out = described_class.merge_gem_calls(src, dest)
-      expect(out).to include('source "https://rubygems.org"')
+      expect(out).to include('source "https://gem.coop"')
       expect(out).to include('gem "b"')
       # a should not be duplicated
       expect(out.scan('gem "a"').length).to eq(1)

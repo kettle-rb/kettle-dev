@@ -20,15 +20,23 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- New `kettle-gh-release` executable for standalone GitHub release creation
+  - Extracted from `kettle-release` step 18
+  - Useful when RubyGems release succeeded but GitHub release failed
+  - Supports explicit version via `version=<VERSION>` argument
+  - Auto-detects version from `lib/**/version.rb` if not specified
+  - Requires `GITHUB_TOKEN` with `repo:public_repo` (classic) or `contents:write` scope
 - Added `.kettle-dev.yml` configuration file for per-file merge options
   - Hybrid format: `defaults` for shared merge options, `patterns` for glob fallbacks, `files` for per-file config
   - Nested directory structure under `files` allows individual file configuration
-  - Supports all `Prism::Merge::SmartMerger` options: `signature_match_preference`, `add_template_only_nodes`, `freeze_token`, `max_recursion_depth`
+  - Supports all `Prism::Merge::SmartMerger` options: `preference`, `add_template_only_nodes`, `freeze_token`, `max_recursion_depth`
   - Added `TemplateHelpers.kettle_config`, `.config_for`, `.find_file_config` methods
   - Added spec coverage in `template_helpers_config_spec.rb`
 
 ### Changed
 
+- Updated documentation on hostile takeover of RubyGems
+  - https://dev.to/galtzo/hostile-takeover-of-rubygems-my-thoughts-5hlo
 - **BREAKING**: Replaced `template_manifest.yml` with `.kettle-dev.yml`
   - New hybrid format supports both glob patterns and per-file configuration
   - `TemplateHelpers.load_manifest` now reads from `.kettle-dev.yml` patterns section

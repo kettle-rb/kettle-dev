@@ -4,7 +4,7 @@ RSpec.describe Kettle::Dev::PrismGemfile, ".remove_gem_dependency" do
   describe "removing self-referential gem dependencies" do
     it "removes gem call matching the gem name" do
       src = <<~RUBY
-        source "https://rubygems.org"
+        source "https://gem.coop"
         
         gem "rails", "~> 7.0"
         gem "my-gem", "~> 1.0"

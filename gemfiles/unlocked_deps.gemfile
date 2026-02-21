@@ -2,7 +2,7 @@
 
 source "https://gem.coop"
 
-gemspec path: "../"
+gemspec :path => "../"
 
 eval_gemfile("modular/coverage.gemfile")
 
@@ -11,6 +11,8 @@ eval_gemfile("modular/documentation.gemfile")
 eval_gemfile("modular/optional.gemfile")
 
 eval_gemfile("modular/recording/r3/recording.gemfile")
+
+eval_gemfile("modular/rspec.gemfile")
 
 eval_gemfile("modular/style.gemfile")
 

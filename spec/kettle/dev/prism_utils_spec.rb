@@ -69,11 +69,11 @@ RSpec.describe Kettle::Dev::PrismUtils do
     end
 
     it "generates key for source call" do
-      source = 'source "https://rubygems.org"'
+      source = 'source "https://gem.coop"'
       result = described_class.parse_with_comments(source)
       node = result.value.statements.body.first
       key = described_class.statement_key(node)
-      expect(key).to eq([:source, "https://rubygems.org"])
+      expect(key).to eq([:source, "https://gem.coop"])
     end
 
     it "returns nil for non-call nodes" do

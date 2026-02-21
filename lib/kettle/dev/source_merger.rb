@@ -9,8 +9,11 @@ module Kettle
     # - Freeze blocks (kettle-dev:freeze / kettle-dev:unfreeze)
     # - Comment preservation
     # - Signature-based node matching
+    #
+    # @see Kettle::Jem::Presets for MergerConfig presets
     module SourceMerger
       BUG_URL = "https://github.com/kettle-rb/kettle-dev/issues"
+      FREEZE_TOKEN = "kettle-dev"
 
       module_function
 
@@ -20,6 +23,7 @@ module Kettle
       # @param src [String] Template source content
       # @param dest [String] Destination file content
       # @param path [String] File path (for error messages)
+      # @param file_type [Symbol, nil] File type hint (:gemfile, :appraisals, :gemspec, :rakefile, nil)
       # @return [String] Merged content with comments preserved
       # @raise [Kettle::Dev::Error] If strategy is unknown or merge fails
       # @example
@@ -29,26 +33,27 @@ module Kettle
       #     dest: 'gem "bar"',
       #     path: "Gemfile"
       #   )
-      def apply(strategy:, src:, dest:, path:)
+      def apply(strategy:, src:, dest:, path:, file_type: nil)
         strategy = normalize_strategy(strategy)
         dest ||= ""
         src_content = src.to_s
         dest_content = dest
+        detected_type = file_type || detect_file_type(path)
 
         result =
           case strategy
           when :skip
             # For skip, use merge to preserve freeze blocks (works with empty dest too)
-            apply_merge(src_content, dest_content)
+            apply_merge(src_content, dest_content, file_type: detected_type)
           when :replace
             # For replace, use merge with template preference
-            apply_merge(src_content, dest_content)
+            apply_merge(src_content, dest_content, file_type: detected_type)
           when :append
             # For append, use merge with destination preference
-            apply_append(src_content, dest_content)
+            apply_append(src_content, dest_content, file_type: detected_type)
           when :merge
             # For merge, use merge with template preference
-            apply_merge(src_content, dest_content)
+            apply_merge(src_content, dest_content, file_type: detected_type)
           else
             raise Kettle::Dev::Error, "Unknown templating strategy '#{strategy}' for #{path}."
           end
@@ -57,6 +62,88 @@ module Kettle
       rescue StandardError => error
         warn_bug(path, error)
         raise Kettle::Dev::Error, "Template merge failed for #{path}: #{error.message}"
+      end
+
+      # Detect file type from path for preset selection.
+      #
+      # @param path [String] File path
+      # @return [Symbol] File type (:gemfile, :appraisals, :gemspec, :rakefile, or :ruby)
+      # @api private
+      def detect_file_type(path)
+        basename = File.basename(path.to_s)
+        case basename
+        when /\AGemfile/, /\.gemfile\z/
+          :gemfile
+        when /\AAppraisals/
+          :appraisals
+        when /\.gemspec\z/
+          :gemspec
+        when /\ARakefile/, /\.rake\z/
+          :rakefile
+        else
+          :ruby
+        end
+      end
+
+      # Get the appropriate MergerConfig preset for a file type.
+      #
+      # @param file_type [Symbol] File type
+      # @param preference [Symbol] :template or :destination
+      # @return [Ast::Merge::MergerConfig] The config preset
+      # @api private
+      def config_for_file_type(file_type, preference:)
+        require "kettle/jem" unless defined?(Kettle::Jem)
+
+        preset_class = case file_type
+        when :gemfile
+          Kettle::Jem::Presets::Gemfile
+        when :appraisals
+          Kettle::Jem::Presets::Appraisals
+        when :gemspec
+          Kettle::Jem::Presets::Gemspec
+        when :rakefile
+          Kettle::Jem::Presets::Rakefile
+        else
+          Kettle::Jem::Presets::Gemfile # Default to Gemfile behavior
+        end
+
+        if preference == :template
+          preset_class.template_wins(freeze_token: FREEZE_TOKEN)
+        else
+          preset_class.destination_wins(freeze_token: FREEZE_TOKEN)
+        end
+      end
+
+      # Get the appropriate MergerConfig preset for append strategy.
+      #
+      # Uses destination preference (existing content wins) but also adds
+      # template-only nodes (content from source that doesn't exist in dest).
+      #
+      # @param file_type [Symbol] File type
+      # @return [Ast::Merge::MergerConfig] The config preset
+      # @api private
+      def config_for_file_type_append(file_type)
+        require "kettle/jem" unless defined?(Kettle::Jem)
+
+        preset_class = case file_type
+        when :gemfile
+          Kettle::Jem::Presets::Gemfile
+        when :appraisals
+          Kettle::Jem::Presets::Appraisals
+        when :gemspec
+          Kettle::Jem::Presets::Gemspec
+        when :rakefile
+          Kettle::Jem::Presets::Rakefile
+        else
+          Kettle::Jem::Presets::Gemfile # Default to Gemfile behavior
+        end
+
+        # For append: destination preference + add template-only nodes
+        preset_class.custom(
+          preference: :destination,
+          add_template_only: true,
+          freeze_token: FREEZE_TOKEN,
+        )
       end
 
       # Normalize strategy to a symbol
@@ -94,12 +181,14 @@ module Kettle
       #
       # Uses destination preference for signature matching, which means
       # existing nodes in dest are preferred over template nodes.
+      # Also enables add_template_only_nodes to append missing content from source.
       #
       # @param src_content [String] Template source content
       # @param dest_content [String] Destination content
+      # @param file_type [Symbol] File type for preset selection
       # @return [String] Merged content
       # @api private
-      def apply_append(src_content, dest_content)
+      def apply_append(src_content, dest_content, file_type: :ruby)
         # Lazy load prism-merge (Ruby 2.7+ requirement)
         begin
           require "prism/merge" unless defined?(Prism::Merge)
@@ -108,16 +197,13 @@ module Kettle
           return src_content
         end
 
-        # Custom signature generator that handles various Ruby constructs
-        signature_generator = create_signature_generator
+        # For append, we want destination preference but also add template-only nodes
+        config = config_for_file_type_append(file_type)
 
         merger = Prism::Merge::SmartMerger.new(
           src_content,
           dest_content,
-          signature_match_preference: :destination,
-          add_template_only_nodes: true,
-          signature_generator: signature_generator,
-          freeze_token: "kettle-dev",
+          **config.to_h,
         )
         merger.merge
       rescue Prism::Merge::Error => e
@@ -132,9 +218,10 @@ module Kettle
       #
       # @param src_content [String] Template source content
       # @param dest_content [String] Destination content
+      # @param file_type [Symbol] File type for preset selection
       # @return [String] Merged content
       # @api private
-      def apply_merge(src_content, dest_content)
+      def apply_merge(src_content, dest_content, file_type: :ruby)
         # Lazy load prism-merge (Ruby 2.7+ requirement)
         begin
           require "prism/merge" unless defined?(Prism::Merge)
@@ -143,74 +230,17 @@ module Kettle
           return src_content
         end
 
-        # Custom signature generator that handles various Ruby constructs
-        signature_generator = create_signature_generator
+        config = config_for_file_type(file_type, preference: :template)
 
         merger = Prism::Merge::SmartMerger.new(
           src_content,
           dest_content,
-          signature_match_preference: :template,
-          add_template_only_nodes: true,
-          signature_generator: signature_generator,
-          freeze_token: "kettle-dev",
+          **config.to_h,
         )
         merger.merge
       rescue Prism::Merge::Error => e
         puts "WARNING: Prism::Merge failed for merge strategy: #{e.message}"
         src_content
-      end
-
-      # Create a signature generator for prism-merge
-      #
-      # The signature generator customizes how nodes are matched during merge:
-      # - `source()` calls: Match by method name only (singleton)
-      # - Assignment methods (`spec.foo =`): Match by receiver and method name
-      # - `gem()` calls: Match by gem name (first argument)
-      # - Other calls with arguments: Match by method name and first argument
-      #
-      # @return [Proc] Lambda that generates signatures for Prism nodes
-      # @api private
-      def create_signature_generator
-        ->(node) do
-          # Only customize CallNode signatures
-          if node.is_a?(Prism::CallNode)
-            # For source(), there should only be one, so signature is just [:source]
-            return [:source] if node.name == :source
-
-            method_name = node.name.to_s
-            receiver_name = node.receiver.is_a?(Prism::CallNode) ? node.receiver.name.to_s : node.receiver&.slice
-
-            # For assignment methods (like spec.homepage = "url"), match by receiver
-            # and method name only - don't include the value being assigned.
-            # This ensures spec.homepage = "url1" matches spec.homepage = "url2"
-            if method_name.end_with?("=")
-              return [:call, node.name, receiver_name]
-            end
-
-            # For gem() calls, match by first argument (gem name)
-            if node.name == :gem
-              first_arg = node.arguments&.arguments&.first
-              if first_arg.is_a?(Prism::StringNode)
-                return [:gem, first_arg.unescaped]
-              end
-            end
-
-            # For other methods with arguments, include the first argument for matching
-            # e.g. spec.add_dependency("gem_name", "~> 1.0") -> [:add_dependency, "gem_name"]
-            first_arg = node.arguments&.arguments&.first
-            arg_value = case first_arg
-            when Prism::StringNode
-              first_arg.unescaped.to_s
-            when Prism::SymbolNode
-              first_arg.unescaped.to_sym
-            end
-
-            return [node.name, arg_value] if arg_value
-          end
-
-          # Return the node to fall through to default signature computation
-          node
-        end
       end
     end
   end

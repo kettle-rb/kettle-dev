@@ -1300,7 +1300,7 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
         Dir.mktmpdir do |gem_root|
           Dir.mktmpdir do |project_root|
             File.write(File.join(gem_root, "Appraisal.root.gemfile"), <<~RUBY)
-              source "https://rubygems.org"
+              source "https://gem.coop"
               gem "foo"
             RUBY
             File.write(File.join(project_root, "Appraisal.root.gemfile"), <<~RUBY)
@@ -1322,7 +1322,7 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
             )
             described_class.run
             merged = File.read(File.join(project_root, "Appraisal.root.gemfile"))
-            expect(merged).to include('source "https://rubygems.org"')
+            expect(merged).to include('source "https://gem.coop"')
             expect(merged).to include('gem "foo"')
             expect(merged).to include('gem "bar"')
           end
@@ -1607,7 +1607,7 @@ RSpec.describe Kettle::Dev::Tasks::TemplateTask do
           template_dir = File.join(gem_root, "gemfiles", "modular")
           FileUtils.mkdir_p(template_dir)
           File.write(File.join(template_dir, "coverage.gemfile"), <<~GEMFILE)
-            source "https://rubygems.org"
+            source "https://gem.coop"
             gem "simplecov", "~> 0.22"
           GEMFILE
           dest_dir = File.join(project_root, "gemfiles", "modular")

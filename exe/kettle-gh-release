@@ -1,0 +1,82 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# vim: set syntax=ruby
+
+# kettle-gh-release: Create a GitHub release for a gem version
+# - Extracted from kettle-release step 18
+# - Useful when the main release succeeded but GitHub release creation failed
+# - Requires GITHUB_TOKEN with repo:public_repo (classic) or contents:write scope
+
+# Immediate, unbuffered output
+$stdout.sync = true
+$stderr.sync = true
+
+# Do not rely on Bundler; allow running in repos that do not depend on kettle-dev
+# Ensure RubyGems is available for 'require' lookups
+begin
+  require "rubygems"
+rescue LoadError
+  # Older Rubies always have rubygems; continue anyway
+end
+
+script_basename = File.basename(__FILE__)
+
+begin
+  require "kettle/dev"
+  puts "== #{script_basename} v#{Kettle::Dev::Version::VERSION} =="
+rescue LoadError => e
+  warn("#{script_basename}: could not load dependency: #{e.class}: #{e.message}")
+  warn("Hint: Ensure the host project has kettle-dev as a dependency and run bundle install.")
+  exit(1)
+end
+
+# Always execute when this file is loaded (e.g., via a Bundler binstub).
+# Do not guard with __FILE__ == $PROGRAM_NAME because binstubs use Kernel.load.
+if ARGV.include?("-h") || ARGV.include?("--help")
+  puts <<~USAGE
+    Usage: #{script_basename} [version=<VERSION>]
+
+    Creates a GitHub release for a gem version.
+
+    This is step 18 of the kettle-release flow, extracted as a standalone script.
+    Useful when the main release to RubyGems succeeded but GitHub release creation
+    failed (e.g., due to token issues or network problems).
+
+    Arguments:
+      version=<VERSION>           # Explicit version (e.g., version=1.2.3)
+                                  # If omitted, auto-detects from lib/**/version.rb
+
+    Environment:
+      GITHUB_TOKEN / GH_TOKEN     # Required; needs repo:public_repo (classic) or contents:write scope
+      DEBUG=true                  # Print backtraces on errors
+
+    Examples:
+      #{script_basename}                    # auto-detect version, create release
+      #{script_basename} version=2.0.0      # create release for specific version
+      GITHUB_TOKEN=ghp_xxx #{script_basename}  # explicit token
+  USAGE
+  exit 0
+end
+
+# Parse version=<v> from ARGV
+version_arg = ARGV.find { |a| a.start_with?("version=") }
+explicit_version = version_arg ? version_arg.split("=", 2)[1].strip : nil
+
+begin
+  cli = Kettle::Dev::ReleaseCLI.new(start_step: 18)
+  version = explicit_version || cli.send(:detect_version)
+  cli.send(:maybe_create_github_release!, version)
+rescue LoadError => e
+  warn("#{script_basename}: could not load dependency: #{e.class}: #{e.message}")
+  warn(Array(e.backtrace).join("\n")) if ENV["DEBUG"]
+  exit(1)
+rescue SystemExit => e
+  # Preserve exit status, but ensure at least a newline so shells don't show an empty line only.
+  warn("#{script_basename}: exited (status=#{e.status}, msg=#{e.message})") if e.status != 0
+  raise
+rescue StandardError => e
+  warn("#{script_basename}: unexpected error: #{e.class}: #{e.message}")
+  warn(Array(e.backtrace).join("\n"))
+  exit(1)
+end

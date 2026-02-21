@@ -20,6 +20,8 @@ gemspec
 
 # Templating
 eval_gemfile "gemfiles/modular/templating.gemfile"
+# runtime dependencies that we can't add to gemspec due to platform differences
+eval_gemfile "gemfiles/modular/tree_sitter.gemfile"
 
 # Debugging
 eval_gemfile "gemfiles/modular/debug.gemfile"

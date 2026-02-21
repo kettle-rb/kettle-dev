@@ -7,7 +7,7 @@
 # kettle-dev:unfreeze
 
 # HOW TO UPDATE APPRAISALS (will run rubocop_gradual's autocorrect afterward):
-#   bin/rake appraisals:update
+#   bin/rake appraisal:update
 
 # Lock/Unlock Deps Pattern
 #
@@ -38,7 +38,6 @@ end
 appraise "head" do
   # Why is gem "cgi" here? See: https://github.com/vcr/vcr/issues/1057
   #  gem "cgi", ">= 0.5"
-  gem "benchmark", "~> 0.4", ">= 0.4.1"
   eval_gemfile "modular/x_std_libs.gemfile"
 end
 

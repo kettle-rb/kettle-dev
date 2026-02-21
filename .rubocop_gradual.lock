@@ -1,4 +1,7 @@
 {
+  "gemfiles/modular/templating.gemfile:1721812216": [
+    [44, 5, 18, "Bundler/DuplicatedGem: Gem `markly-merge` requirements already given on line 26 of the Gemfile.", 2391066495]
+  ],
   "lib/kettle/dev.rb:300303735": [
     [80, 17, 2, "ThreadSafety/MutableClassInstanceVariable: Freeze mutable objects assigned to class instance variables.", 5862883]
   ],
@@ -11,7 +14,7 @@
     [271, 13, 329, "Lint/RescueException: Avoid rescuing the `Exception` class. Perhaps you meant to rescue `StandardError`?", 2809878728],
     [284, 24, 60, "ThreadSafety/NewThread: Avoid starting new threads.", 1884163423]
   ],
-  "lib/kettle/dev/template_helpers.rb:2754353119": [
+  "lib/kettle/dev/template_helpers.rb:2100939976": [
     [177, 11, 20, "ThreadSafety/DirChdir: Avoid using `Dir.chdir` due to its process-wide effect.", 645000286],
     [194, 11, 52, "Style/IdenticalConditionalBranches: Move `preview = status_output.lines.take(10).map(&:rstrip)` out of the conditional.", 311333201],
     [206, 11, 52, "Style/IdenticalConditionalBranches: Move `preview = status_output.lines.take(10).map(&:rstrip)` out of the conditional.", 311333201]
@@ -167,7 +170,7 @@
     [537, 7, 66, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [538].", 798457357],
     [538, 7, 55, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [537].", 673372644]
   ],
-  "spec/kettle/dev/release_cli_spec.rb:4182599911": [
+  "spec/kettle/dev/release_cli_spec.rb:1972242362": [
     [1264, 7, 76, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 1335859022],
     [1292, 11, 51, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [1293].", 1750577460],
     [1293, 11, 58, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [1292].", 3469329402],
@@ -193,7 +196,7 @@
     [1371, 9, 75, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [1370].", 228897198],
     [1377, 7, 74, "RSpec/MultipleExpectations: Example has too many expectations [5/1].", 678037608],
     [1470, 7, 58, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 1054286736],
-    [1501, 7, 69, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 2519740787]
+    [1506, 7, 69, "RSpec/MultipleExpectations: Example has too many expectations [3/1].", 2519740787]
   ],
   "spec/kettle/dev/setup_cli_spec.rb:1563614988": [
     [98, 7, 67, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [99].", 975042764],

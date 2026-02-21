@@ -1469,13 +1469,18 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
       it "rewrites consecutive years into a range in both files" do
         Dir.mktmpdir do |root|
-          File.write(File.join(root, "README.md"), "Copyright (c) 2023, 2024, 2025 Example")
-          File.write(File.join(root, "LICENSE.txt"), "The MIT License (MIT)\nCopyright (c) 2023, 2024, 2025 Example")
+          current_year = Time.now.year
+          # Build a list of consecutive years ending at the current year
+          # so validate_copyright_years! only reformats (no injection needed).
+          start_year = current_year - 2
+          years_list = (start_year..current_year).to_a.join(", ")
+          File.write(File.join(root, "README.md"), "Copyright (c) #{years_list} Example")
+          File.write(File.join(root, "LICENSE.txt"), "The MIT License (MIT)\nCopyright (c) #{years_list} Example")
           allow(ci_helpers).to receive(:project_root).and_return(root)
           cli = described_class.new
           expect { cli.send(:validate_copyright_years!) }.not_to raise_error
-          expect(File.read(File.join(root, "README.md"))).to include("2023-2025")
-          expect(File.read(File.join(root, "LICENSE.txt"))).to include("2023-2025")
+          expect(File.read(File.join(root, "README.md"))).to include("#{start_year}-#{current_year}")
+          expect(File.read(File.join(root, "LICENSE.txt"))).to include("#{start_year}-#{current_year}")
         end
       end
 

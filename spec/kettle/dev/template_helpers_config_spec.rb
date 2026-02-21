@@ -18,7 +18,7 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
 
     it "returns defaults with expected merge options" do
       defaults = described_class.kettle_config["defaults"]
-      expect(defaults["signature_match_preference"]).to eq("template")
+      expect(defaults["preference"]).to eq("template")
       expect(defaults["add_template_only_nodes"]).to be(true)
       expect(defaults["freeze_token"]).to eq("kettle-dev")
     end
@@ -83,7 +83,7 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
     it "returns config with merge options for Gemfile" do
       config = described_class.config_for("Gemfile")
       expect(config[:strategy]).to eq(:merge)
-      expect(config[:signature_match_preference]).to eq("template")
+      expect(config[:preference]).to eq("template")
       expect(config[:add_template_only_nodes]).to be(true)
       expect(config[:freeze_token]).to eq("kettle-dev")
     end
@@ -91,7 +91,7 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
     it "returns config without merge options for skip strategy" do
       config = described_class.config_for(".gitignore")
       expect(config[:strategy]).to eq(:skip)
-      expect(config).not_to have_key(:signature_match_preference)
+      expect(config).not_to have_key(:preference)
     end
 
     it "prefers explicit file config over pattern match" do
@@ -148,7 +148,7 @@ RSpec.describe Kettle::Dev::TemplateHelpers do
       manifest = described_class.load_manifest
       merge_entry = manifest.find { |e| e[:strategy] == :merge }
       expect(merge_entry).not_to be_nil
-      expect(merge_entry[:signature_match_preference]).to eq("template")
+      expect(merge_entry[:preference]).to eq("template")
       expect(merge_entry[:add_template_only_nodes]).to be(true)
     end
   end
