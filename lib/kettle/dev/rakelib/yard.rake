@@ -14,7 +14,7 @@ begin
   begin
     require "yard/fence/rake_task"
     # Only create if not already defined (yard-fence may have auto-registered)
-    Yard::Fence::RakeTask.new unless ::Rake::Task.task_defined?("yard:fence:prepare")
+    Yard::Fence::RakeTask.new unless Rake::Task.task_defined?("yard:fence:prepare")
   rescue LoadError
     # yard-fence not available or doesn't have rake_task - that's fine
   end

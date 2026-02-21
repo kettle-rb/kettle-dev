@@ -80,4 +80,3 @@ rescue StandardError => e
   warn(Array(e.backtrace).join("\n"))
   exit(1)
 end
-
