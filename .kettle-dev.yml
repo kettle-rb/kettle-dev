@@ -21,7 +21,7 @@
 #   add_template_only_nodes: true | false
 #     - true: Add nodes that exist only in template to destination
 #     - false: Only merge/replace existing nodes
-#   freeze_token: string (default: "kettle-dev")
+#   freeze_token: string (default: "kettle-jem")
 #     - Token used to mark frozen sections that should not be modified
 #   max_recursion_depth: number (default: Infinity)
 #     - Maximum depth for recursive merging
@@ -30,7 +30,7 @@
 defaults:
   preference: "template"
   add_template_only_nodes: true
-  freeze_token: "kettle-dev"
+  freeze_token: "kettle-jem"
 
 # Glob patterns evaluated in order (first match wins)
 # These provide fallback for files not explicitly listed in "files"

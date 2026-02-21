@@ -3,66 +3,15 @@
 
 # vim: set syntax=ruby
 
-# kettle-dev-setup: initialize a target gem repo to use kettle-dev tooling.
-# This script is installed into PATH when the kettle-dev gem is installed.
-# It is designed to be run from inside the target gem's repository working
-# directory. It will not assume kettle-dev is already a dependency.
+# kettle-dev-setup has been replaced by kettle-jem-setup.
+# All setup and templating functionality has moved to the kettle-jem gem.
 
-require "fileutils"
-require "shellwords"
-require "open3"
-require "optparse"
-require "rubygems"
+$stderr.puts <<~MSG
+  kettle-dev-setup has been removed.
+  Setup and templating functionality has moved to the kettle-jem gem.
 
-# Ensure output is flushed promptly even if we exit early
-$stdout.sync = true
-$stderr.sync = true
-
-script_basename = File.basename(__FILE__)
-File.basename($PROGRAM_NAME)
-
-begin
-  require "kettle/dev"
-  puts "== #{script_basename} v#{Kettle::Dev::Version::VERSION} begin =="
-rescue StandardError => e
-  # Requiring kettle/dev should generally work since this script ships with the gem.
-  # But if autoloads try to pull optional deps, we should still proceed as most
-  # of this script does not rely on those parts.
-  warn("[kettle-dev-setup] Warning: could not fully load kettle/dev (#{e.class}: #{e.message}). Proceeding with limited features.")
-end
-
-# Always execute when this file is loaded (e.g., via a Bundler binstub).
-# Do not guard with __FILE__ == $PROGRAM_NAME because binstubs use Kernel.load.
-if ARGV.include?("-h") || ARGV.include?("--help")
-  puts <<~USAGE
-    Usage: kettle-dev-setup [options]
-
-    Bootstraps a host gem repository to use kettle-dev tooling.
-
-    Options (passed through to rake kettle:dev:install):
-      --allowed=VAL
-      --force
-      --hook_templates=VAL
-      --only=VAL
-      --include=VAL
-
-    Environment:
-      DEBUG=true                    # print backtraces on errors
-  USAGE
-  exit 0
-end
-
-begin
-  Kettle::Dev::SetupCLI.new(ARGV).run!
-rescue LoadError => e
-  warn("#{script_basename}: could not load dependency: #{e.class}: #{e.message}")
-  warn(e.backtrace.join("\n")) if ENV["DEBUG"]
-  exit(1)
-rescue SystemExit => e
-  warn("#{script_basename}: exited (status=#{e.status}, msg=#{e.message})") if e.status != 0
-  raise
-rescue StandardError => e
-  warn("#{script_basename}: unexpected error: #{e.class}: #{e.message}")
-  warn(e.backtrace.join("\n")) if ENV["DEBUG"]
-  exit(1)
-end
+  Please install kettle-jem and use kettle-jem-setup instead:
+    gem install kettle-jem
+    kettle-jem-setup
+MSG
+exit 1

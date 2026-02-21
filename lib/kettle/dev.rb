@@ -22,26 +22,16 @@ module Kettle
     autoload :GitAdapter, "kettle/dev/git_adapter"
     autoload :GitCommitFooter, "kettle/dev/git_commit_footer"
     autoload :InputAdapter, "kettle/dev/input_adapter"
-    autoload :PrismUtils, "kettle/dev/prism_utils"
-    autoload :PrismGemspec, "kettle/dev/prism_gemspec"
-    autoload :PrismGemfile, "kettle/dev/prism_gemfile"
-    autoload :PrismAppraisals, "kettle/dev/prism_appraisals"
     autoload :ReadmeBackers, "kettle/dev/readme_backers"
     autoload :OpenCollectiveConfig, "kettle/dev/open_collective_config"
-    autoload :SourceMerger, "kettle/dev/source_merger"
     autoload :ReleaseCLI, "kettle/dev/release_cli"
     autoload :PreReleaseCLI, "kettle/dev/pre_release_cli"
-    autoload :SetupCLI, "kettle/dev/setup_cli"
-    autoload :TemplateHelpers, "kettle/dev/template_helpers"
-    autoload :ModularGemfiles, "kettle/dev/modular_gemfiles"
     autoload :Version, "kettle/dev/version"
     autoload :Versioning, "kettle/dev/versioning"
 
     # Nested tasks namespace with autoloaded task modules
     module Tasks
       autoload :CITask, "kettle/dev/tasks/ci_task"
-      autoload :InstallTask, "kettle/dev/tasks/install_task"
-      autoload :TemplateTask, "kettle/dev/tasks/template_task"
     end
 
     # Base error type for kettle-dev.

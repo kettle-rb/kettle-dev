@@ -99,13 +99,13 @@ module Kettle
 
           # Funding org (Open Collective handle) detection.
           # Precedence:
-          #   1) TemplateHelpers.opencollective_disabled? - when true, funding_org is nil
+          #   1) OpenCollectiveConfig.disabled? - when true, funding_org is nil
           #   2) ENV["FUNDING_ORG"] when set and non-empty (unless already disabled above)
           #   3) OpenCollectiveConfig.handle(required: false)
           # Be lenient: allow nil when not discoverable, with a concise warning.
           begin
             # Check if Open Collective is explicitly disabled via environment variables
-            if TemplateHelpers.opencollective_disabled?
+            if OpenCollectiveConfig.disabled?
               funding_org = nil
             else
               env_funding = ENV["FUNDING_ORG"]

@@ -10,6 +10,18 @@ module Kettle
     module OpenCollectiveConfig
       module_function
 
+      # Check if Open Collective is disabled via environment variable.
+      # Returns true when OPENCOLLECTIVE_HANDLE or FUNDING_ORG is explicitly set to a falsey value.
+      # @return [Boolean]
+      def disabled?
+        oc_handle = ENV["OPENCOLLECTIVE_HANDLE"]
+        funding_org = ENV["FUNDING_ORG"]
+
+        [oc_handle, funding_org].any? do |val|
+          val && val.to_s.strip.match(Kettle::Dev::ENV_FALSE_RE)
+        end
+      end
+
       # Absolute path to a .opencollective.yml
       # @param root [String, nil] optional project root to resolve against; when nil, uses this repo root
       # @return [String]
