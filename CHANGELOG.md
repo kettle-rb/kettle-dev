@@ -47,11 +47,17 @@ Please file a bug if you notice a violation of semantic versioning.
   - Removed custom comment deduplication logic - prism-merge handles this natively
   - All strategies (`:skip`, `:replace`, `:append`, `:merge`) now use prism-merge consistently
   - Freeze blocks (`kettle-dev:freeze` / `kettle-dev:unfreeze`) handled by prism-merge's `freeze_token` option
+- Updated stale template tokens in `kettle-dev.gemspec.example`:
+  `{K_D_MIN_RUBY}` → `{KJ|MIN_RUBY}`, `{K_D_MIN_DEV_RUBY}` → `{KJ|MIN_DEV_RUBY}`,
+  `{KETTLE|DEV|GEM}` → `{KJ|KETTLE_DEV_GEM}` to align with kettle-jem's token format
 
 ### Deprecated
 
 ### Removed
 
+- Removed all `.example` template files from the kettle-dev root and subdirectories
+  (27 files). Template files now live exclusively in kettle-jem's `template/` directory.
+  Only `.env.local.example` is retained as a dev resource for all destination gems.
 - Removed unused methods from `SourceMerger`:
   - `normalize_source` - replaced by prism-merge
   - `normalize_newlines` - prism-merge preserves original formatting
