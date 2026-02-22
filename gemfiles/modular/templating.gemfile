@@ -20,8 +20,6 @@ if ENV.fetch("KETTLE_RB_DEV", "false").casecmp?("true")
   gem "rbs-merge", path: "../../../rbs-merge"           # RBS code blocks
   gem "toml-merge", path: "../../../toml-merge"         # TOML code blocks
 
-  gem "kettle-jem", path: "../../../kettle-jem"         # Kettle-rb's Merge Recipes
-
   platform :mri do
     gem "markly-merge", path: "../../../markly-merge"     # markly markdown merging
   end
@@ -35,10 +33,6 @@ else
   gem "psych-merge"     # YAML code blocks
   gem "rbs-merge"       # RBS code blocks
   gem "toml-merge"      # TOML code blocks
-
-  # Not released yet
-  # gem "kettle-jem"      # Kettle-rb's Merge Recipes
-  gem "kettle-jem", path: "../../../kettle-jem"         # Kettle-rb's Merge Recipes
 
   platform :mri do
     gem "markly-merge"    # markly markdown merging
