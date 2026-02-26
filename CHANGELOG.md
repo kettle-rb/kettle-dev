@@ -20,6 +20,25 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [2.0.0] - 2026-02-25
+
+- TAG: [v2.0.0][2.0.0t]
+- COVERAGE: 96.06% -- 2683/2793 lines in 20 files
+- BRANCH COVERAGE: 79.16% -- 1113/1406 branches in 20 files
+- 80.25% documented
+
+### Added
+
 - New `kettle-gh-release` executable for standalone GitHub release creation
   - Extracted from `kettle-release` step 18
   - Useful when RubyGems release succeeded but GitHub release failed
@@ -47,11 +66,6 @@ Please file a bug if you notice a violation of semantic versioning.
   - Removed custom comment deduplication logic - prism-merge handles this natively
   - All strategies (`:skip`, `:replace`, `:append`, `:merge`) now use prism-merge consistently
   - Freeze blocks (`kettle-dev:freeze` / `kettle-dev:unfreeze`) handled by prism-merge's `freeze_token` option
-- Updated stale template tokens in `kettle-dev.gemspec.example`:
-  `{K_D_MIN_RUBY}` → `{KJ|MIN_RUBY}`, `{K_D_MIN_DEV_RUBY}` → `{KJ|MIN_DEV_RUBY}`,
-  `{KETTLE|DEV|GEM}` → `{KJ|KETTLE_DEV_GEM}` to align with kettle-jem's token format
-
-### Deprecated
 
 ### Removed
 
@@ -144,8 +158,6 @@ Please file a bug if you notice a violation of semantic versioning.
   - Prevents `TypeError: no implicit conversion of nil into String` when gemspecs contain emojis
   - Ensures gemspec field carryover works correctly with emoji in summary/description fields
   - Enhanced error reporting to show backtraces when debug mode is enabled
-
-### Security
 
 ## [1.2.5] - 2025-11-28
 
@@ -1662,7 +1674,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v1.2.5...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/kettle-rb/kettle-dev/compare/v1.2.5...v2.0.0
+[2.0.0t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v2.0.0
 [1.2.5]: https://github.com/kettle-rb/kettle-dev/compare/v1.2.4...v1.2.5
 [1.2.5t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v1.2.5
 [1.2.4]: https://github.com/kettle-rb/kettle-dev/compare/v1.2.3...v1.2.4

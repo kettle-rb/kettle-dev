@@ -110,7 +110,7 @@ tree_haver supports multiple parsing backends, but not all backends work on all 
 
 | Gem                      | Purpose         | Description                                   |
 |--------------------------|-----------------|-----------------------------------------------|
-| [kettle-dev][kettle-dev] | Gem Development | Gem templating tool using `*-merge` gems      |
+| [kettle-dev][kettle-dev] | Gem Development  | Development tooling, CI automation, and release workflows |
 | [kettle-jem][kettle-jem] | Gem Templating  | Gem template library with smart merge support |
 
 [tree_haver]: https://github.com/kettle-rb/tree_haver
@@ -227,7 +227,7 @@ tree_haver supports multiple parsing backends, but not all backends work on all 
 ### Compatibility
 
 Compatible with MRI Ruby 2.3.0+, and concordant releases of JRuby, and TruffleRuby.
-Certain templating features are only available with Ruby 2.7+, others are Ruby 3.2+, and some in-between, due to reliance on [prism-merge][prism-merge]. It is recommended to run the template tasks / scripts in the latest release of Ruby\!
+Templating features (AST-aware merging) are provided by [kettle-jem][kettle-jem], which requires Ruby 3.2+ and relies on [prism-merge][prism-merge]. It is recommended to run the template tasks / scripts in the latest release of Ruby\!
 
 | 🚚 *Amazing* test matrix was brought to you by | 🔎 appraisal2 🔎 and the color 💚 green 💚 |
 | --- | --- |
@@ -420,13 +420,13 @@ The install task will write a report at the end with:
     - `ci:act` — interactive selector for running GitHub Actions workflows via `act`.
     - `kettle:dev:install` — copies this repo’s .github automation, offers to install .git-hooks templates, and overwrites many files in your project.
         - Grapheme syncing: detects the grapheme (e.g., emoji) immediately following the first `#` H1 in README.md and ensures the same grapheme, followed by a single space, prefixes both `spec.summary` and `spec.description` in your gemspec. If the H1 has none, you’ll be prompted to enter one; tests use an input adapter, so runs never hang in CI.
-        - option: force: When truthy (1, true, y, yes), treat all y/N prompts as Yes. Useful for non-interactive runs or to accept defaults quickly. Example: `bundle exec rake kettle:dev:template force=true`
+        - option: force: When truthy (1, true, y, yes), treat all y/N prompts as Yes. Useful for non-interactive runs or to accept defaults quickly. Example: `bundle exec rake kettle:dev:install force=true`
         - option: allowed: When truthy (1, true, y, yes), resume task after you have reviewed `.envrc`/`.env.local` and run `direnv allow`. If either file is created or updated, the task will abort with instructions unless `allowed=true` is present. Example: `bundle exec rake kettle:dev:install allowed=true`
         - option: only: A comma-separated list of glob patterns to include in templating. Any destination file whose path+filename does not match one of the patterns is excluded. Patterns are matched relative to your project root. Examples: `only="README.md,.github/**"`, `only="docs/**,lib/**/*.rb"`.
         - option: include: A comma-separated list of glob patterns that opt-in additional, non-default files. Currently, `.github/workflows/discord-notifier.yml` is not copied by default and will only be copied when `include` matches it (e.g., `include=".github/workflows/discord-notifier.yml"`).
-    - `kettle:dev:template` — templates files from this gem into your project (e.g., .github workflows, .devcontainer, .qlty, modular Gemfiles, README/CONTRIBUTING stubs). You can run this independently to refresh templates without the extra install prompts.
-        - option: force: When truthy (1, true, y, yes), treat all y/N prompts as Yes. Useful for non-interactive runs or to accept defaults quickly. Example: `bundle exec rake kettle:dev:template force=true`
-        - option: allowed: When truthy (1, true, y, yes), resume task after you have reviewed `.envrc`/`.env.local` and run `direnv allow`. If either file is created or updated, the task will abort with instructions unless `allowed=true` is present. Example: `bundle exec rake kettle:dev:template allowed=true`
+    - `kettle:jem:template` (provided by [kettle-jem][kettle-jem]) — templates files from this gem into your project (e.g., .github workflows, .devcontainer, .qlty, modular Gemfiles, README/CONTRIBUTING stubs). You can run this independently to refresh templates without the extra install prompts.
+        - option: force: When truthy (1, true, y, yes), treat all y/N prompts as Yes. Useful for non-interactive runs or to accept defaults quickly. Example: `bundle exec rake kettle:dev:install force=true`
+        - option: allowed: When truthy (1, true, y, yes), resume task after you have reviewed `.envrc`/`.env.local` and run `direnv allow`. If either file is created or updated, the task will abort with instructions unless `allowed=true` is present. Example: `bundle exec rake kettle:jem:template allowed=true`
         - option: only: Same as for install; limits which destination files are written based on glob patterns relative to the project root.
         - option: include: Same as for install; opts into optional files (e.g., `.github/workflows/discord-notifier.yml`).
           Recommended one-time setup in your project:
@@ -532,7 +532,7 @@ Common flows
     - The header will include Repo/Upstream/HEAD; entries will show “Latest GHA …” and “Latest GL … pipeline” with emoji status. On failure to authenticate or rate-limit, you’ll see a brief error/result code.
       Project automation bootstrap
 - `bundle exec rake kettle:dev:install` — copies the library’s `.github` folder into your project and offers to install `.git-hooks` templates locally or globally.
-- `bundle exec rake kettle:dev:template` — runs only the templating step used by install; useful to re-apply updates to templates (.github workflows, .devcontainer, .qlty, modular Gemfiles, README, and friends) without the `install` task’s extra prompts.
+- `bundle exec rake kettle:jem:template` — runs only the templating step used by install; useful to re-apply updates to templates (.github workflows, .devcontainer, .qlty, modular Gemfiles, README, and friends) without the `install` task’s extra prompts.
     - Also copies maintainer certificate `certs/pboling.pem` into your project when present (used for signed gem builds).
     - README carry-over during templating: when your project’s README.md is replaced by the template, selected sections from your existing README are preserved and merged into the new one. Specifically, the task carries over the following sections (matched case-insensitively):
         - "Synopsis"
@@ -541,9 +541,9 @@ Common flows
         - Any section whose heading starts with "Note:" at any heading level (for example: "\# NOTE: …", "\#\# Note: …", or "\#\#\# note: …").
         - Headings are recognized at any level using Markdown hashes (\#, \#\#, \#\#\#, …).
 - Notes about task options:
-    - Non-interactive confirmations: append `force=true` to accept all y/N prompts as Yes, e.g., `bundle exec rake kettle:dev:template force=true`.
+    - Non-interactive confirmations: append `force=true` to accept all y/N prompts as Yes, e.g., `bundle exec rake kettle:jem:template force=true`.
     - direnv review flow: if `.envrc` or `.env.local` is created or updated, the task stops and asks you to run `direnv allow`. After you review and allow, resume with `allowed=true`:
-        - `bundle exec rake kettle:dev:template allowed=true`
+        - `bundle exec rake kettle:jem:template allowed=true`
         - `bundle exec rake kettle:dev:install allowed=true`
 - After that, set up binstubs and direnv for convenience:
     - `bundle binstubs kettle-dev --path bin`
@@ -595,15 +595,6 @@ What it does:
 - Attempts to `git fetch` each forge remote to check availability:
     - If all succeed, the README’s federated DVCS summary line has “(Coming soon\!)” removed.
     - If any fail, the script prints import links to help you create a mirror on that forge.
-
-### Template .example files are preferred
-
-- The templating step dynamically prefers any `*.example` file present in this gem’s templates. When a `*.example` exists alongside the non-example template, the `.example` content is used, and the destination file is written without the `.example` suffix.
-- This applies across all templated files, including:
-    - Root files like `.gitlab-ci.yml` (copied from `.gitlab-ci.yml.example` when present).
-    - Nested files like `.github/workflows/coverage.yml` (copied from `.github/workflows/coverage.yml.example` when present).
-- This behavior is automatic for any future `*.example` files added to the templates.
-- Exception: `.env.local` is handled specially for safety. Regardless of whether the template provides `.env.local` or `.env.local.example`, the installer copies it to `.env.local.example` in your project, and will never create or overwrite `.env.local`.
 
 ### Releasing (maintainers)
 
@@ -709,97 +700,6 @@ What it does:
     - Stages and commits any bootstrap changes with message: `🎨 Template bootstrap by kettle-dev-setup v<version>`.
     - Executes `bin/rake kettle:dev:install` with the parsed passthrough args.
 
-### Template Manifest and AST Strategies
-
-`kettle:dev:template` looks at `.kettle-dev.yml` to determine how each file should be updated. The config supports a hybrid format: a list of ordered glob `patterns` used as fallbacks and a `files` nested map for per-file configurations. Each entry ultimately exposes a `strategy` (and optional merge options for Ruby files).
-
-| Strategy  | Behavior                                                                                                          |
-|-----------|-------------------------------------------------------------------------------------------------------------------|
-| `skip`    | Legacy behavior: template content is copied with token replacements and any bespoke merge logic already in place. |
-| `replace` | Template AST replaces the destination outside of `kettle-dev:freeze` sections.                                    |
-| `append`  | Only missing AST nodes (e.g., `gem` or `task` declarations) are appended; existing nodes remain untouched.        |
-| `merge`   | Destination nodes are updated in-place using the template AST (used for `Gemfile`, `*.gemspec`, and `Rakefile`).  |
-
-All Ruby files receive this reminder (inserted after shebang/frozen-string-literal lines):
-
-    # To force retention during kettle-dev templating:
-    #     kettle-dev:freeze
-    #     # ... your code
-    #     kettle-dev:unfreeze
-
-Wrap any code you never want rewritten between `kettle-dev:freeze` / `kettle-dev:unfreeze` comments. When an AST merge fails, the task emits an error asking you to file an issue at https://github.com/kettle-rb/kettle-dev/issues and then aborts—there is no regex fallback.
-
-#### Inline Freeze Comments
-
-In addition to block-style freeze markers, you can freeze a **single Ruby statement** by placing a freeze comment immediately before it (without a matching `unfreeze`):
-
-```ruby
-# kettle-dev:freeze
-gem "my-custom-gem", "~> 1.0"
-```
-
-**⚠️ Important:** When a freeze comment precedes a block-based statement (like a class, module, method definition, or DSL block), the **entire block is frozen**, preventing any template updates to that section:
-
-```ruby
-# kettle-dev:freeze
-class MyCustomClass
-  # EVERYTHING inside this class is frozen!
-  # Template changes to this class will be ignored.
-  def custom_method
-    # ...
-  end
-end
-
-# kettle-dev:freeze
-Gem::Specification.new do |spec|
-  # The entire gemspec block is frozen
-  # Use this carefully - it prevents ALL template updates!
-end
-
-# kettle-dev:freeze
-appraise "custom-ruby" do
-  # This entire appraisal block is frozen
-  gem "specific-version", "= 1.2.3"
-end
-```
-
-Frozen statements are matched by their **structural identity** (e.g., gem name, class name, method name), not their content. The destination's frozen version is always preserved, regardless of changes in the template.
-
-### Template Example
-
-Here is an example `.kettle-dev.yml` (hybrid format):
-
-```yaml
-# Defaults applied to per-file merge options when strategy: merge
-defaults:
-  preference: "template"
-  add_template_only_nodes: true
-
-# Ordered glob patterns (first match wins)
-patterns:
-  - path: "*.gemspec"
-    strategy: merge
-  - path: "gemfiles/modular/erb/**"
-    strategy: merge
-  - path: ".github/**/*.yml"
-    strategy: skip
-
-# Per-file nested configuration (overrides patterns)
-files:
-  "Gemfile":
-    strategy: merge
-    add_template_only_nodes: true
-
-  "Rakefile":
-    strategy: merge
-
-  "README.md":
-    strategy: replace
-
-  ".env.local":
-    strategy: skip
-```
-
 ### Open Collective README updater
 
 - Script: `exe/kettle-readme-backers` (run as `kettle-readme-backers`)
@@ -829,7 +729,7 @@ files:
         - Note: When used with the provided `.git-hooks`, the subject should start with a gitmoji character (see [gitmoji][📌gitmoji]).
 - Tip:
     - Run this locally before committing to keep your README current, or schedule it in CI to refresh periodically.
-    - It runs automatically on a once-a-week schedule by the .github/workflows/opencollective.yml workflow that is part of the kettle-dev template.
+    - It runs automatically on a once-a-week schedule by the .github/workflows/opencollective.yml workflow that is part of the kettle-jem template.
 - Authentication requirement:
     - When running in CI with the provided workflow, you must provide an organization-level Actions secret named `README_UPDATER_TOKEN`.
         - Create it under your GitHub organization settings: `https://github.com/organizations/<YOUR_ORG>/settings/secrets/actions`.

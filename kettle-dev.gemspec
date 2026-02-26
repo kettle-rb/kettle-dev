@@ -1,11 +1,11 @@
 # coding: utf-8
 # frozen_string_literal: true
 
-# kettle-dev:freeze
-# To retain chunks of comments & code during kettle-dev templating:
+# kettle-jem:freeze
+# To retain chunks of comments & code during kettle-jem templating:
 # Wrap custom sections with freeze markers (e.g., as above and below this comment chunk).
-# kettle-dev will then preserve content between those markers across template runs.
-# kettle-dev:unfreeze
+# kettle-jem will then preserve content between those markers across template runs.
+# kettle-jem:unfreeze
 
 gem_version =
   if RUBY_VERSION >= "3.1" # rubocop:disable Gemspec/RubyVersionGlobalsUsage
@@ -65,7 +65,6 @@ Gem::Specification.new do |spec|
   spec.metadata["rubygems_mfa_required"] = "true"
 
   # Specify which files are part of the released package.
-  # Include all sources required by install/template tasks so they work from the shipped gem.
   spec.files = Dir[
     # Code / tasks / data (NOTE: exe/ is specified via spec.bindir and spec.executables below)
     "bin/setup", # bin/setup is included so it can be copied by kettle:dev:install task
@@ -73,45 +72,8 @@ Gem::Specification.new do |spec|
     "lib/**/*.rake",
     # Signatures
     "sig/**/*.rbs",
-    # Template-able project assets
-    ".devcontainer/**/*",
-    ".git-hooks/*",
-    ".github/**/*",
-    ".idea/.gitignore",
-    ".junie/guidelines.md",
-    ".junie/guidelines-rbs.md",
-    ".qlty/**/*",
-    "gemfiles/modular/*.gemfile",
-    "gemfiles/modular/erb/**/*.gemfile",
-    "gemfiles/modular/mutex_m/**/*.gemfile",
-    "gemfiles/modular/stringio/**/*.gemfile",
-    "gemfiles/modular/x_std_libs/**/*.gemfile",
-    # Root files used by template tasks
-    ".envrc",
-    ".gitignore",
-    ".licenserc.yaml",
-    ".opencollective.yml",
-    ".rspec",
-    ".rubocop.yml",
-    ".rubocop_rspec.yml",
-    ".simplecov",
-    ".tool-versions",
-    ".yardopts",
-    ".yardignore",
-    "Appraisal.root.gemfile",
-    "Appraisals",
-    "CHANGELOG.md",
-    "CITATION.cff",
-    "CODE_OF_CONDUCT.md",
-    "CONTRIBUTING.md",
-    "FUNDING.md",
-    "Gemfile",
-    "README.md",
-    "RUBOCOP.md",
-    "SECURITY.md",
   ]
   # Automatically included with gem package, normally no need to list again in files.
-  # But this gem acts as a pseudo-template, so we include some in both places.
   spec.extra_rdoc_files = Dir[
     # Files (alphabetical)
     "CHANGELOG.md",
@@ -141,7 +103,7 @@ Gem::Specification.new do |spec|
   # Listed files are the relative paths from bindir above.
   spec.executables = ["kettle-changelog", "kettle-commit-msg", "kettle-dev-setup", "kettle-dvcs", "kettle-gh-release", "kettle-pre-release", "kettle-readme-backers", "kettle-release"]
 
-  # kettle-dev:freeze
+  # kettle-jem:freeze
   # NOTE: This gem has "runtime" dependencies,
   #       but this gem will always be used in the context of other libraries.
   #       At runtime, this gem depends on its dependencies being direct dependencies of those other libraries.
@@ -149,7 +111,7 @@ Gem::Specification.new do |spec|
 
   # Utilities
   # spec.add_dependency("version_gem", "~> 1.1", ">= 1.1.9")              # ruby >= 2.2.0
-  # kettle-dev:unfreeze
+  # kettle-jem:unfreeze
 
   # NOTE: It is preferable to list development dependencies in the gemspec due to increased
   #       visibility and discoverability.

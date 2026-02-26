@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  File: AGENTS
+  
+    &mdash; Documentation by YARD 0.9.38
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "AGENTS";
+  relpath = '';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="file_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: AGENTS</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><div id='filecontents'><h1 id="agentsmd---kettle-dev-development-guide">AGENTS.md - kettle-dev Development Guide</h1>
+
+<h2 id="-project-overview">🎯 Project Overview</h2>
+
+<p><code>kettle-dev</code> is a <strong>meta tool from kettle-rb to streamline development and testing</strong> of RubyGem projects. It acts as a shim dependency, pulling in many other dependencies, to give you OOTB productivity. It configures Rake tasks, manages gem templating, handles releases, and automates CI workflows.</p>
+
+<p><strong>Repository</strong>: https://github.com/kettle-rb/kettle-dev<br>
+<strong>Current Version</strong>: 1.2.5<br>
+<strong>Required Ruby</strong>: &gt;= 2.3.0 (currently developed against Ruby 4.0.1)</p>
+
+<h2 id="️-ai-agent-terminal-limitations">⚠️ AI Agent Terminal Limitations</h2>
+
+<h3 id="terminal-output-is-not-visible">Terminal Output Is Not Visible</h3>
+
+<p><strong>CRITICAL</strong>: AI agents using <code>run_in_terminal</code> almost never see the command output. The terminal tool sends commands to a persistent Copilot terminal, but output is frequently lost or invisible to the agent.</p>
+
+<p><strong>Workaround</strong>: Always redirect output to a file in the project’s local <code>tmp/</code> directory, then read it back:</p>
+
+<pre class="code language-bash"><code class="language-bash">bundle exec rspec spec/some_spec.rb &gt; tmp/test_output.txt 2&gt;&amp;1
+</code></pre>
+<p>Then use <code>read_file</code> to see <code>tmp/test_output.txt</code>.</p>
+
+<p><strong>NEVER</strong> use <code>/tmp</code> or other system directories — always use the project’s own <code>tmp/</code> directory.</p>
+
+<h3 id="direnv-requires-separate-cd-command">direnv Requires Separate <code>cd</code> Command</h3>
+
+<p><strong>CRITICAL</strong>: The project uses <code>direnv</code> to load environment variables from <code>.envrc</code>. When you <code>cd</code> into the project directory, <code>direnv</code> initializes <strong>after</strong> the shell prompt returns. If you chain <code>cd</code> with other commands via <code>&amp;&amp;</code>, the subsequent commands run <strong>before</strong> <code>direnv</code> has loaded the environment.</p>
+
+<p>✅ <strong>CORRECT</strong> — Run <code>cd</code> alone, then run commands separately:</p>
+<pre class="code language-bash"><code class="language-bash">cd /home/pboling/src/kettle-rb/ast-merge/vendor/kettle-dev
+</code></pre>
+<pre class="code language-bash"><code class="language-bash">bundle exec rspec
+</code></pre>
+
+<p>❌ <strong>WRONG</strong> — Never chain <code>cd</code> with <code>&amp;&amp;</code>:</p>
+<pre class="code language-bash"><code class="language-bash">cd /home/pboling/src/kettle-rb/ast-merge/vendor/kettle-dev &amp;&amp; bundle exec rspec
+</code></pre>
+
+<h3 id="prefer-internal-tools-over-terminal">Prefer Internal Tools Over Terminal</h3>
+
+<p>✅ <strong>PREFERRED</strong> — Use internal tools:</p>
+<ul>
+  <li>
+<code>grep_search</code> instead of <code>grep</code> command</li>
+  <li>
+<code>file_search</code> instead of <code>find</code> command</li>
+  <li>
+<code>read_file</code> instead of <code>cat</code> command</li>
+  <li>
+<code>list_dir</code> instead of <code>ls</code> command</li>
+  <li>
+<code>replace_string_in_file</code> or <code>create_file</code> instead of <code>sed</code> / manual editing</li>
+</ul>
+
+<p>❌ <strong>AVOID</strong> when possible:</p>
+<ul>
+  <li>
+<code>run_in_terminal</code> for information gathering</li>
+</ul>
+
+<p>Only use terminal for:</p>
+<ul>
+  <li>Running tests (<code>bundle exec rspec</code>)</li>
+  <li>Installing dependencies (<code>bundle install</code>)</li>
+  <li>Git operations that require interaction</li>
+  <li>Commands that actually need to execute (not just gather info)</li>
+</ul>
+
+<h3 id="never-pipe-test-commands-through-headtail">NEVER Pipe Test Commands Through head/tail</h3>
+
+<p>❌ <strong>ABSOLUTELY FORBIDDEN</strong>:</p>
+<pre class="code language-bash"><code class="language-bash">bundle exec rspec 2&gt;&amp;1 | tail -50
+</code></pre>
+
+<p>✅ <strong>CORRECT</strong> — Redirect to file:</p>
+<pre class="code language-bash"><code class="language-bash">bundle exec rspec &gt; tmp/test_output.txt 2&gt;&amp;1
+</code></pre>
+
+<h2 id="️-architecture">🏗️ Architecture</h2>
+
+<h3 id="what-kettle-dev-provides">What kettle-dev Provides</h3>
+
+<ul>
+  <li>
+<strong><code>Kettle::Dev::ReleaseCLI</code></strong> — Full gem release automation (changelog, version bumping, GitHub releases, CI monitoring)</li>
+  <li>
+<strong><code>Kettle::Dev::PreReleaseCLI</code></strong> — Pre-release checks and validation</li>
+  <li>
+<strong><code>Kettle::Dev::SetupCLI</code></strong> — Project scaffolding and template setup (<code>kettle-dev-setup</code>)</li>
+  <li>
+<strong><code>Kettle::Dev::TemplateHelpers</code></strong> — AST-based file merging for template updates (uses <code>prism-merge</code>, <code>markly-merge</code>, etc.)</li>
+  <li>
+<strong><code>Kettle::Dev::SourceMerger</code></strong> — Smart source merging with freeze block preservation</li>
+  <li>
+<strong><code>Kettle::Dev::ModularGemfiles</code></strong> — Modular Gemfile management (style, coverage, debug, etc.)</li>
+  <li>
+<strong><code>Kettle::Dev::ChangelogCLI</code></strong> — Automated changelog generation</li>
+  <li>
+<strong><code>Kettle::Dev::DvcsCLI</code></strong> — DVCS (git) workflow automation</li>
+  <li>
+<strong><code>Kettle::Dev::CommitMsg</code></strong> — Git commit message validation</li>
+  <li>
+<strong><code>Kettle::Dev::CIHelpers</code></strong> — CI platform detection and helpers</li>
+  <li>
+<strong><code>Kettle::Dev::CIMonitor</code></strong> — GitHub Actions workflow monitoring</li>
+  <li>
+<strong><code>Kettle::Dev::PrismUtils</code></strong> / <strong><code>PrismGemspec</code></strong> / <strong><code>PrismGemfile</code></strong> / <strong><code>PrismAppraisals</code></strong> — AST-based Ruby file analysis and manipulation</li>
+  <li>
+<strong><code>Kettle::Dev::GemSpecReader</code></strong> — Gemspec introspection</li>
+  <li>
+<strong><code>Kettle::Dev::Versioning</code></strong> — Version management utilities</li>
+  <li>
+<strong><code>Kettle::Dev::ReadmeBackers</code></strong> — Open Collective backer management</li>
+  <li>
+<strong><code>Kettle::Dev::GitAdapter</code></strong> — Git interaction abstraction (shells out or uses <code>git</code> gem)</li>
+  <li>
+<strong><code>Kettle::Dev::ExitAdapter</code></strong> — Testable exit/abort behavior</li>
+</ul>
+
+<h3 id="executables">Executables</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Executable</th>
+      <th>Purpose</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>kettle-release</code></td>
+      <td>Full gem release workflow</td>
+    </tr>
+    <tr>
+      <td><code>kettle-pre-release</code></td>
+      <td>Pre-release validation</td>
+    </tr>
+    <tr>
+      <td><code>kettle-changelog</code></td>
+      <td>Changelog generation</td>
+    </tr>
+    <tr>
+      <td><code>kettle-dev-setup</code></td>
+      <td>Project scaffolding</td>
+    </tr>
+    <tr>
+      <td><code>kettle-dvcs</code></td>
+      <td>DVCS workflow</td>
+    </tr>
+    <tr>
+      <td><code>kettle-commit-msg</code></td>
+      <td>Commit message validation</td>
+    </tr>
+    <tr>
+      <td><code>kettle-readme-backers</code></td>
+      <td>Backer list management</td>
+    </tr>
+    <tr>
+      <td><code>kettle-gh-release</code></td>
+      <td>GitHub release creation</td>
+    </tr>
+    <tr>
+      <td><code>kettle-check-eof</code></td>
+      <td>EOF newline validation</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="key-dependencies">Key Dependencies</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Gem</th>
+      <th>Role</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+<code>kettle-test</code> (~&gt; 1.0)</td>
+      <td>Test infrastructure (dev dependency)</td>
+    </tr>
+    <tr>
+      <td>
+<code>ruby-progressbar</code> (~&gt; 1.13)</td>
+      <td>Progress display during releases</td>
+    </tr>
+    <tr>
+      <td>
+<code>stone_checksums</code> (~&gt; 1.0)</td>
+      <td>Gem checksum generation</td>
+    </tr>
+    <tr>
+      <td><code>prism-merge</code></td>
+      <td>AST-based Ruby file merging (via kettle-jem or direct)</td>
+    </tr>
+    <tr>
+      <td><code>markly-merge</code></td>
+      <td>Markdown file merging (via kettle-jem or direct)</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="vendor-directory">Vendor Directory</h3>
+
+<p><strong>IMPORTANT</strong>: This project lives in <code>vendor/kettle-dev/</code> within the <code>ast-merge</code> workspace. It is a <strong>nested git project</strong> with its own <code>.git/</code> directory. The <code>grep_search</code> tool <strong>CANNOT search inside nested git projects</strong> — use <code>read_file</code> and <code>list_dir</code> instead.</p>
+
+<h2 id="-project-structure">📁 Project Structure</h2>
+
+<pre class="code ruby"><code class="ruby">lib/kettle/dev/
+├── changelog_cli.rb           # Changelog generation CLI
+├── ci_helpers.rb              # CI platform detection
+├── ci_monitor.rb              # GitHub Actions monitoring
+├── commit_msg.rb              # Commit message validation
+├── dvcs_cli.rb                # DVCS workflow CLI
+├── exit_adapter.rb            # Testable exit/abort
+├── gem_spec_reader.rb         # Gemspec introspection
+├── git_adapter.rb             # Git interaction abstraction
+├── git_commit_footer.rb       # Commit footer formatting
+├── input_adapter.rb           # User input abstraction
+├── modular_gemfiles.rb        # Modular Gemfile management
+├── open_collective_config.rb  # Open Collective configuration
+├── pre_release_cli.rb         # Pre-release validation
+├── prism_appraisals.rb        # Appraisals file analysis
+├── prism_gemfile.rb           # Gemfile AST analysis
+├── prism_gemspec.rb           # Gemspec AST analysis
+├── prism_utils.rb             # Shared Prism utilities
+├── rakelib/                   # Rake task definitions
+├── readme_backers.rb          # Backer list management
+├── release_cli.rb             # Full release workflow (~1100 lines)
+├── setup_cli.rb               # Project setup/scaffolding
+├── source_merger.rb           # Smart source merging
+├── tasks/                     # CI, install, template tasks
+├── tasks.rb                   # Task loader
+├── template_helpers.rb        # Template merging helpers
+├── version.rb                 # Version constant
+└── versioning.rb              # Version management
+
+gemfiles/modular/
+├── coverage.gemfile           # Coverage dependencies
+├── debug.gemfile              # Debug dependencies
+├── documentation.gemfile      # Yard/documentation
+├── optional.gemfile[.example] # Optional dependencies
+├── rspec.gemfile              # RSpec testing
+├── runtime_heads.gemfile      # HEAD tracking
+├── style.gemfile[.example]    # RuboCop/style checking
+├── templating.gemfile         # Template merging dependencies
+├── x_std_libs.gemfile         # Extracted stdlib gems
+├── benchmark/                 # Per-Ruby-version benchmark gemfiles
+├── erb/                       # Per-Ruby-version erb gemfiles
+├── mutex_m/                   # Per-Ruby-version mutex_m gemfiles
+├── stringio/                  # Per-Ruby-version stringio gemfiles
+└── x_std_libs/                # Per-Ruby-version std lib gemfiles
+
+exe/
+├── kettle-changelog
+├── kettle-check-eof
+├── kettle-commit-msg
+├── kettle-dev-setup
+├── kettle-dvcs
+├── kettle-gh-release
+├── kettle-pre-release
+├── kettle-readme-backers
+└── kettle-release
+</code></pre>
+
+<h2 id="-development-workflows">🔧 Development Workflows</h2>
+
+<h3 id="running-tests">Running Tests</h3>
+
+<pre class="code language-bash"><code class="language-bash">cd /home/pboling/src/kettle-rb/ast-merge/vendor/kettle-dev
+</code></pre>
+<pre class="code language-bash"><code class="language-bash">bundle exec rspec &gt; tmp/test_output.txt 2&gt;&amp;1
+</code></pre>
+
+<p>Single file (disable coverage threshold):</p>
+<pre class="code language-bash"><code class="language-bash">K_SOUP_COV_MIN_HARD=false bundle exec rspec spec/kettle/dev/release_cli_spec.rb &gt; tmp/test_output.txt 2&gt;&amp;1
+</code></pre>
+
+<h3 id="coverage-reports">Coverage Reports</h3>
+
+<pre class="code language-bash"><code class="language-bash">cd /home/pboling/src/kettle-rb/ast-merge/vendor/kettle-dev
+</code></pre>
+<pre class="code language-bash"><code class="language-bash">bin/rake coverage &gt; tmp/coverage_output.txt 2&gt;&amp;1
+</code></pre>
+
+<p><strong>Key ENV variables</strong> (set in <code>.envrc</code>):</p>
+<ul>
+  <li>
+<code>K_SOUP_COV_DO=true</code> – Enable coverage</li>
+  <li>
+<code>K_SOUP_COV_MIN_LINE=92</code> – Line coverage threshold</li>
+  <li>
+<code>K_SOUP_COV_MIN_BRANCH=76</code> – Branch coverage threshold</li>
+  <li>
+<code>K_SOUP_COV_MIN_HARD=true</code> – Fail if thresholds not met</li>
+</ul>
+
+<h3 id="code-quality">Code Quality</h3>
+
+<pre class="code language-bash"><code class="language-bash">bundle exec rake reek &gt; tmp/reek_output.txt 2&gt;&amp;1
+bundle exec rake rubocop_gradual &gt; tmp/rubocop_output.txt 2&gt;&amp;1
+</code></pre>
+
+<h2 id="-project-conventions">📝 Project Conventions</h2>
+
+<h3 id="freeze-block-preservation">Freeze Block Preservation</h3>
+
+<p>kettle-dev templates support freeze blocks to preserve custom code during template updates:</p>
+
+<pre class="code language-ruby"><code class="language-ruby"># kettle-dev:freeze
+# ... custom code preserved across template runs ...
+# kettle-dev:unfreeze
+</code></pre>
+
+<h3 id="modular-gemfile-architecture">Modular Gemfile Architecture</h3>
+
+<p>Gemfiles are split into modular components under <code>gemfiles/modular/</code>. Each component handles a specific concern (coverage, style, debug, etc.). The <code>style.gemfile.example</code> uses token replacement for Ruby-version-specific RuboCop constraints:</p>
+
+<ul>
+  <li>
+<code>{RUBOCOP|LTS|CONSTRAINT}</code> — Replaced with the appropriate <code>rubocop-lts</code> version constraint</li>
+  <li>
+<code>{RUBOCOP|RUBY|GEM}</code> — Replaced with the appropriate <code>rubocop-ruby*</code> gem name</li>
+</ul>
+
+<h3 id="template-merging-strategy">Template Merging Strategy</h3>
+
+<p>kettle-dev uses AST-based merging (via <code>prism-merge</code>, <code>markly-merge</code>, etc.) to intelligently merge template files with existing project files, preserving custom modifications while updating templated content.</p>
+
+<h3 id="forward-compatibility-with-options">Forward Compatibility with <code>**options</code>
+</h3>
+
+<p><strong>CRITICAL</strong>: All constructors and public API methods that accept keyword arguments MUST include <code>**options</code> as the final parameter for forward compatibility.</p>
+
+<h2 id="-testing-patterns">🧪 Testing Patterns</h2>
+
+<h3 id="test-infrastructure">Test Infrastructure</h3>
+
+<ul>
+  <li>Uses <code>kettle-test</code> for RSpec helpers (stubbed_env, block_is_expected, silent_stream, timecop)</li>
+  <li>Uses <code>MockSystemExit</code> for testing abort behavior</li>
+  <li>Uses <code>Dir.mktmpdir</code> for isolated filesystem tests</li>
+  <li>Git operations are mocked via <code>GitAdapter</code> and <code>CIHelpers</code> stubs</li>
+</ul>
+
+<h3 id="environment-variable-helpers">Environment Variable Helpers</h3>
+
+<pre class="code language-ruby"><code class="language-ruby">before do
+  stub_env(&quot;MY_ENV_VAR&quot; =&gt; &quot;value&quot;)
+end
+
+before do
+  hide_env(&quot;HOME&quot;, &quot;USER&quot;)
+end
+</code></pre>
+
+<h2 id="-critical-files">🔍 Critical Files</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>File</th>
+      <th>Purpose</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>lib/kettle/dev/release_cli.rb</code></td>
+      <td>Full release workflow (~1100 lines)</td>
+    </tr>
+    <tr>
+      <td><code>lib/kettle/dev/template_helpers.rb</code></td>
+      <td>AST-based template merging</td>
+    </tr>
+    <tr>
+      <td><code>lib/kettle/dev/source_merger.rb</code></td>
+      <td>Smart source merging with freeze blocks</td>
+    </tr>
+    <tr>
+      <td><code>lib/kettle/dev/modular_gemfiles.rb</code></td>
+      <td>Modular Gemfile sync logic</td>
+    </tr>
+    <tr>
+      <td><code>lib/kettle/dev/setup_cli.rb</code></td>
+      <td>Project scaffolding</td>
+    </tr>
+    <tr>
+      <td><code>lib/kettle/dev/prism_gemfile.rb</code></td>
+      <td>Gemfile AST analysis</td>
+    </tr>
+    <tr>
+      <td><code>lib/kettle/dev/prism_gemspec.rb</code></td>
+      <td>Gemspec AST analysis</td>
+    </tr>
+    <tr>
+      <td><code>lib/kettle/dev/ci_monitor.rb</code></td>
+      <td>GitHub Actions monitoring</td>
+    </tr>
+    <tr>
+      <td><code>gemfiles/modular/style.gemfile.example</code></td>
+      <td>Style template with token replacement</td>
+    </tr>
+    <tr>
+      <td><code>Rakefile.example</code></td>
+      <td>Template Rakefile for projects</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="-common-pitfalls">🚫 Common Pitfalls</h2>
+
+<ol>
+  <li>
+<strong>NEVER add backward compatibility</strong> — No shims, aliases, or deprecation layers.</li>
+  <li>
+<strong>NEVER chain <code>cd</code> with <code>&amp;&amp;</code></strong> — <code>direnv</code> won’t initialize until after all chained commands finish.</li>
+  <li>
+<strong>NEVER pipe test output through <code>head</code>/<code>tail</code></strong> — Redirect to <code>tmp/</code> files instead.</li>
+  <li>
+<strong>Terminal output is invisible</strong> — Always redirect to <code>tmp/</code> and read back with <code>read_file</code>.</li>
+  <li>
+<strong><code>grep_search</code> cannot search nested git projects</strong> — Use <code>read_file</code> and <code>list_dir</code> to explore this codebase.</li>
+  <li>
+<strong>Use <code>tmp/</code> for temporary files</strong> — Never use <code>/tmp</code> or other system directories.</li>
+  <li>
+<strong><code>vendor/</code> is for local development only</strong> — Does not exist in CI.</li>
+</ol>
+</div></div>
+
+      <div id="footer">
+  Generated on Wed Feb 25 21:24:42 2026 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.38 (ruby-4.0.1).
+</div>
+
+    </div>
+  </body>
+</html>
