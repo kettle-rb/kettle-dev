@@ -265,11 +265,11 @@ module Kettle
           selected = nil
           # Create input thread always so specs that assert its cleanup/exception behavior can exercise it,
           # but guard against non-interactive stdin by rescuing 'bad tty' and similar errors immediately.
-          input_thread = Thread.new do
+          input_thread = Thread.new do # rubocop:disable ThreadSafety/NewThread
             begin
               selected = Kettle::Dev::InputAdapter.gets&.strip
-            rescue Exception => error
-              # Catch all exceptions in background thread, including SystemExit
+            rescue StandardError, SystemExit, Interrupt => error
+              # Catch exceptions in background thread, including SystemExit
               # NOTE: look into refactoring to minimize potential SystemExit.
               puts "Error in background thread: #{error.class}: #{error.message}" if Kettle::Dev::DEBUGGING
               selected = :input_error
@@ -281,7 +281,7 @@ module Kettle
           start_at = Process.clock_gettime(Process::CLOCK_MONOTONIC)
 
           options.each do |code, file|
-            workers << Thread.new(code, file, owner, repo, branch, token, start_at) do |c, f, ow, rp, br, tk, st_at|
+            workers << Thread.new(code, file, owner, repo, branch, token, start_at) do |c, f, ow, rp, br, tk, st_at| # rubocop:disable ThreadSafety/NewThread
               begin
                 now = Process.clock_gettime(Process::CLOCK_MONOTONIC)
                 delay = 0.12 - (now - st_at)

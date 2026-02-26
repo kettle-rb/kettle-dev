@@ -5,8 +5,7 @@ RSpec.describe Kettle::Dev::CIMonitor do
 
   describe "::monitor_gitlab! minutes exhausted handling" do
     it "treats insufficient quota/minutes as unknown and continues", :check_output do
-      allow(helpers).to receive(:project_root).and_return(Dir.pwd)
-      allow(helpers).to receive(:current_branch).and_return("feat")
+      allow(helpers).to receive_messages(project_root: Dir.pwd, current_branch: "feat")
       # Pretend .gitlab-ci.yml exists and there is a gitlab remote
       allow(File).to receive(:exist?).and_call_original
       allow(File).to receive(:exist?).with(File.join(Dir.pwd, ".gitlab-ci.yml")).and_return(true)
@@ -16,16 +15,13 @@ RSpec.describe Kettle::Dev::CIMonitor do
 
       # Return a pipeline hash that indicates failure with insufficient quota
       pipe = {"status" => "failed", "web_url" => "https://gitlab.com/me/repo/-/pipelines/1", "id" => 1, "failure_reason" => "insufficient_quota"}
-      allow(helpers).to receive(:gitlab_latest_pipeline).and_return(pipe)
-      allow(helpers).to receive(:gitlab_success?).and_return(false)
-      allow(helpers).to receive(:gitlab_failed?).and_return(true)
+      allow(helpers).to receive_messages(gitlab_latest_pipeline: pipe, gitlab_success?: false, gitlab_failed?: true)
 
       expect { described_class.monitor_gitlab!(restart_hint: "hint") }.not_to raise_error
     end
 
     it "treats blocked status as unknown and continues", :check_output do
-      allow(helpers).to receive(:project_root).and_return(Dir.pwd)
-      allow(helpers).to receive(:current_branch).and_return("feat")
+      allow(helpers).to receive_messages(project_root: Dir.pwd, current_branch: "feat")
       allow(File).to receive(:exist?).and_call_original
       allow(File).to receive(:exist?).with(File.join(Dir.pwd, ".gitlab-ci.yml")).and_return(true)
       allow(described_class).to receive(:gitlab_remote_candidates).and_return(["gitlab"])
@@ -33,16 +29,13 @@ RSpec.describe Kettle::Dev::CIMonitor do
       allow(helpers).to receive(:repo_info_gitlab).and_return(["me", "repo"])
 
       pipe = {"status" => "blocked", "web_url" => "https://gitlab.com/me/repo/-/pipelines/2", "id" => 2}
-      allow(helpers).to receive(:gitlab_latest_pipeline).and_return(pipe)
-      allow(helpers).to receive(:gitlab_success?).and_return(false)
-      allow(helpers).to receive(:gitlab_failed?).and_return(false)
+      allow(helpers).to receive_messages(gitlab_latest_pipeline: pipe, gitlab_success?: false, gitlab_failed?: false)
 
       expect { described_class.monitor_gitlab!(restart_hint: "hint") }.not_to raise_error
     end
 
     it "still aborts on a normal failure", :check_output do
-      allow(helpers).to receive(:project_root).and_return(Dir.pwd)
-      allow(helpers).to receive(:current_branch).and_return("feat")
+      allow(helpers).to receive_messages(project_root: Dir.pwd, current_branch: "feat")
       allow(File).to receive(:exist?).and_call_original
       allow(File).to receive(:exist?).with(File.join(Dir.pwd, ".gitlab-ci.yml")).and_return(true)
       allow(described_class).to receive(:gitlab_remote_candidates).and_return(["gitlab"])
@@ -50,9 +43,7 @@ RSpec.describe Kettle::Dev::CIMonitor do
       allow(helpers).to receive(:repo_info_gitlab).and_return(["me", "repo"])
 
       pipe = {"status" => "failed", "web_url" => "https://gitlab.com/me/repo/-/pipelines/3", "id" => 3, "failure_reason" => "script_failure"}
-      allow(helpers).to receive(:gitlab_latest_pipeline).and_return(pipe)
-      allow(helpers).to receive(:gitlab_success?).and_return(false)
-      allow(helpers).to receive(:gitlab_failed?).and_return(true)
+      allow(helpers).to receive_messages(gitlab_latest_pipeline: pipe, gitlab_success?: false, gitlab_failed?: true)
 
       expect { described_class.monitor_gitlab!(restart_hint: "hint") }.to raise_error(MockSystemExit, /Pipeline failed:/)
     end
@@ -153,13 +144,10 @@ RSpec.describe Kettle::Dev::CIMonitor do
 
   describe "::monitor_all! no CI configured" do
     it "aborts when neither GitHub nor GitLab present" do
-      allow(helpers).to receive(:project_root).and_return(Dir.pwd)
-      allow(helpers).to receive(:workflows_list).and_return([])
-      allow(described_class).to receive(:preferred_github_remote).and_return(nil)
+      allow(helpers).to receive_messages(project_root: Dir.pwd, workflows_list: [], current_branch: "feat")
+      allow(described_class).to receive_messages(preferred_github_remote: nil, gitlab_remote_candidates: [])
       allow(File).to receive(:exist?).and_call_original
       allow(File).to receive(:exist?).with(File.join(Dir.pwd, ".gitlab-ci.yml")).and_return(false)
-      allow(described_class).to receive(:gitlab_remote_candidates).and_return([])
-      allow(helpers).to receive(:current_branch).and_return("feat")
       expect { described_class.monitor_all!(restart_hint: "hint") }.to raise_error(MockSystemExit, /CI configuration not detected/)
     end
   end

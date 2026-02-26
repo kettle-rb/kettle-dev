@@ -95,8 +95,7 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
         allow(instance).to receive(:fetch_all_backers_raw).and_return(raw)
 
         # In a git repo, ensure commit is attempted
-        allow(instance).to receive(:git_repo?).and_return(true)
-        allow(instance).to receive(:perform_git_commit)
+        allow(instance).to receive_messages(git_repo?: true, perform_git_commit: nil)
 
         expect {
           instance.run!
@@ -415,8 +414,7 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
       raw = [
         {"name" => "Firstname Lastname", "image" => nil, "website" => nil, "profile" => "https://opencollective.com/firstname-lastname", "role" => "BACKER", "tier" => ""},
       ]
-      allow(instance).to receive(:fetch_all_backers_raw).and_return(raw)
-      allow(instance).to receive(:git_repo?).and_return(false)
+      allow(instance).to receive_messages(fetch_all_backers_raw: raw, git_repo?: false)
 
       instance.run!
 
@@ -454,9 +452,7 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
         {"name" => "Alice", "image" => nil, "website" => nil, "profile" => "https://github.com/alice", "role" => "BACKER", "tier" => "Backer"},
         {"name" => "Org", "image" => nil, "website" => "https://org.example", "profile" => nil, "role" => "BACKER", "tier" => "Sponsor"},
       ]
-      allow(instance).to receive(:fetch_all_backers_raw).and_return(raw)
-      allow(instance).to receive(:git_repo?).and_return(true)
-      allow(instance).to receive(:perform_git_commit)
+      allow(instance).to receive_messages(fetch_all_backers_raw: raw, git_repo?: true, perform_git_commit: nil)
 
       expect { instance.run! }.to output(a_string_matching(/Updated backers section in/)).to_stdout
       content = File.read(tmp_readme)
@@ -481,9 +477,7 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
         {"name" => "Old", "image" => nil, "website" => nil, "profile" => nil, "role" => "BACKER", "tier" => "Backer"},
         {"name" => "Acme", "image" => nil, "website" => "https://acme.example", "profile" => nil, "role" => "BACKER", "tier" => "Sponsor"},
       ]
-      allow(instance).to receive(:fetch_all_backers_raw).and_return(raw)
-      allow(instance).to receive(:git_repo?).and_return(true)
-      allow(instance).to receive(:perform_git_commit)
+      allow(instance).to receive_messages(fetch_all_backers_raw: raw, git_repo?: true, perform_git_commit: nil)
 
       expect { instance.run! }.to output(a_string_matching(/Updated sponsors section in/)).to_stdout
       content = File.read(tmp_readme)
@@ -501,8 +495,7 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
       raw = [
         {"name" => "A", "image" => nil, "website" => nil, "profile" => nil, "role" => "BACKER", "tier" => "Backer"},
       ]
-      allow(instance).to receive(:fetch_all_backers_raw).and_return(raw)
-      allow(instance).to receive(:git_repo?).and_return(false)
+      allow(instance).to receive_messages(fetch_all_backers_raw: raw, git_repo?: false)
       expect(instance).not_to receive(:perform_git_commit)
       instance.run!
     end
@@ -517,9 +510,7 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
       raw = [
         {"name" => "A", "image" => nil, "website" => nil, "profile" => nil, "role" => "BACKER", "tier" => "Backer"},
       ]
-      allow(instance).to receive(:fetch_all_backers_raw).and_return(raw)
-      allow(instance).to receive(:git_repo?).and_return(true)
-      allow(instance).to receive(:perform_git_commit)
+      allow(instance).to receive_messages(fetch_all_backers_raw: raw, git_repo?: true, perform_git_commit: nil)
       expect { instance.run! }.to output(a_string_matching(/Updated backers section in/)).to_stdout
       expect(instance).to have_received(:perform_git_commit)
     end
@@ -534,9 +525,7 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
       raw = [
         {"name" => "Indy", "avatar" => "https://img.example/indy.jpg", "website" => "https://indy.example", "profile" => "https://opencollective.com/indy", "role" => "BACKER", "tier" => "Backer"},
       ]
-      allow(instance).to receive(:fetch_all_backers_raw).and_return(raw)
-      allow(instance).to receive(:git_repo?).and_return(true)
-      allow(instance).to receive(:perform_git_commit)
+      allow(instance).to receive_messages(fetch_all_backers_raw: raw, git_repo?: true, perform_git_commit: nil)
       expect { instance.run! }.to output(a_string_matching(/Updated backers section in/)).to_stdout
       content = File.read(tmp_readme)
       expect(content).to include('<a href="https://opencollective.com/test-oc/backer/0/website" target="_blank"><img src="https://opencollective.com/test-oc/backer/0/avatar.svg"></a>')

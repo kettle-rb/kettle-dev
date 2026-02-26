@@ -43,7 +43,7 @@ RSpec.describe Kettle::Dev::OpenCollectiveConfig do
 
     context "when falsey value has surrounding whitespace" do
       %w[false no 0 n].each do |val|
-        it "returns true for #{("  #{val}  ").inspect}" do
+        it "returns true for #{" #{val} ".inspect}" do
           stub_env("OPENCOLLECTIVE_HANDLE" => "  #{val}  ")
 
           expect(described_class.disabled?).to be(true)

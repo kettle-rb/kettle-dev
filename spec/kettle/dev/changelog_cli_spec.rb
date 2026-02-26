@@ -36,8 +36,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
 
           ## [0.9.9] - 2020-01-01
         MD
-        allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
-        allow(Kettle::Dev::CIHelpers).to receive(:repo_info).and_return([nil, nil])
+        allow(Kettle::Dev::CIHelpers).to receive_messages(project_root: root, repo_info: [nil, nil])
         t = Time.new(2025, 8, 31)
         allow(Time).to receive(:now).and_return(t)
 
@@ -484,15 +483,14 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
 
       # Stub project_root and repo_info for deterministic link updates
       ci_helpers = Kettle::Dev::CIHelpers
-      allow(ci_helpers).to receive(:project_root).and_return(root)
-      allow(ci_helpers).to receive(:repo_info).and_return(["acme", "my-gem"]) # owner, repo
+      allow(ci_helpers).to receive_messages(project_root: root, repo_info: ["acme", "my-gem"])
 
       # Freeze time for deterministic date
       t = Time.new(2025, 8, 30)
       allow(Time).to receive(:now).and_return(t)
 
       # Run the CLI
-      cli = Kettle::Dev::ChangelogCLI.new(strict: false)
+      cli = described_class.new(strict: false)
       expect { cli.run }.not_to raise_error
 
       updated = File.read(File.join(root, "CHANGELOG.md"))
@@ -534,14 +532,13 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
 
       # Stub project_root and repo_info for deterministic link updates
       ci_helpers = Kettle::Dev::CIHelpers
-      allow(ci_helpers).to receive(:project_root).and_return(root)
-      allow(ci_helpers).to receive(:repo_info).and_return(["acme", "my-gem"]) # owner, repo
+      allow(ci_helpers).to receive_messages(project_root: root, repo_info: ["acme", "my-gem"])
 
       # Freeze time for deterministic date
       t = Time.new(2025, 8, 30)
       allow(Time).to receive(:now).and_return(t)
 
-      cli = Kettle::Dev::ChangelogCLI.new(strict: false)
+      cli = described_class.new(strict: false)
       expect { cli.run }.not_to raise_error
 
       updated = File.read(File.join(root, "CHANGELOG.md"))

@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
-# rubocop:disable RSpec/MultipleExpectations, RSpec/MessageSpies, RSpec/StubbedMock, RSpec/ReceiveMessages
-
+# rubocop:disable RSpec/ReceiveMessages, RSpec/StubbedMock
 RSpec.describe Kettle::Dev::ReleaseCLI do
   describe "core behaviors" do
     let(:ci_helpers) { Kettle::Dev::CIHelpers }
@@ -1237,7 +1236,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     end
   end
 
-  # rubocop:enable RSpec/MultipleExpectations, RSpec/MessageSpies, RSpec/StubbedMock, RSpec/ReceiveMessages
+  # rubocop:enable RSpec/ReceiveMessages, RSpec/StubbedMock
 
   # Consolidated from release_cli_github_spec.rb and release_cli_github_footer_spec.rb and release_cli_copyright_spec.rb
   describe "GitHub release behaviors" do
@@ -1261,7 +1260,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect { described_class.new.send(:maybe_create_github_release!, "1.2.3") }.not_to raise_error
       end
 
-      it "creates a release with title and body from CHANGELOG when token present" do
+      it "creates a release with title and body from CHANGELOG when token present", :aggregate_failures do
         Dir.mktmpdir do |root|
           # Minimal CHANGELOG with a section and links
           File.write(File.join(root, "CHANGELOG.md"), <<~MD)
@@ -1289,19 +1288,20 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
           stub_env("GITHUB_TOKEN" => "token123")
 
           response = instance_double(Net::HTTPCreated)
-          allow(response).to receive(:code).and_return("201")
-          allow(response).to receive(:body).and_return("{\"id\":1}")
+          allow(response).to receive_messages(code: "201", body: "{\"id\":1}")
 
           http = instance_double(Net::HTTP)
-          expect(http).to receive(:request).with(instance_of(Net::HTTP::Post)).and_return(response)
+          allow(http).to receive(:request).with(instance_of(Net::HTTP::Post)).and_return(response)
 
-          expect(Net::HTTP).to receive(:start).with("api.github.com", 443, use_ssl: true).and_yield(http)
+          allow(Net::HTTP).to receive(:start).with("api.github.com", 443, use_ssl: true).and_yield(http)
 
           expect { local_cli.send(:maybe_create_github_release!, "1.2.3") }.not_to raise_error
+          expect(http).to have_received(:request).with(instance_of(Net::HTTP::Post))
+          expect(Net::HTTP).to have_received(:start).with("api.github.com", 443, use_ssl: true)
         end
       end
 
-      it "treats 422 already_exists as success" do
+      it "treats 422 already_exists as success", :aggregate_failures do
         Dir.mktmpdir do |root|
           File.write(File.join(root, "CHANGELOG.md"), <<~MD)
             # Changelog
@@ -1322,18 +1322,19 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
           stub_env("GITHUB_TOKEN" => "token123")
 
           resp = instance_double(Net::HTTPUnprocessableEntity)
-          allow(resp).to receive(:code).and_return("422")
-          allow(resp).to receive(:body).and_return("{\"errors\":[{\"code\":\"already_exists\"}]}")
+          allow(resp).to receive_messages(code: "422", body: "{\"errors\":[{\"code\":\"already_exists\"}]}")
 
           http = instance_double(Net::HTTP)
-          expect(http).to receive(:request).with(instance_of(Net::HTTP::Post)).and_return(resp)
-          expect(Net::HTTP).to receive(:start).with("api.github.com", 443, use_ssl: true).and_yield(http)
+          allow(http).to receive(:request).with(instance_of(Net::HTTP::Post)).and_return(resp)
+          allow(Net::HTTP).to receive(:start).with("api.github.com", 443, use_ssl: true).and_yield(http)
 
           expect { local_cli.send(:maybe_create_github_release!, "2.0.0") }.not_to raise_error
+          expect(http).to have_received(:request).with(instance_of(Net::HTTP::Post))
+          expect(Net::HTTP).to have_received(:start).with("api.github.com", 443, use_ssl: true)
         end
       end
 
-      it "uses origin when preferred remote is nil" do
+      it "uses origin when preferred remote is nil", :aggregate_failures do
         Dir.mktmpdir do |root|
           File.write(File.join(root, "CHANGELOG.md"), <<~MD)
             # Changelog
@@ -1354,27 +1355,27 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
           stub_env("GITHUB_TOKEN" => "tok")
 
           response = instance_double(Net::HTTPInternalServerError)
-          allow(response).to receive(:code).and_return("500")
-          allow(response).to receive(:body).and_return("oops")
+          allow(response).to receive_messages(code: "500", body: "oops")
           http = instance_double(Net::HTTP)
-          expect(http).to receive(:request).with(instance_of(Net::HTTP::Post)).and_return(response)
-          expect(Net::HTTP).to receive(:start).with("api.github.com", 443, use_ssl: true).and_yield(http)
+          allow(http).to receive(:request).with(instance_of(Net::HTTP::Post)).and_return(response)
+          allow(Net::HTTP).to receive(:start).with("api.github.com", 443, use_ssl: true).and_yield(http)
 
           expect { local_cli.send(:maybe_create_github_release!, "3.0.0") }.not_to raise_error
+          expect(http).to have_received(:request).with(instance_of(Net::HTTP::Post))
+          expect(Net::HTTP).to have_received(:start).with("api.github.com", 443, use_ssl: true)
         end
       end
 
       it "warns and skips when owner/repo cannot be determined" do
         stub_env("GITHUB_TOKEN" => "secret")
         cli = described_class.new
-        allow(cli).to receive(:preferred_github_remote).and_return(nil)
-        allow(cli).to receive(:remote_url).and_return("ssh://gitlab.com/user/repo")
+        allow(cli).to receive_messages(preferred_github_remote: nil, remote_url: "ssh://gitlab.com/user/repo")
         expect { cli.send(:maybe_create_github_release!, "1.0.0") }.not_to raise_error
       end
     end
 
     describe "release notes footer from FUNDING.md" do
-      it "appends footer from FUNDING.md between tags with a leading blank line" do
+      it "appends footer from FUNDING.md between tags with a leading blank line", :aggregate_failures do
         Dir.mktmpdir do |root|
           # CHANGELOG with basic section and links
           File.write(File.join(root, "CHANGELOG.md"), <<~MD)
@@ -1467,7 +1468,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         end
       end
 
-      it "rewrites consecutive years into a range in both files" do
+      it "rewrites consecutive years into a range in both files", :aggregate_failures do
         Dir.mktmpdir do |root|
           current_year = Time.now.year
           # Build a list of consecutive years ending at the current year
@@ -1503,7 +1504,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         end
       end
 
-      it "injects current year into both files when missing and sets match" do
+      it "injects current year into both files when missing and sets match", :aggregate_failures do
         Dir.mktmpdir do |root|
           current_year = Time.now.year
           last_year = current_year - 1

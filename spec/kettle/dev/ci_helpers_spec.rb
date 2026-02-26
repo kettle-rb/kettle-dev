@@ -37,7 +37,7 @@ RSpec.describe Kettle::Dev::CIHelpers do
         stub_const("Rake", double("Rake", application: rake))
         expect(described_class.project_root).to eq(fake_root)
       ensure
-        Dir.chdir(original)
+        Dir.chdir(original) # rubocop:disable ThreadSafety/DirChdir
         FileUtils.remove_entry(fake_root)
       end
     end

@@ -50,7 +50,7 @@ RSpec.describe Kettle::Dev::Versioning do
     end
 
     it "is falsey for nil" do
-      expect(described_class.epic_major?(nil)).to be_falsey
+      expect(described_class).not_to be_epic_major(nil)
     end
   end
 

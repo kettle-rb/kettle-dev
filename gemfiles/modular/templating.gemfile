@@ -35,6 +35,6 @@ else
   gem "toml-merge"      # TOML code blocks
 
   platform :mri do
-    gem "markly-merge"    # markly markdown merging
+    gem "markly-merge" # rubocop:disable Bundler/DuplicatedGem
   end
 end

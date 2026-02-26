@@ -86,13 +86,6 @@ Gem::Specification.new do |spec|
     "gemfiles/modular/mutex_m/**/*.gemfile",
     "gemfiles/modular/stringio/**/*.gemfile",
     "gemfiles/modular/x_std_libs/**/*.gemfile",
-    # Example templates
-    # NOTE: Dir globs do not match dotfiles unless the pattern starts with a dot.
-    # Include example files anywhere in the tree (non-dot and dot-directories)
-    "**/*.example",
-    "**/.*.example",
-    ".**/*.example",
-    ".**/.*.example",
     # Root files used by template tasks
     ".envrc",
     ".gitignore",

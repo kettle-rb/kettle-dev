@@ -15,8 +15,9 @@ RSpec.describe Kettle::Dev do
       allow(Rake::Task).to receive(:task_defined?).with(:default).and_return(true)
       default_task = instance_double(Rake::Task)
       allow(Rake::Task).to receive(:[]).with(:default).and_return(default_task)
-      expect(default_task).to receive(:enhance).with(["foo"]).and_return(nil)
+      allow(default_task).to receive(:enhance).with(["foo"]).and_return(nil)
       expect(described_class.register_default(:foo)).to include("foo")
+      expect(default_task).to have_received(:enhance).with(["foo"])
     end
 
     # Helper to stub a :default task that raises on enhance
@@ -84,9 +85,6 @@ RSpec.describe Kettle::Dev do
 
     it "registers coverage when kettle-soup-cover present and not CI" do
       stub_const("Kettle::Dev::IS_CI", false)
-      Module.new do
-        module Kettle; end
-      end
       allow(described_class).to receive(:require).with("kettle-soup-cover").and_return(true)
       stub_const("Kettle::Soup::Cover", double("Cover", install_tasks: true))
       described_class.send(:coverage_tasks)

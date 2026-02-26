@@ -67,7 +67,7 @@ module Kettle
     # @return [String]
     GEM_ROOT = File.expand_path("../..", __dir__)
 
-    @defaults = []
+    @defaults = [].freeze
 
     class << self
       # Emit a debug warning for rescued errors when kettle-dev debugging is enabled.
@@ -120,7 +120,7 @@ module Kettle
       def register_default(task_name)
         task_name = task_name.to_s
         unless defaults.include?(task_name)
-          defaults << task_name
+          @defaults = (defaults + [task_name]).freeze # rubocop:disable ThreadSafety/ClassInstanceVariable
           if defined?(Rake) && Rake::Task.task_defined?(:default)
             begin
               Rake::Task[:default].enhance([task_name])

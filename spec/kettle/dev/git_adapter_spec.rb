@@ -6,23 +6,25 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
     let(:git_repo) { double("Git::Base") }
 
     it "pushes to named remote and returns true" do
-      expect(git_repo).to receive(:push).with("origin", "feat", force: false)
+      allow(git_repo).to receive(:push).with("origin", "feat", force: false)
       adapter = described_class.new
       adapter.instance_variable_set(:@backend, :gem)
       adapter.instance_variable_set(:@git, git_repo)
       expect(adapter.push("origin", "feat")).to be true
+      expect(git_repo).to have_received(:push).with("origin", "feat", force: false)
     end
 
     it "pushes to default remote when remote is nil" do
-      expect(git_repo).to receive(:push).with(nil, "main", force: true)
+      allow(git_repo).to receive(:push).with(nil, "main", force: true)
       adapter = described_class.new
       adapter.instance_variable_set(:@backend, :gem)
       adapter.instance_variable_set(:@git, git_repo)
       expect(adapter.push(nil, "main", force: true)).to be true
+      expect(git_repo).to have_received(:push).with(nil, "main", force: true)
     end
 
     it "returns false on exceptions in push" do
-      expect(git_repo).to receive(:push).and_raise(StandardError)
+      allow(git_repo).to receive(:push).and_raise(StandardError)
       adapter = described_class.new
       adapter.instance_variable_set(:@backend, :gem)
       adapter.instance_variable_set(:@git, git_repo)
@@ -78,33 +80,36 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
     end
 
     it "checks out a branch and returns false on error" do
-      expect(git_repo).to receive(:checkout).with("feat")
+      allow(git_repo).to receive(:checkout).with("feat")
       adapter = described_class.new
       adapter.instance_variable_set(:@backend, :gem)
       adapter.instance_variable_set(:@git, git_repo)
       expect(adapter.checkout("feat")).to be true
+      expect(git_repo).to have_received(:checkout).with("feat")
       allow(git_repo).to receive(:checkout).and_raise(StandardError)
       expect(adapter.checkout("feat")).to be false
     end
 
     it "pulls and returns false on error" do
-      expect(git_repo).to receive(:pull).with("origin", "main")
+      allow(git_repo).to receive(:pull).with("origin", "main")
       adapter = described_class.new
       adapter.instance_variable_set(:@backend, :gem)
       adapter.instance_variable_set(:@git, git_repo)
       expect(adapter.pull("origin", "main")).to be true
+      expect(git_repo).to have_received(:pull).with("origin", "main")
       allow(git_repo).to receive(:pull).and_raise(StandardError)
       expect(adapter.pull("origin", "main")).to be false
     end
 
     it "fetches with and without ref and returns false on error" do
-      expect(git_repo).to receive(:fetch).with("origin", "main")
+      allow(git_repo).to receive(:fetch)
       adapter = described_class.new
       adapter.instance_variable_set(:@backend, :gem)
       adapter.instance_variable_set(:@git, git_repo)
       expect(adapter.fetch("origin", "main")).to be true
-      expect(git_repo).to receive(:fetch).with("origin")
+      expect(git_repo).to have_received(:fetch).with("origin", "main")
       expect(adapter.fetch("origin")).to be true
+      expect(git_repo).to have_received(:fetch).with("origin")
       allow(git_repo).to receive(:fetch).and_raise(StandardError)
       expect(adapter.fetch("origin", "oops")).to be false
     end
@@ -114,22 +119,25 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
       adapter = described_class.new
       adapter.instance_variable_set(:@backend, :gem)
       adapter.instance_variable_set(:@git, git_repo)
-      expect(adapter).to receive(:system).with("git", "push", "origin", "--tags").and_return(true)
+      allow(adapter).to receive(:system).with("git", "push", "origin", "--tags").and_return(true)
       expect(adapter.push_tags("origin")).to be true
+      expect(adapter).to have_received(:system).with("git", "push", "origin", "--tags")
     end
 
     it "pushes tags without specifying remote when remote is nil or empty" do
       adapter = described_class.new
       adapter.instance_variable_set(:@backend, :gem)
       adapter.instance_variable_set(:@git, git_repo)
-      expect(adapter).to receive(:system).with("git", "push", "--tags").and_return(true)
+      allow(adapter).to receive(:system).with("git", "push", "--tags").and_return(true)
       expect(adapter.push_tags(nil)).to be true
+      expect(adapter).to have_received(:system).with("git", "push", "--tags")
       # also cover empty string
       adapter2 = described_class.new
       adapter2.instance_variable_set(:@backend, :gem)
       adapter2.instance_variable_set(:@git, git_repo)
-      expect(adapter2).to receive(:system).with("git", "push", "--tags").and_return(true)
+      allow(adapter2).to receive(:system).with("git", "push", "--tags").and_return(true)
       expect(adapter2.push_tags("")).to be true
+      expect(adapter2).to have_received(:system).with("git", "push", "--tags")
     end
   end
 
@@ -143,30 +151,34 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
 
     it "pushes using system git with remote and without" do
       adapter = described_class.new
-      expect(adapter).to receive(:system).with("git", "push", "origin", "feat").and_return(true)
+      allow(adapter).to receive(:system).and_return(true)
       expect(adapter.push("origin", "feat")).to be true
-      expect(adapter).to receive(:system).with("git", "push").and_return(true)
+      expect(adapter).to have_received(:system).with("git", "push", "origin", "feat")
       expect(adapter.push(nil, "feat")).to be true
+      expect(adapter).to have_received(:system).with("git", "push")
     end
 
     it "pushes with --force when requested" do
       adapter = described_class.new
-      expect(adapter).to receive(:system).with("git", "push", "--force", "origin", "main").and_return(true)
+      allow(adapter).to receive(:system).and_return(true)
       expect(adapter.push("origin", "main", force: true)).to be true
-      expect(adapter).to receive(:system).with("git", "push", "--force").and_return(true)
+      expect(adapter).to have_received(:system).with("git", "push", "--force", "origin", "main")
       expect(adapter.push(nil, "main", force: true)).to be true
+      expect(adapter).to have_received(:system).with("git", "push", "--force")
     end
 
     it "returns current branch via rev-parse" do
-      expect(Open3).to receive(:capture2).with("git", "rev-parse", "--abbrev-ref", "HEAD").and_return(["main\n", status_ok])
+      allow(Open3).to receive(:capture2).with("git", "rev-parse", "--abbrev-ref", "HEAD").and_return(["main\n", status_ok])
       adapter = described_class.new
       expect(adapter.current_branch).to eq("main")
+      expect(Open3).to have_received(:capture2).with("git", "rev-parse", "--abbrev-ref", "HEAD")
     end
 
     it "lists remotes from `git remote`" do
-      expect(Open3).to receive(:capture2).with("git", "remote").and_return(["origin\ngithub\n", status_ok])
+      allow(Open3).to receive(:capture2).with("git", "remote").and_return(["origin\ngithub\n", status_ok])
       adapter = described_class.new
       expect(adapter.remotes).to eq(["origin", "github"])
+      expect(Open3).to have_received(:capture2).with("git", "remote")
     end
 
     it "parses remotes_with_urls from `git remote -v`" do
@@ -176,43 +188,48 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
         gl     https://gitlab.com/me/repo (fetch)
         gl     https://gitlab.com/me/repo (push)
       OUT
-      expect(Open3).to receive(:capture2).with("git", "remote", "-v").and_return([lines, status_ok])
+      allow(Open3).to receive(:capture2).with("git", "remote", "-v").and_return([lines, status_ok])
       adapter = described_class.new
       urls = adapter.remotes_with_urls
       # Be flexible: accept SSH or HTTPS; only assert the domains are present
       expect(urls.fetch("origin")).to include("github.com")
       expect(urls.fetch("gl")).to include("gitlab.com")
+      expect(Open3).to have_received(:capture2).with("git", "remote", "-v")
     end
 
     it "gets remote_url via git config" do
-      expect(Open3).to receive(:capture2).with("git", "config", "--get", "remote.origin.url").and_return(["git@github.com:me/repo.git\n", status_ok])
+      allow(Open3).to receive(:capture2).with("git", "config", "--get", "remote.origin.url").and_return(["git@github.com:me/repo.git\n", status_ok])
       adapter = described_class.new
       expect(adapter.remote_url("origin")).to include("github.com")
+      expect(Open3).to have_received(:capture2).with("git", "config", "--get", "remote.origin.url")
     end
 
     it "checkout/pull/fetch use system git" do
       adapter = described_class.new
-      expect(adapter).to receive(:system).with("git", "checkout", "main").and_return(true)
+      allow(adapter).to receive(:system).and_return(true)
       expect(adapter.checkout("main")).to be true
-      expect(adapter).to receive(:system).with("git", "pull", "origin", "main").and_return(true)
+      expect(adapter).to have_received(:system).with("git", "checkout", "main")
       expect(adapter.pull("origin", "main")).to be true
-      expect(adapter).to receive(:system).with("git", "fetch", "origin", "main").and_return(true)
+      expect(adapter).to have_received(:system).with("git", "pull", "origin", "main")
       expect(adapter.fetch("origin", "main")).to be true
-      expect(adapter).to receive(:system).with("git", "fetch", "origin").and_return(true)
+      expect(adapter).to have_received(:system).with("git", "fetch", "origin", "main")
       expect(adapter.fetch("origin")).to be true
+      expect(adapter).to have_received(:system).with("git", "fetch", "origin")
     end
 
     # New tests for push_tags behavior under CLI backend
     it "pushes tags to named remote via system with CLI backend" do
       adapter = described_class.new
-      expect(adapter).to receive(:system).with("git", "push", "origin", "--tags").and_return(true)
+      allow(adapter).to receive(:system).with("git", "push", "origin", "--tags").and_return(true)
       expect(adapter.push_tags("origin")).to be true
+      expect(adapter).to have_received(:system).with("git", "push", "origin", "--tags")
     end
 
     it "pushes tags without remote via system with CLI backend" do
       adapter = described_class.new
-      expect(adapter).to receive(:system).with("git", "push", "--tags").and_return(true)
+      allow(adapter).to receive(:system).with("git", "push", "--tags").and_return(true)
       expect(adapter.push_tags(nil)).to be true
+      expect(adapter).to have_received(:system).with("git", "push", "--tags")
     end
   end
 
@@ -273,8 +290,9 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
         adapter = described_class.new
         adapter.instance_variable_set(:@backend, :gem)
         adapter.instance_variable_set(:@git, git_repo)
-        expect(git_repo).to receive(:status).and_return(status_obj)
+        allow(git_repo).to receive(:status).and_return(status_obj)
         expect(adapter.clean?).to be true
+        expect(git_repo).to have_received(:status)
       end
 
       it "returns false when there are any changes" do
@@ -282,8 +300,9 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
         adapter = described_class.new
         adapter.instance_variable_set(:@backend, :gem)
         adapter.instance_variable_set(:@git, git_repo)
-        expect(git_repo).to receive(:status).and_return(dirty_status)
+        allow(git_repo).to receive(:status).and_return(dirty_status)
         expect(adapter.clean?).to be false
+        expect(git_repo).to have_received(:status)
       end
 
       it "returns false when status raises an error" do
@@ -304,25 +323,28 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
       end
 
       it "returns true when porcelain output is empty" do
-        expect(Open3).to receive(:capture2).with("git", "status", "--porcelain").and_return(["\n", ok])
+        allow(Open3).to receive(:capture2).with("git", "status", "--porcelain").and_return(["\n", ok])
         adapter = described_class.new
         expect(adapter.clean?).to be true
+        expect(Open3).to have_received(:capture2).with("git", "status", "--porcelain")
       end
 
       it "returns false when porcelain output has content" do
-        expect(Open3).to receive(:capture2).with("git", "status", "--porcelain").and_return([" M lib/file.rb\n?? new.rb\n", ok])
+        allow(Open3).to receive(:capture2).with("git", "status", "--porcelain").and_return([" M lib/file.rb\n?? new.rb\n", ok])
         adapter = described_class.new
         expect(adapter.clean?).to be false
+        expect(Open3).to have_received(:capture2).with("git", "status", "--porcelain")
       end
 
       it "returns false when git status fails" do
-        expect(Open3).to receive(:capture2).with("git", "status", "--porcelain").and_return(["", fail_status])
+        allow(Open3).to receive(:capture2).with("git", "status", "--porcelain").and_return(["", fail_status])
         adapter = described_class.new
         expect(adapter.clean?).to be false
+        expect(Open3).to have_received(:capture2).with("git", "status", "--porcelain")
       end
 
       it "returns false on unexpected errors" do
-        expect(Open3).to receive(:capture2).and_raise(StandardError)
+        allow(Open3).to receive(:capture2).and_raise(StandardError)
         adapter = described_class.new
         expect(adapter.clean?).to be false
       end

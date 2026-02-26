@@ -9,7 +9,7 @@ RSpec.describe Kettle::Dev::DvcsCLI do
 
   it "normalizes remotes and updates README when all fetches succeed" do
     Dir.mktmpdir do |dir|
-      Dir.chdir(dir) do
+      Dir.chdir(dir) do # rubocop:disable ThreadSafety/DirChdir
         # Minimal README with the Federated DVCS summary line (with Coming soon!)
         File.write("README.md", <<~MD)
           ### Federated DVCS
@@ -26,12 +26,7 @@ RSpec.describe Kettle::Dev::DvcsCLI do
         allow(Kettle::Dev::GitAdapter).to receive(:new).and_return(adapter)
 
         # Clean working tree
-        allow(adapter).to receive(:clean?).and_return(true)
-
-        # No remotes initially; the CLI should add them
-        allow(adapter).to receive(:remotes).and_return([])
-        allow(adapter).to receive(:remotes_with_urls).and_return({})
-        allow(adapter).to receive(:remote_url).and_return(nil)
+        allow(adapter).to receive_messages(clean?: true, remotes: [], remotes_with_urls: {}, remote_url: nil)
 
         # Generic capture should succeed for all write commands
         allow(adapter).to receive(:capture).and_return(["", true])
@@ -60,7 +55,7 @@ RSpec.describe Kettle::Dev::DvcsCLI do
 
   it "prints import links and preserves Coming soon! when some fetches fail", :check_output do
     Dir.mktmpdir do |dir|
-      Dir.chdir(dir) do
+      Dir.chdir(dir) do # rubocop:disable ThreadSafety/DirChdir
         File.write("README.md", <<~MD)
           ### Federated DVCS
           <details>
@@ -71,10 +66,7 @@ RSpec.describe Kettle::Dev::DvcsCLI do
 
         adapter = instance_double(Kettle::Dev::GitAdapter)
         allow(Kettle::Dev::GitAdapter).to receive(:new).and_return(adapter)
-        allow(adapter).to receive(:clean?).and_return(true)
-        allow(adapter).to receive(:remotes).and_return([])
-        allow(adapter).to receive(:remotes_with_urls).and_return({})
-        allow(adapter).to receive(:remote_url).and_return(nil)
+        allow(adapter).to receive_messages(clean?: true, remotes: [], remotes_with_urls: {}, remote_url: nil)
         allow(adapter).to receive(:capture).and_return(["", true])
 
         # Fail GitLab and Codeberg
@@ -94,15 +86,12 @@ RSpec.describe Kettle::Dev::DvcsCLI do
 
   it "uses default 'gh' as GitHub remote name when origin is gitlab" do
     Dir.mktmpdir do |dir|
-      Dir.chdir(dir) do
+      Dir.chdir(dir) do # rubocop:disable ThreadSafety/DirChdir
         File.write("README.md", "# Readme\n")
         Dir.mkdir(".git")
         adapter = instance_double(Kettle::Dev::GitAdapter)
         allow(Kettle::Dev::GitAdapter).to receive(:new).and_return(adapter)
-        allow(adapter).to receive(:clean?).and_return(true)
-        allow(adapter).to receive(:remotes).and_return([])
-        allow(adapter).to receive(:remotes_with_urls).and_return({})
-        allow(adapter).to receive(:remote_url).and_return(nil)
+        allow(adapter).to receive_messages(clean?: true, remotes: [], remotes_with_urls: {}, remote_url: nil)
         allow(adapter).to receive(:capture).and_return(["", true])
         allow(adapter).to receive(:fetch).with("origin").and_return(true)
         allow(adapter).to receive(:fetch).with("gh").and_return(true)
@@ -120,15 +109,12 @@ RSpec.describe Kettle::Dev::DvcsCLI do
 
   it "honors --github-name override when origin is codeberg" do
     Dir.mktmpdir do |dir|
-      Dir.chdir(dir) do
+      Dir.chdir(dir) do # rubocop:disable ThreadSafety/DirChdir
         File.write("README.md", "# Readme\n")
         Dir.mkdir(".git")
         adapter = instance_double(Kettle::Dev::GitAdapter)
         allow(Kettle::Dev::GitAdapter).to receive(:new).and_return(adapter)
-        allow(adapter).to receive(:clean?).and_return(true)
-        allow(adapter).to receive(:remotes).and_return([])
-        allow(adapter).to receive(:remotes_with_urls).and_return({})
-        allow(adapter).to receive(:remote_url).and_return(nil)
+        allow(adapter).to receive_messages(clean?: true, remotes: [], remotes_with_urls: {}, remote_url: nil)
         allow(adapter).to receive(:capture).and_return(["", true])
         allow(adapter).to receive(:fetch).with("origin").and_return(true)
         allow(adapter).to receive(:fetch).with("gl").and_return(true)
@@ -184,14 +170,12 @@ RSpec.describe Kettle::Dev::DvcsCLI do
   it "prefixes ✅️ when ahead by 0 and shows 🔴 when ahead > 0 (remote vs origin)", :check_output do
     adapter = instance_double(Kettle::Dev::GitAdapter)
     allow(Kettle::Dev::GitAdapter).to receive(:new).and_return(adapter)
-    allow(adapter).to receive(:clean?).and_return(true)
-    allow(adapter).to receive_messages(remotes: ["origin", "gl"], remotes_with_urls: {"origin" => "git@github.com:o/r.git"})
+    allow(adapter).to receive_messages(clean?: true, remotes: ["origin", "gl"], remotes_with_urls: {"origin" => "git@github.com:o/r.git"}, remote_url: nil)
     allow(adapter).to receive(:fetch).and_return(true)
     allow(adapter).to receive(:capture).with(["rev-parse", "--verify", "origin/main"]).and_return(["", true])
     # gl ahead 0, behind 2
     allow(adapter).to receive(:capture).with(["rev-list", "--left-right", "--count", "origin/main...gl/main"]).and_return(["2\t0", true])
     allow(adapter).to receive(:capture).with(["rev-list", "--left-right", "--count", "HEAD...origin/main"]).and_return(["", false])
-    allow(adapter).to receive(:remote_url).and_return(nil)
     expect {
       described_class.new(["--status", "o", "r"]).run!
     }.to output(/- gitlab \(gl\): ✅️ ahead by 0, behind by 2/).to_stdout_from_any_process
@@ -201,8 +185,7 @@ RSpec.describe Kettle::Dev::DvcsCLI do
     it "falls back to master when origin/main missing but origin/master exists" do
       adapter = instance_double(Kettle::Dev::GitAdapter)
       allow(Kettle::Dev::GitAdapter).to receive(:new).and_return(adapter)
-      allow(adapter).to receive(:clean?).and_return(true)
-      allow(adapter).to receive_messages(remotes: ["origin"], remotes_with_urls: {"origin" => "git@github.com:o/r.git"})
+      allow(adapter).to receive_messages(clean?: true, remotes: ["origin"], remotes_with_urls: {"origin" => "git@github.com:o/r.git"}, remote_url: nil)
       allow(adapter).to receive(:fetch).and_return(true)
       # main fails, master ok
       allow(adapter).to receive(:capture).with(["rev-parse", "--verify", "origin/main"]).and_return(["", false])
@@ -212,10 +195,8 @@ RSpec.describe Kettle::Dev::DvcsCLI do
       allow(adapter).to receive(:capture).with(["rev-list", "--left-right", "--count", "origin/master...cb/master"]).and_return(["", false])
       allow(adapter).to receive(:capture).with(["rev-list", "--left-right", "--count", "HEAD...origin/master"]).and_return(["", false])
       # Use status mode; provide inferred names
-      allow(adapter).to receive(:remote_url).and_return(nil)
       # Names set so that github remote equals origin (so loop skips) and others nil
       # We'll simulate only github present as origin
-      allow(adapter).to receive(:remotes).and_return(["origin"])
       expect(
         described_class.new(["--status", "o", "r"]).run!,
       ).to eq(0)
@@ -224,8 +205,7 @@ RSpec.describe Kettle::Dev::DvcsCLI do
     it "defaults to main when neither main nor master verifies" do
       adapter = instance_double(Kettle::Dev::GitAdapter)
       allow(Kettle::Dev::GitAdapter).to receive(:new).and_return(adapter)
-      allow(adapter).to receive(:clean?).and_return(true)
-      allow(adapter).to receive_messages(remotes: ["origin", "gl"], remotes_with_urls: {"origin" => "git@github.com:o/r.git"})
+      allow(adapter).to receive_messages(clean?: true, remotes: ["origin", "gl"], remotes_with_urls: {"origin" => "git@github.com:o/r.git"}, remote_url: nil)
       allow(adapter).to receive(:fetch).and_return(true)
       allow(adapter).to receive(:capture).with(["rev-parse", "--verify", "origin/main"]).and_return(["", false])
       allow(adapter).to receive(:capture).with(["rev-parse", "--verify", "origin/master"]).and_return(["", false])
@@ -233,7 +213,6 @@ RSpec.describe Kettle::Dev::DvcsCLI do
       allow(adapter).to receive(:capture).with(["rev-list", "--left-right", "--count", "origin/main...gl/main"]).and_return([" ", false])
       allow(adapter).to receive(:capture).with(["rev-list", "--left-right", "--count", "origin/main...cb/main"]).and_return([" ", false])
       allow(adapter).to receive(:capture).with(["rev-list", "--left-right", "--count", "HEAD...origin/main"]).and_return(["", false])
-      allow(adapter).to receive(:remote_url).and_return(nil)
       expect(
         described_class.new(["--status", "o", "r"]).run!,
       ).to eq(0)
@@ -243,14 +222,12 @@ RSpec.describe Kettle::Dev::DvcsCLI do
   it "prints no data when rev-list fails for a remote", :check_output do
     adapter = instance_double(Kettle::Dev::GitAdapter)
     allow(Kettle::Dev::GitAdapter).to receive(:new).and_return(adapter)
-    allow(adapter).to receive(:clean?).and_return(true)
-    allow(adapter).to receive_messages(remotes: ["origin", "gl"], remotes_with_urls: {"origin" => "git@github.com:o/r.git"})
+    allow(adapter).to receive_messages(clean?: true, remotes: ["origin", "gl"], remotes_with_urls: {"origin" => "git@github.com:o/r.git"}, remote_url: nil)
     allow(adapter).to receive(:fetch).and_return(true)
     allow(adapter).to receive(:capture).with(["rev-parse", "--verify", "origin/main"]).and_return(["", true])
     allow(adapter).to receive(:capture).with(["rev-list", "--left-right", "--count", "origin/main...gl/main"]).and_return(["", false])
     allow(adapter).to receive(:capture).with(["rev-list", "--left-right", "--count", "origin/main...cb/main"]).and_return(["", false])
     allow(adapter).to receive(:capture).with(["rev-list", "--left-right", "--count", "HEAD...origin/main"]).and_return(["", false])
-    allow(adapter).to receive(:remote_url).and_return(nil)
     expect {
       described_class.new(["--status", "o", "r"]).run!
     }.to output(/no data \(branch missing\?\)/).to_stdout_from_any_process
@@ -288,12 +265,7 @@ RSpec.describe Kettle::Dev::DvcsCLI do
     it "infers org/repo from remote url when not provided" do
       adapter = instance_double(Kettle::Dev::GitAdapter)
       allow(Kettle::Dev::GitAdapter).to receive(:new).and_return(adapter)
-      allow(adapter).to receive(:clean?).and_return(true)
-      allow(adapter).to receive(:remotes).and_return([])
-      allow(adapter).to receive(:remotes_with_urls).and_return({"upstream" => "git@github.com:orgx/repo-y.git"})
-      allow(adapter).to receive(:remote_url).and_return(nil)
-      allow(adapter).to receive(:capture).and_return(["", true])
-      allow(adapter).to receive(:fetch).and_return(true)
+      allow(adapter).to receive_messages(clean?: true, remotes: [], remotes_with_urls: {"upstream" => "git@github.com:orgx/repo-y.git"}, remote_url: nil, capture: ["", true], fetch: true)
       # Reach resolve_org_repo via status mode
       expect(described_class.new(["--status"]).send(:resolve_org_repo, adapter)).to eq(["orgx", "repo-y"])
     end
@@ -333,18 +305,19 @@ RSpec.describe Kettle::Dev::DvcsCLI do
       cli = described_class.new([])
       allow(adapter).to receive(:remotes).and_return(["origin"])
       allow(adapter).to receive(:remote_url).with("origin").and_return("git@github.com:o/a.git")
-      expect(adapter).to receive(:capture).with(["remote", "set-url", "origin", "git@github.com:o/r.git"]).and_return(["", true])
+      allow(adapter).to receive(:capture).with(["remote", "set-url", "origin", "git@github.com:o/r.git"]).and_return(["", true])
       cli.send(:ensure_remote_alignment!, adapter, "origin", "git@github.com:o/r.git")
+      expect(adapter).to have_received(:capture).with(["remote", "set-url", "origin", "git@github.com:o/r.git"])
     end
 
     it "renames remote when url already present under different name" do
       adapter = instance_double(Kettle::Dev::GitAdapter)
       cli = described_class.new([])
       allow(adapter).to receive(:remotes).and_return(["upstream"])
-      allow(adapter).to receive(:remote_url).with("upstream").and_return("git@github.com:o/r.git")
-      allow(adapter).to receive(:remotes_with_urls).and_return({"upstream" => "git@github.com:o/r.git"})
-      expect(adapter).to receive(:capture).with(["remote", "rename", "upstream", "origin"]).and_return(["", true])
+      allow(adapter).to receive_messages(remote_url: "git@github.com:o/r.git", remotes_with_urls: {"upstream" => "git@github.com:o/r.git"})
+      allow(adapter).to receive(:capture).with(["remote", "rename", "upstream", "origin"]).and_return(["", true])
       cli.send(:ensure_remote_alignment!, adapter, "origin", "git@github.com:o/r.git")
+      expect(adapter).to have_received(:capture).with(["remote", "rename", "upstream", "origin"])
     end
   end
 
@@ -355,14 +328,15 @@ RSpec.describe Kettle::Dev::DvcsCLI do
       cli.send(:parse!)
       names = {origin: "origin", all: "all", github: "origin", gitlab: "gl", codeberg: "cb"}
       urls = {github: "git@github.com:o/r.git", gitlab: "git@gitlab.com:o/r.git", codeberg: "git@codeberg.org:o/r.git"}
-      allow(adapter).to receive(:remotes).and_return(["all"])
-      expect(adapter).to receive(:capture).with(["remote", "remove", "all"]).and_return(["", true])
-      expect(adapter).to receive(:capture).with(["remote", "add", "all", "git@github.com:o/r.git"]).and_return(["", true])
-      expect(adapter).to receive(:capture).with(["config", "--unset-all", "remote.all.fetch"]).and_return(["", true])
-      expect(adapter).to receive(:capture).with(["config", "--add", "remote.all.fetch", "+refs/heads/*:refs/remotes/all/*"]).and_return(["", true])
-      expect(adapter).to receive(:capture).with(["config", "--add", "remote.all.pushurl", "git@github.com:o/r.git"]).and_return(["", true])
-      expect(adapter).to receive(:capture).with(["config", "--add", "remote.all.pushurl", "git@gitlab.com:o/r.git"]).and_return(["", true])
-      expect(adapter).to receive(:capture).with(["config", "--add", "remote.all.pushurl", "git@codeberg.org:o/r.git"]).and_return(["", true])
+      allow(adapter).to receive_messages(remotes: ["all"], capture: ["", true])
+      cli.send(:configure_all_remote!, adapter, names, urls)
+      expect(adapter).to have_received(:capture).with(["remote", "remove", "all"])
+      expect(adapter).to have_received(:capture).with(["remote", "add", "all", "git@github.com:o/r.git"])
+      expect(adapter).to have_received(:capture).with(["config", "--unset-all", "remote.all.fetch"])
+      expect(adapter).to have_received(:capture).with(["config", "--add", "remote.all.fetch", "+refs/heads/*:refs/remotes/all/*"])
+      expect(adapter).to have_received(:capture).with(["config", "--add", "remote.all.pushurl", "git@github.com:o/r.git"])
+      expect(adapter).to have_received(:capture).with(["config", "--add", "remote.all.pushurl", "git@gitlab.com:o/r.git"])
+      expect(adapter).to have_received(:capture).with(["config", "--add", "remote.all.pushurl", "git@codeberg.org:o/r.git"])
       cli.send(:configure_all_remote!, adapter, names, urls)
     end
   end
@@ -401,7 +375,7 @@ RSpec.describe Kettle::Dev::DvcsCLI do
 
   it "rescues errors while updating README federation status and warns", :check_output do
     Dir.mktmpdir do |dir|
-      Dir.chdir(dir) do
+      Dir.chdir(dir) do # rubocop:disable ThreadSafety/DirChdir
         File.write("README.md", "# hi\n")
         cli = described_class.new([])
         allow(File).to receive(:read).and_raise(StandardError.new("boom"))
@@ -420,8 +394,7 @@ RSpec.describe Kettle::Dev::DvcsCLI do
   it "shows local vs origin status section and emoji on ahead phrase", :check_output do
     adapter = instance_double(Kettle::Dev::GitAdapter)
     allow(Kettle::Dev::GitAdapter).to receive(:new).and_return(adapter)
-    allow(adapter).to receive(:clean?).and_return(true)
-    allow(adapter).to receive_messages(remotes: ["origin", "gl"], remotes_with_urls: {"origin" => "git@github.com:o/r.git"})
+    allow(adapter).to receive_messages(clean?: true, remotes: ["origin", "gl"], remotes_with_urls: {"origin" => "git@github.com:o/r.git"}, remote_url: nil)
     allow(adapter).to receive(:fetch).and_return(true)
     # detect_default_branch! ok on main
     allow(adapter).to receive(:capture).with(["rev-parse", "--verify", "origin/main"]).and_return(["", true])
@@ -429,7 +402,6 @@ RSpec.describe Kettle::Dev::DvcsCLI do
     allow(adapter).to receive(:capture).with(["rev-list", "--left-right", "--count", "origin/main...gl/main"]).and_return(["0\t0", true])
     # local vs origin: local ahead 2, behind 1
     allow(adapter).to receive(:capture).with(["rev-list", "--left-right", "--count", "HEAD...origin/main"]).and_return(["2\t1", true])
-    allow(adapter).to receive(:remote_url).and_return(nil)
 
     expect {
       described_class.new(["--status", "o", "r"]).run!

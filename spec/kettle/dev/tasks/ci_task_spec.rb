@@ -553,8 +553,8 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
           "q\n"
         }
         # Force Thread#alive? to be true and Thread#kill to raise
-        allow_any_instance_of(Thread).to receive(:alive?).and_return(true)
-        allow_any_instance_of(Thread).to receive(:kill).and_raise(StandardError.new("nope"))
+        allow_any_instance_of(Thread).to receive(:alive?).and_return(true) # rubocop:disable RSpec/AnyInstance
+        allow_any_instance_of(Thread).to receive(:kill).and_raise(StandardError.new("nope")) # rubocop:disable RSpec/AnyInstance
         expect { described_class.act(nil) }.not_to raise_error
       end
     end
@@ -567,7 +567,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
           sleep 0.1
           "q\n"
         }
-        allow_any_instance_of(Thread).to receive(:kill).and_raise(StandardError.new("kaboom"))
+        allow_any_instance_of(Thread).to receive(:kill).and_raise(StandardError.new("kaboom")) # rubocop:disable RSpec/AnyInstance
         expect { described_class.act(nil) }.not_to raise_error
       end
     end

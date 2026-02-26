@@ -160,9 +160,8 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
         allow(http).to receive(:open_timeout=)
         allow(http).to receive(:ssl_timeout=)
         allow(http).to receive(:verify_mode=)
-        allow(http).to receive(:use_ssl?).and_return(true)
+        allow(http).to receive_messages(use_ssl?: true, request: redir)
         allow(http).to receive(:start).and_yield(http)
-        allow(http).to receive(:request).and_return(redir)
 
         allow(Net::HTTP).to receive(:new).and_return(http)
 
@@ -179,9 +178,8 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
         allow(http).to receive(:open_timeout=)
         allow(http).to receive(:ssl_timeout=)
         allow(http).to receive(:verify_mode=)
-        allow(http).to receive(:use_ssl?).and_return(true)
+        allow(http).to receive_messages(use_ssl?: true, request: failure)
         allow(http).to receive(:start).and_yield(http)
-        allow(http).to receive(:request).and_return(failure)
 
         allow(Net::HTTP).to receive(:new).and_return(http)
 
@@ -236,7 +234,7 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
           File.write(bad, "# Bad\n")
           # rubocop:disable ThreadSafety/DirChdir
           Dir.chdir(root) do
-            cli = Kettle::Dev::PreReleaseCLI.new(check_num: 1)
+            cli = described_class.new(check_num: 1)
             allow(File).to receive(:read).and_call_original
             allow(File).to receive(:read).with(bad).and_raise(Errno::EACCES)
             expect { cli.run }.not_to raise_error
@@ -252,7 +250,7 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
           File.write(file, "![x](#{url})\n")
           # rubocop:disable ThreadSafety/DirChdir
           Dir.chdir(root) do
-            cli = Kettle::Dev::PreReleaseCLI.new(check_num: 1)
+            cli = described_class.new(check_num: 1)
             allow(File).to receive(:write).and_call_original
             allow(File).to receive(:write).with(file, kind_of(String)).and_raise(Errno::EACCES)
             # Avoid running check 2 by stubbing out URLs discovery
