@@ -23,25 +23,40 @@
 
 **CRITICAL**: The canonical project environment now lives in `mise.toml`, with local overrides in `.env.local` loaded via `dotenvy`.
 
+⚠️ **Watch for trust prompts**: After editing `mise.toml` or `.env.local`, `mise` may require trust to be refreshed before commands can load the project environment. That interactive trust screen can masquerade as missing terminal output, so commands may appear hung or silent until you handle it.
+
+**Recovery rule**: If a `mise exec` command in this repo goes silent, appears hung, or terminal polling stops returning useful output, assume `mise trust` is needed first and recover with:
+
+```bash
+mise trust -C /home/pboling/src/kettle-rb/kettle-dev
+mise exec -C /home/pboling/src/kettle-rb/kettle-dev -- bundle exec rspec
+```
+
+Do this before spending time on unrelated debugging; in this workspace, silent `mise` commands are usually a trust problem.
+
+```bash
+mise trust -C /home/pboling/src/kettle-rb/kettle-dev
+```
+
 ✅ **CORRECT** — Run self-contained commands with `mise exec`:
 ```bash
-mise exec -C /home/pboling/src/kettle-rb/ast-merge/vendor/kettle-dev -- bundle exec rspec
+mise exec -C /home/pboling/src/kettle-rb/kettle-dev -- bundle exec rspec
 ```
 
 ✅ **CORRECT** — If you need shell syntax first, load the environment in the same command:
 ```bash
-eval "$(mise env -C /home/pboling/src/kettle-rb/ast-merge/vendor/kettle-dev -s bash)" && bundle exec rspec
+eval "$(mise env -C /home/pboling/src/kettle-rb/kettle-dev -s bash)" && bundle exec rspec
 ```
 
 ❌ **WRONG** — Do not rely on a previous command changing directories:
 ```bash
-cd /home/pboling/src/kettle-rb/ast-merge/vendor/kettle-dev
+cd /home/pboling/src/kettle-rb/kettle-dev
 bundle exec rspec
 ```
 
 ❌ **WRONG** — A chained `cd` does not give directory-change hooks time to update the environment:
 ```bash
-cd /home/pboling/src/kettle-rb/ast-merge/vendor/kettle-dev && bundle exec rspec
+cd /home/pboling/src/kettle-rb/kettle-dev && bundle exec rspec
 ```
 
 ### Prefer Internal Tools Over Terminal
@@ -62,6 +77,10 @@ Only use terminal for:
 - Git operations that require interaction
 - Commands that actually need to execute (not just gather info)
 
+### Workspace layout
+
+This repo is a sibling project inside the `/home/pboling/src/kettle-rb` workspace, not a vendored dependency under another repo.
+
 ### NEVER Pipe Test Commands Through head/tail
 
 ❌ **ABSOLUTELY FORBIDDEN**:
@@ -71,7 +90,7 @@ bundle exec rspec 2>&1 | tail -50
 
 ✅ **CORRECT** — Run the plain command and read the full output afterward:
 ```bash
-mise exec -C /home/pboling/src/kettle-rb/ast-merge/vendor/kettle-dev -- bundle exec rspec
+mise exec -C /home/pboling/src/kettle-rb/kettle-dev -- bundle exec rspec
 ```
 
 ## 🏗️ Architecture
@@ -120,9 +139,9 @@ mise exec -C /home/pboling/src/kettle-rb/ast-merge/vendor/kettle-dev -- bundle e
 | `prism-merge` | AST-based Ruby file merging (via kettle-jem or direct) |
 | `markly-merge` | Markdown file merging (via kettle-jem or direct) |
 
-### Vendor Directory
+### Workspace layout
 
-**IMPORTANT**: This project lives in `vendor/kettle-dev/` within the `ast-merge` workspace. It is a **nested git project** with its own `.git/` directory. The `grep_search` tool **CANNOT search inside nested git projects** — use `read_file` and `list_dir` instead.
+This repo is a sibling project inside the `/home/pboling/src/kettle-rb` workspace, not a vendored dependency under another repo.
 
 ## 📁 Project Structure
 
@@ -189,18 +208,18 @@ exe/
 ### Running Tests
 
 ```bash
-mise exec -C /home/pboling/src/kettle-rb/ast-merge/vendor/kettle-dev -- bundle exec rspec
+mise exec -C /home/pboling/src/kettle-rb/kettle-dev -- bundle exec rspec
 ```
 
 Single file (disable coverage threshold):
 ```bash
-mise exec -C /home/pboling/src/kettle-rb/ast-merge/vendor/kettle-dev -- env K_SOUP_COV_MIN_HARD=false bundle exec rspec spec/kettle/dev/release_cli_spec.rb
+mise exec -C /home/pboling/src/kettle-rb/kettle-dev -- env K_SOUP_COV_MIN_HARD=false bundle exec rspec spec/kettle/dev/release_cli_spec.rb
 ```
 
 ### Coverage Reports
 
 ```bash
-mise exec -C /home/pboling/src/kettle-rb/ast-merge/vendor/kettle-dev -- bin/rake coverage
+mise exec -C /home/pboling/src/kettle-rb/kettle-dev -- bin/rake coverage
 ```
 
 **Key ENV variables** (set in `mise.toml`, with local overrides in `.env.local`):
@@ -212,8 +231,8 @@ mise exec -C /home/pboling/src/kettle-rb/ast-merge/vendor/kettle-dev -- bin/rake
 ### Code Quality
 
 ```bash
-mise exec -C /home/pboling/src/kettle-rb/ast-merge/vendor/kettle-dev -- bundle exec rake reek
-mise exec -C /home/pboling/src/kettle-rb/ast-merge/vendor/kettle-dev -- bundle exec rake rubocop_gradual
+mise exec -C /home/pboling/src/kettle-rb/kettle-dev -- bundle exec rake reek
+mise exec -C /home/pboling/src/kettle-rb/kettle-dev -- bundle exec rake rubocop_gradual
 ```
 
 ## 📝 Project Conventions
