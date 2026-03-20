@@ -11,15 +11,15 @@ platform :mri do
   gem "standard", ">= 1.50"
   gem "rubocop-on-rbs", "~> 1.8" # ruby >= 3.1.0
 
-  unless ENV.fetch("RUBOCOP_LTS_LOCAL", "false").casecmp("false").zero?
+  if ENV.fetch("RUBOCOP_LTS_LOCAL", "false").casecmp("false").zero?
+    gem "rubocop-lts", "~> 10.0"
+    gem "rubocop-rspec", "~> 3.6"
+    gem "rubocop-ruby2_3"
+  else
     home = ENV["HOME"] || Dir.home
     gem "rubocop-lts", path: "#{home}/src/rubocop-lts/rubocop-lts"
     gem "rubocop-lts-rspec", path: "#{home}/src/rubocop-lts/rubocop-lts-rspec"
     gem "rubocop-ruby2_3", path: "#{home}/src/rubocop-lts/rubocop-ruby2_3"
     gem "standard-rubocop-lts", path: "#{home}/src/rubocop-lts/standard-rubocop-lts"
-  else
-    gem "rubocop-lts", "~> 10.0"
-    gem "rubocop-rspec", "~> 3.6"
-    gem "rubocop-ruby2_3"
   end
 end

@@ -140,6 +140,7 @@ GEM
     mutex_m (0.3.0)
     nokogiri (1.19.1-x86_64-linux-gnu)
       racc (~> 1.4)
+    ostruct (0.6.3)
     parallel (1.27.0)
     parser (3.3.10.2)
       ast (~> 2.4.1)
@@ -340,6 +341,11 @@ GEM
       rdoc (~> 6.11)
       version_gem (~> 1.1, >= 1.1.9)
       yard (~> 0.9, >= 0.9.37)
+    yard-junk (0.1.0)
+      benchmark
+      ostruct
+      rainbow
+      yard
     yard-relative_markdown_links (0.6.0)
       nokogiri (>= 1.14.3, < 2)
     yard-yaml (0.1.0)
@@ -386,6 +392,7 @@ DEPENDENCIES
   yaml-converter (~> 0.1)
   yard (~> 0.9, >= 0.9.37)
   yard-fence (~> 0.8)
+  yard-junk (~> 0.1, >= 0.1.0)
   yard-relative_markdown_links (~> 0.6)
   yard-yaml (~> 0.1)
 
@@ -438,6 +445,7 @@ CHECKSUMS
   minitest (6.0.2) sha256=db6e57956f6ecc6134683b4c87467d6dd792323c7f0eea7b93f66bd284adbc3d
   mutex_m (0.3.0) sha256=cfcb04ac16b69c4813777022fdceda24e9f798e48092a2b817eb4c0a782b0751
   nokogiri (1.19.1-x86_64-linux-gnu) sha256=1a4902842a186b4f901078e692d12257678e6133858d0566152fe29cdb98456a
+  ostruct (0.6.3)
   parallel (1.27.0) sha256=4ac151e1806b755fb4e2dc2332cbf0e54f2e24ba821ff2d3dcf86bf6dc4ae130
   parser (3.3.10.2) sha256=6f60c84aa4bdcedb6d1a2434b738fe8a8136807b6adc8f7f53b97da9bc4e9357
   pdf-core (0.10.0) sha256=0a5d101e2063c01e3f941e1ee47cbb97f1adfc1395b58372f4f65f1300f3ce91
@@ -516,6 +524,7 @@ CHECKSUMS
   yaml-converter (0.1.0) sha256=3a8a6ce675eec8adc7ee67697ee0567e2153cad974b601c062c3a25f545ecc77
   yard (0.9.38) sha256=721fb82afb10532aa49860655f6cc2eaa7130889df291b052e1e6b268283010f
   yard-fence (0.8.2) sha256=4efa58d682fc0eb57258a6d6a8463b61af0890082cdea45f19088b8634d9ab6f
+  yard-junk (0.1.0)
   yard-relative_markdown_links (0.6.0) sha256=3e5ffa85cbad9bac70bee5421774b190fb25d3bdf489323a5b3534f647d1a70e
   yard-yaml (0.1.0) sha256=8bf7b1a69183429c07e8c521d17fbbd56598387f15e13b2c27f31c4ba821a7a7
   zeitwerk (2.7.5) sha256=d8da92128c09ea6ec62c949011b00ed4a20242b255293dd66bf41545398f73dd
