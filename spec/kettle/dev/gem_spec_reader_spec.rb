@@ -72,6 +72,38 @@ RSpec.describe Kettle::Dev::GemSpecReader do
     end
   end
 
+  context "when the gem name differs from the library entrypoint path" do
+    before do
+      FileUtils.mkdir_p(File.join(tmp_root, "lib", "turbo_tests"))
+      File.write(File.join(tmp_root, "lib", "turbo_tests", "version.rb"), <<~RUBY)
+        module TurboTests
+          VERSION = "2.2.5"
+        end
+      RUBY
+
+      write_gemspec <<~G
+        require_relative "lib/turbo_tests/version"
+
+        Gem::Specification.new do |spec|
+          spec.name = "turbo_tests2"
+          spec.version = TurboTests::VERSION
+          spec.homepage = "https://github.com/acme/turbo_tests2"
+          spec.required_ruby_version = ">= 2.7"
+        end
+      G
+    end
+
+    it "prefers the actual version file require path for entrypoint and namespace derivation" do
+      info = load_info
+
+      expect(info[:gem_name]).to eq("turbo_tests2")
+      expect(info[:version]).to eq("2.2.5")
+      expect(info[:entrypoint_require]).to eq("turbo_tests")
+      expect(info[:namespace]).to eq("TurboTests")
+      expect(info[:namespace_shield]).to eq("TurboTests")
+    end
+  end
+
   context "when handling minimum ruby edge cases" do
     it "uses RubyGems default >= 0 when requirement missing" do
       write_gemspec <<~G
@@ -235,7 +267,7 @@ RSpec.describe Kettle::Dev::GemSpecReader do
       allow(Kettle::Dev).to receive(:debug_error)
 
       expect { load_info }.to raise_error(Kettle::Dev::Error, /Unable to determine funding org/)
-      expect(Kettle::Dev).to have_received(:debug_error)
+      expect(Kettle::Dev).to have_received(:debug_error).at_least(:once)
     end
   end
 end

@@ -50,6 +50,17 @@ module Kettle
             end
           end
 
+          gemspec_source = if gemspec_path && File.file?(gemspec_path)
+            begin
+              File.read(gemspec_path)
+            rescue StandardError => e
+              Kettle::Dev.debug_error(e, __method__)
+              ""
+            end
+          else
+            ""
+          end
+
           gem_name = spec&.name.to_s
           if gem_name.nil? || gem_name.strip.empty?
             # Be lenient here for tasks that can proceed without gem_name (e.g., choosing destination filenames).
@@ -92,9 +103,14 @@ module Kettle
           camel = lambda do |s|
             s.to_s.split(/[_-]/).map { |p| p.gsub(/\b([a-z])/) { Regexp.last_match(1).upcase } }.join
           end
-          namespace = gem_name.to_s.split("-").map { |seg| camel.call(seg) }.join("::")
+          entrypoint_require = derive_entrypoint_require(
+            root: root,
+            gem_name: gem_name,
+            gemspec_source: gemspec_source,
+          )
+          namespace_source = entrypoint_require.to_s.empty? ? gem_name.to_s.tr("-", "/") : entrypoint_require.to_s
+          namespace = namespace_source.split("/").reject(&:empty?).map { |seg| camel.call(seg) }.join("::")
           namespace_shield = namespace.gsub("::", "%3A%3A")
-          entrypoint_require = gem_name.to_s.tr("-", "/")
           gem_shield = gem_name.to_s.gsub("-", "--").gsub("_", "__")
 
           # Funding org (Open Collective handle) detection.
@@ -134,6 +150,7 @@ module Kettle
           {
             gemspec_path: gemspec_path,
             gem_name: gem_name,
+            version: spec&.version.to_s,
             min_ruby: min_ruby, # Gem::Version instance
             homepage: homepage_val.to_s,
             gh_org: forge_org, # Might allow divergence from forge_org someday
@@ -192,6 +209,49 @@ module Kettle
           end
 
           forge_info
+        end
+
+        def derive_entrypoint_require(root:, gem_name:, gemspec_source:)
+          from_source = extract_entrypoint_require_from_gemspec_source(gemspec_source)
+          return from_source unless from_source.to_s.empty?
+
+          default_entrypoint = gem_name.to_s.tr("-", "/")
+          return default_entrypoint if default_entrypoint_path_exists?(root, default_entrypoint)
+
+          unique_version_entrypoint(root) || default_entrypoint
+        end
+
+        def extract_entrypoint_require_from_gemspec_source(source)
+          content = source.to_s
+          patterns = [
+            %r{require_relative\s+["']lib/([^"']+)/version["']},
+            %r{Kernel\.load\(\s*["'][#][{]__dir__[}]/lib/([^"']+)/version\.rb["']},
+          ]
+
+          patterns.each do |pattern|
+            match = content.match(pattern)
+            return match[1] if match && !match[1].to_s.strip.empty?
+          end
+
+          nil
+        end
+
+        def default_entrypoint_path_exists?(root, entrypoint_require)
+          return false if entrypoint_require.to_s.strip.empty?
+
+          main_file = File.join(root.to_s, "lib", "#{entrypoint_require}.rb")
+          version_file = File.join(root.to_s, "lib", entrypoint_require, "version.rb")
+          File.file?(main_file) || File.file?(version_file)
+        end
+
+        def unique_version_entrypoint(root)
+          lib_root = File.join(root.to_s, "lib")
+          return nil unless Dir.exist?(lib_root)
+
+          version_files = Dir.glob(File.join(lib_root, "**", "version.rb")).reject { |path| path.include?("/vendor/") }
+          return nil unless version_files.size == 1
+
+          version_files.first.sub(%r{\A#{Regexp.escape(lib_root)}/?}, "").sub(%r{/version\.rb\z}, "")
         end
       end
     end
