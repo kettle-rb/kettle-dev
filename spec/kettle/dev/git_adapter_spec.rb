@@ -360,4 +360,72 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
       end
     end
   end
+
+  describe "#ls_files" do
+    let(:ok)          { instance_double(Process::Status, success?: true) }
+    let(:fail_status) { instance_double(Process::Status, success?: false) }
+
+    before { allow(Kernel).to receive(:require).with("git").and_raise(LoadError) }
+
+    it "returns a list of relative file paths on success" do
+      allow(Open3).to receive(:capture2).with("git", "ls-files")
+        .and_return(["lib/foo.rb\nlib/bar.rb\n", ok])
+      adapter = described_class.new
+      expect(adapter.ls_files).to eq(["lib/foo.rb", "lib/bar.rb"])
+    end
+
+    it "returns an empty array when no files are tracked" do
+      allow(Open3).to receive(:capture2).with("git", "ls-files").and_return(["", ok])
+      adapter = described_class.new
+      expect(adapter.ls_files).to eq([])
+    end
+
+    it "returns an empty array when the git command fails" do
+      allow(Open3).to receive(:capture2).with("git", "ls-files").and_return(["", fail_status])
+      adapter = described_class.new
+      expect(adapter.ls_files).to eq([])
+    end
+
+    it "returns an empty array when Open3 raises" do
+      allow(Open3).to receive(:capture2).with("git", "ls-files").and_raise(StandardError, "boom")
+      adapter = described_class.new
+      expect(adapter.ls_files).to eq([])
+    end
+  end
+
+  describe "#blame_porcelain" do
+    let(:ok)          { instance_double(Process::Status, success?: true) }
+    let(:fail_status) { instance_double(Process::Status, success?: false) }
+    let(:sample_output) { "abc123 1 1 1\nauthor Alice\nauthor-mail <alice@example.com>\nauthor-time 1700000000\nfilename lib/foo.rb\n\thello\n" }
+
+    before { allow(Kernel).to receive(:require).with("git").and_raise(LoadError) }
+
+    it "returns raw porcelain output for a tracked file" do
+      allow(Open3).to receive(:capture2).with("git", "blame", "--porcelain", "lib/foo.rb")
+        .and_return([sample_output, ok])
+      adapter = described_class.new
+      expect(adapter.blame_porcelain("lib/foo.rb")).to eq(sample_output)
+    end
+
+    it "returns an empty string when the file is untracked (non-zero exit)" do
+      allow(Open3).to receive(:capture2).with("git", "blame", "--porcelain", "unknown.rb")
+        .and_return(["", fail_status])
+      adapter = described_class.new
+      expect(adapter.blame_porcelain("unknown.rb")).to eq("")
+    end
+
+    it "returns an empty string when the git command fails" do
+      allow(Open3).to receive(:capture2).with("git", "blame", "--porcelain", "lib/foo.rb")
+        .and_return(["", fail_status])
+      adapter = described_class.new
+      expect(adapter.blame_porcelain("lib/foo.rb")).to eq("")
+    end
+
+    it "returns an empty string when Open3 raises" do
+      allow(Open3).to receive(:capture2).with("git", "blame", "--porcelain", "lib/foo.rb")
+        .and_raise(StandardError, "no git")
+      adapter = described_class.new
+      expect(adapter.blame_porcelain("lib/foo.rb")).to eq("")
+    end
+  end
 end

@@ -147,6 +147,42 @@ module Kettle
         nil
       end
 
+      # Return the list of files currently tracked by git.
+      #
+      # @return [Array<String>] relative paths of tracked files, empty on error
+      def ls_files
+        if @backend == :gem
+          begin
+            @git.ls_files.keys
+          rescue StandardError => e
+            Kettle::Dev.debug_error(e, __method__)
+            []
+          end
+        else
+          out, status = Open3.capture2("git", "ls-files")
+          status.success? ? out.split(/\r?\n/).reject(&:empty?) : []
+        end
+      rescue StandardError => e
+        Kettle::Dev.debug_error(e, __method__)
+        []
+      end
+
+      # Return the raw `git blame --porcelain` output for a single tracked file.
+      #
+      # Both backends shell out directly because the `git` gem does not provide
+      # a stable porcelain-blame interface. Callers that need only the output
+      # string (e.g. +CopyrightCollector+) should stub this method in specs.
+      #
+      # @param path [String] path to the file, relative to the repository root
+      # @return [String] raw porcelain blame output, or "" on error / untracked file
+      def blame_porcelain(path)
+        out, status = Open3.capture2("git", "blame", "--porcelain", path.to_s)
+        status.success? ? out : ""
+      rescue StandardError => e
+        Kettle::Dev.debug_error(e, __method__)
+        ""
+      end
+
       # @return [Array<String>] list of remote names
       def remotes
         if @backend == :gem
