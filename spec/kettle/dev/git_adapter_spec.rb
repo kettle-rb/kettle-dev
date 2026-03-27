@@ -143,10 +143,20 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
 
   describe "CLI fallback when git gem is missing" do
     let(:status_ok) { instance_double(Process::Status, success?: true) }
+    let(:git_load_error) { LoadError.new("cannot load such file -- git") }
 
     before do
       # Make `require "git"` raise, to trigger CLI backend
-      allow(Kernel).to receive(:require).with("git").and_raise(LoadError)
+      allow(Kernel).to receive(:require).with("git").and_raise(git_load_error)
+    end
+
+    it "suppresses the backtrace when the optional git gem is unavailable" do
+      allow(Kettle::Dev).to receive(:debug_error)
+
+      adapter = described_class.new
+
+      expect(adapter.instance_variable_get(:@backend)).to eq(:cli)
+      expect(Kettle::Dev).to have_received(:debug_error).with(git_load_error, :initialize, backtrace: false)
     end
 
     it "pushes using system git with remote and without" do

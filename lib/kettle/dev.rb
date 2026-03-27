@@ -74,13 +74,14 @@ module Kettle
       # Controlled by KETTLE_DEV_DEBUG=true (or DEBUG=true as fallback).
       # @param error [Exception]
       # @param context [String, Symbol, nil] optional label, often __method__
+      # @param backtrace [Boolean] whether to emit the rescued error backtrace
       # @return [void]
-      def debug_error(error, context = nil)
+      def debug_error(error, context = nil, backtrace: true)
         return unless DEBUGGING
 
         ctx = context ? context.to_s : "KETTLE-DEV-RESCUE"
         Kernel.warn("[#{ctx}] #{error.class}: #{error.message}")
-        Kernel.warn(error.backtrace.first(5).join("\n")) if error.respond_to?(:backtrace) && error.backtrace
+        Kernel.warn(Array(error.backtrace).first(5).join("\n")) if backtrace && error.respond_to?(:backtrace) && error.backtrace
       rescue StandardError
         # never raise from debug logging
       end

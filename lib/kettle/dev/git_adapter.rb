@@ -67,7 +67,7 @@ module Kettle
             @git = ::Git.open(Dir.pwd)
           end
         rescue LoadError => e
-          Kettle::Dev.debug_error(e, __method__)
+          Kettle::Dev.debug_error(e, __method__, backtrace: false)
           # Optional dependency: fall back to CLI
           @backend = :cli
         rescue StandardError => e

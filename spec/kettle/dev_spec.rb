@@ -9,6 +9,36 @@ RSpec.describe Kettle::Dev do
     end
   end
 
+  describe "::debug_error" do
+    let(:error) do
+      RuntimeError.new("boom").tap do |e|
+        e.set_backtrace([
+          "/tmp/project/lib/example.rb:10:in `call'",
+          "/tmp/project/lib/example.rb:20:in `run'",
+        ])
+      end
+    end
+
+    before do
+      stub_const("Kettle::Dev::DEBUGGING", true)
+      allow(Kernel).to receive(:warn)
+    end
+
+    it "emits the backtrace by default" do
+      described_class.debug_error(error, :example)
+
+      expect(Kernel).to have_received(:warn).with("[example] RuntimeError: boom")
+      expect(Kernel).to have_received(:warn).with("/tmp/project/lib/example.rb:10:in `call'\n/tmp/project/lib/example.rb:20:in `run'")
+    end
+
+    it "can suppress the backtrace for expected rescued errors" do
+      described_class.debug_error(error, :example, backtrace: false)
+
+      expect(Kernel).to have_received(:warn).with("[example] RuntimeError: boom")
+      expect(Kernel).not_to have_received(:warn).with("/tmp/project/lib/example.rb:10:in `call'\n/tmp/project/lib/example.rb:20:in `run'")
+    end
+  end
+
   describe "::register_default" do
     it "adds task and enhances :default when defined" do
       stub_const("Rake::Task", Class.new)
