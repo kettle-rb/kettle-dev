@@ -20,7 +20,7 @@ set -e
 SUDO=""
 INSTALL_CLI=false
 BUILD_FROM_SOURCE=false
-WORKSPACE_ROOT="/workspaces/kettle-dev"
+WORKSPACE_ROOT="/workspaces/${PWD##*/}"
 
 # Parse arguments properly using while loop
 while [[ $# -gt 0 ]]; do
@@ -231,4 +231,3 @@ echo "Grammar libraries:"
 for grammar in "${GRAMMARS[@]}"; do
   echo "  TREE_SITTER_${grammar^^}_PATH=/usr/local/lib/libtree-sitter-${grammar}.so"
 done
-

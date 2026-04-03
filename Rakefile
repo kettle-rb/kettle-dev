@@ -1,11 +1,17 @@
 # frozen_string_literal: true
 
-# kettle-dev Rakefile v1.1.60 - 2025-11-23
+# kettle-jem:freeze
+# To retain chunks of comments & code during kettle-dev templating:
+# Wrap custom sections with freeze markers (e.g., as above and below this comment chunk).
+# kettle-dev will then preserve content between those markers across template runs.
+# kettle-jem:unfreeze
+
+# kettle-dev Rakefile v1.0.0 - 2026-04-03
 # Ruby 2.3 (Safe Navigation) or higher required
 #
 # MIT License (see License.txt)
 #
-# Copyright (c) 2025 Peter H. Boling (galtzo.com)
+# Copyright (c) 2026 Peter H. Boling (galtzo.com)
 #
 # Expected to work in any project that uses Bundler.
 #
@@ -25,7 +31,9 @@
 # rake default                                # Default tasks aggregator
 # rake install                                # Build and install kettle-dev-1.0.0.gem in...
 # rake install:local                          # Build and install kettle-dev-1.0.0.gem in...
-# rake kettle:dev:install                     # Install kettle-dev GitHub automation and ...
+# rake kettle:jem:install                     # Install kettle-dev GitHub automation and ...
+# rake kettle:jem:selftest                    # Self-test: template kettle-dev against itse...
+# rake kettle:jem:template                    # Template kettle-dev files into the curren...
 # rake reek                                   # Check for code smells
 # rake reek:update                            # Run reek and store the output into the RE...
 # rake release[remote]                        # Create tag v1.0.0 and build and push kett...
@@ -54,6 +62,17 @@ end
 
 # External gems that define tasks - add here!
 require "kettle/dev"
+
+### TEMPLATING TASKS
+begin
+  require "kettle/jem"
+rescue LoadError
+  desc("(stub) kettle:jem:selftest is unavailable")
+  task("kettle:jem:selftest") do
+    warn("NOTE: kettle-jem isn't installed, or is disabled for #{RUBY_VERSION} in the current environment")
+  end
+end
+
 
 ### RELEASE TASKS
 # Setup stone_checksums

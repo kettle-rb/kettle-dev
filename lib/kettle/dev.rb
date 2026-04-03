@@ -1,5 +1,11 @@
 # frozen_string_literal: true
 
+require "version_gem"
+require_relative "dev/version"
+
+Kettle::Dev::Version.class_eval do
+  extend VersionGem::Basic
+end
 # External gems
 
 # It's not reasonable to test this ENV variable

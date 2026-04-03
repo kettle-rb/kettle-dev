@@ -53,7 +53,7 @@ Gem::Specification.new do |spec|
     end
   end
 
-  spec.metadata["homepage_uri"] = "https://#{spec.name.tr("_", "-")}.galtzo.com/"
+  spec.metadata["homepage_uri"] = "https://kettle-dev.galtzo.com/"
   spec.metadata["source_code_uri"] = "#{spec.homepage}/tree/v#{spec.version}"
   spec.metadata["changelog_uri"] = "#{spec.homepage}/blob/v#{spec.version}/CHANGELOG.md"
   spec.metadata["bug_tracker_uri"] = "#{spec.homepage}/issues"
@@ -73,7 +73,8 @@ Gem::Specification.new do |spec|
     # Signatures
     "sig/**/*.rbs",
   ]
-  # Automatically included with gem package, normally no need to list again in files.
+
+  # Automatically included with gem package, no need to list again in files.
   spec.extra_rdoc_files = Dir[
     # Files (alphabetical)
     "CHANGELOG.md",
@@ -103,6 +104,9 @@ Gem::Specification.new do |spec|
   # Listed files are the relative paths from bindir above.
   spec.executables = ["kettle-changelog", "kettle-commit-msg", "kettle-dev-setup", "kettle-dvcs", "kettle-gh-release", "kettle-pre-release", "kettle-readme-backers", "kettle-release"]
 
+  # Utilities
+  spec.add_dependency("version_gem", "~> 1.1", ">= 1.1.9")              # ruby >= 2.2.0
+
   # kettle-jem:freeze
   # NOTE: This gem has "runtime" dependencies,
   #       but this gem will always be used in the context of other libraries.
@@ -126,6 +130,22 @@ Gem::Specification.new do |spec|
   #       Development dependencies that require strictly newer Ruby versions should be in a "gemfile",
   #       and preferably a modular one (see gemfiles/modular/*.gemfile).
 
+
+  # NOTE: It is preferable to list development dependencies in the gemspec due to increased
+  #       visibility and discoverability.
+  #       However, development dependencies in gemspec will install on
+  #       all versions of Ruby that will run in CI.
+  #       This gem, and its gemspec runtime dependencies, will install on Ruby down to 2.3.0.
+  #       This gem, and its gemspec development dependencies, will install on Ruby down to 2.3.0.
+  #       Thus, dev dependencies in gemspec must have
+  #
+  #       required_ruby_version ">= 2.3.0" (or lower)
+  #
+  #       Development dependencies that require strictly newer Ruby versions should be in a "gemfile",
+  #       and preferably a modular one (see gemfiles/modular/*.gemfile).
+
+  # Dev, Test, & Release Tasks
+
   # Security
   spec.add_development_dependency("bundler-audit", "~> 0.9.3")                      # ruby >= 2.0.0
 
@@ -136,8 +156,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency("require_bench", "~> 1.0", ">= 1.0.4")            # ruby >= 2.2.0
 
   # Testing
-  spec.add_development_dependency("appraisal2", "~> 3.0")                           # ruby >= 1.8.7, for testing against multiple versions of dependencies
-  spec.add_development_dependency("kettle-test", "~> 1.0", ">= 1.0.7")              # ruby >= 2.3
+  spec.add_development_dependency("appraisal2", "~> 3.0", ">= 3.0.6")               # ruby >= 1.8.7, for testing against multiple versions of dependencies
+  spec.add_development_dependency("kettle-test", "~> 1.0", ">= 1.0.10")              # ruby >= 2.3
 
   # Releasing
   spec.add_development_dependency("ruby-progressbar", "~> 1.13")                    # ruby >= 0
