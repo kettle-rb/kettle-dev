@@ -29,7 +29,7 @@ module Kettle
       private
 
       # Emit a debug log line when kettle-dev debugging is enabled.
-      # Controlled by KETTLE_DEV_DEBUG=true (or DEBUG=true as fallback).
+      # Controlled by KETTLE_DEV_DEBUG=true.
       # @param msg [String]
       # @return [void]
       def debug_log(msg)

@@ -98,7 +98,7 @@ module Kettle
             latest_overall, latest_for_series = latest_released_versions(gem_name, version)
           rescue StandardError => e
             warn("[kettle-release] RubyGems check failed: #{e.class}: #{e.message}")
-            warn(e.backtrace.first(3).map { |l| "  " + l }.join("\n")) if ENV["DEBUG"]
+            warn(e.backtrace.first(3).map { |l| "  " + l }.join("\n")) if ENV["KETTLE_DEV_DEBUG"]
             warn("Proceeding without RubyGems latest version info.")
           end
 

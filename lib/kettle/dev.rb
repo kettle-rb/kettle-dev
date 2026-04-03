@@ -44,9 +44,9 @@ module Kettle
     class Error < StandardError; end
 
     # Whether debug logging is enabled for kettle-dev internals.
-    # KETTLE_DEV_DEBUG overrides DEBUG.
+    # Controlled by KETTLE_DEV_DEBUG=true.
     # @return [Boolean]
-    DEBUGGING = ENV.fetch("KETTLE_DEV_DEBUG", ENV.fetch("DEBUG", "false")).casecmp("true").zero?
+    DEBUGGING = ENV.fetch("KETTLE_DEV_DEBUG", "false").casecmp("true").zero?
     # Whether we are running on CI.
     # @return [Boolean]
     IS_CI = ENV.fetch("CI", "false").casecmp("true") == 0
@@ -77,7 +77,7 @@ module Kettle
 
     class << self
       # Emit a debug warning for rescued errors when kettle-dev debugging is enabled.
-      # Controlled by KETTLE_DEV_DEBUG=true (or DEBUG=true as fallback).
+      # Controlled by KETTLE_DEV_DEBUG=true.
       # @param error [Exception]
       # @param context [String, Symbol, nil] optional label, often __method__
       # @param backtrace [Boolean] whether to emit the rescued error backtrace
@@ -93,7 +93,7 @@ module Kettle
       end
 
       # Emit a debug log line when kettle-dev debugging is enabled.
-      # Controlled by KETTLE_DEV_DEBUG=true (or DEBUG=true as fallback).
+      # Controlled by KETTLE_DEV_DEBUG=true.
       # @param msg [String]
       # @return [void]
       def debug_log(msg, context = nil)
