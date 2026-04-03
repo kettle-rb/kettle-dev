@@ -107,7 +107,7 @@ Gem::Specification.new do |spec|
   # NOTE: This gem has "runtime" dependencies,
   #       but this gem will always be used in the context of other libraries.
   #       At runtime, this gem depends on its dependencies being direct dependencies of those other libraries.
-  #       The kettle-dev-setup script and kettle:dev:install rake task ensure libraries meet the requirements.
+  #       The kettle-jem script and kettle:jem:install rake task ensure libraries meet the requirements.
 
   # Utilities
   # spec.add_dependency("version_gem", "~> 1.1", ">= 1.1.9")              # ruby >= 2.2.0
