@@ -15,6 +15,7 @@ PATH
   remote: .
   specs:
     kettle-dev (2.0.0)
+      version_gem (~> 1.1, >= 1.1.9)
 
 PATH
   remote: /home/pboling/src/kettle-rb/ast-merge
