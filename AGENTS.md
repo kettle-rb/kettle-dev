@@ -429,3 +429,5 @@ end
 6. **`vendor/` is for local development only** — Does not exist in CI.
 
 1. **NEVER pipe test output through `head`/`tail`** — Run tests without truncation so you can inspect the full output.
+
+1. **NEVER pipe test output through `head`/`tail`** — Run tests without truncation so you can inspect the full output.
