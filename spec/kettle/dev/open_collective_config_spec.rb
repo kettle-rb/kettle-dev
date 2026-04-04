@@ -111,6 +111,32 @@ RSpec.describe Kettle::Dev::OpenCollectiveConfig do
       stub_env("OPENCOLLECTIVE_HANDLE" => nil)
     end
 
+    it "ignores OPENCOLLECTIVE_HANDLE when it contains an unresolved token placeholder" do
+      stub_env("OPENCOLLECTIVE_HANDLE" => "{KJ|OPENCOLLECTIVE_ORG}")
+      File.write(".opencollective.yml", "collective: kettle-rb\n")
+
+      result = described_class.handle(root: @dir)
+
+      # Should fall through to .opencollective.yml, not use the token placeholder
+      expect(result).to eq("kettle-rb")
+    end
+
+    it "ignores token placeholder 'collective' value in YAML in non-strict mode" do
+      File.write(".opencollective.yml", "collective: \"{KJ|OPENCOLLECTIVE_ORG}\"\n")
+
+      result = described_class.handle(root: @dir, required: false)
+
+      expect(result).to be_nil
+    end
+
+    it "ignores token placeholder 'collective' value in YAML in strict mode" do
+      File.write(".opencollective.yml", "collective: \"{KJ|OPENCOLLECTIVE_ORG}\"\n")
+
+      result = described_class.handle(strict: true, root: @dir, required: false)
+
+      expect(result).to be_nil
+    end
+
     it "returns the 'collective' value in strict mode when present" do
       File.write(".opencollective.yml", "collective: kettle-dev\n")
 

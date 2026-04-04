@@ -40,21 +40,21 @@ module Kettle
       # @return [String, nil] the handle, or nil when not required and not discoverable
       def handle(required: false, root: nil, strict: false)
         env = ENV["OPENCOLLECTIVE_HANDLE"]
-        return env unless env.nil? || env.to_s.strip.empty?
+        return env unless env.nil? || env.to_s.strip.empty? || env.match?(/\{KJ\|[^}]+}/)
 
         ypath = yaml_path(root)
         if strict
           yml = YAML.safe_load(File.read(ypath))
           if yml.is_a?(Hash)
             handle = yml["collective"] || yml[:collective] || yml["org"] || yml[:org]
-            return handle.to_s unless handle.nil? || handle.to_s.strip.empty?
+            return handle.to_s unless handle.nil? || handle.to_s.strip.empty? || handle.to_s.match?(/\{KJ\|[^}]+}/)
           end
         elsif File.file?(ypath)
           begin
             yml = YAML.safe_load(File.read(ypath))
             if yml.is_a?(Hash)
               handle = yml["collective"] || yml[:collective] || yml["org"] || yml[:org]
-              return handle.to_s unless handle.nil? || handle.to_s.strip.empty?
+              return handle.to_s unless handle.nil? || handle.to_s.strip.empty? || handle.to_s.match?(/\{KJ\|[^}]+}/)
             end
           rescue StandardError => e
             Kettle::Dev.debug_error(e, __method__) if Kettle::Dev.respond_to?(:debug_error)

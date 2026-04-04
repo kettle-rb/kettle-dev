@@ -125,8 +125,9 @@ module Kettle
               funding_org = nil
             else
               env_funding = ENV["FUNDING_ORG"]
-              if env_funding && !env_funding.to_s.strip.empty?
-                # FUNDING_ORG is set and non-empty; use it as-is (already filtered by opencollective_disabled?)
+              if env_funding && !env_funding.to_s.strip.empty? && !env_funding.match?(/\{KJ\|[^}]+}/)
+                # FUNDING_ORG is set, non-empty, and is not an unresolved token placeholder;
+                # use it as-is (already filtered by opencollective_disabled?)
                 funding_org = env_funding.to_s
               else
                 # Preflight: if a YAML exists under the provided root, attempt to read it here so

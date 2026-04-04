@@ -157,6 +157,31 @@ RSpec.describe Kettle::Dev::GemSpecReader do
       expect(info[:funding_org]).to be_nil
     end
 
+    it "ignores FUNDING_ORG when it contains an unresolved token placeholder" do
+      stub_env("FUNDING_ORG" => "{KJ|OPENCOLLECTIVE_ORG}")
+      File.write(oc_yaml, "collective: oc-from-file\n")
+      write_gemspec <<~G
+        Gem::Specification.new do |spec|
+          spec.name    = "x"
+          spec.version = "0.0.1"
+        end
+      G
+      # Should fall through to .opencollective.yml, not use the token placeholder
+      expect(load_info[:funding_org]).to eq("oc-from-file")
+    end
+
+    it "ignores FUNDING_ORG when it contains a different unresolved token placeholder" do
+      stub_env("FUNDING_ORG" => "{KJ|SOME_OTHER_TOKEN}")
+      File.write(oc_yaml, "collective: oc-from-file\n")
+      write_gemspec <<~G
+        Gem::Specification.new do |spec|
+          spec.name    = "x"
+          spec.version = "0.0.1"
+        end
+      G
+      expect(load_info[:funding_org]).to eq("oc-from-file")
+    end
+
     it "uses OPENCOLLECTIVE_HANDLE when set" do
       stub_env("OPENCOLLECTIVE_HANDLE" => "oc-acme")
       write_gemspec <<~G
