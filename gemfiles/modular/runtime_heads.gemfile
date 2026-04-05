@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# To retain during kettle-jem templating:
+# To retain during kettle-dev templating:
 #     kettle-jem:freeze
 #     # ... your code
 #     kettle-jem:unfreeze
