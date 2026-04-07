@@ -603,6 +603,216 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
     end
   end
 
+  # ── Bug regression specs ────────────────────────────────────────────────────
+
+  # Bug: link-ref definition lines (e.g. `[key]: https://...`) were treated as
+  # real content when deciding whether an H3 section was non-empty.  A section
+  # that contains ONLY link-ref defs (no list items / paragraphs) must be
+  # dropped from the released block.
+  describe "bug: link-ref definitions must not count as section content" do
+    def run_with_fixture(fixture_name, version: "9.9.9", owner: "acme", repo: "x")
+      Dir.mktmpdir do |root|
+        FileUtils.mkdir_p(File.join(root, "lib", "my", "gem"))
+        File.write(File.join(root, "lib", "my", "gem", "version.rb"), <<~RB)
+          module My; module Gem; VERSION = "#{version}"; end; end
+        RB
+        FileUtils.mkdir_p(File.join(root, "coverage"))
+        File.write(File.join(root, "coverage", "coverage.json"), {"coverage" => {}}.to_json)
+
+        fixture_path = File.expand_path("../../support/fixtures/#{fixture_name}", __dir__)
+        File.write(File.join(root, "CHANGELOG.md"), File.read(fixture_path))
+
+        allow(Kettle::Dev::CIHelpers).to receive_messages(project_root: root, repo_info: [owner, repo])
+        allow(Time).to receive(:now).and_return(Time.new(2025, 8, 30))
+
+        cli = described_class.new(strict: false)
+        expect { cli.run }.not_to raise_error
+        yield File.read(File.join(root, "CHANGELOG.md"))
+      end
+    end
+
+    it "drops H3 section whose body contains only link-ref definitions" do
+      run_with_fixture("CHANGELOG_BUG_LINK_REFS_AS_CONTENT.md") do |updated|
+        # ### Changed body had only a link-ref def — must be omitted
+        released = updated[/## \[9\.9\.9\].*?(?=## \[|\z)/m]
+        expect(released).not_to include("### Changed")
+        # ### Added and ### Fixed had real list items — must be kept
+        expect(released).to include("### Added")
+        expect(released).to include("### Fixed")
+        # ### Deprecated, ### Removed, ### Security were all empty — must be omitted
+        expect(released).not_to include("### Deprecated")
+        expect(released).not_to include("### Removed")
+        expect(released).not_to include("### Security")
+      end
+    end
+
+    it "keeps inline link-ref defs that accompany real content, drops refs from dropped sections" do
+      run_with_fixture("CHANGELOG_BUG_LINK_REFS_AS_CONTENT.md") do |updated|
+        released = updated[/## \[9\.9\.9\].*?(?=## \[|\z)/m]
+        # [🔀ref1] lives in ### Added (kept) → must be preserved in the released body
+        expect(released).to include("[🔀ref1]: https://example.com/one")
+        # [🔀ref2] lives in ### Changed (dropped, link-ref only) → must be absent
+        expect(released).not_to include("[🔀ref2]:")
+        # [🔀ref3] lives in ### Security (dropped, link-ref only) → must be absent
+        expect(released).not_to include("[🔀ref3]:")
+      end
+    end
+  end
+
+  # Bug: when the CHANGELOG has no previous `## [...]` release (i.e. this is the
+  # very first release), the footer link-refs (`[Unreleased]: ...` etc.) live
+  # directly inside the Unreleased block with no `## [` boundary to stop
+  # `extract_unreleased`.  They bleed into the last H3 section (typically
+  # ### Security), making it appear non-empty and causing it to be retained with
+  # the footer refs as its body.
+  describe "bug: footer link-refs must not bleed into unreleased body on first release" do
+    it "drops ### Security and places footer link-refs only in the footer" do
+      Dir.mktmpdir do |root|
+        FileUtils.mkdir_p(File.join(root, "lib", "my", "gem"))
+        File.write(File.join(root, "lib", "my", "gem", "version.rb"), <<~RB)
+          module My; module Gem; VERSION = "1.0.0"; end; end
+        RB
+        FileUtils.mkdir_p(File.join(root, "coverage"))
+        File.write(File.join(root, "coverage", "coverage.json"), {"coverage" => {}}.to_json)
+
+        fixture_path = File.expand_path("../../support/fixtures/CHANGELOG_BUG_FOOTER_BLEEDING.md", __dir__)
+        File.write(File.join(root, "CHANGELOG.md"), File.read(fixture_path))
+
+        allow(Kettle::Dev::CIHelpers).to receive_messages(project_root: root, repo_info: ["acme", "new-gem"])
+        allow(Time).to receive(:now).and_return(Time.new(2025, 8, 30))
+
+        cli = described_class.new(strict: false)
+        expect { cli.run }.not_to raise_error
+
+        updated = File.read(File.join(root, "CHANGELOG.md"))
+        # Extract just the released section: from ## [1.0.0] until the footer block or next ## [
+        released_start = updated.index("## [1.0.0]")
+        footer_start   = updated.index("\n[Unreleased]:")
+        released = (released_start && footer_start) ? updated[released_start...footer_start] : ""
+
+        # Empty sections must be absent from the released block
+        expect(released).not_to include("### Security")
+        expect(released).not_to include("### Deprecated")
+        expect(released).not_to include("### Removed")
+        # ### Fixed has real content → must be present
+        expect(released).to include("### Fixed")
+        expect(released).to include("### Added")
+        expect(released).to include("### Changed")
+
+        # Footer link-refs must NOT appear inside the released section body
+        expect(released).not_to match(/^\[Unreleased\]:/)
+        expect(released).not_to match(/^\[1\.0\.0\]:/)
+        expect(released).not_to match(/^\[1\.0\.0t\]:/)
+
+        # But the footer itself must still exist at the end of the file
+        footer = updated.lines.drop_while { |l| !l.start_with?("[Unreleased]:") }.join
+        expect(footer).to include("[Unreleased]:")
+        expect(footer).to include("[1.0.0]:")
+        expect(footer).to include("[1.0.0t]:")
+      end
+    end
+  end
+
+  # Bug: an H4 subsection heading (####) with no list items under it — but
+  # appearing under an H3 section that does have real content elsewhere —
+  # should not count as real content for a section that is otherwise empty.
+  describe "bug: H4 subsection headings alone must not count as section content" do
+    it "drops H3 section whose body has only an H4 heading and no list items" do
+      Dir.mktmpdir do |root|
+        FileUtils.mkdir_p(File.join(root, "lib", "my", "gem"))
+        File.write(File.join(root, "lib", "my", "gem", "version.rb"), <<~RB)
+          module My; module Gem; VERSION = "2.0.0"; end; end
+        RB
+        FileUtils.mkdir_p(File.join(root, "coverage"))
+        File.write(File.join(root, "coverage", "coverage.json"), {"coverage" => {}}.to_json)
+
+        fixture_path = File.expand_path("../../support/fixtures/CHANGELOG_BUG_H4_ONLY_CONTENT.md", __dir__)
+        File.write(File.join(root, "CHANGELOG.md"), File.read(fixture_path))
+
+        allow(Kettle::Dev::CIHelpers).to receive_messages(project_root: root, repo_info: ["acme", "x"])
+        allow(Time).to receive(:now).and_return(Time.new(2025, 8, 30))
+
+        cli = described_class.new(strict: false)
+        expect { cli.run }.not_to raise_error
+
+        updated = File.read(File.join(root, "CHANGELOG.md"))
+        released = updated[/## \[2\.0\.0\] - 2025-08-30.*?(?=## \[|\z)/m]
+
+        # ### Added has ONLY an H4 heading (no list items) → must be dropped
+        expect(released).not_to include("### Added")
+        expect(released).not_to include("#### From upstream project")
+        # Other empty H3 sections must also be absent
+        expect(released).not_to include("### Deprecated")
+        expect(released).not_to include("### Removed")
+        expect(released).not_to include("### Fixed")
+        expect(released).not_to include("### Security")
+        # ### Changed had a real list item → kept
+        expect(released).to include("### Changed")
+      end
+    end
+  end
+
+  # Full integration regression: the real turbo_tests2 CHANGELOG exercising all
+  # three bugs simultaneously.
+  describe "bug integration: turbo_tests2 CHANGELOG with H4 subsections, inline link-refs, and footer bleeding" do
+    it "produces a correct released section from the turbo_tests2 fixture" do
+      Dir.mktmpdir do |root|
+        FileUtils.mkdir_p(File.join(root, "lib", "turbo_tests2"))
+        File.write(File.join(root, "lib", "turbo_tests2", "version.rb"), <<~RB)
+          module TurboTests2; VERSION = "3.0.0"; end
+        RB
+        FileUtils.mkdir_p(File.join(root, "coverage"))
+        File.write(File.join(root, "coverage", "coverage.json"), {"coverage" => {}}.to_json)
+
+        fixture_path = File.expand_path("../../support/fixtures/CHANGELOG_TURBO_TESTS2.md", __dir__)
+        File.write(File.join(root, "CHANGELOG.md"), File.read(fixture_path))
+
+        allow(Kettle::Dev::CIHelpers).to receive_messages(
+          project_root: root,
+          repo_info: ["galtzo-floss", "turbo_tests2"]
+        )
+        allow(Time).to receive(:now).and_return(Time.new(2026, 4, 7))
+
+        cli = described_class.new(strict: false)
+        expect { cli.run }.not_to raise_error
+
+        updated = File.read(File.join(root, "CHANGELOG.md"))
+        # Extract just the released section: stop before the footer block
+        released_start = updated.index("## [3.0.0]")
+        footer_start   = updated.index("\n[Unreleased]:")
+        released = (released_start && footer_start) ? updated[released_start...footer_start] : ""
+
+        # --- Sections that have real content must be present ---
+        expect(released).to include("### Added")
+        expect(released).to include("### Changed")
+        expect(released).to include("### Fixed")
+
+        # --- H4 subsections with content must be preserved ---
+        expect(released).to include("#### From `VitalConnectInc/turbo_tests`, now part of `turbo_tests2`")
+        expect(released).to include("#### New in `turbo_tests2`")
+
+        # --- Empty sections must be absent ---
+        expect(released).not_to include("### Deprecated")
+        expect(released).not_to include("### Removed")
+        expect(released).not_to include("### Security")
+
+        # --- Footer link-refs must NOT appear in the released section body ---
+        expect(released).not_to match(/^\[Unreleased\]:/)
+        expect(released).not_to match(/^\[3\.0\.0\]:/)
+        expect(released).not_to match(/^\[3\.0\.0t\]:/)
+
+        # --- The footer must be present and correct at end of file ---
+        footer = updated.lines.drop_while { |l| !l.start_with?("[Unreleased]:") }.join
+        expect(footer).to include("[Unreleased]: https://github.com/galtzo-floss/turbo_tests2")
+        expect(footer).to include("[3.0.0]:")
+        expect(footer).to include("[3.0.0t]:")
+
+        # --- Unreleased section reset to empty headings ---
+        expect(updated).to match(/## \[Unreleased\]\n\n### Added\n\n### Changed\n\n### Deprecated\n\n### Removed\n\n### Fixed\n\n### Security/)
+      end
+    end
+  end
+
   describe "#yard_percent_documented success" do
     it "parses the documented percentage from yard output" do
       mkproj do |root|

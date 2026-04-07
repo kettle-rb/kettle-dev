@@ -10,6 +10,10 @@ module Kettle
     # includes coverage and YARD stats, and updates link references.
     class ChangelogCLI
       UNRELEASED_SECTION_HEADING = "[Unreleased]:"
+      # Matches a Markdown link-reference definition line, e.g. `[key]: https://...`
+      LINK_REF_DEF_RE = /^\s*\[[^\]]+\]:\s+\S+/
+      # Matches an ATX heading at H4 or deeper (####, #####, ...)
+      DEEP_HEADING_RE = /^[#]{4,}\s/
 
       # Initialize the changelog CLI
       # Sets up paths for CHANGELOG.md and coverage.json
@@ -163,8 +167,23 @@ module Kettle
         end
         # Now next_i points to the next section heading or EOF
         before = lines[0..(start_i - 1)].join
-        unreleased_block = lines[(start_i + 1)..(next_i - 1)].join
-        after = lines[next_i..-1]&.join || ""
+        unreleased_body = lines[(start_i + 1)..(next_i - 1)] || []
+        after_lines = lines[next_i..-1] || []
+
+        # When this is the very first release there is no `## [X.Y.Z]` heading to act
+        # as a boundary, so the footer link-ref block ([Unreleased]: ...) sits at the
+        # end of the unreleased body.  Move everything from the [Unreleased]: line
+        # onward into `after` so those refs are not mistaken for section content.
+        if next_i == lines.length
+          footer_i = unreleased_body.index { |l| l.start_with?(UNRELEASED_SECTION_HEADING) }
+          if footer_i
+            after_lines = unreleased_body[footer_i..] + after_lines
+            unreleased_body = unreleased_body[0...footer_i]
+          end
+        end
+
+        unreleased_block = unreleased_body.join
+        after = after_lines.join
         [unreleased_block, before, after]
       end
 
@@ -194,8 +213,10 @@ module Kettle
               chunk << lines[i]
               i += 1
             end
-            # Determine if chunk has any content (non-blank)
-            content_present = chunk.any? { |l| l.strip != "" }
+            # A section has real content only if it contains at least one non-blank line that is
+            # neither a link-reference definition ([key]: url) nor a deeper heading (H4+).
+            # Link-ref defs and H4+ headings alone are not meaningful section content.
+            content_present = chunk.any? { |l| l.strip != "" && l !~ LINK_REF_DEF_RE && l !~ DEEP_HEADING_RE }
             if content_present
               # Trim leading blank lines so there is no blank line after the header
               while chunk.any? && chunk.first.strip == ""
