@@ -628,16 +628,38 @@ module Kettle
         (head + tail).join("\n")
       end
 
-      def detect_initial_compare_base(lines)
-        # Fallback when prev_version is unknown: try to find the first compare base used historically
-        # e.g., for 1.0.0 it may be a commit SHA instead of a tag
-        ref = lines.find { |l| l =~ /^\[1\.0\.0\]:\s+https:\/\/github\.com\// }
-        if ref && (m = ref.match(%r{compare/([^\.]+)\.\.\.v\d+})).is_a?(MatchData)
-          m[1]
-        else
-          # Default to previous tag name if none found (unlikely to be correct, but better than empty)
-          "HEAD^"
-        end
+      # Determine the "from" side of the compare URL for the very first release.
+      #
+      # Priority:
+      #   1. KETTLE_CHANGELOG_INITIAL_SHA env var — explicit override, required for hard-forks
+      #      (e.g. turbo_tests2 which forked from an upstream commit SHA).
+      #   2. `git rev-list --max-parents=0 HEAD` — the root commit of this repository.
+      #      Correct for the overwhelming majority of new gems.
+      #   3. "HEAD^" — last-resort fallback when git is unavailable or the command fails.
+      #
+      # @param _lines [Array<String>] kept for API compatibility (no longer used)
+      # @return [String] the compare base: a commit SHA, tag, or fallback string
+      def detect_initial_compare_base(_lines = nil)
+        env_sha = ENV.fetch("KETTLE_CHANGELOG_INITIAL_SHA", nil)
+        return env_sha.strip if env_sha && !env_sha.strip.empty?
+
+        sha = git_root_commit
+        return sha if sha
+
+        warn("Could not determine initial git root commit; using HEAD^ as compare base. " \
+             "Set KETTLE_CHANGELOG_INITIAL_SHA to override.")
+        "HEAD^"
+      end
+
+      # Return the root commit SHA of the current repository, or nil on failure.
+      # Uses the generic GitAdapter#capture escape hatch so tests can stub it.
+      def git_root_commit
+        adapter = Kettle::Dev::GitAdapter.new
+        out, ok = adapter.capture(["rev-list", "--max-parents=0", "HEAD"])
+        sha = out.to_s.lines.last&.strip   # take last line in case of multiple root commits
+        ok && sha && !sha.empty? ? sha : nil
+      rescue StandardError
+        nil
       end
     end
   end

@@ -113,22 +113,29 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
   end
 
   describe "#detect_initial_compare_base (private)" do
-    it "extracts historical base from first compare link when present" do
+    it "returns KETTLE_CHANGELOG_INITIAL_SHA env var when set (highest priority)" do
       cli = described_class.new(strict: false)
-      lines = [
-        "[Unreleased]: https://github.com/acme/demo/compare/v1.2.3...HEAD\n",
-        "[1.0.0]: https://github.com/acme/demo/compare/abc123...v1.0.0\n",
-      ]
-      expect(cli.send(:detect_initial_compare_base, lines)).to eq("abc123")
+      orig = ENV.fetch("KETTLE_CHANGELOG_INITIAL_SHA", nil)
+      begin
+        ENV["KETTLE_CHANGELOG_INITIAL_SHA"] = "upstream-sha-abc123"
+        expect(cli.send(:detect_initial_compare_base)).to eq("upstream-sha-abc123")
+      ensure
+        orig ? ENV["KETTLE_CHANGELOG_INITIAL_SHA"] = orig : ENV.delete("KETTLE_CHANGELOG_INITIAL_SHA")
+      end
     end
 
-    it "defaults to HEAD^ when no historical base found" do
+    it "returns the root commit SHA from git when env var is absent" do
       cli = described_class.new(strict: false)
-      lines = [
-        "[Unreleased]: https://github.com/acme/demo/compare/v2.0.0...HEAD\n",
-        "[2.0.0]: https://github.com/acme/demo/compare/v1.9.9...v2.0.0\n",
-      ]
-      expect(cli.send(:detect_initial_compare_base, lines)).to eq("HEAD^")
+      # The mocked git adapter returns deadbeefcafe1234deadbeefcafe1234deadbeef
+      expect(cli.send(:detect_initial_compare_base)).to eq("deadbeefcafe1234deadbeefcafe1234deadbeef")
+    end
+
+    it "falls back to HEAD^ when git command fails" do
+      cli = described_class.new(strict: false)
+      adapter = instance_double(Kettle::Dev::GitAdapter)
+      allow(adapter).to receive(:capture).and_return(["", false])
+      allow(Kettle::Dev::GitAdapter).to receive(:new).and_return(adapter)
+      expect(cli.send(:detect_initial_compare_base)).to eq("HEAD^")
     end
   end
 
@@ -397,19 +404,28 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
   end
 
   describe "#detect_initial_compare_base" do
-    it "extracts base from first 1.0.0 compare ref when present" do
+    it "returns KETTLE_CHANGELOG_INITIAL_SHA env var when set" do
       cli = described_class.new(strict: false)
-      lines = [
-        "[1.0.0]: https://github.com/acme/x/compare/abc123...v1.0.0\n",
-        "[1.1.0]: https://github.com/acme/x/compare/v1.0.0...v1.1.0\n",
-      ]
-      expect(cli.send(:detect_initial_compare_base, lines)).to eq("abc123")
+      orig = ENV.fetch("KETTLE_CHANGELOG_INITIAL_SHA", nil)
+      begin
+        ENV["KETTLE_CHANGELOG_INITIAL_SHA"] = "forked-sha-xyz"
+        expect(cli.send(:detect_initial_compare_base)).to eq("forked-sha-xyz")
+      ensure
+        orig ? ENV["KETTLE_CHANGELOG_INITIAL_SHA"] = orig : ENV.delete("KETTLE_CHANGELOG_INITIAL_SHA")
+      end
     end
 
-    it "defaults to HEAD^ when no suitable ref found" do
+    it "returns the git root commit SHA when env var absent and git succeeds" do
       cli = described_class.new(strict: false)
-      lines = ["[foo]: https://example.com\n"]
-      expect(cli.send(:detect_initial_compare_base, lines)).to eq("HEAD^")
+      expect(cli.send(:detect_initial_compare_base)).to eq("deadbeefcafe1234deadbeefcafe1234deadbeef")
+    end
+
+    it "defaults to HEAD^ when git fails and env var is absent" do
+      cli = described_class.new(strict: false)
+      adapter = instance_double(Kettle::Dev::GitAdapter)
+      allow(adapter).to receive(:capture).and_return(["", false])
+      allow(Kettle::Dev::GitAdapter).to receive(:new).and_return(adapter)
+      expect(cli.send(:detect_initial_compare_base)).to eq("HEAD^")
     end
   end
 
@@ -709,6 +725,8 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
         expect(footer).to include("[Unreleased]:")
         expect(footer).to include("[1.0.0]:")
         expect(footer).to include("[1.0.0t]:")
+        # Compare link must use the git root commit SHA (mocked as deadbeef...)
+        expect(footer).to include("deadbeefcafe1234deadbeefcafe1234deadbeef...v1.0.0")
       end
     end
   end
@@ -806,6 +824,8 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
         expect(footer).to include("[Unreleased]: https://github.com/galtzo-floss/turbo_tests2")
         expect(footer).to include("[3.0.0]:")
         expect(footer).to include("[3.0.0t]:")
+        # The hard-fork compare SHA must be preserved (not overwritten by the git root SHA)
+        expect(footer).to include("7d4064e5b8acc2f53929fccf7be3eb63f8a9f140...v3.0.0")
 
         # --- Unreleased section reset to empty headings ---
         expect(updated).to match(/## \[Unreleased\]\n\n### Added\n\n### Changed\n\n### Deprecated\n\n### Removed\n\n### Fixed\n\n### Security/)

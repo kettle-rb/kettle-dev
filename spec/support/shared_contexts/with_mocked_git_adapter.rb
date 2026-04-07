@@ -30,13 +30,15 @@ RSpec.shared_context "with mocked git adapter" do
     )
     allow(adapter_double).to receive(:remote_url) { |name| (name == "origin") ? "git@github.com:me/repo.git" : nil }
 
-    # Default behavior for generic capture used by ReleaseCLI#git_output
+    # Default behavior for generic capture used by ReleaseCLI#git_output and ChangelogCLI#git_root_commit
     allow(adapter_double).to receive(:capture) do |args|
       case args.map(&:to_s)
       when ["config", "user.name"]
         ["CI", true]
       when ["config", "user.email"]
         ["ci@example.com", true]
+      when ["rev-list", "--max-parents=0", "HEAD"]
+        ["deadbeefcafe1234deadbeefcafe1234deadbeef", true]
       else
         ["", true]
       end
