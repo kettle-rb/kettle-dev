@@ -133,7 +133,6 @@ Gem::Specification.new do |spec|
   #       Development dependencies that require strictly newer Ruby versions should be in a "gemfile",
   #       and preferably a modular one (see gemfiles/modular/*.gemfile).
 
-
   # Dev, Test, & Release Tasks
 
   # Security
