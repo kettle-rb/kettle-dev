@@ -134,19 +134,6 @@ Gem::Specification.new do |spec|
   #       and preferably a modular one (see gemfiles/modular/*.gemfile).
 
 
-  # NOTE: It is preferable to list development dependencies in the gemspec due to increased
-  #       visibility and discoverability.
-  #       However, development dependencies in gemspec will install on
-  #       all versions of Ruby that will run in CI.
-  #       This gem, and its gemspec runtime dependencies, will install on Ruby down to 2.3.0.
-  #       This gem, and its gemspec development dependencies, will install on Ruby down to 2.3.0.
-  #       Thus, dev dependencies in gemspec must have
-  #
-  #       required_ruby_version ">= 2.3.0" (or lower)
-  #
-  #       Development dependencies that require strictly newer Ruby versions should be in a "gemfile",
-  #       and preferably a modular one (see gemfiles/modular/*.gemfile).
-
   # Dev, Test, & Release Tasks
 
   # Security
