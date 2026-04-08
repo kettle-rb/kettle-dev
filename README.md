@@ -28,7 +28,6 @@ I've summarized my thoughts in [this blog post](https://dev.to/galtzo/hostile-ta
 
 ## 🌻 Synopsis
 
-
 Run the one-time project bootstrapper:
 
 ```console
@@ -324,7 +323,6 @@ NOTE: Be prepared to track down certs for signed gems and add them the same way 
 
 ## ⚙️ Configuration
 
-
 Note on executables vs Rake tasks
 
 - Executable scripts provided by this gem (exe/\* and installed binstubs) work when the gem is installed as a system gem (gem install kettle-dev). They do not require the gem to be in your bundle to run.
@@ -486,7 +484,6 @@ Git hooks and commit message helpers (exe/kettle-commit-msg)
 For a quick starting point, this repository’s `.envrc` shows sane defaults, and `.env.local` can override them locally.
 
 ## 🔧 Basic Usage
-
 
 Common flows
 
