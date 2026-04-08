@@ -28,6 +28,187 @@ I've summarized my thoughts in [this blog post](https://dev.to/galtzo/hostile-ta
 
 ## 🌻 Synopsis
 
+
+Run the one-time project bootstrapper:
+
+```console
+kettle-dev-setup
+# Or if your middle name is "danger":
+# kettle-dev-setup --allowed=true --force
+```
+
+This gem integrates tightly with [kettle-test](https://github.com/kettle-rb/kettle-test).
+
+Add this to your `spec/spec_helper.rb`:
+
+```ruby
+require "kettle/test/rspec"
+```
+
+Now you have many powerful development and testing tools at your disposal, all fully [documented](#-configuration) and tested.
+
+If you need to top-up an old setup to get the latest goodies, just re-template:
+
+```console
+bundle exec rake kettle:dev:install
+```
+
+Making sure to review the changes, and retain overwritten bits that matter.
+
+Later, when ready to release:
+
+```console
+bin/kettle-changelog
+bin/kettle-release
+```
+
+### The `*-merge` Gem Family
+
+The `*-merge` gem family provides intelligent, AST-based merging for various file formats. At the foundation is [tree_haver][tree_haver], which provides a unified cross-Ruby parsing API that works seamlessly across MRI, JRuby, and TruffleRuby.
+
+| Gem                                      |                                                         Version / CI                                                         | Language<br>/ Format | Parser Backend(s)                                                                                     | Description                                                                      |
+|------------------------------------------|:----------------------------------------------------------------------------------------------------------------------------:|----------------------|-------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------|
+| [tree_haver][tree_haver]                 |                 [![Version][tree_haver-gem-i]][tree_haver-gem] <br/> [![CI][tree_haver-ci-i]][tree_haver-ci]                 | Multi                | Supported Backends: MRI C, Rust, FFI, Java, Prism, Psych, Commonmarker, Markly, Citrus, Parslet       | **Foundation**: Cross-Ruby adapter for parsing libraries (like Faraday for HTTP) |
+| [ast-merge][ast-merge]                   |                   [![Version][ast-merge-gem-i]][ast-merge-gem] <br/> [![CI][ast-merge-ci-i]][ast-merge-ci]                   | Text                 | internal                                                                                              | **Infrastructure**: Shared base classes and merge logic for all `*-merge` gems   |
+| [bash-merge][bash-merge]                 |                 [![Version][bash-merge-gem-i]][bash-merge-gem] <br/> [![CI][bash-merge-ci-i]][bash-merge-ci]                 | Bash                 | [tree-sitter-bash][ts-bash] (via tree_haver)                                                          | Smart merge for Bash scripts                                                     |
+| [commonmarker-merge][commonmarker-merge] | [![Version][commonmarker-merge-gem-i]][commonmarker-merge-gem] <br/> [![CI][commonmarker-merge-ci-i]][commonmarker-merge-ci] | Markdown             | [Commonmarker][commonmarker] (via tree_haver)                                                         | Smart merge for Markdown (CommonMark via comrak Rust)                            |
+| [dotenv-merge][dotenv-merge]             |             [![Version][dotenv-merge-gem-i]][dotenv-merge-gem] <br/> [![CI][dotenv-merge-ci-i]][dotenv-merge-ci]             | Dotenv               | internal                                                                                              | Smart merge for `.env` files                                                     |
+| [json-merge][json-merge]                 |                 [![Version][json-merge-gem-i]][json-merge-gem] <br/> [![CI][json-merge-ci-i]][json-merge-ci]                 | JSON                 | [tree-sitter-json][ts-json] (via tree_haver)                                                          | Smart merge for JSON files                                                       |
+| [jsonc-merge][jsonc-merge]               |               [![Version][jsonc-merge-gem-i]][jsonc-merge-gem] <br/> [![CI][jsonc-merge-ci-i]][jsonc-merge-ci]               | JSONC                | [tree-sitter-jsonc][ts-jsonc] (via tree_haver)                                                        | ⚠️ Proof of concept; Smart merge for JSON with Comments                          |
+| [markdown-merge][markdown-merge]         |         [![Version][markdown-merge-gem-i]][markdown-merge-gem] <br/> [![CI][markdown-merge-ci-i]][markdown-merge-ci]         | Markdown             | [Commonmarker][commonmarker] / [Markly][markly] (via tree_haver), [Parslet][parslet]                  | **Foundation**: Shared base for Markdown mergers with inner code block merging   |
+| [markly-merge][markly-merge]             |             [![Version][markly-merge-gem-i]][markly-merge-gem] <br/> [![CI][markly-merge-ci-i]][markly-merge-ci]             | Markdown             | [Markly][markly] (via tree_haver)                                                                     | Smart merge for Markdown (CommonMark via cmark-gfm C)                            |
+| [prism-merge][prism-merge]               |               [![Version][prism-merge-gem-i]][prism-merge-gem] <br/> [![CI][prism-merge-ci-i]][prism-merge-ci]               | Ruby                 | [Prism][prism] (`prism` std lib gem)                                                                  | Smart merge for Ruby source files                                                |
+| [psych-merge][psych-merge]               |               [![Version][psych-merge-gem-i]][psych-merge-gem] <br/> [![CI][psych-merge-ci-i]][psych-merge-ci]               | YAML                 | [Psych][psych] (`psych` std lib gem)                                                                  | Smart merge for YAML files                                                       |
+| [rbs-merge][rbs-merge]                   |                   [![Version][rbs-merge-gem-i]][rbs-merge-gem] <br/> [![CI][rbs-merge-ci-i]][rbs-merge-ci]                   | RBS                  | [tree-sitter-rbs][ts-rbs] (via tree_haver), [RBS][rbs] (`rbs` std lib gem)                            | Smart merge for Ruby type signatures                                             |
+| [toml-merge][toml-merge]                 |                 [![Version][toml-merge-gem-i]][toml-merge-gem] <br/> [![CI][toml-merge-ci-i]][toml-merge-ci]                 | TOML                 | [Parslet + toml][toml], [Citrus + toml-rb][toml-rb], [tree-sitter-toml][ts-toml] (all via tree_haver) | Smart merge for TOML files                                                       |
+
+#### Backend Platform Compatibility
+
+tree_haver supports multiple parsing backends, but not all backends work on all Ruby platforms:
+
+| Platform 👉️<br> TreeHaver Backend 👇️          | MRI | JRuby | TruffleRuby | Notes                                                                      |
+|-------------------------------------------------|:---:|:-----:|:-----------:|----------------------------------------------------------------------------|
+| **MRI** ([ruby_tree_sitter][ruby_tree_sitter])  |  ✅  |   ❌   |      ❌      | C extension, MRI only                                                      |
+| **Rust** ([tree_stump][tree_stump])             |  ✅  |   ❌   |      ❌      | Rust extension via magnus/rb-sys, MRI only                                 |
+| **FFI** ([ffi][ffi])                            |  ✅  |   ✅   |      ❌      | TruffleRuby's FFI doesn't support `STRUCT_BY_VALUE`                        |
+| **Java** ([jtreesitter][jtreesitter])           |  ❌  |   ✅   |      ❌      | JRuby only, requires grammar JARs                                          |
+| **Prism** ([prism][prism])                      |  ✅  |   ✅   |      ✅      | Ruby parsing, stdlib in Ruby 3.4+                                          |
+| **Psych** ([psych][psych])                      |  ✅  |   ✅   |      ✅      | YAML parsing, stdlib                                                       |
+| **Citrus** ([citrus][citrus])                   |  ✅  |   ✅   |      ✅      | Pure Ruby PEG parser, no native dependencies                               |
+| **Parslet** ([parslet][parslet])                |  ✅  |   ✅   |      ✅      | Pure Ruby PEG parser, no native dependencies                               |
+| **Commonmarker** ([commonmarker][commonmarker]) |  ✅  |   ❌   |      ❓      | Rust extension for Markdown (via [commonmarker-merge][commonmarker-merge]) |
+| **Markly** ([markly][markly])                   |  ✅  |   ❌   |      ❓      | C extension for Markdown  (via [markly-merge][markly-merge])               |
+
+**Legend**: ✅ = Works, ❌ = Does not work, ❓ = Untested
+
+**Why some backends don't work on certain platforms**:
+
+- **JRuby**: Runs on the JVM; cannot load native C/Rust extensions (`.so` files)
+- **TruffleRuby**: Has C API emulation via Sulong/LLVM, but it doesn't expose all MRI internals that native extensions require (e.g., `RBasic.flags`, `rb_gc_writebarrier`)
+- **FFI on TruffleRuby**: TruffleRuby's FFI implementation doesn't support returning structs by value, which tree-sitter's C API requires
+
+**Example implementations** for the gem templating use case:
+
+| Gem                      | Purpose         | Description                                   |
+|--------------------------|-----------------|-----------------------------------------------|
+| [kettle-dev][kettle-dev] | Gem Development  | Development tooling, CI automation, and release workflows |
+| [kettle-jem][kettle-jem] | Gem Templating  | Gem template library with smart merge support |
+
+[tree_haver]: https://github.com/kettle-rb/tree_haver
+[ast-merge]: https://github.com/kettle-rb/ast-merge
+[prism-merge]: https://github.com/kettle-rb/prism-merge
+[psych-merge]: https://github.com/kettle-rb/psych-merge
+[json-merge]: https://github.com/kettle-rb/json-merge
+[jsonc-merge]: https://github.com/kettle-rb/jsonc-merge
+[bash-merge]: https://github.com/kettle-rb/bash-merge
+[rbs-merge]: https://github.com/kettle-rb/rbs-merge
+[dotenv-merge]: https://github.com/kettle-rb/dotenv-merge
+[toml-merge]: https://github.com/kettle-rb/toml-merge
+[markdown-merge]: https://github.com/kettle-rb/markdown-merge
+[markly-merge]: https://github.com/kettle-rb/markly-merge
+[commonmarker-merge]: https://github.com/kettle-rb/commonmarker-merge
+[kettle-dev]: https://github.com/kettle-rb/kettle-dev
+[kettle-jem]: https://github.com/kettle-rb/kettle-jem
+[tree_haver-gem]: https://bestgems.org/gems/tree_haver
+[ast-merge-gem]: https://bestgems.org/gems/ast-merge
+[prism-merge-gem]: https://bestgems.org/gems/prism-merge
+[psych-merge-gem]: https://bestgems.org/gems/psych-merge
+[json-merge-gem]: https://bestgems.org/gems/json-merge
+[jsonc-merge-gem]: https://bestgems.org/gems/jsonc-merge
+[bash-merge-gem]: https://bestgems.org/gems/bash-merge
+[rbs-merge-gem]: https://bestgems.org/gems/rbs-merge
+[dotenv-merge-gem]: https://bestgems.org/gems/dotenv-merge
+[toml-merge-gem]: https://bestgems.org/gems/toml-merge
+[markdown-merge-gem]: https://bestgems.org/gems/markdown-merge
+[markly-merge-gem]: https://bestgems.org/gems/markly-merge
+[commonmarker-merge-gem]: https://bestgems.org/gems/commonmarker-merge
+[kettle-dev-gem]: https://bestgems.org/gems/kettle-dev
+[kettle-jem-gem]: https://bestgems.org/gems/kettle-jem
+[tree_haver-gem-i]: https://img.shields.io/gem/v/tree_haver.svg
+[ast-merge-gem-i]: https://img.shields.io/gem/v/ast-merge.svg
+[prism-merge-gem-i]: https://img.shields.io/gem/v/prism-merge.svg
+[psych-merge-gem-i]: https://img.shields.io/gem/v/psych-merge.svg
+[json-merge-gem-i]: https://img.shields.io/gem/v/json-merge.svg
+[jsonc-merge-gem-i]: https://img.shields.io/gem/v/jsonc-merge.svg
+[bash-merge-gem-i]: https://img.shields.io/gem/v/bash-merge.svg
+[rbs-merge-gem-i]: https://img.shields.io/gem/v/rbs-merge.svg
+[dotenv-merge-gem-i]: https://img.shields.io/gem/v/dotenv-merge.svg
+[toml-merge-gem-i]: https://img.shields.io/gem/v/toml-merge.svg
+[markdown-merge-gem-i]: https://img.shields.io/gem/v/markdown-merge.svg
+[markly-merge-gem-i]: https://img.shields.io/gem/v/markly-merge.svg
+[commonmarker-merge-gem-i]: https://img.shields.io/gem/v/commonmarker-merge.svg
+[kettle-dev-gem-i]: https://img.shields.io/gem/v/kettle-dev.svg
+[kettle-jem-gem-i]: https://img.shields.io/gem/v/kettle-jem.svg
+[tree_haver-ci-i]: https://github.com/kettle-rb/tree_haver/actions/workflows/current.yml/badge.svg
+[ast-merge-ci-i]: https://github.com/kettle-rb/ast-merge/actions/workflows/current.yml/badge.svg
+[prism-merge-ci-i]: https://github.com/kettle-rb/prism-merge/actions/workflows/current.yml/badge.svg
+[psych-merge-ci-i]: https://github.com/kettle-rb/psych-merge/actions/workflows/current.yml/badge.svg
+[json-merge-ci-i]: https://github.com/kettle-rb/json-merge/actions/workflows/current.yml/badge.svg
+[jsonc-merge-ci-i]: https://github.com/kettle-rb/jsonc-merge/actions/workflows/current.yml/badge.svg
+[bash-merge-ci-i]: https://github.com/kettle-rb/bash-merge/actions/workflows/current.yml/badge.svg
+[rbs-merge-ci-i]: https://github.com/kettle-rb/rbs-merge/actions/workflows/current.yml/badge.svg
+[dotenv-merge-ci-i]: https://github.com/kettle-rb/dotenv-merge/actions/workflows/current.yml/badge.svg
+[toml-merge-ci-i]: https://github.com/kettle-rb/toml-merge/actions/workflows/current.yml/badge.svg
+[markdown-merge-ci-i]: https://github.com/kettle-rb/markdown-merge/actions/workflows/current.yml/badge.svg
+[markly-merge-ci-i]: https://github.com/kettle-rb/markly-merge/actions/workflows/current.yml/badge.svg
+[commonmarker-merge-ci-i]: https://github.com/kettle-rb/commonmarker-merge/actions/workflows/current.yml/badge.svg
+[kettle-dev-ci-i]: https://github.com/kettle-rb/kettle-dev/actions/workflows/current.yml/badge.svg
+[kettle-jem-ci-i]: https://github.com/kettle-rb/kettle-jem/actions/workflows/current.yml/badge.svg
+[tree_haver-ci]: https://github.com/kettle-rb/tree_haver/actions/workflows/current.yml
+[ast-merge-ci]: https://github.com/kettle-rb/ast-merge/actions/workflows/current.yml
+[prism-merge-ci]: https://github.com/kettle-rb/prism-merge/actions/workflows/current.yml
+[psych-merge-ci]: https://github.com/kettle-rb/psych-merge/actions/workflows/current.yml
+[json-merge-ci]: https://github.com/kettle-rb/json-merge/actions/workflows/current.yml
+[jsonc-merge-ci]: https://github.com/kettle-rb/jsonc-merge/actions/workflows/current.yml
+[bash-merge-ci]: https://github.com/kettle-rb/bash-merge/actions/workflows/current.yml
+[rbs-merge-ci]: https://github.com/kettle-rb/rbs-merge/actions/workflows/current.yml
+[dotenv-merge-ci]: https://github.com/kettle-rb/dotenv-merge/actions/workflows/current.yml
+[toml-merge-ci]: https://github.com/kettle-rb/toml-merge/actions/workflows/current.yml
+[markdown-merge-ci]: https://github.com/kettle-rb/markdown-merge/actions/workflows/current.yml
+[markly-merge-ci]: https://github.com/kettle-rb/markly-merge/actions/workflows/current.yml
+[commonmarker-merge-ci]: https://github.com/kettle-rb/commonmarker-merge/actions/workflows/current.yml
+[kettle-dev-ci]: https://github.com/kettle-rb/kettle-dev/actions/workflows/current.yml
+[kettle-jem-ci]: https://github.com/kettle-rb/kettle-jem/actions/workflows/current.yml
+[prism]: https://github.com/ruby/prism
+[psych]: https://github.com/ruby/psych
+[ffi]: https://github.com/ffi/ffi
+[ts-json]: https://github.com/tree-sitter/tree-sitter-json
+[ts-jsonc]: https://gitlab.com/WhyNotHugo/tree-sitter-jsonc
+[ts-bash]: https://github.com/tree-sitter/tree-sitter-bash
+[ts-rbs]: https://github.com/joker1007/tree-sitter-rbs
+[ts-toml]: https://github.com/tree-sitter-grammars/tree-sitter-toml
+[dotenv]: https://github.com/bkeepers/dotenv
+[rbs]: https://github.com/ruby/rbs
+[toml-rb]: https://github.com/emancu/toml-rb
+[toml]: https://github.com/jm/toml
+[markly]: https://github.com/ioquatix/markly
+[commonmarker]: https://github.com/gjtorikian/commonmarker
+[ruby_tree_sitter]: https://github.com/Faveod/ruby-tree-sitter
+[tree_stump]: https://github.com/joker1007/tree_stump
+[jtreesitter]: https://central.sonatype.com/artifact/io.github.tree-sitter/jtreesitter
+[citrus]: https://github.com/mjackson/citrus
+[parslet]: https://github.com/kschiess/parslet
+
 ## 💡 Info you can shake a stick at
 
 | Tokens to Remember      | [![Gem name][⛳️name-img]][⛳️gem-name] [![Gem namespace][⛳️namespace-img]][⛳️gem-namespace]                                                                                                                                                                                                                                                                          |
@@ -143,7 +324,417 @@ NOTE: Be prepared to track down certs for signed gems and add them the same way 
 
 ## ⚙️ Configuration
 
+
+Note on executables vs Rake tasks
+
+- Executable scripts provided by this gem (exe/\* and installed binstubs) work when the gem is installed as a system gem (gem install kettle-dev). They do not require the gem to be in your bundle to run.
+- The Rake tasks provided by this gem require kettle-dev to be declared as a development dependency in your Gemfile and loaded in your project's Rakefile. Ensure your Gemfile includes:
+  ```ruby
+  group :development do
+    gem "kettle-dev", require: false
+  end
+  ```
+  And your Rakefile loads the gem's tasks, e.g.:
+  ```ruby
+  require "kettle/dev"
+  ```
+
+### RSpec
+
+This gem integrates tightly with [kettle-test](https://github.com/kettle-rb/kettle-test).
+
+```ruby
+require "kettle/test/rspec"
+
+# ... any other config you need to do.
+
+# NOTE: Gemfiles for older rubies (< 2.7) won't have kettle-soup-cover.
+#       The rescue LoadError handles that scenario.
+begin
+  require "kettle-soup-cover"
+  require "simplecov" if Kettle::Soup::Cover::DO_COV # `.simplecov` is run here!
+rescue LoadError => error
+  # check the error message, and re-raise if not what is expected
+  raise error unless error.message.include?("kettle")
+end
+
+# This gem (or app)
+require "gem-under-test"
+```
+
+### Rakefile
+
+Add to your `Rakefile`:
+
+```ruby
+require "kettle/dev"
+```
+
+Then run the one-time project bootstrapper:
+
+```console
+kettle-dev-setup
+# Or to accept all defaults:
+kettle-dev-setup --allowed=true --force
+```
+
+You'll be able to compare the changes with your diff tool, and certainly revert some of them.
+
+For your protection:
+
+- it won't run if git doesn't start out porcelain clean.
+  After bootstrapping, to update the template to the latest version from a new release of this gem, run:
+
+<!-- end list -->
+
+```console
+bundle exec rake kettle:dev:install
+```
+
+If git status is not clean it will abort.
+It may have some prompts, which can mostly be avoided by running with options:
+
+```console
+# DANGER: options to reduce prompts will overwrite files without asking.
+bundle exec rake kettle:dev:install allowed=true force=true
+```
+
+Hopefully, all the files that get overwritten are tracked in git\!
+I wrote this for myself, and it fits my patterns of development.
+
+The install task will write a report at the end with:
+
+1.  A file list summary of the changes made.
+2.  Next steps for using the tools.
+3.  A warning about .env.local (DO NOT COMMIT IT, as it will likely have secrets added)
+    That’s it. Once installed, kettle-dev:
+
+<!-- end list -->
+
+- Registers RuboCop-LTS tasks and wires your default Rake task to run the gradual linter.
+    - Locally: default task prefers `rubocop_gradual:autocorrect`.
+    - On CI (`CI=true`): default task prefers `rubocop_gradual:check`.
+- Integrates optional coverage tasks via kettle-soup-cover (enabled locally when present).
+- Adds gem-shipped Rake tasks from `lib/kettle/dev/rakelib`, including:
+    - `ci:act` — interactive selector for running GitHub Actions workflows via `act`.
+    - `kettle:dev:install` — copies this repo’s .github automation, offers to install .git-hooks templates, and overwrites many files in your project.
+        - Grapheme syncing: detects the grapheme (e.g., emoji) immediately following the first `#` H1 in README.md and ensures the same grapheme, followed by a single space, prefixes both `spec.summary` and `spec.description` in your gemspec. If the H1 has none, you’ll be prompted to enter one; tests use an input adapter, so runs never hang in CI.
+        - option: force: When truthy (1, true, y, yes), treat all y/N prompts as Yes. Useful for non-interactive runs or to accept defaults quickly. Example: `bundle exec rake kettle:dev:install force=true`
+        - option: allowed: When truthy (1, true, y, yes), resume task after you have reviewed `.envrc`/`.env.local` and run `direnv allow`. If either file is created or updated, the task will abort with instructions unless `allowed=true` is present. Example: `bundle exec rake kettle:dev:install allowed=true`
+        - option: only: A comma-separated list of glob patterns to include in templating. Any destination file whose path+filename does not match one of the patterns is excluded. Patterns are matched relative to your project root. Examples: `only="README.md,.github/**"`, `only="docs/**,lib/**/*.rb"`.
+        - option: include: A comma-separated list of glob patterns that opt-in additional, non-default files. Currently, `.github/workflows/discord-notifier.yml` is not copied by default and will only be copied when `include` matches it (e.g., `include=".github/workflows/discord-notifier.yml"`).
+    - `kettle:jem:template` (provided by [kettle-jem][kettle-jem]) — templates files from this gem into your project (e.g., .github workflows, .devcontainer, .qlty, modular Gemfiles, README/CONTRIBUTING stubs). You can run this independently to refresh templates without the extra install prompts.
+        - option: force: When truthy (1, true, y, yes), treat all y/N prompts as Yes. Useful for non-interactive runs or to accept defaults quickly. Example: `bundle exec rake kettle:dev:install force=true`
+        - option: allowed: When truthy (1, true, y, yes), resume task after you have reviewed `.envrc`/`.env.local` and run `direnv allow`. If either file is created or updated, the task will abort with instructions unless `allowed=true` is present. Example: `bundle exec rake kettle:jem:template allowed=true`
+        - option: only: Same as for install; limits which destination files are written based on glob patterns relative to the project root.
+        - option: include: Same as for install; opts into optional files (e.g., `.github/workflows/discord-notifier.yml`).
+          Recommended one-time setup in your project:
+- Install binstubs so kettle-dev executables are available under `./bin`:
+    - `bundle binstubs kettle-dev --path bin`
+- Use direnv (recommended) so `./bin` is on PATH automatically:
+    - `brew install direnv`
+    - In your project’s `.envrc` add:
+        - `# Run any command in this library's bin/ without the bin/ prefix!`
+        - `PATH_add bin`
+- Configure shared git hooks path (optional, recommended):
+    - `git config --global core.hooksPath .git-hooks`
+- Install project automation and sample hooks/templates:
+    - `bundle exec rake kettle:dev:install` and follow prompts (copies .github and installs .git-hooks templates locally or globally).
+      See the next section for environment variables that tweak behavior.
+
+### Environment Variables
+
+Below are the primary environment variables recognized by kettle-dev (and its integrated tools). Unless otherwise noted, set boolean values to the string "true" to enable.
+
+General/runtime
+
+- `DEBUG`: Enable extra internal logging for this library (default: false)
+- `REQUIRE_BENCH`: Enable `require_bench` to profile requires (default: false)
+- `CI`: When set to true, adjusts default rake tasks toward CI behavior
+
+Coverage (kettle-soup-cover / SimpleCov)
+
+- `K_SOUP_COV_DO`: Enable coverage collection (default: true in .envrc)
+- `K_SOUP_COV_FORMATTERS`: Comma-separated list of formatters (html, xml, rcov, lcov, json, tty)
+- `K_SOUP_COV_MIN_LINE`: Minimum line coverage threshold (integer, e.g., 100)
+- `K_SOUP_COV_MIN_BRANCH`: Minimum branch coverage threshold (integer, e.g., 100)
+- `K_SOUP_COV_MIN_HARD`: Fail the run if thresholds are not met (true/false)
+- `K_SOUP_COV_MULTI_FORMATTERS`: Enable multiple formatters at once (true/false)
+- `K_SOUP_COV_OPEN_BIN`: Path to browser opener for HTML (empty disables auto-open)
+- `MAX_ROWS`: Limit console output rows for simplecov-console (e.g., 1)
+
+Tip: When running a single spec file locally, you may want `K_SOUP_COV_MIN_HARD=false` to avoid failing thresholds for a partial run.
+
+GitHub API and CI helpers
+
+- `GITHUB_TOKEN` or `GH_TOKEN`: Token used by `ci:act` and release workflow checks to query GitHub Actions status at higher rate limits
+- `GITLAB_TOKEN` or `GL_TOKEN`: Token used by `ci:act` and CI monitor to query GitLab pipeline status
+
+Releasing and signing
+
+- `SKIP_GEM_SIGNING`: If set, skip gem signing during build/release
+- `GEM_CERT_USER`: Username for selecting your public cert in `certs/<USER>.pem` (defaults to $USER)
+- `SOURCE_DATE_EPOCH`: Reproducible build timestamp. `kettle-release` will set this automatically for the session.
+
+Git hooks and commit message helpers (exe/kettle-commit-msg)
+
+- `GIT_HOOK_BRANCH_VALIDATE`: Branch name validation mode (e.g., `jira`) or `false` to disable
+- `GIT_HOOK_FOOTER_APPEND`: Append a footer to commit messages when goalie allows (true/false)
+- `GIT_HOOK_FOOTER_SENTINEL`: Required when footer append is enabled — a unique first-line sentinel to prevent duplicates
+- `GIT_HOOK_FOOTER_APPEND_DEBUG`: Extra debug output in the footer template (true/false)
+
+For a quick starting point, this repository’s `.envrc` shows sane defaults, and `.env.local` can override them locally.
+
 ## 🔧 Basic Usage
+
+
+Common flows
+
+- Default quality workflow (locally):
+    - `bundle exec rake` — runs the curated default task set (gradual RuboCop autocorrect, coverage if available, and other local tasks). On CI `CI=true`, the default task is adjusted to be CI-friendly.
+- Run specs:
+    - `bin/rspec` or `bundle exec rspec`
+    - To run a subset without failing coverage thresholds: `K_SOUP_COV_MIN_HARD=false bin/rspec spec/path/to/file_spec.rb`
+    - To produce multiple coverage reports: `K_SOUP_COV_FORMATTERS="html,xml,rcov,lcov,json,tty" bin/rspec`
+- Linting (Gradual):
+    - `bundle exec rake rubocop_gradual:autocorrect`
+    - `bundle exec rake rubocop_gradual:check` (CI-friendly)
+- Reek and docs:
+    - `bundle exec rake reek` or `bundle exec rake reek:update`
+    - `bundle exec rake yard`
+      [Appraisals][💎appraisal2] helpers
+- `bundle exec rake appraisal:isntall` — First time Appraisal setup.
+- `bundle exec rake appraisal:update` — Update Appraisal gemfiles and run RuboCop Gradual autocorrect.
+- `bundle exec rake appraisal:reset` — Delete all Appraisal lockfiles in gemfiles/ (\*.gemfile.lock). Useful before regenerating appraisals or when switching Ruby versions.
+  GitHub Actions local runner helper
+- `bundle exec rake ci:act` — interactive menu shows workflows from `.github/workflows` with live status and short codes (first 3 letters of file name). Type a number or short code.
+- Non-interactive: `bundle exec rake ci:act[loc]` (short code), or `bundle exec rake ci:act[locked_deps.yml]` (filename).
+  Setup tokens for API status (GitHub and GitLab)
+- Purpose: ci:act displays the latest status for GitHub Actions runs and (when applicable) the latest GitLab pipeline for the current branch. Unauthenticated requests are rate-limited; private repositories require tokens. Provide tokens to get reliable status.
+- GitHub token (recommended: fine-grained):
+    - Where to create: https://github.com/settings/personal-access-tokens
+        - Fine-grained: “Tokens (fine-grained)” → Generate new token
+        - Classic (fallback): “Tokens (classic)” → Generate new token
+    - Minimum permissions:
+        - Fine-grained: Repository access: Read-only for the target repository (or your org); Permissions → Actions: Read
+        - Classic: For public repos, no scopes are strictly required, but rate limits are very low; for private repos, include the repo scope
+    - Add to environment (`.env.local` via `direnv`):
+        - `GITHUB_TOKEN=your_token_here`  (or `GH_TOKEN=…`)
+- GitLab token:
+    - Where to create: [gitlab.com](https://gitlab.com/-/user_settings/personal_access_tokens)
+    - Minimum scope: `read_api` (sufficient to read pipelines)
+    - Add to environment (.env.local via direnv):
+        - `GITLAB_TOKEN=your_token_here`  (or `GL_TOKEN=…`)
+- Load environment:
+    - Save tokens in `.env.local` (never commit this file), then run: `direnv allow`
+- Verify:
+    - Run: bundle exec rake ci:act
+    - The header will include Repo/Upstream/HEAD; entries will show “Latest GHA …” and “Latest GL … pipeline” with emoji status. On failure to authenticate or rate-limit, you’ll see a brief error/result code.
+      Project automation bootstrap
+- `bundle exec rake kettle:dev:install` — copies the library’s `.github` folder into your project and offers to install `.git-hooks` templates locally or globally.
+- `bundle exec rake kettle:jem:template` — runs only the templating step used by install; useful to re-apply updates to templates (.github workflows, .devcontainer, .qlty, modular Gemfiles, README, and friends) without the `install` task’s extra prompts.
+    - Also copies maintainer certificate `certs/pboling.pem` into your project when present (used for signed gem builds).
+    - README carry-over during templating: when your project’s README.md is replaced by the template, selected sections from your existing README are preserved and merged into the new one. Specifically, the task carries over the following sections (matched case-insensitively):
+        - "Synopsis"
+        - "Configuration"
+        - "Basic Usage"
+        - Any section whose heading starts with "Note:" at any heading level (for example: "\# NOTE: …", "\#\# Note: …", or "\#\#\# note: …").
+        - Headings are recognized at any level using Markdown hashes (\#, \#\#, \#\#\#, …).
+- Notes about task options:
+    - Non-interactive confirmations: append `force=true` to accept all y/N prompts as Yes, e.g., `bundle exec rake kettle:jem:template force=true`.
+    - direnv review flow: if `.envrc` or `.env.local` is created or updated, the task stops and asks you to run `direnv allow`. After you review and allow, resume with `allowed=true`:
+        - `bundle exec rake kettle:jem:template allowed=true`
+        - `bundle exec rake kettle:dev:install allowed=true`
+- After that, set up binstubs and direnv for convenience:
+    - `bundle binstubs kettle-dev --path bin`
+    - Add to `.envrc`: `PATH_add bin` (so `bin/` tools run without the prefix)
+
+### kettle-dvcs (normalize multi-forge remotes)
+
+- Script: `exe/kettle-dvcs` (install binstubs for convenience: `bundle binstubs kettle-dev --path bin`)
+- Purpose: Normalize git remotes across GitHub, GitLab, and Codeberg, and create an `all` remote that pushes to all and fetches only from your chosen origin.
+- Assumptions: org and repo names are identical across forges.
+  Usage:
+
+<!-- end list -->
+
+```console
+kettle-dvcs [options] [ORG] [REPO]
+```
+
+Options:
+
+- `--origin [github|gitlab|codeberg]` Which forge to use as `origin` (default: github)
+- `--protocol [ssh|https]` URL style (default: ssh)
+- `--github-name NAME` Remote name for GitHub when not origin (default: gh)
+- `--gitlab-name NAME` Remote name for GitLab (default: gl)
+- `--codeberg-name NAME` Remote name for Codeberg (default: cb)
+- `--force` Non-interactive; accept defaults, and do not prompt for ORG/REPO
+  Examples:
+- Default, interactive (infers ORG/REPO from an existing remote when possible):
+  ```console
+  kettle-dvcs
+  ```
+- Non-interactive with explicit org/repo:
+  ```console
+  kettle-dvcs --force my-org my-repo
+  ```
+- Use GitLab as origin and HTTPS URLs:
+  ```console
+  kettle-dvcs --origin gitlab --protocol https my-org my-repo
+  ```
+
+What it does:
+
+- Ensures remotes exist and have consistent URLs for each forge.
+- Renames existing remotes when their URL already matches the desired target but their name does not (e.g., `gitlab` -\> `gl`).
+- Creates/refreshes an `all` remote that:
+    - fetches only from your chosen `origin` forge.
+    - has pushurls configured for all three forges so `git push all <branch>` updates all mirrors.
+- Prints `git remote -v` at the end.
+- Attempts to `git fetch` each forge remote to check availability:
+    - If all succeed, the README’s federated DVCS summary line has “(Coming soon\!)” removed.
+    - If any fail, the script prints import links to help you create a mirror on that forge.
+
+### Releasing (maintainers)
+
+- Script: `exe/kettle-release` (run as `kettle-release`)
+- Purpose: guided release helper that:
+    - Runs sanity checks (`bin/setup`, `bin/rake`), confirms version/changelog, optionally updates Appraisals, commits “🔖 Prepare release vX.Y.Z”.
+    - Optionally runs your CI locally with `act` before any push:
+        - Enable with env: `K_RELEASE_LOCAL_CI="true"` (run automatically) or `K_RELEASE_LOCAL_CI="ask"` (prompt \[Y/n\]).
+        - Select workflow with `K_RELEASE_LOCAL_CI_WORKFLOW` (with or without .yml/.yaml). Defaults to `locked_deps.yml` if present; otherwise the first workflow discovered.
+        - On failure, the release prep commit is soft-rolled-back (`git reset --soft HEAD^`) and the process aborts.
+    - Ensures trunk sync and rebases feature as needed, pushes, monitors GitHub Actions with a progress bar, and merges feature to trunk on success.
+    - Exports `SOURCE_DATE_EPOCH`, builds (optionally signed), creates gem checksums, and runs `bundle exec rake release` (prompts for signing key + RubyGems MFA OTP as needed).
+- Options:
+    - `start_step` map (skip directly to a phase):
+        1.  Verify Bundler \>= 2.7 (always runs; start at 1 to do everything)
+        2.  Detect version; RubyGems sanity check; confirm CHANGELOG/version; sync copyright years; update badges/headers
+        3.  Run bin/setup
+        4.  Run bin/rake (default task)
+        5.  Run bin/rake appraisal:update if Appraisals present
+        6.  Ensure git user configured; commit release prep
+        7.  Optional local CI with `act` (controlled by `K_RELEASE_LOCAL_CI`)
+        8.  Ensure trunk in sync across remotes; rebase feature as needed
+        9.  Push current branch to remotes (or 'all' remote)
+        10. Monitor CI after push; abort on failures
+        11. Merge feature into trunk and push
+        12. Checkout trunk and pull latest
+        13. Gem signing checks/guidance (skip with `SKIP_GEM_SIGNING=true`)
+        14. Build gem (bundle exec rake build)
+        15. Release gem (bundle exec rake release)
+        16. Generate and validate checksums (`bin/gem_checksums`)
+        17. Push checksum commit
+        18. Create GitHub Release (requires `GITHUB_TOKEN`)
+        19. Push tags to remotes (final)
+- Examples:
+    - After intermittent CI failure, restart from monitoring: `bundle exec kettle-release start_step=10`
+- Tips:
+    - The commit message helper `exe/kettle-commit-msg` prefers project-local `.git-hooks` (then falls back to `~/.git-hooks`).
+    - The goalie file `commit-subjects-goalie.txt` controls when a footer is appended; customize `footer-template.erb.txt` as you like.
+
+### Changelog generator
+
+- Script: `exe/kettle-changelog` (run as `kettle-changelog`)
+- Purpose: Generates a new CHANGELOG.md section for the current version read from `lib/**/version.rb`, moves notes from the Unreleased section, and updates comparison links.
+- Prerequisites:
+    - `coverage/coverage.json` present (generate with: `K_SOUP_COV_FORMATTERS="json" bin/rspec`).
+    - `bin/yard` available (Bundler-installed), to compute documentation coverage.
+- Usage:
+    - `kettle-changelog`
+- Behavior:
+    - Reads version from the unique `lib/**/version.rb` in the project.
+    - Moves entries from the `[Unreleased]` section into a new `[#.#.#] - YYYY-MM-DD` section.
+    - Prepends 4 lines with TAG, line coverage, branch coverage, and percent documented.
+    - Converts any GitLab-style compare links at the bottom to GitHub style, adds new tag/compare links for the new release and a temporary tag reference `[X.Y.Zt]`.
+
+### Pre-release checks
+
+- Script: `exe/kettle-pre-release` (run as `kettle-pre-release`)
+- Purpose: Run a suite of pre-release validations to catch avoidable mistakes (resumable by check number).
+- Usage:
+    - `kettle-pre-release [--check-num N]`
+    - Short option: `kettle-pre-release -cN`
+- Options:
+    - `--check-num N` Start from check number N (default: 1)
+- Checks:
+    - 1)  Validate that all image URLs referenced by Markdown files resolve (HTTP HEAD)
+
+### Commit message helper (git hook)
+
+- Script: `exe/kettle-commit-msg` (run by git as `.git/hooks/commit-msg`)
+- Purpose: Append a standardized footer and optionally enforce branch naming rules when configured.
+- Usage:
+    - Git invokes this with the path to the commit message file: `kettle-commit-msg .git/COMMIT_EDITMSG`
+    - Install via `bundle exec rake kettle:dev:install` to copy hook templates into `.git-hooks` and wire them up.
+- Behavior:
+    - When `GIT_HOOK_BRANCH_VALIDATE=jira`, validates the current branch matches the pattern: `^(hotfix|bug|feature|candy)/[0-9]{8,}-…`.
+        - If it matches and the commit message lacks the numeric ID, appends `[<type>][<id>]`.
+    - Always invokes `Kettle::Dev::GitCommitFooter.render` to potentially append a footer if allowed by the goalie.
+    - Prefers project-local `.git-hooks` templates; falls back to `~/.git-hooks`.
+- Environment:
+    - `GIT_HOOK_BRANCH_VALIDATE` Branch rule (e.g., `jira`) or `false` to disable.
+    - `GIT_HOOK_FOOTER_APPEND` Enable footer auto-append when goalie allows (true/false).
+    - `GIT_HOOK_FOOTER_SENTINEL` Required marker to avoid duplicate appends when enabled.
+    - `GIT_HOOK_FOOTER_APPEND_DEBUG` Extra debug output in the footer template (true/false).
+
+### Project bootstrap installer
+
+- Script: `exe/kettle-dev-setup` (run as `kettle-dev-setup`)
+- Purpose: Bootstrap a host gem repository to use kettle-dev’s tooling without manual steps.
+- Usage:
+    - `kettle-dev-setup [options] [passthrough args]`
+- Options (mapped through to `rake kettle:dev:install`):
+    - `--allowed=VAL` Pass `allowed=VAL` to acknowledge prior direnv allow, etc.
+    - `--force` Pass `force=true` to accept prompts non-interactively.
+    - `--hook_templates=VAL` Pass `hook_templates=VAL` to control git hook templating.
+    - `--only=VAL` Pass `only=VAL` to restrict install scope.
+    - `--include=VAL` Pass `include=VAL` to include optional files by glob (see notes below).
+    - `-h`, `--help` Show help.
+- Behavior:
+    - Verifies a clean git working tree, presence of a Gemfile and a gemspec.
+    - Syncs development dependencies from this gem’s example gemspec into the target gemspec (replacing or inserting `add_development_dependency` lines as needed).
+    - Ensures `bin/setup` exists (copies from gem if missing) and replaces/creates the project’s `Rakefile` from `Rakefile.example`.
+    - Runs `bin/setup`, then `bundle exec bundle binstubs --all`.
+    - Stages and commits any bootstrap changes with message: `🎨 Template bootstrap by kettle-dev-setup v<version>`.
+    - Executes `bin/rake kettle:dev:install` with the parsed passthrough args.
+
+### Open Collective README updater
+
+- Script: `exe/kettle-readme-backers` (run as `kettle-readme-backers`)
+- Purpose: Updates README sections for Open Collective backers (individuals) and sponsors (organizations) by fetching live data from your collective.
+- Tags updated in README.md (first match wins for backers):
+    - The default tag prefix is `OPENCOLLECTIVE`, and it is configurable:
+        - ENV: `KETTLE_DEV_BACKER_README_OSC_TAG="OPENCOLLECTIVE"`
+        - YAML (.opencollective.yml): `readme-osc-tag: "OPENCOLLECTIVE"`
+        - The resulting markers become: `<!-- <TAG>:START --> … <!-- <TAG>:END -->`, `<!-- <TAG>-INDIVIDUALS:START --> … <!-- <TAG>-INDIVIDUALS:END -->`, and `<!-- <TAG>-ORGANIZATIONS:START --> … <!-- <TAG>-ORGANIZATIONS:END -->`.
+        - ENV overrides YAML.
+    - Backers (Individuals): `<!-- <TAG>:START --> … <!-- <TAG>:END -->` or `<!-- <TAG>-INDIVIDUALS:START --> … <!-- <TAG>-INDIVIDUALS:END -->`
+    - Sponsors (Organizations): `<!-- <TAG>-ORGANIZATIONS:START --> … <!-- <TAG>-ORGANIZATIONS:END -->`
+- Handle resolution:
+    1.  `OPENCOLLECTIVE_HANDLE` environment variable, if set
+    2.  `opencollective.yml` in the project root (e.g., `collective: "kettle-rb"` in this repo)
+- Usage:
+    - `exe/kettle-readme-backers`
+    - `OPENCOLLECTIVE_HANDLE=my-collective exe/kettle-readme-backers`
+- Behavior:
+    - Writes to README.md only if content between the tags would change.
+    - If neither the backers nor sponsors tags are present, prints a helpful warning and exits with status 2.
+    - When there are no entries, inserts a friendly placeholder: "No backers yet. Be the first\!" or "No sponsors yet. Be the first\!".
+    - When updates are written and the repository is a git work tree, the script stages README.md and commits with a message thanking new backers and subscribers, including mentions for any newly added backers and subscribers (GitHub @handles when their website/profile is a github.com URL; otherwise their name).
+    - Customize the commit subject via env var: `KETTLE_README_BACKERS_COMMIT_SUBJECT="💸 Thanks 🙏 to our new backers 🎒 and subscribers 📜"`.
+        - Or via .opencollective.yml: set `readme-backers-commit-subject: "💸 Thanks 🙏 to our new backers 🎒 and subscribers 📜"`.
+        - Precedence: ENV overrides .opencollective.yml; if neither is set, a sensible default is used.
+        - Note: When used with the provided `.git-hooks`, the subject should start with a gitmoji character (see [gitmoji][📌gitmoji]).
+- Tip:
+    - Run this locally before committing to keep your README current, or schedule it in CI to refresh periodically.
+    - It runs automatically on a once-a-week schedule by the .github/workflows/opencollective.yml workflow that is part of the kettle-jem template.
+- Authentication requirement:
+    - When running in CI with the provided workflow, you must provide an organization-level Actions secret named `README_UPDATER_TOKEN`.
+        - Create it under your GitHub organization settings: `https://github.com/organizations/<YOUR_ORG>/settings/secrets/actions`.
+        - The updater will look for `REPO` or `GITHUB_REPOSITORY` (both usually set by GitHub Actions) to infer `<YOUR_ORG>` for guidance.
+        - If `README_UPDATER_TOKEN` is missing, the tool prints a helpful error to STDERR and aborts, including a direct link to the expected org settings page.
 
 ## 🦷 FLOSS Funding
 
