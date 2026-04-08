@@ -203,6 +203,18 @@ Gemfiles are split into modular components under `gemfiles/modular/`. Each compo
 
 ### Test Infrastructure
 
+### Building & Installing Locally
+
+To test local code changes across sibling repos, rebuild and reinstall the gem:
+
+```bash
+cd /path/to/gem && rm -rf *.gem && SKIP_GEM_SIGNING=true gem build *.gemspec && gem install --force *.gem
+```
+
+- `SKIP_GEM_SIGNING=true` bypasses the PEM passphrase prompt for signed gemspecs.
+- `--force` overwrites the currently installed version.
+- Always rebuild **and** reinstall before verifying cross-repo behaviour.
+
 - Uses `kettle-test` for RSpec helpers (stubbed_env, block_is_expected, silent_stream, timecop)
 - Uses `Dir.mktmpdir` for isolated filesystem tests
 - Spec helper is loaded by `.rspec` — never add `require "spec_helper"` to spec files
