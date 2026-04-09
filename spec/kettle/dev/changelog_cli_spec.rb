@@ -703,7 +703,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
         updated = File.read(File.join(root, "CHANGELOG.md"))
         # Extract just the released section: from ## [1.0.0] until the footer block or next ## [
         released_start = updated.index("## [1.0.0]")
-        footer_start   = updated.index("\n[Unreleased]:")
+        footer_start = updated.index("\n[Unreleased]:")
         released = (released_start && footer_start) ? updated[released_start...footer_start] : ""
 
         # Empty sections must be absent from the released block
@@ -787,7 +787,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
 
         allow(Kettle::Dev::CIHelpers).to receive_messages(
           project_root: root,
-          repo_info: ["galtzo-floss", "turbo_tests2"]
+          repo_info: ["galtzo-floss", "turbo_tests2"],
         )
         allow(Time).to receive(:now).and_return(Time.new(2026, 4, 7))
 
@@ -797,7 +797,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
         updated = File.read(File.join(root, "CHANGELOG.md"))
         # Extract just the released section: stop before the footer block
         released_start = updated.index("## [3.0.0]")
-        footer_start   = updated.index("\n[Unreleased]:")
+        footer_start = updated.index("\n[Unreleased]:")
         released = (released_start && footer_start) ? updated[released_start...footer_start] : ""
 
         # --- Sections that have real content must be present ---

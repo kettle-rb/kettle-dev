@@ -247,10 +247,10 @@ module Kettle
 
         def unique_version_entrypoint(root)
           lib_root = File.join(root.to_s, "lib")
-          return nil unless Dir.exist?(lib_root)
+          return unless Dir.exist?(lib_root)
 
           version_files = Dir.glob(File.join(lib_root, "**", "version.rb")).reject { |path| path.include?("/vendor/") }
-          return nil unless version_files.size == 1
+          return unless version_files.size == 1
 
           version_files.first.sub(%r{\A#{Regexp.escape(lib_root)}/?}, "").sub(%r{/version\.rb\z}, "")
         end

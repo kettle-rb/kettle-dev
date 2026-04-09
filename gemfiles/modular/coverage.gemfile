@@ -10,7 +10,6 @@
 if ENV.fetch("KETTLE_RB_DEV", "false").casecmp("false").zero?
   # Otherwise rely on gemspec...
   # gem "kettle-test"
-else
 end
 
 # Coverage

@@ -362,7 +362,7 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
   end
 
   describe "#ls_files" do
-    let(:ok)          { instance_double(Process::Status, success?: true) }
+    let(:ok) { instance_double(Process::Status, success?: true) }
     let(:fail_status) { instance_double(Process::Status, success?: false) }
 
     before { allow(Kernel).to receive(:require).with("git").and_raise(LoadError) }
@@ -394,7 +394,7 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
   end
 
   describe "#blame_porcelain" do
-    let(:ok)          { instance_double(Process::Status, success?: true) }
+    let(:ok) { instance_double(Process::Status, success?: true) }
     let(:fail_status) { instance_double(Process::Status, success?: false) }
     let(:sample_output) { "abc123 1 1 1\nauthor Alice\nauthor-mail <alice@example.com>\nauthor-time 1700000000\nfilename lib/foo.rb\n\thello\n" }
 
