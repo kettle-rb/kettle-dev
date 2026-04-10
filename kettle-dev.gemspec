@@ -78,6 +78,8 @@ Gem::Specification.new do |spec|
     "lib/**/*.rake",
     # Signatures
     "sig/**/*.rbs",
+    # Bash scripts (shipped alongside Ruby wrapper executables in exe/)
+    "exe/*.sh",
   ]
 
   # Automatically included with gem package, no need to list again in files.
@@ -108,7 +110,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
   spec.bindir = "exe"
   # Listed files are the relative paths from bindir above.
-  spec.executables = ["kettle-changelog", "kettle-commit-msg", "kettle-dev-setup", "kettle-dvcs", "kettle-gh-release", "kettle-pre-release", "kettle-readme-backers", "kettle-release"]
+  spec.executables = ["kettle-changelog", "kettle-check-eof", "kettle-commit-msg", "kettle-dev-setup", "kettle-dvcs", "kettle-gh-release", "kettle-pre-release", "kettle-readme-backers", "kettle-release"]
 
   # Utilities
   spec.add_dependency("version_gem", "~> 1.1", ">= 1.1.9")              # ruby >= 2.2.0
