@@ -306,7 +306,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
   end
 
   describe "#yard_percent_documented" do
-    it "warns and returns nil when bin/yard not executable" do
+    it "warns and returns nil when bin/rake not executable" do
       mkproj do |root|
         allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
         cli = described_class.new(strict: false)
@@ -316,10 +316,10 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
 
     it "returns nil and warns when percent not found in output" do
       mkproj do |root|
-        # fake bin/yard
+        # fake bin/rake
         path = File.join(root, "bin")
         FileUtils.mkdir_p(path)
-        cmd = File.join(path, "yard")
+        cmd = File.join(path, "rake")
         File.write(cmd, "#!/usr/bin/env ruby\nputs 'no percent here'\n")
         FileUtils.chmod(0o755, cmd)
         allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
@@ -336,7 +336,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       mkproj do |root|
         path = File.join(root, "bin")
         FileUtils.mkdir_p(path)
-        cmd = File.join(path, "yard")
+        cmd = File.join(path, "rake")
         File.write(cmd, "#!/usr/bin/env ruby\nputs 'hi'\n")
         FileUtils.chmod(0o755, cmd)
         allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
@@ -839,7 +839,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
         allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
         path = File.join(root, "bin")
         FileUtils.mkdir_p(path)
-        cmd = File.join(path, "yard")
+        cmd = File.join(path, "rake")
         File.write(cmd, "#!/usr/bin/env ruby\nputs 'ok'\n")
         FileUtils.chmod(0o755, cmd)
         allow(File).to receive(:executable?).and_call_original

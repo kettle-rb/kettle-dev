@@ -597,7 +597,7 @@ What it does:
 
 - Script: `exe/kettle-release` (run as `kettle-release`)
 - Purpose: guided release helper that:
-    - Runs sanity checks (`bin/setup`, `bin/rake`), confirms version/changelog, optionally updates Appraisals, commits “🔖 Prepare release vX.Y.Z”.
+    - Runs sanity checks (`bin/setup`, `bin/rake`), confirms version/changelog, optionally updates Appraisals, regenerates docs via `bin/rake yard`, commits “🔖 Prepare release vX.Y.Z”.
     - Optionally runs your CI locally with `act` before any push:
         - Enable with env: `K_RELEASE_LOCAL_CI="true"` (run automatically) or `K_RELEASE_LOCAL_CI="ask"` (prompt \[Y/n\]).
         - Select workflow with `K_RELEASE_LOCAL_CI_WORKFLOW` (with or without .yml/.yaml). Defaults to `locked_deps.yml` if present; otherwise the first workflow discovered.
@@ -610,7 +610,7 @@ What it does:
         2.  Detect version; RubyGems sanity check; confirm CHANGELOG/version; sync copyright years; update badges/headers
         3.  Run bin/setup
         4.  Run bin/rake (default task)
-        5.  Run bin/rake appraisal:update if Appraisals present
+        5.  Run bin/rake appraisal:update if Appraisals present, then bin/rake yard
         6.  Ensure git user configured; commit release prep
         7.  Optional local CI with `act` (controlled by `K_RELEASE_LOCAL_CI`)
         8.  Ensure trunk in sync across remotes; rebase feature as needed

@@ -332,35 +332,35 @@ module Kettle
       end
 
       def yard_percent_documented
-        cmd = File.join(@root, "bin", "yard")
+        cmd = File.join(@root, "bin", "rake")
         unless File.executable?(cmd)
           if @strict
-            raise "bin/yard not found or not executable; ensure yard is installed via bundler"
+            raise "bin/rake not found or not executable; ensure rake is installed via bundler"
           else
-            warn("bin/yard not found or not executable; ensure yard is installed via bundler")
+            warn("bin/rake not found or not executable; ensure rake is installed via bundler")
             return
           end
         end
 
         begin
-          # Run bin/yard to get documentation percentage
-          out, _ = Open3.capture2(cmd, {chdir: @root})
+          # Run the canonical docs task to get the documentation percentage.
+          out, _ = Open3.capture2(cmd, "yard", {chdir: @root})
           # Look for a line containing e.g., "95.35% documented"
           line = out.lines.find { |l| l =~ /\d+(?:\.\d+)?%\s+documented/ }
 
           if line
             line.strip
           elsif @strict
-            raise "Could not find documented percentage in bin/yard output"
+            raise "Could not find documented percentage in bin/rake yard output"
           else
-            warn("Could not find documented percentage in bin/yard output.")
+            warn("Could not find documented percentage in bin/rake yard output.")
             nil
           end
         rescue StandardError => e
           if @strict
-            raise "Failed to run bin/yard: #{e.class}: #{e.message}"
+            raise "Failed to run bin/rake yard: #{e.class}: #{e.message}"
           else
-            warn("Failed to run bin/yard: #{e.class}: #{e.message}")
+            warn("Failed to run bin/rake yard: #{e.class}: #{e.message}")
             nil
           end
         end

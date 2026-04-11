@@ -184,7 +184,7 @@ module Kettle
         # 4. bin/rake
         run_cmd!("bin/rake") if @start_step <= 4
 
-        # 5. appraisal:update (optional)
+        # 5. appraisal:update (optional) + canonical docs build
         if @start_step <= 5
           appraisals_path = File.join(@root, "Appraisals")
           if File.file?(appraisals_path)
@@ -193,6 +193,9 @@ module Kettle
           else
             puts "No Appraisals file found; skipping appraisal:update"
           end
+
+          puts "Generating docs site via canonical task: bin/rake yard"
+          run_cmd!("bin/rake yard")
         end
 
         # 6. git user + commit release prep
