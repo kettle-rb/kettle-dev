@@ -1,5 +1,0 @@
-{
-  "lib/kettle/dev/changelog_cli.rb:2905471985": [
-    [180, 53, 1, "Lint/Syntax: unexpected token tRBRACK\n(Using Ruby 2.3 parser; configure using `TargetRubyVersion` parameter, under `AllCops`)", 177656]
-  ]
-}

@@ -177,7 +177,7 @@ module Kettle
         if next_i == lines.length
           footer_i = unreleased_body.index { |l| l.start_with?(UNRELEASED_SECTION_HEADING) }
           if footer_i
-            after_lines = unreleased_body[footer_i..] + after_lines
+            after_lines = unreleased_body[footer_i..-1] + after_lines
             unreleased_body = unreleased_body[0...footer_i]
           end
         end
@@ -646,8 +646,10 @@ module Kettle
         sha = git_root_commit
         return sha if sha
 
-        warn("Could not determine initial git root commit; using HEAD^ as compare base. " \
-             "Set KETTLE_CHANGELOG_INITIAL_SHA to override.")
+        warn(
+          "Could not determine initial git root commit; using HEAD^ as compare base. " \
+            "Set KETTLE_CHANGELOG_INITIAL_SHA to override.",
+        )
         "HEAD^"
       end
 
@@ -657,7 +659,7 @@ module Kettle
         adapter = Kettle::Dev::GitAdapter.new
         out, ok = adapter.capture(["rev-list", "--max-parents=0", "HEAD"])
         sha = out.to_s.lines.last&.strip   # take last line in case of multiple root commits
-        ok && sha && !sha.empty? ? sha : nil
+        (ok && sha && !sha.empty?) ? sha : nil
       rescue StandardError
         nil
       end
