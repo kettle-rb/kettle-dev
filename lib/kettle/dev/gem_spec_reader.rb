@@ -64,7 +64,7 @@ module Kettle
           gem_name = spec&.name.to_s
           if gem_name.nil? || gem_name.strip.empty?
             # Be lenient here for tasks that can proceed without gem_name (e.g., choosing destination filenames).
-            Kernel.warn("kettle-dev: Could not derive gem name. Ensure a valid <name> is set in the gemspec.\n  - Tip: set the gem name in your .gemspec file (spec.name).\n  - Path searched: #{gemspec_path || "(none found)"}")
+            Kernel.warn("kettle-dev: Could not derive gem name. Ensure a valid <name> is set in the gemspec.\n  - Tip: set the gem name in your .gemspec file (spec.name).\n  - Path searched: #{Kettle::Dev.display_path(gemspec_path || "(none found)")}")
             gem_name = ""
           end
           # minimum ruby version: derived from spec.required_ruby_version

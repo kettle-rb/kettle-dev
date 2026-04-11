@@ -188,7 +188,7 @@ module Kettle
         if @start_step <= 5
           appraisals_path = File.join(@root, "Appraisals")
           if File.file?(appraisals_path)
-            puts "Appraisals detected at #{appraisals_path}. Running: bin/rake appraisal:update"
+            puts "Appraisals detected at #{Kettle::Dev.display_path(appraisals_path)}. Running: bin/rake appraisal:update"
             run_cmd!("bin/rake appraisal:update")
           else
             puts "No Appraisals file found; skipping appraisal:update"
@@ -600,7 +600,7 @@ module Kettle
 
         file_path = File.join(workflows_dir, chosen)
         unless File.file?(file_path)
-          puts "Skipping local CI: selected workflow not found: #{file_path}"
+          puts "Skipping local CI: selected workflow not found: #{Kettle::Dev.display_path(file_path)}"
           return
         end
 
@@ -628,7 +628,7 @@ module Kettle
         path = gemspecs.min
         content = File.read(path)
         m = content.match(/spec\.name\s*=\s*(["'])([^"']+)\1/)
-        abort("Could not determine gem name from #{path}.") unless m
+        abort("Could not determine gem name from #{Kettle::Dev.display_path(path)}.") unless m
         m[2]
       end
 
@@ -927,11 +927,11 @@ module Kettle
         unless File.exist?(cert_path)
           abort(<<~MSG)
             Gem signing appears enabled but no public cert found at:
-              #{cert_path}
+              #{Kettle::Dev.display_path(cert_path)}
             Add your public key to certs/<USER>.pem (or set GEM_CERT_USER), or set SKIP_GEM_SIGNING to build unsigned.
           MSG
         end
-        puts "Found signing cert: #{cert_path}"
+        puts "Found signing cert: #{Kettle::Dev.display_path(cert_path)}"
         puts "When prompted during build/release, enter the PEM password for ~/.ssh/gem-private_key.pem"
       end
 

@@ -133,7 +133,7 @@ module Kettle
             begin
               extract_image_urls_from_text(File.read(f))
             rescue StandardError => e
-              warn("[kettle-pre-release] Could not read #{f}: #{e.class}: #{e.message}")
+              warn("[kettle-pre-release] Could not read #{Kettle::Dev.display_path(f)}: #{e.class}: #{e.message}")
               []
             end
           end
@@ -179,7 +179,7 @@ module Kettle
           begin
             original = File.read(file)
           rescue StandardError => e
-            warn("[kettle-pre-release] Could not read #{file}: #{e.class}: #{e.message}")
+            warn("[kettle-pre-release] Could not read #{Kettle::Dev.display_path(file)}: #{e.class}: #{e.message}")
             next
           end
 
@@ -199,7 +199,7 @@ module Kettle
             # Replace exact occurrences of the URL in the markdown content
             updated.gsub!(url_str, normalized)
             modified = true
-            puts "  -> #{file}: normalized #{url_str} -> #{normalized}"
+            puts "  -> #{Kettle::Dev.display_path(file)}: normalized #{url_str} -> #{normalized}"
           end
 
           if modified && updated != original
@@ -207,7 +207,7 @@ module Kettle
               File.write(file, updated)
               changed << file
             rescue StandardError => e
-              warn("[kettle-pre-release] Could not write #{file}: #{e.class}: #{e.message}")
+              warn("[kettle-pre-release] Could not write #{Kettle::Dev.display_path(file)}: #{e.class}: #{e.message}")
             end
           end
         end

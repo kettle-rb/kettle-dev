@@ -215,14 +215,14 @@ module Kettle
         if !backers_changed && !sponsors_changed
           if b_start == :not_found && s_start == :not_found
             ts = tag_strings
-            warn("No recognized Open Collective tags found in #{@readme_path}. Expected one or more of: " \
+            warn("No recognized Open Collective tags found in #{Kettle::Dev.display_path(@readme_path)}. Expected one or more of: " \
               "#{ts[:generic_start]}/#{ts[:generic_end]}, #{ts[:individuals_start]}/#{ts[:individuals_end]}, #{ts[:orgs_start]}/#{ts[:orgs_end]}.")
             debug_log("Missing tags: looked for #{ts}")
             # Do not exit the process during tests or library use; just return.
             return
           end
           debug_log("No changes detected after processing; Backers=#{backers.size}, Sponsors=#{sponsors.size}, ExtraTiers=#{extra_map.keys.size}")
-          puts "No changes to backers or sponsors sections in #{@readme_path}."
+          puts "No changes to backers or sponsors sections in #{Kettle::Dev.display_path(@readme_path)}."
           return
         end
 
@@ -230,7 +230,7 @@ module Kettle
         msgs = []
         msgs << "backers" if backers_changed
         msgs << "sponsors" if sponsors_changed
-        puts "Updated #{msgs.join(" and ")} section#{{true => "s", false => ""}[msgs.size > 1]} in #{@readme_path}."
+        puts "Updated #{msgs.join(" and ")} section#{{true => "s", false => ""}[msgs.size > 1]} in #{Kettle::Dev.display_path(@readme_path)}."
 
         # Compose and perform commit with mentions if in a git repo
         perform_git_commit(new_backers, new_sponsors) if git_repo? && (backers_changed || sponsors_changed)

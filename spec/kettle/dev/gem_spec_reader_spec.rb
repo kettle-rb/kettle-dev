@@ -25,6 +25,16 @@ RSpec.describe Kettle::Dev::GemSpecReader do
       expect(info[:homepage]).to eq("")
       expect(info[:forge_org]).to eq("kettle-rb") # fallback when no homepage and no git
     end
+
+    it "normalizes the warning path for user-facing output", :check_output do
+      allow(Kernel).to receive(:warn)
+      allow(Dir).to receive(:glob).and_return(["/var/home/pboling/src/kettle-rb/demo/demo.gemspec"])
+      allow(Gem::Specification).to receive(:load).and_return(double("spec", name: nil, required_ruby_version: nil, homepage: nil))
+
+      described_class.load(tmp_root)
+
+      expect(Kernel).to have_received(:warn).with(include("Path searched: /home/pboling/src/kettle-rb/demo/demo.gemspec"))
+    end
   end
 
   context "with a valid gemspec" do

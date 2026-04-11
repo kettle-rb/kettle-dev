@@ -245,7 +245,7 @@ module Kettle
           # Delete old coverage files to ensure we get current data
           coverage_dir = File.dirname(@coverage_path)
           if Dir.exist?(coverage_dir)
-            puts "Cleaning old coverage data from #{coverage_dir}..."
+            puts "Cleaning old coverage data from #{Kettle::Dev.display_path(coverage_dir)}..."
             Dir.glob(File.join(coverage_dir, "*")).each do |file|
               File.delete(file) if File.file?(file)
             end
@@ -271,12 +271,12 @@ module Kettle
 
           # Check if coverage.json was generated
           unless File.file?(@coverage_path)
-            raise "Coverage JSON not found at #{@coverage_path} after running bin/rake coverage"
+            raise "Coverage JSON not found at #{Kettle::Dev.display_path(@coverage_path)} after running bin/rake coverage"
           end
         else
           # Non-strict mode: check if coverage.json exists, warn if not
           unless File.file?(@coverage_path)
-            warn("Coverage JSON not found at #{@coverage_path}.")
+            warn("Coverage JSON not found at #{Kettle::Dev.display_path(@coverage_path)}.")
             warn("Run: bin/rake coverage to generate it")
             return [nil, nil]
           end

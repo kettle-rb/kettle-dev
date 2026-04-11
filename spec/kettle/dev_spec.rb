@@ -82,6 +82,13 @@ RSpec.describe Kettle::Dev do
     end
   end
 
+  describe "::display_path" do
+    it "normalizes /var/home to /home for user-facing output" do
+      expect(described_class.display_path("/var/home/pboling/src/kettle-rb")).to eq("/home/pboling/src/kettle-rb")
+      expect(described_class.display_path("/home/pboling/src/kettle-rb")).to eq("/home/pboling/src/kettle-rb")
+    end
+  end
+
   # pending("RuboCop::Lts is only a dependency for Ruby >= 2.7") if RUBY_VERSION < "2.7"
   # But the next release of RuboCop::Lts will be for Ruby >= 3.2
   # But also RuboCop::Lts is only installed on the Style and Locked / Unlocked CI workflows,
