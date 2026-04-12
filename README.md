@@ -639,7 +639,7 @@ What it does:
 - Purpose: Generates a new CHANGELOG.md section for the current version read from `lib/**/version.rb`, moves notes from the Unreleased section, and updates comparison links.
 - Prerequisites:
     - `coverage/coverage.json` present (generate with: `K_SOUP_COV_FORMATTERS="json" bin/rspec`).
-    - `bin/yard` available (Bundler-installed), to compute documentation coverage.
+    - `bin/rake yard` available, to compute documentation coverage.
 - Usage:
     - `kettle-changelog`
 - Behavior:

@@ -10,14 +10,14 @@
 #   - TAG
 #   - COVERAGE (line coverage)
 #   - BRANCH COVERAGE (branch coverage)
-#   - percent documented (parsed from `bin/yard` output)
+#   - percent documented (parsed from `bin/rake yard` output)
 # - Updates bottom link references to GitHub style, converts any existing
 #   GitLab links to GitHub links, and appends the new [X.Y.Z] and [X.Y.Zt] links.
 #
 # Notes:
 # - Expects a JSON coverage report at coverage/coverage.json. If missing,
 #   it will instruct you to run: K_SOUP_COV_FORMATTERS="json" bin/rspec
-# - Expects bin/yard to be available via Bundler.
+# - Expects `bin/rake yard` to be available.
 
 $stdout.sync = true
 
@@ -64,7 +64,7 @@ begin
 
       Prerequisites:
         - coverage/coverage.json present (run: bin/rake coverage to generate)
-        - yard installed and available via bin/yard
+        - yard task available via bin/rake yard
 
       By default (strict mode), if coverage.json or yard stats are missing, the script will:
         1. Attempt to generate them by running bin/rake coverage and bin/rake yard
