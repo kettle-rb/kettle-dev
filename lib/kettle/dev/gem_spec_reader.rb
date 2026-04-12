@@ -11,6 +11,10 @@ module Kettle
       # Default minimum Ruby version to assume when a gemspec doesn't specify one.
       # @return [Gem::Version]
       DEFAULT_MINIMUM_RUBY = Gem::Version.new("1.8").freeze
+      CacheState = Struct.new(:entries, :mutex)
+      CACHE = CacheState.new({}, Mutex.new)
+      private_constant :CacheState, :CACHE
+
       class << self
         # Load gemspec data for the project at root using RubyGems.
         # The reader is lenient: failures to load or missing fields are handled with defaults and warnings.
@@ -40,7 +44,9 @@ module Kettle
         # @option return [Array<String>] :executables
         def load(root)
           cache_key = File.expand_path(root.to_s)
-          return @load_cache[cache_key] if @load_cache&.key?(cache_key)
+          CACHE.mutex.synchronize do
+            return CACHE.entries[cache_key] if CACHE.entries.key?(cache_key)
+          end
 
           gemspec_path = Dir.glob(File.join(root.to_s, "*.gemspec")).first
           spec = nil
@@ -177,12 +183,14 @@ module Kettle
             executables: Array(spec&.executables),
           }
 
-          @load_cache ||= {}
-          @load_cache[cache_key] = result
+          CACHE.mutex.synchronize do
+            CACHE.entries[cache_key] = result
+          end
+          result
         end
 
         def clear_cache!
-          @load_cache = {}
+          CACHE.mutex.synchronize { CACHE.entries.clear }
         end
 
         private
