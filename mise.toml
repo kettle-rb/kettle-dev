@@ -1,3 +1,7 @@
+# Shared development environment for this gem.
+# Local overrides belong in .env.local (loaded via dotenvy through mise).
+# Shared development environment for this gem.
+# Local overrides belong in .env.local (loaded via dotenvy through mise).
 # Shared development environment for kettle-dev.
 # Local overrides belong in .env.local (loaded via dotenvy through mise).
 [env]
@@ -34,5 +38,6 @@ YARD_FENCE_CLEAN_DOCS = "true"
 _.file = { path = ".env.local", redact = true }
 _.path = ["exe", "bin"]
 _.source = ".config/mise/env.sh"
+
 [tools]
 ruby = "4.0.2"
