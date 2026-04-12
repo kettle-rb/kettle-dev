@@ -5,6 +5,7 @@ RSpec.describe Kettle::Dev::GemSpecReader do
   let(:gemspec_path) { File.join(tmp_root, "demo.gemspec") }
 
   before do
+    described_class.clear_cache!
     FileUtils.mkdir_p(tmp_root)
   end
 
@@ -228,6 +229,25 @@ RSpec.describe Kettle::Dev::GemSpecReader do
       info = load_info
       expect(Kernel).to have_received(:warn).with(/Could not determine funding org/)
       expect(info[:funding_org]).to be_nil
+    end
+
+    it "warns only once per root when metadata is loaded repeatedly", :check_output do
+      write_gemspec <<~G
+        Gem::Specification.new do |spec|
+          spec.name    = "x"
+          spec.version = "0.0.1"
+        end
+      G
+      allow(Gem::Specification).to receive(:load).and_call_original
+      warnings = []
+      allow(Kernel).to receive(:warn) do |message|
+        warnings << message
+      end
+
+      3.times { load_info }
+
+      expect(Gem::Specification).to have_received(:load).with(gemspec_path).once
+      expect(warnings.grep(/Could not determine funding org/).size).to eq(1)
     end
   end
 

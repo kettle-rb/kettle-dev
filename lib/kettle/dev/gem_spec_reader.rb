@@ -6,7 +6,7 @@ module Kettle
   module Dev
     # Unified gemspec reader using RubyGems loader instead of regex parsing.
     # Returns a Hash with all data used by this project from gemspecs.
-    # Cache within the process to avoid repeated loads.
+    # Results are memoized per project root within the process.
     class GemSpecReader
       # Default minimum Ruby version to assume when a gemspec doesn't specify one.
       # @return [Gem::Version]
@@ -39,6 +39,9 @@ module Kettle
         # @option return [String] :bindir
         # @option return [Array<String>] :executables
         def load(root)
+          cache_key = File.expand_path(root.to_s)
+          return @load_cache[cache_key] if @load_cache&.key?(cache_key)
+
           gemspec_path = Dir.glob(File.join(root.to_s, "*.gemspec")).first
           spec = nil
           if gemspec_path && File.file?(gemspec_path)
@@ -148,7 +151,7 @@ module Kettle
             raise Kettle::Dev::Error, "Unable to determine funding org: #{error.message}"
           end
 
-          {
+          result = {
             gemspec_path: gemspec_path,
             gem_name: gem_name,
             version: spec&.version.to_s,
@@ -173,6 +176,13 @@ module Kettle
             bindir: (spec&.bindir || "").to_s,
             executables: Array(spec&.executables),
           }
+
+          @load_cache ||= {}
+          @load_cache[cache_key] = result
+        end
+
+        def clear_cache!
+          @load_cache = {}
         end
 
         private
