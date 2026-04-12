@@ -1,4 +1,4 @@
-[![Galtzo FLOSS Logo by Aboling0, CC BY-SA 4.0][🖼️galtzo-i]][🖼️galtzo-discord] [![ruby-lang Logo, Yukihiro Matsumoto, Ruby Visual Identity Team, CC BY-SA 2.5][🖼️ruby-lang-i]][🖼️ruby-lang] [![kettle-rb Logo by Aboling0, CC BY-SA 4.0][🖼️kettle-rb-i]][🖼️kettle-rb]
+[![Galtzo FLOSS Logo by Aboling0, CC BY-SA 4.0][🖼️galtzo-i]][🖼️galtzo-discord] [![ruby-lang Logo, Yukihiro Matsumoto, Ruby Visual Identity Team, CC BY-SA 2.5][🖼️ruby-lang-i]][🖼️ruby-lang] [![kettle-rb Logo by Aboling0, CC BY-SA 4.0][🖼️kettle-rb-i]][🖼️kettle-rb] [![kettle-dev Logo by Aboling0, CC BY-SA 4.0][🖼️kettle-dev-i]][🖼️kettle-dev]
 
 [🖼️galtzo-i]: https://logos.galtzo.com/assets/images/galtzo-floss/avatar-192px.svg
 [🖼️galtzo-discord]: https://discord.gg/3qme4XHNKN
@@ -6,6 +6,8 @@
 [🖼️ruby-lang]: https://www.ruby-lang.org/
 [🖼️kettle-rb-i]: https://logos.galtzo.com/assets/images/kettle-rb/avatar-192px.svg
 [🖼️kettle-rb]: https://github.com/kettle-rb
+[🖼️kettle-dev-i]: https://logos.galtzo.com/assets/images/kettle-rb/kettle-dev/avatar-192px.svg
+[🖼️kettle-dev]: https://github.com/kettle-rb/kettle-dev
 
 # 🍲 Kettle::Dev
 
