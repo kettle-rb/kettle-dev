@@ -6,7 +6,7 @@
 <title>
   Class: Kettle::Dev::GemSpecReader
   
-    &mdash; Documentation by YARD 0.9.38
+    &mdash; Documentation by YARD 0.9.39
   
 </title>
 
@@ -103,7 +103,7 @@
   <div class="discussion">
     <p>Unified gemspec reader using RubyGems loader instead of regex parsing.<br />
 Returns a Hash with all data used by this project from gemspecs.<br />
-Cache within the process to avoid repeated loads.</p>
+Results are memoized per project root within the process.</p>
 
 
   </div>
@@ -168,6 +168,29 @@ Cache within the process to avoid repeated loads.</p>
         <li class="public ">
   <span class="summary_signature">
     
+      <a href="#clear_cache!-class_method" title="clear_cache! (class method)">.<strong>clear_cache!</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
       <a href="#load-class_method" title="load (class method)">.<strong>load</strong>(root)  &#x21d2; Hash{Symbol=&gt;Object} </a>
     
 
@@ -198,7 +221,37 @@ Cache within the process to avoid repeated loads.</p>
 
     
       <div class="method_details first">
-  <h3 class="signature first" id="load-class_method">
+  <h3 class="signature first" id="clear_cache!-class_method">
+  
+    .<strong>clear_cache!</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+184
+185
+186</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gem_spec_reader.rb', line 184</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_clear_cache!'>clear_cache!</span>
+  <span class='ivar'>@load_cache</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="load-class_method">
   
     .<strong>load</strong>(root)  &#x21d2; <tt>Hash{Symbol=&gt;Object}</tt> 
   
@@ -395,12 +448,39 @@ The reader is lenient: failures to load or missing fields are handled with defau
 155
 156
 157
-158</pre>
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/kettle/dev/gem_spec_reader.rb', line 41</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_load'>load</span><span class='lparen'>(</span><span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_cache_key'>cache_key</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_expand_path'>expand_path</span><span class='lparen'>(</span><span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='ivar'>@load_cache</span><span class='lbracket'>[</span><span class='id identifier rubyid_cache_key'>cache_key</span><span class='rbracket'>]</span> <span class='kw'>if</span> <span class='ivar'>@load_cache</span><span class='op'>&amp;.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='id identifier rubyid_cache_key'>cache_key</span><span class='rparen'>)</span>
+
   <span class='id identifier rubyid_gemspec_path'>gemspec_path</span> <span class='op'>=</span> <span class='const'>Dir</span><span class='period'>.</span><span class='id identifier rubyid_glob'>glob</span><span class='lparen'>(</span><span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>*.gemspec</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span>
   <span class='id identifier rubyid_spec'>spec</span> <span class='op'>=</span> <span class='kw'>nil</span>
   <span class='kw'>if</span> <span class='id identifier rubyid_gemspec_path'>gemspec_path</span> <span class='op'>&amp;&amp;</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_file?'>file?</span><span class='lparen'>(</span><span class='id identifier rubyid_gemspec_path'>gemspec_path</span><span class='rparen'>)</span>
@@ -412,10 +492,21 @@ The reader is lenient: failures to load or missing fields are handled with defau
     <span class='kw'>end</span>
   <span class='kw'>end</span>
 
+  <span class='id identifier rubyid_gemspec_source'>gemspec_source</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='id identifier rubyid_gemspec_path'>gemspec_path</span> <span class='op'>&amp;&amp;</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_file?'>file?</span><span class='lparen'>(</span><span class='id identifier rubyid_gemspec_path'>gemspec_path</span><span class='rparen'>)</span>
+    <span class='kw'>begin</span>
+      <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='lparen'>(</span><span class='id identifier rubyid_gemspec_path'>gemspec_path</span><span class='rparen'>)</span>
+    <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+      <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_error'><span class='object_link'><a href="../Dev.html#debug_error-class_method" title="Kettle::Dev.debug_error (method)">debug_error</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span>
+      <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span>
+    <span class='kw'>end</span>
+  <span class='kw'>else</span>
+    <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>end</span>
+
   <span class='id identifier rubyid_gem_name'>gem_name</span> <span class='op'>=</span> <span class='id identifier rubyid_spec'>spec</span><span class='op'>&amp;.</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
   <span class='kw'>if</span> <span class='id identifier rubyid_gem_name'>gem_name</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>||</span> <span class='id identifier rubyid_gem_name'>gem_name</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
     <span class='comment'># Be lenient here for tasks that can proceed without gem_name (e.g., choosing destination filenames).
-</span>    <span class='const'>Kernel</span><span class='period'>.</span><span class='id identifier rubyid_warn'>warn</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>kettle-dev: Could not derive gem name. Ensure a valid &lt;name&gt; is set in the gemspec.\n  - Tip: set the gem name in your .gemspec file (spec.name).\n  - Path searched: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_gemspec_path'>gemspec_path</span> <span class='op'>||</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>(none found)</span><span class='tstring_end'>&quot;</span></span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+</span>    <span class='const'>Kernel</span><span class='period'>.</span><span class='id identifier rubyid_warn'>warn</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>kettle-dev: Could not derive gem name. Ensure a valid &lt;name&gt; is set in the gemspec.\n  - Tip: set the gem name in your .gemspec file (spec.name).\n  - Path searched: </span><span class='embexpr_beg'>#{</span><span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_display_path'><span class='object_link'><a href="../Dev.html#display_path-class_method" title="Kettle::Dev.display_path (method)">display_path</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_gemspec_path'>gemspec_path</span> <span class='op'>||</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>(none found)</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
     <span class='id identifier rubyid_gem_name'>gem_name</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span>
   <span class='kw'>end</span>
   <span class='comment'># minimum ruby version: derived from spec.required_ruby_version
@@ -454,9 +545,14 @@ The reader is lenient: failures to load or missing fields are handled with defau
   <span class='id identifier rubyid_camel'>camel</span> <span class='op'>=</span> <span class='id identifier rubyid_lambda'>lambda</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_s'>s</span><span class='op'>|</span>
     <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>[_-]</span><span class='regexp_end'>/</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_p'>p</span><span class='op'>|</span> <span class='id identifier rubyid_p'>p</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\b([a-z])</span><span class='regexp_end'>/</span></span><span class='rparen'>)</span> <span class='lbrace'>{</span> <span class='const'>Regexp</span><span class='period'>.</span><span class='id identifier rubyid_last_match'>last_match</span><span class='lparen'>(</span><span class='int'>1</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_upcase'>upcase</span> <span class='rbrace'>}</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span>
   <span class='kw'>end</span>
-  <span class='id identifier rubyid_namespace'>namespace</span> <span class='op'>=</span> <span class='id identifier rubyid_gem_name'>gem_name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>-</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_seg'>seg</span><span class='op'>|</span> <span class='id identifier rubyid_camel'>camel</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_seg'>seg</span><span class='rparen'>)</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>::</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_entrypoint_require'>entrypoint_require</span> <span class='op'>=</span> <span class='id identifier rubyid_derive_entrypoint_require'>derive_entrypoint_require</span><span class='lparen'>(</span>
+    <span class='label'>root:</span> <span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span><span class='comma'>,</span>
+    <span class='label'>gem_name:</span> <span class='id identifier rubyid_gem_name'>gem_name</span><span class='comma'>,</span>
+    <span class='label'>gemspec_source:</span> <span class='id identifier rubyid_gemspec_source'>gemspec_source</span><span class='comma'>,</span>
+  <span class='rparen'>)</span>
+  <span class='id identifier rubyid_namespace_source'>namespace_source</span> <span class='op'>=</span> <span class='id identifier rubyid_entrypoint_require'>entrypoint_require</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span> <span class='op'>?</span> <span class='id identifier rubyid_gem_name'>gem_name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_tr'>tr</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>-</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>:</span> <span class='id identifier rubyid_entrypoint_require'>entrypoint_require</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
+  <span class='id identifier rubyid_namespace'>namespace</span> <span class='op'>=</span> <span class='id identifier rubyid_namespace_source'>namespace_source</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_reject'>reject</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:empty?</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_seg'>seg</span><span class='op'>|</span> <span class='id identifier rubyid_camel'>camel</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_seg'>seg</span><span class='rparen'>)</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>::</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
   <span class='id identifier rubyid_namespace_shield'>namespace_shield</span> <span class='op'>=</span> <span class='id identifier rubyid_namespace'>namespace</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>::</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>%3A%3A</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_entrypoint_require'>entrypoint_require</span> <span class='op'>=</span> <span class='id identifier rubyid_gem_name'>gem_name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_tr'>tr</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>-</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
   <span class='id identifier rubyid_gem_shield'>gem_shield</span> <span class='op'>=</span> <span class='id identifier rubyid_gem_name'>gem_name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>-</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>--</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>_</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>__</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
 
   <span class='comment'># Funding org (Open Collective handle) detection.
@@ -471,8 +567,9 @@ The reader is lenient: failures to load or missing fields are handled with defau
       <span class='id identifier rubyid_funding_org'>funding_org</span> <span class='op'>=</span> <span class='kw'>nil</span>
     <span class='kw'>else</span>
       <span class='id identifier rubyid_env_funding'>env_funding</span> <span class='op'>=</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>FUNDING_ORG</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
-      <span class='kw'>if</span> <span class='id identifier rubyid_env_funding'>env_funding</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_env_funding'>env_funding</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
-        <span class='comment'># FUNDING_ORG is set and non-empty; use it as-is (already filtered by opencollective_disabled?)
+      <span class='kw'>if</span> <span class='id identifier rubyid_env_funding'>env_funding</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_env_funding'>env_funding</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_env_funding'>env_funding</span><span class='period'>.</span><span class='id identifier rubyid_match?'>match?</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\{KJ\|[^}]+}</span><span class='regexp_end'>/</span></span><span class='rparen'>)</span>
+        <span class='comment'># FUNDING_ORG is set, non-empty, and is not an unresolved token placeholder;
+</span>        <span class='comment'># use it as-is (already filtered by opencollective_disabled?)
 </span>        <span class='id identifier rubyid_funding_org'>funding_org</span> <span class='op'>=</span> <span class='id identifier rubyid_env_funding'>env_funding</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
       <span class='kw'>else</span>
         <span class='comment'># Preflight: if a YAML exists under the provided root, attempt to read it here so
@@ -493,9 +590,10 @@ The reader is lenient: failures to load or missing fields are handled with defau
 </span>    <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Error.html" title="Kettle::Dev::Error (class)">Error</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Unable to determine funding org: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_error'>error</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
   <span class='kw'>end</span>
 
-  <span class='lbrace'>{</span>
+  <span class='id identifier rubyid_result'>result</span> <span class='op'>=</span> <span class='lbrace'>{</span>
     <span class='label'>gemspec_path:</span> <span class='id identifier rubyid_gemspec_path'>gemspec_path</span><span class='comma'>,</span>
     <span class='label'>gem_name:</span> <span class='id identifier rubyid_gem_name'>gem_name</span><span class='comma'>,</span>
+    <span class='label'>version:</span> <span class='id identifier rubyid_spec'>spec</span><span class='op'>&amp;.</span><span class='id identifier rubyid_version'>version</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span>
     <span class='label'>min_ruby:</span> <span class='id identifier rubyid_min_ruby'>min_ruby</span><span class='comma'>,</span> <span class='comment'># Gem::Version instance
 </span>    <span class='label'>homepage:</span> <span class='id identifier rubyid_homepage_val'>homepage_val</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span>
     <span class='label'>gh_org:</span> <span class='id identifier rubyid_forge_org'>forge_org</span><span class='comma'>,</span> <span class='comment'># Might allow divergence from forge_org someday
@@ -517,6 +615,9 @@ The reader is lenient: failures to load or missing fields are handled with defau
     <span class='label'>bindir:</span> <span class='lparen'>(</span><span class='id identifier rubyid_spec'>spec</span><span class='op'>&amp;.</span><span class='id identifier rubyid_bindir'>bindir</span> <span class='op'>||</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span>
     <span class='label'>executables:</span> <span class='const'>Array</span><span class='lparen'>(</span><span class='id identifier rubyid_spec'>spec</span><span class='op'>&amp;.</span><span class='id identifier rubyid_executables'>executables</span><span class='rparen'>)</span><span class='comma'>,</span>
   <span class='rbrace'>}</span>
+
+  <span class='ivar'>@load_cache</span> <span class='op'>||=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
+  <span class='ivar'>@load_cache</span><span class='lbracket'>[</span><span class='id identifier rubyid_cache_key'>cache_key</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_result'>result</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -528,9 +629,9 @@ The reader is lenient: failures to load or missing fields are handled with defau
 </div>
 
       <div id="footer">
-  Generated on Thu Feb 26 11:34:03 2026 by
+  Generated on Sun Apr 12 11:49:31 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.38 (ruby-4.0.1).
+  0.9.39 (ruby-4.0.2).
 </div>
 
     </div>
