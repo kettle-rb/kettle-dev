@@ -1,100 +1,61 @@
 {
-  "#       strategy: merge\n#       file_type: ruby": [
+  "# Continue to the next step on failure\ncontinue-on-error: true": [
     {
-      "file": ".kettle-jem.yml",
+      "file": ".github/workflows/current.yml",
       "lines": [
-        247,
-        417
+        98,
+        111
+      ]
+    },
+    {
+      "file": ".github/workflows/dep-heads.yml",
+      "lines": [
+        99,
+        112
+      ]
+    },
+    {
+      "file": ".github/workflows/heads.yml",
+      "lines": [
+        106,
+        119
+      ]
+    },
+    {
+      "file": ".github/workflows/truffle.yml",
+      "lines": [
+        77,
+        90
       ]
     }
   ],
-  "#     commit-msg:\n#       strategy: merge": [
+  "if: ${{ !env.ACT || (! startsWith(matrix.ruby, 'jruby') && !startsWith(matrix.ruby, 'truffleruby')) }}\nrun: bundle install": [
     {
-      "file": ".kettle-jem.yml",
+      "file": ".github/workflows/current.yml",
       "lines": [
-        246,
-        416
+        91,
+        96
       ]
-    }
-  ],
-  "#     pboling.pem:\n#       strategy: raw_copy": [
+    },
     {
-      "file": ".kettle-jem.yml",
+      "file": ".github/workflows/dep-heads.yml",
       "lines": [
-        242,
-        412
+        92,
+        97
       ]
-    }
-  ],
-  "#     preference: destination\n#     add_template_only_nodes: false": [
+    },
     {
-      "file": ".kettle-jem.yml",
+      "file": ".github/workflows/heads.yml",
       "lines": [
-        252,
-        422
+        99,
+        104
       ]
-    }
-  ],
-  "#     strategy: merge\n#     preference: destination": [
+    },
     {
-      "file": ".kettle-jem.yml",
+      "file": ".github/workflows/truffle.yml",
       "lines": [
-        251,
-        421
-      ]
-    }
-  ],
-  "#   .git-hooks:\n#     commit-msg:": [
-    {
-      "file": ".kettle-jem.yml",
-      "lines": [
-        245,
-        415
-      ]
-    }
-  ],
-  "#   README.md:\n#     strategy: accept_template": [
-    {
-      "file": ".kettle-jem.yml",
-      "lines": [
-        235,
-        405
-      ]
-    }
-  ],
-  "#   Rakefile:\n#     strategy: merge": [
-    {
-      "file": ".kettle-jem.yml",
-      "lines": [
-        250,
-        420
-      ]
-    }
-  ],
-  "#   SECURITY.md:\n#     strategy: keep_destination": [
-    {
-      "file": ".kettle-jem.yml",
-      "lines": [
-        238,
-        408
-      ]
-    }
-  ],
-  "#   certs:\n#     pboling.pem:": [
-    {
-      "file": ".kettle-jem.yml",
-      "lines": [
-        241,
-        411
-      ]
-    }
-  ],
-  "# files:\n#   README.md:": [
-    {
-      "file": ".kettle-jem.yml",
-      "lines": [
-        234,
-        404
+        70,
+        75
       ]
     }
   ]
