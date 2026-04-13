@@ -11,19 +11,18 @@ begin
     t.files = []
   end
 
-  # Load yard-fence rake task if available (provides yard:fence:prepare).
-  # The explicit enhance below is needed because yard-fence only auto-enhances
-  # :yard when the task already exists at the time its rake task is loaded.
   begin
-    require "yard/fence/rake_task"
-    Yard::Fence::RakeTask.new unless Rake::Task.task_defined?("yard:fence:prepare")
-
-    if Rake::Task.task_defined?(:yard) && Rake::Task.task_defined?("yard:fence:prepare")
-      prereqs = Rake::Task[:yard].prerequisites
-      Rake::Task[:yard].enhance(["yard:fence:prepare"]) unless prereqs.include?("yard:fence:prepare")
-    end
+    require "yard/fence"
+    Yard::Fence.install_rake_tasks!(:yard)
   rescue LoadError
-    # yard-fence not available or doesn't have rake_task - that's fine
+    # yard-fence not available - that's fine
+  end
+
+  begin
+    require "yard/timekeeper"
+    Yard::Timekeeper.install_rake_tasks!(:yard)
+  rescue LoadError
+    # yard-timekeeper not available - that's fine
   end
 rescue LoadError
   warn("[kettle-dev][yard.rake] failed to load yard") if Kettle::Dev::DEBUGGING
