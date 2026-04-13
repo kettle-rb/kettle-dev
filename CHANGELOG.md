@@ -22,11 +22,15 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- The shared `:yard` task now installs `yard-fence` and `yard-timekeeper` integrations explicitly so documentation prep and post-processing only run during `rake yard`
+
 ### Deprecated
 
 ### Removed
 
 ### Fixed
+
+- Loading YARD during unrelated rake tasks no longer triggers documentation plugin side effects that rewrite or clear `docs/`
 
 ### Security
 
