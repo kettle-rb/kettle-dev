@@ -252,6 +252,24 @@ RSpec.describe Kettle::Dev::GemSpecReader do
   end
 
   context "when deriving forge org via git adapter" do
+    it "honors FORGE_ORG when homepage and git origin are unavailable" do
+      stub_env("FORGE_ORG" => "env-org")
+      write_gemspec <<~G
+        Gem::Specification.new do |spec|
+          spec.name    = "z"
+          spec.version = "0.0.1"
+        end
+      G
+
+      allow(Kettle::Dev::GitAdapter).to receive(:new).and_raise(RuntimeError.new("boom"))
+      allow(Kernel).to receive(:warn)
+
+      info = load_info
+
+      expect(info[:forge_org]).to eq("env-org")
+      expect(Kernel).not_to have_received(:warn).with(/Could not determine forge org/)
+    end
+
     it "uses git remote origin when homepage is missing" do
       write_gemspec <<~G
         Gem::Specification.new do |spec|

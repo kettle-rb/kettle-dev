@@ -100,9 +100,11 @@ module Kettle
 
           homepage_val = spec&.homepage.to_s
 
+          explicit_forge_org = env_org_override("FORGE_ORG")
+
           # Derive org/repo from homepage or git remote
           forge_info = derive_forge_and_origin_repo(homepage_val)
-          forge_org = forge_info[:forge_org]
+          forge_org = explicit_forge_org || forge_info[:forge_org]
           gh_repo = forge_info[:origin_repo]
           if forge_org.to_s.empty?
             Kernel.warn("kettle-dev: Could not determine forge org from spec.homepage or git remote.\n  - Ensure gemspec.homepage is set to a GitHub URL or that the git remote 'origin' points to GitHub.\n  - Example homepage: https://github.com/<org>/<repo>\n  - Proceeding with default org: kettle-rb.")
@@ -228,6 +230,15 @@ module Kettle
           end
 
           forge_info
+        end
+
+        def env_org_override(env_key)
+          value = ENV[env_key].to_s.strip
+          return if value.empty?
+          return if value.match?(Kettle::Dev::ENV_FALSE_RE)
+          return if value.match?(/\{KJ\|[^}]+}/)
+
+          value
         end
 
         def derive_entrypoint_require(root:, gem_name:, gemspec_source:)
