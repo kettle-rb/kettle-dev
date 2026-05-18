@@ -25,6 +25,16 @@ platform :mri do
     %w[
       tree_haver
       ast-merge
+      bash-merge
+      commonmarker-merge
+      dotenv-merge
+      json-merge
+      kramdown-merge
+      markdown-merge
+      markly-merge
+      prism-merge
+      psych-merge
+      rbs-merge
       ruby-merge
       toml-merge
       yaml-merge

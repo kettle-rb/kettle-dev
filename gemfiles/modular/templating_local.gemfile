@@ -5,31 +5,35 @@
 
 require "nomono/bundler" unless defined?(Nomono)
 
-local_gems = %w[
+structuredmerge_gems = %w[
   tree_haver
   ast-merge
   bash-merge
-  kettle-drift
+  commonmarker-merge
   dotenv-merge
   json-merge
+  kramdown-merge
   markdown-merge
+  markly-merge
   prism-merge
   psych-merge
   rbs-merge
+  ruby-merge
   toml-merge
-  markly-merge
+  yaml-merge
   kettle-jem
-  jsonc-merge
 ]
 
-# export VENDORED_GEMS=tree_haver,ast-merge,bash-merge,kettle-drift,dotenv-merge,json-merge,markdown-merge,prism-merge,psych-merge,rbs-merge,toml-merge,markly-merge,kettle-jem,jsonc-merge
+# `KETTLE_RB_DEV=true` resolves structuredmerge gems under the active split
+# workspace. Use STRUCTUREDMERGE_RUBY_GEMS for the non-nomono path override.
 platform :mri do
   eval_nomono_gems(
-    gems: local_gems,
+    gems: structuredmerge_gems,
     prefix: "KETTLE_RB",
     path_env: "KETTLE_RB_DEV",
     vendored_gems_env: "VENDORED_GEMS",
     vendor_gem_dir_env: "VENDOR_GEM_DIR",
     debug_env: "KETTLE_DEV_DEBUG",
+    root: ["src", "kettle-rb", "structuredmerge", "ruby", "gems"],
   )
 end
