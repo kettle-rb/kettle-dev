@@ -28,27 +28,19 @@ rescue LoadError
 end
 
 setup_spec_task = ->(default:) {
-  begin
-    require "rspec/core/rake_task"
+  unless Rake::Task.task_defined?(:spec)
+    desc("Run RSpec code examples")
+    task(:spec) do
+      sh("bundle", "exec", "kettle-test")
+    end
+  end
 
-    unless Rake::Task.task_defined?(:spec)
-      RSpec::Core::RakeTask.new(:spec)
-    end
-    if default
-      # This takes the place of the `coverage` task if/when it isn't already registered.
-      # This is because spec and coverage run the same tests
-      # (via the coverage task invoking the test task which invokes the spec task),
-      # so we can't have both in the default task.
-      Kettle::Dev.register_default("spec") unless Kettle::Dev.default_registered?("coverage")
-    end
-  rescue LoadError
-    warn("[kettle-dev][spec_test.rake] failed to load rspec/core/rake_task") if Kettle::Dev::DEBUGGING
-    unless Rake::Task.task_defined?(:spec)
-      desc("spec task stub")
-      task(:spec) do
-        warn("NOTE: rspec isn't installed, or is disabled for #{RUBY_VERSION} in the current environment")
-      end
-    end
+  if default
+    # This takes the place of the `coverage` task if/when it isn't already registered.
+    # This is because spec and coverage run the same tests
+    # (via the coverage task invoking the test task which invokes the spec task),
+    # so we can't have both in the default task.
+    Kettle::Dev.register_default("spec") unless Kettle::Dev.default_registered?("coverage")
   end
 }
 
