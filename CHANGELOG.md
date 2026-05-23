@@ -22,6 +22,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- The shared `rake spec` task now delegates to `bundle exec kettle-test`, so
+  projects using kettle-dev automatically pick up kettle-test's default
+  `turbo_tests2` runner and summary output.
 - The shared `:yard` task now installs `yard-fence` and `yard-timekeeper` integrations explicitly so documentation prep and post-processing only run during `rake yard`
 
 ### Deprecated
