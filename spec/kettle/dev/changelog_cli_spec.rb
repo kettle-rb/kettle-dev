@@ -303,6 +303,46 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
         end
       end
     end
+
+    it "disables hard coverage thresholds when refreshing strict coverage data" do
+      mkproj do |root|
+        allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
+        bin_dir = File.join(root, "bin")
+        FileUtils.mkdir_p(bin_dir)
+        rake_cmd = File.join(bin_dir, "rake")
+        File.write(rake_cmd, "#!/usr/bin/env ruby\n")
+        FileUtils.chmod(0o755, rake_cmd)
+        coverage_payload = JSON.generate(
+          "coverage" => {
+            "lib/a.rb" => {
+              "lines" => [1],
+              "branches" => [{"coverage" => 1}],
+            },
+          },
+        )
+
+        expect(cli = described_class.new(strict: true)).to receive(:system).with(
+          hash_including(
+            "K_SOUP_COV_DO" => "true",
+            "K_SOUP_COV_FORMATTERS" => "json",
+            "K_SOUP_COV_MIN_HARD" => "false",
+            "K_SOUP_COV_MULTI_FORMATTERS" => "true",
+            "K_SOUP_COV_OPEN_BIN" => "",
+          ),
+          rake_cmd,
+          "coverage",
+          chdir: root,
+        ) do
+          FileUtils.mkdir_p(File.join(root, "coverage"))
+          File.write(File.join(root, "coverage", "coverage.json"), coverage_payload)
+          true
+        end
+
+        line_cov, branch_cov = cli.send(:coverage_lines)
+        expect(line_cov).to eq("COVERAGE: 100.00% -- 1/1 lines in 1 files")
+        expect(branch_cov).to eq("BRANCH COVERAGE: 100.00% -- 1/1 branches in 1 files")
+      end
+    end
   end
 
   describe "#yard_percent_documented" do

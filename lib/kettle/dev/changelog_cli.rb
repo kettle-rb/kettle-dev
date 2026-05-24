@@ -259,9 +259,9 @@ module Kettle
             raise "bin/rake not found or not executable; cannot generate coverage data"
           end
 
-          # Run the command exactly as the user would run it manually
-          # The coverage task knows how to configure itself properly
-          success = system(rake_cmd, "coverage", chdir: @root)
+          # Changelog generation only needs fresh coverage JSON. Do not let
+          # project threshold policy block metadata collection.
+          success = system(changelog_coverage_env, rake_cmd, "coverage", chdir: @root)
 
           unless success
             raise "bin/rake coverage failed with exit status #{$?.exitstatus || "unknown"}"
@@ -329,6 +329,16 @@ module Kettle
           warn("Failed to get coverage data: #{e.class}: #{e.message}")
           [nil, nil]
         end
+      end
+
+      def changelog_coverage_env
+        {
+          "K_SOUP_COV_DO" => "true",
+          "K_SOUP_COV_FORMATTERS" => "json",
+          "K_SOUP_COV_MIN_HARD" => "false",
+          "K_SOUP_COV_MULTI_FORMATTERS" => "true",
+          "K_SOUP_COV_OPEN_BIN" => "",
+        }
       end
 
       def yard_percent_documented
