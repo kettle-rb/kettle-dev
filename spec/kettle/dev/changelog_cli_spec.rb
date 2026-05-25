@@ -304,7 +304,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       end
     end
 
-    it "runs kettle-test with coverage JSON and hard thresholds disabled in strict mode" do
+    it "runs kettle-test with coverage JSON and hard thresholds enabled in strict mode" do
       mkproj do |root|
         allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
         coverage_payload = JSON.generate(
@@ -317,6 +317,42 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
         )
 
         expect(cli = described_class.new(strict: true)).to receive(:system).with(
+          hash_including(
+            "K_SOUP_COV_DO" => "true",
+            "K_SOUP_COV_FORMATTERS" => "json",
+            "K_SOUP_COV_MIN_HARD" => "true",
+            "K_SOUP_COV_MULTI_FORMATTERS" => "true",
+            "K_SOUP_COV_OPEN_BIN" => "",
+          ),
+          "bundle",
+          "exec",
+          "kettle-test",
+          chdir: root,
+        ) do
+          FileUtils.mkdir_p(File.join(root, "coverage"))
+          File.write(File.join(root, "coverage", "coverage.json"), coverage_payload)
+          true
+        end
+
+        line_cov, branch_cov = cli.send(:coverage_lines)
+        expect(line_cov).to eq("COVERAGE: 100.00% -- 1/1 lines in 1 files")
+        expect(branch_cov).to eq("BRANCH COVERAGE: 100.00% -- 1/1 branches in 1 files")
+      end
+    end
+
+    it "allows strict coverage generation without hard threshold enforcement" do
+      mkproj do |root|
+        allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
+        coverage_payload = JSON.generate(
+          "coverage" => {
+            "lib/a.rb" => {
+              "lines" => [1],
+              "branches" => [{"coverage" => 1}],
+            },
+          },
+        )
+
+        expect(cli = described_class.new(strict: true, enforce_coverage_thresholds: false)).to receive(:system).with(
           hash_including(
             "K_SOUP_COV_DO" => "true",
             "K_SOUP_COV_FORMATTERS" => "json",

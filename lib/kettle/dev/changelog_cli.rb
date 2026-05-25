@@ -18,11 +18,13 @@ module Kettle
       # Initialize the changelog CLI
       # Sets up paths for CHANGELOG.md and coverage.json
       # @param strict [Boolean] when true (default), require coverage and yard data; raise errors if unavailable
-      def initialize(strict: true)
+      # @param enforce_coverage_thresholds [Boolean] when true, fail strict coverage generation below project thresholds
+      def initialize(strict: true, enforce_coverage_thresholds: true)
         @root = Kettle::Dev::CIHelpers.project_root
         @changelog_path = File.join(@root, "CHANGELOG.md")
         @coverage_path = File.join(@root, "coverage", "coverage.json")
         @strict = strict
+        @enforce_coverage_thresholds = enforce_coverage_thresholds
       end
 
       # Main entry point to update CHANGELOG.md
@@ -253,8 +255,6 @@ module Kettle
 
           puts "Generating fresh coverage data by running: bundle exec kettle-test"
 
-          # Changelog generation only needs fresh coverage JSON. Do not let
-          # project threshold policy block metadata collection.
           success = system(changelog_coverage_env, "bundle", "exec", "kettle-test", chdir: @root)
 
           unless success
@@ -329,7 +329,7 @@ module Kettle
         {
           "K_SOUP_COV_DO" => "true",
           "K_SOUP_COV_FORMATTERS" => "json",
-          "K_SOUP_COV_MIN_HARD" => "false",
+          "K_SOUP_COV_MIN_HARD" => @enforce_coverage_thresholds ? "true" : "false",
           "K_SOUP_COV_MULTI_FORMATTERS" => "true",
           "K_SOUP_COV_OPEN_BIN" => "",
         }
