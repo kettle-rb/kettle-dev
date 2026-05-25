@@ -145,7 +145,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
     end
   end
 
-  describe "::act (interactive)", :skip_ci do
+  describe "::act (interactive)" do
     it "highlights mismatch when GitHub and GitLab HEAD SHAs differ", :check_output do
       with_workflows(["ci.yml"]) do |_root, _dir|
         # Ensure both remotes are detected
@@ -312,7 +312,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
     end
   end
 
-  describe "::act edge cases and interactive behaviors", :skip_ci do
+  describe "::act edge cases and interactive behaviors" do
     it "uses default emoji for unknown status in non-interactive fetch", :check_output do
       with_workflows(["ci.yml"]) do |_root, dir|
         seq = [

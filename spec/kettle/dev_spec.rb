@@ -89,17 +89,20 @@ RSpec.describe Kettle::Dev do
     end
   end
 
-  # pending("RuboCop::Lts is only a dependency for Ruby >= 2.7") if RUBY_VERSION < "2.7"
-  # But the next release of RuboCop::Lts will be for Ruby >= 3.2
-  # But also RuboCop::Lts is only installed on the Style and Locked / Unlocked CI workflows,
-  #   so these would fail everywhere else.
-  # As such, these specs are only useful on local.
-  describe "linting and coverage tasks", :skip_ci do
+  describe "linting and coverage tasks" do
+    around do |example|
+      defaults = described_class.defaults
+      described_class.instance_variable_set(:@defaults, [].freeze)
+      example.run
+      described_class.instance_variable_set(:@defaults, defaults)
+    end
+
     before do
-      require "rubocop/lts" # have to require here so we can spy on it
-      # stub register_default to observe calls without mutating global Rake
-      allow(described_class).to receive(:register_default).and_call_original
+      stub_const("Rubocop::Lts", Class.new)
       allow(Rubocop::Lts).to receive(:install_tasks)
+      allow(described_class).to receive(:register_default).and_call_original
+      allow(described_class).to receive(:require).and_call_original
+      allow(described_class).to receive(:require).with("rubocop/lts").and_return(true)
     end
 
     it "registers autocorrect when not on CI" do
@@ -114,8 +117,12 @@ RSpec.describe Kettle::Dev do
       expect(described_class.defaults).to include("rubocop_gradual:check")
     end
 
+    it "handles missing rubocop-lts (LoadError)" do
+      allow(described_class).to receive(:require).with("rubocop/lts").and_raise(LoadError)
+      expect { described_class.send(:linting_tasks) }.not_to raise_error
+    end
+
     it "handles missing kettle-soup-cover (LoadError)" do
-      # Force require to raise when asking for kettle-soup-cover
       allow(described_class).to receive(:require).with("kettle-soup-cover").and_raise(LoadError)
       expect { described_class.send(:coverage_tasks) }.not_to raise_error
     end

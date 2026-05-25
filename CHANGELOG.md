@@ -40,8 +40,10 @@ Please file a bug if you notice a violation of semantic versioning.
 - Appraisal-based CI gemfiles now load the version-appropriate VCR/WebMock
   recording dependencies required by the spec helper without falling back to the
   root Gemfile.
-- Reek rake-task specs are skipped on CI appraisals where style tooling is not
-  installed, matching the existing treatment of RuboCop task specs.
+- Reek, RuboCop-LTS, and coverage task specs now run in coverage CI without
+  requiring style-only dependencies.
+- Coverage CI thresholds now match the repository `mise.toml` thresholds instead
+  of requiring unreachable 100% line and branch coverage.
 - Regenerated templating now keeps `kettle-test` as a runtime dependency only
   instead of duplicating it as both runtime and development dependency.
 - Replaced non-capturing `=~` checks with `Regexp#match?` so unlocked/style CI
