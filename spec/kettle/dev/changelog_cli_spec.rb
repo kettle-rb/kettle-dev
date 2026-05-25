@@ -97,6 +97,71 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       end
     end
 
+    it "updates the most recent prepared release in place" do
+      mkproj do |root|
+        File.write(File.join(root, "lib", "my", "gem", "version.rb"), <<~RB)
+          module My; module Gem; VERSION = "1.2.4"; end; end
+        RB
+        FileUtils.mkdir_p(File.join(root, "coverage"))
+        File.write(File.join(root, "coverage", "coverage.json"), {"coverage" => {}}.to_json)
+        File.write(File.join(root, "CHANGELOG.md"), <<~MD)
+          # Changelog
+
+          ## [Unreleased]
+
+          ### Fixed
+
+          - Fixed a release-prep follow-up.
+
+          ## [1.2.4] - 2025-08-30
+
+          - TAG: [v1.2.4][1.2.4t]
+          - COVERAGE: 90.00% -- 90/100 lines in 2 files
+          - BRANCH COVERAGE: 70.00% -- 7/10 branches in 2 files
+          - 10.00% documented
+
+          ### Fixed
+
+          - Prepared the release.
+
+          ## [1.2.3] - 2025-08-01
+
+          ### Fixed
+
+          - Previous release.
+
+          [Unreleased]: https://github.com/o/r/compare/v1.2.4...HEAD
+          [1.2.4]: https://github.com/o/r/compare/v1.2.3...v1.2.4
+          [1.2.4t]: https://github.com/o/r/releases/tag/v1.2.4
+          [1.2.3]: https://github.com/o/r/compare/v1.2.2...v1.2.3
+          [1.2.3t]: https://github.com/o/r/releases/tag/v1.2.3
+        MD
+        allow(Kettle::Dev::CIHelpers).to receive_messages(project_root: root, repo_info: ["o", "r"])
+        allow(Time).to receive(:now).and_return(Time.new(2025, 8, 31))
+
+        cli = described_class.new(strict: false, update_prep: true)
+        allow(cli).to receive_messages(
+          coverage_lines: [
+            "COVERAGE: 95.00% -- 95/100 lines in 2 files",
+            "BRANCH COVERAGE: 80.00% -- 8/10 branches in 2 files",
+          ],
+          yard_percent_documented: "20.00% documented",
+        )
+
+        expect { cli.run }.not_to raise_error
+        updated = File.read(File.join(root, "CHANGELOG.md"))
+
+        expect(updated.scan(/^## \[1\.2\.4\]/).size).to eq(1)
+        expect(updated).to include("## [1.2.4] - 2025-08-31")
+        expect(updated).to include("- COVERAGE: 95.00% -- 95/100 lines in 2 files")
+        expect(updated).to include("- BRANCH COVERAGE: 80.00% -- 8/10 branches in 2 files")
+        expect(updated).to include("- 20.00% documented")
+        expect(updated).to match(/### Fixed\n\n- Prepared the release\.\n\n- Fixed a release-prep follow-up\./)
+        expect(updated).to match(/## \[Unreleased\]\n\n### Added\n\n### Changed\n\n### Deprecated\n\n### Removed\n\n### Fixed\n\n### Security/)
+        expect(updated).to include("[Unreleased]: https://github.com/o/r/compare/v1.2.4...HEAD")
+      end
+    end
+
     it "aborts when Unreleased section is missing" do
       mkproj do |root|
         File.write(File.join(root, "lib", "my", "gem", "version.rb"), <<~RB)

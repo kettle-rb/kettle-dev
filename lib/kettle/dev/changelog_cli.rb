@@ -19,12 +19,14 @@ module Kettle
       # Sets up paths for CHANGELOG.md and coverage.json
       # @param strict [Boolean] when true (default), require coverage and yard data; raise errors if unavailable
       # @param enforce_coverage_thresholds [Boolean] when true, fail strict coverage generation below project thresholds
-      def initialize(strict: true, enforce_coverage_thresholds: true)
+      # @param update_prep [Boolean] when true, update the most recent prepared release section in place
+      def initialize(strict: true, enforce_coverage_thresholds: true, update_prep: false)
         @root = Kettle::Dev::CIHelpers.project_root
         @changelog_path = File.join(@root, "CHANGELOG.md")
         @coverage_path = File.join(@root, "coverage", "coverage.json")
         @strict = strict
         @enforce_coverage_thresholds = enforce_coverage_thresholds
+        @update_prep = update_prep
       end
 
       # Main entry point to update CHANGELOG.md
@@ -46,6 +48,11 @@ module Kettle
         yard_line = yard_percent_documented
 
         changelog = File.read(@changelog_path)
+
+        if @update_prep
+          update_prepared_release!(changelog, today, owner, repo, line_cov_line, branch_cov_line, yard_line)
+          return
+        end
 
         # If the detected version already exists in the changelog, offer reformat-only mode
         if changelog =~ /^## \[#{Regexp.escape(version)}\]/
@@ -195,6 +202,116 @@ module Kettle
         return m[1] if m
 
         nil
+      end
+
+      def update_prepared_release!(changelog, today, owner, repo, line_cov_line, branch_cov_line, yard_line)
+        unreleased_block, before, after = extract_unreleased(changelog)
+        abort("Could not find '## [Unreleased]' section in CHANGELOG.md") if unreleased_block.nil?
+
+        release_heading = after.to_s.match(/\A## \[(\d+\.\d+\.\d+)\][^\n]*\n/)
+        abort("Could not find a prepared release section after '## [Unreleased]' in CHANGELOG.md") unless release_heading
+
+        prepared_version = release_heading[1]
+        release_and_tail = after.lines
+        next_release_index = release_and_tail[1..-1].to_a.index { |line| line.start_with?("## [") }
+        release_line_count = next_release_index ? next_release_index + 1 : release_and_tail.length
+        release_lines = release_and_tail[0...release_line_count]
+        tail = release_and_tail[release_line_count..-1].to_a.join
+
+        release_body = release_lines[1..-1].to_a.join
+        merged_body = merge_release_body_with_unreleased(release_body, unreleased_block)
+
+        release_section = +""
+        release_section << "## [#{prepared_version}] - #{today}\n"
+        release_section << "- TAG: [v#{prepared_version}][#{prepared_version}t]\n"
+        release_section << "- #{line_cov_line}\n" if line_cov_line
+        release_section << "- #{branch_cov_line}\n" if branch_cov_line
+        release_section << "- #{yard_line}\n" if yard_line
+        release_section << merged_body
+        release_section.rstrip!
+        release_section << "\n\n"
+
+        unreleased_reset = <<~MD
+          ## [Unreleased]
+          ### Added
+          ### Changed
+          ### Deprecated
+          ### Removed
+          ### Fixed
+          ### Security
+        MD
+
+        previous_version = detect_previous_version(tail)
+        updated = before + unreleased_reset + "\n" + release_section + tail
+        updated = update_link_refs(updated, owner, repo, previous_version, prepared_version)
+        updated = convert_heading_tag_suffix_to_list(updated)
+        updated = normalize_heading_spacing(updated)
+        updated = updated.rstrip + "\n"
+
+        File.write(@changelog_path, updated)
+        puts "CHANGELOG.md updated in place for v#{prepared_version}."
+      end
+
+      def merge_release_body_with_unreleased(release_body, unreleased_block)
+        existing = strip_release_metadata(release_body)
+        incoming = filter_unreleased_sections(unreleased_block)
+        return existing if incoming.strip.empty?
+        return incoming if existing.strip.empty?
+
+        leading, sections = split_h3_sections(existing)
+        _incoming_leading, incoming_sections = split_h3_sections(incoming)
+        return [existing.rstrip, incoming.rstrip, ""].join("\n\n") if sections.empty? || incoming_sections.empty?
+
+        incoming_sections.each do |incoming_section|
+          section = sections.find { |candidate| candidate.fetch(:heading) == incoming_section.fetch(:heading) }
+          if section
+            section.fetch(:lines) << "\n" unless section.fetch(:lines).empty? || section.fetch(:lines).last.to_s.strip.empty?
+            section.fetch(:lines).concat(trim_blank_lines(incoming_section.fetch(:lines)))
+          else
+            sections << incoming_section
+          end
+        end
+
+        ([leading] + sections.map { |section| section.fetch(:heading) + trim_blank_lines(section.fetch(:lines)).join }).join.rstrip + "\n"
+      end
+
+      def strip_release_metadata(release_body)
+        lines = release_body.lines
+        while lines.any? && lines.first.strip.empty?
+          lines.shift
+        end
+        while lines.any?
+          stripped = lines.first.strip
+          break unless stripped.start_with?("- TAG:", "- COVERAGE:", "- BRANCH COVERAGE:") || stripped.match?(/\A- \d+(?:\.\d+)?%\s+documented\z/)
+
+          lines.shift
+        end
+        lines.join
+      end
+
+      def split_h3_sections(text)
+        leading = +""
+        sections = []
+        current = nil
+        text.lines.each do |line|
+          if line.start_with?("### ")
+            current = {heading: line, lines: []}
+            sections << current
+          elsif current
+            current.fetch(:lines) << line
+          else
+            leading << line
+          end
+        end
+        [leading, sections]
+      end
+
+      def trim_blank_lines(lines)
+        trimmed = lines.dup
+        trimmed.shift while trimmed.any? && trimmed.first.to_s.strip.empty?
+        trimmed.pop while trimmed.any? && trimmed.last.to_s.strip.empty?
+        trimmed << "\n" if trimmed.any? && !trimmed.last.end_with?("\n")
+        trimmed
       end
 
       # From the Unreleased block, keep only sections that have content.

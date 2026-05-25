@@ -20,6 +20,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- Added `kettle-changelog --update-prep` to refresh the most recent prepared
+  release section in place, including date, coverage, documentation stats, and
+  any follow-up Unreleased notes.
+
 ### Changed
 
 - `kettle-changelog` now generates strict coverage data with
