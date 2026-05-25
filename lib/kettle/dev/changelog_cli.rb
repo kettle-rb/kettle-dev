@@ -612,7 +612,7 @@ module Kettle
           # Run the canonical docs task to get the documentation percentage.
           out, _ = Open3.capture2(cmd, "yard", {chdir: @root})
           # Look for a line containing e.g., "95.35% documented"
-          line = out.lines.find { |l| l =~ /\d+(?:\.\d+)?%\s+documented/ }
+          line = out.lines.find { |l| /\d+(?:\.\d+)?%\s+documented/.match?(l) }
 
           if line
             line.strip
@@ -798,7 +798,7 @@ module Kettle
         end
 
         # Rebuild and sort the reference block so Unreleased is first, then newest to oldest versions, preserving everything above first_ref
-        ref_lines = lines[first_ref..-1].select { |l| l =~ /^\[[^\]]+\]:\s+http/ }
+        ref_lines = lines[first_ref..-1].select { |l| /^\[[^\]]+\]:\s+http/.match?(l) }
         # Deduplicate by key (text inside the square brackets)
         by_key = {}
         ref_lines.each do |l|
@@ -847,12 +847,12 @@ module Kettle
         fence_re = /^\s*```/
         heading_re = /^\s*#+\s+.+/
         lines.each_with_index do |ln, idx|
-          if ln =~ fence_re
+          if fence_re.match?(ln)
             in_fence = !in_fence
             out << ln
             next
           end
-          if !in_fence && ln =~ heading_re
+          if !in_fence && heading_re.match?(ln)
             # Ensure previous line is blank (unless start of file or already blank)
             prev_blank = out.empty? ? false : out.last.to_s.strip == ""
             out << "" unless out.empty? || prev_blank

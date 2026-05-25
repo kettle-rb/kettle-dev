@@ -247,7 +247,7 @@ module Kettle
               pbar&.increment unless pbar&.finished?
             elsif Kettle::Dev::CIHelpers.gitlab_failed?(pipe)
               reason = (pipe["failure_reason"] || "").to_s
-              if reason =~ /insufficient|quota|minute/i
+              if /insufficient|quota|minute/i.match?(reason)
                 result[:status] = "unknown"
                 pbar&.finish unless pbar&.finished?
               else
@@ -352,7 +352,7 @@ module Kettle
             elsif Kettle::Dev::CIHelpers.gitlab_failed?(pipe)
               # Special-case: if failure is due to exhausted minutes/insufficient quota, treat as unknown and continue
               reason = (pipe["failure_reason"] || "").to_s
-              if reason =~ /insufficient|quota|minute/i
+              if /insufficient|quota|minute/i.match?(reason)
                 puts "\nGitLab reports pipeline cannot run due to quota/minutes exhaustion. Result is unknown; continuing."
                 pbar&.finish unless pbar&.finished?
                 break

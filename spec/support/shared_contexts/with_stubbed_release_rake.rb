@@ -16,7 +16,7 @@ RSpec.shared_context "with stubbed release rake" do
 
     # Only stub the exact command "bundle exec rake release" to a no-op, forwarding others to the original method.
     allow(Kettle::Dev::ReleaseCLI).to receive(:run_cmd!).and_wrap_original do |orig, cmd|
-      if cmd =~ /.*rake\s+release\b/
+      if /.*rake\s+release\b/.match?(cmd)
         # no-op: pretend it succeeded / failed as requested by the spec
         release_rake_success
       else

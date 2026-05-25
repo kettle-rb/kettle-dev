@@ -44,6 +44,8 @@ Please file a bug if you notice a violation of semantic versioning.
   installed, matching the existing treatment of RuboCop task specs.
 - Regenerated templating now keeps `kettle-test` as a runtime dependency only
   instead of duplicating it as both runtime and development dependency.
+- Replaced non-capturing `=~` checks with `Regexp#match?` so unlocked/style CI
+  stays clean with newer RuboCop performance cops.
 
 ### Security
 

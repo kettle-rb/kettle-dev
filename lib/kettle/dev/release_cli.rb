@@ -21,7 +21,7 @@ module Kettle
           # For Bundler-invoked build/release, explicitly prefix SKIP_GEM_SIGNING so
           # the signing step is skipped even when Bundler scrubs ENV.
           # Always do this on CI to avoid interactive prompts; locally only when explicitly requested.
-          if ENV["SKIP_GEM_SIGNING"] && cmd =~ /\Abundle(\s+exec)?\s+rake\s+(build|release)\b/
+          if ENV["SKIP_GEM_SIGNING"] && /\Abundle(\s+exec)?\s+rake\s+(build|release)\b/.match?(cmd)
             cmd = "SKIP_GEM_SIGNING=true #{cmd}"
           end
           puts "$ #{cmd}"
@@ -31,7 +31,7 @@ module Kettle
           # Some commands are interactive (e.g., `bundle exec rake release` prompting for RubyGems MFA).
           # Using capture3 detaches STDIN, preventing prompts from working. For such commands, use system
           # so they inherit the current TTY and can read the user's input.
-          interactive = cmd =~ /\Abundle(\s+exec)?\s+rake\s+release\b/ || cmd =~ /\Agem\s+push\b/
+          interactive = /\Abundle(\s+exec)?\s+rake\s+release\b/.match?(cmd) || /\Agem\s+push\b/.match?(cmd)
           if interactive
             ok = system(env_hash, cmd)
             unless ok
@@ -320,7 +320,7 @@ module Kettle
         return unless section
 
         # Example match: "- COVERAGE: 97.70% -- 2125/2175 lines in 20 files"
-        m = section.lines.find { |l| l =~ /-\s*COVERAGE:\s*.+--\s*\d+\/(\d+)\s+lines/i }
+        m = section.lines.find { |l| /-\s*COVERAGE:\s*.+--\s*\d+\/(\d+)\s+lines/i.match?(l) }
         return unless m
 
         denom = m.match(/-\s*COVERAGE:\s*.+--\s*\d+\/(\d+)\s+lines/i)[1].to_i
@@ -411,7 +411,7 @@ module Kettle
         content = File.read(path)
         # Only consider lines that look like copyright notices to reduce false positives
         content.each_line do |line|
-          next unless line =~ /copyright/i
+          next unless /copyright/i.match?(line)
 
           # Expand ranges first (supports hyphen-minus and en dash)
           line.scan(/\b(19\d{2}|20\d{2})\s*[\-–]\s*(19\d{2}|20\d{2})\b/).each do |a, b|
@@ -462,7 +462,7 @@ module Kettle
         changed = false
         canonical_all = collapse_years(years_set)
         new_lines = content.each_line.map do |line|
-          unless line =~ /copyright/i
+          unless /copyright/i.match?(line)
             next line
           end
 
@@ -486,7 +486,7 @@ module Kettle
         content = File.read(path)
         changed = false
         new_lines = content.each_line.map do |line|
-          unless line =~ /copyright/i
+          unless /copyright/i.match?(line)
             next line
           end
 
@@ -559,7 +559,7 @@ module Kettle
         when "ask"
           print("Run local CI with 'act' before pushing? [Y/n] ")
           ans = Kettle::Dev::InputAdapter.gets&.strip
-          ans.nil? || ans.empty? || ans =~ /\Ay(es)?\z/i
+          ans.nil? || ans.empty? || /\Ay(es)?\z/i.match?(ans)
         else
           false
         end
@@ -582,7 +582,7 @@ module Kettle
 
         chosen = (ENV["K_RELEASE_LOCAL_CI_WORKFLOW"] || "").strip
         if !chosen.empty?
-          chosen = "#{chosen}.yml" unless chosen =~ /\.ya?ml\z/
+          chosen = "#{chosen}.yml" unless /\.ya?ml\z/.match?(chosen)
         else
           chosen = if candidates.include?("locked_deps.yml")
             "locked_deps.yml"
@@ -639,7 +639,7 @@ module Kettle
 
         data = JSON.parse(res.body)
         versions = data.map { |h| h["number"] }.compact
-        versions.reject! { |v| v.to_s.include?("-pre") || v.to_s.include?(".pre") || v.to_s =~ /[a-zA-Z]/ }
+        versions.reject! { |v| v.to_s.include?("-pre") || v.to_s.include?(".pre") || /[a-zA-Z]/.match?(v.to_s) }
         gversions = versions.map { |s| Gem::Version.new(s) }.sort
         latest_overall = gversions.last&.to_s
 

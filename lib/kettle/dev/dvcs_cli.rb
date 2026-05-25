@@ -371,7 +371,7 @@ module Kettle
           new_content.gsub!(summary_line_with_cs, summary_line_no_cs)
         else
           # Ensure the line contains (Coming soon!) so readers know it's partial
-          unless content =~ summary_line_with_cs
+          unless summary_line_with_cs.match?(content)
             new_content.gsub!("<summary>Find this repo on other forges</summary>", "<summary>Find this repo on other forges (Coming soon!)</summary>")
           end
         end
