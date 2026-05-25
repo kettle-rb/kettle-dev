@@ -8,8 +8,14 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
 
   before do
     allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("y\n")
-    allow_any_instance_of(described_class).to receive(:detect_gem_name).and_return("demo")
-    allow_any_instance_of(described_class).to receive(:latest_released_versions).and_return([nil, nil])
+    allow(described_class).to receive(:new).and_wrap_original do |original, *args, **kwargs, &block|
+      cli = original.call(*args, **kwargs, &block)
+      allow(cli).to receive_messages(
+        detect_gem_name: "demo",
+        latest_released_versions: [nil, nil],
+      )
+      cli
+    end
   end
 
   def mkproj

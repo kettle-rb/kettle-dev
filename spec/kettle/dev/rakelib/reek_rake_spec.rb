@@ -4,7 +4,7 @@ require "spec_helper"
 require "fileutils"
 require "tmpdir"
 
-RSpec.describe "rake reek:update", :skip_ci do
+RSpec.describe "rake reek:update", :skip_ci do # rubocop:disable RSpec/DescribeClass
   include_context "with rake", "reek"
 
   def status(success, exitstatus)
@@ -15,7 +15,7 @@ RSpec.describe "rake reek:update", :skip_ci do
     tmp_root = File.expand_path("../../../../tmp", __dir__)
     FileUtils.mkdir_p(tmp_root)
     Dir.mktmpdir("kettle-dev-reek-rake", tmp_root) do |root|
-      Dir.chdir(root) { example.run }
+      Dir.chdir(root) { example.run } # rubocop:disable ThreadSafety/DirChdir
     end
   end
 

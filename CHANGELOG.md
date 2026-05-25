@@ -46,6 +46,7 @@ Please file a bug if you notice a violation of semantic versioning.
   instead of duplicating it as both runtime and development dependency.
 - Replaced non-capturing `=~` checks with `Regexp#match?` so unlocked/style CI
   stays clean with newer RuboCop performance cops.
+- Cleared the remaining `rubocop_gradual` backlog and removed the lock file.
 
 ### Security
 

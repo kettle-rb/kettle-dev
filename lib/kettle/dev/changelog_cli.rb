@@ -267,7 +267,7 @@ module Kettle
 
         cur = Gem::Version.new(current_version)
         series = cur.segments[0, 2]
-        latest_series = gversions.select { |gv| gv.segments[0, 2] == series }.last&.to_s
+        latest_series = gversions.reverse.find { |gv| gv.segments[0, 2] == series }&.to_s
         [latest_overall, latest_series]
       rescue StandardError => e
         Kettle::Dev.debug_error(e, __method__)
