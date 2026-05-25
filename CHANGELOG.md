@@ -22,9 +22,12 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- Refreshed generated kettle-jem templates, CI workflows, curated binstubs, and
+  local modular Gemfile wiring.
 - `kettle-changelog` now auto-selects the correct no-argument action by
   comparing `version.rb`, the latest live release, and the most recent
   CHANGELOG.md release section before prompting for confirmation.
+- Updated the development dependency on `kettle-test` to require 2.0.1 or newer.
 
 ### Deprecated
 

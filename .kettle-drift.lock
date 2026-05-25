@@ -1,101 +1,38 @@
 {
-  "# Continue to the next step on failure\ncontinue-on-error: true": [
-    {
-      "file": ".github/workflows/current.yml",
-      "lines": [
-        100,
-        113
-      ]
-    },
-    {
-      "file": ".github/workflows/dep-heads.yml",
-      "lines": [
-        101,
-        114
-      ]
-    },
-    {
-      "file": ".github/workflows/heads.yml",
-      "lines": [
-        108,
-        121
-      ]
-    },
-    {
-      "file": ".github/workflows/truffle.yml",
-      "lines": [
-        79,
-        92
-      ]
-    }
-  ],
-  "appraisal: \"dep-heads\"\nexec_cmd: \"rake spec\"": [
+  "appraisal: \"dep-heads\"\nexec_cmd: \"kettle-test\"": [
     {
       "file": ".github/workflows/dep-heads.yml",
       "lines": [
         44,
-        52,
-        60
+        51,
+        58
       ]
     }
   ],
-  "appraisal: \"head\"\nexec_cmd: \"rake test\"": [
+  "appraisal: \"head\"\nexec_cmd: \"kettle-test\"": [
     {
       "file": ".github/workflows/heads.yml",
       "lines": [
         43,
         50,
-        67
+        57
       ]
     }
   ],
-  "exec_cmd: \"rake spec\"\ngemfile: \"Appraisal.root\"": [
+  "exec_cmd: \"kettle-test\"\nrubygems: default": [
     {
       "file": ".github/workflows/dep-heads.yml",
       "lines": [
-        45,
-        53,
-        61
+        52,
+        59
       ]
-    }
-  ],
-  "exec_cmd: \"rake test\"\ngemfile: \"Appraisal.root\"": [
+    },
     {
       "file": ".github/workflows/heads.yml",
       "lines": [
         44,
         51,
-        68
-      ]
-    }
-  ],
-  "if: ${{ !env.ACT || (! startsWith(matrix.ruby, 'jruby') && !startsWith(matrix.ruby, 'truffleruby')) }}\nrun: bundle install": [
-    {
-      "file": ".github/workflows/current.yml",
-      "lines": [
-        93,
-        98
-      ]
-    },
-    {
-      "file": ".github/workflows/dep-heads.yml",
-      "lines": [
-        94,
-        99
-      ]
-    },
-    {
-      "file": ".github/workflows/heads.yml",
-      "lines": [
-        101,
-        106
-      ]
-    },
-    {
-      "file": ".github/workflows/truffle.yml",
-      "lines": [
-        72,
-        77
+        58
       ]
     }
   ]

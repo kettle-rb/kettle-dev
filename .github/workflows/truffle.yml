@@ -32,16 +32,15 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: ${{ matrix.experimental || endsWith(matrix.ruby, 'head') }}
     env: # $BUNDLE_GEMFILE must be set at job level, so it is set for all steps
-      BUNDLE_GEMFILE: ${{ github.workspace }}/${{ matrix.gemfile }}.gemfile
+      BUNDLE_GEMFILE: ${{ github.workspace }}/Appraisal.root.gemfile
     strategy:
       matrix:
         include:
           # NOTE: truffleruby does not support upgrading rubygems.
-          # truffleruby-23.1 (targets Ruby 3.2 compatibility)
+          # truffleruby-33.0 (targets Ruby 3.3 compatibility)
           - ruby: "truffleruby"
             appraisal: "current"
-            exec_cmd: "rake test"
-            gemfile: "Appraisal.root"
+            exec_cmd: "kettle-test"
             rubygems: default
             bundler: default
 
@@ -52,10 +51,6 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Install tree-sitter library
-        if: ${{ !env.ACT || (! startsWith(matrix.ruby, 'jruby') && !startsWith(matrix.ruby, 'truffleruby')) }}
-        uses: kettle-rb/ts-grammar-action@4b0c04d11ed5b85c67c0c60c6ecb590e81748ccb # v1.0.1
-
       - name: Setup Ruby & RubyGems
         if: ${{ !env.ACT }}
         uses: ruby/setup-ruby@afeafc3d1ab54a631816aba4c914a0081c12ff2f # v1.310.0
@@ -64,26 +59,6 @@ jobs:
           rubygems: ${{ matrix.rubygems }}
           bundler: ${{ matrix.bundler }}
           bundler-cache: true
-
-      # Raw `bundle` will use the BUNDLE_GEMFILE set to matrix.gemfile (i.e. Appraisal.root)
-      # We need to do this first to get appraisal installed.
-      # NOTE: This does not use the primary Gemfile at all.
-      - name: Install Root Appraisal
-        if: ${{ !env.ACT || (! startsWith(matrix.ruby, 'jruby') && !startsWith(matrix.ruby, 'truffleruby')) }}
-        run: bundle install
-
-      - name: "[Attempt 1] Install Root Appraisal"
-        id: bundleAttempt1
-        if: ${{ !env.ACT || (! startsWith(matrix.ruby, 'jruby') && !startsWith(matrix.ruby, 'truffleruby')) }}
-        run: bundle install
-        # Continue to the next step on failure
-        continue-on-error: true
-      # Effectively an automatic retry of the previous step.
-      - name: "[Attempt 2] Install Root Appraisal"
-        id: bundleAttempt2
-        # If bundleAttempt1 failed, try again here; Otherwise skip.
-        if: ${{ steps.bundleAttempt1.outcome == 'failure' && (!env.ACT || (! startsWith(matrix.ruby, 'jruby') && !startsWith(matrix.ruby, 'truffleruby'))) }}
-        run: bundle install
 
       - name: "[Attempt 1] Appraisal for ${{ matrix.ruby }}@${{ matrix.appraisal }}"
         id: bundleAppraisalAttempt1

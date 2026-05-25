@@ -76,7 +76,7 @@ GEM
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
     json (2.19.5)
-    kettle-soup-cover (1.1.2)
+    kettle-soup-cover (1.1.3)
       simplecov (~> 0.22)
       simplecov-cobertura (~> 3.0)
       simplecov-console (~> 0.9, >= 0.9.3)
@@ -85,7 +85,7 @@ GEM
       simplecov-rcov (~> 0.3, >= 0.3.7)
       simplecov_json_formatter (~> 0.1, >= 0.1.4)
       version_gem (~> 1.1, >= 1.1.9)
-    kettle-test (2.0.0)
+    kettle-test (2.0.1)
       appraisal2 (~> 3.0, >= 3.0.2)
       backports (~> 3.0)
       rspec (~> 3.0)
@@ -320,7 +320,7 @@ GEM
     yard-yaml (0.1.1)
       version_gem (~> 1.1, >= 1.1.9)
       yaml-converter (~> 0.1)
-    zeitwerk (2.7.5)
+    zeitwerk (2.8.2)
     zlib (3.2.3)
 
 PLATFORMS
@@ -337,8 +337,8 @@ DEPENDENCIES
   gitmoji-regex (~> 1.0, >= 1.0.3)
   irb (~> 1.17)
   kettle-dev!
-  kettle-soup-cover (~> 1.0, >= 1.1.2)
-  kettle-test (~> 2.0, >= 2.0.0)
+  kettle-soup-cover (~> 1.0, >= 1.1.3)
+  kettle-test (~> 2.0, >= 2.0.1)
   kramdown (~> 2.5, >= 2.5.1)
   kramdown-parser-gfm (~> 1.1)
   mutex_m (~> 0.2)
@@ -398,8 +398,8 @@ CHECKSUMS
   irb (1.18.0) sha256=de9454a0703a54704b9811a5ef31a60c86949fbf4013fcf244fabc7c775248e3
   json (2.19.5) sha256=218a18553e4801d579ca7e0f5bc72bafd776d7397238a1fb4e74db5b0a812c59
   kettle-dev (2.0.1)
-  kettle-soup-cover (1.1.2) sha256=2efd61026621f1e2ab40620c138acaa6dea35e4b97aae9ff31968445dbded9f0
-  kettle-test (2.0.0) sha256=539547131f614da364d1c1c9a1b2f793dfd4a2d84074a62d3828654ec3972959
+  kettle-soup-cover (1.1.3) sha256=a373827da22a7131d093afd32945e5b7d7a10a01ebfdded8fd2cb8230d69c8ad
+  kettle-test (2.0.1) sha256=1aa4ca9eae6bce39b2d54a60fef20dfe82de32ea37b9114047f6117388dee5b9
   kramdown (2.5.2) sha256=1ba542204c66b6f9111ff00dcc26075b95b220b07f2905d8261740c82f7f02fa
   kramdown-parser-gfm (1.1.0) sha256=fb39745516427d2988543bf01fc4cf0ab1149476382393e0e9c48592f6581729
   language_server-protocol (3.17.0.5) sha256=fd1e39a51a28bf3eec959379985a72e296e9f9acfce46f6a79d31ca8760803cc
@@ -487,7 +487,7 @@ CHECKSUMS
   yard-relative_markdown_links (0.6.0) sha256=3e5ffa85cbad9bac70bee5421774b190fb25d3bdf489323a5b3534f647d1a70e
   yard-timekeeper (0.1.0) sha256=c193279aee13627dff559dd15fd88f8a3d293ee27f2f46bfa2fa4d29acf39086
   yard-yaml (0.1.1) sha256=1fa1848ced6f4d79a1a07ddb081700aa425d05aa0c92f405efafda518bb6d3e8
-  zeitwerk (2.7.5) sha256=d8da92128c09ea6ec62c949011b00ed4a20242b255293dd66bf41545398f73dd
+  zeitwerk (2.8.2) sha256=7212a61311083c604184b1ea2574b9aa05cd14f855a0841c06985cabe9181d12
   zlib (3.2.3) sha256=5bd316698b32f31a64ab910a8b6c282442ca1626a81bbd6a1674e8522e319c20
 
 BUNDLED WITH

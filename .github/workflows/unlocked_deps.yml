@@ -1,3 +1,4 @@
+---
 # Lock/Unlock Deps Pattern
 #
 # Two often conflicting goals resolved!
@@ -48,7 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: ${{ matrix.experimental || endsWith(matrix.ruby, 'head') }}
     env: # $BUNDLE_GEMFILE must be set at job level, so it is set for all steps
-      BUNDLE_GEMFILE: ${{ github.workspace }}/${{ matrix.gemfile }}.gemfile
+      BUNDLE_GEMFILE: ${{ github.workspace }}/Appraisal.root.gemfile
     strategy:
       matrix:
         include:
@@ -56,7 +57,6 @@ jobs:
           - ruby: "ruby"
             appraisal: "unlocked_deps"
             exec_cmd: "rake"
-            gemfile: "Appraisal.root"
             rubygems: latest
             bundler: latest
 
@@ -65,6 +65,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
+
       - name: Install tree-sitter library
         uses: kettle-rb/ts-grammar-action@4b0c04d11ed5b85c67c0c60c6ecb590e81748ccb # v1.0.1
 
@@ -75,11 +76,13 @@ jobs:
           rubygems: ${{ matrix.rubygems }}
           bundler: ${{ matrix.bundler }}
           bundler-cache: true
+
       - name: "[Attempt 1] Appraisal for ${{ matrix.ruby }}@${{ matrix.appraisal }}"
         id: bundleAppraisalAttempt1
         run: bundle exec appraisal ${{ matrix.appraisal }} install
         # Continue to the next step on failure
         continue-on-error: true
+
       # Effectively an automatic retry of the previous step.
       - name: "[Attempt 2] Appraisal for ${{ matrix.ruby }}@${{ matrix.appraisal }}"
         id: bundleAppraisalAttempt2
@@ -87,12 +90,5 @@ jobs:
         if: ${{ steps.bundleAppraisalAttempt1.outcome == 'failure' }}
         run: bundle exec appraisal ${{ matrix.appraisal }} install
 
-      # Raw `bundle` will use the BUNDLE_GEMFILE set to matrix.gemfile (i.e. Appraisal.root)
-      # We need to do this first to get appraisal installed.
-      # NOTE: This does not use the primary Gemfile at all.
-      - name: Install Root Appraisal
-        run: bundle install
-      - name: Appraisal for ${{ matrix.ruby }}@${{ matrix.appraisal }}
-        run: bundle exec appraisal ${{ matrix.appraisal }} install
       - name: Run ${{ matrix.exec_cmd }} on ${{ matrix.ruby }}@${{ matrix.appraisal }}
         run: bundle exec appraisal ${{ matrix.appraisal }} bundle exec ${{ matrix.exec_cmd }}
