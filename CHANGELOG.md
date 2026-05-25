@@ -28,6 +28,12 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Appraisal-based CI gemfiles now load the version-appropriate VCR/WebMock
+  recording dependencies required by the spec helper without falling back to the
+  root Gemfile.
+- Reek rake-task specs are skipped on CI appraisals where style tooling is not
+  installed, matching the existing treatment of RuboCop task specs.
+
 ### Security
 
 ## [2.0.1] - 2026-05-25

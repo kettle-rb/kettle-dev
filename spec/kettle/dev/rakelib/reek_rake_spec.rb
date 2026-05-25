@@ -4,7 +4,7 @@ require "spec_helper"
 require "fileutils"
 require "tmpdir"
 
-RSpec.describe "rake reek:update" do
+RSpec.describe "rake reek:update", :skip_ci do
   include_context "with rake", "reek"
 
   def status(success, exitstatus)
