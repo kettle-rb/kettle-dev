@@ -22,6 +22,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- `kettle-changelog` now auto-selects the correct no-argument action by
+  comparing `version.rb`, the latest live release, and the most recent
+  CHANGELOG.md release section before prompting for confirmation.
+
 ### Deprecated
 
 ### Removed

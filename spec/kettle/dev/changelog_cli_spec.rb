@@ -6,6 +6,12 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
   include_context "with mocked git adapter"
   include_context "with mocked exit adapter"
 
+  before do
+    allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("y\n")
+    allow_any_instance_of(described_class).to receive(:detect_gem_name).and_return("demo")
+    allow_any_instance_of(described_class).to receive(:latest_released_versions).and_return([nil, nil])
+  end
+
   def mkproj
     Dir.mktmpdir do |root|
       FileUtils.mkdir_p(File.join(root, "lib", "my", "gem"))
@@ -47,7 +53,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       end
     end
 
-    it "prompts and aborts when duplicate version exists and user declines reformat" do
+    it "prompts and aborts when the selected plan is declined" do
       mkproj do |root|
         File.write(File.join(root, "lib", "my", "gem", "version.rb"), <<~RB)
           module My; module Gem; VERSION = "1.2.3"; end; end
@@ -64,7 +70,8 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
         allow(Kettle::Dev::CIHelpers).to receive_messages(project_root: root, repo_info: ["o", "r"])
         allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("n\n")
         cli = described_class.new(strict: false)
-        expect { cli.run }.to raise_error(MockSystemExit, /Aborting: version not bumped/)
+        allow(cli).to receive(:latest_released_versions).and_return(["1.2.3", "1.2.3"])
+        expect { cli.run }.to raise_error(MockSystemExit, /changelog plan was not confirmed/)
       end
     end
 
@@ -87,6 +94,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
         allow(Kettle::Dev::CIHelpers).to receive_messages(project_root: root, repo_info: ["o", "r"])
         allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("y\n")
         cli = described_class.new(strict: false)
+        allow(cli).to receive(:latest_released_versions).and_return(["1.2.3", "1.2.3"])
         expect { cli.run }.not_to raise_error
         updated = File.read(File.join(root, "CHANGELOG.md"))
         # Should not add another 1.2.3 section
@@ -159,6 +167,91 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
         expect(updated).to match(/### Fixed\n\n- Prepared the release\.\n\n- Fixed a release-prep follow-up\./)
         expect(updated).to match(/## \[Unreleased\]\n\n### Added\n\n### Changed\n\n### Deprecated\n\n### Removed\n\n### Fixed\n\n### Security/)
         expect(updated).to include("[Unreleased]: https://github.com/o/r/compare/v1.2.4...HEAD")
+      end
+    end
+
+    it "auto-selects update-prep when version.rb matches the most recent changelog release but is newer than live" do
+      mkproj do |root|
+        File.write(File.join(root, "lib", "my", "gem", "version.rb"), <<~RB)
+          module My; module Gem; VERSION = "1.2.4"; end; end
+        RB
+        FileUtils.mkdir_p(File.join(root, "coverage"))
+        File.write(File.join(root, "coverage", "coverage.json"), {"coverage" => {}}.to_json)
+        File.write(File.join(root, "CHANGELOG.md"), <<~MD)
+          # Changelog
+
+          ## [Unreleased]
+
+          ### Fixed
+
+          - Fixed a release-prep follow-up.
+
+          ## [1.2.4] - 2025-08-30
+
+          - TAG: [v1.2.4][1.2.4t]
+
+          ### Fixed
+
+          - Prepared the release.
+
+          ## [1.2.3] - 2025-08-01
+
+          [Unreleased]: https://github.com/o/r/compare/v1.2.4...HEAD
+          [1.2.4]: https://github.com/o/r/compare/v1.2.3...v1.2.4
+          [1.2.4t]: https://github.com/o/r/releases/tag/v1.2.4
+          [1.2.3]: https://github.com/o/r/compare/v1.2.2...v1.2.3
+          [1.2.3t]: https://github.com/o/r/releases/tag/v1.2.3
+        MD
+        allow(Kettle::Dev::CIHelpers).to receive_messages(project_root: root, repo_info: ["o", "r"])
+        allow(Time).to receive(:now).and_return(Time.new(2025, 8, 31))
+
+        cli = described_class.new(strict: false)
+        allow(cli).to receive(:latest_released_versions).and_return(["1.2.3", "1.2.3"])
+        allow(cli).to receive_messages(
+          coverage_lines: ["COVERAGE: 95.00% -- 95/100 lines in 2 files", nil],
+          yard_percent_documented: nil,
+        )
+
+        expect { cli.run }.not_to raise_error
+        updated = File.read(File.join(root, "CHANGELOG.md"))
+        expect(updated.scan(/^## \[1\.2\.4\]/).size).to eq(1)
+        expect(updated).to include("## [1.2.4] - 2025-08-31")
+        expect(updated).to match(/### Fixed\n\n- Prepared the release\.\n\n- Fixed a release-prep follow-up\./)
+      end
+    end
+
+    it "auto-selects a new release when version.rb is newer than live and not yet in changelog" do
+      mkproj do |root|
+        File.write(File.join(root, "lib", "my", "gem", "version.rb"), <<~RB)
+          module My; module Gem; VERSION = "1.2.4"; end; end
+        RB
+        FileUtils.mkdir_p(File.join(root, "coverage"))
+        File.write(File.join(root, "coverage", "coverage.json"), {"coverage" => {}}.to_json)
+        File.write(File.join(root, "CHANGELOG.md"), <<~MD)
+          # Changelog
+
+          ## [Unreleased]
+
+          ### Fixed
+
+          - Fixed a new release.
+
+          ## [1.2.3] - 2025-08-01
+
+          [Unreleased]: https://github.com/o/r/compare/v1.2.3...HEAD
+          [1.2.3]: https://github.com/o/r/compare/v1.2.2...v1.2.3
+          [1.2.3t]: https://github.com/o/r/releases/tag/v1.2.3
+        MD
+        allow(Kettle::Dev::CIHelpers).to receive_messages(project_root: root, repo_info: ["o", "r"])
+        allow(Time).to receive(:now).and_return(Time.new(2025, 8, 31))
+
+        cli = described_class.new(strict: false)
+        allow(cli).to receive(:latest_released_versions).and_return(["1.2.3", "1.2.3"])
+
+        expect { cli.run }.not_to raise_error
+        updated = File.read(File.join(root, "CHANGELOG.md"))
+        expect(updated).to include("## [1.2.4] - 2025-08-31")
+        expect(updated).to include("- Fixed a new release.")
       end
     end
 

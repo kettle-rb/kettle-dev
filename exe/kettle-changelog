@@ -52,12 +52,15 @@ begin
     puts <<~USAGE
       Usage: kettle-changelog [--update-prep] [--no-strict] [--no-coverage-threshold]
 
-      Generates a new CHANGELOG.md entry for the current version detected from lib/**/version.rb.
-      Moves entries from [Unreleased] into the new section, adds coverage and documentation stats,
-      and updates bottom link references to GitHub style, adding new compare/tag links.
+      Detects the current version from lib/**/version.rb, the latest live release, and
+      the most recent CHANGELOG.md release section, then prompts to confirm the selected plan:
+      create a new release section, update the prepared release section in place, or reformat only.
+
+      Release plans add coverage and documentation stats, move entries from [Unreleased],
+      and update bottom link references to GitHub style.
 
       Options:
-        --update-prep             Update the most recent prepared release section in place
+        --update-prep             Force updating the most recent prepared release section in place
         --no-strict               Allow missing coverage and yard data (warnings only, no errors)
         --no-coverage-threshold   Generate coverage without hard-failing below configured thresholds
 

@@ -97,9 +97,9 @@ module Kettle
             gem_name = detect_gem_name
             latest_overall, latest_for_series = latest_released_versions(gem_name, version)
           rescue StandardError => e
-            warn("[kettle-release] RubyGems check failed: #{e.class}: #{e.message}")
+            warn("[kettle-release] gem.coop release check failed: #{e.class}: #{e.message}")
             warn(e.backtrace.first(3).map { |l| "  " + l }.join("\n")) if ENV["KETTLE_DEV_DEBUG"]
-            warn("Proceeding without RubyGems latest version info.")
+            warn("Proceeding without gem.coop latest version info.")
           end
 
           if latest_overall
@@ -121,7 +121,7 @@ module Kettle
               latest_for_series = nil unless lfs_series == cur_series
             end
             # Determine the sanity-check target correctly for the current series.
-            # If RubyGems has a newer overall series than our current series, only compare
+            # If gem.coop has a newer overall series than our current series, only compare
             # against the latest published in our current series. If that cannot be determined
             # (e.g., offline), skip the sanity check rather than treating the overall as target.
             target = if (cur_series <=> overall_series) == -1
@@ -130,10 +130,10 @@ module Kettle
               latest_overall
             end
             # IMPORTANT: Never treat a higher different-series "latest_overall" as a downgrade target.
-            # If our current series is behind overall and RubyGems does not report a latest_for_series,
+            # If our current series is behind overall and gem.coop does not report a latest_for_series,
             # then we cannot determine the correct target for this series and should skip the check.
             if (cur_series <=> overall_series) == -1 && target.nil?
-              puts "Could not determine latest released version from RubyGems (offline?). Proceeding without sanity check."
+              puts "Could not determine latest released version from gem.coop (offline?). Proceeding without sanity check."
             elsif target
               bump = Kettle::Dev::Versioning.classify_bump(target, version)
               case bump
@@ -150,10 +150,10 @@ module Kettle
                 puts "Proposed bump type: #{label} (from #{target} -> #{version})"
               end
             else
-              puts "Could not determine latest released version from RubyGems (offline?). Proceeding without sanity check."
+              puts "Could not determine latest released version from gem.coop (offline?). Proceeding without sanity check."
             end
           else
-            puts "Could not determine latest released version from RubyGems (offline?). Proceeding without sanity check."
+            puts "Could not determine latest released version from gem.coop (offline?). Proceeding without sanity check."
           end
 
           puts "Have you updated lib/**/version.rb and CHANGELOG.md for v#{version}? [y/N]"
@@ -633,7 +633,7 @@ module Kettle
       end
 
       def latest_released_versions(gem_name, current_version)
-        uri = URI("https://rubygems.org/api/v1/versions/#{gem_name}.json")
+        uri = URI("https://gem.coop/api/v1/versions/#{gem_name}.json")
         res = Net::HTTP.get_response(uri)
         return [nil, nil] unless res.is_a?(Net::HTTPSuccess)
 

@@ -103,11 +103,11 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       end
     end
 
-    describe "latest_released_versions (integration with RubyGems via VCR)" do
+    describe "latest_released_versions (integration with gem.coop via VCR)" do
       it "fetches real versions for kettle-dev and does not report a 1.2.x series", :check_output do
         # Use VCR to record once then replay. We avoid making any strong assertion on the exact
         # version numbers to keep the test resilient, but we do assert no 1.2.x appears for this gem.
-        cassette = "rubygems_versions_kettle_dev"
+        cassette = "gem_coop_versions_kettle_dev"
         overall, series = nil, nil
         # Ensure any previous stubs on Net::HTTP from unit tests do not apply here; we want a real HTTP call (recorded by VCR)
         allow(Net::HTTP).to receive(:get_response).and_call_original
@@ -529,7 +529,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect { cli.run }.to raise_error(MockSystemExit, /version bump required/)
       end
 
-      it "runs happy path when RubyGems is offline and Appraisals exist and SKIP_GEM_SIGNING is set" do
+      it "runs happy path when gem.coop is offline and Appraisals exist and SKIP_GEM_SIGNING is set" do
         # Make prompts auto-accept via input adapter
         allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("y\n")
 
@@ -689,7 +689,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect { cli.run }.not_to raise_error
       end
 
-      it "rescues failures from RubyGems check and proceeds to user prompt" do
+      it "rescues failures from gem.coop release check and proceeds to user prompt" do
         allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("n\n")
         allow(cli).to receive(:ensure_bundler_2_7_plus!)
         allow(cli).to receive(:detect_version).and_return("1.2.3")
@@ -740,7 +740,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         allow(cli).to receive(:detect_gem_name).and_return("kettle-dev")
 
         # Ensure the offline message was printed during run
-        expect { cli.run }.to output(/Could not determine latest released version from RubyGems/).to_stdout
+        expect { cli.run }.to output(/Could not determine latest released version from gem.coop/).to_stdout
       end
 
       it "prints fallback final message when gem name detection fails", :check_output do
@@ -1070,8 +1070,8 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       end
     end
 
-    describe "regression: Rakefile.example header uses version.rb even if RubyGems has higher overall" do
-      it "injects the version from version.rb (e.g., 1.0.15) and not a higher 1.2.x from RubyGems", freeze: Time.new(2015, 12, 28, 13, 14, 15) do
+    describe "regression: Rakefile.example header uses version.rb even if gem.coop has higher overall" do
+      it "injects the version from version.rb (e.g., 1.0.15) and not a higher 1.2.x from gem.coop", freeze: Time.new(2015, 12, 28, 13, 14, 15) do
         Dir.mktmpdir do |root|
           # Prepare a Rakefile.example with an outdated header
           File.write(File.join(root, "Rakefile.example"), <<~RB)
@@ -1084,7 +1084,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
           allow(ci_helpers).to receive(:project_root).and_return(root)
           cli = described_class.new(start_step: 2)
 
-          # Force detect_version to desired next version and make RubyGems suggest a higher overall
+          # Force detect_version to desired next version and make gem.coop suggest a higher overall
           allow(cli).to receive(:detect_version).and_return("1.0.15")
           allow(cli).to receive(:detect_gem_name).and_return("kettle-dev")
           allow(cli).to receive(:latest_released_versions).and_return(%w[1.2.10 1.2.10]) # overall and series

@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 require "open3"
+require "json"
+require "net/http"
+require "uri"
 
 module Kettle
   module Dev
@@ -44,33 +47,21 @@ module Kettle
           warn("Make sure 'origin' points to github.com. Alternatively, set origin or update links manually afterward.")
         end
 
-        line_cov_line, branch_cov_line = coverage_lines
-        yard_line = yard_percent_documented
-
         changelog = File.read(@changelog_path)
+        plan = @update_prep ? explicit_update_prep_plan(changelog) : detect_plan(changelog, version)
+        confirm_plan!(plan)
 
-        if @update_prep
-          update_prepared_release!(changelog, today, owner, repo, line_cov_line, branch_cov_line, yard_line)
+        if plan.fetch(:action) == :reformat_only
+          reformat_changelog!(changelog)
           return
         end
 
-        # If the detected version already exists in the changelog, offer reformat-only mode
-        if changelog =~ /^## \[#{Regexp.escape(version)}\]/
-          warn("CHANGELOG.md already has a section for version #{version}.")
-          warn("It appears the version has not been bumped. You can reformat CHANGELOG.md without adding a new release section.")
-          print("Proceed with reformat only? [y/N]: ")
-          ans = Kettle::Dev::InputAdapter.gets&.strip&.downcase
-          if ans == "y" || ans == "yes"
-            updated = convert_heading_tag_suffix_to_list(changelog)
-            updated = normalize_heading_spacing(updated)
-            updated = ensure_footer_spacing(updated)
-            updated = updated.rstrip + "\n"
-            File.write(@changelog_path, updated)
-            puts "CHANGELOG.md reformatted. No new version section added."
-            return
-          else
-            abort("Aborting: version not bumped. Re-run after bumping version or answer 'y' to reformat-only.")
-          end
+        line_cov_line, branch_cov_line = coverage_lines
+        yard_line = yard_percent_documented
+
+        if plan.fetch(:action) == :update_prepared_release
+          update_prepared_release!(changelog, today, owner, repo, line_cov_line, branch_cov_line, yard_line)
+          return
         end
 
         unreleased_block, before, after = extract_unreleased(changelog)
@@ -147,6 +138,160 @@ module Kettle
 
       def abort(msg)
         Kettle::Dev::ExitAdapter.abort(msg)
+      end
+
+      def detect_plan(changelog, version)
+        latest_overall = nil
+        latest_for_series = nil
+        gem_name = nil
+        begin
+          gem_name = detect_gem_name
+          latest_overall, latest_for_series = latest_released_versions(gem_name, version)
+        rescue StandardError => e
+          warn("[kettle-changelog] gem.coop release check failed: #{e.class}: #{e.message}")
+          warn("Proceeding without live release info.")
+        end
+
+        _unreleased_block, _before, after = extract_unreleased(changelog)
+        latest_changelog_version = detect_previous_version(after.to_s)
+        section_exists = release_section_exists?(changelog, version)
+        latest_target = latest_release_target(version, latest_overall, latest_for_series)
+
+        if latest_target && Gem::Version.new(version) < Gem::Version.new(latest_target)
+          abort("Aborting: version.rb (#{version}) is lower than the latest released version for this release line (#{latest_target}).")
+        end
+
+        if section_exists && latest_changelog_version != version
+          abort("Aborting: CHANGELOG.md already contains a #{version} section, but the most recent release section is #{latest_changelog_version || "missing"}.")
+        end
+
+        action = if section_exists && latest_target == version
+          :reformat_only
+        elsif section_exists
+          :update_prepared_release
+        elsif latest_target == version
+          abort("Aborting: version.rb (#{version}) matches the latest released version, but CHANGELOG.md does not have #{version} as the most recent release section.")
+        else
+          :new_release
+        end
+
+        {
+          action: action,
+          version: version,
+          gem_name: gem_name,
+          latest_overall: latest_overall,
+          latest_for_series: latest_for_series,
+          latest_target: latest_target,
+          latest_changelog_version: latest_changelog_version,
+        }
+      end
+
+      def explicit_update_prep_plan(changelog)
+        _unreleased_block, _before, after = extract_unreleased(changelog)
+        prepared_version = detect_previous_version(after.to_s)
+        abort("Could not find a prepared release section after '## [Unreleased]' in CHANGELOG.md") unless prepared_version
+
+        {
+          action: :update_prepared_release,
+          version: prepared_version,
+          gem_name: nil,
+          latest_overall: nil,
+          latest_for_series: nil,
+          latest_target: nil,
+          latest_changelog_version: prepared_version,
+          explicit: true,
+        }
+      end
+
+      def confirm_plan!(plan)
+        puts "kettle-changelog selected plan: #{plan_label(plan.fetch(:action))}"
+        puts "  version.rb: #{plan.fetch(:version)}"
+        puts "  latest released: #{plan.fetch(:latest_overall) || "unknown"}"
+        puts "  latest released for current series: #{plan.fetch(:latest_for_series) || "unknown"}"
+        puts "  latest CHANGELOG.md release: #{plan.fetch(:latest_changelog_version) || "none"}"
+        puts "  gem: #{plan.fetch(:gem_name) || "unknown"}"
+        print("Continue with this plan? [y/N]: ")
+        ans = Kettle::Dev::InputAdapter.gets&.strip&.downcase
+        return if ans == "y" || ans == "yes"
+
+        abort("Aborting: changelog plan was not confirmed.")
+      end
+
+      def plan_label(action)
+        case action
+        when :new_release
+          "create a new release section"
+        when :update_prepared_release
+          "update the prepared release section in place"
+        when :reformat_only
+          "reformat CHANGELOG.md without adding a release section"
+        else
+          action.to_s
+        end
+      end
+
+      def reformat_changelog!(changelog)
+        updated = convert_heading_tag_suffix_to_list(changelog)
+        updated = normalize_heading_spacing(updated)
+        updated = ensure_footer_spacing(updated)
+        updated = updated.rstrip + "\n"
+        File.write(@changelog_path, updated)
+        puts "CHANGELOG.md reformatted. No new version section added."
+      end
+
+      def release_section_exists?(changelog, version)
+        changelog.match?(/^## \[#{Regexp.escape(version)}\]/)
+      end
+
+      def detect_gem_name
+        gemspecs = Dir[File.join(@root, "*.gemspec")]
+        abort("Could not find a .gemspec in project root.") if gemspecs.empty?
+        path = gemspecs.min
+        content = File.read(path)
+        m = content.match(/spec\.name\s*=\s*(["'])([^"']+)\1/)
+        abort("Could not determine gem name from #{Kettle::Dev.display_path(path)}.") unless m
+
+        m[2]
+      end
+
+      def latest_released_versions(gem_name, current_version)
+        uri = URI("https://gem.coop/api/v1/versions/#{gem_name}.json")
+        res = Net::HTTP.get_response(uri)
+        return [nil, nil] unless res.is_a?(Net::HTTPSuccess)
+
+        data = JSON.parse(res.body)
+        versions = data.map { |h| h["number"] }.compact
+        versions.reject! { |v| v.to_s.include?("-pre") || v.to_s.include?(".pre") || v.to_s.match?(/[a-zA-Z]/) }
+        gversions = versions.map { |s| Gem::Version.new(s) }.sort
+        latest_overall = gversions.last&.to_s
+
+        cur = Gem::Version.new(current_version)
+        series = cur.segments[0, 2]
+        latest_series = gversions.select { |gv| gv.segments[0, 2] == series }.last&.to_s
+        [latest_overall, latest_series]
+      rescue StandardError => e
+        Kettle::Dev.debug_error(e, __method__)
+        [nil, nil]
+      end
+
+      def latest_release_target(version, latest_overall, latest_for_series)
+        return nil unless latest_overall
+
+        cur = Gem::Version.new(version)
+        overall = Gem::Version.new(latest_overall)
+        cur_series = cur.segments[0, 2]
+        overall_series = overall.segments[0, 2]
+
+        if latest_for_series
+          lfs_series = Gem::Version.new(latest_for_series).segments[0, 2]
+          latest_for_series = nil unless lfs_series == cur_series
+        end
+
+        if (cur_series <=> overall_series) == -1
+          latest_for_series
+        else
+          latest_overall
+        end
       end
 
       def detect_version
