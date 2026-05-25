@@ -20,6 +20,25 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [2.0.1] - 2026-05-24
+
+- TAG: [v2.0.1][2.0.1t]
+- COVERAGE: 95.82% -- 2840/2964 lines in 20 files
+- BRANCH COVERAGE: 79.21% -- 1177/1486 branches in 20 files
+- 76.25% documented
+
+### Added
+
 - Added `kettle-changelog --update-prep` to refresh the most recent prepared
   release section in place, including date, coverage, documentation stats, and
   any follow-up Unreleased notes.
@@ -37,15 +56,9 @@ Please file a bug if you notice a violation of semantic versioning.
   `turbo_tests2` runner and summary output.
 - The shared `:yard` task now installs `yard-fence` and `yard-timekeeper` integrations explicitly so documentation prep and post-processing only run during `rake yard`
 
-### Deprecated
-
-### Removed
-
 ### Fixed
 
 - Loading YARD during unrelated rake tasks no longer triggers documentation plugin side effects that rewrite or clear `docs/`
-
-### Security
 
 ## [2.0.0] - 2026-02-25
 
@@ -1691,7 +1704,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.1...HEAD
+[2.0.1]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.0...v2.0.1
+[2.0.1t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v2.0.1
 [2.0.0]: https://github.com/kettle-rb/kettle-dev/compare/v1.2.5...v2.0.0
 [2.0.0t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v2.0.0
 [1.2.5]: https://github.com/kettle-rb/kettle-dev/compare/v1.2.4...v1.2.5

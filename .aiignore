@@ -17,6 +17,3 @@ coverage/
 docs/
 pkg/
 results/
-
-# custom for this gem
-tmp_gem/

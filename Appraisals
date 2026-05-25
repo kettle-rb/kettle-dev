@@ -6,12 +6,6 @@
 # kettle-dev will then preserve content between those markers across template runs.
 # kettle-jem:unfreeze
 
-# kettle-jem:freeze
-# To retain chunks of comments & code during kettle-jem templating:
-# Wrap custom sections with freeze markers (e.g., as above and below this comment chunk).
-# kettle-jem will then preserve content between those markers across template runs.
-# kettle-jem:unfreeze
-
 # HOW TO UPDATE APPRAISALS (will run rubocop_gradual's autocorrect afterward):
 #   bin/rake appraisal:update
 
@@ -31,6 +25,7 @@
 #    - Matches what contributors and maintainers use locally for development
 #    - Broken workflow indicates that a new contributor will have a bad time
 #
+
 appraise "unlocked_deps" do
   # Seems to be an undeclared dependency of yard.
   # /opt/hostedtoolcache/Ruby/4.0.0/x64/lib/ruby/gems/4.0.0/gems/yard-0.9.38/lib/yard/parser/ruby/legacy/irb/slex.rb:13: warning: irb/notifier is found in irb, which is not part of the default gems since Ruby 4.0.0.
@@ -50,98 +45,57 @@ appraise "unlocked_deps" do
   eval_gemfile "modular/coverage.gemfile"
   eval_gemfile "modular/documentation.gemfile"
   eval_gemfile "modular/optional.gemfile"
-  eval_gemfile "modular/recording/r3/recording.gemfile"
-  eval_gemfile "modular/rspec.gemfile"
   eval_gemfile "modular/style.gemfile"
-  eval_gemfile "modular/templating.gemfile"
   eval_gemfile "modular/x_std_libs.gemfile"
 end
 
-# Used for head (nightly) releases of ruby, truffleruby, and jruby.
-# Split into discrete appraisals if one of them needs a dependency locked discretely.
 appraise "head" do
-  eval_gemfile "modular/recording/r3/recording.gemfile"
-  eval_gemfile "modular/rspec.gemfile"
-  eval_gemfile "modular/templating.gemfile"
   # Why is gem "cgi" here? See: https://github.com/vcr/vcr/issues/1057
   #  gem "cgi", ">= 0.5"
   eval_gemfile "modular/x_std_libs.gemfile"
-  # Why is cgi gem here? See: https://github.com/vcr/vcr/issues/1057
-  gem("cgi", ">= 0.5")
 end
 
-# Used for current releases of ruby, truffleruby, and jruby.
-# Split into discrete appraisals if one of them needs a dependency locked discretely.
 appraise "current" do
-  eval_gemfile "modular/recording/r3/recording.gemfile"
-  eval_gemfile "modular/rspec.gemfile"
-  eval_gemfile "modular/templating.gemfile"
   eval_gemfile "modular/x_std_libs.gemfile"
 end
 
-# Test current Rubies against head versions of runtime dependencies
 appraise "dep-heads" do
-  eval_gemfile "modular/rspec.gemfile"
   eval_gemfile "modular/runtime_heads.gemfile"
-  eval_gemfile "modular/templating.gemfile"
 end
 
 appraise "ruby-2-3" do
-  eval_gemfile "modular/rspec.gemfile"
-  eval_gemfile "modular/recording/r2.3/recording.gemfile"
   eval_gemfile "modular/x_std_libs/r2.3/libs.gemfile"
 end
 
 appraise "ruby-2-4" do
-  eval_gemfile "modular/rspec.gemfile"
-  eval_gemfile "modular/recording/r2.4/recording.gemfile"
   eval_gemfile "modular/x_std_libs/r2.4/libs.gemfile"
 end
 
 appraise "ruby-2-5" do
-  eval_gemfile "modular/rspec.gemfile"
-  eval_gemfile "modular/recording/r2.5/recording.gemfile"
   eval_gemfile "modular/x_std_libs/r2.6/libs.gemfile"
 end
 
 appraise "ruby-2-6" do
-  eval_gemfile "modular/rspec.gemfile"
-  eval_gemfile "modular/recording/r2.5/recording.gemfile"
   eval_gemfile "modular/x_std_libs/r2.6/libs.gemfile"
 end
 
 appraise "ruby-2-7" do
-  eval_gemfile "modular/rspec.gemfile"
-  eval_gemfile "modular/recording/r2.5/recording.gemfile"
-  eval_gemfile "modular/templating.gemfile"
   eval_gemfile "modular/x_std_libs/r2/libs.gemfile"
 end
 
 appraise "ruby-3-0" do
-  eval_gemfile "modular/rspec.gemfile"
-  eval_gemfile "modular/recording/r3/recording.gemfile"
-  eval_gemfile "modular/templating.gemfile"
   eval_gemfile "modular/x_std_libs/r3.1/libs.gemfile"
 end
 
 appraise "ruby-3-1" do
-  eval_gemfile "modular/rspec.gemfile"
-  eval_gemfile "modular/recording/r3/recording.gemfile"
-  eval_gemfile "modular/templating.gemfile"
   eval_gemfile "modular/x_std_libs/r3.1/libs.gemfile"
 end
 
 appraise "ruby-3-2" do
-  eval_gemfile "modular/rspec.gemfile"
-  eval_gemfile "modular/recording/r3/recording.gemfile"
-  eval_gemfile "modular/templating.gemfile"
   eval_gemfile "modular/x_std_libs/r3/libs.gemfile"
 end
 
 appraise "ruby-3-3" do
-  eval_gemfile "modular/rspec.gemfile"
-  eval_gemfile "modular/recording/r3/recording.gemfile"
-  eval_gemfile "modular/templating.gemfile"
   eval_gemfile "modular/x_std_libs/r3/libs.gemfile"
 end
 
@@ -149,24 +103,16 @@ appraise "ruby-3-4" do
   eval_gemfile "modular/x_std_libs/r3/libs.gemfile"
 end
 
-# Only run security audit on the latest version of Ruby
 appraise "audit" do
   eval_gemfile "modular/x_std_libs.gemfile"
 end
 
-# Only run coverage on the latest version of Ruby
 appraise "coverage" do
   eval_gemfile "modular/coverage.gemfile"
   eval_gemfile "modular/optional.gemfile"
   eval_gemfile "modular/x_std_libs.gemfile"
-  eval_gemfile "modular/recording/r3/recording.gemfile"
-  eval_gemfile "modular/rspec.gemfile"
-  eval_gemfile "modular/templating.gemfile"
-  # Normally style is included in coverage runs only, but we need it for the test suite to get full coverage
-  eval_gemfile("modular/style.gemfile")
 end
 
-# Only run linter on the latest version of Ruby (but, in support of oldest supported Ruby version)
 appraise "style" do
   eval_gemfile "modular/style.gemfile"
   eval_gemfile "modular/x_std_libs.gemfile"

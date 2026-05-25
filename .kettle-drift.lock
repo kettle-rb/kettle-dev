@@ -3,29 +3,69 @@
     {
       "file": ".github/workflows/current.yml",
       "lines": [
-        98,
-        111
+        100,
+        113
       ]
     },
     {
       "file": ".github/workflows/dep-heads.yml",
       "lines": [
-        99,
-        112
+        101,
+        114
       ]
     },
     {
       "file": ".github/workflows/heads.yml",
       "lines": [
-        106,
-        119
+        108,
+        121
       ]
     },
     {
       "file": ".github/workflows/truffle.yml",
       "lines": [
-        77,
-        90
+        79,
+        92
+      ]
+    }
+  ],
+  "appraisal: \"dep-heads\"\nexec_cmd: \"rake spec\"": [
+    {
+      "file": ".github/workflows/dep-heads.yml",
+      "lines": [
+        44,
+        52,
+        60
+      ]
+    }
+  ],
+  "appraisal: \"head\"\nexec_cmd: \"rake test\"": [
+    {
+      "file": ".github/workflows/heads.yml",
+      "lines": [
+        43,
+        50,
+        67
+      ]
+    }
+  ],
+  "exec_cmd: \"rake spec\"\ngemfile: \"Appraisal.root\"": [
+    {
+      "file": ".github/workflows/dep-heads.yml",
+      "lines": [
+        45,
+        53,
+        61
+      ]
+    }
+  ],
+  "exec_cmd: \"rake test\"\ngemfile: \"Appraisal.root\"": [
+    {
+      "file": ".github/workflows/heads.yml",
+      "lines": [
+        44,
+        51,
+        68
       ]
     }
   ],
@@ -33,29 +73,29 @@
     {
       "file": ".github/workflows/current.yml",
       "lines": [
-        91,
-        96
+        93,
+        98
       ]
     },
     {
       "file": ".github/workflows/dep-heads.yml",
       "lines": [
-        92,
-        97
+        94,
+        99
       ]
     },
     {
       "file": ".github/workflows/heads.yml",
       "lines": [
-        99,
-        104
+        101,
+        106
       ]
     },
     {
       "file": ".github/workflows/truffle.yml",
       "lines": [
-        70,
-        75
+        72,
+        77
       ]
     }
   ]

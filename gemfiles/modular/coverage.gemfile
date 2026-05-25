@@ -1,22 +1,14 @@
 # frozen_string_literal: true
 
-# To retain during kettle-jem templating:
-#     kettle-jem:freeze
-#     # ... your code
-#     kettle-jem:unfreeze
-#
 # We run code coverage on the latest version of Ruby only.
 
+# Set KETTLE_RB_DEV=true for local development with path-based dependencies.
+# When false (default / CI), remote released gems are used.
 if ENV.fetch("KETTLE_RB_DEV", "false").casecmp("false").zero?
-  # Otherwise rely on gemspec...
-  # gem "kettle-test"
-end
-
-# Coverage
-platform :mri do
-  if ENV.fetch("KETTLE_RB_DEV", "false").casecmp("false").zero?
-    gem "kettle-soup-cover", "~> 1.0", ">= 1.0.10", require: false
-  else
-    gem "kettle-soup-cover", path: "../../../kettle-soup-cover"
+  # Coverage (remote/released)
+  platform :mri do
+    gem "kettle-soup-cover", "~> 1.0", ">= 1.1.2", require: false
   end
+else
+  eval_gemfile "coverage_local.gemfile"
 end

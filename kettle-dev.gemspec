@@ -7,14 +7,8 @@
 # kettle-dev will then preserve content between those markers across template runs.
 # kettle-jem:unfreeze
 
-# kettle-jem:freeze
-# To retain chunks of comments & code during kettle-jem templating:
-# Wrap custom sections with freeze markers (e.g., as above and below this comment chunk).
-# kettle-jem will then preserve content between those markers across template runs.
-# kettle-jem:unfreeze
-
 gem_version =
-  if RUBY_VERSION >= "3.1" # rubocop:disable Gemspec/RubyVersionGlobalsUsage
+  if Gem.ruby_version >= Gem::Version.new("3.1")
     # Loading Version into an anonymous module allows version.rb to get code coverage from SimpleCov!
     # See: https://github.com/simplecov-ruby/simplecov/issues/557#issuecomment-2630782358
     # See: https://github.com/panorama-ed/memo_wise/pull/397
@@ -59,7 +53,7 @@ Gem::Specification.new do |spec|
     end
   end
 
-  spec.metadata["homepage_uri"] = "https://kettle-dev.galtzo.com/"
+  spec.metadata["homepage_uri"] = "https://kettle-dev.galtzo.com"
   spec.metadata["source_code_uri"] = "#{spec.homepage}/tree/v#{spec.version}"
   spec.metadata["changelog_uri"] = "#{spec.homepage}/blob/v#{spec.version}/CHANGELOG.md"
   spec.metadata["bug_tracker_uri"] = "#{spec.homepage}/issues"
@@ -70,16 +64,22 @@ Gem::Specification.new do |spec|
   spec.metadata["discord_uri"] = "https://discord.gg/3qme4XHNKN"
   spec.metadata["rubygems_mfa_required"] = "true"
 
+  enumerate_package_files = lambda do |root|
+    Dir.glob(File.join(root, "**", "*"), File::FNM_DOTMATCH).select do |path|
+      File.file?(path) && ![".", ".."].include?(File.basename(path))
+    end
+  end
+
   # Specify which files are part of the released package.
-  spec.files = Dir[
+  spec.files = [
     # Code / tasks / data (NOTE: exe/ is specified via spec.bindir and spec.executables below)
-    "bin/setup", # bin/setup is included so it can be copied by kettle:dev:install task
-    "lib/**/*.rb",
-    "lib/**/*.rake",
+    *enumerate_package_files.call("lib"),
+    # Executables and executable support scripts
+    *enumerate_package_files.call("exe"),
+    # Public certs for gem signing
+    *enumerate_package_files.call("certs"),
     # Signatures
-    "sig/**/*.rbs",
-    # Bash scripts (shipped alongside Ruby wrapper executables in exe/)
-    "exe/*.sh",
+    *enumerate_package_files.call("sig"),
   ]
 
   # Automatically included with gem package, no need to list again in files.
@@ -90,7 +90,7 @@ Gem::Specification.new do |spec|
     "CODE_OF_CONDUCT.md",
     "CONTRIBUTING.md",
     "FUNDING.md",
-    "LICENSE.txt",
+    "LICENSE.md",
     "README.md",
     "RUBOCOP.md",
     "SECURITY.md",
@@ -106,13 +106,15 @@ Gem::Specification.new do |spec|
     "--inline-source",
     "--quiet",
   ]
-  spec.require_paths = ["lib"]
   spec.bindir = "exe"
   # Listed files are the relative paths from bindir above.
   spec.executables = ["kettle-changelog", "kettle-check-eof", "kettle-commit-msg", "kettle-dev-setup", "kettle-dvcs", "kettle-gh-release", "kettle-pre-release", "kettle-readme-backers", "kettle-release"]
 
-  # Utilities
-  spec.add_dependency("version_gem", "~> 1.1", ">= 1.1.9")              # ruby >= 2.2.0
+# kettle-jem:freeze
+# To retain chunks of comments & code during kettle-jem templating:
+# Wrap custom sections with freeze markers (e.g., as above and below this comment chunk).
+# kettle-jem will then preserve content between those markers across template runs.
+# kettle-jem:unfreeze
 
   # kettle-jem:freeze
   # NOTE: This gem has "runtime" dependencies,
@@ -120,6 +122,11 @@ Gem::Specification.new do |spec|
   #       At runtime, this gem depends on its dependencies being direct dependencies of those other libraries.
   #       The kettle-jem script and kettle:jem:install rake task ensure libraries meet the requirements.
   # kettle-jem:unfreeze
+
+  spec.require_paths = ["lib"]
+
+  # Utilities
+  spec.add_dependency("version_gem", "~> 1.1", ">= 1.1.9")              # ruby >= 2.2.0
 
   # NOTE: It is preferable to list development dependencies in the gemspec due to increased
   #       visibility and discoverability.

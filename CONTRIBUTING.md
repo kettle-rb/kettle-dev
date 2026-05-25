@@ -212,11 +212,11 @@ NOTE: To build without signing the gem set `SKIP_GEM_SIGNING` to any value in th
 14. Run `bundle exec rake release` which will create a git tag for the version,
     push git commits and tags, and push the `.gem` file to the gem host configured in the gemspec.
 
-[📜src-gl]: https://gitlab.com/kettle-rb/kettle-dev/
+[📜src-gl]: https://gitlab.com/kettle-rb/kettle-dev
 [📜src-cb]: https://codeberg.org/kettle-rb/kettle-dev
 [📜src-gh]: https://github.com/kettle-rb/kettle-dev
 [🧪build]: https://github.com/kettle-rb/kettle-dev/actions
-[🤝conduct]: https://gitlab.com/kettle-rb/kettle-dev/-/blob/main/CODE_OF_CONDUCT.md
+[🤝conduct]: https://github.com/kettle-rb/kettle-dev/blob/main/CODE_OF_CONDUCT.md
 [🖐contrib-rocks]: https://contrib.rocks
 [🖐contributors]: https://github.com/kettle-rb/kettle-dev/graphs/contributors
 [🚎contributors-gl]: https://gitlab.com/kettle-rb/kettle-dev/-/graphs/main

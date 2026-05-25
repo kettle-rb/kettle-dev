@@ -22,3 +22,6 @@
 # <<kettle-jem:generated>> — do not edit below this line
 # (no shunted dependencies)
 # <</kettle-jem:generated>>
+# <<kettle-jem:generated>> do not edit below this line
+gem "kettle-test", "~> 2.0" # ruby >= 2.4.0
+# <</kettle-jem:generated>>
