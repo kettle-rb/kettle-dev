@@ -32,6 +32,11 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `rake reek:update` now resolves the Reek gem executable directly instead of
+  shelling through `bundle exec reek`, avoiding stale project binstubs, and no
+  longer fails the default task solely because Reek reported smells while
+  refreshing the `REEK` backlog file.
+
 ### Security
 
 ## [2.0.1] - 2026-05-24

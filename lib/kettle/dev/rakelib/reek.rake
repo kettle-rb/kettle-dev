@@ -12,18 +12,20 @@ begin
 
   # Store current Reek output into REEK file
   require "open3"
+  require "rbconfig"
   desc("Run reek and store the output into the REEK file")
   task("reek:update") do
-    # Run via Bundler if available to ensure the right gem version is used
-    cmd = %w[bundle exec reek]
+    # Resolve the gem executable directly. `bundle exec reek` may prefer a
+    # project-local bin/reek binstub, and stale binstubs are a common failure
+    # mode during template/bootstrap work.
+    cmd = [RbConfig.ruby, Gem.bin_path("reek", "reek")]
 
     output, status = Open3.capture2e(*cmd)
 
     File.write("REEK", output)
 
-    # Mirror the failure semantics of the standard reek task
-    unless status.success?
-      abort("reek:update failed (reek reported smells). Output written to REEK")
+    unless status.success? || status.exitstatus == 1
+      abort("reek:update failed (reek executable failed with exit #{status.exitstatus}). Output written to REEK")
     end
   end
   Kettle::Dev.register_default("reek:update") unless Kettle::Dev::IS_CI
