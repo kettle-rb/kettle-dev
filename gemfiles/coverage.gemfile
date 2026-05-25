@@ -9,11 +9,3 @@ eval_gemfile("modular/coverage.gemfile")
 eval_gemfile("modular/optional.gemfile")
 
 eval_gemfile("modular/x_std_libs.gemfile")
-
-eval_gemfile("modular/recording/r3/recording.gemfile")
-
-eval_gemfile("modular/rspec.gemfile")
-
-eval_gemfile("modular/templating.gemfile")
-
-eval_gemfile("modular/style.gemfile")

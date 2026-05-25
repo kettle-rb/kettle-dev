@@ -6,13 +6,13 @@
 <title>
   Class: Kettle::Dev::ChangelogCLI
   
-    &mdash; Documentation by YARD 0.9.39
+    &mdash; Documentation by YARD 0.9.43
   
 </title>
 
-  <link rel="stylesheet" href="../../css/style.css" type="text/css" />
+  <link rel="stylesheet" href="../../css/style.css" type="text/css">
 
-  <link rel="stylesheet" href="../../css/common.css" type="text/css" />
+  <link rel="stylesheet" href="../../css/common.css" type="text/css">
 
 <script type="text/javascript">
   pathId = "Kettle::Dev::ChangelogCLI";
@@ -27,6 +27,8 @@
 
   </head>
   <body>
+    <div id="main_progress" aria-hidden="true"></div>
+
     <div class="nav_wrap">
       <iframe id="nav" src="../../class_list.html?1"></iframe>
       <div id="resizer"></div>
@@ -94,7 +96,8 @@
   
   <dl>
     <dt>Defined in:</dt>
-    <dd>lib/kettle/dev/changelog_cli.rb</dd>
+    <dd>lib/kettle/dev/changelog_cli.rb
+</dd>
   </dl>
   
 </div>
@@ -176,7 +179,7 @@ includes coverage and YARD stats, and updates link references.</p>
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#initialize-instance_method" title="#initialize (instance method)">#<strong>initialize</strong>(strict: true)  &#x21d2; ChangelogCLI </a>
+      <a href="#initialize-instance_method" title="#initialize (instance method)">#<strong>initialize</strong>(strict: true, enforce_coverage_thresholds: true, update_prep: false)  &#x21d2; ChangelogCLI </a>
     
 
     
@@ -222,6 +225,7 @@ includes coverage and YARD stats, and updates link references.</p>
 
       
     </ul>
+    
   
 
 <div id="constructor_details" class="method_details_list">
@@ -230,7 +234,7 @@ includes coverage and YARD stats, and updates link references.</p>
     <div class="method_details first">
   <h3 class="signature first" id="initialize-instance_method">
   
-    #<strong>initialize</strong>(strict: true)  &#x21d2; <tt><span class='object_link'><a href="" title="Kettle::Dev::ChangelogCLI (class)">ChangelogCLI</a></span></tt> 
+    #<strong>initialize</strong>(strict: true, enforce_coverage_thresholds: true, update_prep: false)  &#x21d2; <tt><span class='object_link'><a href="" title="Kettle::Dev::ChangelogCLI (class)">ChangelogCLI</a></span></tt> 
   
 
   
@@ -265,6 +269,40 @@ Sets up paths for CHANGELOG.md and coverage.json</p>
       
     </li>
   
+    <li>
+      
+        <span class='name'>enforce_coverage_thresholds</span>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>true</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>when true, fail strict coverage generation below project thresholds</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>update_prep</span>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>false</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>when true, update the most recent prepared release section in place</p>
+</div>
+      
+    </li>
+  
 </ul>
 
 
@@ -274,21 +312,25 @@ Sets up paths for CHANGELOG.md and coverage.json</p>
       <pre class="lines">
 
 
-21
-22
-23
-24
-25
-26</pre>
+26
+27
+28
+29
+30
+31
+32
+33</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/changelog_cli.rb', line 21</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/changelog_cli.rb', line 26</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='label'>strict:</span> <span class='kw'>true</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='label'>strict:</span> <span class='kw'>true</span><span class='comma'>,</span> <span class='label'>enforce_coverage_thresholds:</span> <span class='kw'>true</span><span class='comma'>,</span> <span class='label'>update_prep:</span> <span class='kw'>false</span><span class='rparen'>)</span>
   <span class='ivar'>@root</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="CIHelpers.html" title="Kettle::Dev::CIHelpers (module)">CIHelpers</a></span></span><span class='period'>.</span><span class='id identifier rubyid_project_root'><span class='object_link'><a href="CIHelpers.html#project_root-class_method" title="Kettle::Dev::CIHelpers.project_root (method)">project_root</a></span></span>
   <span class='ivar'>@changelog_path</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='ivar'>@root</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>CHANGELOG.md</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
   <span class='ivar'>@coverage_path</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='ivar'>@root</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>coverage</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>coverage.json</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
   <span class='ivar'>@strict</span> <span class='op'>=</span> <span class='id identifier rubyid_strict'>strict</span>
+  <span class='ivar'>@enforce_coverage_thresholds</span> <span class='op'>=</span> <span class='id identifier rubyid_enforce_coverage_thresholds'>enforce_coverage_thresholds</span>
+  <span class='ivar'>@update_prep</span> <span class='op'>=</span> <span class='id identifier rubyid_update_prep'>update_prep</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -330,13 +372,6 @@ a new version section with coverage/YARD stats, and updates all link references.
       <pre class="lines">
 
 
-34
-35
-36
-37
-38
-39
-40
 41
 42
 43
@@ -434,7 +469,7 @@ a new version section with coverage/YARD stats, and updates all link references.
 135</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/changelog_cli.rb', line 34</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/changelog_cli.rb', line 41</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_run'>run</span>
   <span class='id identifier rubyid_version'>version</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Versioning.html" title="Kettle::Dev::Versioning (module)">Versioning</a></span></span><span class='period'>.</span><span class='id identifier rubyid_detect_version'><span class='object_link'><a href="Versioning.html#detect_version-class_method" title="Kettle::Dev::Versioning.detect_version (method)">detect_version</a></span></span><span class='lparen'>(</span><span class='ivar'>@root</span><span class='rparen'>)</span>
@@ -445,28 +480,21 @@ a new version section with coverage/YARD stats, and updates all link references.
     <span class='id identifier rubyid_warn'>warn</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Make sure &#39;origin&#39; points to github.com. Alternatively, set origin or update links manually afterward.</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
   <span class='kw'>end</span>
 
+  <span class='id identifier rubyid_changelog'>changelog</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='lparen'>(</span><span class='ivar'>@changelog_path</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_plan'>plan</span> <span class='op'>=</span> <span class='ivar'>@update_prep</span> <span class='op'>?</span> <span class='id identifier rubyid_explicit_update_prep_plan'>explicit_update_prep_plan</span><span class='lparen'>(</span><span class='id identifier rubyid_changelog'>changelog</span><span class='rparen'>)</span> <span class='op'>:</span> <span class='id identifier rubyid_detect_plan'>detect_plan</span><span class='lparen'>(</span><span class='id identifier rubyid_changelog'>changelog</span><span class='comma'>,</span> <span class='id identifier rubyid_version'>version</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_confirm_plan!'>confirm_plan!</span><span class='lparen'>(</span><span class='id identifier rubyid_plan'>plan</span><span class='rparen'>)</span>
+
+  <span class='kw'>if</span> <span class='id identifier rubyid_plan'>plan</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:action</span><span class='rparen'>)</span> <span class='op'>==</span> <span class='symbol'>:reformat_only</span>
+    <span class='id identifier rubyid_reformat_changelog!'>reformat_changelog!</span><span class='lparen'>(</span><span class='id identifier rubyid_changelog'>changelog</span><span class='rparen'>)</span>
+    <span class='kw'>return</span>
+  <span class='kw'>end</span>
+
   <span class='id identifier rubyid_line_cov_line'>line_cov_line</span><span class='comma'>,</span> <span class='id identifier rubyid_branch_cov_line'>branch_cov_line</span> <span class='op'>=</span> <span class='id identifier rubyid_coverage_lines'>coverage_lines</span>
   <span class='id identifier rubyid_yard_line'>yard_line</span> <span class='op'>=</span> <span class='id identifier rubyid_yard_percent_documented'>yard_percent_documented</span>
 
-  <span class='id identifier rubyid_changelog'>changelog</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='lparen'>(</span><span class='ivar'>@changelog_path</span><span class='rparen'>)</span>
-
-  <span class='comment'># If the detected version already exists in the changelog, offer reformat-only mode
-</span>  <span class='kw'>if</span> <span class='id identifier rubyid_changelog'>changelog</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^## \[</span><span class='embexpr_beg'>#{</span><span class='const'>Regexp</span><span class='period'>.</span><span class='id identifier rubyid_escape'>escape</span><span class='lparen'>(</span><span class='id identifier rubyid_version'>version</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'>\]</span><span class='regexp_end'>/</span></span>
-    <span class='id identifier rubyid_warn'>warn</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>CHANGELOG.md already has a section for version </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_version'>version</span><span class='embexpr_end'>}</span><span class='tstring_content'>.</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_warn'>warn</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>It appears the version has not been bumped. You can reformat CHANGELOG.md without adding a new release section.</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_print'>print</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Proceed with reformat only? [y/N]: </span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_ans'>ans</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="InputAdapter.html" title="Kettle::Dev::InputAdapter (module)">InputAdapter</a></span></span><span class='period'>.</span><span class='id identifier rubyid_gets'><span class='object_link'><a href="InputAdapter.html#gets-class_method" title="Kettle::Dev::InputAdapter.gets (method)">gets</a></span></span><span class='op'>&amp;.</span><span class='id identifier rubyid_strip'>strip</span><span class='op'>&amp;.</span><span class='id identifier rubyid_downcase'>downcase</span>
-    <span class='kw'>if</span> <span class='id identifier rubyid_ans'>ans</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>y</span><span class='tstring_end'>&quot;</span></span> <span class='op'>||</span> <span class='id identifier rubyid_ans'>ans</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>yes</span><span class='tstring_end'>&quot;</span></span>
-      <span class='id identifier rubyid_updated'>updated</span> <span class='op'>=</span> <span class='id identifier rubyid_convert_heading_tag_suffix_to_list'>convert_heading_tag_suffix_to_list</span><span class='lparen'>(</span><span class='id identifier rubyid_changelog'>changelog</span><span class='rparen'>)</span>
-      <span class='id identifier rubyid_updated'>updated</span> <span class='op'>=</span> <span class='id identifier rubyid_normalize_heading_spacing'>normalize_heading_spacing</span><span class='lparen'>(</span><span class='id identifier rubyid_updated'>updated</span><span class='rparen'>)</span>
-      <span class='id identifier rubyid_updated'>updated</span> <span class='op'>=</span> <span class='id identifier rubyid_ensure_footer_spacing'>ensure_footer_spacing</span><span class='lparen'>(</span><span class='id identifier rubyid_updated'>updated</span><span class='rparen'>)</span>
-      <span class='id identifier rubyid_updated'>updated</span> <span class='op'>=</span> <span class='id identifier rubyid_updated'>updated</span><span class='period'>.</span><span class='id identifier rubyid_rstrip'>rstrip</span> <span class='op'>+</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span>
-      <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_write'>write</span><span class='lparen'>(</span><span class='ivar'>@changelog_path</span><span class='comma'>,</span> <span class='id identifier rubyid_updated'>updated</span><span class='rparen'>)</span>
-      <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>CHANGELOG.md reformatted. No new version section added.</span><span class='tstring_end'>&quot;</span></span>
-      <span class='kw'>return</span>
-    <span class='kw'>else</span>
-      <span class='id identifier rubyid_abort'>abort</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Aborting: version not bumped. Re-run after bumping version or answer &#39;y&#39; to reformat-only.</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-    <span class='kw'>end</span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_plan'>plan</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:action</span><span class='rparen'>)</span> <span class='op'>==</span> <span class='symbol'>:update_prepared_release</span>
+    <span class='id identifier rubyid_update_prepared_release!'>update_prepared_release!</span><span class='lparen'>(</span><span class='id identifier rubyid_changelog'>changelog</span><span class='comma'>,</span> <span class='id identifier rubyid_today'>today</span><span class='comma'>,</span> <span class='id identifier rubyid_owner'>owner</span><span class='comma'>,</span> <span class='id identifier rubyid_repo'>repo</span><span class='comma'>,</span> <span class='id identifier rubyid_line_cov_line'>line_cov_line</span><span class='comma'>,</span> <span class='id identifier rubyid_branch_cov_line'>branch_cov_line</span><span class='comma'>,</span> <span class='id identifier rubyid_yard_line'>yard_line</span><span class='rparen'>)</span>
+    <span class='kw'>return</span>
   <span class='kw'>end</span>
 
   <span class='id identifier rubyid_unreleased_block'>unreleased_block</span><span class='comma'>,</span> <span class='id identifier rubyid_before'>before</span><span class='comma'>,</span> <span class='id identifier rubyid_after'>after</span> <span class='op'>=</span> <span class='id identifier rubyid_extract_unreleased'>extract_unreleased</span><span class='lparen'>(</span><span class='id identifier rubyid_changelog'>changelog</span><span class='rparen'>)</span>
@@ -548,9 +576,9 @@ a new version section with coverage/YARD stats, and updates all link references.
 </div>
 
       <div id="footer">
-  Generated on Sun Apr 12 11:49:31 2026 by
+  Generated on Mon May 25 01:04:48 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.39 (ruby-4.0.2).
+  0.9.43 (ruby-4.0.5).
 </div>
 
     </div>

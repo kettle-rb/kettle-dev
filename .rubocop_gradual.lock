@@ -1,0 +1,13 @@
+{
+  "lib/kettle/dev/changelog_cli.rb:2070654419": [
+    [270, 35, 48, "Performance/Detect: Use `reverse.find` instead of `select.last`.", 1297576450]
+  ],
+  "spec/kettle/dev/changelog_cli_spec.rb:820711720": [
+    [11, 5, 38, "RSpec/AnyInstance: Avoid stubbing using `allow_any_instance_of`.", 3627954156],
+    [12, 5, 38, "RSpec/AnyInstance: Avoid stubbing using `allow_any_instance_of`.", 3627954156]
+  ],
+  "spec/kettle/dev/rakelib/reek_rake_spec.rb:2194098004": [
+    [7, 16, 18, "RSpec/DescribeClass: The first argument to describe should be the class or module being tested.", 1164940970],
+    [18, 7, 15, "ThreadSafety/DirChdir: Avoid using `Dir.chdir` due to its process-wide effect.", 131138375]
+  ]
+}

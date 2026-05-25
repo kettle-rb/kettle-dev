@@ -22,33 +22,19 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
-- Refreshed generated kettle-jem templates, CI workflows, curated binstubs, and
-  local modular Gemfile wiring.
-- `kettle-changelog` now auto-selects the correct no-argument action by
-  comparing `version.rb`, the latest live release, and the most recent
-  CHANGELOG.md release section before prompting for confirmation.
-- Updated the development dependency on `kettle-test` to require 2.0.1 or newer.
-
 ### Deprecated
 
 ### Removed
 
 ### Fixed
 
-- `rake reek:update` now resolves the Reek gem executable directly instead of
-  shelling through `bundle exec reek`, avoiding stale project binstubs, and no
-  longer fails the default task solely because Reek reported smells while
-  refreshing the `REEK` backlog file.
-- `rake reek:update` now keeps `REEK` zero-byte when Reek reports no smells
-  instead of writing a single blank line.
-
 ### Security
 
-## [2.0.1] - 2026-05-24
+## [2.0.1] - 2026-05-25
 
 - TAG: [v2.0.1][2.0.1t]
-- COVERAGE: 95.82% -- 2840/2964 lines in 20 files
-- BRANCH COVERAGE: 79.21% -- 1177/1486 branches in 20 files
+- COVERAGE: 94.88% -- 2911/3068 lines in 21 files
+- BRANCH COVERAGE: 78.43% -- 1200/1530 branches in 21 files
 - 76.25% documented
 
 ### Added
@@ -70,9 +56,23 @@ Please file a bug if you notice a violation of semantic versioning.
   `turbo_tests2` runner and summary output.
 - The shared `:yard` task now installs `yard-fence` and `yard-timekeeper` integrations explicitly so documentation prep and post-processing only run during `rake yard`
 
+- Refreshed generated kettle-jem templates, CI workflows, curated binstubs, and
+  local modular Gemfile wiring.
+- `kettle-changelog` now auto-selects the correct no-argument action by
+  comparing `version.rb`, the latest live release, and the most recent
+  CHANGELOG.md release section before prompting for confirmation.
+- Updated the development dependency on `kettle-test` to require 2.0.1 or newer.
+
 ### Fixed
 
 - Loading YARD during unrelated rake tasks no longer triggers documentation plugin side effects that rewrite or clear `docs/`
+
+- `rake reek:update` now resolves the Reek gem executable directly instead of
+  shelling through `bundle exec reek`, avoiding stale project binstubs, and no
+  longer fails the default task solely because Reek reported smells while
+  refreshing the `REEK` backlog file.
+- `rake reek:update` now keeps `REEK` zero-byte when Reek reports no smells
+  instead of writing a single blank line.
 
 ## [2.0.0] - 2026-02-25
 

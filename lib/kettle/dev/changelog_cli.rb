@@ -275,7 +275,7 @@ module Kettle
       end
 
       def latest_release_target(version, latest_overall, latest_for_series)
-        return nil unless latest_overall
+        return unless latest_overall
 
         cur = Gem::Version.new(version)
         overall = Gem::Version.new(latest_overall)
