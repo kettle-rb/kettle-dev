@@ -26,6 +26,8 @@ Please file a bug if you notice a violation of semantic versioning.
   `kettle-test` 2.x and its runtime `turbo_tests2` dependency.
 - `kettle-test` is now declared as a runtime dependency because the shipped rake
   and changelog tasks invoke `bundle exec kettle-test`.
+- Refreshed generated template output for README badge formatting and
+  Ruby 2.4-targeted RuboCop LTS style dependencies.
 
 ### Deprecated
 
@@ -40,6 +42,8 @@ Please file a bug if you notice a violation of semantic versioning.
   root Gemfile.
 - Reek rake-task specs are skipped on CI appraisals where style tooling is not
   installed, matching the existing treatment of RuboCop task specs.
+- Regenerated templating now keeps `kettle-test` as a runtime dependency only
+  instead of duplicating it as both runtime and development dependency.
 
 ### Security
 
