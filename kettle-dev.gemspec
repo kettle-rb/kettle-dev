@@ -33,7 +33,7 @@ Gem::Specification.new do |spec|
   spec.description = "🍲 Kettle::Dev is a meta tool from kettle-rb to streamline development and testing. Acts as a shim dependency, pulling in many other dependencies, to give you OOTB productivity with a RubyGem, or Ruby app project. Configures a complete set of Rake tasks, for all the libraries is brings in, so they arrive ready to go. Fund overlooked open source projects - bottom of stack, dev/test dependencies: floss-funding.dev"
   spec.homepage = "https://github.com/kettle-rb/kettle-dev"
   spec.licenses = ["AGPL-3.0-only"]
-  spec.required_ruby_version = ">= 2.3.0"
+  spec.required_ruby_version = ">= 2.4.0"
 
   # Linux distros often package gems and securely certify them independent
   #   of the official RubyGem certification process. Allowed via ENV["SKIP_GEM_SIGNING"]
@@ -127,16 +127,17 @@ Gem::Specification.new do |spec|
 
   # Utilities
   spec.add_dependency("version_gem", "~> 1.1", ">= 1.1.9")              # ruby >= 2.2.0
+  spec.add_dependency("kettle-test", "~> 2.0", ">= 2.0.1")              # ruby >= 2.4
 
   # NOTE: It is preferable to list development dependencies in the gemspec due to increased
   #       visibility and discoverability.
   #       However, development dependencies in gemspec will install on
   #       all versions of Ruby that will run in CI.
-  #       This gem, and its gemspec runtime dependencies, will install on Ruby down to 2.3.0.
-  #       This gem, and its gemspec development dependencies, will install on Ruby down to 2.3.0.
+  #       This gem, and its gemspec runtime dependencies, will install on Ruby down to 2.4.0.
+  #       This gem, and its gemspec development dependencies, will install on Ruby down to 2.4.0.
   #       Thus, dev dependencies in gemspec must have
   #
-  #       required_ruby_version ">= 2.3.0" (or lower)
+  #       required_ruby_version ">= 2.4.0" (or lower)
   #
   #       Development dependencies that require strictly newer Ruby versions should be in a "gemfile",
   #       and preferably a modular one (see gemfiles/modular/*.gemfile).
@@ -154,7 +155,6 @@ Gem::Specification.new do |spec|
 
   # Testing
   spec.add_development_dependency("appraisal2", "~> 3.0", ">= 3.0.6")               # ruby >= 1.8.7, for testing against multiple versions of dependencies
-  spec.add_development_dependency("kettle-test", "~> 2.0", ">= 2.0.1")              # ruby >= 2.3
 
   # Releasing
   spec.add_development_dependency("ruby-progressbar", "~> 1.13")                    # ruby >= 0

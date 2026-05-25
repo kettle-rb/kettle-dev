@@ -11,7 +11,7 @@
 # These gems have been moved here from the gemspec because they require a
 # newer Ruby than the project's effective dev floor:
 #
-#   effective_dev_floor = max(gemspec required_ruby_version, 2.3)
+#   effective_dev_floor = max(gemspec required_ruby_version, 2.4)
 #
 # They are loaded via the Appraisals "unlocked" group so that CI can still
 # test them on the Rubies they support, while older-Ruby CI jobs simply

@@ -67,11 +67,6 @@ appraise "dep-heads" do
   eval_gemfile "modular/runtime_heads.gemfile"
 end
 
-appraise "ruby-2-3" do
-  eval_gemfile "modular/recording/r2.3/recording.gemfile"
-  eval_gemfile "modular/x_std_libs/r2.3/libs.gemfile"
-end
-
 appraise "ruby-2-4" do
   eval_gemfile "modular/recording/r2.4/recording.gemfile"
   eval_gemfile "modular/x_std_libs/r2.4/libs.gemfile"

@@ -22,9 +22,16 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- **BREAKING**: Raised the minimum Ruby version to 2.4.0, matching
+  `kettle-test` 2.x and its runtime `turbo_tests2` dependency.
+- `kettle-test` is now declared as a runtime dependency because the shipped rake
+  and changelog tasks invoke `bundle exec kettle-test`.
+
 ### Deprecated
 
 ### Removed
+
+- Removed Ruby 2.3 and JRuby 9.1 CI workflows and appraisal gemfiles.
 
 ### Fixed
 
