@@ -137,6 +137,9 @@ workflows:
   # Default command used by generated test workflows.
   # ENV override: KJ_EXEC_CMD
   exec_cmd: kettle-test
+  # Include VCR/WebMock recording modular gemfiles in generated Appraisals.
+  # Enable only for projects that actually require recording support.
+  recording: true
 # README top logos.
 # Comma-separated list of optional logo entries for the generated README header.
 # Supported values: related-org, ruby, org, project
