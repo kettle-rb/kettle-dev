@@ -31,6 +31,15 @@ RSpec.describe "rake reek:update" do
     expect(File.read("REEK")).to eq("smells\n")
   end
 
+  it "keeps the REEK file empty when reek reports no smells" do
+    allow(Gem).to receive(:bin_path).with("reek", "reek").and_return("/gems/reek/exe/reek")
+    allow(Open3).to receive(:capture2e).and_return(["\n", status(true, 0)])
+
+    invoke
+
+    expect(File.read("REEK")).to eq("")
+  end
+
   it "fails when the reek executable exits for a reason other than smells" do
     allow(Gem).to receive(:bin_path).with("reek", "reek").and_return("/gems/reek/exe/reek")
     allow(Open3).to receive(:capture2e).and_return(["usage error\n", status(false, 2)])

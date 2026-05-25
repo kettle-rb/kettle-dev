@@ -22,7 +22,8 @@ begin
 
     output, status = Open3.capture2e(*cmd)
 
-    File.write("REEK", output)
+    normalized_output = output.to_s.strip.empty? ? "" : output
+    File.write("REEK", normalized_output)
 
     unless status.success? || status.exitstatus == 1
       abort("reek:update failed (reek executable failed with exit #{status.exitstatus}). Output written to REEK")

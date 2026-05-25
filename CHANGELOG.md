@@ -36,6 +36,8 @@ Please file a bug if you notice a violation of semantic versioning.
   shelling through `bundle exec reek`, avoiding stale project binstubs, and no
   longer fails the default task solely because Reek reported smells while
   refreshing the `REEK` backlog file.
+- `rake reek:update` now keeps `REEK` zero-byte when Reek reports no smells
+  instead of writing a single blank line.
 
 ### Security
 
