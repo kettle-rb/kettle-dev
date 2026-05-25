@@ -15,8 +15,8 @@
 #   GitLab links to GitHub links, and appends the new [X.Y.Z] and [X.Y.Zt] links.
 #
 # Notes:
-# - Expects a JSON coverage report at coverage/coverage.json. If missing,
-#   it will instruct you to run: K_SOUP_COV_FORMATTERS="json" bin/rspec
+# - Expects a JSON coverage report at coverage/coverage.json. In strict mode,
+#   it will generate one with bundle exec kettle-test.
 # - Expects `bin/rake yard` to be available.
 
 $stdout.sync = true
@@ -63,11 +63,11 @@ begin
         K_CHANGELOG_STRICT=false  Disable strict mode (equivalent to --no-strict flag)
 
       Prerequisites:
-        - coverage/coverage.json present (run: bin/rake coverage to generate)
+        - coverage/coverage.json present (run: bundle exec kettle-test with K_SOUP_COV_FORMATTERS=json to generate)
         - yard task available via bin/rake yard
 
       By default (strict mode), if coverage.json or yard stats are missing, the script will:
-        1. Attempt to generate them by running bin/rake coverage and bin/rake yard
+        1. Attempt to generate them by running bundle exec kettle-test and bin/rake yard
         2. Fail with an error if generation fails or data is still unavailable
 
       Use --no-strict or K_CHANGELOG_STRICT=false to allow missing data (backward compatible behavior).

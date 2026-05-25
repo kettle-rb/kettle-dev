@@ -304,14 +304,9 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       end
     end
 
-    it "disables hard coverage thresholds when refreshing strict coverage data" do
+    it "runs kettle-test with coverage JSON and hard thresholds disabled in strict mode" do
       mkproj do |root|
         allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
-        bin_dir = File.join(root, "bin")
-        FileUtils.mkdir_p(bin_dir)
-        rake_cmd = File.join(bin_dir, "rake")
-        File.write(rake_cmd, "#!/usr/bin/env ruby\n")
-        FileUtils.chmod(0o755, rake_cmd)
         coverage_payload = JSON.generate(
           "coverage" => {
             "lib/a.rb" => {
@@ -329,8 +324,9 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
             "K_SOUP_COV_MULTI_FORMATTERS" => "true",
             "K_SOUP_COV_OPEN_BIN" => "",
           ),
-          rake_cmd,
-          "coverage",
+          "bundle",
+          "exec",
+          "kettle-test",
           chdir: root,
         ) do
           FileUtils.mkdir_p(File.join(root, "coverage"))

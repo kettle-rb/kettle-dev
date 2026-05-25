@@ -251,33 +251,27 @@ module Kettle
             end
           end
 
-          puts "Generating fresh coverage data by running: bin/rake coverage"
-
-          # Run bin/rake coverage to generate coverage.json
-          rake_cmd = File.join(@root, "bin", "rake")
-          unless File.executable?(rake_cmd)
-            raise "bin/rake not found or not executable; cannot generate coverage data"
-          end
+          puts "Generating fresh coverage data by running: bundle exec kettle-test"
 
           # Changelog generation only needs fresh coverage JSON. Do not let
           # project threshold policy block metadata collection.
-          success = system(changelog_coverage_env, rake_cmd, "coverage", chdir: @root)
+          success = system(changelog_coverage_env, "bundle", "exec", "kettle-test", chdir: @root)
 
           unless success
-            raise "bin/rake coverage failed with exit status #{$?.exitstatus || "unknown"}"
+            raise "bundle exec kettle-test failed with exit status #{$?.exitstatus || "unknown"}"
           end
 
           puts "Coverage generation complete."
 
           # Check if coverage.json was generated
           unless File.file?(@coverage_path)
-            raise "Coverage JSON not found at #{Kettle::Dev.display_path(@coverage_path)} after running bin/rake coverage"
+            raise "Coverage JSON not found at #{Kettle::Dev.display_path(@coverage_path)} after running bundle exec kettle-test"
           end
         else
           # Non-strict mode: check if coverage.json exists, warn if not
           unless File.file?(@coverage_path)
             warn("Coverage JSON not found at #{Kettle::Dev.display_path(@coverage_path)}.")
-            warn("Run: bin/rake coverage to generate it")
+            warn("Run: K_SOUP_COV_FORMATTERS=json bundle exec kettle-test to generate it")
             return [nil, nil]
           end
         end
