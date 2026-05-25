@@ -42,6 +42,8 @@ Please file a bug if you notice a violation of semantic versioning.
   root Gemfile.
 - Reek, RuboCop-LTS, and coverage task specs now run in coverage CI without
   requiring style-only dependencies.
+- Reek rake task specs no longer change the process working directory, avoiding
+  cross-spec project root leakage under turbo workers.
 - Coverage CI thresholds now match the repository `mise.toml` thresholds instead
   of requiring unreachable 100% line and branch coverage.
 - Regenerated templating now keeps `kettle-test` as a runtime dependency only
