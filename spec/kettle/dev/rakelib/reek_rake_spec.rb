@@ -39,7 +39,7 @@ RSpec.describe "reek rake tasks" do # rubocop:disable RSpec/DescribeClass
 
     after do
       $LOAD_PATH.delete(fake_reek_load_path)
-      $LOADED_FEATURES.delete(fake_reek_task_file)
+      $LOADED_FEATURES.reject! { |feature| feature.end_with?("reek/rake/task.rb") }
     end
 
     it "writes the REEK file by resolving the gem executable directly" do
@@ -66,7 +66,7 @@ RSpec.describe "reek rake tasks" do # rubocop:disable RSpec/DescribeClass
       allow(Open3).to receive(:capture2e).and_return(["usage error\n", status(false, 2)])
       expect(File).to receive(:write).with("REEK", "usage error\n")
 
-      expect { invoke }.to raise_error(SystemExit)
+      expect { invoke }.to raise_error(RuntimeError, /reek:update failed/)
     end
   end
 
@@ -74,6 +74,24 @@ RSpec.describe "reek rake tasks" do # rubocop:disable RSpec/DescribeClass
     include_context "with rake", "reek"
 
     let(:task_name) { "reek" }
+    let(:fake_reek_load_path) { File.expand_path("../../../../tmp/fake_reek_unavailable_load_path", __dir__) }
+    let(:fake_reek_task_file) { File.join(fake_reek_load_path, "reek/rake/task.rb") }
+
+    prepend_before do
+      FileUtils.mkdir_p(File.dirname(fake_reek_task_file))
+      File.write(fake_reek_task_file, <<~RUBY)
+        # frozen_string_literal: true
+
+        raise LoadError, "reek unavailable"
+      RUBY
+      $LOADED_FEATURES.reject! { |feature| feature.end_with?("reek/rake/task.rb") }
+      $LOAD_PATH.unshift(fake_reek_load_path)
+    end
+
+    after do
+      $LOAD_PATH.delete(fake_reek_load_path)
+      $LOADED_FEATURES.reject! { |feature| feature.end_with?("reek/rake/task.rb") }
+    end
 
     it "defines a stub task that warns instead of failing" do
       expect { invoke }.to output(/NOTE: reek isn't installed/).to_stderr

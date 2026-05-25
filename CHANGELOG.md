@@ -44,6 +44,9 @@ Please file a bug if you notice a violation of semantic versioning.
   requiring style-only dependencies.
 - Reek rake task specs no longer change the process working directory, avoiding
   cross-spec project root leakage under turbo workers.
+- `rake reek:update` now raises a normal task error on unexpected reek exits
+  instead of calling `Kernel.abort`, so specs can assert the failure path without
+  poisoning the process exit status.
 - Coverage CI thresholds now match the repository `mise.toml` thresholds instead
   of requiring unreachable 100% line and branch coverage.
 - Regenerated templating now keeps `kettle-test` as a runtime dependency only

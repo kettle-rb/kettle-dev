@@ -26,7 +26,7 @@ begin
     File.write("REEK", normalized_output)
 
     unless status.success? || status.exitstatus == 1
-      abort("reek:update failed (reek executable failed with exit #{status.exitstatus}). Output written to REEK")
+      raise("reek:update failed (reek executable failed with exit #{status.exitstatus}). Output written to REEK")
     end
   end
   Kettle::Dev.register_default("reek:update") unless Kettle::Dev::IS_CI
