@@ -22,6 +22,12 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- `kettle-changelog` now generates strict coverage data with
+  `bundle exec kettle-test`, preserving the faster `turbo_tests2` runner.
+- `kettle-changelog` now treats configured coverage thresholds as a changelog
+  preparation gate by default; use `--no-coverage-threshold` or
+  `K_CHANGELOG_COVERAGE_HARD=false` to generate changelog metadata without
+  threshold enforcement.
 - The shared `rake spec` task now delegates to `bundle exec kettle-test`, so
   projects using kettle-dev automatically pick up kettle-test's default
   `turbo_tests2` runner and summary output.
