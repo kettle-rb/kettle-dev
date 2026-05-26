@@ -4,6 +4,7 @@ require "open3"
 require "json"
 require "net/http"
 require "uri"
+require "fileutils"
 
 module Kettle
   module Dev
@@ -525,14 +526,12 @@ module Kettle
 
           puts "Coverage generation complete."
 
-          # Check if coverage.json was generated
-          unless File.file?(@coverage_path)
-            raise "Coverage JSON not found at #{Kettle::Dev.display_path(@coverage_path)} after running bundle exec kettle-test"
-          end
+          @coverage_path = detected_coverage_json_path || merge_parallel_coverage_json!
         else
           # Non-strict mode: check if coverage.json exists, warn if not
-          unless File.file?(@coverage_path)
-            warn("Coverage JSON not found at #{Kettle::Dev.display_path(@coverage_path)}.")
+          @coverage_path = detected_coverage_json_path || merge_parallel_coverage_json_if_present
+          unless @coverage_path
+            warn("Coverage JSON not found at #{Kettle::Dev.display_path(File.join(@root, "coverage", "coverage.json"))}.")
             warn("Run: K_SOUP_COV_FORMATTERS=json bundle exec kettle-test to generate it")
             return [nil, nil]
           end
@@ -597,26 +596,99 @@ module Kettle
         }
       end
 
+      def detected_coverage_json_path
+        return @coverage_path if File.file?(@coverage_path)
+
+        candidates = Dir.glob(File.join(File.dirname(@coverage_path), "turbo_tests", "*", "coverage.json")).sort
+        return if candidates.empty?
+        return candidates.first if candidates.length == 1
+
+        nil
+      end
+
+      def merge_parallel_coverage_json_if_present
+        paths = Dir.glob(File.join(File.dirname(@coverage_path), "turbo_tests", "*", "coverage.json")).sort
+        return if paths.empty?
+
+        merge_parallel_coverage_json!
+      end
+
+      def merge_parallel_coverage_json!
+        paths = Dir.glob(File.join(File.dirname(@coverage_path), "turbo_tests", "*", "coverage.json")).sort
+        if paths.empty?
+          raise "Coverage JSON not found at #{Kettle::Dev.display_path(@coverage_path)} after running bundle exec kettle-test"
+        end
+
+        merged = {"coverage" => {}}
+        paths.each do |path|
+          JSON.parse(File.read(path)).fetch("coverage", {}).each do |file, coverage|
+            target = merged["coverage"][file] ||= {"lines" => [], "branches" => []}
+            merge_line_coverage!(target["lines"], coverage["lines"] || [])
+            target["branches"] = merge_branch_coverage(target["branches"], coverage["branches"] || [])
+          end
+        end
+        FileUtils.mkdir_p(File.dirname(@coverage_path))
+        File.write(@coverage_path, JSON.pretty_generate(merged))
+        @coverage_path
+      end
+
+      def merge_line_coverage!(target, source)
+        source.each_with_index do |value, index|
+          next unless value.is_a?(Integer)
+
+          current = target[index]
+          target[index] = [current, value].compact.max
+        end
+      end
+
+      def merge_branch_coverage(target, source)
+        by_key = {}
+        target.each do |branch|
+          next unless branch.is_a?(Hash)
+
+          by_key[branch_identity(branch)] = branch.dup
+        end
+        source.each do |branch|
+          next unless branch.is_a?(Hash)
+
+          key = branch_identity(branch)
+          existing = by_key[key]
+          unless existing
+            by_key[key] = branch.dup
+            next
+          end
+          existing["coverage"] = [existing["coverage"], branch["coverage"]].select { |value| value.is_a?(Numeric) }.max
+        end
+        by_key.values
+      end
+
+      def branch_identity(branch)
+        branch.reject { |key, _value| key == "coverage" }
+      end
+
       def yard_percent_documented
-        cmd = File.join(@root, "bin", "rake")
-        unless File.executable?(cmd)
+        commands = yard_documentation_commands
+        if commands.empty?
           if @strict
-            raise "bin/rake not found or not executable; ensure rake is installed via bundler"
+            raise "bin/rake and bin/yard not found or not executable; ensure rake and yard are installed via bundler"
           else
-            warn("bin/rake not found or not executable; ensure rake is installed via bundler")
+            warn("bin/rake and bin/yard not found or not executable; ensure rake and yard are installed via bundler")
             return
           end
         end
 
         begin
           # Run the canonical docs task to get the documentation percentage.
-          out, _ = Open3.capture2(cmd, "yard", {chdir: @root})
-          # Look for a line containing e.g., "95.35% documented"
-          line = out.lines.find { |l| /\d+(?:\.\d+)?%\s+documented/.match?(l) }
+          out = +""
+          commands.each do |command|
+            prepare_yard_fence_tmp_files if command == [File.join(@root, "bin", "yard")]
+            output, _status = Open3.capture2(*command, {chdir: @root})
+            out << output
+            line = documented_percent_line(output)
+            return line if line
+          end
 
-          if line
-            line.strip
-          elsif @strict
+          if @strict
             raise "Could not find documented percentage in bin/rake yard output"
           else
             warn("Could not find documented percentage in bin/rake yard output.")
@@ -630,6 +702,38 @@ module Kettle
             nil
           end
         end
+      end
+
+      def yard_documentation_commands
+        commands = []
+        rake = File.join(@root, "bin", "rake")
+        commands << [rake, "yard"] if File.executable?(rake)
+        yard = File.join(@root, "bin", "yard")
+        commands << [yard] if File.executable?(yard)
+        commands
+      end
+
+      def prepare_yard_fence_tmp_files
+        yardopts = File.join(@root, ".yardopts")
+        return unless File.file?(yardopts)
+        return unless File.read(yardopts).include?("tmp/yard-fence")
+
+        require "yard/fence"
+        outdir = File.join(@root, "tmp", "yard-fence")
+        FileUtils.rm_rf(outdir)
+        FileUtils.mkdir_p(outdir)
+        Dir.glob(File.join(@root, Yard::Fence::GLOB_PATTERN)).each do |src|
+          next unless File.file?(src)
+
+          content = File.read(src)
+          sanitized = Yard::Fence.sanitize_text(content)
+          File.write(File.join(outdir, File.basename(src)), sanitized)
+        end
+      end
+
+      def documented_percent_line(output)
+        line = output.lines.find { |l| /\d+(?:\.\d+)?%\s+documented/.match?(l) }
+        line&.strip
       end
 
       # Transform legacy release headings that include a tag suffix, e.g.:

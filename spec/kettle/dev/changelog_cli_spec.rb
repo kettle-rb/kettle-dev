@@ -504,6 +504,47 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       end
     end
 
+    it "merges parallel turbo_tests coverage JSON in strict mode" do
+      mkproj do |root|
+        allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
+
+        expect(cli = described_class.new(strict: true)).to receive(:system).and_wrap_original do |_original, *_args|
+          worker_one = File.join(root, "coverage", "turbo_tests", "1")
+          worker_two = File.join(root, "coverage", "turbo_tests", "2")
+          FileUtils.mkdir_p(worker_one)
+          FileUtils.mkdir_p(worker_two)
+          File.write(
+            File.join(worker_one, "coverage.json"),
+            JSON.generate(
+              "coverage" => {
+                "lib/a.rb" => {
+                  "lines" => [1, 0, nil],
+                  "branches" => [{"type" => "then", "start_line" => 1, "end_line" => 1, "coverage" => 0}],
+                },
+              },
+            ),
+          )
+          File.write(
+            File.join(worker_two, "coverage.json"),
+            JSON.generate(
+              "coverage" => {
+                "lib/a.rb" => {
+                  "lines" => [0, 1, nil],
+                  "branches" => [{"type" => "then", "start_line" => 1, "end_line" => 1, "coverage" => 1}],
+                },
+              },
+            ),
+          )
+          true
+        end
+
+        line_cov, branch_cov = cli.send(:coverage_lines)
+        expect(line_cov).to eq("COVERAGE: 100.00% -- 2/2 lines in 1 files")
+        expect(branch_cov).to eq("BRANCH COVERAGE: 100.00% -- 1/1 branches in 1 files")
+        expect(File.file?(File.join(root, "coverage", "coverage.json"))).to be(true)
+      end
+    end
+
     it "allows strict coverage generation without hard threshold enforcement" do
       mkproj do |root|
         allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
@@ -579,6 +620,25 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
         allow(Open3).to receive(:capture2).and_raise(StandardError.new("boom"))
         cli = described_class.new(strict: false)
         expect(cli.send(:yard_percent_documented)).to be_nil
+      end
+    end
+
+    it "falls back to bin/yard when the rake task has no documented percentage" do
+      mkproj do |root|
+        allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
+        path = File.join(root, "bin")
+        FileUtils.mkdir_p(path)
+        rake = File.join(path, "rake")
+        yard = File.join(path, "yard")
+        File.write(rake, "#!/usr/bin/env ruby\n")
+        File.write(yard, "#!/usr/bin/env ruby\n")
+        FileUtils.chmod(0o755, rake)
+        FileUtils.chmod(0o755, yard)
+        allow(Open3).to receive(:capture2).with(rake, "yard", {chdir: root}).and_return(["no task here\n", double("rake status")])
+        allow(Open3).to receive(:capture2).with(yard, {chdir: root}).and_return(["95.35% documented\n", double("yard status")])
+
+        cli = described_class.new(strict: true)
+        expect(cli.send(:yard_percent_documented)).to eq("95.35% documented")
       end
     end
   end
