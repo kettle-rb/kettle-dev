@@ -223,6 +223,13 @@ bin/kettle-pre-release    # Validate everything before release
 bin/kettle-release        # Full release workflow
 ```
 
+### Changelog Editing
+
+Manual changelog edits are allowed only under `## [Unreleased]`. Never add,
+remove, move, or rewrite entries in an already released version section by hand;
+`kettle-changelog` is the tool responsible for preparing or updating release
+sections.
+
 ## 📝 Project Conventions
 
 ### Freeze Block Preservation

@@ -153,7 +153,7 @@ module Kettle
           warn("Proceeding without live release info.")
         end
 
-        _unreleased_block, _before, after = extract_unreleased(changelog)
+        unreleased_block, _before, after = extract_unreleased(changelog)
         latest_changelog_version = detect_previous_version(after.to_s)
         section_exists = release_section_exists?(changelog, version)
         latest_target = latest_release_target(version, latest_overall, latest_for_series)
@@ -167,7 +167,7 @@ module Kettle
         end
 
         action = if section_exists && latest_target == version
-          :reformat_only
+          current_release_needs_update?(changelog, version, unreleased_block) ? :update_prepared_release : :reformat_only
         elsif section_exists
           :update_prepared_release
         elsif latest_target == version
@@ -502,6 +502,28 @@ module Kettle
           end
         end
         out.join
+      end
+
+      def current_release_needs_update?(changelog, version, unreleased_block)
+        return true if unreleased_block_has_entries?(unreleased_block)
+
+        !release_metadata_complete?(release_body_for(changelog, version))
+      end
+
+      def unreleased_block_has_entries?(unreleased_block)
+        !filter_unreleased_sections(unreleased_block.to_s).strip.empty?
+      end
+
+      def release_body_for(changelog, version)
+        pattern = /^## \[#{Regexp.escape(version)}\][^\n]*\n(?<body>.*?)(?=^## \[|\z)/m
+        changelog.match(pattern)&.[](:body).to_s
+      end
+
+      def release_metadata_complete?(release_body)
+        stripped_body = release_body.to_s
+        stripped_body.match?(/^- COVERAGE: /) &&
+          stripped_body.match?(/^- BRANCH COVERAGE: /) &&
+          stripped_body.match?(/^- \d+(?:\.\d+)?%\s+documented$/)
       end
 
       def coverage_lines

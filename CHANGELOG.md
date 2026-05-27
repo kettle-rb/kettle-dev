@@ -30,6 +30,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - The default rake task now includes documentation generation via `yard`, so
   documentation plugin post-processing runs during `bin/rake`.
+- `kettle-changelog` now updates the current changelog release in place when
+  Unreleased has pending entries or the release section is missing generated
+  coverage/documentation metadata, even if the version is already the latest
+  known release.
 
 ### Security
 

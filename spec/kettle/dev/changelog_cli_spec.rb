@@ -93,8 +93,19 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
           # Changelog
           ## [Unreleased]
           ### Added
-          - item
+          ### Changed
+          ### Deprecated
+          ### Removed
+          ### Fixed
+          ### Security
           ## [1.2.3] - 2025-08-30
+          - TAG: [v1.2.3][1.2.3t]
+          - COVERAGE: 95.00% -- 95/100 lines in 2 files
+          - BRANCH COVERAGE: 80.00% -- 8/10 branches in 2 files
+          - 20.00% documented
+
+          ### Fixed
+
           - prev
         MD
         allow(Kettle::Dev::CIHelpers).to receive_messages(project_root: root, repo_info: ["o", "r"])
@@ -108,6 +119,124 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
         # Headings should have blank lines around
         expect(updated).to match(/# Changelog\n\n## \[Unreleased\]/)
         expect(updated).to match(/## \[Unreleased\]\n\n### Added/)
+      end
+    end
+
+    it "auto-selects update-prep when the current released version has pending unreleased entries" do
+      mkproj do |root|
+        File.write(File.join(root, "lib", "my", "gem", "version.rb"), <<~RB)
+          module My; module Gem; VERSION = "1.2.3"; end; end
+        RB
+        FileUtils.mkdir_p(File.join(root, "coverage"))
+        File.write(File.join(root, "coverage", "coverage.json"), {"coverage" => {}}.to_json)
+        File.write(File.join(root, "CHANGELOG.md"), <<~MD)
+          # Changelog
+
+          ## [Unreleased]
+
+          ### Fixed
+
+          - Fixed a follow-up before release.
+
+          ## [1.2.3] - 2025-08-30
+
+          - TAG: [v1.2.3][1.2.3t]
+
+          ### Fixed
+
+          - Prepared the release.
+
+          ## [1.2.2] - 2025-08-01
+
+          [Unreleased]: https://github.com/o/r/compare/v1.2.3...HEAD
+          [1.2.3]: https://github.com/o/r/compare/v1.2.2...v1.2.3
+          [1.2.3t]: https://github.com/o/r/releases/tag/v1.2.3
+          [1.2.2]: https://github.com/o/r/compare/v1.2.1...v1.2.2
+          [1.2.2t]: https://github.com/o/r/releases/tag/v1.2.2
+        MD
+        allow(Kettle::Dev::CIHelpers).to receive_messages(project_root: root, repo_info: ["o", "r"])
+        allow(Time).to receive(:now).and_return(Time.new(2025, 8, 31))
+
+        cli = described_class.new(strict: false)
+        allow(cli).to receive(:latest_released_versions).and_return(["1.2.3", "1.2.3"])
+        allow(cli).to receive_messages(
+          coverage_lines: [
+            "COVERAGE: 95.00% -- 95/100 lines in 2 files",
+            "BRANCH COVERAGE: 80.00% -- 8/10 branches in 2 files",
+          ],
+          yard_percent_documented: "20.00% documented",
+        )
+
+        expect { cli.run }.not_to raise_error
+        updated = File.read(File.join(root, "CHANGELOG.md"))
+
+        expect(updated.scan(/^## \[1\.2\.3\]/).size).to eq(1)
+        expect(updated).to include("## [1.2.3] - 2025-08-31")
+        expect(updated).to include("- COVERAGE: 95.00% -- 95/100 lines in 2 files")
+        expect(updated).to include("- BRANCH COVERAGE: 80.00% -- 8/10 branches in 2 files")
+        expect(updated).to include("- 20.00% documented")
+        expect(updated).to match(/### Fixed\n\n- Prepared the release\.\n\n- Fixed a follow-up before release\./)
+        expect(updated).to match(/## \[Unreleased\]\n\n### Added\n\n### Changed\n\n### Deprecated\n\n### Removed\n\n### Fixed\n\n### Security/)
+      end
+    end
+
+    it "auto-selects update-prep when the current released version is missing generated metadata" do
+      mkproj do |root|
+        File.write(File.join(root, "lib", "my", "gem", "version.rb"), <<~RB)
+          module My; module Gem; VERSION = "1.2.3"; end; end
+        RB
+        FileUtils.mkdir_p(File.join(root, "coverage"))
+        File.write(File.join(root, "coverage", "coverage.json"), {"coverage" => {}}.to_json)
+        File.write(File.join(root, "CHANGELOG.md"), <<~MD)
+          # Changelog
+
+          ## [Unreleased]
+
+          ### Added
+          ### Changed
+          ### Deprecated
+          ### Removed
+          ### Fixed
+          ### Security
+
+          ## [1.2.3] - 2025-08-30
+
+          - TAG: [v1.2.3][1.2.3t]
+
+          ### Fixed
+
+          - Prepared the release.
+
+          ## [1.2.2] - 2025-08-01
+
+          [Unreleased]: https://github.com/o/r/compare/v1.2.3...HEAD
+          [1.2.3]: https://github.com/o/r/compare/v1.2.2...v1.2.3
+          [1.2.3t]: https://github.com/o/r/releases/tag/v1.2.3
+          [1.2.2]: https://github.com/o/r/compare/v1.2.1...v1.2.2
+          [1.2.2t]: https://github.com/o/r/releases/tag/v1.2.2
+        MD
+        allow(Kettle::Dev::CIHelpers).to receive_messages(project_root: root, repo_info: ["o", "r"])
+        allow(Time).to receive(:now).and_return(Time.new(2025, 8, 31))
+
+        cli = described_class.new(strict: false)
+        allow(cli).to receive(:latest_released_versions).and_return(["1.2.3", "1.2.3"])
+        allow(cli).to receive_messages(
+          coverage_lines: [
+            "COVERAGE: 95.00% -- 95/100 lines in 2 files",
+            "BRANCH COVERAGE: 80.00% -- 8/10 branches in 2 files",
+          ],
+          yard_percent_documented: "20.00% documented",
+        )
+
+        expect { cli.run }.not_to raise_error
+        updated = File.read(File.join(root, "CHANGELOG.md"))
+
+        expect(updated.scan(/^## \[1\.2\.3\]/).size).to eq(1)
+        expect(updated).to include("## [1.2.3] - 2025-08-31")
+        expect(updated).to include("- COVERAGE: 95.00% -- 95/100 lines in 2 files")
+        expect(updated).to include("- BRANCH COVERAGE: 80.00% -- 8/10 branches in 2 files")
+        expect(updated).to include("- 20.00% documented")
+        expect(updated).to include("- Prepared the release.")
       end
     end
 
