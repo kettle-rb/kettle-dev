@@ -82,6 +82,16 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 
 <h3 id="fixed">Fixed</h3>
 
+<ul>
+  <li>The <code>yard</code> rake spec now reloads the task file directly and uses Ruby<br>
+2.4-compatible cleanup syntax, fixing order-dependent CI failures across the<br>
+appraisal matrix.</li>
+  <li>The <code>yard</code> rake fallback task now remains registered with kettle-dev defaults<br>
+when the optional <code>yard</code> gem is unavailable in an appraisal environment.</li>
+  <li>The Rakefile now falls back to a stub <code>kettle:jem:selftest</code> task when the<br>
+installed <code>kettle-jem</code> package does not expose rake task installation.</li>
+</ul>
+
 <h3 id="security">Security</h3>
 
 <h2 id="203---2026-05-27">
@@ -2875,7 +2885,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </div></div>
 
       <div id="footer">
-  Generated on Wed May 27 16:00:08 2026 by
+  Generated on Wed May 27 16:28:05 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>

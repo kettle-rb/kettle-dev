@@ -264,6 +264,10 @@ Use the <code>K_SOUP_COV_MIN_HARD=false</code> environment variable to disable h
 <pre class="code language-bash"><code class="language-bash">mise exec -C /path/to/project -- env K_SOUP_COV_MIN_HARD=false bundle exec kettle-test spec/path/to/spec.rb
 </code></pre>
 
+<p>Do not stub <code>require</code> in specs. If an optional require branch exists only for<br>
+coverage accounting, mark the branch with <code># :nocov:</code> instead. Do not add specs<br>
+that exist only to exercise require failures.</p>
+
 <h3 id="template-management-kettle-jem">Template Management (kettle-jem)</h3>
 
 <p>Run the full kettle-jem installer to sync project files with the latest template<br>
@@ -417,7 +421,7 @@ end
 </div></div>
 
       <div id="footer">
-  Generated on Wed May 27 16:00:08 2026 by
+  Generated on Wed May 27 16:28:05 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>
