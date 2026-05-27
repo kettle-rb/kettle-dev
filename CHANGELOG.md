@@ -22,14 +22,29 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [2.0.2] - 2026-05-27
+
+- TAG: [v2.0.2][2.0.2t]
+- COVERAGE: 94.71% -- 2937/3101 lines in 23 files
+- BRANCH COVERAGE: 78.23% -- 1200/1534 branches in 23 files
+- 76.40% documented
+
+### Changed
+
 - **BREAKING**: Raised the minimum Ruby version to 2.4.0, matching
   `kettle-test` 2.x and its runtime `turbo_tests2` dependency.
 - `kettle-test` is now declared as a runtime dependency because the shipped rake
   and changelog tasks invoke `bundle exec kettle-test`.
 - Refreshed generated template output for README badge formatting and
   Ruby 2.4-targeted RuboCop LTS style dependencies.
-
-### Deprecated
 
 ### Removed
 
@@ -59,8 +74,6 @@ Please file a bug if you notice a violation of semantic versioning.
 - Replaced non-capturing `=~` checks with `Regexp#match?` so unlocked/style CI
   stays clean with newer RuboCop performance cops.
 - Cleared the remaining `rubocop_gradual` backlog and removed the lock file.
-
-### Security
 
 ## [2.0.1] - 2026-05-25
 
@@ -1750,7 +1763,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.1...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.2...HEAD
+[2.0.2]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.1...v2.0.2
+[2.0.2t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v2.0.2
 [2.0.1]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.0...v2.0.1
 [2.0.1t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v2.0.1
 [2.0.0]: https://github.com/kettle-rb/kettle-dev/compare/v1.2.5...v2.0.0

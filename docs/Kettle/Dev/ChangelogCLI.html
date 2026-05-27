@@ -6,7 +6,7 @@
 <title>
   Class: Kettle::Dev::ChangelogCLI
   
-    &mdash; Documentation by YARD 0.9.43
+    &mdash; Documentation by YARD 0.9.44
   
 </title>
 
@@ -312,17 +312,17 @@ Sets up paths for CHANGELOG.md and coverage.json</p>
       <pre class="lines">
 
 
-26
 27
 28
 29
 30
 31
 32
-33</pre>
+33
+34</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/changelog_cli.rb', line 26</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/changelog_cli.rb', line 27</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='label'>strict:</span> <span class='kw'>true</span><span class='comma'>,</span> <span class='label'>enforce_coverage_thresholds:</span> <span class='kw'>true</span><span class='comma'>,</span> <span class='label'>update_prep:</span> <span class='kw'>false</span><span class='rparen'>)</span>
   <span class='ivar'>@root</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="CIHelpers.html" title="Kettle::Dev::CIHelpers (module)">CIHelpers</a></span></span><span class='period'>.</span><span class='id identifier rubyid_project_root'><span class='object_link'><a href="CIHelpers.html#project_root-class_method" title="Kettle::Dev::CIHelpers.project_root (method)">project_root</a></span></span>
@@ -372,7 +372,6 @@ a new version section with coverage/YARD stats, and updates all link references.
       <pre class="lines">
 
 
-41
 42
 43
 44
@@ -466,10 +465,11 @@ a new version section with coverage/YARD stats, and updates all link references.
 132
 133
 134
-135</pre>
+135
+136</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/changelog_cli.rb', line 41</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/changelog_cli.rb', line 42</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_run'>run</span>
   <span class='id identifier rubyid_version'>version</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Versioning.html" title="Kettle::Dev::Versioning (module)">Versioning</a></span></span><span class='period'>.</span><span class='id identifier rubyid_detect_version'><span class='object_link'><a href="Versioning.html#detect_version-class_method" title="Kettle::Dev::Versioning.detect_version (method)">detect_version</a></span></span><span class='lparen'>(</span><span class='ivar'>@root</span><span class='rparen'>)</span>
@@ -576,9 +576,9 @@ a new version section with coverage/YARD stats, and updates all link references.
 </div>
 
       <div id="footer">
-  Generated on Mon May 25 01:04:48 2026 by
+  Generated on Wed May 27 14:58:07 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.43 (ruby-4.0.5).
+  0.9.44 (ruby-4.0.5).
 </div>
 
     </div>

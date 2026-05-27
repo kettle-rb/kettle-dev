@@ -6,7 +6,7 @@
 <title>
   Module: Kettle::Dev::CIHelpers
   
-    &mdash; Documentation by YARD 0.9.43
+    &mdash; Documentation by YARD 0.9.44
   
 </title>
 
@@ -348,6 +348,29 @@ kettle-release executable.</p>
         <li class="public ">
   <span class="summary_signature">
     
+      <a href="#parse_hosted_repo-class_method" title="parse_hosted_repo (class method)">.<strong>parse_hosted_repo</strong>(url, host)  &#x21d2; Array(String, String)<sup>?</sup> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Parse owner/repo from common hosted Git remote URL shapes.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
       <a href="#project_root-class_method" title="project_root (class method)">.<strong>project_root</strong>  &#x21d2; String </a>
     
 
@@ -508,13 +531,13 @@ kettle-release executable.</p>
       <pre class="lines">
 
 
-49
-50
-51
-52</pre>
+43
+44
+45
+46</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_helpers.rb', line 49</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_helpers.rb', line 43</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_current_branch'>current_branch</span>
   <span class='id identifier rubyid_out'>out</span><span class='comma'>,</span> <span class='id identifier rubyid_status'>status</span> <span class='op'>=</span> <span class='const'>Open3</span><span class='period'>.</span><span class='id identifier rubyid_capture2'>capture2</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>git</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>rev-parse</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>--abbrev-ref</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>HEAD</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
@@ -563,12 +586,12 @@ kettle-release executable.</p>
       <pre class="lines">
 
 
-172
-173
-174</pre>
+162
+163
+164</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_helpers.rb', line 172</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_helpers.rb', line 162</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_default_gitlab_token'>default_gitlab_token</span>
   <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>GITLAB_TOKEN</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>||</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>GL_TOKEN</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
@@ -616,12 +639,12 @@ kettle-release executable.</p>
       <pre class="lines">
 
 
-144
-145
-146</pre>
+138
+139
+140</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_helpers.rb', line 144</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_helpers.rb', line 138</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_default_token'>default_token</span>
   <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>GITHUB_TOKEN</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>||</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>GH_TOKEN</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
@@ -669,19 +692,19 @@ kettle-release executable.</p>
       <pre class="lines">
 
 
+66
+67
+68
+69
+70
+71
 72
 73
 74
-75
-76
-77
-78
-79
-80
-81</pre>
+75</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_helpers.rb', line 72</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_helpers.rb', line 66</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_exclusions'>exclusions</span>
   <span class='qwords_beg'>%w[</span><span class='words_sep'>
@@ -751,12 +774,12 @@ kettle-release executable.</p>
       <pre class="lines">
 
 
-138
-139
-140</pre>
+132
+133
+134</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_helpers.rb', line 138</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_helpers.rb', line 132</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_failed?'>failed?</span><span class='lparen'>(</span><span class='id identifier rubyid_run'>run</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_run'>run</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_run'>run</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>status</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>completed</span><span class='tstring_end'>&quot;</span></span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_run'>run</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>conclusion</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_run'>run</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>conclusion</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>!=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>success</span><span class='tstring_end'>&quot;</span></span>
@@ -819,12 +842,12 @@ kettle-release executable.</p>
       <pre class="lines">
 
 
-243
-244
-245</pre>
+233
+234
+235</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_helpers.rb', line 243</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_helpers.rb', line 233</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_gitlab_failed?'>gitlab_failed?</span><span class='lparen'>(</span><span class='id identifier rubyid_pipeline'>pipeline</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_pipeline'>pipeline</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_pipeline'>pipeline</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>status</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>failed</span><span class='tstring_end'>&quot;</span></span>
@@ -937,6 +960,16 @@ kettle-release executable.</p>
       <pre class="lines">
 
 
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
 183
 184
 185
@@ -975,20 +1008,10 @@ kettle-release executable.</p>
 218
 219
 220
-221
-222
-223
-224
-225
-226
-227
-228
-229
-230
-231</pre>
+221</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_helpers.rb', line 183</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_helpers.rb', line 173</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_gitlab_latest_pipeline'>gitlab_latest_pipeline</span><span class='lparen'>(</span><span class='label'>owner:</span><span class='comma'>,</span> <span class='label'>repo:</span><span class='comma'>,</span> <span class='label'>branch:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>host:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>gitlab.com</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='label'>token:</span> <span class='id identifier rubyid_default_gitlab_token'>default_gitlab_token</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_owner'>owner</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_repo'>repo</span>
@@ -1097,12 +1120,12 @@ kettle-release executable.</p>
       <pre class="lines">
 
 
-236
-237
-238</pre>
+226
+227
+228</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_helpers.rb', line 236</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_helpers.rb', line 226</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_gitlab_success?'>gitlab_success?</span><span class='lparen'>(</span><span class='id identifier rubyid_pipeline'>pipeline</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_pipeline'>pipeline</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_pipeline'>pipeline</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>status</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>success</span><span class='tstring_end'>&quot;</span></span>
@@ -1229,6 +1252,12 @@ kettle-release executable.</p>
       <pre class="lines">
 
 
+84
+85
+86
+87
+88
+89
 90
 91
 92
@@ -1259,16 +1288,10 @@ kettle-release executable.</p>
 117
 118
 119
-120
-121
-122
-123
-124
-125
-126</pre>
+120</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_helpers.rb', line 90</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_helpers.rb', line 84</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_latest_run'>latest_run</span><span class='lparen'>(</span><span class='label'>owner:</span><span class='comma'>,</span> <span class='label'>repo:</span><span class='comma'>,</span> <span class='label'>workflow_file:</span><span class='comma'>,</span> <span class='label'>branch:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>token:</span> <span class='id identifier rubyid_default_token'>default_token</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_owner'>owner</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_repo'>repo</span>
@@ -1350,17 +1373,126 @@ kettle-release executable.</p>
       <pre class="lines">
 
 
-152
-153
-154
-155</pre>
+146
+147
+148
+149</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_helpers.rb', line 152</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_helpers.rb', line 146</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_origin_url'>origin_url</span>
   <span class='id identifier rubyid_out'>out</span><span class='comma'>,</span> <span class='id identifier rubyid_status'>status</span> <span class='op'>=</span> <span class='const'>Open3</span><span class='period'>.</span><span class='id identifier rubyid_capture2'>capture2</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>git</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>config</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>--get</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>remote.origin.url</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
   <span class='id identifier rubyid_status'>status</span><span class='period'>.</span><span class='id identifier rubyid_success?'>success?</span> <span class='op'>?</span> <span class='id identifier rubyid_out'>out</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span> <span class='op'>:</span> <span class='kw'>nil</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="parse_hosted_repo-class_method">
+  
+    .<strong>parse_hosted_repo</strong>(url, host)  &#x21d2; <tt>Array(String, String)</tt><sup>?</sup> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Parse owner/repo from common hosted Git remote URL shapes.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>url</span>
+      
+      
+        <span class='type'>(<tt>String</tt>, <tt>nil</tt>)</span>
+      
+      
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>host</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array(String, String)</tt>, <tt>nil</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_helpers.rb', line 241</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_parse_hosted_repo'>parse_hosted_repo</span><span class='lparen'>(</span><span class='id identifier rubyid_url'>url</span><span class='comma'>,</span> <span class='id identifier rubyid_host'>host</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_url'>url</span>
+
+  <span class='kw'>if</span> <span class='id identifier rubyid_url'>url</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>%r{</span><span class='tstring_content'>\Agit@</span><span class='embexpr_beg'>#{</span><span class='const'>Regexp</span><span class='period'>.</span><span class='id identifier rubyid_escape'>escape</span><span class='lparen'>(</span><span class='id identifier rubyid_host'>host</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'>:(.+?)/(.+?)(?:\.git)?\z</span><span class='regexp_end'>}</span></span>
+    <span class='kw'>return</span> <span class='lbracket'>[</span><span class='const'>Regexp</span><span class='period'>.</span><span class='id identifier rubyid_last_match'>last_match</span><span class='lparen'>(</span><span class='int'>1</span><span class='rparen'>)</span><span class='comma'>,</span> <span class='const'>Regexp</span><span class='period'>.</span><span class='id identifier rubyid_last_match'>last_match</span><span class='lparen'>(</span><span class='int'>2</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\.git\z</span><span class='regexp_end'>/</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='rbracket'>]</span>
+  <span class='kw'>end</span>
+
+  <span class='id identifier rubyid_uri'>uri</span> <span class='op'>=</span> <span class='const'>URI</span><span class='period'>.</span><span class='id identifier rubyid_parse'>parse</span><span class='lparen'>(</span><span class='id identifier rubyid_url'>url</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_uri'>uri</span><span class='period'>.</span><span class='id identifier rubyid_host'>host</span> <span class='op'>==</span> <span class='id identifier rubyid_host'>host</span>
+
+  <span class='id identifier rubyid_path'>path</span> <span class='op'>=</span> <span class='id identifier rubyid_uri'>uri</span><span class='period'>.</span><span class='id identifier rubyid_path'>path</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>%r{</span><span class='tstring_content'>\A/</span><span class='regexp_end'>}</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_owner'>owner</span><span class='comma'>,</span> <span class='id identifier rubyid_repo'>repo</span> <span class='op'>=</span> <span class='id identifier rubyid_path'>path</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='int'>2</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_owner'>owner</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_repo'>repo</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_owner'>owner</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_repo'>repo</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+
+  <span class='lbracket'>[</span><span class='id identifier rubyid_owner'>owner</span><span class='comma'>,</span> <span class='id identifier rubyid_repo'>repo</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\.git\z</span><span class='regexp_end'>/</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='rbracket'>]</span>
+<span class='kw'>rescue</span> <span class='const'>URI</span><span class='op'>::</span><span class='const'>InvalidURIError</span>
+  <span class='kw'>nil</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1448,8 +1580,7 @@ kettle-release executable.</p>
 </h3><div class="docstring">
   <div class="discussion">
     <p>Parse the GitHub owner/repo from the configured origin remote.<br />
-Supports SSH (git@github.com:owner/repo(.git)) and HTTPS<br />
-(https://github.com/owner/repo(.git)) forms.</p>
+Supports SSH and HTTPS remote URL forms.</p>
 
 
   </div>
@@ -1480,31 +1611,21 @@ Supports SSH (git@github.com:owner/repo(.git)) and HTTPS<br />
       <pre class="lines">
 
 
+34
 35
 36
 37
 38
-39
-40
-41
-42
-43
-44
-45</pre>
+39</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_helpers.rb', line 35</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_helpers.rb', line 34</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_repo_info'>repo_info</span>
   <span class='id identifier rubyid_out'>out</span><span class='comma'>,</span> <span class='id identifier rubyid_status'>status</span> <span class='op'>=</span> <span class='const'>Open3</span><span class='period'>.</span><span class='id identifier rubyid_capture2'>capture2</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>git</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>config</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>--get</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>remote.origin.url</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_status'>status</span><span class='period'>.</span><span class='id identifier rubyid_success?'>success?</span>
 
-  <span class='id identifier rubyid_url'>url</span> <span class='op'>=</span> <span class='id identifier rubyid_out'>out</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span>
-  <span class='kw'>if</span> <span class='id identifier rubyid_url'>url</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>%r{</span><span class='tstring_content'>git@github.com:(.+?)/(.+?)(\.git)?$</span><span class='regexp_end'>}</span></span>
-    <span class='lbracket'>[</span><span class='const'>Regexp</span><span class='period'>.</span><span class='id identifier rubyid_last_match'>last_match</span><span class='lparen'>(</span><span class='int'>1</span><span class='rparen'>)</span><span class='comma'>,</span> <span class='const'>Regexp</span><span class='period'>.</span><span class='id identifier rubyid_last_match'>last_match</span><span class='lparen'>(</span><span class='int'>2</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\.git\z</span><span class='regexp_end'>/</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='rbracket'>]</span>
-  <span class='kw'>elsif</span> <span class='id identifier rubyid_url'>url</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>%r{</span><span class='tstring_content'>https://github.com/(.+?)/(.+?)(\.git)?$</span><span class='regexp_end'>}</span></span>
-    <span class='lbracket'>[</span><span class='const'>Regexp</span><span class='period'>.</span><span class='id identifier rubyid_last_match'>last_match</span><span class='lparen'>(</span><span class='int'>1</span><span class='rparen'>)</span><span class='comma'>,</span> <span class='const'>Regexp</span><span class='period'>.</span><span class='id identifier rubyid_last_match'>last_match</span><span class='lparen'>(</span><span class='int'>2</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\.git\z</span><span class='regexp_end'>/</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='rbracket'>]</span>
-  <span class='kw'>end</span>
+  <span class='id identifier rubyid_parse_hosted_repo'>parse_hosted_repo</span><span class='lparen'>(</span><span class='id identifier rubyid_out'>out</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>github.com</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1549,29 +1670,21 @@ Supports SSH (git@github.com:owner/repo(.git)) and HTTPS<br />
       <pre class="lines">
 
 
-159
-160
-161
-162
-163
-164
-165
-166
-167
-168</pre>
+153
+154
+155
+156
+157
+158</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_helpers.rb', line 159</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_helpers.rb', line 153</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_repo_info_gitlab'>repo_info_gitlab</span>
   <span class='id identifier rubyid_url'>url</span> <span class='op'>=</span> <span class='id identifier rubyid_origin_url'>origin_url</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_url'>url</span>
 
-  <span class='kw'>if</span> <span class='id identifier rubyid_url'>url</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>%r{</span><span class='tstring_content'>git@gitlab.com:(.+?)/(.+?)(\.git)?$</span><span class='regexp_end'>}</span></span>
-    <span class='lbracket'>[</span><span class='const'>Regexp</span><span class='period'>.</span><span class='id identifier rubyid_last_match'>last_match</span><span class='lparen'>(</span><span class='int'>1</span><span class='rparen'>)</span><span class='comma'>,</span> <span class='const'>Regexp</span><span class='period'>.</span><span class='id identifier rubyid_last_match'>last_match</span><span class='lparen'>(</span><span class='int'>2</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\.git\z</span><span class='regexp_end'>/</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='rbracket'>]</span>
-  <span class='kw'>elsif</span> <span class='id identifier rubyid_url'>url</span> <span class='op'>=~</span> <span class='tstring'><span class='regexp_beg'>%r{</span><span class='tstring_content'>https://gitlab.com/(.+?)/(.+?)(\.git)?$</span><span class='regexp_end'>}</span></span>
-    <span class='lbracket'>[</span><span class='const'>Regexp</span><span class='period'>.</span><span class='id identifier rubyid_last_match'>last_match</span><span class='lparen'>(</span><span class='int'>1</span><span class='rparen'>)</span><span class='comma'>,</span> <span class='const'>Regexp</span><span class='period'>.</span><span class='id identifier rubyid_last_match'>last_match</span><span class='lparen'>(</span><span class='int'>2</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\.git\z</span><span class='regexp_end'>/</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='rbracket'>]</span>
-  <span class='kw'>end</span>
+  <span class='id identifier rubyid_parse_hosted_repo'>parse_hosted_repo</span><span class='lparen'>(</span><span class='id identifier rubyid_url'>url</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>gitlab.com</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1631,12 +1744,12 @@ Supports SSH (git@github.com:owner/repo(.git)) and HTTPS<br />
       <pre class="lines">
 
 
-131
-132
-133</pre>
+125
+126
+127</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_helpers.rb', line 131</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_helpers.rb', line 125</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_success?'>success?</span><span class='lparen'>(</span><span class='id identifier rubyid_run'>run</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_run'>run</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_run'>run</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>status</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>completed</span><span class='tstring_end'>&quot;</span></span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_run'>run</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>conclusion</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>success</span><span class='tstring_end'>&quot;</span></span>
@@ -1710,20 +1823,20 @@ Excludes maintenance workflows defined by <span class='object_link'>#exclusions<
       <pre class="lines">
 
 
+52
+53
+54
+55
+56
+57
 58
 59
 60
 61
-62
-63
-64
-65
-66
-67
-68</pre>
+62</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_helpers.rb', line 58</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_helpers.rb', line 52</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_workflows_list'>workflows_list</span><span class='lparen'>(</span><span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span> <span class='op'>=</span> <span class='id identifier rubyid_project_root'>project_root</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_workflows_dir'>workflows_dir</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>.github</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>workflows</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
@@ -1746,9 +1859,9 @@ Excludes maintenance workflows defined by <span class='object_link'>#exclusions<
 </div>
 
       <div id="footer">
-  Generated on Mon May 25 01:04:48 2026 by
+  Generated on Wed May 27 14:58:07 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.43 (ruby-4.0.5).
+  0.9.44 (ruby-4.0.5).
 </div>
 
     </div>

@@ -6,7 +6,7 @@
 <title>
   File: CONTRIBUTING
   
-    &mdash; Documentation by YARD 0.9.43
+    &mdash; Documentation by YARD 0.9.44
   
 </title>
 
@@ -184,7 +184,12 @@ Tip: When running a single spec file locally, you may want <code>K_SOUP_COV_MIN_
 <h2 id="appraisals">Appraisals</h2>
 
 <p>From time to time the <a href="https://github.com/appraisal-rb/appraisal2">appraisal2</a> gemfiles in <code>gemfiles/</code> will need to be updated.<br>
-They are created and updated with the commands:</p>
+Generated appraisal and CI workflow floors are controlled by <code>ruby.test_minimum</code><br>
+in <code>.kettle-jem.yml</code>; this project was templated with <code>ruby.test_minimum: 2.4</code>.<br>
+That value describes the lowest Ruby version expected to run the test/development<br>
+toolchain, and it may be higher than the gemspec runtime floor.</p>
+
+<p>They are created and updated with the commands:</p>
 
 <pre class="code language-console"><code class="language-console">bin/rake appraisal:update
 </code></pre>
@@ -333,9 +338,9 @@ push git commits and tags, and push the <code>.gem</code> file to the gem host c
 </div></div>
 
       <div id="footer">
-  Generated on Mon May 25 01:04:47 2026 by
+  Generated on Wed May 27 14:58:07 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.43 (ruby-4.0.5).
+  0.9.44 (ruby-4.0.5).
 </div>
 
     </div>
