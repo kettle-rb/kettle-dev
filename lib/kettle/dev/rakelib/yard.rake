@@ -32,4 +32,5 @@ rescue LoadError
   task(:yard) do
     warn("NOTE: yard isn't installed, or is disabled for #{RUBY_VERSION} in the current environment")
   end
+  Kettle::Dev.register_default("yard")
 end

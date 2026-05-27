@@ -31,6 +31,8 @@ Please file a bug if you notice a violation of semantic versioning.
 - The `yard` rake spec now reloads the task file directly and uses Ruby
   2.4-compatible cleanup syntax, fixing order-dependent CI failures across the
   appraisal matrix.
+- The `yard` rake fallback task now remains registered with kettle-dev defaults
+  when the optional `yard` gem is unavailable in an appraisal environment.
 - The Rakefile now falls back to a stub `kettle:jem:selftest` task when the
   installed `kettle-jem` package does not expose rake task installation.
 
