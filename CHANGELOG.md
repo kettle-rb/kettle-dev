@@ -28,6 +28,12 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- The `yard` rake spec now reloads the task file directly and uses Ruby
+  2.4-compatible cleanup syntax, fixing order-dependent CI failures across the
+  appraisal matrix.
+- The Rakefile now falls back to a stub `kettle:jem:selftest` task when the
+  installed `kettle-jem` package does not expose rake task installation.
+
 ### Security
 
 ## [2.0.3] - 2026-05-27
