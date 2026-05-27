@@ -24,6 +24,8 @@ begin
   rescue LoadError
     # yard-timekeeper not available - that's fine
   end
+
+  Kettle::Dev.register_default("yard")
 rescue LoadError
   warn("[kettle-dev][yard.rake] failed to load yard") if Kettle::Dev::DEBUGGING
   desc("(stub) yard is unavailable")

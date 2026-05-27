@@ -28,6 +28,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- The default rake task now includes documentation generation via `yard`, so
+  documentation plugin post-processing runs during `bin/rake`.
+
 ### Security
 
 ## [2.0.2] - 2026-05-27
