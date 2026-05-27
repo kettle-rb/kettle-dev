@@ -28,6 +28,17 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [2.0.4] - 2026-05-27
+
+- TAG: [v2.0.4][2.0.4t]
+- COVERAGE: 94.42% -- 2944/3118 lines in 24 files
+- BRANCH COVERAGE: 78.22% -- 1203/1538 branches in 24 files
+- 76.40% documented
+
+### Fixed
+
 - `kettle-changelog` now refuses to merge Unreleased entries or generated
   metadata into a release section when `version.rb` already matches the latest
   published version for that release line; bump the version before preparing a
@@ -39,8 +50,6 @@ Please file a bug if you notice a violation of semantic versioning.
   when the optional `yard` gem is unavailable in an appraisal environment.
 - The Rakefile now falls back to a stub `kettle:jem:selftest` task when the
   installed `kettle-jem` package does not expose rake task installation.
-
-### Security
 
 ## [2.0.3] - 2026-05-27
 
@@ -1791,7 +1800,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.3...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.4...HEAD
+[2.0.4]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.3...v2.0.4
+[2.0.4t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v2.0.4
 [2.0.3]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.2...v2.0.3
 [2.0.3t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v2.0.3
 [2.0.2]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.1...v2.0.2
