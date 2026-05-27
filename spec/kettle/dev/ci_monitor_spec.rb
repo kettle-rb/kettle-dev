@@ -109,6 +109,8 @@ RSpec.describe Kettle::Dev::CIMonitor do
 
     it "parses SSH and HTTPS URLs" do
       expect(described_class.parse_github_owner_repo("git@github.com:me/repo.git")).to eq(["me", "repo"])
+      expect(described_class.parse_github_owner_repo("git+ssh://git@github.com/me/repo.git")).to eq(["me", "repo"])
+      expect(described_class.parse_github_owner_repo("ssh://git@github.com/me/repo.git")).to eq(["me", "repo"])
       expect(described_class.parse_github_owner_repo("https://github.com/me/repo")).to eq(["me", "repo"])
     end
 

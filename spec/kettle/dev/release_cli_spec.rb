@@ -207,6 +207,8 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
       it "parses github owner/repo from ssh and https and fails otherwise" do
         expect(cli.send(:parse_github_owner_repo, "git@github.com:user/repo.git")).to eq(%w[user repo])
+        expect(cli.send(:parse_github_owner_repo, "git+ssh://git@github.com/user/repo.git")).to eq(%w[user repo])
+        expect(cli.send(:parse_github_owner_repo, "ssh://git@github.com/user/repo.git")).to eq(%w[user repo])
         expect(cli.send(:parse_github_owner_repo, "https://github.com/user/repo")).to eq(%w[user repo])
         expect(cli.send(:parse_github_owner_repo, "ssh://gitlab.com/user/repo")).to eq([nil, nil])
       end

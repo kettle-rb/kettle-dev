@@ -29,19 +29,13 @@ module Kettle
       end
 
       # Parse the GitHub owner/repo from the configured origin remote.
-      # Supports SSH (git@github.com:owner/repo(.git)) and HTTPS
-      # (https://github.com/owner/repo(.git)) forms.
+      # Supports SSH and HTTPS remote URL forms.
       # @return [Array(String, String), nil] [owner, repo] or nil when unavailable
       def repo_info
         out, status = Open3.capture2("git", "config", "--get", "remote.origin.url")
         return unless status.success?
 
-        url = out.strip
-        if url =~ %r{git@github.com:(.+?)/(.+?)(\.git)?$}
-          [Regexp.last_match(1), Regexp.last_match(2).sub(/\.git\z/, "")]
-        elsif url =~ %r{https://github.com/(.+?)/(.+?)(\.git)?$}
-          [Regexp.last_match(1), Regexp.last_match(2).sub(/\.git\z/, "")]
-        end
+        parse_hosted_repo(out.strip, "github.com")
       end
 
       # Current git branch name, or nil when not in a repository.
@@ -160,11 +154,7 @@ module Kettle
         url = origin_url
         return unless url
 
-        if url =~ %r{git@gitlab.com:(.+?)/(.+?)(\.git)?$}
-          [Regexp.last_match(1), Regexp.last_match(2).sub(/\.git\z/, "")]
-        elsif url =~ %r{https://gitlab.com/(.+?)/(.+?)(\.git)?$}
-          [Regexp.last_match(1), Regexp.last_match(2).sub(/\.git\z/, "")]
-        end
+        parse_hosted_repo(url, "gitlab.com")
       end
 
       # Default GitLab token from environment
@@ -242,6 +232,29 @@ module Kettle
       # @return [Boolean]
       def gitlab_failed?(pipeline)
         pipeline && pipeline["status"] == "failed"
+      end
+
+      # Parse owner/repo from common hosted Git remote URL shapes.
+      # @param url [String, nil]
+      # @param host [String]
+      # @return [Array(String, String), nil]
+      def parse_hosted_repo(url, host)
+        return unless url
+
+        if url =~ %r{\Agit@#{Regexp.escape(host)}:(.+?)/(.+?)(?:\.git)?\z}
+          return [Regexp.last_match(1), Regexp.last_match(2).sub(/\.git\z/, "")]
+        end
+
+        uri = URI.parse(url)
+        return unless uri.host == host
+
+        path = uri.path.to_s.sub(%r{\A/}, "")
+        owner, repo = path.split("/", 2)
+        return unless owner && repo && !owner.empty? && !repo.empty?
+
+        [owner, repo.sub(/\.git\z/, "")]
+      rescue URI::InvalidURIError
+        nil
       end
     end
   end

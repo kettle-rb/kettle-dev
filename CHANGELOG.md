@@ -37,6 +37,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `ci:act` and release CI monitoring now detect GitHub and GitLab repositories
+  when remotes use `git+ssh://` or `ssh://` URLs.
 - Appraisal-based CI gemfiles now load the version-appropriate VCR/WebMock
   recording dependencies required by the spec helper without falling back to the
   root Gemfile.

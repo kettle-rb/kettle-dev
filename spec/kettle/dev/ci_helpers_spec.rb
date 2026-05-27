@@ -57,6 +57,22 @@ RSpec.describe Kettle::Dev::CIHelpers do
       expect(described_class.repo_info).to eq(["owner", "repo"])
     end
 
+    it "parses git+ssh origin URL" do
+      allow(Open3).to receive(:capture2).and_return([
+        "git+ssh://git@github.com/owner/repo.git\n",
+        instance_double(Process::Status, success?: true),
+      ])
+      expect(described_class.repo_info).to eq(["owner", "repo"])
+    end
+
+    it "parses ssh origin URL" do
+      allow(Open3).to receive(:capture2).and_return([
+        "ssh://git@github.com/owner/repo.git\n",
+        instance_double(Process::Status, success?: true),
+      ])
+      expect(described_class.repo_info).to eq(["owner", "repo"])
+    end
+
     it "parses HTTPS origin URL" do
       allow(Open3).to receive(:capture2).and_return([
         "https://github.com/owner/repo\n",
@@ -252,6 +268,11 @@ RSpec.describe Kettle::Dev::CIHelpers do
     describe "::repo_info_gitlab" do
       it "parses SSH origin URL" do
         allow(described_class).to receive(:origin_url).and_return("git@gitlab.com:group/proj.git")
+        expect(described_class.repo_info_gitlab).to eq(["group", "proj"])
+      end
+
+      it "parses git+ssh origin URL" do
+        allow(described_class).to receive(:origin_url).and_return("git+ssh://git@gitlab.com/group/proj.git")
         expect(described_class.repo_info_gitlab).to eq(["group", "proj"])
       end
 

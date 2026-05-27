@@ -791,15 +791,7 @@ module Kettle
       end
 
       def parse_github_owner_repo(url)
-        return [nil, nil] unless url
-
-        if url =~ %r{git@github.com:(.+?)/(.+?)(\.git)?$}
-          [Regexp.last_match(1), Regexp.last_match(2).sub(/\.git\z/, "")]
-        elsif url =~ %r{https://github.com/(.+?)/(.+?)(\.git)?$}
-          [Regexp.last_match(1), Regexp.last_match(2).sub(/\.git\z/, "")]
-        else
-          [nil, nil]
-        end
+        Kettle::Dev::CIHelpers.parse_hosted_repo(url, "github.com") || [nil, nil]
       end
 
       def has_remote?(name)
