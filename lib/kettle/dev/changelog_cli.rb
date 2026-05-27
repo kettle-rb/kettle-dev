@@ -526,12 +526,11 @@ module Kettle
 
           puts "Coverage generation complete."
 
-          @coverage_path = detected_coverage_json_path || merge_parallel_coverage_json!
+          ensure_changelog_coverage_json!
         else
           # Non-strict mode: check if coverage.json exists, warn if not
-          @coverage_path = detected_coverage_json_path || merge_parallel_coverage_json_if_present
-          unless @coverage_path
-            warn("Coverage JSON not found at #{Kettle::Dev.display_path(File.join(@root, "coverage", "coverage.json"))}.")
+          unless File.file?(@coverage_path)
+            warn(coverage_json_missing_message)
             warn("Run: K_SOUP_COV_FORMATTERS=json bundle exec kettle-test to generate it")
             return [nil, nil]
           end
@@ -596,74 +595,18 @@ module Kettle
         }
       end
 
-      def detected_coverage_json_path
-        return @coverage_path if File.file?(@coverage_path)
+      def ensure_changelog_coverage_json!
+        return if File.file?(@coverage_path)
 
-        candidates = Dir.glob(File.join(File.dirname(@coverage_path), "turbo_tests", "*", "coverage.json")).sort
-        return if candidates.empty?
-        return candidates.first if candidates.length == 1
-
-        nil
+        raise coverage_json_missing_message
       end
 
-      def merge_parallel_coverage_json_if_present
-        paths = Dir.glob(File.join(File.dirname(@coverage_path), "turbo_tests", "*", "coverage.json")).sort
-        return if paths.empty?
-
-        merge_parallel_coverage_json!
-      end
-
-      def merge_parallel_coverage_json!
-        paths = Dir.glob(File.join(File.dirname(@coverage_path), "turbo_tests", "*", "coverage.json")).sort
-        if paths.empty?
-          raise "Coverage JSON not found at #{Kettle::Dev.display_path(@coverage_path)} after running bundle exec kettle-test"
-        end
-
-        merged = {"coverage" => {}}
-        paths.each do |path|
-          JSON.parse(File.read(path)).fetch("coverage", {}).each do |file, coverage|
-            target = merged["coverage"][file] ||= {"lines" => [], "branches" => []}
-            merge_line_coverage!(target["lines"], coverage["lines"] || [])
-            target["branches"] = merge_branch_coverage(target["branches"], coverage["branches"] || [])
-          end
-        end
-        FileUtils.mkdir_p(File.dirname(@coverage_path))
-        File.write(@coverage_path, JSON.pretty_generate(merged))
-        @coverage_path
-      end
-
-      def merge_line_coverage!(target, source)
-        source.each_with_index do |value, index|
-          next unless value.is_a?(Integer)
-
-          current = target[index]
-          target[index] = [current, value].compact.max
-        end
-      end
-
-      def merge_branch_coverage(target, source)
-        by_key = {}
-        target.each do |branch|
-          next unless branch.is_a?(Hash)
-
-          by_key[branch_identity(branch)] = branch.dup
-        end
-        source.each do |branch|
-          next unless branch.is_a?(Hash)
-
-          key = branch_identity(branch)
-          existing = by_key[key]
-          unless existing
-            by_key[key] = branch.dup
-            next
-          end
-          existing["coverage"] = [existing["coverage"], branch["coverage"]].select { |value| value.is_a?(Numeric) }.max
-        end
-        by_key.values
-      end
-
-      def branch_identity(branch)
-        branch.reject { |key, _value| key == "coverage" }
+      def coverage_json_missing_message
+        [
+          "Coverage JSON not found at #{Kettle::Dev.display_path(@coverage_path)} after running bundle exec kettle-test.",
+          "kettle-test runs specs in parallel and is expected to collate parallel SimpleCov results into this canonical file.",
+          "If it is missing, coverage was not enabled in ENV config or the rake/task hooks did not load the coverage integration.",
+        ].join(" ")
       end
 
       def yard_percent_documented

@@ -49,6 +49,9 @@ Please file a bug if you notice a violation of semantic versioning.
   poisoning the process exit status.
 - Coverage CI thresholds now match the repository `mise.toml` thresholds instead
   of requiring unreachable 100% line and branch coverage.
+- `kettle-changelog` now fails closed when `kettle-test` does not produce the
+  expected collated `coverage/coverage.json`, instead of merging worker coverage
+  files itself and hiding a coverage integration failure.
 - Regenerated templating now keeps `kettle-test` as a runtime dependency only
   instead of duplicating it as both runtime and development dependency.
 - Replaced non-capturing `=~` checks with `Regexp#match?` so unlocked/style CI

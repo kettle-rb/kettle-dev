@@ -504,11 +504,11 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       end
     end
 
-    it "merges parallel turbo_tests coverage JSON in strict mode" do
+    it "fails closed when kettle-test does not collate parallel coverage JSON" do
       mkproj do |root|
         allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
 
-        expect(cli = described_class.new(strict: true)).to receive(:system).and_wrap_original do |_original, *_args|
+        expect(cli = described_class.new(strict: true)).to receive(:system) do
           worker_one = File.join(root, "coverage", "turbo_tests", "1")
           worker_two = File.join(root, "coverage", "turbo_tests", "2")
           FileUtils.mkdir_p(worker_one)
@@ -538,10 +538,13 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
           true
         end
 
-        line_cov, branch_cov = cli.send(:coverage_lines)
-        expect(line_cov).to eq("COVERAGE: 100.00% -- 2/2 lines in 1 files")
-        expect(branch_cov).to eq("BRANCH COVERAGE: 100.00% -- 1/1 branches in 1 files")
-        expect(File.file?(File.join(root, "coverage", "coverage.json"))).to be(true)
+        expect do
+          cli.send(:coverage_lines)
+        end.to raise_error(
+          RuntimeError,
+          /kettle-test runs specs in parallel and is expected to collate parallel SimpleCov results/,
+        )
+        expect(File.file?(File.join(root, "coverage", "coverage.json"))).to be(false)
       end
     end
 
