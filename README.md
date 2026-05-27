@@ -228,6 +228,10 @@ tree_haver supports multiple parsing backends, but not all backends work on all 
 ### Compatibility
 
 Compatible with MRI Ruby 2.4.0+, and concordant releases of JRuby, and TruffleRuby.
+CI workflows and Appraisals are generated for MRI Ruby 2.4+.
+This test floor is configured by `ruby.test_minimum` in `.kettle-jem.yml` and
+may be higher than the gem's runtime compatibility floor when legacy Rubies are
+not practical for the current toolchain.
 
 | 🚚 _Amazing_ test matrix was brought to you by | 🔎 appraisal2 🔎 and the color 💚 green 💚 |
 |------------------------------------------------|--------------------------------------------------------|
@@ -1015,6 +1019,7 @@ Thanks for RTFM. ☺️
 [📄license-img]: https://img.shields.io/badge/License-AGPL--3.0--only-259D6C.svg
 [📄license-compat]: https://www.apache.org/legal/resolved.html#category-x
 [📄license-compat-img]: https://img.shields.io/badge/Apache_Incompatible:_Category_X-%E2%9C%97-C0392B.svg?style=flat&logo=Apache
+
 [📄ilo-declaration]: https://www.ilo.org/declaration/lang--en/index.htm
 [📄ilo-declaration-img]: https://img.shields.io/badge/ILO_Fundamental_Principles-✓-259D6C.svg?style=flat
 [🚎yard-current]: http://rubydoc.info/gems/kettle-dev

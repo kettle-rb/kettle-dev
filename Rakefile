@@ -6,16 +6,16 @@
 # kettle-dev will then preserve content between those markers across template runs.
 # kettle-jem:unfreeze
 
-# kettle-dev Rakefile v1.0.0 - 2026-04-05
+# kettle-dev Rakefile v7.0.0 - 2026-05-27
 # Ruby 2.3 (Safe Navigation) or higher required
 #
-# MIT License (see License.txt)
+# See LICENSE.md for license information.
 #
 # Copyright (c) 2026 Peter H. Boling (galtzo.com)
 #
 # Expected to work in any project that uses Bundler.
 #
-# Sets up tasks for appraisal, floss_funding, rspec, minitest, rubocop, reek, yard, and stone_checksums.
+# Sets up tasks for appraisal2, floss_funding, kettle-jem, kettle-dev, rspec, minitest, rubocop_gradual, reek, yard, and stone_checksums.
 #
 # rake appraisal:install                      # Install Appraisal gemfiles (initial setup...
 # rake appraisal:reset                        # Delete Appraisal lockfiles (gemfiles/*.gemfile.lock)
@@ -31,9 +31,9 @@
 # rake default                                # Default tasks aggregator
 # rake install                                # Build and install kettle-dev-1.0.0.gem in...
 # rake install:local                          # Build and install kettle-dev-1.0.0.gem in...
-# rake kettle:jem:install                     # Install kettle-dev GitHub automation and ...
+# rake kettle:jem:install                     # Internal target used by `kettle-jem install`
 # rake kettle:jem:selftest                    # Self-test: template kettle-dev against itse...
-# rake kettle:jem:template                    # Template kettle-dev files into the curren...
+# rake kettle:jem:template                    # Internal target used by scoped `kettle-jem template --only`
 # rake reek                                   # Check for code smells
 # rake reek:update                            # Run reek and store the output into the RE...
 # rake release[remote]                        # Create tag v1.0.0 and build and push kett...
@@ -63,6 +63,12 @@ task :default do
 end
 
 # External gems that define tasks - add here!
+begin
+  require "kettle/dev"
+  Kettle::Dev.install_tasks unless Kettle::Dev::RUNNING_AS == "rake"
+rescue LoadError
+  warn("NOTE: kettle-dev isn't installed, or is disabled for #{RUBY_VERSION} in the current environment")
+end
 
 ### DUPLICATE DRIFT TASKS
 begin
@@ -85,7 +91,12 @@ rescue LoadError
   task("kettle:drift" => "kettle:drift:update")
 end
 
+
 ### TEMPLATING TASKS
+# These tasks are installed for the `kettle-jem` executable. Run full templating
+# through `kettle-jem install`; use `kettle-jem template --only PATH` only for
+# scoped file updates. The executable prepares the environment and then
+# delegates here when rake orchestration is needed.
 begin
   require "kettle/jem"
   Kettle::Jem.install_tasks
@@ -105,11 +116,4 @@ rescue LoadError
   task("build:generate_checksums") do
     warn("NOTE: stone_checksums isn't installed, or is disabled for #{RUBY_VERSION} in the current environment")
   end
-end
-
-begin
-  require "kettle/dev"
-  Kettle::Dev.install_tasks unless Kettle::Dev::RUNNING_AS == "rake"
-rescue LoadError
-  warn("NOTE: kettle-dev isn't installed, or is disabled for #{RUBY_VERSION} in the current environment")
 end

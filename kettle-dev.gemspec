@@ -134,10 +134,10 @@ Gem::Specification.new do |spec|
   #       However, development dependencies in gemspec will install on
   #       all versions of Ruby that will run in CI.
   #       This gem, and its gemspec runtime dependencies, will install on Ruby down to 2.4.0.
-  #       This gem, and its gemspec development dependencies, will install on Ruby down to 2.4.0.
+  #       This gem, and its gemspec development dependencies, will install on Ruby down to 2.4.
   #       Thus, dev dependencies in gemspec must have
   #
-  #       required_ruby_version ">= 2.4.0" (or lower)
+  #       required_ruby_version ">= 2.4" (or lower)
   #
   #       Development dependencies that require strictly newer Ruby versions should be in a "gemfile",
   #       and preferably a modular one (see gemfiles/modular/*.gemfile).
@@ -170,7 +170,7 @@ Gem::Specification.new do |spec|
   # This means we have no choice but to use the erb that shipped with Ruby 2.3
   # /opt/hostedtoolcache/Ruby/2.3.8/x64/lib/ruby/gems/2.3.0/gems/erb-2.2.2/lib/erb.rb:670:in `prepare_trim_mode': undefined method `match?' for "-":String (NoMethodError)
   # spec.add_development_dependency("erb", ">= 2.2")                                  # ruby >= 2.3.0, not SemVer, old rubies get dropped in a patch.
-  spec.add_development_dependency("gitmoji-regex", "~> 1.0", ">= 1.0.3")            # ruby >= 2.3.0
+  spec.add_development_dependency("gitmoji-regex", "~> 2.0", ">= 2.0.0")            # ruby >= 2.4
 
   # HTTP recording for deterministic specs
   # In Ruby 3.5 (HEAD) the CGI library has been pared down, so we also need to depend on gem "cgi" for ruby@head
