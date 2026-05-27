@@ -28,14 +28,23 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [2.0.3] - 2026-05-27
+
+- TAG: [v2.0.3][2.0.3t]
+- COVERAGE: 94.62% -- 2956/3124 lines in 24 files
+- BRANCH COVERAGE: 78.21% -- 1206/1542 branches in 24 files
+- 76.40% documented
+
+### Fixed
+
 - The default rake task now includes documentation generation via `yard`, so
   documentation plugin post-processing runs during `bin/rake`.
 - `kettle-changelog` now updates the current changelog release in place when
   Unreleased has pending entries or the release section is missing generated
   coverage/documentation metadata, even if the version is already the latest
   known release.
-
-### Security
 
 ## [2.0.2] - 2026-05-27
 
@@ -1770,7 +1779,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.2...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.3...HEAD
+[2.0.3]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.2...v2.0.3
+[2.0.3t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v2.0.3
 [2.0.2]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.1...v2.0.2
 [2.0.2t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v2.0.2
 [2.0.1]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.0...v2.0.1

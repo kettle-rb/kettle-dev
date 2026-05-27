@@ -341,6 +341,13 @@ mise exec -C /path/to/project -- bundle exec rubocop-gradual
 bin/kettle-release        # Full release workflow
 </code></pre>
 
+<h3 id="changelog-editing">Changelog Editing</h3>
+
+<p>Manual changelog edits are allowed only under <code>## [Unreleased]</code>. Never add,<br>
+remove, move, or rewrite entries in an already released version section by hand;<br>
+<code>kettle-changelog</code> is the tool responsible for preparing or updating release<br>
+sections.</p>
+
 <h2 id="-project-conventions">📝 Project Conventions</h2>
 
 <h3 id="freeze-block-preservation">Freeze Block Preservation</h3>
@@ -410,7 +417,7 @@ end
 </div></div>
 
       <div id="footer">
-  Generated on Wed May 27 14:58:07 2026 by
+  Generated on Wed May 27 16:00:08 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>
