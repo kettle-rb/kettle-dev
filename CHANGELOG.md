@@ -28,6 +28,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-changelog` now refuses to merge Unreleased entries or generated
+  metadata into a release section when `version.rb` already matches the latest
+  published version for that release line; bump the version before preparing a
+  new changelog release.
 - The `yard` rake spec now reloads the task file directly and uses Ruby
   2.4-compatible cleanup syntax, fixing order-dependent CI failures across the
   appraisal matrix.

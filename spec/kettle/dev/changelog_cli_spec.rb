@@ -122,7 +122,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       end
     end
 
-    it "auto-selects update-prep when the current released version has pending unreleased entries" do
+    it "aborts when the current released version has pending unreleased entries" do
       mkproj do |root|
         File.write(File.join(root, "lib", "my", "gem", "version.rb"), <<~RB)
           module My; module Gem; VERSION = "1.2.3"; end; end
@@ -159,28 +159,17 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
 
         cli = described_class.new(strict: false)
         allow(cli).to receive(:latest_released_versions).and_return(["1.2.3", "1.2.3"])
-        allow(cli).to receive_messages(
-          coverage_lines: [
-            "COVERAGE: 95.00% -- 95/100 lines in 2 files",
-            "BRANCH COVERAGE: 80.00% -- 8/10 branches in 2 files",
-          ],
-          yard_percent_documented: "20.00% documented",
-        )
-
-        expect { cli.run }.not_to raise_error
+        expect { cli.run }.to raise_error(MockSystemExit, /matches the latest released version.*bump version\.rb/m)
         updated = File.read(File.join(root, "CHANGELOG.md"))
 
         expect(updated.scan(/^## \[1\.2\.3\]/).size).to eq(1)
-        expect(updated).to include("## [1.2.3] - 2025-08-31")
-        expect(updated).to include("- COVERAGE: 95.00% -- 95/100 lines in 2 files")
-        expect(updated).to include("- BRANCH COVERAGE: 80.00% -- 8/10 branches in 2 files")
-        expect(updated).to include("- 20.00% documented")
-        expect(updated).to match(/### Fixed\n\n- Prepared the release\.\n\n- Fixed a follow-up before release\./)
-        expect(updated).to match(/## \[Unreleased\]\n\n### Added\n\n### Changed\n\n### Deprecated\n\n### Removed\n\n### Fixed\n\n### Security/)
+        expect(updated).to include("## [1.2.3] - 2025-08-30")
+        expect(updated).to include("- Fixed a follow-up before release.")
+        expect(updated).not_to include("## [1.2.3] - 2025-08-31")
       end
     end
 
-    it "auto-selects update-prep when the current released version is missing generated metadata" do
+    it "reformats only when the current released version is missing generated metadata and Unreleased is empty" do
       mkproj do |root|
         File.write(File.join(root, "lib", "my", "gem", "version.rb"), <<~RB)
           module My; module Gem; VERSION = "1.2.3"; end; end
@@ -220,22 +209,14 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
 
         cli = described_class.new(strict: false)
         allow(cli).to receive(:latest_released_versions).and_return(["1.2.3", "1.2.3"])
-        allow(cli).to receive_messages(
-          coverage_lines: [
-            "COVERAGE: 95.00% -- 95/100 lines in 2 files",
-            "BRANCH COVERAGE: 80.00% -- 8/10 branches in 2 files",
-          ],
-          yard_percent_documented: "20.00% documented",
-        )
-
         expect { cli.run }.not_to raise_error
         updated = File.read(File.join(root, "CHANGELOG.md"))
 
         expect(updated.scan(/^## \[1\.2\.3\]/).size).to eq(1)
-        expect(updated).to include("## [1.2.3] - 2025-08-31")
-        expect(updated).to include("- COVERAGE: 95.00% -- 95/100 lines in 2 files")
-        expect(updated).to include("- BRANCH COVERAGE: 80.00% -- 8/10 branches in 2 files")
-        expect(updated).to include("- 20.00% documented")
+        expect(updated).to include("## [1.2.3] - 2025-08-30")
+        expect(updated).not_to include("- COVERAGE:")
+        expect(updated).not_to include("- BRANCH COVERAGE:")
+        expect(updated).not_to include("- 20.00% documented")
         expect(updated).to include("- Prepared the release.")
       end
     end

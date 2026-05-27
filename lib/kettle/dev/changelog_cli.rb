@@ -167,7 +167,10 @@ module Kettle
         end
 
         action = if section_exists && latest_target == version
-          current_release_needs_update?(changelog, version, unreleased_block) ? :update_prepared_release : :reformat_only
+          if unreleased_block_has_entries?(unreleased_block)
+            abort("Aborting: version.rb (#{version}) matches the latest released version for this release line (#{latest_target}); bump version.rb before moving Unreleased entries into a release section.")
+          end
+          :reformat_only
         elsif section_exists
           :update_prepared_release
         elsif latest_target == version
@@ -504,26 +507,8 @@ module Kettle
         out.join
       end
 
-      def current_release_needs_update?(changelog, version, unreleased_block)
-        return true if unreleased_block_has_entries?(unreleased_block)
-
-        !release_metadata_complete?(release_body_for(changelog, version))
-      end
-
       def unreleased_block_has_entries?(unreleased_block)
         !filter_unreleased_sections(unreleased_block.to_s).strip.empty?
-      end
-
-      def release_body_for(changelog, version)
-        pattern = /^## \[#{Regexp.escape(version)}\][^\n]*\n(?<body>.*?)(?=^## \[|\z)/m
-        changelog.match(pattern)&.[](:body).to_s
-      end
-
-      def release_metadata_complete?(release_body)
-        stripped_body = release_body.to_s
-        stripped_body.match?(/^- COVERAGE: /) &&
-          stripped_body.match?(/^- BRANCH COVERAGE: /) &&
-          stripped_body.match?(/^- \d+(?:\.\d+)?%\s+documented$/)
       end
 
       def coverage_lines
