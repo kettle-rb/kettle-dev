@@ -20,9 +20,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
-- Added `appraisal:generate`, which regenerates Appraisal gemfiles inside the
-  `Appraisal.root.gemfile` bundle context without resolving appraisal locks.
-
 ### Changed
 
 ### Deprecated
@@ -32,6 +29,18 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Fixed
 
 ### Security
+
+## [2.0.5] - 2026-05-28
+
+- TAG: [v2.0.5][2.0.5t]
+- COVERAGE: 93.46% -- 2972/3180 lines in 25 files
+- BRANCH COVERAGE: 76.94% -- 1208/1570 branches in 25 files
+- 76.40% documented
+
+### Added
+
+- Added `appraisal:generate`, which regenerates Appraisal gemfiles inside the
+  `Appraisal.root.gemfile` bundle context without resolving appraisal locks.
 
 ## [2.0.4] - 2026-05-27
 
@@ -1803,7 +1812,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.4...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.5...HEAD
+[2.0.5]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.4...v2.0.5
+[2.0.5t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v2.0.5
 [2.0.4]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.3...v2.0.4
 [2.0.4t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v2.0.4
 [2.0.3]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.2...v2.0.3
