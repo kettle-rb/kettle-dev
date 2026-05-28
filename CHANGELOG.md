@@ -20,6 +20,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- Added `appraisal:generate`, which regenerates Appraisal gemfiles inside the
+  `Appraisal.root.gemfile` bundle context without resolving appraisal locks.
+
 ### Changed
 
 ### Deprecated

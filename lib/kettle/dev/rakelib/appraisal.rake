@@ -31,6 +31,29 @@ begin
     end
   end
 
+  desc("Generate Appraisal gemfiles without resolving appraisal locks")
+  task("appraisal:generate") do
+    bundle = "bundle"
+
+    run_in_unbundled = proc do
+      env = {"BUNDLE_GEMFILE" => "Appraisal.root.gemfile"}
+
+      # 1) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle install
+      ok = system(env, bundle, "install")
+      abort("appraisal:generate failed: BUNDLE_GEMFILE=Appraisal.root.gemfile bundle install") unless ok
+
+      # 2) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle exec appraisal generate
+      ok = system(env, bundle, "exec", "appraisal", "generate")
+      abort("appraisal:generate failed: BUNDLE_GEMFILE=Appraisal.root.gemfile bundle exec appraisal generate") unless ok
+    end
+
+    if defined?(Bundler)
+      Bundler.with_unbundled_env(&run_in_unbundled)
+    else
+      run_in_unbundled.call
+    end
+  end
+
   desc("Update Appraisal gemfiles and run RuboCop Gradual autocorrect")
   task("appraisal:update") do
     bundle = "bundle"
