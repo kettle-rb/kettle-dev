@@ -3,6 +3,10 @@
 # External RSpec & related config
 require "kettle/test/rspec"
 
+
+# This library
+require "kettle/dev"
+
 # Internal ENV config
 require_relative "config/debug"
 require_relative "config/vcr"
@@ -28,6 +32,15 @@ require "kettle-dev"
 # Dog food autoload setup and ensure InputAdapter constant is available for stubbing
 
 RSpec.configure do |config|
+  # Enable flags like --only-failures and --next-failure
+  config.example_status_persistence_file_path = ".rspec_status"
+
+  # Disable RSpec exposing methods globally on `Module` and `main`
+  config.disable_monkey_patching!
+
+  config.expect_with :rspec do |c|
+    c.syntax = :expect
+  end
   # Auto-skip examples that require Bundler >= 2.7 (which implies Ruby >= 3.2)
   config.before(:each, :bundler_27_only) do
     # Skip on Ruby < 3.2 using rspec-pending_for's version matcher
