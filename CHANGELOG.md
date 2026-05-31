@@ -24,6 +24,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - Updated the user-maintained README usage sections to describe the current
   kettle-dev task, changelog, release, and kettle-jem setup boundaries.
+- Corrected the deprecated `kettle-dev-setup` documentation and shim output to
+  point at the real `kettle-jem setup` command.
 
 ### Deprecated
 

@@ -3,15 +3,15 @@
 
 # vim: set syntax=ruby
 
-# kettle-dev-setup has been replaced by kettle-jem-setup.
+# kettle-dev-setup has been replaced by kettle-jem setup.
 # All setup and templating functionality has moved to the kettle-jem gem.
 
 $stderr.puts <<~MSG
   kettle-dev-setup has been removed.
   Setup and templating functionality has moved to the kettle-jem gem.
 
-  Please install kettle-jem and use kettle-jem-setup instead:
+  Please install kettle-jem and use kettle-jem setup instead:
     gem install kettle-jem
-    kettle-jem-setup
+    kettle-jem setup
 MSG
 exit 1

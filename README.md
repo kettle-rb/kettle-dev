@@ -60,7 +60,7 @@ Project setup and template refreshes are now owned by
 
 ```console
 gem install kettle-jem
-kettle-jem-setup
+kettle-jem setup
 ```
 
 Once a project is wired, the normal local development loop is:
@@ -228,7 +228,7 @@ refreshes should be run through kettle-jem:
 
 ```console
 gem install kettle-jem
-kettle-jem-setup
+kettle-jem setup
 ```
 
 `kettle-dev-setup` is still shipped for compatibility, but it now exits with a
@@ -322,7 +322,8 @@ GitHub Actions local runner helper:
 
 Project automation and template refreshes:
 
-- Use `kettle-jem-setup` or `kettle-jem install` for setup and templating.
+- Use `kettle-jem setup` for first-time setup and `kettle-jem install` for
+  full template refreshes.
 - When kettle-jem's rake integration is installed, run `bundle exec rake kettle:jem:template`
   to refresh template-managed files.
 - `kettle-dev-setup` is deprecated and intentionally exits with a migration
@@ -471,7 +472,7 @@ What it does:
     - Does not modify the destination repository.
 - Replacement:
     - `gem install kettle-jem`
-    - `kettle-jem-setup`
+    - `kettle-jem setup`
 
 ### Open Collective README updater
 
