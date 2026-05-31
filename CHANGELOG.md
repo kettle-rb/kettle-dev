@@ -35,6 +35,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Regenerated the spec helper so `kettle-dev` is required only after coverage
+  bootstrap setup.
+
 ### Security
 
 ## [2.0.5] - 2026-05-28

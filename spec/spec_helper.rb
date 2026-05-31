@@ -4,8 +4,6 @@
 require "kettle/test/rspec"
 
 
-# This library
-require "kettle/dev"
 
 # Internal ENV config
 require_relative "config/debug"
