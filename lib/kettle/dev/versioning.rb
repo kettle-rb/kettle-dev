@@ -6,12 +6,13 @@ module Kettle
     module Versioning
       module_function
 
-      # Detects a unique VERSION constant declared under lib/**/version.rb
+      # Detects a unique VERSION constant declared under lib/**/version.rb,
+      # or in K_CHANGELOG_VERSION_FILE when a monorepo/root changelog needs
+      # to point at a representative package version file.
       # @param root [String] project root
       # @return [String] version string
       def detect_version(root)
-        candidates = Dir[File.join(root, "lib", "**", "version.rb")]
-        abort!("Could not find version.rb under lib/**.") if candidates.empty?
+        candidates = version_file_candidates(root)
         versions = candidates.map do |path|
           content = File.read(path)
           m = content.match(/VERSION\s*=\s*(["'])([^"']+)\1/)
@@ -22,6 +23,20 @@ module Kettle
         abort!("VERSION constant not found in #{root}/lib/**/version.rb") if versions.none?
         abort!("Multiple VERSION constants found to be out of sync (#{versions.inspect}) in #{root}/lib/**/version.rb") unless versions.uniq.length == 1
         versions.first
+      end
+
+      def version_file_candidates(root)
+        override = ENV.fetch("K_CHANGELOG_VERSION_FILE", "").to_s.strip
+        unless override.empty?
+          path = File.expand_path(override, root)
+          abort!("K_CHANGELOG_VERSION_FILE does not exist: #{override}") unless File.file?(path)
+
+          return [path]
+        end
+
+        candidates = Dir[File.join(root, "lib", "**", "version.rb")]
+        abort!("Could not find version.rb under lib/**.") if candidates.empty?
+        candidates
       end
 
       # Classify the bump type from prev -> cur.

@@ -299,18 +299,7 @@ module Kettle
       end
 
       def detect_version
-        candidates = Dir[File.join(@root, "lib", "**", "version.rb")]
-        abort("Could not find version.rb under lib/**.") if candidates.empty?
-        versions = candidates.map do |path|
-          content = File.read(path)
-          m = content.match(/VERSION\s*=\s*(["'])([^"']+)\1/)
-          next unless m
-
-          m[2]
-        end.compact
-        abort("VERSION constant not found in #{@root}/lib/**/version.rb") if versions.none?
-        abort("Multiple VERSION constants found to be out of sync (#{versions.inspect}) in #{@root}/lib/**/version.rb") unless versions.uniq.length == 1
-        versions.first
+        Kettle::Dev::Versioning.detect_version(@root)
       end
 
       def extract_unreleased(content)

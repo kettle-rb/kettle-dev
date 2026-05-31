@@ -38,6 +38,21 @@ RSpec.describe Kettle::Dev::Versioning do
         expect { described_class.detect_version(dir) }.to raise_error(SystemExit)
       end
     end
+
+    it "detects VERSION from K_CHANGELOG_VERSION_FILE for monorepo roots" do
+      Dir.mktmpdir do |dir|
+        version_file = File.join(dir, "gems", "example", "lib", "example", "version.rb")
+        FileUtils.mkdir_p(File.dirname(version_file))
+        File.write(version_file, "module Example; VERSION = '7.1.2'; end\n")
+
+        begin
+          ENV["K_CHANGELOG_VERSION_FILE"] = "gems/example/lib/example/version.rb"
+          expect(described_class.detect_version(dir)).to eq("7.1.2")
+        ensure
+          ENV.delete("K_CHANGELOG_VERSION_FILE")
+        end
+      end
+    end
   end
 
   describe "::epic_major?" do

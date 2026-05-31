@@ -5,6 +5,7 @@
 
 # kettle-changelog: Generate a CHANGELOG.md entry for the current VERSION.
 # - Reads VERSION from lib/**/version.rb (must be unique across files)
+# - Set K_CHANGELOG_VERSION_FILE to use a specific version.rb for monorepo roots
 # - Moves entries from the "Unreleased" section into a new versioned section
 # - Prepends 4 heading lines:
 #   - TAG
@@ -67,6 +68,7 @@ begin
       Environment:
         K_CHANGELOG_STRICT=false              Disable strict mode (equivalent to --no-strict flag)
         K_CHANGELOG_COVERAGE_HARD=false       Disable coverage threshold hard-failure
+        K_CHANGELOG_VERSION_FILE=path         Read VERSION from this file instead of lib/**/version.rb
 
       Prerequisites:
         - coverage/coverage.json present (run: bundle exec kettle-test with K_SOUP_COV_FORMATTERS=json to generate)
