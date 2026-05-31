@@ -1,0 +1,414 @@
+{
+  "bin/kettle-soup-cover:2643111151": [
+    [149, 39, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [183, 46, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [204, 10, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [332, 21, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545]
+  ],
+  "exe/kettle-changelog:3518586720": [
+    [105, 1, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729]
+  ],
+  "exe/kettle-commit-msg:2696073944": [
+    [43, 13, 76, "Lint/MixedRegexpCaptureTypes: Do not mix named captures and numbered captures in a Regexp literal.", 1400492948],
+    [43, 89, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [54, 12, 59, "Style/CommandLiteral: Use backticks around command string.", 1837732887],
+    [87, 1, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729]
+  ],
+  "exe/kettle-dev-setup:2792276008": [
+    [9, 1, 12, "Style/StderrPuts: Use `warn` instead of `$stderr.puts` to allow such output to be disabled.", 1907194539]
+  ],
+  "exe/kettle-dvcs:2558423981": [
+    [73, 1, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729]
+  ],
+  "exe/kettle-gh-release:1525715549": [
+    [78, 1, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729]
+  ],
+  "exe/kettle-pre-release:2281640847": [
+    [29, 1, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [37, 15, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545]
+  ],
+  "exe/kettle-readme-backers:2635508800": [
+    [37, 1, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729]
+  ],
+  "exe/kettle-release:2080633758": [
+    [105, 1, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729]
+  ],
+  "gemfiles/modular/coverage_local.gemfile:2244487561": [
+    [20, 34, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [30, 38, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545]
+  ],
+  "gemfiles/modular/documentation_local.gemfile:3439283577": [
+    [17, 34, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545]
+  ],
+  "gemfiles/modular/style_local.gemfile:3977464789": [
+    [22, 33, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545]
+  ],
+  "gemfiles/modular/templating_local.gemfile:4213170000": [
+    [68, 34, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [79, 36, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545]
+  ],
+  "kettle-dev.gemspec:2809857957": [
+    [1, 1, 15, "Style/Encoding: Unnecessary utf-8 encoding comment.", 3274088582],
+    [82, 41, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [96, 18, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [107, 14, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545]
+  ],
+  "lib/kettle-dev.rb:3954709658": [
+    [1, 1, 41, "Lint/CopDirectiveSyntax: Malformed directive comment detected. Cop names must be separated by commas. Comment in the directive must start with `--`.", 3330142062]
+  ],
+  "lib/kettle/dev.rb:1614101906": [
+    [106, 7, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [119, 7, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [149, 13, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729]
+  ],
+  "lib/kettle/dev/changelog_cli.rb:3718828940": [
+    [20, 27, 3, "Style/RedundantRegexpCharacterClass: Redundant single-element character class, `[#]` can be replaced with `\\#`.", 193472864],
+    [151, 9, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [189, 61, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [206, 25, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [276, 7, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [575, 7, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [590, 38, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [604, 131, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [636, 9, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [783, 84, 2, "Style/RedundantRegexpEscape: Redundant escape inside regexp literal", 5862711],
+    [804, 21, 191, "Style/RedundantCondition: Use double pipes `||` instead.", 2001240008],
+    [960, 60, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [972, 7, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729]
+  ],
+  "lib/kettle/dev/ci_helpers.rb:2938957997": [
+    [115, 28, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [117, 7, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [208, 9, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [216, 53, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [218, 7, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729]
+  ],
+  "lib/kettle/dev/ci_monitor.rb:4076252705": [
+    [81, 9, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [87, 9, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [102, 29, 2, "Style/ItAssignment: `it` is the default block parameter; consider another name.", 5861176]
+  ],
+  "lib/kettle/dev/commit_msg.rb:3838921756": [
+    [12, 19, 76, "Lint/MixedRegexpCaptureTypes: Do not mix named captures and numbered captures in a Regexp literal.", 1400492948],
+    [12, 95, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [25, 18, 59, "Style/CommandLiteral: Use backticks around command string.", 1837732887]
+  ],
+  "lib/kettle/dev/dvcs_cli.rb:2272795951": [
+    [38, 22, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [43, 54, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [126, 37, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [212, 21, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [222, 60, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [228, 64, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [347, 37, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [391, 7, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729]
+  ],
+  "lib/kettle/dev/gem_spec_reader.rb:1292818879": [
+    [56, 13, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [65, 13, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [94, 13, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [120, 43, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [156, 11, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [185, 50, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [226, 13, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [258, 37, 3, "Style/RedundantRegexpCharacterClass: Redundant single-element character class, `[#]` can be replaced with `\\#`.", 193472864],
+    [258, 83, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545]
+  ],
+  "lib/kettle/dev/git_adapter.rb:2622684470": [
+    [26, 11, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [34, 7, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [48, 7, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [73, 9, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [93, 11, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [132, 7, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [145, 7, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [157, 11, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [165, 7, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [181, 7, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [194, 7, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [205, 13, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [223, 7, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [238, 7, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [253, 7, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [269, 7, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [291, 7, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729]
+  ],
+  "lib/kettle/dev/git_commit_footer.rb:1778448353": [
+    [23, 19, 45, "Style/CommandLiteral: Use backticks around command string.", 1063093737],
+    [25, 11, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [117, 9, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729]
+  ],
+  "lib/kettle/dev/open_collective_config.rb:1647013435": [
+    [59, 11, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729]
+  ],
+  "lib/kettle/dev/pre_release_cli.rb:3645301076": [
+    [105, 50, 2, "Style/RedundantRegexpEscape: Redundant escape inside regexp literal", 5862715],
+    [105, 54, 2, "Style/RedundantRegexpEscape: Redundant escape inside regexp literal", 5862715],
+    [105, 58, 2, "Style/RedundantRegexpEscape: Redundant escape inside regexp literal", 5862715],
+    [119, 45, 2, "Style/RedundantRegexpEscape: Redundant escape inside regexp literal", 5862715],
+    [119, 50, 2, "Style/RedundantRegexpEscape: Redundant escape inside regexp literal", 5862715],
+    [119, 55, 2, "Style/RedundantRegexpEscape: Redundant escape inside regexp literal", 5862715],
+    [120, 45, 2, "Style/RedundantRegexpEscape: Redundant escape inside regexp literal", 5862718],
+    [120, 50, 2, "Style/RedundantRegexpEscape: Redundant escape inside regexp literal", 5862718],
+    [120, 55, 2, "Style/RedundantRegexpEscape: Redundant escape inside regexp literal", 5862718],
+    [135, 13, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [181, 11, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [209, 13, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [225, 68, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545]
+  ],
+  "lib/kettle/dev/rakelib/appraisal.rake:939277226": [
+    [104, 11, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729]
+  ],
+  "lib/kettle/dev/readme_backers.rb:3259958526": [
+    [79, 11, 12, "Style/StderrPuts: Use `warn` instead of `$stderr.puts` to allow such output to be disabled.", 1907194539],
+    [80, 11, 12, "Style/StderrPuts: Use `warn` instead of `$stderr.puts` to allow such output to be disabled.", 1907194539],
+    [81, 11, 12, "Style/StderrPuts: Use `warn` instead of `$stderr.puts` to allow such output to be disabled.", 1907194539],
+    [82, 11, 12, "Style/StderrPuts: Use `warn` instead of `$stderr.puts` to allow such output to be disabled.", 1907194539],
+    [253, 11, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [268, 57, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [304, 7, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [381, 31, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [430, 33, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [440, 84, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [500, 43, 2, "Style/RedundantRegexpEscape: Redundant escape inside regexp literal", 5862704],
+    [500, 56, 2, "Style/RedundantRegexpEscape: Redundant escape inside regexp literal", 5862704],
+    [505, 45, 2, "Style/RedundantRegexpEscape: Redundant escape inside regexp literal", 5862704],
+    [505, 57, 2, "Style/RedundantRegexpEscape: Redundant escape inside regexp literal", 5862704],
+    [510, 47, 2, "Style/RedundantRegexpEscape: Redundant escape inside regexp literal", 5862704],
+    [613, 9, 69, "Style/RedundantAssignment: Redundant assignment before returning detected.", 1187420233],
+    [670, 11, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729]
+  ],
+  "lib/kettle/dev/release_cli.rb:3756784063": [
+    [99, 11, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [170, 11, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [177, 11, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [300, 9, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [417, 45, 2, "Style/RedundantRegexpEscape: Redundant escape inside regexp literal", 5862708],
+    [469, 93, 2, "Style/RedundantRegexpEscape: Redundant escape inside regexp literal", 5862708],
+    [469, 156, 2, "Style/RedundantRegexpEscape: Redundant escape inside regexp literal", 5862708],
+    [494, 93, 2, "Style/RedundantRegexpEscape: Redundant escape inside regexp literal", 5862708],
+    [494, 156, 2, "Style/RedundantRegexpEscape: Redundant escape inside regexp literal", 5862708],
+    [503, 51, 2, "Style/RedundantRegexpEscape: Redundant escape inside regexp literal", 5862708],
+    [570, 9, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [651, 7, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [960, 14, 9, "Style/RedundantSort: Use `max` instead of `sort...last`.", 684147931],
+    [1045, 7, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [1066, 7, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [1084, 28, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [1102, 7, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729]
+  ],
+  "lib/kettle/dev/tasks/ci_task.rb:3752451643": [
+    [87, 13, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [133, 13, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [177, 11, 16, "Lint/RedundantRequireStatement: Remove unnecessary `require` statement.", 1977108102],
+    [193, 11, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [200, 11, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [238, 11, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [384, 11, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729],
+    [389, 11, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729]
+  ],
+  "spec/integration/commit_msg_exe_spec.rb:3079982160": [
+    [18, 44, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [28, 107, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545]
+  ],
+  "spec/kettle/dev/changelog_cli_spec.rb:4214367512": [
+    [15, 45, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [270, 66, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [272, 55, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [328, 39, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [394, 9, 59, "Env/Assign: Mock the return value of an ENV variable instead of assigning to ENV directly.", 3382669582],
+    [397, 16, 42, "Env/Assign: Mock the return value of an ENV variable instead of assigning to ENV directly.", 3316236078],
+    [526, 40, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [527, 18, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [533, 36, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [534, 18, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [538, 33, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [539, 16, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [540, 14, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [565, 36, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [566, 18, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [567, 16, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [568, 14, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [588, 48, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [589, 14, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [590, 12, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [599, 40, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [604, 22, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [632, 106, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [633, 18, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [634, 16, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [635, 14, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [643, 106, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [644, 18, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [645, 16, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [646, 14, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [655, 101, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [668, 48, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [669, 14, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [670, 12, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [679, 40, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [684, 22, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [820, 9, 54, "Env/Assign: Mock the return value of an ENV variable instead of assigning to ENV directly.", 3660616109],
+    [823, 16, 42, "Env/Assign: Mock the return value of an ENV variable instead of assigning to ENV directly.", 3316236078],
+    [1199, 54, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545]
+  ],
+  "spec/kettle/dev/ci_helpers_spec.rb:2430582763": [
+    [55, 57, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [63, 57, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [71, 57, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [79, 57, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [92, 57, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [102, 57, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [129, 57, 6, "RSpec/Extra/BeEmpty: Use `be_empty` matchers for checking an empty array.", 1172408214],
+    [235, 102, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [257, 59, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [426, 91, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [441, 130, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [442, 10, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [465, 133, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [466, 10, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [515, 45, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545]
+  ],
+  "spec/kettle/dev/ci_monitor_spec.rb:2141727298": [
+    [67, 143, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [71, 53, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [90, 53, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [95, 55, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [100, 51, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [121, 51, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [130, 51, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [162, 99, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [164, 20, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [213, 31, 6, "RSpec/Extra/BeEmpty: Use `be_empty` matchers for checking an empty array.", 1172408214],
+    [223, 27, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [235, 99, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [237, 83, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [245, 45, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [271, 94, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [282, 123, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545]
+  ],
+  "spec/kettle/dev/dvcs_cli_spec.rb:460278955": [
+    [145, 24, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [201, 57, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [217, 57, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545]
+  ],
+  "spec/kettle/dev/git_adapter_spec.rb:715344388": [
+    [53, 34, 6, "RSpec/Extra/BeEmpty: Use `be_empty` matchers for checking an empty array.", 1172408214],
+    [65, 53, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [380, 35, 6, "RSpec/Extra/BeEmpty: Use `be_empty` matchers for checking an empty array.", 1172408214],
+    [386, 35, 6, "RSpec/Extra/BeEmpty: Use `be_empty` matchers for checking an empty array.", 1172408214],
+    [392, 35, 6, "RSpec/Extra/BeEmpty: Use `be_empty` matchers for checking an empty array.", 1172408214]
+  ],
+  "spec/kettle/dev/git_commit_footer_spec.rb:3504918425": [
+    [72, 47, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [102, 44, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [114, 47, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [127, 47, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545]
+  ],
+  "spec/kettle/dev/pre_release_cli_spec.rb:938540098": [
+    [46, 37, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [110, 40, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [120, 79, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [223, 27, 6, "RSpec/Extra/BeEmpty: Use `be_empty` matchers for checking an empty array.", 1172408214]
+  ],
+  "spec/kettle/dev/rakelib/appraisal_rake_spec.rb:3832033470": [
+    [26, 67, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545]
+  ],
+  "spec/kettle/dev/readme_backers_spec.rb:279336782": [
+    [16, 61, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545],
+    [27, 45, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [37, 141, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [52, 13, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [86, 13, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [93, 141, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [140, 34, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [205, 56, 6, "RSpec/Extra/BeEmpty: Use `be_empty` matchers for checking an empty array.", 1172408214],
+    [212, 56, 6, "RSpec/Extra/BeEmpty: Use `be_empty` matchers for checking an empty array.", 1172408214],
+    [217, 56, 6, "RSpec/Extra/BeEmpty: Use `be_empty` matchers for checking an empty array.", 1172408214],
+    [274, 27, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [327, 23, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [411, 11, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [415, 171, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [434, 100, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [438, 118, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [447, 33, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [453, 137, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [473, 33, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [478, 139, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [493, 36, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [496, 116, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [508, 36, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [511, 116, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [523, 40, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [526, 196, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [611, 35, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [619, 54, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [621, 114, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [623, 95, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [625, 126, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [626, 10, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [634, 35, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545]
+  ],
+  "spec/kettle/dev/release_cli_spec.rb:3708689623": [
+    [89, 38, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [198, 49, 1, "Style/TrailingCommaInHashLiteral: Avoid comma after the last item of a hash.", 177545]
+  ],
+  "spec/kettle/dev/tasks/ci_task_spec.rb:1015160156": [
+    [18, 25, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [37, 136, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [59, 100, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [112, 46, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [270, 98, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [320, 100, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [336, 98, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [367, 98, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
+    [480, 100, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [496, 100, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [510, 100, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [534, 100, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545]
+  ],
+  "spec/kettle/dev/versioning_spec.rb:379641260": [
+    [49, 11, 71, "Env/Assign: Mock the return value of an ENV variable instead of assigning to ENV directly.", 3835029270]
+  ],
+  "spec/kettle/dev_spec.rb:277242471": [
+    [17, 52, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545]
+  ],
+  "spec/support/fixtures/example-kettle-dev.gemspec:1087612104": [
+    [1, 1, 15, "Style/Encoding: Unnecessary utf-8 encoding comment.", 3274088582],
+    [36, 32, 10, "Gemspec/RequiredRubyVersion: `required_ruby_version` and `TargetRubyVersion` (2.4, which may be specified in .rubocop.yml) should be equal.", 4109298775],
+    [118, 18, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [133, 18, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [144, 14, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545]
+  ],
+  "spec/support/fixtures/example-kettle-dev.template.gemspec:1354262893": [
+    [1, 1, 15, "Style/Encoding: Unnecessary utf-8 encoding comment.", 3274088582],
+    [30, 32, 10, "Gemspec/RequiredRubyVersion: `required_ruby_version` and `TargetRubyVersion` (2.4, which may be specified in .rubocop.yml) should be equal.", 4109298775],
+    [59, 19, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [72, 18, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [83, 14, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545]
+  ],
+  "spec/support/fixtures/example-kettle-soup-cover.gemspec:3038997085": [
+    [51, 32, 8, "Gemspec/RequiredRubyVersion: `required_ruby_version` and `TargetRubyVersion` (2.4, which may be specified in .rubocop.yml) should be equal.", 484936141],
+    [69, 19, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [79, 18, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
+    [93, 14, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545]
+  ],
+  "spec/support/fixtures/ruby_example_one.destination.rb:4146971774": [
+    [1, 1, 15, "Style/Encoding: Unnecessary utf-8 encoding comment.", 3274088582]
+  ],
+  "spec/support/fixtures/ruby_example_one.template.rb:4146971774": [
+    [1, 1, 15, "Style/Encoding: Unnecessary utf-8 encoding comment.", 3274088582]
+  ],
+  "spec/support/fixtures/ruby_example_two.destination.rb:4125734818": [
+    [1, 1, 15, "Style/Encoding: Unnecessary utf-8 encoding comment.", 3274088582]
+  ],
+  "spec/support/fixtures/ruby_example_two.template.rb:3468831086": [
+    [1, 1, 15, "Style/Encoding: Unnecessary utf-8 encoding comment.", 3274088582]
+  ],
+  "spec/support/shared_contexts/with_mocked_git_adapter.rb:4261784729": [
+    [29, 18, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545]
+  ],
+  "spec/support/shared_contexts/with_truffleruby_skip_31_32.rb:79858327": [
+    [11, 28, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545]
+  ]
+}

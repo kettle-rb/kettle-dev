@@ -9,7 +9,7 @@
 
 # 🍲 Kettle::Dev
 
-[![Version][👽versioni]][👽version] [![GitHub tag (latest SemVer)][⛳️tag-img]][⛳️tag] [![License: AGPL-3.0-only][📄license-img]][📄license] [![Downloads Rank][👽dl-ranki]][👽dl-rank] [![CodeCov Test Coverage][🏀codecovi]][🏀codecov] [![Coveralls Test Coverage][🏀coveralls-img]][🏀coveralls] [![QLTY Test Coverage][🏀qlty-covi]][🏀qlty-cov] [![QLTY Maintainability][🏀qlty-mnti]][🏀qlty-mnt] [![CI Heads][🚎3-hd-wfi]][🚎3-hd-wf] [![CI Runtime Dependencies @ HEAD][🚎12-crh-wfi]][🚎12-crh-wf] [![CI Current][🚎11-c-wfi]][🚎11-c-wf] [![CI Truffle Ruby][🚎9-t-wfi]][🚎9-t-wf] [![CI JRuby][🚎10-j-wfi]][🚎10-j-wf] [![Deps Locked][🚎13-🔒️-wfi]][🚎13-🔒️-wf] [![Deps Unlocked][🚎14-🔓️-wfi]][🚎14-🔓️-wf] [![CI Test Coverage][🚎2-cov-wfi]][🚎2-cov-wf] [![CI Style][🚎5-st-wfi]][🚎5-st-wf] [![CodeQL][🖐codeQL-img]][🖐codeQL]
+[![Version][👽versioni]][👽version] [![GitHub tag (latest SemVer)][⛳️tag-img]][⛳️tag] [![License: AGPL-3.0-only][📄license-img]][📄license] [![Downloads Rank][👽dl-ranki]][👽dl-rank] [![CodeCov Test Coverage][🏀codecovi]][🏀codecov] [![Coveralls Test Coverage][🏀coveralls-img]][🏀coveralls] [![QLTY Test Coverage][🏀qlty-covi]][🏀qlty-cov] [![QLTY Maintainability][🏀qlty-mnti]][🏀qlty-mnt] [![CI Heads][🚎3-hd-wfi]][🚎3-hd-wf] [![CI Runtime Dependencies @ HEAD][🚎12-crh-wfi]][🚎12-crh-wf] [![CI Current][🚎11-c-wfi]][🚎11-c-wf] [![CI Truffle Ruby][🚎9-t-wfi]][🚎9-t-wf] [![CI JRuby][🚎10-j-wfi]][🚎10-j-wf] [![Deps Locked][🚎13-🔒️-wfi]][🚎13-🔒️-wf] [![Deps Unlocked][🚎14-🔓️-wfi]][🚎14-🔓️-wf] [![CI Test Coverage][🚎2-cov-wfi]][🚎2-cov-wf] [![CI Style][🚎5-st-wfi]][🚎5-st-wf]
 
 `if ci_badges.map(&:color).detect { it != "green"}` ☝️ [let me know][🖼️galtzo-floss], as I may have missed the [discord notification][🖼️galtzo-floss].
 
@@ -924,8 +924,6 @@ Thanks for RTFM. ☺️
 [🏀codecovi]: https://codecov.io/gh/kettle-rb/kettle-dev/graph/badge.svg
 [🏀coveralls]: https://coveralls.io/github/kettle-rb/kettle-dev?branch=main
 [🏀coveralls-img]: https://coveralls.io/repos/github/kettle-rb/kettle-dev/badge.svg?branch=main
-[🖐codeQL]: https://github.com/kettle-rb/kettle-dev/security/code-scanning
-[🖐codeQL-img]: https://github.com/kettle-rb/kettle-dev/actions/workflows/codeql-analysis.yml/badge.svg
 [🚎ruby-2.4-wf]: https://github.com/kettle-rb/kettle-dev/actions/workflows/ruby-2.4.yml
 [🚎ruby-2.5-wf]: https://github.com/kettle-rb/kettle-dev/actions/workflows/ruby-2.5.yml
 [🚎ruby-2.6-wf]: https://github.com/kettle-rb/kettle-dev/actions/workflows/ruby-2.6.yml
@@ -1038,7 +1036,7 @@ Thanks for RTFM. ☺️
 | Package | kettle-dev |
 | Description | 🍲 Kettle::Dev is a meta tool from kettle-rb to streamline development and testing. Acts as a shim dependency, pulling in many other dependencies, to give you OOTB productivity with a RubyGem, or Ruby app project. Configures a complete set of Rake tasks, for all the libraries is brings in, so they arrive ready to go. Fund overlooked open source projects - bottom of stack, dev/test dependencies: floss-funding.dev |
 | Homepage | https://github.com/kettle-rb/kettle-dev |
-| Source | https://github.com/kettle-rb/kettle-dev/tree/v2.0.1 |
+| Source | https://github.com/kettle-rb/kettle-dev/tree/v2.0.5 |
 | License | `AGPL-3.0-only` |
 | Funding | https://github.com/sponsors/pboling, https://issuehunt.io/u/pboling, https://ko-fi.com/pboling, https://liberapay.com/pboling/donate, https://opencollective.com/kettle-rb, https://patreon.com/galtzo, https://polar.sh/pboling, https://thanks.dev/u/gh/pboling, https://tidelift.com/funding/github/rubygems/kettle-dev, https://www.buymeacoffee.com/pboling |
 <!-- kettle-jem:metadata:end -->

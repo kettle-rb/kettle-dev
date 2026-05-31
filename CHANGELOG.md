@@ -20,7 +20,14 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- `kettle-changelog` now supports monorepo version files, allowing release
+  preparation for gems whose version constants live below subproject roots.
+
 ### Changed
+
+- Refreshed generated `kettle-jem` template output, including
+  `.structuredmerge` configuration, Git diff driver setup, RuboCop-LTS RSpec
+  style dependencies, and release task wiring.
 
 ### Deprecated
 
