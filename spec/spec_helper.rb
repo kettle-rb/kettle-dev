@@ -3,8 +3,6 @@
 # External RSpec & related config
 require "kettle/test/rspec"
 
-
-
 # Internal ENV config
 require_relative "config/debug"
 require_relative "config/vcr"
