@@ -22,6 +22,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- Updated the user-maintained README usage sections to describe the current
+  kettle-dev task, changelog, release, and kettle-jem setup boundaries.
+
 ### Deprecated
 
 ### Removed
