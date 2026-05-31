@@ -20,6 +20,25 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [2.0.6] - 2026-05-31
+
+- TAG: [v2.0.6][2.0.6t]
+- COVERAGE: 93.14% -- 2961/3179 lines in 25 files
+- BRANCH COVERAGE: 76.88% -- 1204/1566 branches in 25 files
+- 75.93% documented
+
+### Added
+
 - `kettle-changelog` now supports monorepo version files, allowing release
   preparation for gems whose version constants live below subproject roots.
 
@@ -29,16 +48,10 @@ Please file a bug if you notice a violation of semantic versioning.
   `.structuredmerge` configuration, Git diff driver setup, RuboCop-LTS RSpec
   style dependencies, and release task wiring.
 
-### Deprecated
-
-### Removed
-
 ### Fixed
 
 - Regenerated the spec helper so `kettle-dev` is required only after coverage
   bootstrap setup.
-
-### Security
 
 ## [2.0.5] - 2026-05-28
 
@@ -1822,7 +1835,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.5...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.6...HEAD
+[2.0.6]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.5...v2.0.6
+[2.0.6t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v2.0.6
 [2.0.5]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.4...v2.0.5
 [2.0.5t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v2.0.5
 [2.0.4]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.3...v2.0.4

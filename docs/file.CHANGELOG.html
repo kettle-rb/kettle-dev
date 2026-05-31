@@ -74,13 +74,30 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 
 <h3 id="added">Added</h3>
 
+<ul>
+  <li>
+<code>kettle-changelog</code> now supports monorepo version files, allowing release<br>
+preparation for gems whose version constants live below subproject roots.</li>
+</ul>
+
 <h3 id="changed">Changed</h3>
+
+<ul>
+  <li>Refreshed generated <code>kettle-jem</code> template output, including<br>
+<code>.structuredmerge</code> configuration, Git diff driver setup, RuboCop-LTS RSpec<br>
+style dependencies, and release task wiring.</li>
+</ul>
 
 <h3 id="deprecated">Deprecated</h3>
 
 <h3 id="removed">Removed</h3>
 
 <h3 id="fixed">Fixed</h3>
+
+<ul>
+  <li>Regenerated the spec helper so <code>kettle-dev</code> is required only after coverage<br>
+bootstrap setup.</li>
+</ul>
 
 <h3 id="security">Security</h3>
 
@@ -688,8 +705,9 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
     <table>
       <tbody>
         <tr>
-          <td>token replacement of           <td>GEM</td>
-          <td>NAME</td>
+          <td>token replacement of {TARGET</td>
+          <td>GEM</td>
+          <td>NAME}</td>
         </tr>
       </tbody>
     </table>
@@ -2291,8 +2309,9 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
         <table>
           <tbody>
             <tr>
-              <td>              <td>LTS</td>
-              <td>CONSTRAINT =&gt; dynamic</td>
+              <td>{RUBOCOP</td>
+              <td>LTS</td>
+              <td>CONSTRAINT} =&gt; dynamic</td>
             </tr>
           </tbody>
         </table>
@@ -2301,8 +2320,9 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
         <table>
           <tbody>
             <tr>
-              <td>              <td>RUBY</td>
-              <td>GEM =&gt; dynamic</td>
+              <td>{RUBOCOP</td>
+              <td>RUBY</td>
+              <td>GEM} =&gt; dynamic</td>
             </tr>
           </tbody>
         </table>
@@ -2921,7 +2941,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </div></div>
 
       <div id="footer">
-  Generated on Thu May 28 00:59:07 2026 by
+  Generated on Sun May 31 15:01:00 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>
