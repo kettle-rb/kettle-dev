@@ -30,6 +30,8 @@ Please file a bug if you notice a violation of semantic versioning.
   128px HTML logo output and the Ruby Toolbox language-logo link.
 - Moved the generated related-org and Ruby README logos from the H1 to the
   Synopsis heading with the current kettle-jem width defaults.
+- Added the generated README note that identifies kettle-jem and
+  StructuredMerge as the templating and merge-contract tooling.
 
 ### Deprecated
 
