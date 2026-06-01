@@ -14,9 +14,6 @@
     [54, 12, 59, "Style/CommandLiteral: Use backticks around command string.", 1837732887],
     [87, 1, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729]
   ],
-  "exe/kettle-dev-setup:2792276008": [
-    [9, 1, 12, "Style/StderrPuts: Use `warn` instead of `$stderr.puts` to allow such output to be disabled.", 1907194539]
-  ],
   "exe/kettle-dvcs:2558423981": [
     [73, 1, 20, "Style/RescueStandardError: Omit the error class when rescuing `StandardError` by itself.", 3081355729]
   ],

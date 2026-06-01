@@ -59,7 +59,7 @@
         <div class="clear"></div>
       </div>
 
-      <div id="content"><div id='filecontents'><p><a href="https://discord.gg/3qme4XHNKN"><img src="https://logos.galtzo.com/assets/images/galtzo-floss/avatar-192px.svg" alt="Galtzo FLOSS Logo by Aboling0, CC BY-SA 4.0"></a> <a href="https://www.ruby-lang.org/"><img src="https://logos.galtzo.com/assets/images/ruby-lang/avatar-192px.svg" alt="ruby-lang Logo, Yukihiro Matsumoto, Ruby Visual Identity Team, CC BY-SA 2.5"></a> <a href="https://github.com/kettle-rb"><img src="https://logos.galtzo.com/assets/images/kettle-rb/avatar-192px.svg" alt="kettle-rb Logo by Aboling0, CC BY-SA 4.0"></a></p>
+      <div id="content"><div id='filecontents'><p><a href="https://github.com/kettle-rb"><img alt="kettle-rb Logo by Aboling0, CC BY-SA 4.0" src="https://logos.galtzo.com/assets/images/kettle-rb/avatar-128px.svg" width="14%" align="right"></a></p>
 
 <h1 id="-kettledev">🍲 Kettle::Dev</h1>
 
@@ -80,321 +80,74 @@ I've summarized my thoughts in [this blog post](https://dev.to/galtzo/hostile-ta
 
 </details>
 
-<h2 id="-synopsis">🌻 Synopsis</h2>
+<h2 id="-synopsis--">🌻 Synopsis <a href="https://discord.gg/3qme4XHNKN"><img alt="Galtzo FLOSS Logo by Aboling0, CC BY-SA 4.0" src="https://logos.galtzo.com/assets/images/galtzo-floss/avatar-128px.svg" width="8%" align="right"></a> <a href="https://ruby-toolbox.com"><img alt="ruby-lang Logo, Yukihiro Matsumoto, Ruby Visual Identity Team, CC BY-SA 2.5" src="https://logos.galtzo.com/assets/images/ruby-lang/avatar-128px.svg" width="8%" align="right"></a>
+</h2>
 
-<p>Run the one-time project bootstrapper:</p>
+<p>Kettle::Dev is the development, CI, changelog, and release harness used by<br>
+kettle-rb gems. It installs rake tasks when loaded from a project’s <code>Rakefile</code>,<br>
+and it ships command-line tools for changelog preparation, release automation,<br>
+multi-forge git remotes, commit-message hooks, and Open Collective README<br>
+updates.</p>
 
-<pre class="code language-console"><code class="language-console">kettle-dev-setup
-# Or if your middle name is &quot;danger&quot;:
-# kettle-dev-setup --allowed=true --force
+<p>Add it to a gem’s development dependencies, then load the rake integration:</p>
+
+<pre class="code language-ruby"><code class="language-ruby"># Gemfile
+group :development, :test do
+  gem &quot;kettle-dev&quot;, require: false
+end
 </code></pre>
 
-<p>This gem integrates tightly with <a href="https://github.com/kettle-rb/kettle-test">kettle-test</a>.</p>
+<pre class="code language-ruby"><code class="language-ruby"># Rakefile
+require &quot;kettle/dev&quot;
+</code></pre>
 
-<p>Add this to your <code>spec/spec_helper.rb</code>:</p>
+<p>For RSpec projects, use the matching test harness from<br>
+<a href="https://github.com/kettle-rb/kettle-test">kettle-test</a>:</p>
 
 <pre class="code language-ruby"><code class="language-ruby">require &quot;kettle/test/rspec&quot;
 </code></pre>
 
-<p>Now you have many powerful development and testing tools at your disposal, all fully <a href="#-configuration">documented</a> and tested.</p>
+<p>Project setup and template refreshes are now owned by<br>
+<a href="https://github.com/kettle-rb/kettle-jem">kettle-jem</a>, not kettle-dev:</p>
 
-<p>If you need to top-up an old setup to get the latest goodies, just re-template:</p>
-
-<pre class="code language-console"><code class="language-console">bundle exec rake kettle:dev:install
+<pre class="code language-console"><code class="language-console">gem install kettle-jem
+kettle-jem setup
 </code></pre>
 
-<p>Making sure to review the changes, and retain overwritten bits that matter.</p>
+<p>Once a project is wired, the normal local development loop is:</p>
 
-<p>Later, when ready to release:</p>
+<pre class="code language-console"><code class="language-console">bin/rake
+bin/rake rubocop_gradual:autocorrect
+bin/rake yard
+</code></pre>
 
-<pre class="code language-console"><code class="language-console">bin/kettle-changelog
+<p>And the maintainer release flow is:</p>
+
+<pre class="code language-console"><code class="language-console">bin/kettle-pre-release
+bin/kettle-changelog
 bin/kettle-release
 </code></pre>
 
-<h3 id="the--merge-gem-family">The <code>*-merge</code> Gem Family</h3>
-
-<p>The <code>*-merge</code> gem family provides intelligent, AST-based merging for various file formats. At the foundation is <a href="https://github.com/kettle-rb/tree_haver">tree_haver</a>, which provides a unified cross-Ruby parsing API that works seamlessly across MRI, JRuby, and TruffleRuby.</p>
-
-<table>
-  <thead>
-    <tr>
-      <th>Gem</th>
-      <th style="text-align: center">Version / CI</th>
-      <th>Language<br>/ Format</th>
-      <th>Parser Backend(s)</th>
-      <th>Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><a href="https://github.com/kettle-rb/tree_haver">tree_haver</a></td>
-      <td style="text-align: center">
-<a href="https://bestgems.org/gems/tree_haver"><img src="https://img.shields.io/gem/v/tree_haver.svg" alt="Version"></a> <br> <a href="https://github.com/kettle-rb/tree_haver/actions/workflows/current.yml"><img src="https://github.com/kettle-rb/tree_haver/actions/workflows/current.yml/badge.svg" alt="CI"></a>
-</td>
-      <td>Multi</td>
-      <td>Supported Backends: MRI C, Rust, FFI, Java, Prism, Psych, Commonmarker, Markly, Citrus, Parslet</td>
-      <td>
-<strong>Foundation</strong>: Cross-Ruby adapter for parsing libraries (like Faraday for HTTP)</td>
-    </tr>
-    <tr>
-      <td><a href="https://github.com/kettle-rb/ast-merge">ast-merge</a></td>
-      <td style="text-align: center">
-<a href="https://bestgems.org/gems/ast-merge"><img src="https://img.shields.io/gem/v/ast-merge.svg" alt="Version"></a> <br> <a href="https://github.com/kettle-rb/ast-merge/actions/workflows/current.yml"><img src="https://github.com/kettle-rb/ast-merge/actions/workflows/current.yml/badge.svg" alt="CI"></a>
-</td>
-      <td>Text</td>
-      <td>internal</td>
-      <td>
-<strong>Infrastructure</strong>: Shared base classes and merge logic for all <code>*-merge</code> gems</td>
-    </tr>
-    <tr>
-      <td><a href="https://github.com/kettle-rb/bash-merge">bash-merge</a></td>
-      <td style="text-align: center">
-<a href="https://bestgems.org/gems/bash-merge"><img src="https://img.shields.io/gem/v/bash-merge.svg" alt="Version"></a> <br> <a href="https://github.com/kettle-rb/bash-merge/actions/workflows/current.yml"><img src="https://github.com/kettle-rb/bash-merge/actions/workflows/current.yml/badge.svg" alt="CI"></a>
-</td>
-      <td>Bash</td>
-      <td>
-<a href="https://github.com/tree-sitter/tree-sitter-bash">tree-sitter-bash</a> (via tree_haver)</td>
-      <td>Smart merge for Bash scripts</td>
-    </tr>
-    <tr>
-      <td><a href="https://github.com/kettle-rb/commonmarker-merge">commonmarker-merge</a></td>
-      <td style="text-align: center">
-<a href="https://bestgems.org/gems/commonmarker-merge"><img src="https://img.shields.io/gem/v/commonmarker-merge.svg" alt="Version"></a> <br> <a href="https://github.com/kettle-rb/commonmarker-merge/actions/workflows/current.yml"><img src="https://github.com/kettle-rb/commonmarker-merge/actions/workflows/current.yml/badge.svg" alt="CI"></a>
-</td>
-      <td>Markdown</td>
-      <td>
-<a href="https://github.com/gjtorikian/commonmarker">Commonmarker</a> (via tree_haver)</td>
-      <td>Smart merge for Markdown (CommonMark via comrak Rust)</td>
-    </tr>
-    <tr>
-      <td><a href="https://github.com/kettle-rb/dotenv-merge">dotenv-merge</a></td>
-      <td style="text-align: center">
-<a href="https://bestgems.org/gems/dotenv-merge"><img src="https://img.shields.io/gem/v/dotenv-merge.svg" alt="Version"></a> <br> <a href="https://github.com/kettle-rb/dotenv-merge/actions/workflows/current.yml"><img src="https://github.com/kettle-rb/dotenv-merge/actions/workflows/current.yml/badge.svg" alt="CI"></a>
-</td>
-      <td>Dotenv</td>
-      <td>internal</td>
-      <td>Smart merge for <code>.env</code> files</td>
-    </tr>
-    <tr>
-      <td><a href="https://github.com/kettle-rb/json-merge">json-merge</a></td>
-      <td style="text-align: center">
-<a href="https://bestgems.org/gems/json-merge"><img src="https://img.shields.io/gem/v/json-merge.svg" alt="Version"></a> <br> <a href="https://github.com/kettle-rb/json-merge/actions/workflows/current.yml"><img src="https://github.com/kettle-rb/json-merge/actions/workflows/current.yml/badge.svg" alt="CI"></a>
-</td>
-      <td>JSON</td>
-      <td>
-<a href="https://github.com/tree-sitter/tree-sitter-json">tree-sitter-json</a> (via tree_haver)</td>
-      <td>Smart merge for JSON files</td>
-    </tr>
-    <tr>
-      <td><a href="https://github.com/kettle-rb/jsonc-merge">jsonc-merge</a></td>
-      <td style="text-align: center">
-<a href="https://bestgems.org/gems/jsonc-merge"><img src="https://img.shields.io/gem/v/jsonc-merge.svg" alt="Version"></a> <br> <a href="https://github.com/kettle-rb/jsonc-merge/actions/workflows/current.yml"><img src="https://github.com/kettle-rb/jsonc-merge/actions/workflows/current.yml/badge.svg" alt="CI"></a>
-</td>
-      <td>JSONC</td>
-      <td>
-<a href="https://gitlab.com/WhyNotHugo/tree-sitter-jsonc">tree-sitter-jsonc</a> (via tree_haver)</td>
-      <td>⚠️ Proof of concept; Smart merge for JSON with Comments</td>
-    </tr>
-    <tr>
-      <td><a href="https://github.com/kettle-rb/markdown-merge">markdown-merge</a></td>
-      <td style="text-align: center">
-<a href="https://bestgems.org/gems/markdown-merge"><img src="https://img.shields.io/gem/v/markdown-merge.svg" alt="Version"></a> <br> <a href="https://github.com/kettle-rb/markdown-merge/actions/workflows/current.yml"><img src="https://github.com/kettle-rb/markdown-merge/actions/workflows/current.yml/badge.svg" alt="CI"></a>
-</td>
-      <td>Markdown</td>
-      <td>
-<a href="https://github.com/gjtorikian/commonmarker">Commonmarker</a> / <a href="https://github.com/ioquatix/markly">Markly</a> (via tree_haver), <a href="https://github.com/kschiess/parslet">Parslet</a>
-</td>
-      <td>
-<strong>Foundation</strong>: Shared base for Markdown mergers with inner code block merging</td>
-    </tr>
-    <tr>
-      <td><a href="https://github.com/kettle-rb/markly-merge">markly-merge</a></td>
-      <td style="text-align: center">
-<a href="https://bestgems.org/gems/markly-merge"><img src="https://img.shields.io/gem/v/markly-merge.svg" alt="Version"></a> <br> <a href="https://github.com/kettle-rb/markly-merge/actions/workflows/current.yml"><img src="https://github.com/kettle-rb/markly-merge/actions/workflows/current.yml/badge.svg" alt="CI"></a>
-</td>
-      <td>Markdown</td>
-      <td>
-<a href="https://github.com/ioquatix/markly">Markly</a> (via tree_haver)</td>
-      <td>Smart merge for Markdown (CommonMark via cmark-gfm C)</td>
-    </tr>
-    <tr>
-      <td><a href="https://github.com/kettle-rb/prism-merge">prism-merge</a></td>
-      <td style="text-align: center">
-<a href="https://bestgems.org/gems/prism-merge"><img src="https://img.shields.io/gem/v/prism-merge.svg" alt="Version"></a> <br> <a href="https://github.com/kettle-rb/prism-merge/actions/workflows/current.yml"><img src="https://github.com/kettle-rb/prism-merge/actions/workflows/current.yml/badge.svg" alt="CI"></a>
-</td>
-      <td>Ruby</td>
-      <td>
-<a href="https://github.com/ruby/prism">Prism</a> (<code>prism</code> std lib gem)</td>
-      <td>Smart merge for Ruby source files</td>
-    </tr>
-    <tr>
-      <td><a href="https://github.com/kettle-rb/psych-merge">psych-merge</a></td>
-      <td style="text-align: center">
-<a href="https://bestgems.org/gems/psych-merge"><img src="https://img.shields.io/gem/v/psych-merge.svg" alt="Version"></a> <br> <a href="https://github.com/kettle-rb/psych-merge/actions/workflows/current.yml"><img src="https://github.com/kettle-rb/psych-merge/actions/workflows/current.yml/badge.svg" alt="CI"></a>
-</td>
-      <td>YAML</td>
-      <td>
-<a href="https://github.com/ruby/psych">Psych</a> (<code>psych</code> std lib gem)</td>
-      <td>Smart merge for YAML files</td>
-    </tr>
-    <tr>
-      <td><a href="https://github.com/kettle-rb/rbs-merge">rbs-merge</a></td>
-      <td style="text-align: center">
-<a href="https://bestgems.org/gems/rbs-merge"><img src="https://img.shields.io/gem/v/rbs-merge.svg" alt="Version"></a> <br> <a href="https://github.com/kettle-rb/rbs-merge/actions/workflows/current.yml"><img src="https://github.com/kettle-rb/rbs-merge/actions/workflows/current.yml/badge.svg" alt="CI"></a>
-</td>
-      <td>RBS</td>
-      <td>
-<a href="https://github.com/joker1007/tree-sitter-rbs">tree-sitter-rbs</a> (via tree_haver), <a href="https://github.com/ruby/rbs">RBS</a> (<code>rbs</code> std lib gem)</td>
-      <td>Smart merge for Ruby type signatures</td>
-    </tr>
-    <tr>
-      <td><a href="https://github.com/kettle-rb/toml-merge">toml-merge</a></td>
-      <td style="text-align: center">
-<a href="https://bestgems.org/gems/toml-merge"><img src="https://img.shields.io/gem/v/toml-merge.svg" alt="Version"></a> <br> <a href="https://github.com/kettle-rb/toml-merge/actions/workflows/current.yml"><img src="https://github.com/kettle-rb/toml-merge/actions/workflows/current.yml/badge.svg" alt="CI"></a>
-</td>
-      <td>TOML</td>
-      <td>
-<a href="https://github.com/jm/toml">Parslet + toml</a>, <a href="https://github.com/emancu/toml-rb">Citrus + toml-rb</a>, <a href="https://github.com/tree-sitter-grammars/tree-sitter-toml">tree-sitter-toml</a> (all via tree_haver)</td>
-      <td>Smart merge for TOML files</td>
-    </tr>
-  </tbody>
-</table>
-
-<h4 id="backend-platform-compatibility">Backend Platform Compatibility</h4>
-
-<p>tree_haver supports multiple parsing backends, but not all backends work on all Ruby platforms:</p>
-
-<table>
-  <thead>
-    <tr>
-      <th>Platform 👉️<br> TreeHaver Backend 👇️</th>
-      <th style="text-align: center">MRI</th>
-      <th style="text-align: center">JRuby</th>
-      <th style="text-align: center">TruffleRuby</th>
-      <th>Notes</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>
-<strong>MRI</strong> (<a href="https://github.com/Faveod/ruby-tree-sitter">ruby_tree_sitter</a>)</td>
-      <td style="text-align: center">✅</td>
-      <td style="text-align: center">❌</td>
-      <td style="text-align: center">❌</td>
-      <td>C extension, MRI only</td>
-    </tr>
-    <tr>
-      <td>
-<strong>Rust</strong> (<a href="https://github.com/joker1007/tree_stump">tree_stump</a>)</td>
-      <td style="text-align: center">✅</td>
-      <td style="text-align: center">❌</td>
-      <td style="text-align: center">❌</td>
-      <td>Rust extension via magnus/rb-sys, MRI only</td>
-    </tr>
-    <tr>
-      <td>
-<strong>FFI</strong> (<a href="https://github.com/ffi/ffi">ffi</a>)</td>
-      <td style="text-align: center">✅</td>
-      <td style="text-align: center">✅</td>
-      <td style="text-align: center">❌</td>
-      <td>TruffleRuby’s FFI doesn’t support <code>STRUCT_BY_VALUE</code>
-</td>
-    </tr>
-    <tr>
-      <td>
-<strong>Java</strong> (<a href="https://central.sonatype.com/artifact/io.github.tree-sitter/jtreesitter">jtreesitter</a>)</td>
-      <td style="text-align: center">❌</td>
-      <td style="text-align: center">✅</td>
-      <td style="text-align: center">❌</td>
-      <td>JRuby only, requires grammar JARs</td>
-    </tr>
-    <tr>
-      <td>
-<strong>Prism</strong> (<a href="https://github.com/ruby/prism">prism</a>)</td>
-      <td style="text-align: center">✅</td>
-      <td style="text-align: center">✅</td>
-      <td style="text-align: center">✅</td>
-      <td>Ruby parsing, stdlib in Ruby 3.4+</td>
-    </tr>
-    <tr>
-      <td>
-<strong>Psych</strong> (<a href="https://github.com/ruby/psych">psych</a>)</td>
-      <td style="text-align: center">✅</td>
-      <td style="text-align: center">✅</td>
-      <td style="text-align: center">✅</td>
-      <td>YAML parsing, stdlib</td>
-    </tr>
-    <tr>
-      <td>
-<strong>Citrus</strong> (<a href="https://github.com/mjackson/citrus">citrus</a>)</td>
-      <td style="text-align: center">✅</td>
-      <td style="text-align: center">✅</td>
-      <td style="text-align: center">✅</td>
-      <td>Pure Ruby PEG parser, no native dependencies</td>
-    </tr>
-    <tr>
-      <td>
-<strong>Parslet</strong> (<a href="https://github.com/kschiess/parslet">parslet</a>)</td>
-      <td style="text-align: center">✅</td>
-      <td style="text-align: center">✅</td>
-      <td style="text-align: center">✅</td>
-      <td>Pure Ruby PEG parser, no native dependencies</td>
-    </tr>
-    <tr>
-      <td>
-<strong>Commonmarker</strong> (<a href="https://github.com/gjtorikian/commonmarker">commonmarker</a>)</td>
-      <td style="text-align: center">✅</td>
-      <td style="text-align: center">❌</td>
-      <td style="text-align: center">❓</td>
-      <td>Rust extension for Markdown (via <a href="https://github.com/kettle-rb/commonmarker-merge">commonmarker-merge</a>)</td>
-    </tr>
-    <tr>
-      <td>
-<strong>Markly</strong> (<a href="https://github.com/ioquatix/markly">markly</a>)</td>
-      <td style="text-align: center">✅</td>
-      <td style="text-align: center">❌</td>
-      <td style="text-align: center">❓</td>
-      <td>C extension for Markdown  (via <a href="https://github.com/kettle-rb/markly-merge">markly-merge</a>)</td>
-    </tr>
-  </tbody>
-</table>
-
-<p><strong>Legend</strong>: ✅ = Works, ❌ = Does not work, ❓ = Untested</p>
-
-<p><strong>Why some backends don’t work on certain platforms</strong>:</p>
+<h3 id="what-kettle-dev-provides">What kettle-dev provides</h3>
 
 <ul>
+  <li>Rake task loading from <code>require "kettle/dev"</code>.</li>
+  <li>RuboCop Gradual, Reek, YARD, appraisal, local CI, benchmark, and coverage task wiring.</li>
   <li>
-<strong>JRuby</strong>: Runs on the JVM; cannot load native C/Rust extensions (<code>.so</code> files)</li>
+<code>kettle-changelog</code> for moving Unreleased changelog notes into a versioned release section with coverage and documentation stats.</li>
   <li>
-<strong>TruffleRuby</strong>: Has C API emulation via Sulong/LLVM, but it doesn’t expose all MRI internals that native extensions require (e.g., <code>RBasic.flags</code>, <code>rb_gc_writebarrier</code>)</li>
+<code>kettle-release</code> for the canonical kettle-rb release flow.</li>
   <li>
-<strong>FFI on TruffleRuby</strong>: TruffleRuby’s FFI implementation doesn’t support returning structs by value, which tree-sitter’s C API requires</li>
+<code>kettle-pre-release</code> for release readiness checks.</li>
+  <li>
+<code>kettle-dvcs</code> for normalizing GitHub, GitLab, Codeberg, and aggregate remotes.</li>
+  <li>
+<code>kettle-commit-msg</code> for shared commit-message hook behavior.</li>
+  <li>
+<code>kettle-readme-backers</code> for Open Collective README sections.</li>
+  <li>
+<code>kettle-dev-setup</code> as a deprecated compatibility executable that exits with instructions to use kettle-jem.</li>
 </ul>
-
-<p><strong>Example implementations</strong> for the gem templating use case:</p>
-
-<table>
-  <thead>
-    <tr>
-      <th>Gem</th>
-      <th>Purpose</th>
-      <th>Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><a href="https://github.com/kettle-rb/kettle-dev">kettle-dev</a></td>
-      <td>Gem Development</td>
-      <td>Development tooling, CI automation, and release workflows</td>
-    </tr>
-    <tr>
-      <td><a href="https://github.com/kettle-rb/kettle-jem">kettle-jem</a></td>
-      <td>Gem Templating</td>
-      <td>Gem template library with smart merge support</td>
-    </tr>
-  </tbody>
-</table>
 
 <h2 id="-info-you-can-shake-a-stick-at">💡 Info you can shake a stick at</h2>
 
@@ -447,7 +200,7 @@ bin/kettle-release
     <tr>
       <td>Source</td>
       <td>
-<a href="https://gitlab.com/kettle-rb/kettle-dev"><img src="https://img.shields.io/badge/GitLab-FBA326?style=for-the-badge&amp;logo=Gitlab&amp;logoColor=orange" alt="Source on GitLab.com"></a> <a href="https://codeberg.org/kettle-rb/kettle-dev"><img src="https://img.shields.io/badge/CodeBerg-4893CC?style=for-the-badge&amp;logo=CodeBerg&amp;logoColor=blue" alt="Source on CodeBerg.org"></a> <a href="https://github.com/kettle-rb/kettle-dev"><img src="https://img.shields.io/badge/GitHub-238636?style=for-the-badge&amp;logo=Github&amp;logoColor=green" alt="Source on Github.com"></a> <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"><img src="https://img.shields.io/badge/KLOC-3.180-FFDD67.svg?style=for-the-badge&amp;logo=YouTube&amp;logoColor=blue" alt="The best SHA: dQw4w9WgXcQ!"></a>
+<a href="https://gitlab.com/kettle-rb/kettle-dev"><img src="https://img.shields.io/badge/GitLab-FBA326?style=for-the-badge&amp;logo=Gitlab&amp;logoColor=orange" alt="Source on GitLab.com"></a> <a href="https://codeberg.org/kettle-rb/kettle-dev"><img src="https://img.shields.io/badge/CodeBerg-4893CC?style=for-the-badge&amp;logo=CodeBerg&amp;logoColor=blue" alt="Source on CodeBerg.org"></a> <a href="https://github.com/kettle-rb/kettle-dev"><img src="https://img.shields.io/badge/GitHub-238636?style=for-the-badge&amp;logo=Github&amp;logoColor=green" alt="Source on Github.com"></a> <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"><img src="https://img.shields.io/badge/KLOC-3.179-FFDD67.svg?style=for-the-badge&amp;logo=YouTube&amp;logoColor=blue" alt="The best SHA: dQw4w9WgXcQ!"></a>
 </td>
     </tr>
     <tr>
@@ -613,20 +366,22 @@ not practical for the current toolchain.</p>
 
 <h2 id="️-configuration">⚙️ Configuration</h2>
 
-<p>Note on executables vs Rake tasks</p>
+<p>Kettle-dev has two integration surfaces:</p>
 
 <ul>
-  <li>Executable scripts provided by this gem (exe/* and installed binstubs) work when the gem is installed as a system gem (gem install kettle-dev). They do not require the gem to be in your bundle to run.</li>
-  <li>The Rake tasks provided by this gem require kettle-dev to be declared as a development dependency in your Gemfile and loaded in your project’s Rakefile. Ensure your Gemfile includes:
-    <pre class="code language-ruby"><code class="language-ruby">group :development do
+  <li>Executable scripts in <code>exe/</code>, or binstubs generated from them, can run when<br>
+<code>kettle-dev</code> is installed and loadable.</li>
+  <li>Rake tasks are registered by adding <code>kettle-dev</code> to the project’s development<br>
+dependencies and requiring <code>kettle/dev</code> from the project’s <code>Rakefile</code>.</li>
+</ul>
+
+<pre class="code language-ruby"><code class="language-ruby">group :development, :test do
   gem &quot;kettle-dev&quot;, require: false
 end
 </code></pre>
-    <p>And your Rakefile loads the gem’s tasks, e.g.:</p>
-    <pre class="code language-ruby"><code class="language-ruby">require &quot;kettle/dev&quot;
+
+<pre class="code language-ruby"><code class="language-ruby">require &quot;kettle/dev&quot;
 </code></pre>
-  </li>
-</ul>
 
 <h3 id="rspec">RSpec</h3>
 
@@ -657,115 +412,39 @@ require &quot;gem-under-test&quot;
 <pre class="code language-ruby"><code class="language-ruby">require &quot;kettle/dev&quot;
 </code></pre>
 
-<p>Then run the one-time project bootstrapper:</p>
+<p>This loads the kettle-dev rake task set. Current project setup and template<br>
+refreshes should be run through kettle-jem:</p>
 
-<pre class="code language-console"><code class="language-console">kettle-dev-setup
-# Or to accept all defaults:
-kettle-dev-setup --allowed=true --force
+<pre class="code language-console"><code class="language-console">gem install kettle-jem
+kettle-jem setup
 </code></pre>
 
-<p>You’ll be able to compare the changes with your diff tool, and certainly revert some of them.</p>
+<p><code>kettle-dev-setup</code> is still shipped for compatibility, but it now exits with a<br>
+message explaining that setup and templating moved to kettle-jem.</p>
 
-<p>For your protection:</p>
+<p>Useful registered tasks include:</p>
 
 <ul>
-  <li>it won’t run if git doesn’t start out porcelain clean.<br>
-After bootstrapping, to update the template to the latest version from a new release of this gem, run:</li>
+  <li>
+<code>rubocop_gradual:autocorrect</code> and <code>rubocop_gradual:check</code>
+</li>
+  <li>
+<code>reek</code> and <code>reek:update</code>
+</li>
+  <li><code>yard</code></li>
+  <li>
+<code>appraisal:install</code>, <code>appraisal:generate</code>, <code>appraisal:update</code>, and <code>appraisal:reset</code>
+</li>
+  <li><code>ci:act</code></li>
+  <li><code>bench</code></li>
+  <li>
+<code>kettle:jem:template</code> and <code>kettle:jem:selftest</code>, when kettle-jem’s task integration is available</li>
 </ul>
 
-<!-- end list -->
+<p>Install binstubs when a project wants local <code>bin/kettle-*</code> commands:</p>
 
-<pre class="code language-console"><code class="language-console">bundle exec rake kettle:dev:install
+<pre class="code language-console"><code class="language-console">bundle binstubs kettle-dev --path bin
 </code></pre>
-
-<p>If git status is not clean it will abort.<br>
-It may have some prompts, which can mostly be avoided by running with options:</p>
-
-<pre class="code language-console"><code class="language-console"># DANGER: options to reduce prompts will overwrite files without asking.
-bundle exec rake kettle:dev:install allowed=true force=true
-</code></pre>
-
-<p>Hopefully, all the files that get overwritten are tracked in git!<br>
-I wrote this for myself, and it fits my patterns of development.</p>
-
-<p>The install task will write a report at the end with:</p>
-
-<ol>
-  <li>A file list summary of the changes made.</li>
-  <li>Next steps for using the tools.</li>
-  <li>A warning about .env.local (DO NOT COMMIT IT, as it will likely have secrets added)<br>
-That’s it. Once installed, kettle-dev:</li>
-</ol>
-
-<!-- end list -->
-
-<ul>
-  <li>Registers RuboCop-LTS tasks and wires your default Rake task to run the gradual linter.
-    <ul>
-      <li>Locally: default task prefers <code>rubocop_gradual:autocorrect</code>.</li>
-      <li>On CI (<code>CI=true</code>): default task prefers <code>rubocop_gradual:check</code>.</li>
-    </ul>
-  </li>
-  <li>Integrates optional coverage tasks via kettle-soup-cover (enabled locally when present).</li>
-  <li>Adds gem-shipped Rake tasks from <code>lib/kettle/dev/rakelib</code>, including:
-    <ul>
-      <li>
-<code>ci:act</code> — interactive selector for running GitHub Actions workflows via <code>act</code>.</li>
-      <li>
-<code>kettle:dev:install</code> — copies this repo’s .github automation, offers to install .git-hooks templates, and overwrites many files in your project.
-        <ul>
-          <li>Grapheme syncing: detects the grapheme (e.g., emoji) immediately following the first <code>#</code> H1 in README.md and ensures the same grapheme, followed by a single space, prefixes both <code>spec.summary</code> and <code>spec.description</code> in your gemspec. If the H1 has none, you’ll be prompted to enter one; tests use an input adapter, so runs never hang in CI.</li>
-          <li>option: force: When truthy (1, true, y, yes), treat all y/N prompts as Yes. Useful for non-interactive runs or to accept defaults quickly. Example: <code>bundle exec rake kettle:dev:install force=true</code>
-</li>
-          <li>option: allowed: When truthy (1, true, y, yes), resume task after you have reviewed <code>.envrc</code>/<code>.env.local</code> and run <code>direnv allow</code>. If either file is created or updated, the task will abort with instructions unless <code>allowed=true</code> is present. Example: <code>bundle exec rake kettle:dev:install allowed=true</code>
-</li>
-          <li>option: only: A comma-separated list of glob patterns to include in templating. Any destination file whose path+filename does not match one of the patterns is excluded. Patterns are matched relative to your project root. Examples: <code>only="README.md,.github/**"</code>, <code>only="docs/**,lib/**/*.rb"</code>.</li>
-          <li>option: include: A comma-separated list of glob patterns that opt-in additional, non-default files. Currently, <code>.github/workflows/discord-notifier.yml</code> is not copied by default and will only be copied when <code>include</code> matches it (e.g., <code>include=".github/workflows/discord-notifier.yml"</code>).</li>
-        </ul>
-      </li>
-      <li>
-<code>kettle:jem:template</code> (provided by <a href="https://github.com/kettle-rb/kettle-jem">kettle-jem</a>) — templates files from this gem into your project (e.g., .github workflows, .devcontainer, .qlty, modular Gemfiles, README/CONTRIBUTING stubs). You can run this independently to refresh templates without the extra install prompts.
-        <ul>
-          <li>option: force: When truthy (1, true, y, yes), treat all y/N prompts as Yes. Useful for non-interactive runs or to accept defaults quickly. Example: <code>bundle exec rake kettle:dev:install force=true</code>
-</li>
-          <li>option: allowed: When truthy (1, true, y, yes), resume task after you have reviewed <code>.envrc</code>/<code>.env.local</code> and run <code>direnv allow</code>. If either file is created or updated, the task will abort with instructions unless <code>allowed=true</code> is present. Example: <code>bundle exec rake kettle:jem:template allowed=true</code>
-</li>
-          <li>option: only: Same as for install; limits which destination files are written based on glob patterns relative to the project root.</li>
-          <li>option: include: Same as for install; opts into optional files (e.g., <code>.github/workflows/discord-notifier.yml</code>).<br>
-Recommended one-time setup in your project:</li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-  <li>Install binstubs so kettle-dev executables are available under <code>./bin</code>:
-    <ul>
-      <li><code>bundle binstubs kettle-dev --path bin</code></li>
-    </ul>
-  </li>
-  <li>Use direnv (recommended) so <code>./bin</code> is on PATH automatically:
-    <ul>
-      <li><code>brew install direnv</code></li>
-      <li>In your project’s <code>.envrc</code> add:
-        <ul>
-          <li><code># Run any command in this library's bin/ without the bin/ prefix!</code></li>
-          <li><code>PATH_add bin</code></li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-  <li>Configure shared git hooks path (optional, recommended):
-    <ul>
-      <li><code>git config --global core.hooksPath .git-hooks</code></li>
-    </ul>
-  </li>
-  <li>Install project automation and sample hooks/templates:
-    <ul>
-      <li>
-<code>bundle exec rake kettle:dev:install</code> and follow prompts (copies .github and installs .git-hooks templates locally or globally).<br>
-See the next section for environment variables that tweak behavior.</li>
-    </ul>
-  </li>
-</ul>
 
 <h3 id="environment-variables">Environment Variables</h3>
 
@@ -842,137 +521,59 @@ See the next section for environment variables that tweak behavior.</li>
 
 <h2 id="-basic-usage">🔧 Basic Usage</h2>
 
-<p>Common flows</p>
+<p>Common local workflows:</p>
 
 <ul>
-  <li>Default quality workflow (locally):
-    <ul>
-      <li>
-<code>bundle exec rake</code> — runs the curated default task set (gradual RuboCop autocorrect, coverage if available, and other local tasks). On CI <code>CI=true</code>, the default task is adjusted to be CI-friendly.</li>
-    </ul>
-  </li>
-  <li>Run specs:
-    <ul>
-      <li>
-<code>bin/rspec</code> or <code>bundle exec rspec</code>
-</li>
-      <li>To run a subset without failing coverage thresholds: <code>K_SOUP_COV_MIN_HARD=false bin/rspec spec/path/to/file_spec.rb</code>
-</li>
-      <li>To produce multiple coverage reports: <code>K_SOUP_COV_FORMATTERS="html,xml,rcov,lcov,json,tty" bin/rspec</code>
-</li>
-    </ul>
-  </li>
-  <li>Linting (Gradual):
-    <ul>
-      <li><code>bundle exec rake rubocop_gradual:autocorrect</code></li>
-      <li>
-<code>bundle exec rake rubocop_gradual:check</code> (CI-friendly)</li>
-    </ul>
-  </li>
-  <li>Reek and docs:
-    <ul>
-      <li>
-<code>bundle exec rake reek</code> or <code>bundle exec rake reek:update</code>
-</li>
-      <li>
-<code>bundle exec rake yard</code><br>
-<a href="https://github.com/appraisal-rb/appraisal2">Appraisals</a> helpers</li>
-    </ul>
-  </li>
   <li>
-<code>bundle exec rake appraisal:isntall</code> — First time Appraisal setup.</li>
+<code>bundle exec rake</code> runs the curated default task set. Locally this favors<br>
+autocorrection where supported; with <code>CI=true</code> it favors check-only behavior.</li>
   <li>
-<code>bundle exec rake appraisal:update</code> — Update Appraisal gemfiles and run RuboCop Gradual autocorrect.</li>
+<code>bin/rspec</code> or <code>bundle exec rspec</code> runs specs.</li>
   <li>
-<code>bundle exec rake appraisal:reset</code> — Delete all Appraisal lockfiles in gemfiles/ (*.gemfile.lock). Useful before regenerating appraisals or when switching Ruby versions.<br>
-GitHub Actions local runner helper</li>
+<code>K_SOUP_COV_MIN_HARD=false bin/rspec spec/path/to/file_spec.rb</code> is useful for<br>
+focused spec runs that should not fail whole-suite coverage thresholds.</li>
   <li>
-<code>bundle exec rake ci:act</code> — interactive menu shows workflows from <code>.github/workflows</code> with live status and short codes (first 3 letters of file name). Type a number or short code.</li>
-  <li>Non-interactive: <code>bundle exec rake ci:act[loc]</code> (short code), or <code>bundle exec rake ci:act[locked_deps.yml]</code> (filename).<br>
-Setup tokens for API status (GitHub and GitLab)</li>
-  <li>Purpose: ci:act displays the latest status for GitHub Actions runs and (when applicable) the latest GitLab pipeline for the current branch. Unauthenticated requests are rate-limited; private repositories require tokens. Provide tokens to get reliable status.</li>
-  <li>GitHub token (recommended: fine-grained):
-    <ul>
-      <li>Where to create: https://github.com/settings/personal-access-tokens
-        <ul>
-          <li>Fine-grained: “Tokens (fine-grained)” → Generate new token</li>
-          <li>Classic (fallback): “Tokens (classic)” → Generate new token</li>
-        </ul>
-      </li>
-      <li>Minimum permissions:
-        <ul>
-          <li>Fine-grained: Repository access: Read-only for the target repository (or your org); Permissions → Actions: Read</li>
-          <li>Classic: For public repos, no scopes are strictly required, but rate limits are very low; for private repos, include the repo scope</li>
-        </ul>
-      </li>
-      <li>Add to environment (<code>.env.local</code> via <code>direnv</code>):
-        <ul>
-          <li>
-<code>GITHUB_TOKEN=your_token_here</code>  (or <code>GH_TOKEN=…</code>)</li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-  <li>GitLab token:
-    <ul>
-      <li>Where to create: <a href="https://gitlab.com/-/user_settings/personal_access_tokens">gitlab.com</a>
-</li>
-      <li>Minimum scope: <code>read_api</code> (sufficient to read pipelines)</li>
-      <li>Add to environment (.env.local via direnv):
-        <ul>
-          <li>
-<code>GITLAB_TOKEN=your_token_here</code>  (or <code>GL_TOKEN=…</code>)</li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-  <li>Load environment:
-    <ul>
-      <li>Save tokens in <code>.env.local</code> (never commit this file), then run: <code>direnv allow</code>
-</li>
-    </ul>
-  </li>
-  <li>Verify:
-    <ul>
-      <li>Run: bundle exec rake ci:act</li>
-      <li>The header will include Repo/Upstream/HEAD; entries will show “Latest GHA …” and “Latest GL … pipeline” with emoji status. On failure to authenticate or rate-limit, you’ll see a brief error/result code.<br>
-Project automation bootstrap</li>
-    </ul>
-  </li>
+<code>bundle exec rake rubocop_gradual:autocorrect</code> applies gradual RuboCop fixes.</li>
   <li>
-<code>bundle exec rake kettle:dev:install</code> — copies the library’s <code>.github</code> folder into your project and offers to install <code>.git-hooks</code> templates locally or globally.</li>
+<code>bundle exec rake rubocop_gradual:check</code> is the CI-friendly RuboCop Gradual task.</li>
   <li>
-<code>bundle exec rake kettle:jem:template</code> — runs only the templating step used by install; useful to re-apply updates to templates (.github workflows, .devcontainer, .qlty, modular Gemfiles, README, and friends) without the <code>install</code> task’s extra prompts.
-    <ul>
-      <li>Also copies maintainer certificate <code>certs/pboling.pem</code> into your project when present (used for signed gem builds).</li>
-      <li>README carry-over during templating: when your project’s README.md is replaced by the template, selected sections from your existing README are preserved and merged into the new one. Specifically, the task carries over the following sections (matched case-insensitively):
-        <ul>
-          <li>“Synopsis”</li>
-          <li>“Configuration”</li>
-          <li>“Basic Usage”</li>
-          <li>Any section whose heading starts with “Note:” at any heading level (for example: “# NOTE: …”, “## Note: …”, or “### note: …”).</li>
-          <li>Headings are recognized at any level using Markdown hashes (#, ##, ###, …).</li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-  <li>Notes about task options:
-    <ul>
-      <li>Non-interactive confirmations: append <code>force=true</code> to accept all y/N prompts as Yes, e.g., <code>bundle exec rake kettle:jem:template force=true</code>.</li>
-      <li>direnv review flow: if <code>.envrc</code> or <code>.env.local</code> is created or updated, the task stops and asks you to run <code>direnv allow</code>. After you review and allow, resume with <code>allowed=true</code>:
-        <ul>
-          <li><code>bundle exec rake kettle:jem:template allowed=true</code></li>
-          <li><code>bundle exec rake kettle:dev:install allowed=true</code></li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-  <li>After that, set up binstubs and direnv for convenience:
-    <ul>
-      <li><code>bundle binstubs kettle-dev --path bin</code></li>
-      <li>Add to <code>.envrc</code>: <code>PATH_add bin</code> (so <code>bin/</code> tools run without the prefix)</li>
-    </ul>
-  </li>
+<code>bundle exec rake reek</code> and <code>bundle exec rake reek:update</code> run or refresh Reek.</li>
+  <li>
+<code>bundle exec rake yard</code> builds API documentation.</li>
+  <li>
+<code>bundle exec rake appraisal:install</code> performs first-time Appraisal setup.</li>
+  <li>
+<code>bundle exec rake appraisal:generate</code> regenerates Appraisal gemfiles.</li>
+  <li>
+<code>bundle exec rake appraisal:update</code> updates Appraisal locks and applies gradual RuboCop autocorrect.</li>
+  <li>
+<code>bundle exec rake appraisal:reset</code> removes Appraisal lockfiles below <code>gemfiles/</code>.</li>
+</ul>
+
+<p>GitHub Actions local runner helper:</p>
+
+<ul>
+  <li>
+<code>bundle exec rake ci:act</code> opens an interactive workflow selector using<br>
+<code>.github/workflows</code> and live CI status when tokens are available.</li>
+  <li>
+<code>bundle exec rake ci:act[loc]</code> selects by short code.</li>
+  <li>
+<code>bundle exec rake ci:act[locked_deps.yml]</code> selects by workflow filename.</li>
+  <li>Set <code>GITHUB_TOKEN</code> or <code>GH_TOKEN</code> for GitHub Actions API status.</li>
+  <li>Set <code>GITLAB_TOKEN</code> or <code>GL_TOKEN</code> for GitLab pipeline status.</li>
+</ul>
+
+<p>Project automation and template refreshes:</p>
+
+<ul>
+  <li>Use <code>kettle-jem setup</code> for first-time setup and <code>kettle-jem install</code> for<br>
+full template refreshes.</li>
+  <li>When kettle-jem’s rake integration is installed, run <code>bundle exec rake kettle:jem:template</code><br>
+to refresh template-managed files.</li>
+  <li>
+<code>kettle-dev-setup</code> is deprecated and intentionally exits with a migration<br>
+message pointing to kettle-jem.</li>
 </ul>
 
 <h3 id="kettle-dvcs-normalize-multi-forge-remotes">kettle-dvcs (normalize multi-forge remotes)</h3>
@@ -1161,7 +762,7 @@ Examples:</li>
     <ul>
       <li>Git invokes this with the path to the commit message file: <code>kettle-commit-msg .git/COMMIT_EDITMSG</code>
 </li>
-      <li>Install via <code>bundle exec rake kettle:dev:install</code> to copy hook templates into <code>.git-hooks</code> and wire them up.</li>
+      <li>Install hook templates through kettle-jem setup/templating, then point git at the resulting hook path.</li>
     </ul>
   </li>
   <li>Behavior:
@@ -1193,36 +794,24 @@ Examples:</li>
 
 <ul>
   <li>Script: <code>exe/kettle-dev-setup</code> (run as <code>kettle-dev-setup</code>)</li>
-  <li>Purpose: Bootstrap a host gem repository to use kettle-dev’s tooling without manual steps.</li>
+  <li>Status: Deprecated compatibility shim.</li>
+  <li>Purpose: Direct users to kettle-jem, which now owns setup and templating.</li>
   <li>Usage:
     <ul>
-      <li><code>kettle-dev-setup [options] [passthrough args]</code></li>
-    </ul>
-  </li>
-  <li>Options (mapped through to <code>rake kettle:dev:install</code>):
-    <ul>
-      <li>
-<code>--allowed=VAL</code> Pass <code>allowed=VAL</code> to acknowledge prior direnv allow, etc.</li>
-      <li>
-<code>--force</code> Pass <code>force=true</code> to accept prompts non-interactively.</li>
-      <li>
-<code>--hook_templates=VAL</code> Pass <code>hook_templates=VAL</code> to control git hook templating.</li>
-      <li>
-<code>--only=VAL</code> Pass <code>only=VAL</code> to restrict install scope.</li>
-      <li>
-<code>--include=VAL</code> Pass <code>include=VAL</code> to include optional files by glob (see notes below).</li>
-      <li>
-<code>-h</code>, <code>--help</code> Show help.</li>
+      <li><code>kettle-dev-setup</code></li>
     </ul>
   </li>
   <li>Behavior:
     <ul>
-      <li>Verifies a clean git working tree, presence of a Gemfile and a gemspec.</li>
-      <li>Syncs development dependencies from this gem’s example gemspec into the target gemspec (replacing or inserting <code>add_development_dependency</code> lines as needed).</li>
-      <li>Ensures <code>bin/setup</code> exists (copies from gem if missing) and replaces/creates the project’s <code>Rakefile</code> from <code>Rakefile.example</code>.</li>
-      <li>Runs <code>bin/setup</code>, then <code>bundle exec bundle binstubs --all</code>.</li>
-      <li>Stages and commits any bootstrap changes with message: <code>🎨 Template bootstrap by kettle-dev-setup v&lt;version&gt;</code>.</li>
-      <li>Executes <code>bin/rake kettle:dev:install</code> with the parsed passthrough args.</li>
+      <li>Prints migration instructions.</li>
+      <li>Exits non-zero.</li>
+      <li>Does not modify the destination repository.</li>
+    </ul>
+  </li>
+  <li>Replacement:
+    <ul>
+      <li><code>gem install kettle-jem</code></li>
+      <li><code>kettle-jem setup</code></li>
     </ul>
   </li>
 </ul>
@@ -1421,6 +1010,8 @@ Please consider sponsoring me or the project.</p>
 
 <h3 id="please-give-the-project-a-star--">Please give the project a star ⭐ ♥.</h3>
 
+<p>Many parts of this project are actively managed by a <a href="https://github.com/structuredmerge/structuredmerge-ruby/tree/main/gems/kettle-jem">kettle-jem</a> smart template utilizing <a href="https://structuredmerge.org">StructuredMerge.org</a> merge contracts.</p>
+
 <p>Thanks for RTFM. ☺️</p>
 
 <!-- kettle-jem:metadata:start -->
@@ -1429,14 +1020,14 @@ Please consider sponsoring me or the project.</p>
 | Package | kettle-dev |<br>
 | Description | 🍲 Kettle::Dev is a meta tool from kettle-rb to streamline development and testing. Acts as a shim dependency, pulling in many other dependencies, to give you OOTB productivity with a RubyGem, or Ruby app project. Configures a complete set of Rake tasks, for all the libraries is brings in, so they arrive ready to go. Fund overlooked open source projects - bottom of stack, dev/test dependencies: floss-funding.dev |<br>
 | Homepage | https://github.com/kettle-rb/kettle-dev |<br>
-| Source | https://github.com/kettle-rb/kettle-dev/tree/v2.0.5 |<br>
+| Source | https://github.com/kettle-rb/kettle-dev/tree/v2.0.6 |<br>
 | License | <code>AGPL-3.0-only</code> |<br>
 | Funding | https://github.com/sponsors/pboling, https://issuehunt.io/u/pboling, https://ko-fi.com/pboling, https://liberapay.com/pboling/donate, https://opencollective.com/kettle-rb, https://patreon.com/galtzo, https://polar.sh/pboling, https://thanks.dev/u/gh/pboling, https://tidelift.com/funding/github/rubygems/kettle-dev, https://www.buymeacoffee.com/pboling |<br>
 <!-- kettle-jem:metadata:end --></p>
 </div></div>
 
       <div id="footer">
-  Generated on Sun May 31 15:01:00 2026 by
+  Generated on Sun May 31 20:38:26 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>

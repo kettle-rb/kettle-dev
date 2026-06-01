@@ -22,17 +22,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
-- Updated the user-maintained README usage sections to describe the current
-  kettle-dev task, changelog, release, and kettle-jem setup boundaries.
-- Corrected the deprecated `kettle-dev-setup` documentation and shim output to
-  point at the real `kettle-jem setup` command.
-- Refreshed the README with current kettle-jem logo templating, including
-  128px HTML logo output and the Ruby Toolbox language-logo link.
-- Moved the generated related-org and Ruby README logos from the H1 to the
-  Synopsis heading with the current kettle-jem width defaults.
-- Added the generated README note that identifies kettle-jem and
-  StructuredMerge as the templating and merge-contract tooling.
-
 ### Deprecated
 
 ### Removed
@@ -45,7 +34,7 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - TAG: [v2.0.6][2.0.6t]
 - COVERAGE: 93.14% -- 2961/3179 lines in 25 files
-- BRANCH COVERAGE: 76.88% -- 1204/1566 branches in 25 files
+- BRANCH COVERAGE: 76.95% -- 1205/1566 branches in 25 files
 - 75.93% documented
 
 ### Added
@@ -58,6 +47,17 @@ Please file a bug if you notice a violation of semantic versioning.
 - Refreshed generated `kettle-jem` template output, including
   `.structuredmerge` configuration, Git diff driver setup, RuboCop-LTS RSpec
   style dependencies, and release task wiring.
+
+- Updated the user-maintained README usage sections to describe the current
+  kettle-dev task, changelog, release, and kettle-jem setup boundaries.
+- Corrected the deprecated `kettle-dev-setup` documentation and shim output to
+  point at the real `kettle-jem setup` command.
+- Refreshed the README with current kettle-jem logo templating, including
+  128px HTML logo output and the Ruby Toolbox language-logo link.
+- Moved the generated related-org and Ruby README logos from the H1 to the
+  Synopsis heading with the current kettle-jem width defaults.
+- Added the generated README note that identifies kettle-jem and
+  StructuredMerge as the templating and merge-contract tooling.
 
 ### Fixed
 

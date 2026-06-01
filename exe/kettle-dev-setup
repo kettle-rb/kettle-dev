@@ -6,7 +6,7 @@
 # kettle-dev-setup has been replaced by kettle-jem setup.
 # All setup and templating functionality has moved to the kettle-jem gem.
 
-$stderr.puts <<~MSG
+warn <<~MSG
   kettle-dev-setup has been removed.
   Setup and templating functionality has moved to the kettle-jem gem.
 
