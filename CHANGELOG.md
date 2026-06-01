@@ -26,6 +26,8 @@ Please file a bug if you notice a violation of semantic versioning.
   kettle-dev task, changelog, release, and kettle-jem setup boundaries.
 - Corrected the deprecated `kettle-dev-setup` documentation and shim output to
   point at the real `kettle-jem setup` command.
+- Refreshed the README with current kettle-jem logo templating, including
+  128px HTML logo output and the Ruby Toolbox language-logo link.
 
 ### Deprecated
 
