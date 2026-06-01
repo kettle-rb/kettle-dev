@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
   point at the real `kettle-jem setup` command.
 - Refreshed the README with current kettle-jem logo templating, including
   128px HTML logo output and the Ruby Toolbox language-logo link.
+- Moved the generated related-org and Ruby README logos from the H1 to the
+  Synopsis heading with the current kettle-jem width defaults.
 
 ### Deprecated
 
