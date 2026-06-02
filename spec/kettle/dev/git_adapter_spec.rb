@@ -50,7 +50,7 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
       adapter.instance_variable_set(:@git, git_repo)
       expect(adapter.remotes).to eq(["origin", "github"])
       allow(git_repo).to receive(:remotes).and_raise(StandardError)
-      expect(adapter.remotes).to eq([])
+      expect(adapter.remotes).to be_empty
     end
 
     it "returns remotes_with_urls and handles error" do
@@ -62,7 +62,7 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
       adapter.instance_variable_set(:@git, git_repo)
       expect(adapter.remotes_with_urls).to eq({
         "origin" => "git@github.com:me/repo.git",
-        "github" => "https://github.com/me/repo.git",
+        "github" => "https://github.com/me/repo.git"
       })
       allow(git_repo).to receive(:remotes).and_raise(StandardError)
       expect(adapter.remotes_with_urls).to eq({})
@@ -377,19 +377,19 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
     it "returns an empty array when no files are tracked" do
       allow(Open3).to receive(:capture2).with("git", "ls-files").and_return(["", ok])
       adapter = described_class.new
-      expect(adapter.ls_files).to eq([])
+      expect(adapter.ls_files).to be_empty
     end
 
     it "returns an empty array when the git command fails" do
       allow(Open3).to receive(:capture2).with("git", "ls-files").and_return(["", fail_status])
       adapter = described_class.new
-      expect(adapter.ls_files).to eq([])
+      expect(adapter.ls_files).to be_empty
     end
 
     it "returns an empty array when Open3 raises" do
       allow(Open3).to receive(:capture2).with("git", "ls-files").and_raise(StandardError, "boom")
       adapter = described_class.new
-      expect(adapter.ls_files).to eq([])
+      expect(adapter.ls_files).to be_empty
     end
   end
 

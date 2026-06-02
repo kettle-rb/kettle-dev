@@ -23,7 +23,7 @@ module Kettle
             status = @git.status
             # git gem's Status responds to changed, added, deleted, untracked, etc.
             status.changed.empty? && status.added.empty? && status.deleted.empty? && status.untracked.empty?
-          rescue StandardError => e
+          rescue => e
             Kettle::Dev.debug_error(e, __method__)
             false
           end
@@ -31,7 +31,7 @@ module Kettle
           out, st = Open3.capture2("git", "status", "--porcelain")
           st.success? && out.strip.empty?
         end
-      rescue StandardError => e
+      rescue => e
         Kettle::Dev.debug_error(e, __method__)
         false
       end
@@ -45,7 +45,7 @@ module Kettle
       def capture(args)
         out, status = Open3.capture2("git", *args)
         [out.strip, status.success?]
-      rescue StandardError => e
+      rescue => e
         Kettle::Dev.debug_error(e, __method__)
         ["", false]
       end
@@ -70,7 +70,7 @@ module Kettle
           Kettle::Dev.debug_error(e, __method__, backtrace: false)
           # Optional dependency: fall back to CLI
           @backend = :cli
-        rescue StandardError => e
+        rescue => e
           raise Kettle::Dev::Error, "Failed to open git repository: #{e.message}"
         end
       end
@@ -90,7 +90,7 @@ module Kettle
               @git.push(nil, branch, force: force)
             end
             true
-          rescue StandardError => e
+          rescue => e
             Kettle::Dev.debug_error(e, __method__)
             false
           end
@@ -129,7 +129,7 @@ module Kettle
         else
           system("git", "push", "--tags")
         end
-      rescue StandardError => e
+      rescue => e
         Kettle::Dev.debug_error(e, __method__)
         false
       end
@@ -142,7 +142,7 @@ module Kettle
           out, status = Open3.capture2("git", "rev-parse", "--abbrev-ref", "HEAD")
           status.success? ? out.strip : nil
         end
-      rescue StandardError => e
+      rescue => e
         Kettle::Dev.debug_error(e, __method__)
         nil
       end
@@ -154,7 +154,7 @@ module Kettle
         if @backend == :gem
           begin
             @git.ls_files.keys
-          rescue StandardError => e
+          rescue => e
             Kettle::Dev.debug_error(e, __method__)
             []
           end
@@ -162,7 +162,7 @@ module Kettle
           out, status = Open3.capture2("git", "ls-files")
           status.success? ? out.split(/\r?\n/).reject(&:empty?) : []
         end
-      rescue StandardError => e
+      rescue => e
         Kettle::Dev.debug_error(e, __method__)
         []
       end
@@ -178,7 +178,7 @@ module Kettle
       def blame_porcelain(path)
         out, status = Open3.capture2("git", "blame", "--porcelain", path.to_s)
         status.success? ? out : ""
-      rescue StandardError => e
+      rescue => e
         Kettle::Dev.debug_error(e, __method__)
         ""
       end
@@ -191,7 +191,7 @@ module Kettle
           out, status = Open3.capture2("git", "remote")
           status.success? ? out.split(/\r?\n/).map(&:strip).reject(&:empty?) : []
         end
-      rescue StandardError => e
+      rescue => e
         Kettle::Dev.debug_error(e, __method__)
         []
       end
@@ -202,7 +202,7 @@ module Kettle
           @git.remotes.each_with_object({}) do |r, h|
             begin
               h[r.name] = r.url
-            rescue StandardError => e
+            rescue => e
               Kettle::Dev.debug_error(e, __method__)
               # ignore
             end
@@ -220,7 +220,7 @@ module Kettle
           end
           urls
         end
-      rescue StandardError => e
+      rescue => e
         Kettle::Dev.debug_error(e, __method__)
         {}
       end
@@ -235,7 +235,7 @@ module Kettle
           out, status = Open3.capture2("git", "config", "--get", "remote.#{name}.url")
           status.success? ? out.strip : nil
         end
-      rescue StandardError => e
+      rescue => e
         Kettle::Dev.debug_error(e, __method__)
         nil
       end
@@ -250,7 +250,7 @@ module Kettle
         else
           system("git", "checkout", branch.to_s)
         end
-      rescue StandardError => e
+      rescue => e
         Kettle::Dev.debug_error(e, __method__)
         false
       end
@@ -266,7 +266,7 @@ module Kettle
         else
           system("git", "pull", remote.to_s, branch.to_s)
         end
-      rescue StandardError => e
+      rescue => e
         Kettle::Dev.debug_error(e, __method__)
         false
       end
@@ -288,7 +288,7 @@ module Kettle
         else
           system("git", "fetch", remote.to_s)
         end
-      rescue StandardError => e
+      rescue => e
         Kettle::Dev.debug_error(e, __method__)
         false
       end

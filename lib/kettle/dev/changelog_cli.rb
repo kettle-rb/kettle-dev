@@ -17,7 +17,7 @@ module Kettle
       # Matches a Markdown link-reference definition line, e.g. `[key]: https://...`
       LINK_REF_DEF_RE = /^\s*\[[^\]]+\]:\s+\S+/
       # Matches an ATX heading at H4 or deeper (####, #####, ...)
-      DEEP_HEADING_RE = /^[#]{4,}\s/
+      DEEP_HEADING_RE = /^\#{4,}\s/
 
       # Initialize the changelog CLI
       # Sets up paths for CHANGELOG.md and coverage.json
@@ -148,7 +148,7 @@ module Kettle
         begin
           gem_name = detect_gem_name
           latest_overall, latest_for_series = latest_released_versions(gem_name, version)
-        rescue StandardError => e
+        rescue => e
           warn("[kettle-changelog] gem.coop release check failed: #{e.class}: #{e.message}")
           warn("Proceeding without live release info.")
         end
@@ -186,7 +186,7 @@ module Kettle
           latest_overall: latest_overall,
           latest_for_series: latest_for_series,
           latest_target: latest_target,
-          latest_changelog_version: latest_changelog_version,
+          latest_changelog_version: latest_changelog_version
         }
       end
 
@@ -203,7 +203,7 @@ module Kettle
           latest_for_series: nil,
           latest_target: nil,
           latest_changelog_version: prepared_version,
-          explicit: true,
+          explicit: true
         }
       end
 
@@ -273,7 +273,7 @@ module Kettle
         series = cur.segments[0, 2]
         latest_series = gversions.reverse.find { |gv| gv.segments[0, 2] == series }&.to_s
         [latest_overall, latest_series]
-      rescue StandardError => e
+      rescue => e
         Kettle::Dev.debug_error(e, __method__)
         [nil, nil]
       end
@@ -572,7 +572,7 @@ module Kettle
           warn("Failed to parse coverage: #{e.class}: #{e.message}")
           [nil, nil]
         end
-      rescue StandardError => e
+      rescue => e
         if @strict
           raise "Failed to get coverage data: #{e.class}: #{e.message}"
         else
@@ -587,7 +587,7 @@ module Kettle
           "K_SOUP_COV_FORMATTERS" => "json",
           "K_SOUP_COV_MIN_HARD" => @enforce_coverage_thresholds ? "true" : "false",
           "K_SOUP_COV_MULTI_FORMATTERS" => "true",
-          "K_SOUP_COV_OPEN_BIN" => "",
+          "K_SOUP_COV_OPEN_BIN" => ""
         }
       end
 
@@ -601,7 +601,7 @@ module Kettle
         [
           "Coverage JSON not found at #{Kettle::Dev.display_path(@coverage_path)} after running bundle exec kettle-test.",
           "kettle-test runs specs in parallel and is expected to collate parallel SimpleCov results into this canonical file.",
-          "If it is missing, coverage was not enabled in ENV config or the rake/task hooks did not load the coverage integration.",
+          "If it is missing, coverage was not enabled in ENV config or the rake/task hooks did not load the coverage integration."
         ].join(" ")
       end
 
@@ -633,7 +633,7 @@ module Kettle
             warn("Could not find documented percentage in bin/rake yard output.")
             nil
           end
-        rescue StandardError => e
+        rescue => e
           if @strict
             raise "Failed to run bin/rake yard: #{e.class}: #{e.message}"
           else
@@ -780,7 +780,7 @@ module Kettle
 
       def update_link_refs(content, owner, repo, prev_version, new_version)
         # Convert any GitLab links to GitHub
-        content = content.gsub(%r{https://gitlab\.com/([^/]+)/([^/]+)/-/compare/([^\.]+)\.\.\.([^\s]+)}) do
+        content = content.gsub(%r{https://gitlab\.com/([^/]+)/([^/]+)/-/compare/([^.]+)\.\.\.([^\s]+)}) do
           o = owner || Regexp.last_match(1)
           r = repo || Regexp.last_match(2)
           from = Regexp.last_match(3)
@@ -801,12 +801,8 @@ module Kettle
         # Do NOT assume the first link-ref after the Unreleased heading starts the footer, because
         # some changelogs contain interspersed link-refs within section bodies.
         unreleased_ref_idx = lines.index { |l| l.start_with?(UNRELEASED_SECTION_HEADING) }
-        first_ref = if unreleased_ref_idx
-          unreleased_ref_idx
-        else
-          # If no [Unreleased]: ref is present, consider the reference block to start at EOF
-          lines.length
-        end
+        # If no [Unreleased]: ref is present, consider the reference block to start at EOF
+        first_ref = unreleased_ref_idx || lines.length
 
         # Ensure Unreleased points to GitHub compare from new tag to HEAD
         if owner && repo
@@ -957,7 +953,7 @@ module Kettle
 
         warn(
           "Could not determine initial git root commit; using HEAD^ as compare base. " \
-            "Set KETTLE_CHANGELOG_INITIAL_SHA to override.",
+            "Set KETTLE_CHANGELOG_INITIAL_SHA to override."
         )
         "HEAD^"
       end
@@ -969,7 +965,7 @@ module Kettle
         out, ok = adapter.capture(["rev-list", "--max-parents=0", "HEAD"])
         sha = out.to_s.lines.last&.strip   # take last line in case of multiple root commits
         (ok && sha && !sha.empty?) ? sha : nil
-      rescue StandardError
+      rescue
         nil
       end
     end

@@ -78,13 +78,13 @@ module Kettle
         begin
           gh = collect_github
           results[:github] = gh if gh
-        rescue StandardError => e
+        rescue => e
           Kettle::Dev.debug_error(e, __method__)
         end
         begin
           gl = collect_gitlab
           results[:gitlab] = gl if gl
-        rescue StandardError => e
+        rescue => e
           Kettle::Dev.debug_error(e, __method__)
         end
         results
@@ -99,12 +99,12 @@ module Kettle
         gh_items = results[:github] || []
         unless gh_items.empty?
           puts "GitHub Actions:"
-          gh_items.each do |it|
-            emoji = status_emoji(it[:status], it[:conclusion])
-            details = [it[:status], it[:conclusion]].compact.join("/")
-            wf = it[:workflow]
-            puts "  - #{wf}: #{emoji} (#{details}) #{"-> #{it[:url]}" if it[:url]}"
-            all_ok &&= (it[:conclusion] == "success")
+          gh_items.each do |item|
+            emoji = status_emoji(item[:status], item[:conclusion])
+            details = [item[:status], item[:conclusion]].compact.join("/")
+            wf = item[:workflow]
+            puts "  - #{wf}: #{emoji} (#{details}) #{"-> #{item[:url]}" if item[:url]}"
+            all_ok &&= (item[:conclusion] == "success")
           end
         end
         gl = results[:gitlab]

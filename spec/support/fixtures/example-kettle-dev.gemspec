@@ -1,4 +1,3 @@
-# coding: utf-8
 # frozen_string_literal: true
 
 # kettle-dev:freeze
@@ -33,7 +32,9 @@ Gem::Specification.new do |spec|
   spec.description = "🍲 Kettle::Dev is a meta tool from kettle-rb to streamline development and testing. Acts as a shim dependency, pulling in many other dependencies, to give you OOTB productivity with a RubyGem, or Ruby app project. Configures a complete set of Rake tasks, for all the libraries is brings in, so they arrive ready to go. Fund overlooked open source projects - bottom of stack, dev/test dependencies: floss-funding.dev"
   spec.homepage = "https://github.com/kettle-rb/kettle-dev"
   spec.licenses = ["MIT"]
+  # rubocop:disable Gemspec/RequiredRubyVersion -- fixture preserves historical Ruby floor
   spec.required_ruby_version = ">= 2.3.0"
+  # rubocop:enable Gemspec/RequiredRubyVersion
 
   # Linux distros often package gems and securely certify them independent
   #   of the official RubyGem certification process. Allowed via ENV["SKIP_GEM_SIGNING"]
@@ -115,7 +116,7 @@ Gem::Specification.new do |spec|
     "Gemfile",
     "README.md",
     "RUBOCOP.md",
-    "SECURITY.md",
+    "SECURITY.md"
   ]
   # Automatically included with gem package, normally no need to list again in files.
   # But this gem acts as a pseudo-template, so we include some in both places.
@@ -130,7 +131,7 @@ Gem::Specification.new do |spec|
     "README.md",
     "REEK",
     "RUBOCOP.md",
-    "SECURITY.md",
+    "SECURITY.md"
   ]
   spec.rdoc_options += [
     "--title",
@@ -141,7 +142,7 @@ Gem::Specification.new do |spec|
     "^sig/",
     "--line-numbers",
     "--inline-source",
-    "--quiet",
+    "--quiet"
   ]
   spec.require_paths = ["lib"]
   spec.bindir = "exe"

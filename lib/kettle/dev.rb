@@ -103,7 +103,7 @@ module Kettle
         ctx = context ? context.to_s : "KETTLE-DEV-RESCUE"
         Kernel.warn("[#{ctx}] #{error.class}: #{error.message}")
         Kernel.warn(Array(error.backtrace).first(5).join("\n")) if backtrace && error.respond_to?(:backtrace) && error.backtrace
-      rescue StandardError
+      rescue
         # never raise from debug logging
       end
 
@@ -116,7 +116,7 @@ module Kettle
 
         ctx = context ? context.to_s : "KETTLE-DEV-DEBUG"
         Kernel.warn("[#{ctx}] #{msg}")
-      rescue StandardError
+      rescue
         # never raise from debug logging
       end
 
@@ -146,7 +146,7 @@ module Kettle
           if defined?(Rake) && Rake::Task.task_defined?(:default)
             begin
               Rake::Task[:default].enhance([task_name])
-            rescue StandardError => e
+            rescue => e
               Kernel.warn("kettle-dev: failed to enhance :default with #{task_name}: #{e.message}") if DEBUGGING
             end
           end

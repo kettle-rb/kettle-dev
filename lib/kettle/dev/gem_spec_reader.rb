@@ -53,7 +53,7 @@ module Kettle
           if gemspec_path && File.file?(gemspec_path)
             begin
               spec = Gem::Specification.load(gemspec_path)
-            rescue StandardError => e
+            rescue => e
               Kettle::Dev.debug_error(e, __method__)
               spec = nil
             end
@@ -62,7 +62,7 @@ module Kettle
           gemspec_source = if gemspec_path && File.file?(gemspec_path)
             begin
               File.read(gemspec_path)
-            rescue StandardError => e
+            rescue => e
               Kettle::Dev.debug_error(e, __method__)
               ""
             end
@@ -91,7 +91,7 @@ module Kettle
                 puts "WARNING: Minimum Ruby not detected"
                 DEFAULT_MINIMUM_RUBY
               end
-            rescue StandardError => e
+            rescue => e
               puts "WARNING: Minimum Ruby detection failed:"
               Kettle::Dev.debug_error(e, __method__)
               # Default to a minimum of Ruby 1.8
@@ -117,7 +117,7 @@ module Kettle
           entrypoint_require = derive_entrypoint_require(
             root: root,
             gem_name: gem_name,
-            gemspec_source: gemspec_source,
+            gemspec_source: gemspec_source
           )
           namespace_source = entrypoint_require.to_s.empty? ? gem_name.to_s.tr("-", "/") : entrypoint_require.to_s
           namespace = namespace_source.split("/").reject(&:empty?).map { |seg| camel.call(seg) }.join("::")
@@ -153,7 +153,7 @@ module Kettle
                 end
               end
             end
-          rescue StandardError => error
+          rescue => error
             Kettle::Dev.debug_error(error, __method__)
             # In an unexpected exception path, escalate to a domain error to aid callers/specs
             raise Kettle::Dev::Error, "Unable to determine funding org: #{error.message}"
@@ -182,7 +182,7 @@ module Kettle
             required_ruby_version: spec&.required_ruby_version, # Gem::Requirement instance
             require_paths: Array(spec&.require_paths),
             bindir: (spec&.bindir || "").to_s,
-            executables: Array(spec&.executables),
+            executables: Array(spec&.executables)
           }
 
           CACHE.mutex.synchronize do
@@ -223,7 +223,7 @@ module Kettle
                 forge_info[:forge_org] = m[1]
                 forge_info[:origin_repo] = m[2].to_s.sub(/\.git\z/, "")
               end
-            rescue StandardError => error
+            rescue => error
               Kettle::Dev.debug_error(error, __method__)
               # be lenient here; actual error raising will occur in caller if required
             end
@@ -255,7 +255,7 @@ module Kettle
           content = source.to_s
           patterns = [
             %r{require_relative\s+["']lib/([^"']+)/version["']},
-            %r{Kernel\.load\(\s*["'][#][{]__dir__[}]/lib/([^"']+)/version\.rb["']},
+            %r{Kernel\.load\(\s*["']\#[{]__dir__[}]/lib/([^"']+)/version\.rb["']}
           ]
 
           patterns.each do |pattern|

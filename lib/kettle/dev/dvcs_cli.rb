@@ -35,12 +35,12 @@ module Kettle
         gl_name: "gl",
         cb_name: "cb",
         force: false,
-        status: false,
+        status: false
       }.freeze
       FORGE_MIGRATION_TOOLS = {
         github: "https://github.com/new/import",
         gitlab: "https://gitlab.com/projects/new#import_project",
-        codeberg: "https://codeberg.org/repo/migrate",
+        codeberg: "https://codeberg.org/repo/migrate"
       }.freeze
 
       # Create the CLI with argv-like arguments
@@ -123,7 +123,7 @@ module Kettle
         {
           github: names[:github],
           gitlab: names[:gitlab],
-          codeberg: names[:codeberg],
+          codeberg: names[:codeberg]
         }.each do |forge, remote|
           next unless remote
           next if remote == names[:origin]
@@ -209,7 +209,7 @@ module Kettle
           github: (@opts[:origin] == "github") ? "origin" : @opts[:gh_name],
           gitlab: (@opts[:origin] == "gitlab") ? "origin" : @opts[:gl_name],
           codeberg: (@opts[:origin] == "codeberg") ? "origin" : @opts[:cb_name],
-          all: "all",
+          all: "all"
         }
       end
 
@@ -219,13 +219,13 @@ module Kettle
           {
             github: "git@github.com:#{org}/#{repo}.git",
             gitlab: "git@gitlab.com:#{org}/#{repo}.git",
-            codeberg: "git@codeberg.org:#{org}/#{repo}.git",
+            codeberg: "git@codeberg.org:#{org}/#{repo}.git"
           }
         else # https
           {
             github: "https://github.com/#{org}/#{repo}.git",
             gitlab: "https://gitlab.com/#{org}/#{repo}.git",
-            codeberg: "https://codeberg.org/#{org}/#{repo}.git",
+            codeberg: "https://codeberg.org/#{org}/#{repo}.git"
           }
         end
       end
@@ -344,7 +344,7 @@ module Kettle
         {
           github: names[:github],
           gitlab: names[:gitlab],
-          codeberg: names[:codeberg],
+          codeberg: names[:codeberg]
         }.each do |forge, remote_name|
           next unless remote_name
 
@@ -388,7 +388,7 @@ module Kettle
             say("  - #{forge.capitalize} import: #{FORGE_MIGRATION_TOOLS[forge]}")
           end
         end
-      rescue StandardError => e
+      rescue => e
         warn("Failed to update README federation status: #{e.message}")
       end
 

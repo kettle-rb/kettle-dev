@@ -20,9 +20,9 @@ module Kettle
         def git_toplevel
           toplevel = nil
           begin
-            out = %x(git rev-parse --show-toplevel 2>/dev/null)
+            out = `git rev-parse --show-toplevel 2>/dev/null`
             toplevel = out.strip unless out.nil? || out.empty?
-          rescue StandardError => e
+          rescue => e
             Kettle::Dev.debug_error(e, __method__)
             nil
           end
@@ -114,7 +114,7 @@ module Kettle
           if @name_index
             return $2
           end
-        rescue StandardError => e
+        rescue => e
           Kettle::Dev.debug_error(e, __method__)
         end
         nil

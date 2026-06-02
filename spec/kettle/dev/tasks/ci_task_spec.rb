@@ -15,7 +15,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
     allow(Kettle::Dev::CIHelpers).to receive_messages(
       current_branch: "main",
       repo_info: ["acme", "demo"],
-      default_token: nil,
+      default_token: nil
     )
 
     # Avoid dependence on tty rendering in tests
@@ -34,7 +34,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
 
     # Default GitHub API stub: return a completed successful run so polling ends quickly
     allow(Net::HTTP).to receive(:start).and_return(
-      http_ok_with({"workflow_runs" => [{"status" => "completed", "conclusion" => "success", "id" => 1, "html_url" => "https://x/y"}]}),
+      http_ok_with({"workflow_runs" => [{"status" => "completed", "conclusion" => "success", "id" => 1, "html_url" => "https://x/y"}]})
     )
   end
 
@@ -56,7 +56,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
         seq = [
           http_ok_with({"workflow_runs" => [{"status" => "queued"}]}),
           http_ok_with({"workflow_runs" => [{"status" => "in_progress"}]}),
-          http_ok_with({"workflow_runs" => [{"status" => "completed", "conclusion" => "failure"}]}),
+          http_ok_with({"workflow_runs" => [{"status" => "completed", "conclusion" => "failure"}]})
         ]
         allow(Net::HTTP).to receive(:start).and_return(*seq)
         file_path = File.join(dir, "ci.yml")
@@ -109,7 +109,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
 
     it "handles GitHub API 'none' (no runs)", :check_output do
       allow(Net::HTTP).to receive(:start).and_return(
-        http_ok_with({"workflow_runs" => []}),
+        http_ok_with({"workflow_runs" => []})
       )
       with_workflows(["ci.yml"]) do |_root, dir|
         file_path = File.join(dir, "ci.yml")
@@ -267,7 +267,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
       seq = [
         http_ok_with({"workflow_runs" => [{"status" => "queued"}]}),
         http_ok_with({"workflow_runs" => [{"status" => "in_progress"}]}),
-        http_ok_with({"workflow_runs" => [{"status" => "completed", "conclusion" => "success"}]}),
+        http_ok_with({"workflow_runs" => [{"status" => "completed", "conclusion" => "success"}]})
       ]
       allow(Net::HTTP).to receive(:start).and_return(*seq)
       with_workflows(["ci.yml"]) do |_root, _dir|
@@ -317,7 +317,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
       with_workflows(["ci.yml"]) do |_root, dir|
         seq = [
           http_ok_with({"workflow_runs" => [{"status" => "unknown_state"}]}),
-          http_ok_with({"workflow_runs" => [{"status" => "completed", "conclusion" => "success"}]}),
+          http_ok_with({"workflow_runs" => [{"status" => "completed", "conclusion" => "success"}]})
         ]
         allow(Net::HTTP).to receive(:start).and_return(*seq)
         file_path = File.join(dir, "ci.yml")
@@ -333,7 +333,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
       stub_env("CI_ACT_POLL_INTERVAL" => "0")
       seq = [
         http_ok_with({"workflow_runs" => [{"status" => "mystery"}]}),
-        http_ok_with({"workflow_runs" => [{"status" => "completed", "conclusion" => "success"}]}),
+        http_ok_with({"workflow_runs" => [{"status" => "completed", "conclusion" => "success"}]})
       ]
       allow(Net::HTTP).to receive(:start).and_return(*seq)
       with_workflows(["ci.yml"]) do |_root, _dir|
@@ -364,7 +364,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
       seq = [
         http_ok_with({"workflow_runs" => [{"status" => "queued"}]}),
         http_ok_with({"workflow_runs" => [{"status" => "in_progress"}]}),
-        http_ok_with({"workflow_runs" => [{"status" => "completed", "conclusion" => "success"}]}),
+        http_ok_with({"workflow_runs" => [{"status" => "completed", "conclusion" => "success"}]})
       ]
       allow(Net::HTTP).to receive(:start).and_return(*seq)
       with_workflows(["ci.yml"]) do |_root, _dir|
@@ -477,7 +477,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
       with_workflows(["ci.yml"]) do |_root, dir|
         # Ensure GHA status query still succeeds quickly
         allow(Net::HTTP).to receive(:start).and_return(
-          http_ok_with({"workflow_runs" => [{"status" => "completed", "conclusion" => "success"}]}),
+          http_ok_with({"workflow_runs" => [{"status" => "completed", "conclusion" => "success"}]})
         )
         # GitLab ssh remote
         allow(Kettle::Dev::CIMonitor).to receive(:gitlab_remote_candidates).and_return(["origin"])
@@ -493,7 +493,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
     it "parses HTTPS remote and prints failed status with details", :check_output do
       with_workflows(["ci.yml"]) do |_root, dir|
         allow(Net::HTTP).to receive(:start).and_return(
-          http_ok_with({"workflow_runs" => [{"status" => "completed", "conclusion" => "success"}]}),
+          http_ok_with({"workflow_runs" => [{"status" => "completed", "conclusion" => "success"}]})
         )
         allow(Kettle::Dev::CIMonitor).to receive(:gitlab_remote_candidates).and_return(["gl"])
         allow(Kettle::Dev::CIMonitor).to receive(:remote_url).with("gl").and_return("https://gitlab.com/acme/demo.git")
@@ -507,7 +507,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
     it "prints none when there is no latest GitLab pipeline", :check_output do
       with_workflows(["ci.yml"]) do |_root, dir|
         allow(Net::HTTP).to receive(:start).and_return(
-          http_ok_with({"workflow_runs" => [{"status" => "completed", "conclusion" => "success"}]}),
+          http_ok_with({"workflow_runs" => [{"status" => "completed", "conclusion" => "success"}]})
         )
         allow(Kettle::Dev::CIMonitor).to receive(:gitlab_remote_candidates).and_return(["gl"])
         allow(Kettle::Dev::CIMonitor).to receive(:remote_url).with("gl").and_return("https://gitlab.com/acme/demo.git")
@@ -531,7 +531,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
     it "handles exceptions when fetching GitLab status", :check_output do
       with_workflows(["ci.yml"]) do |_root, dir|
         allow(Net::HTTP).to receive(:start).and_return(
-          http_ok_with({"workflow_runs" => [{"status" => "completed", "conclusion" => "success"}]}),
+          http_ok_with({"workflow_runs" => [{"status" => "completed", "conclusion" => "success"}]})
         )
         allow(Kettle::Dev::CIMonitor).to receive(:gitlab_remote_candidates).and_return(["gl"])
         allow(Kettle::Dev::CIMonitor).to receive(:remote_url).with("gl").and_return("https://gitlab.com/acme/demo.git")

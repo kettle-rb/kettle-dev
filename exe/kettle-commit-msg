@@ -40,7 +40,7 @@ end
 # BRANCH_RULE_TYPE = jira, or another type of branch rule validation, or false to disable
 # FOOTER_APPEND = true/false append commit message footer
 BRANCH_RULES = {
-  "jira" => /^(?<story_type>(hotfix)|(bug)|(feature)|(candy))\/(?<story_id>\d{8,})-.+\Z/,
+  "jira" => /^(?<story_type>hotfix|bug|feature|candy)\/(?<story_id>\d{8,})-.+\Z/
 }
 # Ruby 2.3 compatibility: String#casecmp? is not available; use casecmp.zero?
 BRANCH_RULE_TYPE = (validate = ENV.fetch("GIT_HOOK_BRANCH_VALIDATE", "false")) && !(validate.respond_to?(:casecmp?) ? validate.casecmp?("false") : (validate.casecmp("false").zero?)) && validate
@@ -51,7 +51,7 @@ if (branch_rule = BRANCH_RULES[BRANCH_RULE_TYPE])
   #	<story_type>/<story_id>-explosion-in-the-fudge-factory-spec-suite-fix
   #	where story type is one of "hotfix", "bug", "feature", "candy"
   #
-  branch = %x(git branch 2> /dev/null | grep -e ^* | awk '{print $2}')
+  branch = `git branch 2> /dev/null | grep -e ^* | awk '{print $2}'`
   match_data = branch.match(branch_rule)
   # NOTE: `match` will return nil if match fails, otherwise an instance of MatchData.
   # If not nil then we are assured matches for both regex capture groups
@@ -84,7 +84,7 @@ rescue SystemExit => e
   # Preserve exit status, but ensure at least a newline so shells don't show an empty line only.
   warn("#{script_basename}: exited (status=#{e.status}, msg=#{e.message})") if e.status != 0
   raise
-rescue StandardError => e
+rescue => e
   warn("#{script_basename}: unexpected error: #{e.class}: #{e.message}")
   warn(e.backtrace.join("\n"))
   exit(1)

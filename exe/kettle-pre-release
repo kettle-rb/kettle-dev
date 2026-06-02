@@ -26,7 +26,7 @@ script_basename = File.basename(__FILE__)
 begin
   require "kettle/dev"
   puts "== #{script_basename} v#{Kettle::Dev::Version::VERSION} =="
-rescue StandardError => e
+rescue => e
   warn("#{script_basename}: could not load dependency: #{e.class}: #{e.message}")
   warn("Hint: Ensure the host project has kettle-dev as a dependency and run bundle install.")
   exit(1)
@@ -34,7 +34,7 @@ end
 
 # Option parsing
 options = {
-  check_num: 1,
+  check_num: 1
 }
 
 parser = OptionParser.new do |opts|

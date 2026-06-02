@@ -96,7 +96,7 @@ module Kettle
           begin
             gem_name = detect_gem_name
             latest_overall, latest_for_series = latest_released_versions(gem_name, version)
-          rescue StandardError => e
+          rescue => e
             warn("[kettle-release] gem.coop release check failed: #{e.class}: #{e.message}")
             warn(e.backtrace.first(3).map { |l| "  " + l }.join("\n")) if ENV["KETTLE_DEV_DEBUG"]
             warn("Proceeding without gem.coop latest version info.")
@@ -167,14 +167,14 @@ module Kettle
           # Ensure README KLOC badge reflects current CHANGELOG coverage denominator
           begin
             update_readme_kloc_badge!
-          rescue StandardError => e
+          rescue => e
             warn("Failed to update KLOC badge in README: #{e.class}: #{e.message}")
           end
 
           # Update Rakefile.example header banner with current version and date
           begin
             update_rakefile_example_header!(version)
-          rescue StandardError => e
+          rescue => e
             warn("Failed to update Rakefile.example header: #{e.class}: #{e.message}")
           end
         end
@@ -297,7 +297,7 @@ module Kettle
           version ||= detect_version
           gem_name = detect_gem_name
           puts "\n🚀 Release #{gem_name} v#{version} Complete 🚀"
-        rescue StandardError => e
+        rescue => e
           Kettle::Dev.debug_error(e, __method__)
           # Fallback if detection fails for any reason
           puts "\n🚀 Release v#{version || "unknown"} Complete 🚀"
@@ -414,7 +414,7 @@ module Kettle
           next unless /copyright/i.match?(line)
 
           # Expand ranges first (supports hyphen-minus and en dash)
-          line.scan(/\b(19\d{2}|20\d{2})\s*[\-–]\s*(19\d{2}|20\d{2})\b/).each do |a, b|
+          line.scan(/\b(19\d{2}|20\d{2})\s*[-–]\s*(19\d{2}|20\d{2})\b/).each do |a, b|
             s = a.to_i
             e = b.to_i
             if e < s
@@ -466,7 +466,7 @@ module Kettle
             next line
           end
 
-          m = line.match(/\A(?<pre>.*?copyright[^0-9]*)(?<years>(?:\b(?:19|20)\d{2}\b(?:\s*[\-–]\s*\b(?:19|20)\d{2}\b)?)(?:\s*,\s*\b(?:19|20)\d{2}\b(?:\s*[\-–]\s*\b(?:19|20)\d{2}\b)?)*)(?<post>.*)\z/i)
+          m = line.match(/\A(?<pre>.*?copyright[^0-9]*)(?<years>(?:\b(?:19|20)\d{2}\b(?:\s*[-–]\s*\b(?:19|20)\d{2}\b)?)(?:\s*,\s*\b(?:19|20)\d{2}\b(?:\s*[-–]\s*\b(?:19|20)\d{2}\b)?)*)(?<post>.*)\z/i)
           unless m
             next line
           end
@@ -491,7 +491,7 @@ module Kettle
           end
 
           # Capture three parts: prefix up to first year, the year blob, and the rest
-          m = line.match(/\A(?<pre>.*?copyright[^0-9]*)(?<years>(?:\b(?:19|20)\d{2}\b(?:\s*[\-–]\s*\b(?:19|20)\d{2}\b)?)(?:\s*,\s*\b(?:19|20)\d{2}\b(?:\s*[\-–]\s*\b(?:19|20)\d{2}\b)?)*)(?<post>.*)\z/i)
+          m = line.match(/\A(?<pre>.*?copyright[^0-9]*)(?<years>(?:\b(?:19|20)\d{2}\b(?:\s*[-–]\s*\b(?:19|20)\d{2}\b)?)(?:\s*,\s*\b(?:19|20)\d{2}\b(?:\s*[-–]\s*\b(?:19|20)\d{2}\b)?)*)(?<post>.*)\z/i)
           unless m
             # No parsable year sequence on this line; leave as-is
             next line
@@ -500,7 +500,7 @@ module Kettle
           years_blob = m[:years]
           # Reuse extraction logic on just the years blob
           years = []
-          years_blob.scan(/\b(19\d{2}|20\d{2})\s*[\-–]\s*(19\d{2}|20\d{2})\b/).each do |a, b|
+          years_blob.scan(/\b(19\d{2}|20\d{2})\s*[-–]\s*(19\d{2}|20\d{2})\b/).each do |a, b|
             s = a.to_i
             e = b.to_i
             s, e = e, s if e < s
@@ -567,7 +567,7 @@ module Kettle
 
         act_ok = begin
           system("act", "--version", out: File::NULL, err: File::NULL)
-        rescue StandardError => e
+        rescue => e
           Kettle::Dev.debug_error(e, __method__)
           false
         end
@@ -648,7 +648,7 @@ module Kettle
         series_versions = gversions.select { |gv| gv.segments[0, 2] == series }
         latest_series = series_versions.last&.to_s
         [latest_overall, latest_series]
-      rescue StandardError => e
+      rescue => e
         Kettle::Dev.debug_error(e, __method__)
         [nil, nil]
       end
@@ -957,7 +957,7 @@ module Kettle
         pkg = File.join(@root, "pkg")
         pattern = File.join(pkg, "*.gem")
         gems = Dir[pattern].select { |p| File.basename(p).include?("-#{version}.gem") }
-        gems.sort.last
+        gems.max
       end
 
       def compute_sha256(path)
@@ -1042,7 +1042,7 @@ module Kettle
         compare_ref = compare_ref&.end_with?("\n") ? compare_ref : (compare_ref && compare_ref + "\n")
         tag_ref = tag_ref&.end_with?("\n") ? tag_ref : (tag_ref && tag_ref + "\n")
         [section, compare_ref, tag_ref]
-      rescue StandardError => e
+      rescue => e
         warn("Failed to parse CHANGELOG.md: #{e.class}: #{e.message}")
         [nil, nil, nil]
       end
@@ -1063,7 +1063,7 @@ module Kettle
         # Normalize: trim trailing whitespace but keep internal formatting
         block = block.lstrip # drop leading newline/space
         block.rstrip
-      rescue StandardError => e
+      rescue => e
         warn("[kettle-release] Failed to extract release notes footer from FUNDING.md: #{e.class}: #{e.message}")
         nil
       end
@@ -1081,7 +1081,7 @@ module Kettle
           name: title,
           body: body,
           draft: false,
-          prerelease: false,
+          prerelease: false
         })
 
         res = Net::HTTP.start(uri.host, uri.port, use_ssl: true) do |http|
@@ -1099,7 +1099,7 @@ module Kettle
             [false, "HTTP #{res.code}: #{res.body}"]
           end
         end
-      rescue StandardError => e
+      rescue => e
         [false, "#{e.class}: #{e.message}"]
       end
     end

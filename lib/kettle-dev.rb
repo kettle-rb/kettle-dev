@@ -1,4 +1,4 @@
-# rubocop:disable Naming/FileName# USAGE:
+# rubocop:disable Naming/FileName -- USAGE:
 # In your `spec/spec_helper.rb`,
 # just prior to loading the library under test:
 #

@@ -14,7 +14,7 @@ RSpec.describe Kettle::Dev do
       RuntimeError.new("boom").tap do |e|
         e.set_backtrace([
           "/tmp/project/lib/example.rb:10:in `call'",
-          "/tmp/project/lib/example.rb:20:in `run'",
+          "/tmp/project/lib/example.rb:20:in `run'"
         ])
       end
     end

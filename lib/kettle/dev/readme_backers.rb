@@ -76,10 +76,10 @@ module Kettle
           else
             "https://github.com/organizations/YOUR_ORG/settings/secrets/actions"
           end
-          $stderr.puts "ERROR: README_UPDATER_TOKEN is not set."
-          $stderr.puts "Please create an organization-level Actions secret named README_UPDATER_TOKEN at:"
-          $stderr.puts "  #{org_url}"
-          $stderr.puts "Then update the workflow to reference it, or provide README_UPDATER_TOKEN in the environment."
+          warn "ERROR: README_UPDATER_TOKEN is not set."
+          warn "Please create an organization-level Actions secret named README_UPDATER_TOKEN at:"
+          warn "  #{org_url}"
+          warn "Then update the workflow to reference it, or provide README_UPDATER_TOKEN in the environment."
           raise 'Missing ENV["README_UPDATER_TOKEN"]'
         end
         nil
@@ -250,7 +250,7 @@ module Kettle
               from_yml = from_yml.to_s if from_yml
               return from_yml unless from_yml.nil? || from_yml.strip.empty?
             end
-          rescue StandardError => e
+          rescue => e
             Kettle::Dev.debug_error(e, __method__)
           end
         end
@@ -265,7 +265,7 @@ module Kettle
           individuals_start: "<!-- #{base}-INDIVIDUALS:START -->",
           individuals_end: "<!-- #{base}-INDIVIDUALS:END -->",
           orgs_start: "<!-- #{base}-ORGANIZATIONS:START -->",
-          orgs_end: "<!-- #{base}-ORGANIZATIONS:END -->",
+          orgs_end: "<!-- #{base}-ORGANIZATIONS:END -->"
         }
       end
 
@@ -301,7 +301,7 @@ module Kettle
         warn("Error parsing #{api_path} JSON: #{e.message}")
         debug_log("Body that failed to parse (truncated 500): #{response&.body.to_s[0, 500]}")
         []
-      rescue StandardError => e
+      rescue => e
         warn("Error fetching #{api_path}: #{e.class}: #{e.message}")
         debug_log(e.backtrace.join("\n"))
         []
@@ -378,7 +378,7 @@ module Kettle
             website: (h["website"].to_s.strip.empty? ? nil : h["website"]),
             profile: (h["profile"].to_s.strip.empty? ? nil : h["profile"]),
             oc_type: oc_type,
-            oc_index: oc_index,
+            oc_index: oc_index
           )
         end
       end
@@ -427,7 +427,7 @@ module Kettle
               name: m.name,
               image: m.image,
               website: m.website,
-              profile: m.profile,
+              profile: m.profile
             )
           end
           # Build a single, well-formed block per tier with deterministic spacing:
@@ -437,7 +437,7 @@ module Kettle
           block = [
             "### Open Collective for #{tier}",
             "",
-            generate_markdown(members_plain, empty_message: "", default_name: tier),
+            generate_markdown(members_plain, empty_message: "", default_name: tier)
           ].join("\n")
           blocks << block
         end
@@ -497,17 +497,17 @@ module Kettle
         block = content[(start_index + start_tag.length)...end_index]
         identities = Set.new
         # 1) Image-style link wrappers: [![ALT](IMG)](HREF)
-        block.to_s.scan(/\[!\[[^\]]*\]\([^\)]*\)\]\(([^\)]+)\)/) do |m|
+        block.to_s.scan(/\[!\[[^\]]*\]\([^)]*\)\]\(([^)]+)\)/) do |m|
           href = (m[0] || "").strip
           identities << href.downcase unless href.empty?
         end
         # 2) Capture ALT text from image-style wrappers for name identity
-        block.to_s.scan(/\[!\[([^\]]*)\]\([^\)]*\)\]\([^\)]*\)/) do |m|
+        block.to_s.scan(/\[!\[([^\]]*)\]\([^)]*\)\]\([^)]*\)/) do |m|
           alt = (m[0] || "").strip
           identities << alt.downcase unless alt.empty?
         end
         # 3) Plain markdown links: [TEXT](HREF)
-        block.to_s.scan(/\[([^!][^\]]*)\]\(([^\)]+)\)/) do |m|
+        block.to_s.scan(/\[([^!][^\]]*)\]\(([^)]+)\)/) do |m|
           text = (m[0] || "").strip
           href = (m[1] || "").strip
           identities << href.downcase unless href.empty?
@@ -610,8 +610,7 @@ module Kettle
         handle = github_handle_from_urls(m.profile, m.website)
         return "@#{handle}" if handle
 
-        name = (m.name && !m.name.strip.empty?) ? m.name.strip : default_name
-        name
+        (m.name && !m.name.strip.empty?) ? m.name.strip : default_name
       end
 
       def github_handle_from_urls(*urls)
@@ -667,7 +666,7 @@ module Kettle
               from_yml = from_yml.to_s if from_yml
               return from_yml unless from_yml.nil? || from_yml.strip.empty?
             end
-          rescue StandardError => e
+          rescue => e
             Kettle::Dev.debug_error(e, __method__)
           end
         end

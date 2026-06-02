@@ -84,7 +84,7 @@ module Kettle
               else
                 puts "GHA status: request failed (#{res.code})"
               end
-            rescue StandardError => e
+            rescue => e
               puts "GHA status: error #{e.class}: #{e.message}"
             end
           end
@@ -130,7 +130,7 @@ module Kettle
               else
                 puts "Latest GL (#{branch}) pipeline: none"
               end
-            rescue StandardError => e
+            rescue => e
               puts "GL status: error #{e.class}: #{e.message}"
             end
           end
@@ -174,7 +174,6 @@ module Kettle
           end
 
           # Interactive menu
-          require "thread"
           tty = $stdout.tty?
           options = mapping.to_a + dynamic_files.map { |f| [f, f] }
           quit_code = "q"
@@ -190,14 +189,14 @@ module Kettle
           upstream = begin
             out, status = Open3.capture2("git", "rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}")
             status.success? ? out.strip : nil
-          rescue StandardError => e
+          rescue => e
             Kettle::Dev.debug_error(e, __method__)
             nil
           end
           sha = begin
             out, status = Open3.capture2("git", "rev-parse", "--short", "HEAD")
             status.success? ? out.strip : nil
-          rescue StandardError => e
+          rescue => e
             Kettle::Dev.debug_error(e, __method__)
             nil
           end
@@ -235,7 +234,7 @@ module Kettle
                 end
               end
             end
-          rescue StandardError => e
+          rescue => e
             Kettle::Dev.debug_error(e, __method__)
           end
 
@@ -381,12 +380,12 @@ module Kettle
 
           begin
             workers.each { |t| t.kill if t&.alive? }
-          rescue StandardError => e
+          rescue => e
             Kettle::Dev.debug_error(e, __method__)
           end
           begin
             input_thread.kill if input_thread&.alive?
-          rescue StandardError => e
+          rescue => e
             Kettle::Dev.debug_error(e, __method__)
           end
 

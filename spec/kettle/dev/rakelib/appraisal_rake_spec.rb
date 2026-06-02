@@ -23,7 +23,7 @@ RSpec.describe "appraisal rake tasks" do # rubocop:disable RSpec/DescribeClass
 
       expect(system_calls).to eq([
         [appraisal_env, "bundle", "install"],
-        [appraisal_env, "bundle", "exec", "appraisal", "generate"],
+        [appraisal_env, "bundle", "exec", "appraisal", "generate"]
       ])
     end
   end

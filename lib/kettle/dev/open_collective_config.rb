@@ -56,7 +56,7 @@ module Kettle
               handle = yml["collective"] || yml[:collective] || yml["org"] || yml[:org]
               return handle.to_s unless handle.nil? || handle.to_s.strip.empty? || handle.to_s.match?(/\{KJ\|[^}]+}/)
             end
-          rescue StandardError => e
+          rescue => e
             Kettle::Dev.debug_error(e, __method__) if Kettle::Dev.respond_to?(:debug_error)
             # fall through to required check
           end

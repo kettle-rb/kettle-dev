@@ -43,7 +43,7 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
         "https://example.com/a.png",
         "https://example.com/b.jpg",
         "https://example.com/c.gif",
-        "https://example.com/d.webp",
+        "https://example.com/d.webp"
       )
     end
 
@@ -107,7 +107,7 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
       cli = described_class.new(check_num: 1)
       # Provide a deterministic URL and use VCR to avoid network
       allow(Kettle::Dev::PreReleaseCLI::Markdown).to receive(:extract_image_urls_from_files).and_return([
-        "https://httpbin.org/image/png",
+        "https://httpbin.org/image/png"
       ])
       expect {
         VCR.use_cassette("head_image_ok") { cli.run }
@@ -117,7 +117,7 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
     it "aborts via ExitAdapter when HTTP failures occur in check 2" do
       cli = described_class.new(check_num: 2)
       allow(Kettle::Dev::PreReleaseCLI::Markdown).to receive(:extract_image_urls_from_files).and_return([
-        "https://httpbin.org/image/png", "https://example.invalid/missing.png",
+        "https://httpbin.org/image/png", "https://example.invalid/missing.png"
       ])
       # First will be OK via cassette; second will fail (no cassette and blocked net), so stub head_ok? only for failure path
       allow(Kettle::Dev::PreReleaseCLI::HTTP).to receive(:head_ok?).and_wrap_original do |m, url|
@@ -220,7 +220,7 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
           allow(File).to receive(:read).with(bad).and_raise(Errno::EACCES)
 
           urls = described_class.extract_image_urls_from_files(glob)
-          expect(urls).to eq([])
+          expect(urls).to be_empty
         end
       end
     end

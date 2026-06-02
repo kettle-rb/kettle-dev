@@ -48,7 +48,9 @@ Gem::Specification.new do |spec|
   gl_homepage = "https://gitlab.com/kettle-rb/#{spec.name}"
   spec.homepage = gl_homepage
   spec.license = "MIT"
+  # rubocop:disable Gemspec/RequiredRubyVersion -- fixture preserves its own Ruby floor
   spec.required_ruby_version = ">= 2.7"
+  # rubocop:enable Gemspec/RequiredRubyVersion
 
   spec.metadata["homepage_uri"] = "https://#{spec.name}.galtzo.com/"
   spec.metadata["source_code_uri"] = "#{gh_mirror}/releases/tag/v#{spec.version}"
@@ -66,7 +68,7 @@ Gem::Specification.new do |spec|
     # Splats (alphabetical)
     "lib/**/*.rb",
     "lib/**/rakelib/*.rake",
-    "sig/**/*.rbs",
+    "sig/**/*.rbs"
   ]
   # Automatically included with gem package, no need to list again in files.
   spec.extra_rdoc_files = Dir[
@@ -76,7 +78,7 @@ Gem::Specification.new do |spec|
     "CONTRIBUTING.md",
     "LICENSE.txt",
     "README.md",
-    "SECURITY.md",
+    "SECURITY.md"
   ]
   spec.rdoc_options += [
     "--title",
@@ -90,7 +92,7 @@ Gem::Specification.new do |spec|
     "SECURITY.md",
     "--line-numbers",
     "--inline-source",
-    "--quiet",
+    "--quiet"
   ]
   spec.require_paths = ["lib"]
   spec.bindir = "exe"

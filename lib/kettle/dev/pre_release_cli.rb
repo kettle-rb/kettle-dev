@@ -102,7 +102,7 @@ module Kettle
           urls = []
 
           # Inline image syntax
-          text.scan(/!\[[^\]]*\]\(([^\s)]+)(?:\s+\"[^\"]*\")?\)/) { |m| urls << m[0] }
+          text.scan(/!\[[^\]]*\]\(([^\s)]+)(?:\s+"[^"]*")?\)/) { |m| urls << m[0] }
 
           # Reference definitions
           ref_defs = {}
@@ -116,8 +116,8 @@ module Kettle
           end
 
           # HTML <img src="...">
-          text.scan(/<img\b[^>]*\bsrc\s*=\s*\"([^\"]+)\"[^>]*>/i) { |m| urls << m[0] }
-          text.scan(/<img\b[^>]*\bsrc\s*=\s*\'([^\']+)\'[^>]*>/i) { |m| urls << m[0] }
+          text.scan(/<img\b[^>]*\bsrc\s*=\s*"([^"]+)"[^>]*>/i) { |m| urls << m[0] }
+          text.scan(/<img\b[^>]*\bsrc\s*=\s*'([^']+)'[^>]*>/i) { |m| urls << m[0] }
 
           urls.reject! { |u| u.nil? || u.strip.empty? }
           urls.select! { |u| u =~ %r{^https?://}i }
@@ -132,7 +132,7 @@ module Kettle
           urls = files.flat_map do |f|
             begin
               extract_image_urls_from_text(File.read(f))
-            rescue StandardError => e
+            rescue => e
               warn("[kettle-pre-release] Could not read #{Kettle::Dev.display_path(f)}: #{e.class}: #{e.message}")
               []
             end
@@ -178,7 +178,7 @@ module Kettle
         files.each do |file|
           begin
             original = File.read(file)
-          rescue StandardError => e
+          rescue => e
             warn("[kettle-pre-release] Could not read #{Kettle::Dev.display_path(file)}: #{e.class}: #{e.message}")
             next
           end
@@ -206,7 +206,7 @@ module Kettle
             begin
               File.write(file, updated)
               changed << file
-            rescue StandardError => e
+            rescue => e
               warn("[kettle-pre-release] Could not write #{Kettle::Dev.display_path(file)}: #{e.class}: #{e.message}")
             end
           end
@@ -222,7 +222,7 @@ module Kettle
         puts "[kettle-pre-release] Check 2: Validate Markdown image links (HTTP HEAD)"
         urls = [
           Markdown.extract_image_urls_from_files("**/*.md"),
-          Markdown.extract_image_urls_from_files("**/*.md.example"),
+          Markdown.extract_image_urls_from_files("**/*.md.example")
         ].flatten.uniq
         puts "[kettle-pre-release] Found #{urls.size} unique image URL(s)."
         failures = []

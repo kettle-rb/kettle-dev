@@ -45,12 +45,8 @@ RSpec.describe Kettle::Dev::Versioning do
         FileUtils.mkdir_p(File.dirname(version_file))
         File.write(version_file, "module Example; VERSION = '7.1.2'; end\n")
 
-        begin
-          ENV["K_CHANGELOG_VERSION_FILE"] = "gems/example/lib/example/version.rb"
-          expect(described_class.detect_version(dir)).to eq("7.1.2")
-        ensure
-          ENV.delete("K_CHANGELOG_VERSION_FILE")
-        end
+        stub_env("K_CHANGELOG_VERSION_FILE" => "gems/example/lib/example/version.rb")
+        expect(described_class.detect_version(dir)).to eq("7.1.2")
       end
     end
   end

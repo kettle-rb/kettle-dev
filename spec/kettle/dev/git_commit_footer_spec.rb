@@ -69,7 +69,7 @@ RSpec.describe Kettle::Dev::GitCommitFooter do
       Dir.mktmpdir do |dir|
         stub_env(
           "GIT_HOOK_FOOTER_APPEND" => "true",
-          "GIT_HOOK_FOOTER_SENTINEL" => "SENT",
+          "GIT_HOOK_FOOTER_SENTINEL" => "SENT"
         )
         # prepare hooks
         Dir.mktmpdir do |home|
@@ -99,7 +99,7 @@ RSpec.describe Kettle::Dev::GitCommitFooter do
       Dir.mktmpdir do |dir|
         stub_env(
           "GIT_HOOK_FOOTER_APPEND" => "true",
-          "GIT_HOOK_FOOTER_SENTINEL" => nil,
+          "GIT_HOOK_FOOTER_SENTINEL" => nil
         )
         file = File.join(dir, "COMMIT_EDITMSG")
         File.write(file, "chore: header\n\nbody\n")
@@ -111,7 +111,7 @@ RSpec.describe Kettle::Dev::GitCommitFooter do
       Dir.mktmpdir do |dir|
         stub_env(
           "GIT_HOOK_FOOTER_APPEND" => "true",
-          "GIT_HOOK_FOOTER_SENTINEL" => "SENT",
+          "GIT_HOOK_FOOTER_SENTINEL" => "SENT"
         )
         file = File.join(dir, "COMMIT_EDITMSG")
         File.write(file, "feat: header\n\nbody\nSENT\n")
@@ -124,7 +124,7 @@ RSpec.describe Kettle::Dev::GitCommitFooter do
       Dir.mktmpdir do |dir|
         stub_env(
           "GIT_HOOK_FOOTER_APPEND" => "false",
-          "GIT_HOOK_FOOTER_SENTINEL" => "SENT",
+          "GIT_HOOK_FOOTER_SENTINEL" => "SENT"
         )
         file = File.join(dir, "COMMIT_EDITMSG")
         original = "docs: header\n\nbody\n"

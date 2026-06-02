@@ -142,7 +142,7 @@ RSpec.describe Kettle::Dev::DvcsCLI do
       allow(adapter).to receive_messages(
         remotes: ["origin", "gl", "cb"],
         remotes_with_urls: {"origin" => "git@github.com:org/repo.git"},
-        remote_url: nil,
+        remote_url: nil
       )
 
       # detect_default_branch!: first try origin/main ok
@@ -198,7 +198,7 @@ RSpec.describe Kettle::Dev::DvcsCLI do
       # Names set so that github remote equals origin (so loop skips) and others nil
       # We'll simulate only github present as origin
       expect(
-        described_class.new(["--status", "o", "r"]).run!,
+        described_class.new(["--status", "o", "r"]).run!
       ).to eq(0)
     end
 
@@ -214,7 +214,7 @@ RSpec.describe Kettle::Dev::DvcsCLI do
       allow(adapter).to receive(:capture).with(["rev-list", "--left-right", "--count", "origin/main...cb/main"]).and_return([" ", false])
       allow(adapter).to receive(:capture).with(["rev-list", "--left-right", "--count", "HEAD...origin/main"]).and_return(["", false])
       expect(
-        described_class.new(["--status", "o", "r"]).run!,
+        described_class.new(["--status", "o", "r"]).run!
       ).to eq(0)
     end
   end

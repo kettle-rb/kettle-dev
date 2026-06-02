@@ -9,7 +9,7 @@ module Kettle
       module_function
 
       BRANCH_RULES = {
-        "jira" => /^(?<story_type>(hotfix)|(bug)|(feature)|(candy))\/(?<story_id>\d{8,})-.+\Z/,
+        "jira" => /^(?<story_type>hotfix|bug|feature|candy)\/(?<story_id>\d{8,})-.+\Z/
       }.freeze
 
       # Enforce branch rule by appending [type][id] to the commit message when missing.
@@ -22,7 +22,7 @@ module Kettle
         branch_rule = BRANCH_RULES[branch_rule_type]
         return unless branch_rule
 
-        branch = %x(git branch 2> /dev/null | grep -e ^* | awk '{print $2}')
+        branch = `git branch 2> /dev/null | grep -e ^* | awk '{print $2}'`
         match_data = branch.match(branch_rule)
         return unless match_data
 

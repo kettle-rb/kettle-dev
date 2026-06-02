@@ -101,7 +101,7 @@ begin
             File.delete(f)
           rescue Errno::ENOENT
             # Ignore if already gone
-          rescue StandardError => e
+          rescue => e
             failures << [f, e]
           end
         end

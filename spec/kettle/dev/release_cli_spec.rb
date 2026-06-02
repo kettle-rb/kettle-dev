@@ -86,7 +86,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
           {"number" => "1.3.0"},
           {"number" => "2.0.0"},
           {"number" => "1.2.10"},
-          {"number" => "1.2.9-alpha"},
+          {"number" => "1.2.9-alpha"}
         ].to_json
         resp = response_class.new(body)
         allow(Net::HTTP).to receive(:get_response).and_return(resp)
@@ -195,7 +195,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
           "origin" => "git@github.com:me/repo.git",
           "github" => "https://github.com/me/repo.git",
           "gl" => "https://gitlab.com/me/repo",
-          "cb" => "git@codeberg.org:me/repo.git",
+          "cb" => "git@codeberg.org:me/repo.git"
         })
         urls = cli.send(:remotes_with_urls)
         expect(urls["origin"]).to include("github.com")

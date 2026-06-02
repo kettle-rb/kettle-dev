@@ -12,7 +12,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       cli = original.call(*args, **kwargs, &block)
       allow(cli).to receive_messages(
         detect_gem_name: "demo",
-        latest_released_versions: [nil, nil],
+        latest_released_versions: [nil, nil]
       )
       cli
     end
@@ -267,9 +267,9 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
         allow(cli).to receive_messages(
           coverage_lines: [
             "COVERAGE: 95.00% -- 95/100 lines in 2 files",
-            "BRANCH COVERAGE: 80.00% -- 8/10 branches in 2 files",
+            "BRANCH COVERAGE: 80.00% -- 8/10 branches in 2 files"
           ],
-          yard_percent_documented: "20.00% documented",
+          yard_percent_documented: "20.00% documented"
         )
 
         expect { cli.run }.not_to raise_error
@@ -325,7 +325,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
         allow(cli).to receive(:latest_released_versions).and_return(["1.2.3", "1.2.3"])
         allow(cli).to receive_messages(
           coverage_lines: ["COVERAGE: 95.00% -- 95/100 lines in 2 files", nil],
-          yard_percent_documented: nil,
+          yard_percent_documented: nil
         )
 
         expect { cli.run }.not_to raise_error
@@ -389,13 +389,8 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
   describe "#detect_initial_compare_base (private)" do
     it "returns KETTLE_CHANGELOG_INITIAL_SHA env var when set (highest priority)" do
       cli = described_class.new(strict: false)
-      orig = ENV.fetch("KETTLE_CHANGELOG_INITIAL_SHA", nil)
-      begin
-        ENV["KETTLE_CHANGELOG_INITIAL_SHA"] = "upstream-sha-abc123"
-        expect(cli.send(:detect_initial_compare_base)).to eq("upstream-sha-abc123")
-      ensure
-        orig ? ENV["KETTLE_CHANGELOG_INITIAL_SHA"] = orig : ENV.delete("KETTLE_CHANGELOG_INITIAL_SHA")
-      end
+      stub_env("KETTLE_CHANGELOG_INITIAL_SHA" => "upstream-sha-abc123")
+      expect(cli.send(:detect_initial_compare_base)).to eq("upstream-sha-abc123")
     end
 
     it "returns the root commit SHA from git when env var is absent" do
@@ -523,21 +518,21 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
                 "branches" => [
                   {"coverage" => 1},
                   {"coverage" => 0},
-                  {"coverage" => "n/a"},
-                ],
+                  {"coverage" => "n/a"}
+                ]
               },
               "lib/b.rb" => {
                 "lines" => [0, 0, 2],
                 "branches" => [
                   {"coverage" => 0},
-                  {"coverage" => 0},
-                ],
+                  {"coverage" => 0}
+                ]
               },
               "lib/c.rb" => {
                 "lines" => [nil, nil],
-                "branches" => [],
-              },
-            },
+                "branches" => []
+              }
+            }
           }
           File.write(File.join(root, "coverage", "coverage.json"), JSON.pretty_generate(data))
           cli = described_class.new(strict: false)
@@ -562,10 +557,10 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
                   123,                   # skipped: not a Hash (line 202)
                   {"coverage" => "n/a"}, # skipped: non-Numeric (line 204)
                   {"coverage" => 0},     # counts in total, not covered (205-206)
-                  {"coverage" => 2},      # counts in total and covered (205-206)
-                ],
-              },
-            },
+                  {"coverage" => 2}      # counts in total and covered (205-206)
+                ]
+              }
+            }
           }
           File.write(File.join(root, "coverage", "coverage.json"), JSON.pretty_generate(data))
           cli = described_class.new(strict: false)
@@ -585,9 +580,9 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
           "coverage" => {
             "lib/a.rb" => {
               "lines" => [1],
-              "branches" => [{"coverage" => 1}],
-            },
-          },
+              "branches" => [{"coverage" => 1}]
+            }
+          }
         )
 
         expect(cli = described_class.new(strict: true)).to receive(:system).with(
@@ -596,12 +591,12 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
             "K_SOUP_COV_FORMATTERS" => "json",
             "K_SOUP_COV_MIN_HARD" => "true",
             "K_SOUP_COV_MULTI_FORMATTERS" => "true",
-            "K_SOUP_COV_OPEN_BIN" => "",
+            "K_SOUP_COV_OPEN_BIN" => ""
           ),
           "bundle",
           "exec",
           "kettle-test",
-          chdir: root,
+          chdir: root
         ) do
           FileUtils.mkdir_p(File.join(root, "coverage"))
           File.write(File.join(root, "coverage", "coverage.json"), coverage_payload)
@@ -629,10 +624,10 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
               "coverage" => {
                 "lib/a.rb" => {
                   "lines" => [1, 0, nil],
-                  "branches" => [{"type" => "then", "start_line" => 1, "end_line" => 1, "coverage" => 0}],
-                },
-              },
-            ),
+                  "branches" => [{"type" => "then", "start_line" => 1, "end_line" => 1, "coverage" => 0}]
+                }
+              }
+            )
           )
           File.write(
             File.join(worker_two, "coverage.json"),
@@ -640,10 +635,10 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
               "coverage" => {
                 "lib/a.rb" => {
                   "lines" => [0, 1, nil],
-                  "branches" => [{"type" => "then", "start_line" => 1, "end_line" => 1, "coverage" => 1}],
-                },
-              },
-            ),
+                  "branches" => [{"type" => "then", "start_line" => 1, "end_line" => 1, "coverage" => 1}]
+                }
+              }
+            )
           )
           true
         end
@@ -652,7 +647,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
           cli.send(:coverage_lines)
         end.to raise_error(
           RuntimeError,
-          /kettle-test runs specs in parallel and is expected to collate parallel SimpleCov results/,
+          /kettle-test runs specs in parallel and is expected to collate parallel SimpleCov results/
         )
         expect(File.file?(File.join(root, "coverage", "coverage.json"))).to be(false)
       end
@@ -665,9 +660,9 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
           "coverage" => {
             "lib/a.rb" => {
               "lines" => [1],
-              "branches" => [{"coverage" => 1}],
-            },
-          },
+              "branches" => [{"coverage" => 1}]
+            }
+          }
         )
 
         expect(cli = described_class.new(strict: true, enforce_coverage_thresholds: false)).to receive(:system).with(
@@ -676,12 +671,12 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
             "K_SOUP_COV_FORMATTERS" => "json",
             "K_SOUP_COV_MIN_HARD" => "false",
             "K_SOUP_COV_MULTI_FORMATTERS" => "true",
-            "K_SOUP_COV_OPEN_BIN" => "",
+            "K_SOUP_COV_OPEN_BIN" => ""
           ),
           "bundle",
           "exec",
           "kettle-test",
-          chdir: root,
+          chdir: root
         ) do
           FileUtils.mkdir_p(File.join(root, "coverage"))
           File.write(File.join(root, "coverage", "coverage.json"), coverage_payload)
@@ -815,13 +810,8 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
   describe "#detect_initial_compare_base" do
     it "returns KETTLE_CHANGELOG_INITIAL_SHA env var when set" do
       cli = described_class.new(strict: false)
-      orig = ENV.fetch("KETTLE_CHANGELOG_INITIAL_SHA", nil)
-      begin
-        ENV["KETTLE_CHANGELOG_INITIAL_SHA"] = "forked-sha-xyz"
-        expect(cli.send(:detect_initial_compare_base)).to eq("forked-sha-xyz")
-      ensure
-        orig ? ENV["KETTLE_CHANGELOG_INITIAL_SHA"] = orig : ENV.delete("KETTLE_CHANGELOG_INITIAL_SHA")
-      end
+      stub_env("KETTLE_CHANGELOG_INITIAL_SHA" => "forked-sha-xyz")
+      expect(cli.send(:detect_initial_compare_base)).to eq("forked-sha-xyz")
     end
 
     it "returns the git root commit SHA when env var absent and git succeeds" do
@@ -1196,7 +1186,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
 
         allow(Kettle::Dev::CIHelpers).to receive_messages(
           project_root: root,
-          repo_info: ["galtzo-floss", "turbo_tests2"],
+          repo_info: ["galtzo-floss", "turbo_tests2"]
         )
         allow(Time).to receive(:now).and_return(Time.new(2026, 4, 7))
 

@@ -52,7 +52,7 @@ RSpec.describe Kettle::Dev::CIHelpers do
     it "parses SSH origin URL" do
       allow(Open3).to receive(:capture2).and_return([
         "git@github.com:owner/repo.git\n",
-        instance_double(Process::Status, success?: true),
+        instance_double(Process::Status, success?: true)
       ])
       expect(described_class.repo_info).to eq(["owner", "repo"])
     end
@@ -60,7 +60,7 @@ RSpec.describe Kettle::Dev::CIHelpers do
     it "parses git+ssh origin URL" do
       allow(Open3).to receive(:capture2).and_return([
         "git+ssh://git@github.com/owner/repo.git\n",
-        instance_double(Process::Status, success?: true),
+        instance_double(Process::Status, success?: true)
       ])
       expect(described_class.repo_info).to eq(["owner", "repo"])
     end
@@ -68,7 +68,7 @@ RSpec.describe Kettle::Dev::CIHelpers do
     it "parses ssh origin URL" do
       allow(Open3).to receive(:capture2).and_return([
         "ssh://git@github.com/owner/repo.git\n",
-        instance_double(Process::Status, success?: true),
+        instance_double(Process::Status, success?: true)
       ])
       expect(described_class.repo_info).to eq(["owner", "repo"])
     end
@@ -76,7 +76,7 @@ RSpec.describe Kettle::Dev::CIHelpers do
     it "parses HTTPS origin URL" do
       allow(Open3).to receive(:capture2).and_return([
         "https://github.com/owner/repo\n",
-        instance_double(Process::Status, success?: true),
+        instance_double(Process::Status, success?: true)
       ])
       expect(described_class.repo_info).to eq(["owner", "repo"])
     end
@@ -89,7 +89,7 @@ RSpec.describe Kettle::Dev::CIHelpers do
     it "returns nil when origin is non-GitHub" do
       allow(Open3).to receive(:capture2).and_return([
         "git@gitlab.com:owner/repo.git\n",
-        instance_double(Process::Status, success?: true),
+        instance_double(Process::Status, success?: true)
       ])
       expect(described_class.repo_info).to be_nil
     end
@@ -99,7 +99,7 @@ RSpec.describe Kettle::Dev::CIHelpers do
     it "returns branch when command succeeds" do
       allow(Open3).to receive(:capture2).and_return([
         "main\n",
-        instance_double(Process::Status, success?: true),
+        instance_double(Process::Status, success?: true)
       ])
       expect(described_class.current_branch).to eq("main")
     end
@@ -126,7 +126,7 @@ RSpec.describe Kettle::Dev::CIHelpers do
 
     it "returns [] when dir missing" do
       Dir.mktmpdir("root") do |root|
-        expect(described_class.workflows_list(root)).to eq([])
+        expect(described_class.workflows_list(root)).to be_empty
       end
     end
   end
@@ -232,7 +232,7 @@ RSpec.describe Kettle::Dev::CIHelpers do
     it "returns nil when an exception occurs (rescued)" do
       allow(Net::HTTP).to receive(:start).and_raise(StandardError.new("boom"))
       expect(
-        described_class.latest_run(owner: owner, repo: repo, workflow_file: workflow, branch: branch),
+        described_class.latest_run(owner: owner, repo: repo, workflow_file: workflow, branch: branch)
       ).to be_nil
     end
   end
@@ -254,7 +254,7 @@ RSpec.describe Kettle::Dev::CIHelpers do
       it "returns origin url when config succeeds" do
         allow(Open3).to receive(:capture2).and_return([
           "git@gitlab.com:owner/repo.git\n",
-          instance_double(Process::Status, success?: true),
+          instance_double(Process::Status, success?: true)
         ])
         expect(described_class.origin_url).to eq("git@gitlab.com:owner/repo.git")
       end
@@ -423,7 +423,7 @@ RSpec.describe Kettle::Dev::CIHelpers do
       it "returns nil when an exception occurs (rescued)" do
         allow(Net::HTTP).to receive(:start).and_raise(StandardError.new("boom"))
         expect(
-          described_class.gitlab_latest_pipeline(owner: owner, repo: repo, branch: branch),
+          described_class.gitlab_latest_pipeline(owner: owner, repo: repo, branch: branch)
         ).to be_nil
       end
     end
@@ -438,8 +438,8 @@ RSpec.describe Kettle::Dev::CIHelpers do
       body = {
         "workflow_runs" => [
           {"id" => 10, "status" => "completed", "conclusion" => "success", "html_url" => "https://x/first", "head_sha" => "zzz"},
-          {"id" => 20, "status" => "completed", "conclusion" => "success", "html_url" => "https://x/second", "head_sha" => "abc"},
-        ],
+          {"id" => 20, "status" => "completed", "conclusion" => "success", "html_url" => "https://x/second", "head_sha" => "abc"}
+        ]
       }.to_json
 
       response = instance_double(Net::HTTPSuccess, body: body)
@@ -462,8 +462,8 @@ RSpec.describe Kettle::Dev::CIHelpers do
       body = {
         "workflow_runs" => [
           {"id" => 100, "status" => "completed", "conclusion" => "failure", "html_url" => "https://x/older", "head_sha" => "zzz999"},
-          {"id" => 200, "status" => "completed", "conclusion" => "success", "html_url" => "https://x/newer", "head_sha" => "abc123"},
-        ],
+          {"id" => 200, "status" => "completed", "conclusion" => "success", "html_url" => "https://x/newer", "head_sha" => "abc123"}
+        ]
       }.to_json
 
       response = instance_double(Net::HTTPSuccess, body: body)
@@ -512,7 +512,7 @@ RSpec.describe Kettle::Dev::CIHelpers do
         "id" => 42,
         "status" => "failed",
         "web_url" => "https://gitlab.com/me/repo/-/pipelines/42",
-        "failure_reason" => "script_failure",
+        "failure_reason" => "script_failure"
       )
     end
   end

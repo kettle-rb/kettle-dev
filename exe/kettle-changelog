@@ -102,7 +102,7 @@ rescue SystemExit => e
   # Preserve exit status, but ensure at least a newline so shells don't show an empty line only.
   warn("#{script_basename}: exited (status=#{e.status}, msg=#{e.message})") if e.status != 0
   raise
-rescue StandardError => e
+rescue => e
   warn("#{script_basename}: unexpected error: #{e.class}: #{e.message}")
   warn(e.backtrace.join("\n"))
   exit(1)

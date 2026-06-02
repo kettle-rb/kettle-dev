@@ -13,7 +13,7 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
       individuals_start: "<!-- #{default_base}-INDIVIDUALS:START -->",
       individuals_end: "<!-- #{default_base}-INDIVIDUALS:END -->",
       orgs_start: "<!-- #{default_base}-ORGANIZATIONS:START -->",
-      orgs_end: "<!-- #{default_base}-ORGANIZATIONS:END -->",
+      orgs_end: "<!-- #{default_base}-ORGANIZATIONS:END -->"
     }
   end
 
@@ -24,7 +24,7 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
       "OPENCOLLECTIVE_HANDLE" => nil,
       "KETTLE_README_BACKERS_COMMIT_SUBJECT" => nil,
       # Required by ReadmeBackers#validate
-      "README_UPDATER_TOKEN" => "test-token",
+      "README_UPDATER_TOKEN" => "test-token"
     )
   end
 
@@ -34,7 +34,7 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
         # Arrange members and README matching generated markdown
         raw = [
           {"name" => "Alice", "image" => nil, "website" => "https://a.example", "profile" => nil, "role" => "BACKER", "tier" => "Backer", "type" => "USER"},
-          {"name" => "", "image" => "", "website" => "", "profile" => "", "role" => "BACKER", "tier" => "Sponsor", "type" => "ORGANIZATION"},
+          {"name" => "", "image" => "", "website" => "", "profile" => "", "role" => "BACKER", "tier" => "Sponsor", "type" => "ORGANIZATION"}
         ]
         allow(instance).to receive(:fetch_all_backers_raw).and_return(raw)
         # Pre-seed README with the exact HTML that generate_markdown will produce
@@ -49,7 +49,7 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
           tags[:orgs_start],
           sponsor_html,
           tags[:orgs_end],
-          "",
+          ""
         ].join("\n")
         File.write(tmp_readme, content)
 
@@ -83,14 +83,14 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
           tags[:orgs_start],
           "old sponsors",
           tags[:orgs_end],
-          "",
+          ""
         ].join("\n")
         File.write(tmp_readme, initial)
 
         # Members that will generate different markdown
         raw = [
           {"name" => "Alice", "image" => nil, "website" => nil, "profile" => "https://github.com/Alice", "role" => "BACKER", "tier" => "Backer"},
-          {"name" => "Acme", "image" => nil, "website" => "https://acme.example", "profile" => nil, "role" => "BACKER", "tier" => "Sponsor"},
+          {"name" => "Acme", "image" => nil, "website" => "https://acme.example", "profile" => nil, "role" => "BACKER", "tier" => "Sponsor"}
         ]
         allow(instance).to receive(:fetch_all_backers_raw).and_return(raw)
 
@@ -137,7 +137,7 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
     it "builds tags from base" do
       expect(instance.send(:tag_strings)).to include(
         generic_start: tags[:generic_start],
-        orgs_end: tags[:orgs_end],
+        orgs_end: tags[:orgs_end]
       )
     end
   end
@@ -202,19 +202,19 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
       failure = instance_double(Net::HTTPResponse)
       allow(Net::HTTP).to receive(:start).and_return(failure)
       allow(failure).to receive(:is_a?).with(Net::HTTPSuccess).and_return(false)
-      expect(instance.send(:fetch_all_backers_raw)).to eq([])
+      expect(instance.send(:fetch_all_backers_raw)).to be_empty
     end
 
     it "rescues JSON parsing error" do
       bad = instance_double(Net::HTTPSuccess, body: "not json")
       allow(Net::HTTP).to receive(:start).and_return(bad)
       allow(bad).to receive(:is_a?).with(Net::HTTPSuccess).and_return(true)
-      expect(instance.send(:fetch_all_backers_raw)).to eq([])
+      expect(instance.send(:fetch_all_backers_raw)).to be_empty
     end
 
     it "rescues other StandardError" do
       allow(Net::HTTP).to receive(:start).and_raise(StandardError.new("boom"))
-      expect(instance.send(:fetch_all_backers_raw)).to eq([])
+      expect(instance.send(:fetch_all_backers_raw)).to be_empty
     end
   end
 
@@ -271,7 +271,7 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
         tags[:generic_start],
         "[![Alt Name](img)](https://Example.com)",
         "[![AnotherAlt](img)](https://site)",
-        tags[:generic_end],
+        tags[:generic_end]
       ].join("\n")
       ids = instance.send(:extract_section_identities, block, tags[:generic_start], tags[:generic_end])
       expect(ids).to include("https://example.com")
@@ -324,7 +324,7 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
         "http://github.com/sponsors/baz/",
         "https://notgithub.com/x",
         "http://github.com/",
-        "%%%baduri%%%",
+        "%%%baduri%%%"
       ]
       h1 = instance.send(:github_handle_from_urls, urls[0])
       h2 = instance.send(:github_handle_from_urls, urls[1])
@@ -408,11 +408,11 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
         instance_tags[:orgs_start],
         "",
         instance_tags[:orgs_end],
-        "",
+        ""
       ].join("\n"))
 
       raw = [
-        {"name" => "Firstname Lastname", "image" => nil, "website" => nil, "profile" => "https://opencollective.com/firstname-lastname", "role" => "BACKER", "tier" => ""},
+        {"name" => "Firstname Lastname", "image" => nil, "website" => nil, "profile" => "https://opencollective.com/firstname-lastname", "role" => "BACKER", "tier" => ""}
       ]
       allow(instance).to receive_messages(fetch_all_backers_raw: raw, git_repo?: false)
 
@@ -431,11 +431,11 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
       # README with both tags; backers will change, sponsors unchanged
       instance_tags = instance.send(:tag_strings)
       initial_backers = [
-        Kettle::Dev::ReadmeBackers::Backer.new(name: "Old", image: nil, website: nil, profile: nil),
+        Kettle::Dev::ReadmeBackers::Backer.new(name: "Old", image: nil, website: nil, profile: nil)
       ]
       initial_backers_md = instance.send(:generate_markdown, initial_backers, empty_message: "No backers yet. Be the first!", default_name: "Backer")
       initial_sponsors = [
-        Kettle::Dev::ReadmeBackers::Backer.new(name: "Org", image: nil, website: "https://org.example", profile: nil),
+        Kettle::Dev::ReadmeBackers::Backer.new(name: "Org", image: nil, website: "https://org.example", profile: nil)
       ]
       initial_sponsors_md = instance.send(:generate_markdown, initial_sponsors, empty_message: "No sponsors yet. Be the first!", default_name: "Sponsor")
       File.write(tmp_readme, [
@@ -444,13 +444,13 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
         instance_tags[:generic_end],
         instance_tags[:orgs_start],
         initial_sponsors_md,
-        instance_tags[:orgs_end],
+        instance_tags[:orgs_end]
       ].join("\n"))
 
       # New backers different; sponsors same so no change for sponsors
       raw = [
         {"name" => "Alice", "image" => nil, "website" => nil, "profile" => "https://github.com/alice", "role" => "BACKER", "tier" => "Backer"},
-        {"name" => "Org", "image" => nil, "website" => "https://org.example", "profile" => nil, "role" => "BACKER", "tier" => "Sponsor"},
+        {"name" => "Org", "image" => nil, "website" => "https://org.example", "profile" => nil, "role" => "BACKER", "tier" => "Sponsor"}
       ]
       allow(instance).to receive_messages(fetch_all_backers_raw: raw, git_repo?: true, perform_git_commit: nil)
 
@@ -470,12 +470,12 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
         instance_tags[:generic_end],
         instance_tags[:orgs_start],
         "old sponsors",
-        instance_tags[:orgs_end],
+        instance_tags[:orgs_end]
       ].join("\n"))
 
       raw = [
         {"name" => "Old", "image" => nil, "website" => nil, "profile" => nil, "role" => "BACKER", "tier" => "Backer"},
-        {"name" => "Acme", "image" => nil, "website" => "https://acme.example", "profile" => nil, "role" => "BACKER", "tier" => "Sponsor"},
+        {"name" => "Acme", "image" => nil, "website" => "https://acme.example", "profile" => nil, "role" => "BACKER", "tier" => "Sponsor"}
       ]
       allow(instance).to receive_messages(fetch_all_backers_raw: raw, git_repo?: true, perform_git_commit: nil)
 
@@ -490,10 +490,10 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
       File.write(tmp_readme, [
         instance_tags[:generic_start],
         "old",
-        instance_tags[:generic_end],
+        instance_tags[:generic_end]
       ].join("\n"))
       raw = [
-        {"name" => "A", "image" => nil, "website" => nil, "profile" => nil, "role" => "BACKER", "tier" => "Backer"},
+        {"name" => "A", "image" => nil, "website" => nil, "profile" => nil, "role" => "BACKER", "tier" => "Backer"}
       ]
       allow(instance).to receive_messages(fetch_all_backers_raw: raw, git_repo?: false)
       expect(instance).not_to receive(:perform_git_commit)
@@ -505,10 +505,10 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
       File.write(tmp_readme, [
         instance_tags[:generic_start],
         "old",
-        instance_tags[:generic_end],
+        instance_tags[:generic_end]
       ].join("\n"))
       raw = [
-        {"name" => "A", "image" => nil, "website" => nil, "profile" => nil, "role" => "BACKER", "tier" => "Backer"},
+        {"name" => "A", "image" => nil, "website" => nil, "profile" => nil, "role" => "BACKER", "tier" => "Backer"}
       ]
       allow(instance).to receive_messages(fetch_all_backers_raw: raw, git_repo?: true, perform_git_commit: nil)
       expect { instance.run! }.to output(a_string_matching(/Updated backers section in/)).to_stdout
@@ -520,10 +520,10 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
       File.write(tmp_readme, [
         instance_tags[:individuals_start],
         "No backers yet. Be the first!",
-        instance_tags[:individuals_end],
+        instance_tags[:individuals_end]
       ].join("\n"))
       raw = [
-        {"name" => "Indy", "avatar" => "https://img.example/indy.jpg", "website" => "https://indy.example", "profile" => "https://opencollective.com/indy", "role" => "BACKER", "tier" => "Backer"},
+        {"name" => "Indy", "avatar" => "https://img.example/indy.jpg", "website" => "https://indy.example", "profile" => "https://opencollective.com/indy", "role" => "BACKER", "tier" => "Backer"}
       ]
       allow(instance).to receive_messages(fetch_all_backers_raw: raw, git_repo?: true, perform_git_commit: nil)
       expect { instance.run! }.to output(a_string_matching(/Updated backers section in/)).to_stdout
@@ -608,7 +608,7 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
       stub_env(
         "README_UPDATER_TOKEN" => nil,
         "REPO" => "acme/widgets",
-        "GITHUB_REPOSITORY" => nil,
+        "GITHUB_REPOSITORY" => nil
       )
       expect {
         expect {
@@ -616,14 +616,14 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
         }.to raise_error(RuntimeError, 'Missing ENV["README_UPDATER_TOKEN"]')
       }.to output(
         a_string_including(
-          "ERROR: README_UPDATER_TOKEN is not set.\n",
+          "ERROR: README_UPDATER_TOKEN is not set.\n"
         ).and(
-          a_string_including("Please create an organization-level Actions secret named README_UPDATER_TOKEN at:"),
+          a_string_including("Please create an organization-level Actions secret named README_UPDATER_TOKEN at:")
         ).and(
-          a_string_including("https://github.com/organizations/acme/settings/secrets/actions"),
+          a_string_including("https://github.com/organizations/acme/settings/secrets/actions")
         ).and(
-          a_string_including("Then update the workflow to reference it, or provide README_UPDATER_TOKEN in the environment."),
-        ),
+          a_string_including("Then update the workflow to reference it, or provide README_UPDATER_TOKEN in the environment.")
+        )
       ).to_stderr
     end
 
@@ -631,7 +631,7 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
       stub_env(
         "README_UPDATER_TOKEN" => "abc123",
         "REPO" => nil,
-        "GITHUB_REPOSITORY" => nil,
+        "GITHUB_REPOSITORY" => nil
       )
       expect { expect(instance.validate).to be_nil }.not_to output.to_stderr
     end

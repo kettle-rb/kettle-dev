@@ -64,11 +64,11 @@ RSpec.describe Kettle::Dev::CIMonitor do
         project_root: Dir.pwd,
         workflows_list: ["ci.yml"],
         current_branch: "main",
-        latest_run: {"status" => "completed", "conclusion" => "success", "html_url" => "https://github.com/me/repo/actions/runs/1", "id" => 1},
+        latest_run: {"status" => "completed", "conclusion" => "success", "html_url" => "https://github.com/me/repo/actions/runs/1", "id" => 1}
       )
       allow(described_class).to receive_messages(
         preferred_github_remote: "origin",
-        remote_url: "https://github.com/me/repo.git",
+        remote_url: "https://github.com/me/repo.git"
       )
 
       # Expect initial sleep to be called with our configured value, then allow other sleeps (loop) to be stubbed
@@ -87,17 +87,17 @@ RSpec.describe Kettle::Dev::CIMonitor do
     it "preferred_github_remote prefers explicit then origin then first" do
       allow(described_class).to receive(:remotes_with_urls).and_return({
         "origin" => "https://github.com/me/repo.git",
-        "github" => "https://github.com/me/repo.git",
+        "github" => "https://github.com/me/repo.git"
       })
       expect(described_class.preferred_github_remote).to eq("github")
       allow(described_class).to receive(:remotes_with_urls).and_return({
         "origin" => "https://github.com/me/repo.git",
-        "upstream" => "https://github.com/me/repo.git",
+        "upstream" => "https://github.com/me/repo.git"
       })
       expect(described_class.preferred_github_remote).to eq("origin")
       allow(described_class).to receive(:remotes_with_urls).and_return({
         "foo" => "https://github.com/me/repo.git",
-        "bar" => "https://github.com/me/other.git",
+        "bar" => "https://github.com/me/other.git"
       })
       expect(described_class.preferred_github_remote).to eq("foo")
     end
@@ -118,7 +118,7 @@ RSpec.describe Kettle::Dev::CIMonitor do
       allow(described_class).to receive(:remotes_with_urls).and_return({
         "origin" => "https://gitlab.com/me/repo.git",
         "gh" => "git@github.com:me/repo.git",
-        "cb" => "https://codeberg.org/me/repo.git",
+        "cb" => "https://codeberg.org/me/repo.git"
       })
       expect(described_class.github_remote_candidates).to eq(["gh"])
     end
@@ -127,7 +127,7 @@ RSpec.describe Kettle::Dev::CIMonitor do
       allow(described_class).to receive(:remotes_with_urls).and_return({
         "origin" => "https://github.com/me/repo.git",
         "gl" => "git@gitlab.com:me/repo.git",
-        "cb" => "https://codeberg.org/me/repo.git",
+        "cb" => "https://codeberg.org/me/repo.git"
       })
       expect(described_class.gitlab_remote_candidates).to eq(["gl"])
     end
@@ -159,9 +159,9 @@ RSpec.describe Kettle::Dev::CIMonitor do
       # Simulate presence of failed checks so the prompt is reached
       allow(described_class).to receive(:collect_all).and_return({
         github: [
-          {workflow: "ci.yml", status: "completed", conclusion: "failure", url: "https://example"},
+          {workflow: "ci.yml", status: "completed", conclusion: "failure", url: "https://example"}
         ],
-        gitlab: nil,
+        gitlab: nil
       })
       # TTY environment
       allow($stdin).to receive(:tty?).and_return(true)
@@ -210,7 +210,7 @@ RSpec.describe Kettle::Dev::CIMonitor do
 
       res = described_class.collect_all
       expect(res).to be_a(Hash)
-      expect(res[:github]).to eq([]) # default
+      expect(res[:github]).to be_empty # default
       expect(res[:gitlab]).to be_nil
       expect(Kettle::Dev).to have_received(:debug_error).at_least(:once)
     end
@@ -220,7 +220,7 @@ RSpec.describe Kettle::Dev::CIMonitor do
       gl = {status: "success", url: "https://gitlab.com/x/y/-/pipelines"}
       allow(described_class).to receive_messages(
         collect_github: gh,
-        collect_gitlab: gl,
+        collect_gitlab: gl
       )
       res = described_class.collect_all
       expect(res[:github]).to eq(gh)
@@ -232,9 +232,9 @@ RSpec.describe Kettle::Dev::CIMonitor do
     it "prints GitHub and GitLab summaries and returns true when ok", :check_output do
       res = {
         github: [
-          {workflow: "ci.yml", status: "completed", conclusion: "success", url: "https://example"},
+          {workflow: "ci.yml", status: "completed", conclusion: "success", url: "https://example"}
         ],
-        gitlab: {status: "success", url: "https://gitlab.com/me/repo/-/pipelines"},
+        gitlab: {status: "success", url: "https://gitlab.com/me/repo/-/pipelines"}
       }
       expect(described_class.summarize_results(res)).to be true
     end
@@ -242,7 +242,7 @@ RSpec.describe Kettle::Dev::CIMonitor do
     it "returns false when GitLab failed", :check_output do
       res = {
         github: [],
-        gitlab: {status: "failed", url: nil},
+        gitlab: {status: "failed", url: nil}
       }
       expect(described_class.summarize_results(res)).to be false
     end
@@ -268,7 +268,7 @@ RSpec.describe Kettle::Dev::CIMonitor do
       # First workflow succeeds, second fails
       runs = {
         "ci.yml" => {"status" => "completed", "conclusion" => "success", "html_url" => "https://github.com/me/repo/actions/runs/1"},
-        "lint.yml" => {"status" => "completed", "conclusion" => "failure", "html_url" => nil},
+        "lint.yml" => {"status" => "completed", "conclusion" => "failure", "html_url" => nil}
       }
       allow(helpers).to receive(:latest_run) do |owner:, repo:, workflow_file:, branch:|
         runs[workflow_file]
@@ -279,7 +279,7 @@ RSpec.describe Kettle::Dev::CIMonitor do
       res = described_class.collect_github
       expect(res).to contain_exactly(
         include(workflow: "ci.yml", conclusion: "success", url: "https://github.com/me/repo/actions/runs/1"),
-        include(workflow: "lint.yml", conclusion: "failure", url: "https://github.com/me/repo/actions/workflows/lint.yml"),
+        include(workflow: "lint.yml", conclusion: "failure", url: "https://github.com/me/repo/actions/workflows/lint.yml")
       )
     end
 

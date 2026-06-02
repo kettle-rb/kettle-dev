@@ -15,7 +15,7 @@ RSpec.describe "exe/kettle-commit-msg" do
       # Ensure script does not try to validate branch or append footer
       stub_env(
         "GIT_HOOK_BRANCH_VALIDATE" => "false",
-        "GIT_HOOK_FOOTER_APPEND" => "false",
+        "GIT_HOOK_FOOTER_APPEND" => "false"
       )
 
       ruby = RbConfig.ruby
@@ -25,7 +25,7 @@ RSpec.describe "exe/kettle-commit-msg" do
       env = {
         "BUNDLE_GEMFILE" => nil,
         "BUNDLE_WITH" => nil,
-        "RUBYOPT" => (ENV["RUBYOPT"] || "").split.reject { |opt| opt.include?("bundler/setup") }.join(" "),
+        "RUBYOPT" => (ENV["RUBYOPT"] || "").split.reject { |opt| opt.include?("bundler/setup") }.join(" ")
       }.reject { |_, v| v.nil? }
 
       stdout, stderr, status = Open3.capture3(env, *cmd)
