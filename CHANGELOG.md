@@ -22,9 +22,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
-- Runtime dependency `kettle-test` now requires 2.0.2 or newer.
-- Generated style Gemfiles now use the current RuboCop-LTS Ruby 2.4 floor.
-
 ### Deprecated
 
 ### Removed
@@ -32,6 +29,18 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Fixed
 
 ### Security
+
+## [2.0.7] - 2026-06-01
+
+- TAG: [v2.0.7][2.0.7t]
+- COVERAGE: 93.14% -- 2961/3179 lines in 25 files
+- BRANCH COVERAGE: 76.88% -- 1204/1566 branches in 25 files
+- 75.93% documented
+
+### Changed
+
+- Runtime dependency `kettle-test` now requires 2.0.2 or newer.
+- Generated style Gemfiles now use the current RuboCop-LTS Ruby 2.4 floor.
 
 ## [2.0.6] - 2026-05-31
 
@@ -1849,7 +1858,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.6...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.7...HEAD
+[2.0.7]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.6...v2.0.7
+[2.0.7t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v2.0.7
 [2.0.6]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.5...v2.0.6
 [2.0.6t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v2.0.6
 [2.0.5]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.4...v2.0.5

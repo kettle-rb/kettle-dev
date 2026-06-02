@@ -44,12 +44,6 @@
     [68, 34, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
     [79, 36, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545]
   ],
-  "kettle-dev.gemspec:2809857957": [
-    [1, 1, 15, "Style/Encoding: Unnecessary utf-8 encoding comment.", 3274088582],
-    [82, 41, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545],
-    [96, 18, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call.", 177545],
-    [107, 14, 1, "Style/TrailingCommaInArrayLiteral: Avoid comma after the last item of an array.", 177545]
-  ],
   "lib/kettle-dev.rb:3954709658": [
     [1, 1, 41, "Lint/CopDirectiveSyntax: Malformed directive comment detected. Cop names must be separated by commas. Comment in the directive must start with `--`.", 3330142062]
   ],
