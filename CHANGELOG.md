@@ -23,6 +23,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Changed
 
 - Runtime dependency `kettle-test` now requires 2.0.2 or newer.
+- Generated style Gemfiles now use the current RuboCop-LTS Ruby 2.4 floor.
 
 ### Deprecated
 
