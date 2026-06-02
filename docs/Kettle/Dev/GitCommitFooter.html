@@ -579,9 +579,9 @@
 <span class='kw'>def</span> <span class='id identifier rubyid_git_toplevel'>git_toplevel</span>
   <span class='id identifier rubyid_toplevel'>toplevel</span> <span class='op'>=</span> <span class='kw'>nil</span>
   <span class='kw'>begin</span>
-    <span class='id identifier rubyid_out'>out</span> <span class='op'>=</span> <span class='backtick'>%x(</span><span class='tstring_content'>git rev-parse --show-toplevel 2&gt;/dev/null</span><span class='tstring_end'>)</span></span>
+    <span class='id identifier rubyid_out'>out</span> <span class='op'>=</span> <span class='backtick'>`</span><span class='tstring_content'>git rev-parse --show-toplevel 2&gt;/dev/null</span><span class='tstring_end'>`</span></span>
     <span class='id identifier rubyid_toplevel'>toplevel</span> <span class='op'>=</span> <span class='id identifier rubyid_out'>out</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span> <span class='kw'>unless</span> <span class='id identifier rubyid_out'>out</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>||</span> <span class='id identifier rubyid_out'>out</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
-  <span class='kw'>rescue</span> <span class='const'>StandardError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+  <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
     <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_error'><span class='object_link'><a href="../Dev.html#debug_error-class_method" title="Kettle::Dev.debug_error (method)">debug_error</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span>
     <span class='kw'>nil</span>
   <span class='kw'>end</span>
@@ -884,7 +884,7 @@
 </div>
 
       <div id="footer">
-  Generated on Wed May 27 14:58:08 2026 by
+  Generated on Tue Jun  2 02:06:02 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>
