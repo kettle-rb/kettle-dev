@@ -22,6 +22,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- Runtime dependency `kettle-test` now requires 2.0.2 or newer.
+
 ### Deprecated
 
 ### Removed
