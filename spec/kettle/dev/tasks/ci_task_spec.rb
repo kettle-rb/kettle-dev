@@ -235,6 +235,17 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
       end
     end
 
+    it "reads non-tty menu input through InputAdapter on the caller thread", :check_output do
+      main_thread = Thread.current
+      with_workflows(["ci.yml"]) do |_root, _dir|
+        allow(Kettle::Dev::InputAdapter).to receive(:gets) do
+          expect(Thread.current).to eq(main_thread)
+          "q\n"
+        end
+        expect { described_class.act(nil) }.not_to raise_error
+      end
+    end
+
     it "prints n/a for upstream and sha when git commands fail", :check_output do
       allow(Open3).to receive(:capture2).and_raise(StandardError)
       with_workflows(["ci.yml"]) do |_root, _dir|

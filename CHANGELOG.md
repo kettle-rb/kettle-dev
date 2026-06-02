@@ -28,6 +28,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Avoided moving mocked CI task input reads into a background thread for
+  non-interactive runs, fixing TruffleRuby v23.0-v23.1 CI stability.
+
 ### Security
 
 ## [2.0.7] - 2026-06-01

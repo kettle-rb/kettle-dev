@@ -262,17 +262,19 @@ module Kettle
           sleep(0.2)
 
           selected = nil
-          # Create input thread always so specs that assert its cleanup/exception behavior can exercise it,
-          # but guard against non-interactive stdin by rescuing 'bad tty' and similar errors immediately.
-          input_thread = Thread.new do # rubocop:disable ThreadSafety/NewThread
+          input_thread = nil
+          read_input = proc do
             begin
               selected = Kettle::Dev::InputAdapter.gets&.strip
             rescue StandardError, SystemExit, Interrupt => error
-              # Catch exceptions in background thread, including SystemExit
-              # NOTE: look into refactoring to minimize potential SystemExit.
-              puts "Error in background thread: #{error.class}: #{error.message}" if Kettle::Dev::DEBUGGING
+              puts "Error reading input: #{error.class}: #{error.message}" if Kettle::Dev::DEBUGGING
               selected = :input_error
             end
+          end
+          if tty
+            input_thread = Thread.new(&read_input) # rubocop:disable ThreadSafety/NewThread
+          else
+            read_input.call
           end
 
           status_q = Queue.new
