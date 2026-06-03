@@ -61,19 +61,23 @@ begin
     run_in_unbundled = proc do
       env = {"BUNDLE_GEMFILE" => "Appraisal.root.gemfile"}
 
-      # 1) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle update --bundler
-      ok = system(env, bundle, "update", "--bundler")
-      abort("appraisal:update failed: BUNDLE_GEMFILE=Appraisal.root.gemfile bundle update --bundler") unless ok
-
-      # 2) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle install
+      # 1) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle install
       ok = system(env, bundle, "install")
       abort("appraisal:update failed: BUNDLE_GEMFILE=Appraisal.root.gemfile bundle install") unless ok
 
-      # 3) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle exec appraisal update
+      # 2) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle update --bundler
+      ok = system(env, bundle, "update", "--bundler")
+      abort("appraisal:update failed: BUNDLE_GEMFILE=Appraisal.root.gemfile bundle update --bundler") unless ok
+
+      # 3) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle install
+      ok = system(env, bundle, "install")
+      abort("appraisal:update failed: BUNDLE_GEMFILE=Appraisal.root.gemfile bundle install") unless ok
+
+      # 4) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle exec appraisal update
       ok = system(env, bundle, "exec", "appraisal", "update")
       abort("appraisal:update failed: BUNDLE_GEMFILE=Appraisal.root.gemfile bundle exec appraisal update") unless ok
 
-      # 4) bundle exec rake rubocop_gradual:autocorrect
+      # 5) bundle exec rake rubocop_gradual:autocorrect
       ok = system(bundle, "exec", "rake", "rubocop_gradual:autocorrect")
       abort("appraisal:update failed: rubocop_gradual:autocorrect") unless ok
     end

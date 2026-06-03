@@ -28,6 +28,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `appraisal:update` now installs the `Appraisal.root.gemfile` bundle before
+  running `bundle update --bundler`, fixing first-run release failures when the
+  Appraisal root lockfile does not exist yet.
+
 ### Security
 
 ## [2.0.7] - 2026-06-01
@@ -547,7 +551,7 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - Template .yardopts now includes yard-yaml plugin (for CITATION.cff)
 - Template now includes a default `.yardopts` file
-  - Excludes *.gem, pkg/*.gem and .yardoc from documentation generation
+  - Excludes _.gem, pkg/_.gem and .yardoc from documentation generation
 
 ## [1.1.52] - 2025-11-08
 
@@ -1046,7 +1050,7 @@ Please file a bug if you notice a violation of semantic versioning.
 - improved documentation
 - better organized readme
 - badges are more clear & new badge for Ruby Friends Squad on Daily.dev
-    - https://app.daily.dev/squads/rubyfriends
+  - https://app.daily.dev/squads/rubyfriends
 
 ### Changed
 
@@ -1532,7 +1536,7 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- kettle:dev:install remove "Works with MRI Ruby*" lines with no badges left
+- kettle:dev:install remove "Works with MRI Ruby\*" lines with no badges left
 - kettle:dev:install prefix badge cell replacement with a single space
 
 ## [1.0.17] - 2025-08-29
@@ -1579,7 +1583,7 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- include gemfiles/modular/*gemfile.example with packaged gem
+- include gemfiles/modular/\*gemfile.example with packaged gem
 - CI workflow result polling logic revised:
   - includes a delay
   - scopes queries to specific commit SHA
@@ -1656,13 +1660,13 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Added
 
 - Add more .example templates
-    - .github/workflows/coverage.yml.example
-    - .gitlab-ci.yml.example
-    - Appraisals.example
+  - .github/workflows/coverage.yml.example
+  - .gitlab-ci.yml.example
+  - Appraisals.example
 - Kettle::Dev::InputAdapter: Input indirection layer for safe interactive prompts in tests; provides gets and readline; documented with YARD and typed with RBS.
 - install task README improvements
-    - extracts emoji grapheme from H1 to apply to gemspec's summary and description
-    - removes badges for unsupported rubies, and major version MRI row if all badges removed
+  - extracts emoji grapheme from H1 to apply to gemspec's summary and description
+  - removes badges for unsupported rubies, and major version MRI row if all badges removed
 - new exe script: kettle-changelog - transitions a changelog from unreleased to next release
 
 ### Changed
@@ -1674,17 +1678,17 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Removed
 
 - dependency on git gem
-    - git gem is still supported if present and not bypassed by new ENV variable `KETTLE_DEV_DISABLE_GIT_GEM`
-    - no longer a direct dependency
+  - git gem is still supported if present and not bypassed by new ENV variable `KETTLE_DEV_DISABLE_GIT_GEM`
+  - no longer a direct dependency
 
 ### Fixed
 
 - Upgrade stone_checksums for release compatibility with bundler v2.7+
-    - Retains compatibility with older bundler < v2.7
+  - Retains compatibility with older bundler < v2.7
 - Ship all example templates with gem
 - install task README preservation
-    - preserves H1 line, and specific H2 headed sections
-    - preserve table alignment
+  - preserves H1 line, and specific H2 headed sections
+  - preserve table alignment
 
 ## [1.0.10] - 2025-08-24
 
@@ -1707,7 +1711,7 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Removed
 
-- attempts to make exe/* scripts work without bundler. Bundler is required.
+- attempts to make exe/\* scripts work without bundler. Bundler is required.
 
 ### Fixed
 
@@ -1718,14 +1722,14 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - TAG: [v1.0.9][1.0.9t]
 - COVERAGE: 100.00% -- 130/130 lines in 7 files
-- BRANCH COVERAGE:  96.00% -- 48/50 branches in 7 files
+- BRANCH COVERAGE: 96.00% -- 48/50 branches in 7 files
 - 95.35% documented
 
 ### Added
 
 - kettle-release: Add a sanity check for the latest released version of the gem being released, and display it during the confirmation with user that CHANGELOG.md and version.rb have been updated, so they can compare the value in version.rb with the value of the latest released version.
-    - If the value in version.rb is less than the latest released version's major or minor, then check for the latest released version that matches the major + minor of what is in version.rb.
-    - This way a stable branch intended to release patch updates to older versions is able to work use the script.
+  - If the value in version.rb is less than the latest released version's major or minor, then check for the latest released version that matches the major + minor of what is in version.rb.
+  - This way a stable branch intended to release patch updates to older versions is able to work use the script.
 - kettle-release: optional pre-push local CI run using `act`, controlled by env var `K_RELEASE_LOCAL_CI` ("true" to run, "ask" to prompt) and `K_RELEASE_LOCAL_CI_WORKFLOW` to choose a workflow; defaults to `locked_deps.yml` when present; on failure, soft-resets the release prep commit and aborts.
 - template task: now copies `certs/pboling.pem` into the host project when available.
 
@@ -1749,7 +1753,7 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Reproducible builds, with consistent checksums, by *not* using SOURCE_DATE_EPOCH.
+- Reproducible builds, with consistent checksums, by _not_ using SOURCE_DATE_EPOCH.
   - Since bundler v2.7.0 builds are reproducible by default.
 
 ## [1.0.6] - 2025-08-24
@@ -1831,9 +1835,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - These were documented but not yet released:
   - `kettle-release` ruby script for safely, securely, releasing a gem.
-      - This may move to its own gem in the future.
+    - This may move to its own gem in the future.
   - `kettle-readme-backers` ruby script for integrating Open Source Collective backers into a README.md file.
-      - This may move to its own gem in the future.
+    - This may move to its own gem in the future.
 
 ## [1.0.0] - 2025-08-24
 
@@ -1851,7 +1855,7 @@ Please file a bug if you notice a violation of semantic versioning.
   - appraisal2
   - gitmoji-regex (& git-hooks to enforce gitmoji commit-style)
   - via kettle-test
-    - Note: rake tasks for kettle-test are added in *this gem* (kettle-dev) because test rake tasks are a development concern
+    - Note: rake tasks for kettle-test are added in _this gem_ (kettle-dev) because test rake tasks are a development concern
     - rspec
       - although rspec is the focus, most tools work with minitest as well
     - rspec-block_is_expected
