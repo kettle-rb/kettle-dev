@@ -28,6 +28,12 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `appraisal:update` now adds the current local platform to existing Appraisal
+  lockfiles and refreshes `yaml-converter` in appraisal locks that use it before
+  running `appraisal update`, fixing release failures when an appraisal lock only
+  contains normalized Linux platforms or a stale unpublished `yaml-converter`
+  version.
+
 ### Security
 
 ## [2.0.8] - 2026-06-02

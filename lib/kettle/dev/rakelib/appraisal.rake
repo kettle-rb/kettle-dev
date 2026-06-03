@@ -60,6 +60,7 @@ begin
 
     run_in_unbundled = proc do
       env = {"BUNDLE_GEMFILE" => "Appraisal.root.gemfile"}
+      local_platform = Gem::Platform.local.to_s
 
       # 1) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle install
       ok = system(env, bundle, "install")
@@ -73,11 +74,25 @@ begin
       ok = system(env, bundle, "install")
       abort("appraisal:update failed: BUNDLE_GEMFILE=Appraisal.root.gemfile bundle install") unless ok
 
-      # 4) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle exec appraisal update
+      # 4) Ensure existing appraisal locks include this machine's local platform before updates.
+      Dir.glob(File.join("gemfiles", "*.gemfile")).sort.each do |gemfile|
+        lockfile = "#{gemfile}.lock"
+        next unless File.file?(lockfile)
+
+        ok = system({"BUNDLE_GEMFILE" => gemfile}, bundle, "lock", "--add-platform", local_platform)
+        abort("appraisal:update failed: BUNDLE_GEMFILE=#{gemfile} bundle lock --add-platform #{local_platform}") unless ok
+
+        next unless File.read(gemfile).include?("yaml-converter") || File.read(lockfile).include?("yaml-converter")
+
+        ok = system({"BUNDLE_GEMFILE" => gemfile}, bundle, "update", "yaml-converter")
+        abort("appraisal:update failed: BUNDLE_GEMFILE=#{gemfile} bundle update yaml-converter") unless ok
+      end
+
+      # 5) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle exec appraisal update
       ok = system(env, bundle, "exec", "appraisal", "update")
       abort("appraisal:update failed: BUNDLE_GEMFILE=Appraisal.root.gemfile bundle exec appraisal update") unless ok
 
-      # 5) bundle exec rake rubocop_gradual:autocorrect
+      # 6) bundle exec rake rubocop_gradual:autocorrect
       ok = system(bundle, "exec", "rake", "rubocop_gradual:autocorrect")
       abort("appraisal:update failed: rubocop_gradual:autocorrect") unless ok
     end
