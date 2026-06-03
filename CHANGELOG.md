@@ -28,11 +28,20 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [2.0.8] - 2026-06-02
+
+- TAG: [v2.0.8][2.0.8t]
+- COVERAGE: 92.83% -- 2953/3181 lines in 25 files
+- BRANCH COVERAGE: 76.59% -- 1201/1568 branches in 25 files
+- 75.93% documented
+
+### Fixed
+
 - `appraisal:update` now installs the `Appraisal.root.gemfile` bundle before
   running `bundle update --bundler`, fixing first-run release failures when the
   Appraisal root lockfile does not exist yet.
-
-### Security
 
 ## [2.0.7] - 2026-06-01
 
@@ -1868,7 +1877,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.7...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.8...HEAD
+[2.0.8]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.7...v2.0.8
+[2.0.8t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v2.0.8
 [2.0.7]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.6...v2.0.7
 [2.0.7t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v2.0.7
 [2.0.6]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.5...v2.0.6
