@@ -9,13 +9,13 @@ env:
 on:
   push:
     branches:
-      - 'main'
-      - '*-stable'
+      - "main"
+      - "*-stable"
     tags:
-      - '!*' # Do not execute on tags
+      - "!*" # Do not execute on tags
   pull_request:
     branches:
-      - '*'
+      - "*"
   # Allow manually triggering the workflow.
   workflow_dispatch:
 
@@ -40,8 +40,8 @@ jobs:
           - ruby: "jruby-9.4"
             appraisal: "ruby-3-1"
             exec_cmd: "kettle-test"
-            rubygems: default
-            bundler: default
+            rubygems: "3.6.9"
+            bundler: "2.6.9"
 
     steps:
       - name: Checkout
