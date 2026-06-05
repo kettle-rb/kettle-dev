@@ -28,6 +28,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `appraisal:generate` now also runs `rubocop_gradual:autocorrect`, and
+  `appraisal:install` / `appraisal:update` fall back to generation before
+  autocorrecting when appraisal dependency resolution fails.
+
 ### Security
 
 ## [2.0.8] - 2026-06-02

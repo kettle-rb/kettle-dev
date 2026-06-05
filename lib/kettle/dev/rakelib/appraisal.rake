@@ -4,24 +4,82 @@
 begin
   require "appraisal/task"
 
+  bundle = "bundle"
+  appraisal_env = {"BUNDLE_GEMFILE" => "Appraisal.root.gemfile"}
+
+  run_command = lambda do |failure_message, *args|
+    ok = system(*args)
+    raise(failure_message) unless ok
+  end
+
+  run_autocorrect = lambda do |task_name|
+    run_command.call("#{task_name} failed: rubocop_gradual:autocorrect", bundle, "exec", "rake", "rubocop_gradual:autocorrect")
+  end
+
+  run_generate_steps = lambda do
+    # 1) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle install
+    run_command.call(
+      "appraisal:generate failed: BUNDLE_GEMFILE=Appraisal.root.gemfile bundle install",
+      appraisal_env,
+      bundle,
+      "install"
+    )
+
+    # 2) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle exec appraisal generate
+    run_command.call(
+      "appraisal:generate failed: BUNDLE_GEMFILE=Appraisal.root.gemfile bundle exec appraisal generate",
+      appraisal_env,
+      bundle,
+      "exec",
+      "appraisal",
+      "generate"
+    )
+  end
+
+  run_appraisal_task = lambda do |task_name, primary_steps = nil|
+    begin
+      if primary_steps
+        begin
+          primary_steps.call
+        rescue RuntimeError => e
+          warn("[kettle-dev][#{task_name}] #{e.message}; falling back to appraisal:generate")
+          run_generate_steps.call
+        end
+      else
+        run_generate_steps.call
+      end
+
+      run_autocorrect.call(task_name)
+    rescue RuntimeError => e
+      abort(e.message)
+    end
+  end
+
   desc("Install Appraisal gemfiles (initial setup for projects that didn't previously use Appraisal)")
   task("appraisal:install") do
-    bundle = "bundle"
-
     run_in_unbundled = proc do
-      env = {"BUNDLE_GEMFILE" => "Appraisal.root.gemfile"}
+      run_appraisal_task.call(
+        "appraisal:install",
+        lambda do
+          # 1) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle install
+          run_command.call(
+            "appraisal:install failed: BUNDLE_GEMFILE=Appraisal.root.gemfile bundle install",
+            appraisal_env,
+            bundle,
+            "install"
+          )
 
-      # 1) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle install
-      ok = system(env, bundle, "install")
-      abort("appraisal:install failed: BUNDLE_GEMFILE=Appraisal.root.gemfile bundle install") unless ok
-
-      # 2) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle exec appraisal install
-      ok = system(env, bundle, "exec", "appraisal", "install")
-      abort("appraisal:install failed: bundle exec appraisal install") unless ok
-
-      # 3) bundle exec rake rubocop_gradual:autocorrect
-      ok = system(bundle, "exec", "rake", "rubocop_gradual:autocorrect")
-      abort("appraisal:update failed: rubocop_gradual:autocorrect") unless ok
+          # 2) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle exec appraisal install
+          run_command.call(
+            "appraisal:install failed: BUNDLE_GEMFILE=Appraisal.root.gemfile bundle exec appraisal install",
+            appraisal_env,
+            bundle,
+            "exec",
+            "appraisal",
+            "install"
+          )
+        end
+      )
     end
 
     if defined?(Bundler)
@@ -33,18 +91,8 @@ begin
 
   desc("Generate Appraisal gemfiles without resolving appraisal locks")
   task("appraisal:generate") do
-    bundle = "bundle"
-
     run_in_unbundled = proc do
-      env = {"BUNDLE_GEMFILE" => "Appraisal.root.gemfile"}
-
-      # 1) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle install
-      ok = system(env, bundle, "install")
-      abort("appraisal:generate failed: BUNDLE_GEMFILE=Appraisal.root.gemfile bundle install") unless ok
-
-      # 2) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle exec appraisal generate
-      ok = system(env, bundle, "exec", "appraisal", "generate")
-      abort("appraisal:generate failed: BUNDLE_GEMFILE=Appraisal.root.gemfile bundle exec appraisal generate") unless ok
+      run_appraisal_task.call("appraisal:generate")
     end
 
     if defined?(Bundler)
@@ -56,30 +104,46 @@ begin
 
   desc("Update Appraisal gemfiles and run RuboCop Gradual autocorrect")
   task("appraisal:update") do
-    bundle = "bundle"
-
     run_in_unbundled = proc do
-      env = {"BUNDLE_GEMFILE" => "Appraisal.root.gemfile"}
+      run_appraisal_task.call(
+        "appraisal:update",
+        lambda do
+          # 1) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle install
+          run_command.call(
+            "appraisal:update failed: BUNDLE_GEMFILE=Appraisal.root.gemfile bundle install",
+            appraisal_env,
+            bundle,
+            "install"
+          )
 
-      # 1) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle install
-      ok = system(env, bundle, "install")
-      abort("appraisal:update failed: BUNDLE_GEMFILE=Appraisal.root.gemfile bundle install") unless ok
+          # 2) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle update --bundler
+          run_command.call(
+            "appraisal:update failed: BUNDLE_GEMFILE=Appraisal.root.gemfile bundle update --bundler",
+            appraisal_env,
+            bundle,
+            "update",
+            "--bundler"
+          )
 
-      # 2) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle update --bundler
-      ok = system(env, bundle, "update", "--bundler")
-      abort("appraisal:update failed: BUNDLE_GEMFILE=Appraisal.root.gemfile bundle update --bundler") unless ok
+          # 3) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle install
+          run_command.call(
+            "appraisal:update failed: BUNDLE_GEMFILE=Appraisal.root.gemfile bundle install",
+            appraisal_env,
+            bundle,
+            "install"
+          )
 
-      # 3) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle install
-      ok = system(env, bundle, "install")
-      abort("appraisal:update failed: BUNDLE_GEMFILE=Appraisal.root.gemfile bundle install") unless ok
-
-      # 4) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle exec appraisal update
-      ok = system(env, bundle, "exec", "appraisal", "update")
-      abort("appraisal:update failed: BUNDLE_GEMFILE=Appraisal.root.gemfile bundle exec appraisal update") unless ok
-
-      # 5) bundle exec rake rubocop_gradual:autocorrect
-      ok = system(bundle, "exec", "rake", "rubocop_gradual:autocorrect")
-      abort("appraisal:update failed: rubocop_gradual:autocorrect") unless ok
+          # 4) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle exec appraisal update
+          run_command.call(
+            "appraisal:update failed: BUNDLE_GEMFILE=Appraisal.root.gemfile bundle exec appraisal update",
+            appraisal_env,
+            bundle,
+            "exec",
+            "appraisal",
+            "update"
+          )
+        end
+      )
     end
 
     if defined?(Bundler)
