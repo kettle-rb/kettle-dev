@@ -6,7 +6,7 @@
 # kettle-dev will then preserve content between those markers across template runs.
 # kettle-jem:unfreeze
 
-# HOW TO UPDATE APPRAISALS (will run rubocop_gradual's autocorrect afterward):
+# HOW TO UPDATE APPRAISALS:
 #   bin/rake appraisal:update
 
 # Lock/Unlock Deps Pattern

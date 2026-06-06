@@ -12,10 +12,6 @@ begin
     raise(failure_message) unless ok
   end
 
-  run_autocorrect = lambda do |task_name|
-    run_command.call("#{task_name} failed: rubocop_gradual:autocorrect", bundle, "exec", "rake", "rubocop_gradual:autocorrect")
-  end
-
   run_generate_steps = lambda do
     # 1) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle install
     run_command.call(
@@ -49,7 +45,6 @@ begin
         run_generate_steps.call
       end
 
-      run_autocorrect.call(task_name)
     rescue RuntimeError => e
       abort(e.message)
     end
@@ -69,14 +64,14 @@ begin
             "install"
           )
 
-          # 2) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle exec appraisal install
+          # 2) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle exec appraisal generate-install
           run_command.call(
-            "appraisal:install failed: BUNDLE_GEMFILE=Appraisal.root.gemfile bundle exec appraisal install",
+            "appraisal:install failed: BUNDLE_GEMFILE=Appraisal.root.gemfile bundle exec appraisal generate-install",
             appraisal_env,
             bundle,
             "exec",
             "appraisal",
-            "install"
+            "generate-install"
           )
         end
       )
@@ -102,7 +97,7 @@ begin
     end
   end
 
-  desc("Update Appraisal gemfiles and run RuboCop Gradual autocorrect")
+  desc("Generate and update Appraisal gemfiles")
   task("appraisal:update") do
     run_in_unbundled = proc do
       run_appraisal_task.call(
@@ -133,14 +128,14 @@ begin
             "install"
           )
 
-          # 4) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle exec appraisal update
+          # 4) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle exec appraisal generate-update
           run_command.call(
-            "appraisal:update failed: BUNDLE_GEMFILE=Appraisal.root.gemfile bundle exec appraisal update",
+            "appraisal:update failed: BUNDLE_GEMFILE=Appraisal.root.gemfile bundle exec appraisal generate-update",
             appraisal_env,
             bundle,
             "exec",
             "appraisal",
-            "update"
+            "generate-update"
           )
         end
       )

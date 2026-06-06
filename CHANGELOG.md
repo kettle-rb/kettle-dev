@@ -22,15 +22,19 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- `appraisal:install` now uses `appraisal generate-install`, and
+  `appraisal:update` now uses `appraisal generate-update`, preserving
+  generation-before-resolution behavior after Appraisal2 split pure install and
+  update commands from generation.
+- Appraisal gemfile cleanup is no longer run directly by kettle-dev appraisal
+  tasks; projects that need generated gemfile normalization should load an
+  Appraisal2 plugin hook such as `appraisal2-rubocop`.
+
 ### Deprecated
 
 ### Removed
 
 ### Fixed
-
-- `appraisal:generate` now also runs `rubocop_gradual:autocorrect`, and
-  `appraisal:install` / `appraisal:update` fall back to generation before
-  autocorrecting when appraisal dependency resolution fails.
 
 ### Security
 

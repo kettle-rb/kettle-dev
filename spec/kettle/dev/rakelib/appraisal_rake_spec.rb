@@ -8,7 +8,6 @@ RSpec.describe "appraisal rake tasks" do # rubocop:disable RSpec/DescribeClass
   describe "rake appraisal:generate" do
     let(:task_name) { "appraisal:generate" }
     let(:appraisal_env) { {"BUNDLE_GEMFILE" => "Appraisal.root.gemfile"} }
-    let(:autocorrect_call) { ["bundle", "exec", "rake", "rubocop_gradual:autocorrect"] }
     let(:system_calls) { [] }
 
     before do
@@ -24,8 +23,7 @@ RSpec.describe "appraisal rake tasks" do # rubocop:disable RSpec/DescribeClass
 
       expect(system_calls).to eq([
         [appraisal_env, "bundle", "install"],
-        [appraisal_env, "bundle", "exec", "appraisal", "generate"],
-        autocorrect_call
+        [appraisal_env, "bundle", "exec", "appraisal", "generate"]
       ])
     end
   end
@@ -33,8 +31,7 @@ RSpec.describe "appraisal rake tasks" do # rubocop:disable RSpec/DescribeClass
   describe "rake appraisal:install" do
     let(:task_name) { "appraisal:install" }
     let(:appraisal_env) { {"BUNDLE_GEMFILE" => "Appraisal.root.gemfile"} }
-    let(:autocorrect_call) { ["bundle", "exec", "rake", "rubocop_gradual:autocorrect"] }
-    let(:appraisal_install_call) { [appraisal_env, "bundle", "exec", "appraisal", "install"] }
+    let(:appraisal_install_call) { [appraisal_env, "bundle", "exec", "appraisal", "generate-install"] }
     let(:failed_calls) { [] }
     let(:system_calls) { [] }
 
@@ -47,28 +44,26 @@ RSpec.describe "appraisal rake tasks" do # rubocop:disable RSpec/DescribeClass
       end
     end
 
-    it "installs appraisal gemfiles and runs RuboCop Gradual autocorrect" do
+    it "generates and installs appraisal gemfiles" do
       invoke
 
       expect(system_calls).to eq([
         [appraisal_env, "bundle", "install"],
-        appraisal_install_call,
-        autocorrect_call
+        appraisal_install_call
       ])
     end
 
     context "when appraisal install fails" do
       let(:failed_calls) { [appraisal_install_call] }
 
-      it "falls back to generating appraisal gemfiles before autocorrecting" do
+      it "falls back to generating appraisal gemfiles" do
         invoke
 
         expect(system_calls).to eq([
           [appraisal_env, "bundle", "install"],
           appraisal_install_call,
           [appraisal_env, "bundle", "install"],
-          [appraisal_env, "bundle", "exec", "appraisal", "generate"],
-          autocorrect_call
+          [appraisal_env, "bundle", "exec", "appraisal", "generate"]
         ])
       end
     end
@@ -77,8 +72,7 @@ RSpec.describe "appraisal rake tasks" do # rubocop:disable RSpec/DescribeClass
   describe "rake appraisal:update" do
     let(:task_name) { "appraisal:update" }
     let(:appraisal_env) { {"BUNDLE_GEMFILE" => "Appraisal.root.gemfile"} }
-    let(:autocorrect_call) { ["bundle", "exec", "rake", "rubocop_gradual:autocorrect"] }
-    let(:appraisal_update_call) { [appraisal_env, "bundle", "exec", "appraisal", "update"] }
+    let(:appraisal_update_call) { [appraisal_env, "bundle", "exec", "appraisal", "generate-update"] }
     let(:failed_calls) { [] }
     let(:system_calls) { [] }
 
@@ -98,15 +92,14 @@ RSpec.describe "appraisal rake tasks" do # rubocop:disable RSpec/DescribeClass
         [appraisal_env, "bundle", "install"],
         [appraisal_env, "bundle", "update", "--bundler"],
         [appraisal_env, "bundle", "install"],
-        appraisal_update_call,
-        autocorrect_call
+        appraisal_update_call
       ])
     end
 
     context "when appraisal update fails" do
       let(:failed_calls) { [appraisal_update_call] }
 
-      it "falls back to generating appraisal gemfiles before autocorrecting" do
+      it "falls back to generating appraisal gemfiles" do
         invoke
 
         expect(system_calls).to eq([
@@ -115,8 +108,7 @@ RSpec.describe "appraisal rake tasks" do # rubocop:disable RSpec/DescribeClass
           [appraisal_env, "bundle", "install"],
           appraisal_update_call,
           [appraisal_env, "bundle", "install"],
-          [appraisal_env, "bundle", "exec", "appraisal", "generate"],
-          autocorrect_call
+          [appraisal_env, "bundle", "exec", "appraisal", "generate"]
         ])
       end
     end
