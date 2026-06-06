@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 # kettle-jem:freeze
-# To retain chunks of comments & code during kettle-dev templating:
+# To retain chunks of comments & code during kettle-jem templating:
 # Wrap custom sections with freeze markers (e.g., as above and below this comment chunk).
-# kettle-dev will then preserve content between those markers across template runs.
+# kettle-jem will then preserve content between those markers across template runs.
 # kettle-jem:unfreeze
 
 gem_version =
@@ -13,12 +13,7 @@ gem_version =
     # See: https://github.com/panorama-ed/memo_wise/pull/397
     Module.new.tap { |mod| Kernel.load("#{__dir__}/lib/kettle/dev/version.rb", mod) }::Kettle::Dev::Version::VERSION
   else
-    # NOTE: Use __FILE__ or __dir__ until removal of Ruby 1.x support
-    # __dir__ introduced in Ruby 1.9.1
-    # lib = File.expand_path("../lib", __FILE__)
-    lib = File.expand_path("lib", __dir__)
-    $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-    require "kettle/dev/version"
+    require_relative "lib/kettle/dev/version"
     Kettle::Dev::Version::VERSION
   end
 
@@ -109,6 +104,12 @@ Gem::Specification.new do |spec|
   # Listed files are the relative paths from bindir above.
   spec.executables = ["kettle-changelog", "kettle-check-eof", "kettle-commit-msg", "kettle-dev-setup", "kettle-dvcs", "kettle-gh-release", "kettle-pre-release", "kettle-readme-backers", "kettle-release"]
 
+# kettle-jem:freeze
+# To retain chunks of comments & code during kettle-dev templating:
+# Wrap custom sections with freeze markers (e.g., as above and below this comment chunk).
+# kettle-dev will then preserve content between those markers across template runs.
+# kettle-jem:unfreeze
+
   # kettle-jem:freeze
   # To retain chunks of comments & code during kettle-jem templating:
   # Wrap custom sections with freeze markers (e.g., as above and below this comment chunk).
@@ -126,7 +127,7 @@ Gem::Specification.new do |spec|
 
   # Utilities
   spec.add_dependency("kettle-test", "~> 2.0", ">= 2.0.2")              # ruby >= 2.4
-  spec.add_dependency("version_gem", "~> 1.1", ">= 1.1.9")              # ruby >= 2.2.0
+  spec.add_dependency("version_gem", "~> 1.1", ">= 1.1.10")              # ruby >= 2.2.0
 
   # NOTE: It is preferable to list development dependencies in the gemspec due to increased
   #       visibility and discoverability.
