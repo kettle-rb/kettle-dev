@@ -44,7 +44,6 @@ begin
       else
         run_generate_steps.call
       end
-
     rescue RuntimeError => e
       abort(e.message)
     end

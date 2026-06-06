@@ -22,14 +22,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
-- `appraisal:install` now uses `appraisal generate-install`, and
-  `appraisal:update` now uses `appraisal generate-update`, preserving
-  generation-before-resolution behavior after Appraisal2 split pure install and
-  update commands from generation.
-- Appraisal gemfile cleanup is no longer run directly by kettle-dev appraisal
-  tasks; projects that need generated gemfile normalization should load an
-  Appraisal2 plugin hook such as `appraisal2-rubocop`.
-
 ### Deprecated
 
 ### Removed
@@ -37,6 +29,23 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Fixed
 
 ### Security
+
+## [2.1.0] - 2026-06-06
+
+- TAG: [v2.1.0][2.1.0t]
+- COVERAGE: 93.52% -- 2973/3179 lines in 25 files
+- BRANCH COVERAGE: 77.58% -- 1204/1552 branches in 25 files
+- 75.93% documented
+
+### Changed
+
+- `appraisal:install` now uses `appraisal generate-install`, and
+  `appraisal:update` now uses `appraisal generate-update`, preserving
+  generation-before-resolution behavior after Appraisal2 split pure install and
+  update commands from generation.
+- Appraisal gemfile cleanup is no longer run directly by kettle-dev appraisal
+  tasks; projects that need generated gemfile normalization should load an
+  Appraisal2 plugin hook such as `appraisal2-rubocop`.
 
 ## [2.0.8] - 2026-06-02
 
@@ -1885,7 +1894,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.8...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.8...v2.1.0
+[2.1.0t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v2.1.0
 [2.0.8]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.7...v2.0.8
 [2.0.8t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v2.0.8
 [2.0.7]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.6...v2.0.7

@@ -104,11 +104,11 @@ Gem::Specification.new do |spec|
   # Listed files are the relative paths from bindir above.
   spec.executables = ["kettle-changelog", "kettle-check-eof", "kettle-commit-msg", "kettle-dev-setup", "kettle-dvcs", "kettle-gh-release", "kettle-pre-release", "kettle-readme-backers", "kettle-release"]
 
-# kettle-jem:freeze
-# To retain chunks of comments & code during kettle-dev templating:
-# Wrap custom sections with freeze markers (e.g., as above and below this comment chunk).
-# kettle-dev will then preserve content between those markers across template runs.
-# kettle-jem:unfreeze
+  # kettle-jem:freeze
+  # To retain chunks of comments & code during kettle-dev templating:
+  # Wrap custom sections with freeze markers (e.g., as above and below this comment chunk).
+  # kettle-dev will then preserve content between those markers across template runs.
+  # kettle-jem:unfreeze
 
   # kettle-jem:freeze
   # To retain chunks of comments & code during kettle-jem templating:
