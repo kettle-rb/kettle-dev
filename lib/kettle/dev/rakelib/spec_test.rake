@@ -3,14 +3,19 @@
 require "fileutils"
 
 # rubocop:disable Rake/DuplicateTask
+minitest_files = FileList["test/*test*.rb", "test/**/*test*.rb"].to_a.uniq
+rspec_files = FileList["spec/*_spec.rb", "spec/**/*_spec.rb"].to_a.uniq
+minitest_project = !minitest_files.empty?
+rspec_project = !rspec_files.empty?
+
 # Set up MiniTest
 begin
   require "rake/testtask"
 
-  unless Rake::Task.task_defined?(:test)
+  if minitest_project && !Rake::Task.task_defined?(:test)
     Rake::TestTask.new(:test) do |t|
       t.libs << "test"
-      t.test_files = FileList["test/**/*test*.rb"]
+      t.test_files = minitest_files
       t.verbose = true
     end
     # The test task is invoked by the coverage task, so of the two, (i.e., when outside CI),
@@ -44,20 +49,23 @@ setup_spec_task = ->(default:) {
   end
 }
 
-# Setup RSpec
-if defined?(Kettle::Dev::IS_CI)
-  if Kettle::Dev::IS_CI
-    # then we should not have a coverage task, but do want a spec test.
-    setup_spec_task.call(default: true)
+# Setup RSpec only when this project has specs, or when no MiniTest suite exists
+# and the historical kettle-test/RSpec default remains the best available task.
+if rspec_project || !minitest_project
+  if defined?(Kettle::Dev::IS_CI)
+    if Kettle::Dev::IS_CI
+      # then we should not have a coverage task, but do want a spec test.
+      setup_spec_task.call(default: true)
+    else
+      # then we should have a coverage task.
+      # The coverage task will invoke the "test" task, which will invoke the spec task.
+      setup_spec_task.call(default: false)
+    end
   else
-    # then we should have a coverage task.
-    # The coverage task will invoke the "test" task, which will invoke the spec task.
-    setup_spec_task.call(default: false)
+    # then we do not have a coverage task setup by this gem, and are not in a coverage context.
+    # So setup a spec test.
+    setup_spec_task.call(default: true)
   end
-else
-  # then we do not have a coverage task setup by this gem, and are not in a coverage context.
-  # So setup a spec test.
-  setup_spec_task.call(default: true)
 end
 
 spec_registered = Kettle::Dev.default_registered?("spec")

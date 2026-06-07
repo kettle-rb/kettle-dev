@@ -28,6 +28,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Minitest-only projects now keep `rake test` on the generated
+  `Rake::TestTask` path instead of synthesizing a `kettle-test` RSpec task when
+  tests live directly under `test/`.
+
 ### Security
 
 ## [2.1.1] - 2026-06-06
