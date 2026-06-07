@@ -26,6 +26,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- Refreshed kettle-jem template output, including Appraisal2 plugin wiring and
+  current dependency floors for `appraisal2`, `appraisal2-rubocop`, and
+  `version_gem`.
+
 ### Deprecated
 
 ### Removed
