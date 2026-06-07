@@ -4,7 +4,7 @@ source "https://gem.coop"
 
 gem "cgi", ">= 0.5"
 
-gemspec :path => "../"
+gemspec path: "../"
 
 eval_gemfile("modular/recording/r4/recording.gemfile")
 

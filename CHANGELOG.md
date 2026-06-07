@@ -20,6 +20,25 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [2.1.1] - 2026-06-06
+
+- TAG: [v2.1.1][2.1.1t]
+- COVERAGE: 93.11% -- 2988/3209 lines in 25 files
+- BRANCH COVERAGE: 77.58% -- 1218/1570 branches in 25 files
+- 75.93% documented
+
+### Added
+
 - `kettle-release --local-ci` for sensitive releases that run `act` locally,
   publish the gem before any git push, create the release tag locally, and push
   commits and tags only after publishing succeeds.
@@ -29,14 +48,6 @@ Please file a bug if you notice a violation of semantic versioning.
 - Refreshed kettle-jem template output, including Appraisal2 plugin wiring and
   current dependency floors for `appraisal2`, `appraisal2-rubocop`, and
   `version_gem`.
-
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
 
 ## [2.1.0] - 2026-06-06
 
@@ -1902,7 +1913,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v2.1.0...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v2.1.1...HEAD
+[2.1.1]: https://github.com/kettle-rb/kettle-dev/compare/v2.1.0...v2.1.1
+[2.1.1t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v2.1.1
 [2.1.0]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.8...v2.1.0
 [2.1.0t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v2.1.0
 [2.0.8]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.7...v2.0.8
