@@ -575,6 +575,40 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect(cli).to have_received(:run_cmd!).with("bin/gem_checksums")
       end
 
+      it "runs local-ci mode without pushing until after the gem is published" do
+        local_cli = described_class.new(local_ci: true)
+        allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("y\n")
+        stub_env("SKIP_GEM_SIGNING" => "true", "GITHUB_TOKEN" => nil)
+
+        allow(local_cli).to receive(:ensure_bundler_2_7_plus!)
+        allow(local_cli).to receive(:detect_version).and_return("9.9.9")
+        allow(local_cli).to receive(:detect_gem_name).and_return("mygem")
+        allow(local_cli).to receive(:latest_released_versions).and_return([nil, nil])
+        allow(local_cli).to receive(:validate_copyright_years!)
+        allow(local_cli).to receive(:update_readme_kloc_badge!)
+        allow(local_cli).to receive(:update_rakefile_example_header!)
+        allow(local_cli).to receive(:run_cmd!).and_return(true)
+        allow(local_cli).to receive(:ensure_git_user!)
+        allow(local_cli).to receive(:commit_release_prep!).and_return(true)
+        allow(local_cli).to receive(:ensure_signing_setup_or_skip!)
+        allow(local_cli).to receive(:validate_checksums!)
+        allow(local_cli).to receive(:maybe_create_github_release!)
+
+        expect(local_cli).to receive(:maybe_run_local_ci_before_push!).with(true, force: true).ordered
+        expect(local_cli).not_to receive(:ensure_trunk_synced_before_push!)
+        expect(local_cli).not_to receive(:monitor_workflows_after_push!)
+        expect(local_cli).not_to receive(:merge_feature_into_trunk_and_push!)
+        expect(local_cli).not_to receive(:checkout!)
+        expect(local_cli).not_to receive(:pull!)
+        expect(local_cli).to receive(:release_gem_and_tag_locally!).with("9.9.9").ordered
+        expect(local_cli).to receive(:push!).ordered
+        expect(local_cli).to receive(:push_tags!).ordered
+
+        expect { local_cli.run }.not_to raise_error
+        expect(local_cli).to have_received(:run_cmd!).with("bundle exec rake build")
+        expect(local_cli).not_to have_received(:run_cmd!).with("bundle exec rake release")
+      end
+
       it "skips appraisal:update when Appraisals file missing" do
         # Accept initial prompt via input adapter
         allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("y\n")
@@ -832,6 +866,54 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
           expect(cli).to receive(:system).with("act", "-W", file_path).and_return(false)
           expect(cli).to receive(:system).with("git", "reset", "--soft", "HEAD^")
           expect { cli.send(:maybe_run_local_ci_before_push!, true) }.to raise_error(MockSystemExit, /local CI failure/)
+        end
+      end
+
+      it "aborts when forced and act is unavailable" do
+        allow(cli).to receive(:system).with("act", "--version", out: File::NULL, err: File::NULL).and_return(false)
+        expect { cli.send(:maybe_run_local_ci_before_push!, false, force: true) }.to raise_error(MockSystemExit, /Local CI requires 'act'/)
+      end
+
+      it "aborts when forced and no workflows are available" do
+        allow(cli).to receive(:system).with("act", "--version", out: File::NULL, err: File::NULL).and_return(true)
+        allow(ci_helpers).to receive(:project_root).and_return(Dir.pwd)
+        allow(ci_helpers).to receive(:workflows_list).and_return([])
+        expect { cli.send(:maybe_run_local_ci_before_push!, false, force: true) }.to raise_error(MockSystemExit, /requires at least one workflow/)
+      end
+    end
+
+    describe "#release_gem_and_tag_locally!" do
+      it "creates a local tag and pushes the built gem without pushing git refs" do
+        Dir.mktmpdir do |root|
+          allow(ci_helpers).to receive(:project_root).and_return(root)
+          pkg = File.join(root, "pkg")
+          FileUtils.mkdir_p(pkg)
+          gem_path = File.join(pkg, "mygem-1.2.3.gem")
+          File.write(gem_path, "gem")
+          local_cli = described_class.new
+
+          allow(local_cli).to receive(:git_output).with(["rev-parse", "-q", "--verify", "refs/tags/v1.2.3"]).and_return(["", false])
+          expect(local_cli).to receive(:run_cmd!).with("git tag -a v1.2.3 -m v1.2.3").ordered
+          expect(local_cli).to receive(:run_cmd!).with("gem push #{gem_path}").ordered
+
+          local_cli.send(:release_gem_and_tag_locally!, "1.2.3")
+        end
+      end
+
+      it "does not recreate an existing local tag" do
+        Dir.mktmpdir do |root|
+          allow(ci_helpers).to receive(:project_root).and_return(root)
+          pkg = File.join(root, "pkg")
+          FileUtils.mkdir_p(pkg)
+          gem_path = File.join(pkg, "mygem-1.2.3.gem")
+          File.write(gem_path, "gem")
+          local_cli = described_class.new
+
+          allow(local_cli).to receive(:git_output).with(["rev-parse", "-q", "--verify", "refs/tags/v1.2.3"]).and_return(["abc", true])
+          expect(local_cli).not_to receive(:run_cmd!).with(/git tag/)
+          expect(local_cli).to receive(:run_cmd!).with("gem push #{gem_path}")
+
+          local_cli.send(:release_gem_and_tag_locally!, "1.2.3")
         end
       end
     end

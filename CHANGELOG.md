@@ -20,6 +20,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- `kettle-release --local-ci` for sensitive releases that run `act` locally,
+  publish the gem before any git push, create the release tag locally, and push
+  commits and tags only after publishing succeeds.
+
 ### Changed
 
 ### Deprecated

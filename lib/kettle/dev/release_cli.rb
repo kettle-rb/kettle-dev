@@ -70,11 +70,12 @@ module Kettle
 
       public
 
-      def initialize(start_step: 1)
+      def initialize(start_step: 1, local_ci: false)
         @root = Kettle::Dev::CIHelpers.project_root
         @git = Kettle::Dev::GitAdapter.new
         @start_step = (start_step || 1).to_i
         @start_step = 1 if @start_step < 1
+        @local_ci = !!local_ci
       end
 
       def run
@@ -206,31 +207,33 @@ module Kettle
         end
 
         # 7. optional local CI via act
-        maybe_run_local_ci_before_push!(committed) if @start_step <= 7
+        maybe_run_local_ci_before_push!(committed, force: local_ci?) if @start_step <= 7
 
         # 8. ensure trunk synced
-        if @start_step <= 8
+        if @start_step <= 8 && !local_ci?
           trunk = detect_trunk_branch
           feature = current_branch
           puts "Trunk branch detected: #{trunk}"
           ensure_trunk_synced_before_push!(trunk, feature)
+        elsif @start_step <= 8
+          puts "Local CI release mode: skipping remote trunk sync before publishing."
         end
 
         # 9. push branches
-        push! if @start_step <= 9
+        push! if @start_step <= 9 && !local_ci?
 
         # 10. monitor CI after push
-        monitor_workflows_after_push! if @start_step <= 10
+        monitor_workflows_after_push! if @start_step <= 10 && !local_ci?
 
         # 11. merge feature into trunk and push
-        if @start_step <= 11
+        if @start_step <= 11 && !local_ci?
           trunk ||= detect_trunk_branch
           feature ||= current_branch
           merge_feature_into_trunk_and_push!(trunk, feature)
         end
 
         # 12. checkout trunk and pull
-        if @start_step <= 12
+        if @start_step <= 12 && !local_ci?
           trunk ||= detect_trunk_branch
           checkout!(trunk)
           pull!(trunk)
@@ -265,8 +268,13 @@ module Kettle
 
         # 15. release and tag
         if @start_step <= 15
-          puts "Running release (you may be prompted for signing key password and RubyGems MFA OTP)..."
-          run_cmd!("bundle exec rake release")
+          if local_ci?
+            version ||= detect_version
+            release_gem_and_tag_locally!(version)
+          else
+            puts "Running release (you may be prompted for signing key password and RubyGems MFA OTP)..."
+            run_cmd!("bundle exec rake release")
+          end
         end
 
         # 16. generate checksums
@@ -281,7 +289,10 @@ module Kettle
         end
 
         # 17. push checksum commit (gem_checksums already commits)
-        push! if @start_step <= 17
+        if @start_step <= 17
+          push!
+          push_tags! if local_ci?
+        end
 
         # 18. create GitHub release (optional)
         if @start_step <= 18
@@ -290,7 +301,7 @@ module Kettle
         end
 
         # 19. push tags to remotes (final step)
-        push_tags! if @start_step <= 19
+        push_tags! if @start_step <= 19 && !local_ci?
 
         # Final success message
         begin
@@ -305,6 +316,10 @@ module Kettle
       end
 
       private
+
+      def local_ci?
+        @local_ci
+      end
 
       # Update the README KLOC badge number based on the denominator in the current version's COVERAGE line in CHANGELOG.md.
       # - Parses the current version section of CHANGELOG.md
@@ -552,17 +567,22 @@ module Kettle
         end
       end
 
-      def maybe_run_local_ci_before_push!(committed)
+      def maybe_run_local_ci_before_push!(committed, force: false)
         mode = (ENV["K_RELEASE_LOCAL_CI"] || "").strip.downcase
-        run_it = case mode
-        when "true", "1", "yes", "y" then true
-        when "ask"
-          print("Run local CI with 'act' before pushing? [Y/n] ")
-          ans = Kettle::Dev::InputAdapter.gets&.strip
-          ans.nil? || ans.empty? || /\Ay(es)?\z/i.match?(ans)
-        else
-          false
-        end
+        run_it =
+          if force
+            true
+          else
+            case mode
+            when "true", "1", "yes", "y" then true
+            when "ask"
+              print("Run local CI with 'act' before pushing? [Y/n] ")
+              ans = Kettle::Dev::InputAdapter.gets&.strip
+              ans.nil? || ans.empty? || /\Ay(es)?\z/i.match?(ans)
+            else
+              false
+            end
+          end
         return unless run_it
 
         act_ok = begin
@@ -572,6 +592,8 @@ module Kettle
           false
         end
         unless act_ok
+          msg = "Local CI requires 'act'. Install https://github.com/nektos/act to enable."
+          abort(msg) if force
           puts "Skipping local CI: 'act' command not found. Install https://github.com/nektos/act to enable."
           return
         end
@@ -594,12 +616,16 @@ module Kettle
         end
 
         unless chosen
+          msg = "Local CI requires at least one workflow under .github/workflows."
+          abort(msg) if force
           puts "Skipping local CI: no workflows found under .github/workflows."
           return
         end
 
         file_path = File.join(workflows_dir, chosen)
         unless File.file?(file_path)
+          msg = "Local CI selected workflow not found: #{Kettle::Dev.display_path(file_path)}"
+          abort(msg) if force
           puts "Skipping local CI: selected workflow not found: #{Kettle::Dev.display_path(file_path)}"
           return
         end
@@ -616,6 +642,25 @@ module Kettle
           end
           abort("Aborting due to local CI failure.")
         end
+      end
+
+      def release_gem_and_tag_locally!(version)
+        tag = "v#{version}"
+        gem_path = gem_file_for_version(version)
+        unless gem_path && File.file?(gem_path)
+          abort("Unable to locate built gem for version #{version} in pkg/. Did the build succeed?")
+        end
+
+        _out, tag_exists = git_output(["rev-parse", "-q", "--verify", "refs/tags/#{tag}"])
+        if tag_exists
+          puts "Local tag #{tag} already exists."
+        else
+          puts "Creating local git tag #{tag} without pushing it."
+          run_cmd!("git tag -a #{Shellwords.escape(tag)} -m #{Shellwords.escape(tag)}")
+        end
+
+        puts "Publishing #{File.basename(gem_path)} to RubyGems without pushing git refs..."
+        run_cmd!("gem push #{Shellwords.escape(gem_path)}")
       end
 
       def detect_version
