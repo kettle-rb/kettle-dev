@@ -453,7 +453,13 @@ What it does:
     - `kettle-gha-sha-pins --write --upgrade patch`
 - Behavior:
     - Human output shows discovery, workflow scan, and action-resolution progress
-      on STDERR, then prints the final report on STDOUT.
+      on STDERR, including per-action timing via `ruby-progressbar`, then prints
+      the final report on STDOUT.
+    - Action metadata is resolved with the GitHub REST API and cached per
+      `owner/repo` action so duplicate uses of the same action reuse one
+      resolution plan.
+    - The outdated summary reports newer releases even when `--upgrade patch` or
+      `--upgrade minor` limits the write target to a safer release line.
     - JSON output keeps progress disabled by default so STDOUT remains parseable.
       Use `--progress` to force progress or `--no-progress` to suppress it.
     - `--check` exits non-zero when workflow action pins are stale or mutable and

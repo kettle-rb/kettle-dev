@@ -771,7 +771,13 @@ SHAs and current allowed release versions.</li>
   <li>Behavior:
     <ul>
       <li>Human output shows discovery, workflow scan, and action-resolution progress<br>
-on STDERR, then prints the final report on STDOUT.</li>
+on STDERR, including per-action timing via <code>ruby-progressbar</code>, then prints<br>
+the final report on STDOUT.</li>
+      <li>Action metadata is resolved with the GitHub REST API and cached per<br>
+<code>owner/repo</code> action so duplicate uses of the same action reuse one<br>
+resolution plan.</li>
+      <li>The outdated summary reports newer releases even when <code>--upgrade patch</code> or<br>
+<code>--upgrade minor</code> limits the write target to a safer release line.</li>
       <li>JSON output keeps progress disabled by default so STDOUT remains parseable.<br>
 Use <code>--progress</code> to force progress or <code>--no-progress</code> to suppress it.</li>
       <li>
@@ -1077,7 +1083,7 @@ Please consider sponsoring me or the project.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Mon Jun  8 03:52:41 2026 by
+  Generated on Mon Jun  8 04:06:34 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>

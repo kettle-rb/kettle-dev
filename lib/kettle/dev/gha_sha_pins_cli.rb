@@ -72,6 +72,7 @@ module Kettle
         action_count = workflows.sum { |workflow| workflow[:uses_nodes].count { |node| classify_action_ref(node[:value].to_s) } }
         progress_message("Resolving #{action_count} GitHub action reference(s)...") if action_count.positive?
         action_progress = progress_bar(title: "Actions", total: action_count)
+        action_plan_cache = {}
 
         workflows.each do |workflow|
           path = workflow.fetch(:path)
@@ -88,17 +89,15 @@ module Kettle
               action = parsed_ref[:action]
               repo_ref = "#{action[:owner]}/#{action[:repo]}"
               old_ref = action[:ref]
-              action_progress&.log("Resolving #{repo_ref}@#{old_ref}")
+              upgrade_plan = resolve_action_plan(
+                cache: action_plan_cache,
+                client: client,
+                progress: action_progress,
+                repo_ref: repo_ref,
+                old_ref: old_ref
+              )
 
               updates = nil
-              available_versions = client.versions_for_repo(repo_ref)
-              upgrade_plan = determine_upgrade_plan(
-                old_ref: old_ref,
-                repo_ref: repo_ref,
-                versions: available_versions,
-                upgrade_level: @options[:upgrade],
-                client: client
-              )
               if upgrade_plan[:updates]
                 updates = compute_updates(old_ref, upgrade_plan[:updates][:sha], upgrade_plan[:updates][:reason], repo_ref)
                 updates[:new_version] = upgrade_plan[:updates][:version]
@@ -112,8 +111,8 @@ module Kettle
                   action: repo_ref,
                   old_ref: old_ref,
                   old_version: upgrade_plan[:current_version],
-                  new_ref: upgrade_plan[:updates] ? upgrade_plan[:updates][:sha] : nil,
-                  new_version: upgrade_plan[:updates] ? upgrade_plan[:updates][:version] : nil,
+                  new_ref: upgrade_plan[:latest_outdated] ? upgrade_plan[:latest_outdated][:sha] : nil,
+                  new_version: upgrade_plan[:latest_outdated] ? upgrade_plan[:latest_outdated][:version] : nil,
                   upgrade_level: @options[:upgrade],
                   reason: upgrade_plan[:reason]
                 }
@@ -268,6 +267,32 @@ module Kettle
         end
       end
 
+      def resolve_action_plan(cache:, client:, progress:, repo_ref:, old_ref:)
+        started_at = monotonic_time
+        if cache.key?(repo_ref)
+          plan = cache.fetch(repo_ref)
+          progress&.log(format("Reused %<ref>s in %<elapsed>.2fs", ref: "#{repo_ref}@#{old_ref}", elapsed: monotonic_time - started_at))
+          return plan
+        end
+
+        progress&.log("Resolving #{repo_ref}@#{old_ref}")
+        versions = client.versions_for_repo(repo_ref)
+        plan = determine_upgrade_plan(
+          old_ref: old_ref,
+          repo_ref: repo_ref,
+          versions: versions,
+          upgrade_level: @options[:upgrade],
+          client: client
+        )
+        cache[repo_ref] = plan
+        progress&.log(format("Resolved %<ref>s in %<elapsed>.2fs", ref: "#{repo_ref}@#{old_ref}", elapsed: monotonic_time - started_at))
+        plan
+      end
+
+      def monotonic_time
+        Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      end
+
       def progress_enabled?
         return @options[:progress] unless @options[:progress].nil?
 
@@ -376,7 +401,7 @@ module Kettle
         nil
       end
 
-      def matching_version_entry(versions, current_ref, current_sha)
+      def matching_version_entry(versions, current_ref, current_sha, client, repo_ref)
         parsed = parse_release_version(current_ref)
         if parsed
           direct = versions.find { |entry| entry[:version_obj] == parsed }
@@ -386,7 +411,10 @@ module Kettle
         return nil unless current_sha
 
         prefix = current_sha[0, 40]
-        versions.find { |entry| entry[:sha].to_s.start_with?(prefix) }
+        versions.find do |entry|
+          sha = version_entry_sha(entry, client, repo_ref)
+          sha.to_s.start_with?(prefix)
+        end
       end
 
       def choose_upgrade_target(current_version, versions, level)
@@ -410,6 +438,15 @@ module Kettle
         candidates.max_by { |entry| entry[:version_obj] }
       end
 
+      def latest_outdated_target(current_version, versions)
+        current = parse_release_version(current_version)
+        return nil if current.nil?
+
+        versions
+          .select { |entry| entry[:version_obj].is_a?(Gem::Version) && entry[:version_obj] > current }
+          .max_by { |entry| entry[:version_obj] }
+      end
+
       def determine_upgrade_plan(old_ref:, repo_ref:, versions:, upgrade_level:, client:)
         level = upgrade_level.to_s.downcase
         level = DEFAULT_UPGRADE_LEVEL unless VALID_UPGRADE_LEVELS.include?(level)
@@ -420,24 +457,36 @@ module Kettle
         available_versions = versions || []
         latest = available_versions.first
 
-        current_sha = client.commit_sha(repo_ref, current_ref)
-        matched_entry = matching_version_entry(available_versions, current_ref, current_sha)
+        current_sha = if SHA_RE.match?(current_ref) || WEAK_SHA_RE.match?(current_ref)
+          current_ref
+        else
+          client.commit_sha(repo_ref, current_ref)
+        end
+        matched_entry = matching_version_entry(available_versions, current_ref, current_sha, client, repo_ref)
         current_version = matched_entry ? matched_entry[:version] : nil
 
         updates = nil
         reason = nil
         is_outdated = false
+        latest_outdated = nil
 
         if current_version
+          latest_outdated = latest_outdated_target(current_version, available_versions)
           target = choose_upgrade_target(current_version, available_versions, level)
-          if target && stale_sha?(current_ref, target[:sha])
+          target_sha = target ? version_entry_sha(target, client, repo_ref) : nil
+          latest_outdated_sha = latest_outdated ? version_entry_sha(latest_outdated, client, repo_ref) : nil
+          if latest_outdated && stale_sha?(current_ref, latest_outdated_sha)
+            latest_outdated = latest_outdated.merge(sha: latest_outdated_sha)
+            is_outdated = true
+            reason = UPGRADE_REASON
+          end
+          if target && stale_sha?(current_ref, target_sha)
             updates = {
-              sha: target[:sha],
+              sha: target_sha,
               version: target[:version],
               reason: UPGRADE_REASON
             }
-            reason = UPGRADE_REASON
-            is_outdated = true
+            reason ||= UPGRADE_REASON
           end
         elsif current_sha && non_sha?(current_ref)
           if stale_sha?(current_ref, current_sha)
@@ -449,9 +498,11 @@ module Kettle
             reason = NON_SHA_REASON
           end
         elsif current_sha
-          if latest && stale_sha?(current_ref, latest[:sha])
+          latest_sha = latest ? version_entry_sha(latest, client, repo_ref) : nil
+          if latest && stale_sha?(current_ref, latest_sha)
+            latest_outdated = latest.merge(sha: latest_sha)
             updates = {
-              sha: latest[:sha],
+              sha: latest_sha,
               version: latest[:version],
               reason: STALE_SHA_REASON
             }
@@ -464,8 +515,18 @@ module Kettle
           is_outdated: is_outdated,
           updates: updates,
           reason: reason,
-          current_version: current_version
+          current_version: current_version,
+          latest_outdated: latest_outdated
         }
+      end
+
+      def version_entry_sha(entry, client, repo_ref)
+        return nil unless entry
+        return entry[:sha] unless entry[:sha].to_s.empty?
+
+        sha = client.commit_sha(repo_ref, entry[:tag])
+        entry[:sha] = sha
+        sha
       end
 
       def short_sha?(candidate)
@@ -723,6 +784,7 @@ module Kettle
           data = request_json("/repos/#{repo_ref}/releases?per_page=100")
           return [] unless data.is_a?(Array)
 
+          tag_shas = tag_ref_shas(repo_ref)
           releases = data.filter_map do |release|
             next unless release.is_a?(Hash)
             next if release["prerelease"] == true
@@ -731,14 +793,11 @@ module Kettle
             parsed = parse_release_version_text(tag)
             next unless parsed
 
-            sha = commit_sha(repo_ref, tag)
-            next unless sha
-
             {
               tag: tag,
               version_obj: parsed,
               version: parsed.to_s,
-              sha: sha
+              sha: tag_shas[tag]
             }
           end
 
@@ -765,7 +824,7 @@ module Kettle
         def release_latest_sha(repo_ref)
           versions = versions_for_repo(repo_ref)
           latest = versions.first
-          latest ? latest[:sha] : nil
+          latest ? version_entry_sha(repo_ref, latest) : nil
         end
 
         private
@@ -777,6 +836,22 @@ module Kettle
           Gem::Version.new(normalized)
         rescue ArgumentError
           nil
+        end
+
+        def tag_ref_shas(repo_ref)
+          data = request_json("/repos/#{repo_ref}/git/matching-refs/tags/")
+          return {} unless data.is_a?(Array)
+
+          data.each_with_object({}) do |entry, memo|
+            ref = entry["ref"].to_s
+            next unless ref.start_with?("refs/tags/")
+
+            tag = ref.sub(%r{\Arefs/tags/}, "")
+            object = entry["object"]
+            next unless object.is_a?(Hash)
+
+            memo[tag] = object["sha"].to_s[0, 40] if object["type"] == "commit"
+          end
         end
 
         def request_json(path)
@@ -802,6 +877,13 @@ module Kettle
 
         def uri_encode(value)
           URI.encode_www_form_component(value)
+        end
+
+        def version_entry_sha(repo_ref, entry)
+          return nil unless entry
+          return entry[:sha] unless entry[:sha].to_s.empty?
+
+          entry[:sha] = commit_sha(repo_ref, entry[:tag])
         end
       end
     end

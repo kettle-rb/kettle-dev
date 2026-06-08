@@ -30,6 +30,9 @@ Please file a bug if you notice a violation of semantic versioning.
   release prep.
 - `kettle-gha-sha-pins` now shows discovery, workflow scan, and action-resolution
   progress on STDERR for human runs while keeping JSON output quiet by default.
+- `kettle-gha-sha-pins` now times action resolution, caches one resolution plan
+  per action repository, and uses GitHub REST tag-ref lookups to avoid resolving
+  every release tag through individual commit requests.
 
 ### Changed
 

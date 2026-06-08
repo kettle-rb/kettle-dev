@@ -123,11 +123,41 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       expect(plan[:updates][:sha]).to eq("aaa")
       expect(plan[:updates][:version]).to eq("1.2.3")
       expect(plan[:reason]).to eq(described_class::UPGRADE_REASON)
+      expect(plan[:latest_outdated][:version]).to eq("2.0.0")
     end
 
     it "parses release tags and matches version-like values" do
       expect(dummy_cli.send(:parse_release_version, "v1.2.3")).to eq(Gem::Version.new("1.2.3"))
       expect(dummy_cli.send(:parse_release_version, "bad-tag")).to be_nil
+    end
+
+    it "reports higher-version outdated info even when patch is the write target" do
+      plan = dummy_cli.send(:determine_upgrade_plan, old_ref: "v1.2.0", repo_ref: "foo/bar", versions: versions, upgrade_level: "patch", client: client)
+
+      expect(plan[:updates][:version]).to eq("1.2.3")
+      expect(plan[:latest_outdated][:version]).to eq("2.0.0")
+      expect(plan[:is_outdated]).to be(true)
+    end
+  end
+
+  describe described_class::GitHubClient do
+    it "loads release tag SHAs through matching refs instead of resolving every release commit" do
+      client = described_class.new(token: nil, api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE, user_agent: "kettle-gha-sha-pins")
+      releases = [
+        {"tag_name" => "v1.2.0", "prerelease" => false},
+        {"tag_name" => "v1.3.0", "prerelease" => false}
+      ]
+      refs = [
+        {"ref" => "refs/tags/v1.2.0", "object" => {"type" => "commit", "sha" => "a" * 40}},
+        {"ref" => "refs/tags/v1.3.0", "object" => {"type" => "commit", "sha" => "b" * 40}}
+      ]
+      allow(client).to receive(:request_json).with("/repos/foo/bar/releases?per_page=100").and_return(releases)
+      allow(client).to receive(:request_json).with("/repos/foo/bar/git/matching-refs/tags/").and_return(refs)
+      expect(client).not_to receive(:commit_sha)
+
+      versions = client.versions_for_repo("foo/bar")
+
+      expect(versions.map { |entry| entry[:sha] }).to contain_exactly("a" * 40, "b" * 40)
     end
   end
 
@@ -186,8 +216,8 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
           "action" => "foo/bar",
           "old_ref" => "v1.2.0",
           "old_version" => "1.2.0",
-          "new_ref" => "bbb",
-          "new_version" => "1.3.0",
+          "new_ref" => "ccc",
+          "new_version" => "2.0.0",
           "upgrade_level" => "minor",
           "reason" => described_class::UPGRADE_REASON
         )
@@ -224,6 +254,29 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       cli.run!
     end
 
+    it "reuses one resolution plan for duplicate action repos" do
+      File.write(
+        workflow_path,
+        <<~YAML
+          name: ci
+          on: [push]
+          jobs:
+            test:
+              runs-on: ubuntu-latest
+              steps:
+                - uses: foo/bar@v1.2.0
+                - uses: foo/bar@v1.2.0
+        YAML
+      )
+      cli_client = instance_double(described_class::GitHubClient)
+      allow(described_class::GitHubClient).to receive(:new).and_return(cli_client)
+      expect(cli_client).to receive(:versions_for_repo).with("foo/bar").once.and_return(client_versions)
+      allow(cli_client).to receive(:commit_sha).and_return("aaa")
+
+      cli = described_class.new(["--root", workflow_root, "--upgrade", "minor"])
+      cli.run!
+    end
+
     it "emits progress feedback to stderr for human output" do
       err = StringIO.new
       cli = described_class.new(["--root", workflow_root, "--upgrade", "minor", "--no-progress"], err: err)
@@ -237,6 +290,7 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       expect(err.string).to include("Discovering workflow files")
       expect(err.string).to include("Discovered 1 workflow file")
       expect(err.string).to include("Resolving 1 GitHub action reference")
+      expect(err.string).to include("Resolved foo/bar@v1.2.0 in")
     end
 
     it "keeps progress disabled by default for JSON output" do
