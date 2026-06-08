@@ -85,7 +85,7 @@ Gem::Specification.new do |spec|
   ]
   spec.require_paths = ["lib"]
   spec.bindir = "exe"
-  spec.executables = ["kettle-changelog", "kettle-commit-msg", "kettle-dev-setup", "kettle-pre-release", "kettle-readme-backers", "kettle-release", "kettle-dvcs"]
+  spec.executables = ["kettle-changelog", "kettle-commit-msg", "kettle-dev-setup", "kettle-pre-release", "kettle-readme-backers", "kettle-release", "kettle-dvcs", "kettle-gha-sha-pins"]
 
   # NOTE: It is preferable to list development dependencies in the gemspec due to increased
   #       visibility and discoverability.

@@ -27,6 +27,7 @@ module Kettle
     autoload :GemSpecReader, "kettle/dev/gem_spec_reader"
     autoload :GitAdapter, "kettle/dev/git_adapter"
     autoload :GitCommitFooter, "kettle/dev/git_commit_footer"
+    autoload :GhaShaPinsCLI, "kettle/dev/gha_sha_pins_cli"
     autoload :InputAdapter, "kettle/dev/input_adapter"
     autoload :ReadmeBackers, "kettle/dev/readme_backers"
     autoload :OpenCollectiveConfig, "kettle/dev/open_collective_config"
