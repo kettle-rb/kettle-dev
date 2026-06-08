@@ -20,14 +20,7 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
-- `kettle-gha-sha-pins` now keeps a 24-hour persistent action release cache at
-  the XDG state location and supports `--refresh-cache` to bypass stale entries
-  while preserving cached discoveries for other projects and actions.
-
 ### Changed
-
-- Retemplated project metadata with the latest `kettle-jem` stack, refreshing
-  README and security-policy generated details for the current release line.
 
 ### Deprecated
 
@@ -35,25 +28,14 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- `kettle-gha-sha-pins` now treats version-equivalent but unresolved action
-  refs as invalid and converts them to release SHAs instead of accepting
-  stripped tag names such as `6.0.2` when only `v6.0.2` exists.
-- `kettle-gha-sha-pins --write` now refreshes adjacent release-version comments
-  when the pinned SHA is current but the comment is stale.
-- `kettle-gha-sha-pins` now uses `GH_TOKEN` or `gh auth token` as a fallback
-  when `GITHUB_TOKEN` is not set, avoiding false clean reports after
-  unauthenticated GitHub API rate limits are exhausted.
-- Coverage workflow uploads now pin `codecov/codecov-action` and
-  `coverallsapp/github-action` to resolvable release SHAs.
-
 ### Security
 
 ## [2.2.0] - 2026-06-08
 
 - TAG: [v2.2.0][2.2.0t]
-- COVERAGE: 91.36% -- 3552/3888 lines in 28 files
-- BRANCH COVERAGE: 72.91% -- 1397/1916 branches in 28 files
-- 69.68% documented
+- COVERAGE: 91.82% -- 3705/4035 lines in 28 files
+- BRANCH COVERAGE: 73.14% -- 1454/1988 branches in 28 files
+- 67.51% documented
 
 ### Added
 
@@ -71,6 +53,10 @@ Please file a bug if you notice a violation of semantic versioning.
   per action repository, and uses GitHub REST tag-ref lookups to avoid resolving
   every release tag through individual commit requests.
 
+- `kettle-gha-sha-pins` now keeps a 24-hour persistent action release cache at
+  the XDG state location and supports `--refresh-cache` to bypass stale entries
+  while preserving cached discoveries for other projects and actions.
+
 ### Fixed
 
 - Minitest-only projects now keep `rake test` on the generated
@@ -82,6 +68,22 @@ Please file a bug if you notice a violation of semantic versioning.
   from the previous branch run.
 - Removed the duplicate `cgi` declaration from the `head` appraisal so
   `kettle-release` can regenerate Appraisal gemfiles on Ruby 4.
+
+- `kettle-gha-sha-pins` now treats version-equivalent but unresolved action
+  refs as invalid and converts them to release SHAs instead of accepting
+  stripped tag names such as `6.0.2` when only `v6.0.2` exists.
+- `kettle-gha-sha-pins --write` now refreshes adjacent release-version comments
+  when the pinned SHA is current but the comment is stale.
+- `kettle-gha-sha-pins` now uses `GH_TOKEN` or `gh auth token` as a fallback
+  when `GITHUB_TOKEN` is not set, avoiding false clean reports after
+  unauthenticated GitHub API rate limits are exhausted.
+- Coverage workflow uploads now pin `codecov/codecov-action` and
+  `coverallsapp/github-action` to resolvable release SHAs.
+
+### Changed
+
+- Retemplated project metadata with the latest `kettle-jem` stack, refreshing
+  README and security-policy generated details for the current release line.
 
 ## [2.1.1] - 2026-06-06
 

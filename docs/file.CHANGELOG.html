@@ -74,41 +74,13 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 
 <h3 id="added">Added</h3>
 
-<ul>
-  <li>
-<code>kettle-gha-sha-pins</code> now keeps a 24-hour persistent action release cache at<br>
-the XDG state location and supports <code>--refresh-cache</code> to bypass stale entries<br>
-while preserving cached discoveries for other projects and actions.</li>
-</ul>
-
 <h3 id="changed">Changed</h3>
-
-<ul>
-  <li>Retemplated project metadata with the latest <code>kettle-jem</code> stack, refreshing<br>
-README and security-policy generated details for the current release line.</li>
-</ul>
 
 <h3 id="deprecated">Deprecated</h3>
 
 <h3 id="removed">Removed</h3>
 
 <h3 id="fixed">Fixed</h3>
-
-<ul>
-  <li>
-<code>kettle-gha-sha-pins</code> now treats version-equivalent but unresolved action<br>
-refs as invalid and converts them to release SHAs instead of accepting<br>
-stripped tag names such as <code>6.0.2</code> when only <code>v6.0.2</code> exists.</li>
-  <li>
-<code>kettle-gha-sha-pins --write</code> now refreshes adjacent release-version comments<br>
-when the pinned SHA is current but the comment is stale.</li>
-  <li>
-<code>kettle-gha-sha-pins</code> now uses <code>GH_TOKEN</code> or <code>gh auth token</code> as a fallback<br>
-when <code>GITHUB_TOKEN</code> is not set, avoiding false clean reports after<br>
-unauthenticated GitHub API rate limits are exhausted.</li>
-  <li>Coverage workflow uploads now pin <code>codecov/codecov-action</code> and<br>
-<code>coverallsapp/github-action</code> to resolvable release SHAs.</li>
-</ul>
 
 <h3 id="security">Security</h3>
 
@@ -118,9 +90,9 @@ unauthenticated GitHub API rate limits are exhausted.</li>
 <ul>
   <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v2.2.0">v2.2.0</a>
 </li>
-  <li>COVERAGE: 91.36% – 3552/3888 lines in 28 files</li>
-  <li>BRANCH COVERAGE: 72.91% – 1397/1916 branches in 28 files</li>
-  <li>69.68% documented</li>
+  <li>COVERAGE: 91.82% – 3705/4035 lines in 28 files</li>
+  <li>BRANCH COVERAGE: 73.14% – 1454/1988 branches in 28 files</li>
+  <li>67.51% documented</li>
 </ul>
 
 <h3 id="added-1">Added</h3>
@@ -141,9 +113,14 @@ release prep.</li>
 <code>kettle-gha-sha-pins</code> now shows discovery, workflow scan, and action-resolution<br>
 progress on STDERR for human runs while keeping JSON output quiet by default.</li>
   <li>
-<code>kettle-gha-sha-pins</code> now times action resolution, caches one resolution plan<br>
+    <p><code>kettle-gha-sha-pins</code> now times action resolution, caches one resolution plan<br>
 per action repository, and uses GitHub REST tag-ref lookups to avoid resolving<br>
-every release tag through individual commit requests.</li>
+every release tag through individual commit requests.</p>
+  </li>
+  <li>
+<code>kettle-gha-sha-pins</code> now keeps a 24-hour persistent action release cache at<br>
+the XDG state location and supports <code>--refresh-cache</code> to bypass stale entries<br>
+while preserving cached discoveries for other projects and actions.</li>
 </ul>
 
 <h3 id="fixed-1">Fixed</h3>
@@ -158,8 +135,30 @@ tests live directly under <code>test/</code>.</p>
 <code>kettle-release start_step=10</code> now waits for GitHub Actions runs for the<br>
 local HEAD SHA to appear before evaluating results, avoiding stale failures<br>
 from the previous branch run.</li>
-  <li>Removed the duplicate <code>cgi</code> declaration from the <code>head</code> appraisal so<br>
-<code>kettle-release</code> can regenerate Appraisal gemfiles on Ruby 4.</li>
+  <li>
+    <p>Removed the duplicate <code>cgi</code> declaration from the <code>head</code> appraisal so<br>
+<code>kettle-release</code> can regenerate Appraisal gemfiles on Ruby 4.</p>
+  </li>
+  <li>
+<code>kettle-gha-sha-pins</code> now treats version-equivalent but unresolved action<br>
+refs as invalid and converts them to release SHAs instead of accepting<br>
+stripped tag names such as <code>6.0.2</code> when only <code>v6.0.2</code> exists.</li>
+  <li>
+<code>kettle-gha-sha-pins --write</code> now refreshes adjacent release-version comments<br>
+when the pinned SHA is current but the comment is stale.</li>
+  <li>
+<code>kettle-gha-sha-pins</code> now uses <code>GH_TOKEN</code> or <code>gh auth token</code> as a fallback<br>
+when <code>GITHUB_TOKEN</code> is not set, avoiding false clean reports after<br>
+unauthenticated GitHub API rate limits are exhausted.</li>
+  <li>Coverage workflow uploads now pin <code>codecov/codecov-action</code> and<br>
+<code>coverallsapp/github-action</code> to resolvable release SHAs.</li>
+</ul>
+
+<h3 id="changed-1">Changed</h3>
+
+<ul>
+  <li>Retemplated project metadata with the latest <code>kettle-jem</code> stack, refreshing<br>
+README and security-policy generated details for the current release line.</li>
 </ul>
 
 <h2 id="211---2026-06-06">
@@ -182,7 +181,7 @@ publish the gem before any git push, create the release tag locally, and push<br
 commits and tags only after publishing succeeds.</li>
 </ul>
 
-<h3 id="changed-1">Changed</h3>
+<h3 id="changed-2">Changed</h3>
 
 <ul>
   <li>Refreshed kettle-jem template output, including Appraisal2 plugin wiring and<br>
@@ -201,7 +200,7 @@ current dependency floors for <code>appraisal2</code>, <code>appraisal2-rubocop<
   <li>75.93% documented</li>
 </ul>
 
-<h3 id="changed-2">Changed</h3>
+<h3 id="changed-3">Changed</h3>
 
 <ul>
   <li>
@@ -245,7 +244,7 @@ Appraisal root lockfile does not exist yet.</li>
   <li>75.93% documented</li>
 </ul>
 
-<h3 id="changed-3">Changed</h3>
+<h3 id="changed-4">Changed</h3>
 
 <ul>
   <li>Runtime dependency <code>kettle-test</code> now requires 2.0.2 or newer.</li>
@@ -279,7 +278,7 @@ non-interactive runs, fixing TruffleRuby v23.0-v23.1 CI stability.</li>
 preparation for gems whose version constants live below subproject roots.</li>
 </ul>
 
-<h3 id="changed-4">Changed</h3>
+<h3 id="changed-5">Changed</h3>
 
 <ul>
   <li>
@@ -386,7 +385,7 @@ known release.</li>
   <li>76.40% documented</li>
 </ul>
 
-<h3 id="changed-5">Changed</h3>
+<h3 id="changed-6">Changed</h3>
 
 <ul>
   <li>
@@ -454,7 +453,7 @@ release section in place, including date, coverage, documentation stats, and<br>
 any follow-up Unreleased notes.</li>
 </ul>
 
-<h3 id="changed-6">Changed</h3>
+<h3 id="changed-7">Changed</h3>
 
 <ul>
   <li>
@@ -532,7 +531,7 @@ instead of writing a single blank line.</li>
   </li>
 </ul>
 
-<h3 id="changed-7">Changed</h3>
+<h3 id="changed-8">Changed</h3>
 
 <ul>
   <li>Updated documentation on hostile takeover of RubyGems
@@ -737,7 +736,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   </li>
 </ul>
 
-<h3 id="changed-8">Changed</h3>
+<h3 id="changed-9">Changed</h3>
 
 <ul>
   <li>Updated <code>FREEZE_REMINDER</code> constant to include blank line before and empty comment line after</li>
@@ -844,7 +843,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>69.14% documented</li>
 </ul>
 
-<h3 id="changed-9">Changed</h3>
+<h3 id="changed-10">Changed</h3>
 
 <ul>
   <li>Source merging switched from Regex-based string manipulation to Prism AST-based manipulation
@@ -897,7 +896,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>79.89% documented</li>
 </ul>
 
-<h3 id="changed-10">Changed</h3>
+<h3 id="changed-11">Changed</h3>
 
 <ul>
   <li>Improved default devcontainer with common dependencies of most Ruby projects</li>
@@ -1059,7 +1058,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>Update documentation</li>
 </ul>
 
-<h3 id="changed-11">Changed</h3>
+<h3 id="changed-12">Changed</h3>
 
 <ul>
   <li>Upgrade to yard-fence v0.8.0</li>
@@ -1197,7 +1196,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>79.68% documented</li>
 </ul>
 
-<h3 id="changed-12">Changed</h3>
+<h3 id="changed-13">Changed</h3>
 
 <ul>
   <li>floss-funding related documentation improvements</li>
@@ -1275,7 +1274,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>79.68% documented</li>
 </ul>
 
-<h3 id="changed-13">Changed</h3>
+<h3 id="changed-14">Changed</h3>
 
 <ul>
   <li>Improved formatting of errors</li>
@@ -1292,7 +1291,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>79.68% documented</li>
 </ul>
 
-<h3 id="changed-14">Changed</h3>
+<h3 id="changed-15">Changed</h3>
 
 <ul>
   <li>Improved copy for this gem and templated gems</li>
@@ -1332,7 +1331,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>79.68% documented</li>
 </ul>
 
-<h3 id="changed-15">Changed</h3>
+<h3 id="changed-16">Changed</h3>
 
 <ul>
   <li>legacy ruby 3.1 pinned to bundler 2.6.9</li>
@@ -1363,7 +1362,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>improved documentation of spec setup with kettle-test</li>
 </ul>
 
-<h3 id="changed-16">Changed</h3>
+<h3 id="changed-17">Changed</h3>
 
 <ul>
   <li>upgrade to kettle-test v1.0.6</li>
@@ -1409,7 +1408,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>more documentation of the RC.O situation</li>
 </ul>
 
-<h3 id="changed-17">Changed</h3>
+<h3 id="changed-18">Changed</h3>
 
 <ul>
   <li>upgraded kettle-test to v1.0.5</li>
@@ -1432,7 +1431,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>79.68% documented</li>
 </ul>
 
-<h3 id="changed-18">Changed</h3>
+<h3 id="changed-19">Changed</h3>
 
 <ul>
   <li>kettle-release: Make step 17 only push the checksum commit; bin/gem_checksums creates the commit internally.</li>
@@ -1476,7 +1475,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>added codeberg gem source</li>
 </ul>
 
-<h3 id="changed-19">Changed</h3>
+<h3 id="changed-20">Changed</h3>
 
 <ul>
   <li>removed redundant github gem source</li>
@@ -1506,7 +1505,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>A top-level note on gem server switch in README.md &amp; template</li>
 </ul>
 
-<h3 id="changed-20">Changed</h3>
+<h3 id="changed-21">Changed</h3>
 
 <ul>
   <li>Switch to cooperative gem server
@@ -1569,7 +1568,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>79.12% documented</li>
 </ul>
 
-<h3 id="changed-21">Changed</h3>
+<h3 id="changed-22">Changed</h3>
 
 <ul>
   <li>Testing release</li>
@@ -1603,7 +1602,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>79.12% documented</li>
 </ul>
 
-<h3 id="changed-22">Changed</h3>
+<h3 id="changed-23">Changed</h3>
 
 <ul>
   <li>Use obfuscated URLs, and avatars from Open Collective in ReadmeBackers</li>
@@ -1650,7 +1649,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>Replace template tokens with real minimum ruby versions for runtime and development</li>
 </ul>
 
-<h3 id="changed-23">Changed</h3>
+<h3 id="changed-24">Changed</h3>
 
 <ul>
   <li>consolidated specs</li>
@@ -1695,7 +1694,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>77.01% documented</li>
 </ul>
 
-<h3 id="changed-24">Changed</h3>
+<h3 id="changed-25">Changed</h3>
 
 <ul>
   <li>Revert “🔒️ Use pull_request_target in workflows”
@@ -1716,7 +1715,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>77.01% documented</li>
 </ul>
 
-<h3 id="changed-25">Changed</h3>
+<h3 id="changed-26">Changed</h3>
 
 <ul>
   <li>improved templating</li>
@@ -1830,7 +1829,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   </li>
 </ul>
 
-<h3 id="changed-26">Changed</h3>
+<h3 id="changed-27">Changed</h3>
 
 <ul>
   <li>update template to version_gem v1.1.9</li>
@@ -1888,7 +1887,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>76.88% documented</li>
 </ul>
 
-<h3 id="changed-27">Changed</h3>
+<h3 id="changed-28">Changed</h3>
 
 <ul>
   <li>use current x_std_libs modular gemfile for all appraisals that are pinned to current ruby</li>
@@ -1924,7 +1923,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>76.88% documented</li>
 </ul>
 
-<h3 id="changed-28">Changed</h3>
+<h3 id="changed-29">Changed</h3>
 
 <ul>
   <li>improve Gemfile updates during kettle-dev-setup</li>
@@ -1942,7 +1941,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>77.06% documented</li>
 </ul>
 
-<h3 id="changed-29">Changed</h3>
+<h3 id="changed-30">Changed</h3>
 
 <ul>
   <li>move kettle-dev-setup logic into Kettle::Dev::SetupCLI</li>
@@ -1975,7 +1974,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   </li>
 </ul>
 
-<h3 id="changed-30">Changed</h3>
+<h3 id="changed-31">Changed</h3>
 
 <ul>
   <li>template task no longer overwrites CHANGELOG.md completely
@@ -2083,7 +2082,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   </li>
 </ul>
 
-<h3 id="changed-31">Changed</h3>
+<h3 id="changed-32">Changed</h3>
 
 <ul>
   <li>.git-hooks/commit-msg allows commit if gitmoji-regex is unavailable</li>
@@ -2154,7 +2153,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>how to set up forge tokens for ci:act, and other tools, instructions for README.md</li>
 </ul>
 
-<h3 id="changed-32">Changed</h3>
+<h3 id="changed-33">Changed</h3>
 
 <ul>
   <li>expanded use of adapter patterns (Exit, Git, and Input)</li>
@@ -2209,7 +2208,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>76.22% documented</li>
 </ul>
 
-<h3 id="changed-33">Changed</h3>
+<h3 id="changed-34">Changed</h3>
 
 <ul>
   <li>URL for migrating repo to CodeBerg:
@@ -2253,7 +2252,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>Specs for DvcsCLI covering remote normalization, fetch outcomes, and README updates</li>
 </ul>
 
-<h3 id="changed-34">Changed</h3>
+<h3 id="changed-35">Changed</h3>
 
 <ul>
   <li>major spec refactoring</li>
@@ -2331,7 +2330,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>76.47% documented</li>
 </ul>
 
-<h3 id="changed-35">Changed</h3>
+<h3 id="changed-36">Changed</h3>
 
 <ul>
   <li>Use semver version dependency (~&gt; 1.0) on kettle-dev when templating</li>
@@ -2381,7 +2380,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>test that .env.local.example is copied by install / template tasks</li>
 </ul>
 
-<h3 id="changed-36">Changed</h3>
+<h3 id="changed-37">Changed</h3>
 
 <ul>
   <li>update Appraisals.example template’s instructions for updating appraisals</li>
@@ -2407,7 +2406,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>integration test for kettle-changelog using KEEP_A_CHANGELOG.md.</li>
 </ul>
 
-<h3 id="changed-37">Changed</h3>
+<h3 id="changed-38">Changed</h3>
 
 <ul>
   <li>add output to error handling related to release creation on GitHub</li>
@@ -2539,7 +2538,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>improved documentation</li>
 </ul>
 
-<h3 id="changed-38">Changed</h3>
+<h3 id="changed-39">Changed</h3>
 
 <ul>
   <li>dependabot: ignore rubocop-lts for updates</li>
@@ -2557,7 +2556,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>76.23% documented</li>
 </ul>
 
-<h3 id="changed-39">Changed</h3>
+<h3 id="changed-40">Changed</h3>
 
 <ul>
   <li>Use example version of ancient.yml workflow since local version has been customized</li>
@@ -2665,7 +2664,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>kettle-release: update Rakefile.example with version and date</li>
 </ul>
 
-<h3 id="changed-40">Changed</h3>
+<h3 id="changed-41">Changed</h3>
 
 <ul>
   <li>kettle-release: print package name and version released as final line</li>
@@ -2707,7 +2706,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>kettle-release: Push tags to additional remotes after release</li>
 </ul>
 
-<h3 id="changed-41">Changed</h3>
+<h3 id="changed-42">Changed</h3>
 
 <ul>
   <li>Improve .gitlab-ci.yml pipeline</li>
@@ -2816,7 +2815,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>new exe script: kettle-changelog - transitions a changelog from unreleased to next release</li>
 </ul>
 
-<h3 id="changed-42">Changed</h3>
+<h3 id="changed-43">Changed</h3>
 
 <ul>
   <li>Make ‘git’ gem dependency optional; fall back to raw <code>git</code> commands when the gem is not present (rescues LoadError). See Kettle::Dev::GitAdapter.</li>
@@ -2870,7 +2869,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>runs git add –all before git commit, to ensure all files are committed.</li>
 </ul>
 
-<h3 id="changed-43">Changed</h3>
+<h3 id="changed-44">Changed</h3>
 
 <ul>
   <li>This gem is now loaded via Ruby’s standard <code>autoload</code> feature.</li>
@@ -3146,7 +3145,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </div></div>
 
       <div id="footer">
-  Generated on Mon Jun  8 15:16:07 2026 by
+  Generated on Mon Jun  8 15:20:21 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>
