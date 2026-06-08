@@ -13,16 +13,18 @@ RSpec.describe "spec and test rake tasks" do # rubocop:disable RSpec/DescribeCla
     tmp_root = File.expand_path("../../../../tmp", __dir__)
     FileUtils.mkdir_p(tmp_root)
     Dir.mktmpdir("kettle-dev-spec-test-rake", tmp_root) do |dir|
-      @project_dir = dir
-      Dir.chdir(dir) do
-        Rake.application = Rake::Application.new
-        Rake::Task.define_task(:default)
-        Kettle::Dev.instance_variable_set(:@defaults, [].freeze)
-        example.run
+      begin
+        @project_dir = dir
+        Dir.chdir(dir) do # rubocop:disable ThreadSafety/DirChdir
+          Rake.application = Rake::Application.new
+          Rake::Task.define_task(:default)
+          Kettle::Dev.instance_variable_set(:@defaults, [].freeze)
+          example.run
+        end
+      ensure
+        Rake.application = previous_application
+        Kettle::Dev.instance_variable_set(:@defaults, previous_defaults)
       end
-    ensure
-      Rake.application = previous_application
-      Kettle::Dev.instance_variable_set(:@defaults, previous_defaults)
     end
   end
 

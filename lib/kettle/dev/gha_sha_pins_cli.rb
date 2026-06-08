@@ -296,7 +296,7 @@ module Kettle
               next
             end
 
-            uses_nodes = extract_uses_nodes(parsed)
+            uses_nodes = extract_uses_nodes(parsed, text)
             workflows << {path: path, text: text, uses_nodes: uses_nodes} unless uses_nodes.empty?
           ensure
             file_progress&.increment
@@ -382,21 +382,27 @@ module Kettle
         end
       end
 
-      def extract_uses_nodes(parsed)
+      def extract_uses_nodes(parsed, text = nil)
         mapping_node = Psych::Nodes::Mapping
         scalar_node = Psych::Nodes::Scalar
         sequence_node = Psych::Nodes::Sequence
 
         nodes = []
+        fallback_locations = {}
         walk = lambda do |node|
           case node
           when mapping_node
             node.children.each_slice(2) do |key_node, value_node|
               next unless key_node.is_a?(scalar_node)
               if key_node.value == "uses" && value_node.is_a?(scalar_node)
+                line, col = if value_node.respond_to?(:start_line) && value_node.respond_to?(:start_column)
+                  [value_node.start_line, value_node.start_column]
+                else
+                  fallback_uses_location(text, value_node.value, fallback_locations)
+                end
                 nodes << {
-                  line: value_node.start_line,
-                  col: value_node.start_column,
+                  line: line,
+                  col: col,
                   value: value_node.value
                 }
                 next
@@ -413,7 +419,26 @@ module Kettle
         end
 
         parsed.children.each { |node| walk.call(node) }
-        nodes
+        nodes.compact
+      end
+
+      def fallback_uses_location(text, value, used_locations)
+        return [0, 0] unless text
+
+        text.each_line.with_index do |line, index|
+          next if used_locations[index]
+
+          marker = line.index("uses:")
+          next unless marker
+
+          value_index = line.index(value.to_s, marker + 5)
+          next unless value_index
+
+          used_locations[index] = true
+          return [index, value_index]
+        end
+
+        [0, 0]
       end
 
       def classify_action_ref(value)

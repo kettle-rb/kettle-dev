@@ -28,6 +28,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Ruby 2.4-2.6 CI appraisals now include `backports`, and Ruby 3.0-3.1
+  appraisals include `prism`, so `kettle-bump` and GitHub Action SHA pin specs
+  run on the supported legacy matrix.
+
 ### Security
 
 ## [2.2.0] - 2026-06-08

@@ -3,6 +3,16 @@
 require "version_gem"
 require_relative "dev/version"
 
+if Gem.ruby_version < Gem::Version.new("2.7")
+  begin
+    require "backports/2.7.0/enumerable/filter_map"
+  rescue LoadError => error
+    message = "kettle-dev on Ruby <= 2.6 requires the backports gem; " \
+      "add `gem \"backports\", \">= 3.25\"` to your Gemfile (#{error.message})"
+    raise LoadError, message
+  end
+end
+
 Kettle::Dev::Version.class_eval do
   extend VersionGem::Basic
 end

@@ -142,6 +142,17 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       expect(dummy_cli.send(:parse_release_version, "bad-tag")).to be_nil
     end
 
+    it "falls back to source scanning for Psych nodes without location APIs" do
+      text = <<~YAML
+        jobs:
+          test:
+            steps:
+              - uses: foo/bar@v1.2.0
+      YAML
+
+      expect(dummy_cli.send(:fallback_uses_location, text, "foo/bar@v1.2.0", {})).to eq([3, 14])
+    end
+
     it "reports higher-version outdated info even when patch is the write target" do
       plan = dummy_cli.send(:determine_upgrade_plan, old_ref: "v1.2.0", repo_ref: "foo/bar", versions: versions, upgrade_level: "patch", client: client)
 

@@ -1,0 +1,4 @@
+# frozen_string_literal: true
+
+# Ruby <= 2.6 lacks APIs kettle-dev uses while supporting modern Rubies.
+gem "backports", ">= 3.25"
