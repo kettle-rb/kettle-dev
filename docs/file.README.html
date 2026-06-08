@@ -646,6 +646,7 @@ Examples:</li>
   <li>Script: <code>exe/kettle-release</code> (run as <code>kettle-release</code>)</li>
   <li>Purpose: guided release helper that:
     <ul>
+      <li>Runs <code>kettle-pre-release</code> before the numbered release steps on full releases, aborting before release setup if any pre-release gate fails.</li>
       <li>Runs sanity checks (<code>bin/setup</code>, <code>bin/rake</code>), confirms version/changelog, optionally updates Appraisals, regenerates docs via <code>bin/rake yard</code>, commits “🔖 Prepare release vX.Y.Z”.</li>
       <li>Optionally runs your CI locally with <code>act</code> before any push:
         <ul>
@@ -689,6 +690,8 @@ Examples:</li>
   <li>Examples:
     <ul>
       <li>After intermittent CI failure, restart from monitoring: <code>bundle exec kettle-release start_step=10</code>
+</li>
+      <li>After fixing a failed pre-release gate, rerun from the top: <code>bundle exec kettle-release</code>
 </li>
     </ul>
   </li>
@@ -1029,7 +1032,7 @@ Please consider sponsoring me or the project.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Mon Jun  8 03:05:15 2026 by
+  Generated on Mon Jun  8 03:10:43 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>

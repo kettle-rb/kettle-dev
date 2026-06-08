@@ -79,6 +79,8 @@ module Kettle
       end
 
       def run
+        run_pre_release_checks! if @start_step <= 1
+
         # 1. Ensure Bundler version ✓
         ensure_bundler_2_7_plus!
 
@@ -319,6 +321,11 @@ module Kettle
 
       def local_ci?
         @local_ci
+      end
+
+      def run_pre_release_checks!
+        puts "Running pre-release checks via kettle-pre-release..."
+        Kettle::Dev::PreReleaseCLI.new(check_num: 1).run
       end
 
       # Update the README KLOC badge number based on the denominator in the current version's COVERAGE line in CHANGELOG.md.

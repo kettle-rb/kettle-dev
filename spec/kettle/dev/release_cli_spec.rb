@@ -103,6 +103,15 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       end
     end
 
+    describe "#run_pre_release_checks!" do
+      it "runs kettle-pre-release checks from the beginning" do
+        pre_release = instance_double(Kettle::Dev::PreReleaseCLI, run: nil)
+        expect(Kettle::Dev::PreReleaseCLI).to receive(:new).with(check_num: 1).and_return(pre_release)
+
+        cli.send(:run_pre_release_checks!)
+      end
+    end
+
     describe "latest_released_versions (integration with gem.coop via VCR)" do
       it "fetches real versions for kettle-dev and does not report a 1.2.x series", :check_output do
         # Use VCR to record once then replay. We avoid making any strong assertion on the exact
@@ -523,6 +532,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       end
 
       it "aborts when current version is not greater than latest released for series" do
+        allow(cli).to receive(:run_pre_release_checks!)
         allow(cli).to receive(:ensure_bundler_2_7_plus!) # skip real check
         allow(cli).to receive(:detect_version).and_return("1.2.3")
         allow(cli).to receive(:detect_gem_name).and_return("mygem")
@@ -537,6 +547,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
         stub_env("SKIP_GEM_SIGNING" => "true")
 
+        allow(cli).to receive(:run_pre_release_checks!)
         allow(cli).to receive(:ensure_bundler_2_7_plus!)
         allow(cli).to receive(:detect_version).and_return("9.9.9")
         allow(cli).to receive(:detect_gem_name).and_return("mygem")
@@ -566,6 +577,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect { cli.run }.not_to raise_error
 
         # Ensure the initial build/release commands were attempted
+        expect(cli).to have_received(:run_pre_release_checks!)
         expect(cli).to have_received(:run_cmd!).with("bin/setup")
         expect(cli).to have_received(:run_cmd!).with("bin/rake")
         expect(cli).to have_received(:run_cmd!).with("bin/rake appraisal:update")
@@ -580,6 +592,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("y\n")
         stub_env("SKIP_GEM_SIGNING" => "true", "GITHUB_TOKEN" => nil)
 
+        allow(local_cli).to receive(:run_pre_release_checks!)
         allow(local_cli).to receive(:ensure_bundler_2_7_plus!)
         allow(local_cli).to receive(:detect_version).and_return("9.9.9")
         allow(local_cli).to receive(:detect_gem_name).and_return("mygem")
@@ -605,6 +618,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect(local_cli).to receive(:push_tags!).ordered
 
         expect { local_cli.run }.not_to raise_error
+        expect(local_cli).to have_received(:run_pre_release_checks!)
         expect(local_cli).to have_received(:run_cmd!).with("bundle exec rake build")
         expect(local_cli).not_to have_received(:run_cmd!).with("bundle exec rake release")
       end
@@ -615,6 +629,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
         stub_env("SKIP_GEM_SIGNING" => "true")
 
+        allow(cli).to receive(:run_pre_release_checks!)
         allow(cli).to receive(:ensure_bundler_2_7_plus!)
         allow(cli).to receive(:detect_version).and_return("9.9.9")
         allow(cli).to receive(:detect_gem_name).and_return("mygem")
@@ -662,6 +677,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
         stub_env("SKIP_GEM_SIGNING" => nil, "CI" => "true")
 
+        allow(cli).to receive(:run_pre_release_checks!)
         allow(cli).to receive(:ensure_bundler_2_7_plus!)
         allow(cli).to receive(:detect_version).and_return("9.9.9")
         allow(cli).to receive(:detect_gem_name).and_return("mygem")
@@ -686,6 +702,25 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
         expect { cli.run }.to raise_error(MockSystemExit, /SKIP_GEM_SIGNING=true/)
       end
+
+      it "aborts before release setup when pre-release checks fail" do
+        expect(cli).to receive(:run_pre_release_checks!).and_raise(MockSystemExit.new("pre-release failed"))
+        expect(cli).not_to receive(:ensure_bundler_2_7_plus!)
+
+        expect { cli.run }.to raise_error(MockSystemExit, /pre-release failed/)
+      end
+
+      it "skips pre-release checks when resuming after step 1" do
+        resumed_cli = described_class.new(start_step: 2)
+        allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("n\n")
+        allow(resumed_cli).to receive(:ensure_bundler_2_7_plus!)
+        allow(resumed_cli).to receive(:detect_version).and_return("9.9.9")
+        allow(resumed_cli).to receive(:detect_gem_name).and_return("mygem")
+        allow(resumed_cli).to receive(:latest_released_versions).and_return([nil, nil])
+        expect(resumed_cli).not_to receive(:run_pre_release_checks!)
+
+        expect { resumed_cli.run }.to raise_error(MockSystemExit, /please update version.rb/)
+      end
     end
 
     describe "#run version sanity messaging and rescue" do
@@ -700,6 +735,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
       it "prints series info when latest overall is different series and continues" do
         allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("y\n")
+        allow(cli).to receive(:run_pre_release_checks!)
         allow(cli).to receive(:ensure_bundler_2_7_plus!)
         allow(cli).to receive(:detect_version).and_return("1.2.10")
         allow(cli).to receive(:detect_gem_name).and_return("mygem")
@@ -727,6 +763,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
       it "rescues failures from gem.coop release check and proceeds to user prompt" do
         allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("n\n")
+        allow(cli).to receive(:run_pre_release_checks!)
         allow(cli).to receive(:ensure_bundler_2_7_plus!)
         allow(cli).to receive(:detect_version).and_return("1.2.3")
         allow(cli).to receive(:detect_gem_name).and_raise(StandardError.new("boom"))
@@ -737,6 +774,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     describe "#run sanity-check branches" do
       it "aborts on downgrade when latest target is higher", :check_output do
         cli = described_class.new
+        allow(cli).to receive(:run_pre_release_checks!)
         allow(cli).to receive(:ensure_bundler_2_7_plus!)
         allow(cli).to receive(:detect_version).and_return("1.2.3")
         allow(cli).to receive(:detect_gem_name).and_return("kettle-dev")
@@ -749,6 +787,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
       it "prints offline message when target cannot be determined even though overall present", :check_output do
         cli = described_class.new
+        allow(cli).to receive(:run_pre_release_checks!)
         allow(cli).to receive(:ensure_bundler_2_7_plus!)
         allow(cli).to receive(:detect_version).and_return("1.2.3")
         allow(cli).to receive(:detect_gem_name).and_return("kettle-dev")

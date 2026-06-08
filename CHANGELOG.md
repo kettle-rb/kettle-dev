@@ -24,6 +24,8 @@ Please file a bug if you notice a violation of semantic versioning.
   checks, failing with an outdated-actions summary and recommended
   `kettle-gha-sha-pins --write --upgrade patch` command when workflow actions
   need updated SHA pins.
+- `kettle-release` now runs `kettle-pre-release` as a full-release gate before
+  release setup starts.
 
 ### Changed
 

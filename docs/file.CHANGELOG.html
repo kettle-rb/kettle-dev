@@ -80,6 +80,9 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 checks, failing with an outdated-actions summary and recommended<br>
 <code>kettle-gha-sha-pins --write --upgrade patch</code> command when workflow actions<br>
 need updated SHA pins.</li>
+  <li>
+<code>kettle-release</code> now runs <code>kettle-pre-release</code> as a full-release gate before<br>
+release setup starts.</li>
 </ul>
 
 <h3 id="changed">Changed</h3>
@@ -3082,7 +3085,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </div></div>
 
       <div id="footer">
-  Generated on Mon Jun  8 03:05:15 2026 by
+  Generated on Mon Jun  8 03:10:43 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>

@@ -626,12 +626,16 @@
 313
 314
 315
-316</pre>
+316
+317
+318</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 81</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_run'>run</span>
+  <span class='id identifier rubyid_run_pre_release_checks!'>run_pre_release_checks!</span> <span class='kw'>if</span> <span class='ivar'>@start_step</span> <span class='op'>&lt;=</span> <span class='int'>1</span>
+
   <span class='comment'># 1. Ensure Bundler version ✓
 </span>  <span class='id identifier rubyid_ensure_bundler_2_7_plus!'>ensure_bundler_2_7_plus!</span>
 
@@ -877,7 +881,7 @@
 </div>
 
       <div id="footer">
-  Generated on Sat Jun  6 23:12:22 2026 by
+  Generated on Mon Jun  8 03:10:44 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>

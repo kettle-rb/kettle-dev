@@ -47,6 +47,10 @@ if ARGV.include?("-h") || ARGV.include?("--help")
 
     Automates the release flow for a Ruby gem in the host project.
 
+    Full releases run `kettle-pre-release` before step 1 and abort if any
+    pre-release gate fails. Resume with start_step > 1 only after the gate has
+    passed or after intentionally handling the failure.
+
     Start steps (use start_step=<n> to begin at that step):
       1. Verify Bundler >= 2.7 (always runs; start at 1 to do everything)
       2. Detect version; RubyGems sanity check; confirm CHANGELOG/version; sync copyright years; update badges/headers
