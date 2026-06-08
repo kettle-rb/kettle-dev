@@ -22,6 +22,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- Retemplated project metadata with the latest `kettle-jem` stack, refreshing
+  README and security-policy generated details for the current release line.
+
 ### Deprecated
 
 ### Removed

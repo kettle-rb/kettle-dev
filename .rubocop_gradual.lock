@@ -2,14 +2,14 @@
   "exe/kettle-gha-sha-pins:1198589381": [
     [40, 1, 25, "Lint/UselessRescue: Useless `rescue` detected.", 3216106097]
   ],
-  "spec/kettle/dev/gha_sha_pins_cli_spec.rb:766358072": [
+  "spec/kettle/dev/gha_sha_pins_cli_spec.rb:3798450015": [
     [6, 1, 95, "Lint/MissingCopEnableDirective: Re-enable ThreadSafety/ClassInstanceVariable cop with `# rubocop:enable` after disabling it.", 1607411573],
     [33, 5, 52, "RSpec/AnyInstance: Avoid stubbing using `allow_any_instance_of`.", 2477653456],
     [34, 5, 52, "RSpec/AnyInstance: Avoid stubbing using `allow_any_instance_of`.", 2477653456],
     [102, 7, 52, "RSpec/AnyInstance: Avoid stubbing using `allow_any_instance_of`.", 2477653456],
     [214, 7, 7, "RSpec/ExpectOutput: Use `expect { ... }.to output(...).to_stdout` instead of mutating $stdout.", 2833060492],
     [218, 9, 7, "RSpec/ExpectOutput: Use `expect { ... }.to output(...).to_stdout` instead of mutating $stdout.", 2833060492],
-    [285, 7, 18, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 3300528635]
+    [335, 7, 18, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 3300528635]
   ],
   "spec/kettle/dev/rakelib/spec_test_rake_spec.rb:3467399156": [
     [23, 5, 6, "Lint/Syntax: unexpected token kENSURE\n(Using Ruby 2.4 parser; configure using `TargetRubyVersion` parameter, under `AllCops`)", 1164465823],

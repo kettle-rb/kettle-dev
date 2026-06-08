@@ -259,6 +259,7 @@ license_eye:
 # Default (when key is absent or empty): ["autobolt"]
 machine_users:
   - autobolt
+  - Ubuntu
 # Self-test / templating CI threshold.
 # Set to a number from 0 to 100 to fail `rake kettle:jem:selftest` once
 # divergence reaches or exceeds that percent. Leave blank to report only.

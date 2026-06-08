@@ -76,6 +76,11 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 
 <h3 id="changed">Changed</h3>
 
+<ul>
+  <li>Retemplated project metadata with the latest <code>kettle-jem</code> stack, refreshing<br>
+README and security-policy generated details for the current release line.</li>
+</ul>
+
 <h3 id="deprecated">Deprecated</h3>
 
 <h3 id="removed">Removed</h3>
@@ -87,6 +92,13 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 <code>kettle-gha-sha-pins</code> now treats version-equivalent but unresolved action<br>
 refs as invalid and converts them to release SHAs instead of accepting<br>
 stripped tag names such as <code>6.0.2</code> when only <code>v6.0.2</code> exists.</li>
+  <li>
+<code>kettle-gha-sha-pins --write</code> now refreshes adjacent release-version comments<br>
+when the pinned SHA is current but the comment is stale.</li>
+  <li>
+<code>kettle-gha-sha-pins</code> now uses <code>GH_TOKEN</code> or <code>gh auth token</code> as a fallback<br>
+when <code>GITHUB_TOKEN</code> is not set, avoiding false clean reports after<br>
+unauthenticated GitHub API rate limits are exhausted.</li>
   <li>Coverage workflow uploads now pin <code>codecov/codecov-action</code> and<br>
 <code>coverallsapp/github-action</code> to resolvable release SHAs.</li>
 </ul>
@@ -3127,7 +3139,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </div></div>
 
       <div id="footer">
-  Generated on Mon Jun  8 14:12:49 2026 by
+  Generated on Mon Jun  8 14:57:09 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>
