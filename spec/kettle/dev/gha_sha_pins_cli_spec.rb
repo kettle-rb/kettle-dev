@@ -279,6 +279,56 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       expect(File.read(workflow_path)).not_to include("foo/bar@1.2.0")
     end
 
+    it "updates adjacent version comments when upgrading to a newer release SHA" do
+      File.write(
+        workflow_path,
+        <<~YAML
+          name: ci
+          on: [push]
+          jobs:
+            test:
+              runs-on: ubuntu-latest
+              steps:
+                - uses: foo/bar@aaa # v1.2.0
+        YAML
+      )
+      cli_client = instance_double(described_class::GitHubClient)
+      allow(described_class::GitHubClient).to receive(:new).and_return(cli_client)
+      allow(cli_client).to receive(:versions_for_repo).with("foo/bar").and_return(client_versions)
+      allow(cli_client).to receive(:commit_sha).with("foo/bar", "aaa").and_return("aaa")
+
+      cli = described_class.new(["--root", workflow_root, "--upgrade", "minor", "--write"])
+      cli.run!
+
+      expect(File.read(workflow_path)).to include("uses: foo/bar@bbb # v1.3.0")
+      expect(File.read(workflow_path)).not_to include("# v1.2.0")
+    end
+
+    it "updates stale version comments even when the SHA is already current" do
+      File.write(
+        workflow_path,
+        <<~YAML
+          name: ci
+          on: [push]
+          jobs:
+            test:
+              runs-on: ubuntu-latest
+              steps:
+                - uses: foo/bar@bbb # v1.2.0
+        YAML
+      )
+      cli_client = instance_double(described_class::GitHubClient)
+      allow(described_class::GitHubClient).to receive(:new).and_return(cli_client)
+      allow(cli_client).to receive(:versions_for_repo).with("foo/bar").and_return(client_versions)
+      allow(cli_client).to receive(:commit_sha).with("foo/bar", "bbb").and_return("bbb")
+
+      cli = described_class.new(["--root", workflow_root, "--upgrade", "minor", "--write"])
+      cli.run!
+
+      expect(File.read(workflow_path)).to include("uses: foo/bar@bbb # v1.3.0")
+      expect(File.read(workflow_path)).not_to include("# v1.2.0")
+    end
+
     it "calls GitHub release-version lookup for each workflow action when evaluating pins" do
       cli_client = instance_double(described_class::GitHubClient)
       allow(described_class::GitHubClient).to receive(:new).and_return(cli_client)

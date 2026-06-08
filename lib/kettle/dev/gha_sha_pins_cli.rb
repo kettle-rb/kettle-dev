@@ -2,6 +2,7 @@
 
 require "json"
 require "net/http"
+require "open3"
 require "optparse"
 require "pathname"
 require "set"
@@ -26,6 +27,7 @@ module Kettle
       NON_SHA_REASON = "convert_to_sha"
       STALE_SHA_REASON = "upgrade_to_latest_release_sha"
       UPGRADE_REASON = "upgrade_to_allowed_release"
+      COMMENT_REASON = "update_version_comment"
       DEFAULT_UPGRADE_LEVEL = "patch"
       VALID_UPGRADE_LEVELS = %w[major minor patch].freeze
 
@@ -35,7 +37,7 @@ module Kettle
         @options = {
           root: Dir.pwd,
           dry_run: true,
-          token: ENV["GITHUB_TOKEN"],
+          token: ENV["GITHUB_TOKEN"] || ENV["GH_TOKEN"],
           json: false,
           validate: true,
           write: false,
@@ -51,6 +53,7 @@ module Kettle
       def run!
         parse!
 
+        @options[:token] ||= gh_auth_token if @options[:api_base] == API_BASE
         client = GitHubClient.new(token: @options[:token], api_base: @options[:api_base], user_agent: @options[:user_agent])
 
         state = {
@@ -103,6 +106,18 @@ module Kettle
                 updates[:new_version] = upgrade_plan[:updates][:version]
                 updates[:old_version] = upgrade_plan[:current_version]
               end
+              if updates.nil? && upgrade_plan[:current_version]
+                comment_version = version_comment_from_line(text, node[:line], node[:col], parsed_ref[:value])
+                if comment_version && comment_version != upgrade_plan[:current_version]
+                  updates = {
+                    new_ref: old_ref,
+                    new_version: upgrade_plan[:current_version],
+                    old_version: comment_version,
+                    reason: COMMENT_REASON,
+                    action: repo_ref
+                  }
+                end
+              end
 
               if upgrade_plan[:is_outdated]
                 state[:outdated_pins] << {
@@ -120,7 +135,7 @@ module Kettle
 
               next unless updates
 
-              replacement = build_replacement_from_line(text, node[:line], node[:col], parsed_ref[:value], updates[:new_ref])
+              replacement = build_replacement_from_line(text, node[:line], node[:col], parsed_ref[:value], updates[:new_ref], updates[:new_version])
               unless replacement
                 record_failure(
                   state,
@@ -270,13 +285,20 @@ module Kettle
       def resolve_action_plan(cache:, client:, progress:, repo_ref:, old_ref:)
         started_at = monotonic_time
         if cache.key?(repo_ref)
-          plan = cache.fetch(repo_ref)
+          versions = cache.fetch(repo_ref)
           progress&.log(format("Reused %<ref>s in %<elapsed>.2fs", ref: "#{repo_ref}@#{old_ref}", elapsed: monotonic_time - started_at))
-          return plan
+          return determine_upgrade_plan(
+            old_ref: old_ref,
+            repo_ref: repo_ref,
+            versions: versions,
+            upgrade_level: @options[:upgrade],
+            client: client
+          )
         end
 
         progress&.log("Resolving #{repo_ref}@#{old_ref}")
         versions = client.versions_for_repo(repo_ref)
+        cache[repo_ref] = versions
         plan = determine_upgrade_plan(
           old_ref: old_ref,
           repo_ref: repo_ref,
@@ -284,7 +306,6 @@ module Kettle
           upgrade_level: @options[:upgrade],
           client: client
         )
-        cache[repo_ref] = plan
         progress&.log(format("Resolved %<ref>s in %<elapsed>.2fs", ref: "#{repo_ref}@#{old_ref}", elapsed: monotonic_time - started_at))
         plan
       end
@@ -303,6 +324,16 @@ module Kettle
         return unless progress_enabled?
 
         @err.puts("[kettle-gha-sha-pins] #{message}")
+      end
+
+      def gh_auth_token
+        stdout, _stderr, status = Open3.capture3("gh", "auth", "token")
+        return nil unless status.success?
+
+        token = stdout.to_s.strip
+        token.empty? ? nil : token
+      rescue Errno::ENOENT
+        nil
       end
 
       def progress_bar(title:, total:)
@@ -638,7 +669,23 @@ module Kettle
         }
       end
 
-      def build_replacement_from_line(text, line, col, old_token, new_ref)
+      def version_comment_from_line(text, line, col, old_token)
+        line_text = text.lines[line]
+        return nil if line_text.nil?
+
+        raw = line_text[col..-1]
+        return nil if raw.nil?
+
+        token_info = extract_scalar_token(raw)
+        return nil unless token_info
+        return nil unless token_info[:token] == old_token
+
+        suffix = raw[token_info[:span]..-1].to_s
+        match = suffix.match(/\A\s+#\s*v?(\d+\.\d+\.\d+(?:[-.]?[0-9A-Za-z.-]+)?)/)
+        match && match[1]
+      end
+
+      def build_replacement_from_line(text, line, col, old_token, new_ref, new_version = nil)
         line_text = text.lines[line]
         return nil if line_text.nil?
 
@@ -652,10 +699,21 @@ module Kettle
         rendered = render_replacement(old_token, new_ref, token_info[:quote])
         return nil unless rendered
 
+        span = token_info[:span]
+        new_scalar = rendered[:quoted]
+        if new_version && token_info[:quote] == :plain
+          suffix = raw[span..-1].to_s
+          comment = suffix.match(/\A(?<prefix>\s+#\s*)v?\d+\.\d+\.\d+(?:[-.]?[0-9A-Za-z.-]+)?/)
+          if comment
+            span += comment[0].length
+            new_scalar += "#{comment[:prefix]}v#{new_version}"
+          end
+        end
+
         {
           start: col,
-          end: col + token_info[:span],
-          new_scalar: rendered[:quoted],
+          end: col + span,
+          new_scalar: new_scalar,
           new_ref: new_ref,
           old_token: old_token
         }

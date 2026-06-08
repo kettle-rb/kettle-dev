@@ -31,6 +31,11 @@ Please file a bug if you notice a violation of semantic versioning.
 - `kettle-gha-sha-pins` now treats version-equivalent but unresolved action
   refs as invalid and converts them to release SHAs instead of accepting
   stripped tag names such as `6.0.2` when only `v6.0.2` exists.
+- `kettle-gha-sha-pins --write` now refreshes adjacent release-version comments
+  when the pinned SHA is current but the comment is stale.
+- `kettle-gha-sha-pins` now uses `GH_TOKEN` or `gh auth token` as a fallback
+  when `GITHUB_TOKEN` is not set, avoiding false clean reports after
+  unauthenticated GitHub API rate limits are exhausted.
 - Coverage workflow uploads now pin `codecov/codecov-action` and
   `coverallsapp/github-action` to resolvable release SHAs.
 
