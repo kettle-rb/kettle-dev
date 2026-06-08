@@ -48,6 +48,12 @@ RSpec.configure do |config|
     skip_for(reason: "Requires prism-merge which is unavailable on Ruby < 2.7", versions: %w[2.3 2.4 2.5 2.6])
   end
 
+  config.before(:each, :prism_only) do
+    require "prism"
+  rescue LoadError
+    skip "Requires Prism, which is unavailable in this appraisal"
+  end
+
   config.before do
     # Speed up polling loops
     allow(described_class).to receive(:sleep) unless described_class.nil?

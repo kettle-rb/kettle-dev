@@ -107,6 +107,8 @@ appraise "ruby-3-1" do
 end
 
 appraise "ruby-3-2" do
+  gem "prism", "~> 1.6"
+
   eval_gemfile "modular/json/truffleruby_23_1.gemfile"
   eval_gemfile "modular/recording/r3/recording.gemfile"
   eval_gemfile "modular/x_std_libs/r3/libs.gemfile"

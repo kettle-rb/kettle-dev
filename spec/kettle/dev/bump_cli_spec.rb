@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Kettle::Dev::BumpCLI, :check_output do
+RSpec.describe Kettle::Dev::BumpCLI, :check_output, :prism_only do
   def with_project(version: "1.2.3", gemspec_version: version)
     begin
       Dir.mktmpdir do |root|

@@ -28,6 +28,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Legacy CI appraisals now skip `kettle-bump` specs when Prism is unavailable,
+  and the Ruby 3.2 appraisal includes `prism` so the specs run where supported.
+
 ### Security
 
 ## [2.2.0] - 2026-06-08
