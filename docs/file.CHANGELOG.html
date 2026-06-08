@@ -82,12 +82,6 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 
 <h3 id="fixed">Fixed</h3>
 
-<ul>
-  <li>Ruby 2.4-2.6 CI appraisals now include <code>backports</code>, and Ruby 3.0-3.1<br>
-appraisals include <code>prism</code>, so <code>kettle-bump</code> and GitHub Action SHA pin specs<br>
-run on the supported legacy matrix.</li>
-</ul>
-
 <h3 id="security">Security</h3>
 
 <h2 id="220---2026-06-08">
@@ -96,8 +90,8 @@ run on the supported legacy matrix.</li>
 <ul>
   <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v2.2.0">v2.2.0</a>
 </li>
-  <li>COVERAGE: 91.82% – 3705/4035 lines in 28 files</li>
-  <li>BRANCH COVERAGE: 73.14% – 1454/1988 branches in 28 files</li>
+  <li>COVERAGE: 91.81% – 3722/4054 lines in 28 files</li>
+  <li>BRANCH COVERAGE: 73.05% – 1461/2000 branches in 28 files</li>
   <li>67.51% documented</li>
 </ul>
 
@@ -156,8 +150,13 @@ when the pinned SHA is current but the comment is stale.</li>
 <code>kettle-gha-sha-pins</code> now uses <code>GH_TOKEN</code> or <code>gh auth token</code> as a fallback<br>
 when <code>GITHUB_TOKEN</code> is not set, avoiding false clean reports after<br>
 unauthenticated GitHub API rate limits are exhausted.</li>
-  <li>Coverage workflow uploads now pin <code>codecov/codecov-action</code> and<br>
-<code>coverallsapp/github-action</code> to resolvable release SHAs.</li>
+  <li>
+    <p>Coverage workflow uploads now pin <code>codecov/codecov-action</code> and<br>
+<code>coverallsapp/github-action</code> to resolvable release SHAs.</p>
+  </li>
+  <li>Ruby 2.4-2.6 CI appraisals now include <code>backports</code>, and Ruby 3.0-3.1<br>
+appraisals include <code>prism</code>, so <code>kettle-bump</code> and GitHub Action SHA pin specs<br>
+run on the supported legacy matrix.</li>
 </ul>
 
 <h3 id="changed-1">Changed</h3>
@@ -3151,7 +3150,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </div></div>
 
       <div id="footer">
-  Generated on Mon Jun  8 15:52:26 2026 by
+  Generated on Mon Jun  8 16:14:16 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>

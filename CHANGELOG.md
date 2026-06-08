@@ -28,17 +28,13 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Ruby 2.4-2.6 CI appraisals now include `backports`, and Ruby 3.0-3.1
-  appraisals include `prism`, so `kettle-bump` and GitHub Action SHA pin specs
-  run on the supported legacy matrix.
-
 ### Security
 
 ## [2.2.0] - 2026-06-08
 
 - TAG: [v2.2.0][2.2.0t]
-- COVERAGE: 91.82% -- 3705/4035 lines in 28 files
-- BRANCH COVERAGE: 73.14% -- 1454/1988 branches in 28 files
+- COVERAGE: 91.81% -- 3722/4054 lines in 28 files
+- BRANCH COVERAGE: 73.05% -- 1461/2000 branches in 28 files
 - 67.51% documented
 
 ### Added
@@ -83,6 +79,10 @@ Please file a bug if you notice a violation of semantic versioning.
   unauthenticated GitHub API rate limits are exhausted.
 - Coverage workflow uploads now pin `codecov/codecov-action` and
   `coverallsapp/github-action` to resolvable release SHAs.
+
+- Ruby 2.4-2.6 CI appraisals now include `backports`, and Ruby 3.0-3.1
+  appraisals include `prism`, so `kettle-bump` and GitHub Action SHA pin specs
+  run on the supported legacy matrix.
 
 ### Changed
 
