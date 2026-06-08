@@ -64,6 +64,7 @@ RSpec.describe Kettle::Dev::CIMonitor do
         project_root: Dir.pwd,
         workflows_list: ["ci.yml"],
         current_branch: "main",
+        current_head_sha: "abc123",
         latest_run: {"status" => "completed", "conclusion" => "success", "html_url" => "https://github.com/me/repo/actions/runs/1", "id" => 1}
       )
       allow(described_class).to receive_messages(
@@ -77,6 +78,49 @@ RSpec.describe Kettle::Dev::CIMonitor do
 
       expect { described_class.monitor_all!(restart_hint: "hint") }.not_to raise_error
       expect(described_class).to have_received(:sleep).with(5)
+    end
+
+    it "waits for the local HEAD workflow run instead of failing on an older branch run", :check_output do
+      allow(helpers).to receive_messages(
+        project_root: Dir.pwd,
+        workflows_list: ["ci.yml"],
+        current_branch: "main",
+        current_head_sha: "abc123"
+      )
+      allow(described_class).to receive_messages(
+        preferred_github_remote: "origin",
+        remote_url: "https://github.com/me/repo.git"
+      )
+      allow(helpers).to receive(:latest_run).with(owner: "me", repo: "repo", workflow_file: "ci.yml", branch: "main", require_head: true, head_sha: "abc123").and_return(
+        nil,
+        {"status" => "completed", "conclusion" => "success", "html_url" => "https://github.com/me/repo/actions/runs/2", "id" => 2, "head_sha" => "abc123"}
+      )
+      allow(helpers).to receive(:success?) { |run| run && run["conclusion"] == "success" }
+      allow(helpers).to receive(:failed?) { |run| run && run["conclusion"] == "failure" }
+      allow(described_class).to receive(:monotonic_time).and_return(0, 1)
+      stub_env("K_RELEASE_CI_INITIAL_SLEEP" => "0", "K_RELEASE_CI_START_TIMEOUT" => "10", "K_RELEASE_CI_POLL_INTERVAL" => "0")
+      allow(described_class).to receive(:sleep)
+
+      expect { described_class.monitor_all!(restart_hint: "hint") }.not_to raise_error
+    end
+
+    it "times out when GitHub never starts a run for local HEAD", :check_output do
+      allow(helpers).to receive_messages(
+        project_root: Dir.pwd,
+        workflows_list: ["ci.yml"],
+        current_branch: "main",
+        current_head_sha: "abc123"
+      )
+      allow(described_class).to receive_messages(
+        preferred_github_remote: "origin",
+        remote_url: "https://github.com/me/repo.git"
+      )
+      allow(helpers).to receive(:latest_run).with(owner: "me", repo: "repo", workflow_file: "ci.yml", branch: "main", require_head: true, head_sha: "abc123").and_return(nil)
+      allow(described_class).to receive(:monotonic_time).and_return(0, 1)
+      stub_env("K_RELEASE_CI_INITIAL_SLEEP" => "0", "K_RELEASE_CI_START_TIMEOUT" => "0", "K_RELEASE_CI_POLL_INTERVAL" => "0")
+      allow(described_class).to receive(:sleep)
+
+      expect { described_class.monitor_all!(restart_hint: "hint") }.to raise_error(MockSystemExit, /Timed out.*HEAD abc123/)
     end
 
     it "preferred_github_remote returns nil when no candidates" do

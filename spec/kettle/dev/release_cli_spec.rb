@@ -468,8 +468,9 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         allow(File).to receive(:exist?).with(File.join(Dir.pwd, ".gitlab-ci.yml")).and_return(false)
         run1 = {"html_url" => "http://example/1"}
         run2 = {"html_url" => "http://example/2"}
-        allow(ci_helpers).to receive(:latest_run).with(owner: "me", repo: "repo", workflow_file: "ci.yml", branch: "feat").and_return(run1)
-        allow(ci_helpers).to receive(:latest_run).with(owner: "me", repo: "repo", workflow_file: "lint.yml", branch: "feat").and_return(run2)
+        allow(ci_helpers).to receive(:current_head_sha).and_return("abc123")
+        allow(ci_helpers).to receive(:latest_run).with(owner: "me", repo: "repo", workflow_file: "ci.yml", branch: "feat", require_head: true, head_sha: "abc123").and_return(run1)
+        allow(ci_helpers).to receive(:latest_run).with(owner: "me", repo: "repo", workflow_file: "lint.yml", branch: "feat", require_head: true, head_sha: "abc123").and_return(run2)
         allow(ci_helpers).to receive(:success?).and_return(true)
         expect { cli.send(:monitor_workflows_after_push!) }.not_to raise_error
       end
@@ -479,6 +480,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         allow(File).to receive(:exist?).and_call_original
         allow(File).to receive(:exist?).with(File.join(Dir.pwd, ".gitlab-ci.yml")).and_return(false)
         allow(Kettle::Dev::CIMonitor).to receive(:gitlab_remote_candidates).and_return([])
+        allow(ci_helpers).to receive(:current_head_sha).and_return("abc123")
         run = {"html_url" => "http://example/ci"}
         allow(ci_helpers).to receive(:latest_run).and_return(run)
         allow(ci_helpers).to receive(:success?).and_return(false)

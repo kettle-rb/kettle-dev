@@ -285,8 +285,13 @@ module Kettle
         total = workflows.size
         abort("No GitHub workflows found under .github/workflows; aborting.") if total.zero?
 
+        head_sha = Kettle::Dev::CIHelpers.current_head_sha
+        abort("Could not determine local HEAD SHA for GitHub Actions checks.") unless head_sha && !head_sha.empty?
+
         passed = {}
+        started = {}
         puts "Ensuring GitHub Actions workflows pass on #{branch} (#{owner}/#{repo}) via remote '#{gh_remote}'"
+        puts "Waiting for GitHub Actions runs to start for HEAD #{head_sha[0, 12]}."
         pbar = if defined?(ProgressBar)
           ProgressBar.create(title: "CI", total: total, format: "%t %b %c/%C", length: 30)
         end
@@ -300,11 +305,15 @@ module Kettle
           end
         end
         sleep((initial_sleep && initial_sleep >= 0) ? initial_sleep : 3)
+        start_timeout = github_start_timeout
+        poll_interval = github_poll_interval
+        start_deadline = monotonic_time + start_timeout
         idx = 0
         loop do
           wf = workflows[idx]
-          run = Kettle::Dev::CIHelpers.latest_run(owner: owner, repo: repo, workflow_file: wf, branch: branch)
+          run = Kettle::Dev::CIHelpers.latest_run(owner: owner, repo: repo, workflow_file: wf, branch: branch, require_head: true, head_sha: head_sha)
           if run
+            started[wf] = true
             if Kettle::Dev::CIHelpers.success?(run)
               unless passed[wf]
                 passed[wf] = true
@@ -317,15 +326,45 @@ module Kettle
             end
           end
           break if passed.size == total
+          if started.size < total && monotonic_time >= start_deadline
+            missing = (workflows - started.keys).join(", ")
+            puts
+            abort("Timed out after #{start_timeout}s waiting for GitHub Actions workflows to start for HEAD #{head_sha[0, 12]}: #{missing}. Confirm GitHub Actions started, then restart this tool from CI validation with: #{restart_hint}")
+          end
 
           idx = (idx + 1) % total
-          sleep(1)
+          sleep(poll_interval)
         end
         pbar&.finish unless pbar&.finished?
         puts "\nAll GitHub workflows passing (#{passed.size}/#{total})."
         true
       end
       module_function :monitor_github_internal!
+
+      def monotonic_time
+        Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      end
+      module_function :monotonic_time
+
+      def github_start_timeout
+        seconds = begin
+          Integer(ENV["K_RELEASE_CI_START_TIMEOUT"])
+        rescue
+          nil
+        end
+        (seconds && seconds >= 0) ? seconds : 120
+      end
+      module_function :github_start_timeout
+
+      def github_poll_interval
+        seconds = begin
+          Float(ENV["K_RELEASE_CI_POLL_INTERVAL"])
+        rescue
+          nil
+        end
+        (seconds && seconds >= 0) ? seconds : 1
+      end
+      module_function :github_poll_interval
 
       def monitor_gitlab_internal!(restart_hint:)
         root = Kettle::Dev::CIHelpers.project_root

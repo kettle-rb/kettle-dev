@@ -28,6 +28,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-release start_step=10` now waits for GitHub Actions runs for the
+  local HEAD SHA to appear before evaluating results, avoiding stale failures
+  from the previous branch run.
 - Removed the duplicate `cgi` declaration from the `head` appraisal so
   `kettle-release` can regenerate Appraisal gemfiles on Ruby 4.
 

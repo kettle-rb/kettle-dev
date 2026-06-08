@@ -45,6 +45,13 @@ module Kettle
         status.success? ? out.strip : nil
       end
 
+      # Current git commit SHA, or nil when unavailable.
+      # @return [String, nil]
+      def current_head_sha
+        out, status = Open3.capture2("git", "rev-parse", "HEAD")
+        status.success? ? out.strip : nil
+      end
+
       # List workflow YAML basenames under .github/workflows at the given root.
       # Excludes maintenance workflows defined by {#exclusions}.
       # @param root [String] project root (defaults to {#project_root})
@@ -81,15 +88,14 @@ module Kettle
       # @param branch [String, nil] branch to query; defaults to {#current_branch}
       # @param token [String, nil] OAuth token for higher rate limits; defaults to {#default_token}
       # @return [Hash{String=>String,Integer}, nil] minimal run info or nil on error/none
-      def latest_run(owner:, repo:, workflow_file:, branch: nil, token: default_token)
+      def latest_run(owner:, repo:, workflow_file:, branch: nil, token: default_token, require_head: false, head_sha: nil)
         return unless owner && repo
 
         b = branch || current_branch
         return unless b
 
         # Scope to the exact commit SHA when available to avoid picking up a previous run on the same branch.
-        sha_out, status = Open3.capture2("git", "rev-parse", "HEAD")
-        sha = status.success? ? sha_out.strip : nil
+        sha = head_sha || current_head_sha
         base_url = "https://api.github.com/repos/#{owner}/#{repo}/actions/workflows/#{workflow_file}/runs?branch=#{URI.encode_www_form_component(b)}&per_page=5"
         uri = URI(base_url)
         req = Net::HTTP::Get.new(uri)
@@ -102,9 +108,10 @@ module Kettle
         runs = Array(data["workflow_runs"]) || []
         # Try to match by head_sha first; fall back to first run (branch-scoped) if none matches yet.
         run = if sha
-          runs.find { |r| r["head_sha"] == sha } || runs.first
+          match = runs.find { |r| r["head_sha"] == sha }
+          require_head ? match : (match || runs.first)
         else
-          runs.first
+          runs.first unless require_head
         end
         return unless run
 
@@ -112,7 +119,8 @@ module Kettle
           "status" => run["status"],
           "conclusion" => run["conclusion"],
           "html_url" => run["html_url"],
-          "id" => run["id"]
+          "id" => run["id"],
+          "head_sha" => run["head_sha"]
         }
       rescue => e
         Kettle::Dev.debug_error(e, __method__)

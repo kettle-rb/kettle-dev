@@ -9,6 +9,9 @@ module Kettle
       def self.monitor_and_prompt_for_release!: (?restart_hint: String) -> void
       def self.collect_github: () -> Array[untyped]?
       def self.collect_gitlab: () -> { status: String, url: String? }?
+      def self.monotonic_time: () -> Float
+      def self.github_start_timeout: () -> Integer
+      def self.github_poll_interval: () -> Float
     end
   end
 end

@@ -5,6 +5,7 @@ module Kettle
       def self.project_root: () -> String
       def self.repo_info: () -> [String, String]?
       def self.current_branch: () -> String?
+      def self.current_head_sha: () -> String?
       def self.workflows_list: (?String root) -> Array[String]
       def self.exclusions: () -> Array[String]
 
@@ -13,8 +14,10 @@ module Kettle
         repo: String,
         workflow_file: String,
         ?branch: String?,
-        ?token: String?
-      ) -> { "status" => String, "conclusion" => String?, "html_url" => String, "id" => Integer }?
+        ?token: String?,
+        ?require_head: bool,
+        ?head_sha: String?
+      ) -> { "status" => String, "conclusion" => String?, "html_url" => String, "id" => Integer, "head_sha" => String? }?
 
       def self.success?: ({ "status" => String, "conclusion" => String? }?) -> bool
       def self.failed?: ({ "status" => String, "conclusion" => String? }?) -> bool
