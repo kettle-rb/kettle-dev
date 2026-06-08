@@ -108,7 +108,7 @@ jobs:
 
       - name: Upload coverage to CodeCov
         if: ${{ !env.ACT }}
-        uses: codecov/codecov-action@6.0.2 # v6.0.2
+        uses: codecov/codecov-action@v7.0.0 # v6.0.2
         with:
           use_oidc: true
           disable_search: true
