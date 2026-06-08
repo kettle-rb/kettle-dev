@@ -20,6 +20,25 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [2.2.0] - 2026-06-08
+
+- TAG: [v2.2.0][2.2.0t]
+- COVERAGE: 91.45% -- 3530/3860 lines in 28 files
+- BRANCH COVERAGE: 72.85% -- 1387/1904 branches in 28 files
+- 70.65% documented
+
+### Added
+
 - `kettle-pre-release` now runs `kettle-gha-sha-pins --check` before release
   checks, failing with an outdated-actions summary and recommended
   `kettle-gha-sha-pins --write --upgrade patch` command when workflow actions
@@ -34,19 +53,11 @@ Please file a bug if you notice a violation of semantic versioning.
   per action repository, and uses GitHub REST tag-ref lookups to avoid resolving
   every release tag through individual commit requests.
 
-### Changed
-
-### Deprecated
-
-### Removed
-
 ### Fixed
 
 - Minitest-only projects now keep `rake test` on the generated
   `Rake::TestTask` path instead of synthesizing a `kettle-test` RSpec task when
   tests live directly under `test/`.
-
-### Security
 
 ## [2.1.1] - 2026-06-06
 
@@ -1931,7 +1942,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v2.1.1...HEAD
+[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v2.2.0...HEAD
+[2.2.0]: https://github.com/kettle-rb/kettle-dev/compare/v2.1.1...v2.2.0
+[2.2.0t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v2.2.0
 [2.1.1]: https://github.com/kettle-rb/kettle-dev/compare/v2.1.0...v2.1.1
 [2.1.1t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v2.1.1
 [2.1.0]: https://github.com/kettle-rb/kettle-dev/compare/v2.0.8...v2.1.0
