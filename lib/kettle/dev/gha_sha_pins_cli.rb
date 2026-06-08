@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
 require "json"
+require "fileutils"
 require "net/http"
 require "open3"
 require "optparse"
 require "pathname"
 require "set"
+require "time"
 require "uri"
 
 require "psych"
@@ -29,6 +31,7 @@ module Kettle
       UPGRADE_REASON = "upgrade_to_allowed_release"
       COMMENT_REASON = "update_version_comment"
       DEFAULT_UPGRADE_LEVEL = "patch"
+      DEFAULT_CACHE_TTL_SECONDS = 24 * 60 * 60
       VALID_UPGRADE_LEVELS = %w[major minor patch].freeze
 
       def initialize(argv, err: $stderr)
@@ -45,6 +48,8 @@ module Kettle
           api_base: API_BASE,
           user_agent: "kettle-gha-sha-pins",
           upgrade: DEFAULT_UPGRADE_LEVEL,
+          cache_path: ENV["KETTLE_GHA_SHA_PINS_CACHE"] || PersistentActionCache.default_path,
+          refresh_cache: false,
           reject_patterns: Set.new,
           progress: nil
         }
@@ -54,7 +59,18 @@ module Kettle
         parse!
 
         @options[:token] ||= gh_auth_token if @options[:api_base] == API_BASE
-        client = GitHubClient.new(token: @options[:token], api_base: @options[:api_base], user_agent: @options[:user_agent])
+        persistent_cache = if @options[:cache_path].to_s.empty?
+          nil
+        else
+          PersistentActionCache.new(path: @options[:cache_path])
+        end
+        client = GitHubClient.new(
+          token: @options[:token],
+          api_base: @options[:api_base],
+          user_agent: @options[:user_agent],
+          persistent_cache: persistent_cache,
+          refresh_cache: @options[:refresh_cache]
+        )
 
         state = {
           files_scanned: 0,
@@ -230,6 +246,12 @@ module Kettle
           end
           opt.on("--token VALUE", "GitHub token to increase API rate-limit") do |token|
             @options[:token] = token
+          end
+          opt.on("--refresh-cache", "Bypass cached action release data and refresh discovered actions") do
+            @options[:refresh_cache] = true
+          end
+          opt.on("--cache-path PATH", "Action release cache path (default: #{@options[:cache_path]})") do |path|
+            @options[:cache_path] = path
           end
           opt.on("--json", "Emit JSON report") do
             @options[:json] = true
@@ -847,12 +869,166 @@ module Kettle
 ")
       end
 
+      # Persistent cache of GitHub Action release versions and target SHAs.
+      class PersistentActionCache
+        VERSION = 1
+
+        def self.default_path
+          state_home = ENV["XDG_STATE_HOME"]
+          state_home = File.join(Dir.home, ".local", "state") if state_home.to_s.empty?
+          File.join(state_home, "kettle-dev", "gha-sha-pins-cache.json")
+        rescue ArgumentError
+          nil
+        end
+
+        def initialize(path:, ttl_seconds: DEFAULT_CACHE_TTL_SECONDS, clock: -> { Time.now })
+          @path = path
+          @ttl_seconds = ttl_seconds
+          @clock = clock
+          @data = nil
+        end
+
+        def versions_for_repo(repo_ref, fresh: true)
+          action = action_data(repo_ref)
+          return nil unless action
+
+          versions = action.fetch("versions", {}).values
+          return nil if versions.empty?
+
+          entries = if fresh
+            versions.select { |entry| fresh_entry?(entry) }
+          else
+            versions
+          end
+          return nil if entries.empty?
+          return nil if fresh && entries.length != versions.length
+
+          entries.filter_map { |entry| deserialize_version_entry(entry) }
+            .sort_by { |entry| entry[:version_obj] }
+            .reverse
+        end
+
+        def write_versions(repo_ref, versions)
+          return if @path.to_s.empty?
+          return if repo_ref.to_s.empty?
+
+          action = data.fetch("actions")[repo_ref] ||= {}
+          stored_versions = action["versions"] ||= {}
+          timestamp = @clock.call.utc.iso8601
+
+          versions.each do |entry|
+            version = entry[:version].to_s
+            next if version.empty?
+
+            stored_versions[version] = {
+              "tag" => entry[:tag].to_s,
+              "version" => version,
+              "sha" => entry[:sha].to_s,
+              "cached_at" => timestamp
+            }
+          end
+
+          action["targets"] = target_cache(stored_versions.values)
+          save!
+        end
+
+        def to_h
+          data
+        end
+
+        private
+
+        def data
+          @data ||= load_data
+        end
+
+        def action_data(repo_ref)
+          data.fetch("actions")[repo_ref]
+        end
+
+        def load_data
+          parsed = if @path && File.file?(@path)
+            JSON.parse(File.read(@path))
+          end
+          return empty_data unless parsed.is_a?(Hash)
+
+          parsed["version"] ||= VERSION
+          parsed["actions"] = {} unless parsed["actions"].is_a?(Hash)
+          parsed
+        rescue JSON::ParserError, Errno::EACCES
+          empty_data
+        end
+
+        def empty_data
+          {"version" => VERSION, "actions" => {}}
+        end
+
+        def save!
+          FileUtils.mkdir_p(File.dirname(@path))
+          File.write(@path, JSON.pretty_generate(data) + "\n")
+        end
+
+        def deserialize_version_entry(entry)
+          version = entry["version"].to_s
+          parsed = parse_version(version)
+          return nil unless parsed
+
+          {
+            tag: entry["tag"].to_s,
+            version_obj: parsed,
+            version: version,
+            sha: entry["sha"].to_s
+          }
+        end
+
+        def target_cache(version_entries)
+          entries = version_entries.filter_map do |entry|
+            deserialized = deserialize_version_entry(entry)
+            next unless deserialized
+
+            deserialized.merge(cached_at: entry["cached_at"].to_s)
+          end
+
+          {
+            "patch" => entries.group_by { |entry| entry[:version_obj].segments[0, 2].join(".") }
+              .transform_values { |group| serialize_target(group.max_by { |entry| entry[:version_obj] }) },
+            "minor" => entries.group_by { |entry| entry[:version_obj].segments[0].to_s }
+              .transform_values { |group| serialize_target(group.max_by { |entry| entry[:version_obj] }) },
+            "major" => {"*" => serialize_target(entries.max_by { |entry| entry[:version_obj] })}
+          }
+        end
+
+        def serialize_target(entry)
+          {
+            "tag" => entry[:tag],
+            "version" => entry[:version],
+            "sha" => entry[:sha],
+            "cached_at" => entry[:cached_at]
+          }
+        end
+
+        def parse_version(value)
+          Gem::Version.new(value)
+        rescue ArgumentError
+          nil
+        end
+
+        def fresh_entry?(entry)
+          cached_at = Time.iso8601(entry["cached_at"].to_s)
+          cached_at >= @clock.call - @ttl_seconds
+        rescue ArgumentError
+          false
+        end
+      end
+
       # Lightweight GitHub API client for commit and release SHA resolution.
       class GitHubClient
-        def initialize(token:, api_base:, user_agent:)
+        def initialize(token:, api_base:, user_agent:, persistent_cache: nil, refresh_cache: false)
           @token = token
           @api_base = api_base
           @user_agent = user_agent
+          @persistent_cache = persistent_cache
+          @refresh_cache = refresh_cache
           @commit_cache = {}
           @release_cache = {}
         end
@@ -861,8 +1037,21 @@ module Kettle
           return [] if repo_ref.to_s.empty?
           return @release_cache[repo_ref] if @release_cache.key?(repo_ref)
 
+          unless @refresh_cache
+            cached = @persistent_cache&.versions_for_repo(repo_ref, fresh: true)
+            if cached
+              @release_cache[repo_ref] = cached
+              return cached
+            end
+          end
+
           data = request_json("/repos/#{repo_ref}/releases?per_page=100")
-          return [] unless data.is_a?(Array)
+          unless data.is_a?(Array)
+            fallback = @persistent_cache&.versions_for_repo(repo_ref, fresh: false)
+            return fallback if fallback
+
+            return []
+          end
 
           tag_shas = tag_ref_shas(repo_ref)
           releases = data.filter_map do |release|
@@ -883,6 +1072,7 @@ module Kettle
 
           releases.sort_by! { |release| release[:version_obj] }
           releases.reverse!
+          @persistent_cache&.write_versions(repo_ref, releases)
           @release_cache[repo_ref] = releases
           releases
         end

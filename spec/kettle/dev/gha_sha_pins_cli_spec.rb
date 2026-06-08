@@ -43,6 +43,17 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       expect(cli.instance_variable_get(:@options)[:upgrade]).to eq("patch")
     end
 
+    it "accepts --refresh-cache and --cache-path" do
+      cache_path = File.join(workflow_root, "gha-cache.json")
+      cli = described_class.new(["--root", workflow_root, "--refresh-cache", "--cache-path", cache_path])
+
+      cli.send(:parse!)
+
+      options = cli.instance_variable_get(:@options)
+      expect(options[:refresh_cache]).to be(true)
+      expect(options[:cache_path]).to eq(cache_path)
+    end
+
     it "accepts major, minor, and patch for --upgrade", :real_exit_adapter do
       cli_major = described_class.new(["--upgrade", "major", "--root", workflow_root])
       cli_minor = described_class.new(["--upgrade", "minor", "--root", workflow_root])
@@ -168,6 +179,99 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       versions = client.versions_for_repo("foo/bar")
 
       expect(versions.map { |entry| entry[:sha] }).to contain_exactly("a" * 40, "b" * 40)
+    end
+
+    it "uses fresh persistent cache entries without GitHub API calls" do
+      cache = Kettle::Dev::GhaShaPinsCLI::PersistentActionCache.new(
+        path: File.join(workflow_root, "gha-cache.json"),
+        clock: -> { Time.utc(2026, 6, 8, 12, 0, 0) }
+      )
+      cache.write_versions(
+        "foo/bar",
+        [
+          {tag: "v1.2.3", version_obj: Gem::Version.new("1.2.3"), version: "1.2.3", sha: "a" * 40},
+          {tag: "v1.3.0", version_obj: Gem::Version.new("1.3.0"), version: "1.3.0", sha: "b" * 40},
+          {tag: "v2.0.0", version_obj: Gem::Version.new("2.0.0"), version: "2.0.0", sha: "c" * 40}
+        ]
+      )
+      client = described_class.new(
+        token: nil,
+        api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE,
+        user_agent: "kettle-gha-sha-pins",
+        persistent_cache: cache
+      )
+      expect(client).not_to receive(:request_json)
+
+      versions = client.versions_for_repo("foo/bar")
+
+      expect(versions.map { |entry| entry[:version] }).to eq(%w[2.0.0 1.3.0 1.2.3])
+    end
+
+    it "bypasses fresh cache when refreshing and preserves unrelated cached actions" do
+      cache_path = File.join(workflow_root, "gha-cache.json")
+      cache = Kettle::Dev::GhaShaPinsCLI::PersistentActionCache.new(path: cache_path, clock: -> { Time.utc(2026, 6, 8, 12, 0, 0) })
+      cache.write_versions(
+        "other/action",
+        [{tag: "v9.0.0", version_obj: Gem::Version.new("9.0.0"), version: "9.0.0", sha: "9" * 40}]
+      )
+      cache.write_versions(
+        "foo/bar",
+        [{tag: "v1.2.0", version_obj: Gem::Version.new("1.2.0"), version: "1.2.0", sha: "a" * 40}]
+      )
+      client = described_class.new(
+        token: nil,
+        api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE,
+        user_agent: "kettle-gha-sha-pins",
+        persistent_cache: Kettle::Dev::GhaShaPinsCLI::PersistentActionCache.new(path: cache_path, clock: -> { Time.utc(2026, 6, 8, 12, 5, 0) }),
+        refresh_cache: true
+      )
+      allow(client).to receive(:request_json).with("/repos/foo/bar/releases?per_page=100").and_return([
+        {"tag_name" => "v1.2.3", "prerelease" => false},
+        {"tag_name" => "v1.3.0", "prerelease" => false},
+        {"tag_name" => "v2.0.0", "prerelease" => false}
+      ])
+      allow(client).to receive(:request_json).with("/repos/foo/bar/git/matching-refs/tags/").and_return([
+        {"ref" => "refs/tags/v1.2.3", "object" => {"type" => "commit", "sha" => "b" * 40}},
+        {"ref" => "refs/tags/v1.3.0", "object" => {"type" => "commit", "sha" => "c" * 40}},
+        {"ref" => "refs/tags/v2.0.0", "object" => {"type" => "commit", "sha" => "d" * 40}}
+      ])
+
+      versions = client.versions_for_repo("foo/bar")
+      cached = JSON.parse(File.read(cache_path))
+
+      expect(versions.map { |entry| entry[:version] }).to eq(%w[2.0.0 1.3.0 1.2.3])
+      expect(cached.fetch("actions")).to include("other/action")
+      expect(cached.dig("actions", "foo/bar", "versions")).to include("1.2.0", "1.2.3", "1.3.0", "2.0.0")
+      expect(cached.dig("actions", "foo/bar", "targets", "patch", "1.2", "version")).to eq("1.2.3")
+      expect(cached.dig("actions", "foo/bar", "targets", "minor", "1", "version")).to eq("1.3.0")
+      expect(cached.dig("actions", "foo/bar", "targets", "major", "*", "version")).to eq("2.0.0")
+    end
+
+    it "refreshes stale persistent cache entries after the TTL" do
+      cache_path = File.join(workflow_root, "gha-cache.json")
+      Kettle::Dev::GhaShaPinsCLI::PersistentActionCache.new(
+        path: cache_path,
+        clock: -> { Time.utc(2026, 6, 7, 11, 59, 0) }
+      ).write_versions(
+        "foo/bar",
+        [{tag: "v1.2.0", version_obj: Gem::Version.new("1.2.0"), version: "1.2.0", sha: "a" * 40}]
+      )
+      client = described_class.new(
+        token: nil,
+        api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE,
+        user_agent: "kettle-gha-sha-pins",
+        persistent_cache: Kettle::Dev::GhaShaPinsCLI::PersistentActionCache.new(path: cache_path, clock: -> { Time.utc(2026, 6, 8, 12, 0, 1) })
+      )
+      allow(client).to receive(:request_json).with("/repos/foo/bar/releases?per_page=100").and_return([
+        {"tag_name" => "v1.2.1", "prerelease" => false}
+      ])
+      allow(client).to receive(:request_json).with("/repos/foo/bar/git/matching-refs/tags/").and_return([
+        {"ref" => "refs/tags/v1.2.1", "object" => {"type" => "commit", "sha" => "b" * 40}}
+      ])
+
+      versions = client.versions_for_repo("foo/bar")
+
+      expect(versions.map { |entry| entry[:version] }).to eq(["1.2.1"])
     end
   end
 

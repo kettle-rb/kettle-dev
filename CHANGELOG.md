@@ -20,6 +20,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- `kettle-gha-sha-pins` now keeps a 24-hour persistent action release cache at
+  the XDG state location and supports `--refresh-cache` to bypass stale entries
+  while preserving cached discoveries for other projects and actions.
+
 ### Changed
 
 - Retemplated project metadata with the latest `kettle-jem` stack, refreshing

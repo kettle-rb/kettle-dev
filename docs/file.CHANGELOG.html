@@ -74,6 +74,13 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 
 <h3 id="added">Added</h3>
 
+<ul>
+  <li>
+<code>kettle-gha-sha-pins</code> now keeps a 24-hour persistent action release cache at<br>
+the XDG state location and supports <code>--refresh-cache</code> to bypass stale entries<br>
+while preserving cached discoveries for other projects and actions.</li>
+</ul>
+
 <h3 id="changed">Changed</h3>
 
 <ul>
@@ -3139,7 +3146,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </div></div>
 
       <div id="footer">
-  Generated on Mon Jun  8 14:57:09 2026 by
+  Generated on Mon Jun  8 15:16:07 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>
