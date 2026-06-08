@@ -5,7 +5,7 @@
 
 # kettle-pre-release: Run pre-release checks to catch avoidable mistakes.
 # - Structured as a sequence of checks that can be resumed via check_num
-# - Initial check: validate all image URLs referenced by Markdown files resolve (HTTP HEAD)
+# - Checks GitHub Actions SHA pins and validates Markdown image links.
 
 require "optparse"
 
@@ -45,7 +45,9 @@ parser = OptionParser.new do |opts|
     puts opts
     puts
     puts "Checks:"
-    puts "  1) Validate Markdown image links (HTTP HEAD)"
+    puts "  1) Validate GitHub Actions SHA pins"
+    puts "  2) Normalize Markdown image URLs"
+    puts "  3) Validate Markdown image links (HTTP HEAD)"
     exit(0)
   end
 end

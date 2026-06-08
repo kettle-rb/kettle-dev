@@ -106,8 +106,9 @@
   <div class="discussion">
     <p>PreReleaseCLI: run pre-release checks before invoking full release workflow.<br />
 Checks:<br />
-  1) Normalize Markdown image URLs using Addressable normalization.<br />
-  2) Validate Markdown image links resolve via HTTP(S) HEAD.</p>
+  1) Ensure GitHub Actions workflow actions are pinned to current SHAs.<br />
+  2) Normalize Markdown image URLs using Addressable normalization.<br />
+  3) Validate Markdown image links resolve via HTTP(S) HEAD.</p>
 
 <p>Usage: Kettle::Dev::PreReleaseCLI.new(check_num: 1).run</p>
 
@@ -145,6 +146,29 @@ Checks:<br />
         <li class="public ">
   <span class="summary_signature">
     
+      <a href="#check_github_actions_sha_pins!-instance_method" title="#check_github_actions_sha_pins! (instance method)">#<strong>check_github_actions_sha_pins!</strong>  &#x21d2; void </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Check 1: Ensure GitHub Actions workflow action refs are current SHA pins.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
       <a href="#check_markdown_images_http!-instance_method" title="#check_markdown_images_http! (instance method)">#<strong>check_markdown_images_http!</strong>  &#x21d2; void </a>
     
 
@@ -159,7 +183,7 @@ Checks:<br />
   
 
   
-    <span class="summary_desc"><div class='inline'><p>Check 2: Validate Markdown image links by HTTP HEAD (no rescue for parse failures).</p>
+    <span class="summary_desc"><div class='inline'><p>Check 3: Validate Markdown image links by HTTP HEAD (no rescue for parse failures).</p>
 </div></span>
   
 </li>
@@ -182,7 +206,7 @@ Checks:<br />
   
 
   
-    <span class="summary_desc"><div class='inline'><p>Check 1: Normalize Markdown image URLs   Compares URLs to Addressable-normalized form and rewrites Markdown when needed.</p>
+    <span class="summary_desc"><div class='inline'><p>Check 2: Normalize Markdown image URLs   Compares URLs to Addressable-normalized form and rewrites Markdown when needed.</p>
 </div></span>
   
 </li>
@@ -289,13 +313,13 @@ Checks:<br />
       <pre class="lines">
 
 
-145
 146
 147
-148</pre>
+148
+149</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/pre_release_cli.rb', line 145</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/pre_release_cli.rb', line 146</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='label'>check_num:</span> <span class='int'>1</span><span class='rparen'>)</span>
   <span class='ivar'>@check_num</span> <span class='op'>=</span> <span class='lparen'>(</span><span class='id identifier rubyid_check_num'>check_num</span> <span class='op'>||</span> <span class='int'>1</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_to_i'>to_i</span>
@@ -314,9 +338,9 @@ Checks:<br />
 
     
       <div class="method_details first">
-  <h3 class="signature first" id="check_markdown_images_http!-instance_method">
+  <h3 class="signature first" id="check_github_actions_sha_pins!-instance_method">
   
-    #<strong>check_markdown_images_http!</strong>  &#x21d2; <tt>void</tt> 
+    #<strong>check_github_actions_sha_pins!</strong>  &#x21d2; <tt>void</tt> 
   
 
   
@@ -324,7 +348,7 @@ Checks:<br />
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p class="note returns_void">This method returns an undefined value.</p><p>Check 2: Validate Markdown image links by HTTP HEAD (no rescue for parse failures)</p>
+    <p class="note returns_void">This method returns an undefined value.</p><p>Check 1: Ensure GitHub Actions workflow action refs are current SHA pins.</p>
 
 
   </div>
@@ -338,18 +362,54 @@ Checks:<br />
       <pre class="lines">
 
 
-221
-222
-223
-224
-225
-226
-227
-228
-229
-230
-231
-232
+173
+174
+175
+176
+177
+178
+179</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/pre_release_cli.rb', line 173</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_check_github_actions_sha_pins!'>check_github_actions_sha_pins!</span>
+  <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>[kettle-pre-release] Check 1: Validate GitHub Actions SHA pins</span><span class='tstring_end'>&quot;</span></span>
+  <span class='id identifier rubyid_status'>status</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="GhaShaPinsCLI.html" title="Kettle::Dev::GhaShaPinsCLI (class)">GhaShaPinsCLI</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="GhaShaPinsCLI.html#initialize-instance_method" title="Kettle::Dev::GhaShaPinsCLI#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>--root</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='const'>Dir</span><span class='period'>.</span><span class='id identifier rubyid_pwd'>pwd</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>--check</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_run!'><span class='object_link'><a href="GhaShaPinsCLI.html#run!-instance_method" title="Kettle::Dev::GhaShaPinsCLI#run! (method)">run!</a></span></span>
+  <span class='kw'>return</span> <span class='kw'>nil</span> <span class='kw'>if</span> <span class='id identifier rubyid_status'>status</span><span class='period'>.</span><span class='id identifier rubyid_zero?'>zero?</span>
+
+  <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="ExitAdapter.html" title="Kettle::Dev::ExitAdapter (module)">ExitAdapter</a></span></span><span class='period'>.</span><span class='id identifier rubyid_abort'><span class='object_link'><a href="ExitAdapter.html#abort-class_method" title="Kettle::Dev::ExitAdapter.abort (method)">abort</a></span></span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>GitHub Actions SHA pin validation failed</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="check_markdown_images_http!-instance_method">
+  
+    #<strong>check_markdown_images_http!</strong>  &#x21d2; <tt>void</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p class="note returns_void">This method returns an undefined value.</p><p>Check 3: Validate Markdown image links by HTTP HEAD (no rescue for parse failures)</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
 233
 234
 235
@@ -364,13 +424,25 @@ Checks:<br />
 244
 245
 246
-247</pre>
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/pre_release_cli.rb', line 221</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/pre_release_cli.rb', line 233</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_check_markdown_images_http!'>check_markdown_images_http!</span>
-  <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>[kettle-pre-release] Check 2: Validate Markdown image links (HTTP HEAD)</span><span class='tstring_end'>&quot;</span></span>
+  <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>[kettle-pre-release] Check 3: Validate Markdown image links (HTTP HEAD)</span><span class='tstring_end'>&quot;</span></span>
   <span class='id identifier rubyid_urls'>urls</span> <span class='op'>=</span> <span class='lbracket'>[</span>
     <span class='const'><span class='object_link'><a href="PreReleaseCLI/Markdown.html" title="Kettle::Dev::PreReleaseCLI::Markdown (module)">Markdown</a></span></span><span class='period'>.</span><span class='id identifier rubyid_extract_image_urls_from_files'><span class='object_link'><a href="PreReleaseCLI/Markdown.html#extract_image_urls_from_files-class_method" title="Kettle::Dev::PreReleaseCLI::Markdown.extract_image_urls_from_files (method)">extract_image_urls_from_files</a></span></span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>**/*.md</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='comma'>,</span>
     <span class='const'><span class='object_link'><a href="PreReleaseCLI/Markdown.html" title="Kettle::Dev::PreReleaseCLI::Markdown (module)">Markdown</a></span></span><span class='period'>.</span><span class='id identifier rubyid_extract_image_urls_from_files'><span class='object_link'><a href="PreReleaseCLI/Markdown.html#extract_image_urls_from_files-class_method" title="Kettle::Dev::PreReleaseCLI::Markdown.extract_image_urls_from_files (method)">extract_image_urls_from_files</a></span></span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>**/*.md.example</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
@@ -412,7 +484,7 @@ Checks:<br />
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p class="note returns_void">This method returns an undefined value.</p><p>Check 1: Normalize Markdown image URLs<br />
+    <p class="note returns_void">This method returns an undefined value.</p><p>Check 2: Normalize Markdown image URLs<br />
   Compares URLs to Addressable-normalized form and rewrites Markdown when needed.</p>
 
 
@@ -427,18 +499,6 @@ Checks:<br />
       <pre class="lines">
 
 
-172
-173
-174
-175
-176
-177
-178
-179
-180
-181
-182
-183
 184
 185
 186
@@ -472,13 +532,25 @@ Checks:<br />
 214
 215
 216
-217</pre>
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/pre_release_cli.rb', line 172</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/pre_release_cli.rb', line 184</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_check_markdown_uri_normalization!'>check_markdown_uri_normalization!</span>
-  <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>[kettle-pre-release] Check 1: Normalize Markdown image URLs</span><span class='tstring_end'>&quot;</span></span>
+  <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>[kettle-pre-release] Check 2: Normalize Markdown image URLs</span><span class='tstring_end'>&quot;</span></span>
   <span class='id identifier rubyid_files'>files</span> <span class='op'>=</span> <span class='const'>Dir</span><span class='period'>.</span><span class='id identifier rubyid_glob'>glob</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>**/*.md</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>**/*.md.example</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_changed'>changed</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
   <span class='id identifier rubyid_total_candidates'>total_candidates</span> <span class='op'>=</span> <span class='int'>0</span>
@@ -566,7 +638,6 @@ Checks:<br />
       <pre class="lines">
 
 
-152
 153
 154
 155
@@ -581,13 +652,16 @@ Checks:<br />
 164
 165
 166
-167</pre>
+167
+168
+169</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/pre_release_cli.rb', line 152</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/pre_release_cli.rb', line 153</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_run'>run</span>
   <span class='id identifier rubyid_checks'>checks</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+  <span class='id identifier rubyid_checks'>checks</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_method'>method</span><span class='lparen'>(</span><span class='symbol'>:check_github_actions_sha_pins!</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_checks'>checks</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_method'>method</span><span class='lparen'>(</span><span class='symbol'>:check_markdown_uri_normalization!</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_checks'>checks</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_method'>method</span><span class='lparen'>(</span><span class='symbol'>:check_markdown_images_http!</span><span class='rparen'>)</span>
 
@@ -612,7 +686,7 @@ Checks:<br />
 </div>
 
       <div id="footer">
-  Generated on Tue Jun  2 02:06:02 2026 by
+  Generated on Mon Jun  8 03:02:25 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>

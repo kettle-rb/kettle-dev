@@ -1,7 +1,13 @@
 # frozen_string_literal: true
 
 RSpec.describe Kettle::Dev::PreReleaseCLI do
-  it "normalizes unicode URLs in markdown files (check 1)" do
+  let(:gha_sha_pins_cli) { instance_double(Kettle::Dev::GhaShaPinsCLI, run!: 0) }
+
+  before do
+    allow(Kettle::Dev::GhaShaPinsCLI).to receive(:new).and_return(gha_sha_pins_cli)
+  end
+
+  it "normalizes unicode URLs in markdown files (check 2)" do
     Dir.mktmpdir do |root|
       file = File.join(root, "README.md")
       url = "https://img.shields.io/badge/buy_me_a_coffee-\u2713-a51611.svg?style=flat"
@@ -10,7 +16,7 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
 
       # rubocop:disable ThreadSafety/DirChdir
       Dir.chdir(root) do
-        cli = described_class.new(check_num: 1)
+        cli = described_class.new(check_num: 2)
         # Avoid running actual HTTP in check 2 for this example; focus on check 1 behavior
         allow(Kettle::Dev::PreReleaseCLI::Markdown).to receive(:extract_image_urls_from_files).and_return([])
         # Wrap in VCR so any incidental HTTP is blocked deterministically
@@ -103,7 +109,7 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
   end
 
   describe "CLI run flow" do
-    it "runs checks 1 and 2 and completes without abort when all links pass", :check_output do
+    it "runs checks 1, 2, and 3 and completes without abort when all links pass", :check_output do
       cli = described_class.new(check_num: 1)
       # Provide a deterministic URL and use VCR to avoid network
       allow(Kettle::Dev::PreReleaseCLI::Markdown).to receive(:extract_image_urls_from_files).and_return([
@@ -112,10 +118,18 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
       expect {
         VCR.use_cassette("head_image_ok") { cli.run }
       }.not_to raise_error
+      expect(Kettle::Dev::GhaShaPinsCLI).to have_received(:new).with(["--root", Dir.pwd, "--check"])
     end
 
-    it "aborts via ExitAdapter when HTTP failures occur in check 2" do
-      cli = described_class.new(check_num: 2)
+    it "aborts with the SHA pin recommendation when GitHub Actions pins are stale" do
+      allow(gha_sha_pins_cli).to receive(:run!).and_return(3)
+      cli = described_class.new(check_num: 1)
+
+      expect { cli.run }.to raise_error(MockSystemExit, /GitHub Actions SHA pin validation failed/)
+    end
+
+    it "aborts via ExitAdapter when HTTP failures occur in check 3" do
+      cli = described_class.new(check_num: 3)
       allow(Kettle::Dev::PreReleaseCLI::Markdown).to receive(:extract_image_urls_from_files).and_return([
         "https://httpbin.org/image/png", "https://example.invalid/missing.png"
       ])
@@ -131,7 +145,7 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
     end
 
     it "respects starting check index (no-op when > number of checks)" do
-      cli = described_class.new(check_num: 3)
+      cli = described_class.new(check_num: 4)
       expect { cli.run }.not_to raise_error
     end
   end

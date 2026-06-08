@@ -33,10 +33,10 @@ begin
   cli = Kettle::Dev::GhaShaPinsCLI.new(ARGV)
   status = cli.run!
   Kettle::Dev::ExitAdapter.exit(status)
-rescue StandardError => e
+rescue => e
   warn("#{script_basename}: unexpected error: #{e.class}: #{e.message}")
   warn(e.backtrace.join("\n"))
   Kettle::Dev::ExitAdapter.exit(1)
-rescue SystemExit => e
+rescue SystemExit
   raise
 end

@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require "json"
 require "stringio"
 
@@ -200,7 +201,15 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
 
       expect do
         cli.run!
-      end.to output(%r{Outdated pins \(1\):\n- #{Regexp.escape(workflow_path)}:\d+ foo\/bar 1\.2\.0 -> 1\.3\.0 #{Regexp.escape(described_class::UPGRADE_REASON)}}).to_stdout
+      end.to output(%r{Outdated pins \(1\):\n- #{Regexp.escape(workflow_path)}:\d+ foo/bar 1\.2\.0 -> 1\.3\.0 #{Regexp.escape(described_class::UPGRADE_REASON)}}).to_stdout
+    end
+
+    it "fails in check mode and recommends the write command when updates are needed" do
+      cli = described_class.new(["--root", workflow_root, "--upgrade", "minor", "--check"])
+
+      expect do
+        expect(cli.run!).to eq(3)
+      end.to output(/Recommended fix: kettle-gha-sha-pins --write --upgrade minor/).to_stdout
     end
 
     it "calls GitHub release-version lookup for each workflow action when evaluating pins" do

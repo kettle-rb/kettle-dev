@@ -748,7 +748,9 @@ Examples:</li>
   </li>
   <li>Checks:
     <ul>
-      <li>1)  Validate that all image URLs referenced by Markdown files resolve (HTTP HEAD)</li>
+      <li>1) Validate GitHub Actions workflow action refs with <code>kettle-gha-sha-pins --check</code>; if pins are stale, it exits non-zero and recommends <code>kettle-gha-sha-pins --write --upgrade patch</code>.</li>
+      <li>2) Normalize Markdown image URLs.</li>
+      <li>3) Validate that all image URLs referenced by Markdown files resolve (HTTP HEAD).</li>
     </ul>
   </li>
 </ul>
@@ -1027,7 +1029,7 @@ Please consider sponsoring me or the project.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Sat Jun  6 23:12:21 2026 by
+  Generated on Mon Jun  8 03:02:24 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>

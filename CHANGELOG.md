@@ -20,6 +20,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- `kettle-pre-release` now runs `kettle-gha-sha-pins --check` before release
+  checks, failing with a recommended `kettle-gha-sha-pins --write --upgrade
+  patch` command when workflow actions need updated SHA pins.
+
 ### Changed
 
 ### Deprecated

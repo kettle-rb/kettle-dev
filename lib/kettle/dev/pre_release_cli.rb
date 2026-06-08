@@ -14,8 +14,9 @@ module Kettle
   module Dev
     # PreReleaseCLI: run pre-release checks before invoking full release workflow.
     # Checks:
-    #   1) Normalize Markdown image URLs using Addressable normalization.
-    #   2) Validate Markdown image links resolve via HTTP(S) HEAD.
+    #   1) Ensure GitHub Actions workflow actions are pinned to current SHAs.
+    #   2) Normalize Markdown image URLs using Addressable normalization.
+    #   3) Validate Markdown image links resolve via HTTP(S) HEAD.
     #
     # Usage: Kettle::Dev::PreReleaseCLI.new(check_num: 1).run
     class PreReleaseCLI
@@ -151,6 +152,7 @@ module Kettle
       # @return [void]
       def run
         checks = []
+        checks << method(:check_github_actions_sha_pins!)
         checks << method(:check_markdown_uri_normalization!)
         checks << method(:check_markdown_images_http!)
 
@@ -166,11 +168,21 @@ module Kettle
         nil
       end
 
-      # Check 1: Normalize Markdown image URLs
+      # Check 1: Ensure GitHub Actions workflow action refs are current SHA pins.
+      # @return [void]
+      def check_github_actions_sha_pins!
+        puts "[kettle-pre-release] Check 1: Validate GitHub Actions SHA pins"
+        status = Kettle::Dev::GhaShaPinsCLI.new(["--root", Dir.pwd, "--check"]).run!
+        return nil if status.zero?
+
+        Kettle::Dev::ExitAdapter.abort("GitHub Actions SHA pin validation failed")
+      end
+
+      # Check 2: Normalize Markdown image URLs
       #   Compares URLs to Addressable-normalized form and rewrites Markdown when needed.
       # @return [void]
       def check_markdown_uri_normalization!
-        puts "[kettle-pre-release] Check 1: Normalize Markdown image URLs"
+        puts "[kettle-pre-release] Check 2: Normalize Markdown image URLs"
         files = Dir.glob(["**/*.md", "**/*.md.example"])
         changed = []
         total_candidates = 0
@@ -216,10 +228,10 @@ module Kettle
         nil
       end
 
-      # Check 2: Validate Markdown image links by HTTP HEAD (no rescue for parse failures)
+      # Check 3: Validate Markdown image links by HTTP HEAD (no rescue for parse failures)
       # @return [void]
       def check_markdown_images_http!
-        puts "[kettle-pre-release] Check 2: Validate Markdown image links (HTTP HEAD)"
+        puts "[kettle-pre-release] Check 3: Validate Markdown image links (HTTP HEAD)"
         urls = [
           Markdown.extract_image_urls_from_files("**/*.md"),
           Markdown.extract_image_urls_from_files("**/*.md.example")

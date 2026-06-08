@@ -33,6 +33,7 @@ module Kettle
           json: false,
           validate: true,
           write: false,
+          check: false,
           api_base: API_BASE,
           user_agent: "kettle-gha-sha-pins",
           upgrade: DEFAULT_UPGRADE_LEVEL,
@@ -176,7 +177,10 @@ module Kettle
         end
 
         print_report(state)
-        state[:failures].zero? ? 0 : 2
+        return 2 unless state[:failures].zero?
+        return 3 if @options[:check] && (state[:updates].positive? || state[:outdated_pins].any?)
+
+        0
       end
 
       private
@@ -189,14 +193,17 @@ module Kettle
           opt.on("-r", "--root PATH", "Root directory to scan (defaults to cwd)") do |root|
             @options[:root] = root
           end
-          opt.on("-w", "--write", "Write edits (dry-run is default)" ) do
+          opt.on("-w", "--write", "Write edits (dry-run is default)") do
             @options[:write] = true
             @options[:dry_run] = false
+          end
+          opt.on("--check", "Fail when workflow action pins are stale or mutable") do
+            @options[:check] = true
           end
           opt.on("--upgrade LEVEL", "Upgrade strategy: major, minor, patch (default: #{DEFAULT_UPGRADE_LEVEL})") do |level|
             normalized = level.to_s.downcase
             unless VALID_UPGRADE_LEVELS.include?(normalized)
-              Kettle::Dev::ExitAdapter.abort("Invalid --upgrade value #{level.inspect}; use one of: #{VALID_UPGRADE_LEVELS.join(', ')}")
+              Kettle::Dev::ExitAdapter.abort("Invalid --upgrade value #{level.inspect}; use one of: #{VALID_UPGRADE_LEVELS.join(", ")}")
             end
             @options[:upgrade] = normalized
           end
@@ -207,9 +214,11 @@ module Kettle
             @options[:json] = true
           end
           opt.on("--skip-pattern PATTERN", "Skip workflow paths matching pattern (repeatable)") do |pattern|
-            @options[:reject_patterns] << Regexp.new(pattern)
-          rescue RegexpError => e
-            Kettle::Dev::ExitAdapter.abort("Invalid --skip-pattern #{pattern.inspect}: #{e.message}")
+            begin
+              @options[:reject_patterns] << Regexp.new(pattern)
+            rescue RegexpError => e
+              Kettle::Dev::ExitAdapter.abort("Invalid --skip-pattern #{pattern.inspect}: #{e.message}")
+            end
           end
           opt.on("--[no-]validate", "Validate YAML after editing") do |bool|
             @options[:validate] = bool
@@ -295,7 +304,7 @@ module Kettle
           action: {
             owner: parts[0],
             repo: parts[1],
-            path: parts.length > 2 ? parts[2..-1].join("/") : nil,
+            path: (parts.length > 2) ? parts[2..-1].join("/") : nil,
             ref: ref
           }
         }
@@ -349,7 +358,7 @@ module Kettle
         level = DEFAULT_UPGRADE_LEVEL unless VALID_UPGRADE_LEVELS.include?(level)
 
         current_ref = old_ref.to_s.strip
-        return { is_outdated: false, updates: nil, reason: nil, current_version: nil } if current_ref.empty?
+        return {is_outdated: false, updates: nil, reason: nil, current_version: nil} if current_ref.empty?
 
         available_versions = versions || []
         latest = available_versions.first
@@ -443,7 +452,7 @@ module Kettle
             token: match[1].gsub(/\\./) { |frag| frag[1] },
             span: match[0].length,
             quote: :double,
-            raw: match[0],
+            raw: match[0]
           }
         end
 
@@ -452,7 +461,7 @@ module Kettle
             token: match[1].gsub("''", "'"),
             span: match[0].length,
             quote: :single,
-            raw: match[0],
+            raw: match[0]
           }
         end
 
@@ -463,7 +472,7 @@ module Kettle
           token: match[1],
           span: match[0].length,
           quote: :plain,
-          raw: match[0],
+          raw: match[0]
         }
       end
 
@@ -472,7 +481,7 @@ module Kettle
         when :single
           "'#{value.gsub("'", "''")}'"
         when :double
-          %Q("#{value.gsub('\\', '\\\\').gsub('"', '\\"')}")
+          %("#{value.gsub("\\", "\\\\").gsub('"', '\\"')}")
         else
           value
         end
@@ -485,7 +494,7 @@ module Kettle
         replacement_token = old_token[0...at_index + 1] + new_ref
         {
           token: replacement_token,
-          quoted: normalize_quote_scalar(replacement_token, quote),
+          quoted: normalize_quote_scalar(replacement_token, quote)
         }
       end
 
@@ -574,6 +583,7 @@ module Kettle
         lines = []
         lines << "kettle-gha-sha-pins report"
         lines << "  mode: #{mode}"
+        lines << "  check: #{@options[:check]}"
         lines << "  root: #{@options[:root]}"
         lines << "  scanned: #{state[:files_scanned]}"
         lines << "  changed_files: #{state[:changed_files].length}"
@@ -585,10 +595,10 @@ module Kettle
         if state[:errors].any?
           lines << "Errors:"
           state[:errors].sort_by { |error| [error[:path], error[:line].to_i] }.each do |error|
-            if error[:line]
-              lines << "- #{error[:path]}:#{error[:line]} #{error[:error]}"
+            lines << if error[:line]
+              "- #{error[:path]}:#{error[:line]} #{error[:error]}"
             else
-              lines << "- #{error[:path]} #{error[:error]}"
+              "- #{error[:path]} #{error[:error]}"
             end
           end
           lines << ""
@@ -616,7 +626,10 @@ module Kettle
             lines << "- #{change[:path]}:#{change[:line]} #{from} -> #{to} #{change[:reason]}"
           end
         end
-
+        if @options[:check] && (state[:planned_changes].any? || state[:outdated_pins].any?)
+          lines << ""
+          lines << "Recommended fix: kettle-gha-sha-pins --write --upgrade #{@options[:upgrade]}"
+        end
 
         puts lines.join("
 ")
@@ -709,13 +722,11 @@ module Kettle
 
           return nil unless response.code.to_i == 200
 
-          parsed = begin
+          begin
             JSON.parse(response.body)
           rescue JSON::ParserError
             nil
           end
-
-          parsed
         end
 
         def uri_encode(value)
