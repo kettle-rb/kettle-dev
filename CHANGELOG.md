@@ -28,6 +28,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Removed the duplicate `cgi` declaration from the `head` appraisal so
+  `kettle-release` can regenerate Appraisal gemfiles on Ruby 4.
+
 ### Security
 
 ## [2.2.0] - 2026-06-08
