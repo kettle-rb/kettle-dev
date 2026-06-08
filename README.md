@@ -444,6 +444,21 @@ What it does:
 
 ### Pre-release checks
 
+- Script: `exe/kettle-gha-sha-pins` (run as `kettle-gha-sha-pins`)
+- Purpose: Validate and optionally update GitHub Actions `uses:` refs to pinned
+  SHAs and current allowed release versions.
+- Usage:
+    - `kettle-gha-sha-pins`
+    - `kettle-gha-sha-pins --check`
+    - `kettle-gha-sha-pins --write --upgrade patch`
+- Behavior:
+    - Human output shows discovery, workflow scan, and action-resolution progress
+      on STDERR, then prints the final report on STDOUT.
+    - JSON output keeps progress disabled by default so STDOUT remains parseable.
+      Use `--progress` to force progress or `--no-progress` to suppress it.
+    - `--check` exits non-zero when workflow action pins are stale or mutable and
+      prints a recommended `kettle-gha-sha-pins --write --upgrade patch` command.
+
 - Script: `exe/kettle-pre-release` (run as `kettle-pre-release`)
 - Purpose: Run a suite of pre-release validations to catch avoidable mistakes (resumable by check number).
 - Usage:

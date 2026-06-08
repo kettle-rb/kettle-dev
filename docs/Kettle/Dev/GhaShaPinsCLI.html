@@ -196,7 +196,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#initialize-instance_method" title="#initialize (instance method)">#<strong>initialize</strong>(argv)  &#x21d2; GhaShaPinsCLI </a>
+      <a href="#initialize-instance_method" title="#initialize (instance method)">#<strong>initialize</strong>(argv, err: $stderr)  &#x21d2; GhaShaPinsCLI </a>
     
 
     
@@ -251,7 +251,7 @@
     <div class="method_details first">
   <h3 class="signature first" id="initialize-instance_method">
   
-    #<strong>initialize</strong>(argv)  &#x21d2; <tt><span class='object_link'><a href="" title="Kettle::Dev::GhaShaPinsCLI (class)">GhaShaPinsCLI</a></span></tt> 
+    #<strong>initialize</strong>(argv, err: $stderr)  &#x21d2; <tt><span class='object_link'><a href="" title="Kettle::Dev::GhaShaPinsCLI (class)">GhaShaPinsCLI</a></span></tt> 
   
 
   
@@ -273,11 +273,6 @@
       <pre class="lines">
 
 
-27
-28
-29
-30
-31
 32
 33
 34
@@ -288,13 +283,21 @@
 39
 40
 41
-42</pre>
+42
+43
+44
+45
+46
+47
+48
+49</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gha_sha_pins_cli.rb', line 27</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gha_sha_pins_cli.rb', line 32</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_argv'>argv</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_argv'>argv</span><span class='comma'>,</span> <span class='label'>err:</span> <span class='gvar'>$stderr</span><span class='rparen'>)</span>
   <span class='ivar'>@argv</span> <span class='op'>=</span> <span class='id identifier rubyid_argv'>argv</span>
+  <span class='ivar'>@err</span> <span class='op'>=</span> <span class='id identifier rubyid_err'>err</span>
   <span class='ivar'>@options</span> <span class='op'>=</span> <span class='lbrace'>{</span>
     <span class='label'>root:</span> <span class='const'>Dir</span><span class='period'>.</span><span class='id identifier rubyid_pwd'>pwd</span><span class='comma'>,</span>
     <span class='label'>dry_run:</span> <span class='kw'>true</span><span class='comma'>,</span>
@@ -306,7 +309,8 @@
     <span class='label'>api_base:</span> <span class='const'><span class='object_link'><a href="#API_BASE-constant" title="Kettle::Dev::GhaShaPinsCLI::API_BASE (constant)">API_BASE</a></span></span><span class='comma'>,</span>
     <span class='label'>user_agent:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>kettle-gha-sha-pins</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
     <span class='label'>upgrade:</span> <span class='const'><span class='object_link'><a href="#DEFAULT_UPGRADE_LEVEL-constant" title="Kettle::Dev::GhaShaPinsCLI::DEFAULT_UPGRADE_LEVEL (constant)">DEFAULT_UPGRADE_LEVEL</a></span></span><span class='comma'>,</span>
-    <span class='label'>reject_patterns:</span> <span class='const'>Set</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
+    <span class='label'>reject_patterns:</span> <span class='const'>Set</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='comma'>,</span>
+    <span class='label'>progress:</span> <span class='kw'>nil</span>
   <span class='rbrace'>}</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -336,13 +340,6 @@
       <pre class="lines">
 
 
-44
-45
-46
-47
-48
-49
-50
 51
 52
 53
@@ -476,10 +473,17 @@
 181
 182
 183
-184</pre>
+184
+185
+186
+187
+188
+189
+190
+191</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gha_sha_pins_cli.rb', line 44</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gha_sha_pins_cli.rb', line 51</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_run!'>run!</span>
   <span class='id identifier rubyid_parse!'>parse!</span>
@@ -497,24 +501,19 @@
     <span class='label'>outdated_pins:</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
   <span class='rbrace'>}</span>
 
-  <span class='id identifier rubyid_discover_workflow_files'>discover_workflow_files</span><span class='lparen'>(</span><span class='ivar'>@options</span><span class='lbracket'>[</span><span class='symbol'>:root</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='ivar'>@options</span><span class='lbracket'>[</span><span class='symbol'>:reject_patterns</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_path'>path</span><span class='op'>|</span>
-    <span class='id identifier rubyid_state'>state</span><span class='lbracket'>[</span><span class='symbol'>:files_scanned</span><span class='rbracket'>]</span> <span class='op'>+=</span> <span class='int'>1</span>
-    <span class='id identifier rubyid_text'>text</span> <span class='op'>=</span> <span class='kw'>begin</span>
-      <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span>
-    <span class='kw'>rescue</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>EACCES</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-      <span class='id identifier rubyid_record_failure'>record_failure</span><span class='lparen'>(</span><span class='id identifier rubyid_state'>state</span><span class='comma'>,</span> <span class='label'>path:</span> <span class='id identifier rubyid_path'>path</span><span class='comma'>,</span> <span class='label'>error:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>read_error: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-      <span class='kw'>next</span>
-    <span class='kw'>end</span>
+  <span class='id identifier rubyid_progress_message'>progress_message</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Discovering workflow files under </span><span class='embexpr_beg'>#{</span><span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_display_path'><span class='object_link'><a href="../Dev.html#display_path-class_method" title="Kettle::Dev.display_path (method)">display_path</a></span></span><span class='lparen'>(</span><span class='ivar'>@options</span><span class='lbracket'>[</span><span class='symbol'>:root</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'>...</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_workflow_files'>workflow_files</span> <span class='op'>=</span> <span class='id identifier rubyid_discover_workflow_files'>discover_workflow_files</span><span class='lparen'>(</span><span class='ivar'>@options</span><span class='lbracket'>[</span><span class='symbol'>:root</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='ivar'>@options</span><span class='lbracket'>[</span><span class='symbol'>:reject_patterns</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_progress_message'>progress_message</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Discovered </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_workflow_files'>workflow_files</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span><span class='embexpr_end'>}</span><span class='tstring_content'> workflow file(s).</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
 
-    <span class='id identifier rubyid_parsed'>parsed</span> <span class='op'>=</span> <span class='kw'>begin</span>
-      <span class='const'>Psych</span><span class='period'>.</span><span class='id identifier rubyid_parse_stream'>parse_stream</span><span class='lparen'>(</span><span class='id identifier rubyid_text'>text</span><span class='rparen'>)</span>
-    <span class='kw'>rescue</span> <span class='const'>Psych</span><span class='op'>::</span><span class='const'>Exception</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-      <span class='id identifier rubyid_record_failure'>record_failure</span><span class='lparen'>(</span><span class='id identifier rubyid_state'>state</span><span class='comma'>,</span> <span class='label'>path:</span> <span class='id identifier rubyid_path'>path</span><span class='comma'>,</span> <span class='label'>error:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>yaml_parse_error: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-      <span class='kw'>next</span>
-    <span class='kw'>end</span>
+  <span class='id identifier rubyid_workflows'>workflows</span> <span class='op'>=</span> <span class='id identifier rubyid_load_workflows'>load_workflows</span><span class='lparen'>(</span><span class='id identifier rubyid_workflow_files'>workflow_files</span><span class='comma'>,</span> <span class='id identifier rubyid_state'>state</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_action_count'>action_count</span> <span class='op'>=</span> <span class='id identifier rubyid_workflows'>workflows</span><span class='period'>.</span><span class='id identifier rubyid_sum'>sum</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_workflow'>workflow</span><span class='op'>|</span> <span class='id identifier rubyid_workflow'>workflow</span><span class='lbracket'>[</span><span class='symbol'>:uses_nodes</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_count'>count</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_node'>node</span><span class='op'>|</span> <span class='id identifier rubyid_classify_action_ref'>classify_action_ref</span><span class='lparen'>(</span><span class='id identifier rubyid_node'>node</span><span class='lbracket'>[</span><span class='symbol'>:value</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span> <span class='rbrace'>}</span> <span class='rbrace'>}</span>
+  <span class='id identifier rubyid_progress_message'>progress_message</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Resolving </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_action_count'>action_count</span><span class='embexpr_end'>}</span><span class='tstring_content'> GitHub action reference(s)...</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='id identifier rubyid_action_count'>action_count</span><span class='period'>.</span><span class='id identifier rubyid_positive?'>positive?</span>
+  <span class='id identifier rubyid_action_progress'>action_progress</span> <span class='op'>=</span> <span class='id identifier rubyid_progress_bar'>progress_bar</span><span class='lparen'>(</span><span class='label'>title:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Actions</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='label'>total:</span> <span class='id identifier rubyid_action_count'>action_count</span><span class='rparen'>)</span>
 
-    <span class='id identifier rubyid_uses_nodes'>uses_nodes</span> <span class='op'>=</span> <span class='id identifier rubyid_extract_uses_nodes'>extract_uses_nodes</span><span class='lparen'>(</span><span class='id identifier rubyid_parsed'>parsed</span><span class='rparen'>)</span>
-    <span class='kw'>next</span> <span class='kw'>if</span> <span class='id identifier rubyid_uses_nodes'>uses_nodes</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+  <span class='id identifier rubyid_workflows'>workflows</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_workflow'>workflow</span><span class='op'>|</span>
+    <span class='id identifier rubyid_path'>path</span> <span class='op'>=</span> <span class='id identifier rubyid_workflow'>workflow</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:path</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_text'>text</span> <span class='op'>=</span> <span class='id identifier rubyid_workflow'>workflow</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:text</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_uses_nodes'>uses_nodes</span> <span class='op'>=</span> <span class='id identifier rubyid_workflow'>workflow</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:uses_nodes</span><span class='rparen'>)</span>
 
     <span class='id identifier rubyid_edits'>edits</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
     <span class='id identifier rubyid_uses_nodes'>uses_nodes</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_node'>node</span><span class='op'>|</span>
@@ -522,69 +521,74 @@
       <span class='id identifier rubyid_parsed_ref'>parsed_ref</span> <span class='op'>=</span> <span class='id identifier rubyid_classify_action_ref'>classify_action_ref</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
       <span class='kw'>next</span> <span class='kw'>unless</span> <span class='id identifier rubyid_parsed_ref'>parsed_ref</span>
 
-      <span class='id identifier rubyid_action'>action</span> <span class='op'>=</span> <span class='id identifier rubyid_parsed_ref'>parsed_ref</span><span class='lbracket'>[</span><span class='symbol'>:action</span><span class='rbracket'>]</span>
-      <span class='id identifier rubyid_repo_ref'>repo_ref</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_action'>action</span><span class='lbracket'>[</span><span class='symbol'>:owner</span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_content'>/</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_action'>action</span><span class='lbracket'>[</span><span class='symbol'>:repo</span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
-      <span class='id identifier rubyid_old_ref'>old_ref</span> <span class='op'>=</span> <span class='id identifier rubyid_action'>action</span><span class='lbracket'>[</span><span class='symbol'>:ref</span><span class='rbracket'>]</span>
+      <span class='kw'>begin</span>
+        <span class='id identifier rubyid_action'>action</span> <span class='op'>=</span> <span class='id identifier rubyid_parsed_ref'>parsed_ref</span><span class='lbracket'>[</span><span class='symbol'>:action</span><span class='rbracket'>]</span>
+        <span class='id identifier rubyid_repo_ref'>repo_ref</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_action'>action</span><span class='lbracket'>[</span><span class='symbol'>:owner</span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_content'>/</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_action'>action</span><span class='lbracket'>[</span><span class='symbol'>:repo</span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+        <span class='id identifier rubyid_old_ref'>old_ref</span> <span class='op'>=</span> <span class='id identifier rubyid_action'>action</span><span class='lbracket'>[</span><span class='symbol'>:ref</span><span class='rbracket'>]</span>
+        <span class='id identifier rubyid_action_progress'>action_progress</span><span class='op'>&amp;.</span><span class='id identifier rubyid_log'>log</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Resolving </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='embexpr_end'>}</span><span class='tstring_content'>@</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_old_ref'>old_ref</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
 
-      <span class='id identifier rubyid_updates'>updates</span> <span class='op'>=</span> <span class='kw'>nil</span>
-      <span class='id identifier rubyid_available_versions'>available_versions</span> <span class='op'>=</span> <span class='id identifier rubyid_client'>client</span><span class='period'>.</span><span class='id identifier rubyid_versions_for_repo'>versions_for_repo</span><span class='lparen'>(</span><span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='rparen'>)</span>
-      <span class='id identifier rubyid_upgrade_plan'>upgrade_plan</span> <span class='op'>=</span> <span class='id identifier rubyid_determine_upgrade_plan'>determine_upgrade_plan</span><span class='lparen'>(</span>
-        <span class='label'>old_ref:</span> <span class='id identifier rubyid_old_ref'>old_ref</span><span class='comma'>,</span>
-        <span class='label'>repo_ref:</span> <span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='comma'>,</span>
-        <span class='label'>versions:</span> <span class='id identifier rubyid_available_versions'>available_versions</span><span class='comma'>,</span>
-        <span class='label'>upgrade_level:</span> <span class='ivar'>@options</span><span class='lbracket'>[</span><span class='symbol'>:upgrade</span><span class='rbracket'>]</span><span class='comma'>,</span>
-        <span class='label'>client:</span> <span class='id identifier rubyid_client'>client</span>
-      <span class='rparen'>)</span>
-      <span class='kw'>if</span> <span class='id identifier rubyid_upgrade_plan'>upgrade_plan</span><span class='lbracket'>[</span><span class='symbol'>:updates</span><span class='rbracket'>]</span>
-        <span class='id identifier rubyid_updates'>updates</span> <span class='op'>=</span> <span class='id identifier rubyid_compute_updates'>compute_updates</span><span class='lparen'>(</span><span class='id identifier rubyid_old_ref'>old_ref</span><span class='comma'>,</span> <span class='id identifier rubyid_upgrade_plan'>upgrade_plan</span><span class='lbracket'>[</span><span class='symbol'>:updates</span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='symbol'>:sha</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_upgrade_plan'>upgrade_plan</span><span class='lbracket'>[</span><span class='symbol'>:updates</span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='symbol'>:reason</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='rparen'>)</span>
-        <span class='id identifier rubyid_updates'>updates</span><span class='lbracket'>[</span><span class='symbol'>:new_version</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_upgrade_plan'>upgrade_plan</span><span class='lbracket'>[</span><span class='symbol'>:updates</span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='symbol'>:version</span><span class='rbracket'>]</span>
-        <span class='id identifier rubyid_updates'>updates</span><span class='lbracket'>[</span><span class='symbol'>:old_version</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_upgrade_plan'>upgrade_plan</span><span class='lbracket'>[</span><span class='symbol'>:current_version</span><span class='rbracket'>]</span>
-      <span class='kw'>end</span>
-
-      <span class='kw'>if</span> <span class='id identifier rubyid_upgrade_plan'>upgrade_plan</span><span class='lbracket'>[</span><span class='symbol'>:is_outdated</span><span class='rbracket'>]</span>
-        <span class='id identifier rubyid_state'>state</span><span class='lbracket'>[</span><span class='symbol'>:outdated_pins</span><span class='rbracket'>]</span> <span class='op'>&lt;&lt;</span> <span class='lbrace'>{</span>
-          <span class='label'>path:</span> <span class='id identifier rubyid_path'>path</span><span class='comma'>,</span>
-          <span class='label'>line:</span> <span class='id identifier rubyid_node'>node</span><span class='lbracket'>[</span><span class='symbol'>:line</span><span class='rbracket'>]</span> <span class='op'>+</span> <span class='int'>1</span><span class='comma'>,</span>
-          <span class='label'>action:</span> <span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='comma'>,</span>
+        <span class='id identifier rubyid_updates'>updates</span> <span class='op'>=</span> <span class='kw'>nil</span>
+        <span class='id identifier rubyid_available_versions'>available_versions</span> <span class='op'>=</span> <span class='id identifier rubyid_client'>client</span><span class='period'>.</span><span class='id identifier rubyid_versions_for_repo'>versions_for_repo</span><span class='lparen'>(</span><span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='rparen'>)</span>
+        <span class='id identifier rubyid_upgrade_plan'>upgrade_plan</span> <span class='op'>=</span> <span class='id identifier rubyid_determine_upgrade_plan'>determine_upgrade_plan</span><span class='lparen'>(</span>
           <span class='label'>old_ref:</span> <span class='id identifier rubyid_old_ref'>old_ref</span><span class='comma'>,</span>
-          <span class='label'>old_version:</span> <span class='id identifier rubyid_upgrade_plan'>upgrade_plan</span><span class='lbracket'>[</span><span class='symbol'>:current_version</span><span class='rbracket'>]</span><span class='comma'>,</span>
-          <span class='label'>new_ref:</span> <span class='id identifier rubyid_upgrade_plan'>upgrade_plan</span><span class='lbracket'>[</span><span class='symbol'>:updates</span><span class='rbracket'>]</span> <span class='op'>?</span> <span class='id identifier rubyid_upgrade_plan'>upgrade_plan</span><span class='lbracket'>[</span><span class='symbol'>:updates</span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='symbol'>:sha</span><span class='rbracket'>]</span> <span class='op'>:</span> <span class='kw'>nil</span><span class='comma'>,</span>
-          <span class='label'>new_version:</span> <span class='id identifier rubyid_upgrade_plan'>upgrade_plan</span><span class='lbracket'>[</span><span class='symbol'>:updates</span><span class='rbracket'>]</span> <span class='op'>?</span> <span class='id identifier rubyid_upgrade_plan'>upgrade_plan</span><span class='lbracket'>[</span><span class='symbol'>:updates</span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='symbol'>:version</span><span class='rbracket'>]</span> <span class='op'>:</span> <span class='kw'>nil</span><span class='comma'>,</span>
+          <span class='label'>repo_ref:</span> <span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='comma'>,</span>
+          <span class='label'>versions:</span> <span class='id identifier rubyid_available_versions'>available_versions</span><span class='comma'>,</span>
           <span class='label'>upgrade_level:</span> <span class='ivar'>@options</span><span class='lbracket'>[</span><span class='symbol'>:upgrade</span><span class='rbracket'>]</span><span class='comma'>,</span>
-          <span class='label'>reason:</span> <span class='id identifier rubyid_upgrade_plan'>upgrade_plan</span><span class='lbracket'>[</span><span class='symbol'>:reason</span><span class='rbracket'>]</span>
-        <span class='rbrace'>}</span>
-      <span class='kw'>end</span>
-
-      <span class='kw'>next</span> <span class='kw'>unless</span> <span class='id identifier rubyid_updates'>updates</span>
-
-      <span class='id identifier rubyid_replacement'>replacement</span> <span class='op'>=</span> <span class='id identifier rubyid_build_replacement_from_line'>build_replacement_from_line</span><span class='lparen'>(</span><span class='id identifier rubyid_text'>text</span><span class='comma'>,</span> <span class='id identifier rubyid_node'>node</span><span class='lbracket'>[</span><span class='symbol'>:line</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_node'>node</span><span class='lbracket'>[</span><span class='symbol'>:col</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_parsed_ref'>parsed_ref</span><span class='lbracket'>[</span><span class='symbol'>:value</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_updates'>updates</span><span class='lbracket'>[</span><span class='symbol'>:new_ref</span><span class='rbracket'>]</span><span class='rparen'>)</span>
-      <span class='kw'>unless</span> <span class='id identifier rubyid_replacement'>replacement</span>
-        <span class='id identifier rubyid_record_failure'>record_failure</span><span class='lparen'>(</span>
-          <span class='id identifier rubyid_state'>state</span><span class='comma'>,</span>
-          <span class='label'>path:</span> <span class='id identifier rubyid_path'>path</span><span class='comma'>,</span>
-          <span class='label'>line:</span> <span class='id identifier rubyid_node'>node</span><span class='lbracket'>[</span><span class='symbol'>:line</span><span class='rbracket'>]</span> <span class='op'>+</span> <span class='int'>1</span><span class='comma'>,</span>
-          <span class='label'>error:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>token_parse_failed</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
-          <span class='label'>value:</span> <span class='id identifier rubyid_value'>value</span>
+          <span class='label'>client:</span> <span class='id identifier rubyid_client'>client</span>
         <span class='rparen'>)</span>
-        <span class='kw'>next</span>
-      <span class='kw'>end</span>
+        <span class='kw'>if</span> <span class='id identifier rubyid_upgrade_plan'>upgrade_plan</span><span class='lbracket'>[</span><span class='symbol'>:updates</span><span class='rbracket'>]</span>
+          <span class='id identifier rubyid_updates'>updates</span> <span class='op'>=</span> <span class='id identifier rubyid_compute_updates'>compute_updates</span><span class='lparen'>(</span><span class='id identifier rubyid_old_ref'>old_ref</span><span class='comma'>,</span> <span class='id identifier rubyid_upgrade_plan'>upgrade_plan</span><span class='lbracket'>[</span><span class='symbol'>:updates</span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='symbol'>:sha</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_upgrade_plan'>upgrade_plan</span><span class='lbracket'>[</span><span class='symbol'>:updates</span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='symbol'>:reason</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='rparen'>)</span>
+          <span class='id identifier rubyid_updates'>updates</span><span class='lbracket'>[</span><span class='symbol'>:new_version</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_upgrade_plan'>upgrade_plan</span><span class='lbracket'>[</span><span class='symbol'>:updates</span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='symbol'>:version</span><span class='rbracket'>]</span>
+          <span class='id identifier rubyid_updates'>updates</span><span class='lbracket'>[</span><span class='symbol'>:old_version</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_upgrade_plan'>upgrade_plan</span><span class='lbracket'>[</span><span class='symbol'>:current_version</span><span class='rbracket'>]</span>
+        <span class='kw'>end</span>
 
-      <span class='id identifier rubyid_edits'>edits</span> <span class='op'>&lt;&lt;</span> <span class='lbrace'>{</span>
-        <span class='label'>path:</span> <span class='id identifier rubyid_path'>path</span><span class='comma'>,</span>
-        <span class='label'>line:</span> <span class='id identifier rubyid_node'>node</span><span class='lbracket'>[</span><span class='symbol'>:line</span><span class='rbracket'>]</span><span class='comma'>,</span>
-        <span class='label'>col:</span> <span class='id identifier rubyid_node'>node</span><span class='lbracket'>[</span><span class='symbol'>:col</span><span class='rbracket'>]</span><span class='comma'>,</span>
-        <span class='label'>old_ref:</span> <span class='id identifier rubyid_old_ref'>old_ref</span><span class='comma'>,</span>
-        <span class='label'>old_version:</span> <span class='id identifier rubyid_updates'>updates</span><span class='lbracket'>[</span><span class='symbol'>:old_version</span><span class='rbracket'>]</span><span class='comma'>,</span>
-        <span class='label'>new_ref:</span> <span class='id identifier rubyid_updates'>updates</span><span class='lbracket'>[</span><span class='symbol'>:new_ref</span><span class='rbracket'>]</span><span class='comma'>,</span>
-        <span class='label'>new_version:</span> <span class='id identifier rubyid_updates'>updates</span><span class='lbracket'>[</span><span class='symbol'>:new_version</span><span class='rbracket'>]</span><span class='comma'>,</span>
-        <span class='label'>reason:</span> <span class='id identifier rubyid_updates'>updates</span><span class='lbracket'>[</span><span class='symbol'>:reason</span><span class='rbracket'>]</span><span class='comma'>,</span>
-        <span class='label'>start:</span> <span class='id identifier rubyid_replacement'>replacement</span><span class='lbracket'>[</span><span class='symbol'>:start</span><span class='rbracket'>]</span><span class='comma'>,</span>
-        <span class='label'>end:</span> <span class='id identifier rubyid_replacement'>replacement</span><span class='lbracket'>[</span><span class='symbol'>:end</span><span class='rbracket'>]</span><span class='comma'>,</span>
-        <span class='label'>old_value:</span> <span class='id identifier rubyid_value'>value</span><span class='comma'>,</span>
-        <span class='label'>new_value:</span> <span class='id identifier rubyid_replacement'>replacement</span><span class='lbracket'>[</span><span class='symbol'>:new_scalar</span><span class='rbracket'>]</span><span class='comma'>,</span>
-        <span class='label'>new_scalar:</span> <span class='id identifier rubyid_replacement'>replacement</span><span class='lbracket'>[</span><span class='symbol'>:new_scalar</span><span class='rbracket'>]</span><span class='comma'>,</span>
-        <span class='label'>action:</span> <span class='id identifier rubyid_repo_ref'>repo_ref</span>
-      <span class='rbrace'>}</span>
+        <span class='kw'>if</span> <span class='id identifier rubyid_upgrade_plan'>upgrade_plan</span><span class='lbracket'>[</span><span class='symbol'>:is_outdated</span><span class='rbracket'>]</span>
+          <span class='id identifier rubyid_state'>state</span><span class='lbracket'>[</span><span class='symbol'>:outdated_pins</span><span class='rbracket'>]</span> <span class='op'>&lt;&lt;</span> <span class='lbrace'>{</span>
+            <span class='label'>path:</span> <span class='id identifier rubyid_path'>path</span><span class='comma'>,</span>
+            <span class='label'>line:</span> <span class='id identifier rubyid_node'>node</span><span class='lbracket'>[</span><span class='symbol'>:line</span><span class='rbracket'>]</span> <span class='op'>+</span> <span class='int'>1</span><span class='comma'>,</span>
+            <span class='label'>action:</span> <span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='comma'>,</span>
+            <span class='label'>old_ref:</span> <span class='id identifier rubyid_old_ref'>old_ref</span><span class='comma'>,</span>
+            <span class='label'>old_version:</span> <span class='id identifier rubyid_upgrade_plan'>upgrade_plan</span><span class='lbracket'>[</span><span class='symbol'>:current_version</span><span class='rbracket'>]</span><span class='comma'>,</span>
+            <span class='label'>new_ref:</span> <span class='id identifier rubyid_upgrade_plan'>upgrade_plan</span><span class='lbracket'>[</span><span class='symbol'>:updates</span><span class='rbracket'>]</span> <span class='op'>?</span> <span class='id identifier rubyid_upgrade_plan'>upgrade_plan</span><span class='lbracket'>[</span><span class='symbol'>:updates</span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='symbol'>:sha</span><span class='rbracket'>]</span> <span class='op'>:</span> <span class='kw'>nil</span><span class='comma'>,</span>
+            <span class='label'>new_version:</span> <span class='id identifier rubyid_upgrade_plan'>upgrade_plan</span><span class='lbracket'>[</span><span class='symbol'>:updates</span><span class='rbracket'>]</span> <span class='op'>?</span> <span class='id identifier rubyid_upgrade_plan'>upgrade_plan</span><span class='lbracket'>[</span><span class='symbol'>:updates</span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='symbol'>:version</span><span class='rbracket'>]</span> <span class='op'>:</span> <span class='kw'>nil</span><span class='comma'>,</span>
+            <span class='label'>upgrade_level:</span> <span class='ivar'>@options</span><span class='lbracket'>[</span><span class='symbol'>:upgrade</span><span class='rbracket'>]</span><span class='comma'>,</span>
+            <span class='label'>reason:</span> <span class='id identifier rubyid_upgrade_plan'>upgrade_plan</span><span class='lbracket'>[</span><span class='symbol'>:reason</span><span class='rbracket'>]</span>
+          <span class='rbrace'>}</span>
+        <span class='kw'>end</span>
+
+        <span class='kw'>next</span> <span class='kw'>unless</span> <span class='id identifier rubyid_updates'>updates</span>
+
+        <span class='id identifier rubyid_replacement'>replacement</span> <span class='op'>=</span> <span class='id identifier rubyid_build_replacement_from_line'>build_replacement_from_line</span><span class='lparen'>(</span><span class='id identifier rubyid_text'>text</span><span class='comma'>,</span> <span class='id identifier rubyid_node'>node</span><span class='lbracket'>[</span><span class='symbol'>:line</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_node'>node</span><span class='lbracket'>[</span><span class='symbol'>:col</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_parsed_ref'>parsed_ref</span><span class='lbracket'>[</span><span class='symbol'>:value</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_updates'>updates</span><span class='lbracket'>[</span><span class='symbol'>:new_ref</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+        <span class='kw'>unless</span> <span class='id identifier rubyid_replacement'>replacement</span>
+          <span class='id identifier rubyid_record_failure'>record_failure</span><span class='lparen'>(</span>
+            <span class='id identifier rubyid_state'>state</span><span class='comma'>,</span>
+            <span class='label'>path:</span> <span class='id identifier rubyid_path'>path</span><span class='comma'>,</span>
+            <span class='label'>line:</span> <span class='id identifier rubyid_node'>node</span><span class='lbracket'>[</span><span class='symbol'>:line</span><span class='rbracket'>]</span> <span class='op'>+</span> <span class='int'>1</span><span class='comma'>,</span>
+            <span class='label'>error:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>token_parse_failed</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+            <span class='label'>value:</span> <span class='id identifier rubyid_value'>value</span>
+          <span class='rparen'>)</span>
+          <span class='kw'>next</span>
+        <span class='kw'>end</span>
+
+        <span class='id identifier rubyid_edits'>edits</span> <span class='op'>&lt;&lt;</span> <span class='lbrace'>{</span>
+          <span class='label'>path:</span> <span class='id identifier rubyid_path'>path</span><span class='comma'>,</span>
+          <span class='label'>line:</span> <span class='id identifier rubyid_node'>node</span><span class='lbracket'>[</span><span class='symbol'>:line</span><span class='rbracket'>]</span><span class='comma'>,</span>
+          <span class='label'>col:</span> <span class='id identifier rubyid_node'>node</span><span class='lbracket'>[</span><span class='symbol'>:col</span><span class='rbracket'>]</span><span class='comma'>,</span>
+          <span class='label'>old_ref:</span> <span class='id identifier rubyid_old_ref'>old_ref</span><span class='comma'>,</span>
+          <span class='label'>old_version:</span> <span class='id identifier rubyid_updates'>updates</span><span class='lbracket'>[</span><span class='symbol'>:old_version</span><span class='rbracket'>]</span><span class='comma'>,</span>
+          <span class='label'>new_ref:</span> <span class='id identifier rubyid_updates'>updates</span><span class='lbracket'>[</span><span class='symbol'>:new_ref</span><span class='rbracket'>]</span><span class='comma'>,</span>
+          <span class='label'>new_version:</span> <span class='id identifier rubyid_updates'>updates</span><span class='lbracket'>[</span><span class='symbol'>:new_version</span><span class='rbracket'>]</span><span class='comma'>,</span>
+          <span class='label'>reason:</span> <span class='id identifier rubyid_updates'>updates</span><span class='lbracket'>[</span><span class='symbol'>:reason</span><span class='rbracket'>]</span><span class='comma'>,</span>
+          <span class='label'>start:</span> <span class='id identifier rubyid_replacement'>replacement</span><span class='lbracket'>[</span><span class='symbol'>:start</span><span class='rbracket'>]</span><span class='comma'>,</span>
+          <span class='label'>end:</span> <span class='id identifier rubyid_replacement'>replacement</span><span class='lbracket'>[</span><span class='symbol'>:end</span><span class='rbracket'>]</span><span class='comma'>,</span>
+          <span class='label'>old_value:</span> <span class='id identifier rubyid_value'>value</span><span class='comma'>,</span>
+          <span class='label'>new_value:</span> <span class='id identifier rubyid_replacement'>replacement</span><span class='lbracket'>[</span><span class='symbol'>:new_scalar</span><span class='rbracket'>]</span><span class='comma'>,</span>
+          <span class='label'>new_scalar:</span> <span class='id identifier rubyid_replacement'>replacement</span><span class='lbracket'>[</span><span class='symbol'>:new_scalar</span><span class='rbracket'>]</span><span class='comma'>,</span>
+          <span class='label'>action:</span> <span class='id identifier rubyid_repo_ref'>repo_ref</span>
+        <span class='rbrace'>}</span>
+      <span class='kw'>ensure</span>
+        <span class='id identifier rubyid_action_progress'>action_progress</span><span class='op'>&amp;.</span><span class='id identifier rubyid_increment'>increment</span>
+      <span class='kw'>end</span>
     <span class='kw'>end</span>
 
     <span class='kw'>if</span> <span class='id identifier rubyid_edits'>edits</span><span class='period'>.</span><span class='id identifier rubyid_any?'>any?</span>
@@ -632,7 +636,7 @@
 </div>
 
       <div id="footer">
-  Generated on Mon Jun  8 03:02:25 2026 by
+  Generated on Mon Jun  8 03:52:42 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>

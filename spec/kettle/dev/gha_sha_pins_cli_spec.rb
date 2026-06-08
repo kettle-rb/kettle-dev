@@ -223,5 +223,29 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       cli = described_class.new(["--root", workflow_root, "--upgrade", "minor"])
       cli.run!
     end
+
+    it "emits progress feedback to stderr for human output" do
+      err = StringIO.new
+      cli = described_class.new(["--root", workflow_root, "--upgrade", "minor", "--no-progress"], err: err)
+      expect(cli.run!).to eq(0)
+      expect(err.string).to eq("")
+
+      err = StringIO.new
+      cli = described_class.new(["--root", workflow_root, "--upgrade", "minor"], err: err)
+      cli.run!
+
+      expect(err.string).to include("Discovering workflow files")
+      expect(err.string).to include("Discovered 1 workflow file")
+      expect(err.string).to include("Resolving 1 GitHub action reference")
+    end
+
+    it "keeps progress disabled by default for JSON output" do
+      err = StringIO.new
+      cli = described_class.new(["--root", workflow_root, "--upgrade", "minor", "--json"], err: err)
+
+      cli.run!
+
+      expect(err.string).to eq("")
+    end
   end
 end

@@ -8,6 +8,11 @@ require "set"
 require "uri"
 
 require "psych"
+begin
+  require "ruby-progressbar"
+rescue LoadError
+  # Progress feedback is helpful but optional; fall back to plain status lines.
+end
 
 module Kettle
   module Dev
@@ -24,8 +29,9 @@ module Kettle
       DEFAULT_UPGRADE_LEVEL = "patch"
       VALID_UPGRADE_LEVELS = %w[major minor patch].freeze
 
-      def initialize(argv)
+      def initialize(argv, err: $stderr)
         @argv = argv
+        @err = err
         @options = {
           root: Dir.pwd,
           dry_run: true,
@@ -37,7 +43,8 @@ module Kettle
           api_base: API_BASE,
           user_agent: "kettle-gha-sha-pins",
           upgrade: DEFAULT_UPGRADE_LEVEL,
-          reject_patterns: Set.new
+          reject_patterns: Set.new,
+          progress: nil
         }
       end
 
@@ -57,24 +64,19 @@ module Kettle
           outdated_pins: []
         }
 
-        discover_workflow_files(@options[:root], @options[:reject_patterns]).each do |path|
-          state[:files_scanned] += 1
-          text = begin
-            File.read(path)
-          rescue Errno::EACCES => e
-            record_failure(state, path: path, error: "read_error: #{e.message}")
-            next
-          end
+        progress_message("Discovering workflow files under #{Kettle::Dev.display_path(@options[:root])}...")
+        workflow_files = discover_workflow_files(@options[:root], @options[:reject_patterns])
+        progress_message("Discovered #{workflow_files.length} workflow file(s).")
 
-          parsed = begin
-            Psych.parse_stream(text)
-          rescue Psych::Exception => e
-            record_failure(state, path: path, error: "yaml_parse_error: #{e.message}")
-            next
-          end
+        workflows = load_workflows(workflow_files, state)
+        action_count = workflows.sum { |workflow| workflow[:uses_nodes].count { |node| classify_action_ref(node[:value].to_s) } }
+        progress_message("Resolving #{action_count} GitHub action reference(s)...") if action_count.positive?
+        action_progress = progress_bar(title: "Actions", total: action_count)
 
-          uses_nodes = extract_uses_nodes(parsed)
-          next if uses_nodes.empty?
+        workflows.each do |workflow|
+          path = workflow.fetch(:path)
+          text = workflow.fetch(:text)
+          uses_nodes = workflow.fetch(:uses_nodes)
 
           edits = []
           uses_nodes.each do |node|
@@ -82,69 +84,74 @@ module Kettle
             parsed_ref = classify_action_ref(value)
             next unless parsed_ref
 
-            action = parsed_ref[:action]
-            repo_ref = "#{action[:owner]}/#{action[:repo]}"
-            old_ref = action[:ref]
+            begin
+              action = parsed_ref[:action]
+              repo_ref = "#{action[:owner]}/#{action[:repo]}"
+              old_ref = action[:ref]
+              action_progress&.log("Resolving #{repo_ref}@#{old_ref}")
 
-            updates = nil
-            available_versions = client.versions_for_repo(repo_ref)
-            upgrade_plan = determine_upgrade_plan(
-              old_ref: old_ref,
-              repo_ref: repo_ref,
-              versions: available_versions,
-              upgrade_level: @options[:upgrade],
-              client: client
-            )
-            if upgrade_plan[:updates]
-              updates = compute_updates(old_ref, upgrade_plan[:updates][:sha], upgrade_plan[:updates][:reason], repo_ref)
-              updates[:new_version] = upgrade_plan[:updates][:version]
-              updates[:old_version] = upgrade_plan[:current_version]
-            end
-
-            if upgrade_plan[:is_outdated]
-              state[:outdated_pins] << {
-                path: path,
-                line: node[:line] + 1,
-                action: repo_ref,
+              updates = nil
+              available_versions = client.versions_for_repo(repo_ref)
+              upgrade_plan = determine_upgrade_plan(
                 old_ref: old_ref,
-                old_version: upgrade_plan[:current_version],
-                new_ref: upgrade_plan[:updates] ? upgrade_plan[:updates][:sha] : nil,
-                new_version: upgrade_plan[:updates] ? upgrade_plan[:updates][:version] : nil,
+                repo_ref: repo_ref,
+                versions: available_versions,
                 upgrade_level: @options[:upgrade],
-                reason: upgrade_plan[:reason]
-              }
-            end
-
-            next unless updates
-
-            replacement = build_replacement_from_line(text, node[:line], node[:col], parsed_ref[:value], updates[:new_ref])
-            unless replacement
-              record_failure(
-                state,
-                path: path,
-                line: node[:line] + 1,
-                error: "token_parse_failed",
-                value: value
+                client: client
               )
-              next
-            end
+              if upgrade_plan[:updates]
+                updates = compute_updates(old_ref, upgrade_plan[:updates][:sha], upgrade_plan[:updates][:reason], repo_ref)
+                updates[:new_version] = upgrade_plan[:updates][:version]
+                updates[:old_version] = upgrade_plan[:current_version]
+              end
 
-            edits << {
-              path: path,
-              line: node[:line],
-              col: node[:col],
-              old_ref: old_ref,
-              old_version: updates[:old_version],
-              new_ref: updates[:new_ref],
-              new_version: updates[:new_version],
-              reason: updates[:reason],
-              start: replacement[:start],
-              end: replacement[:end],
-              old_value: value,
-              new_value: replacement[:new_scalar],
-              new_scalar: replacement[:new_scalar],
-              action: repo_ref
-            }
+              if upgrade_plan[:is_outdated]
+                state[:outdated_pins] << {
+                  path: path,
+                  line: node[:line] + 1,
+                  action: repo_ref,
+                  old_ref: old_ref,
+                  old_version: upgrade_plan[:current_version],
+                  new_ref: upgrade_plan[:updates] ? upgrade_plan[:updates][:sha] : nil,
+                  new_version: upgrade_plan[:updates] ? upgrade_plan[:updates][:version] : nil,
+                  upgrade_level: @options[:upgrade],
+                  reason: upgrade_plan[:reason]
+                }
+              end
+
+              next unless updates
+
+              replacement = build_replacement_from_line(text, node[:line], node[:col], parsed_ref[:value], updates[:new_ref])
+              unless replacement
+                record_failure(
+                  state,
+                  path: path,
+                  line: node[:line] + 1,
+                  error: "token_parse_failed",
+                  value: value
+                )
+                next
+              end
+
+              edits << {
+                path: path,
+                line: node[:line],
+                col: node[:col],
+                old_ref: old_ref,
+                old_version: updates[:old_version],
+                new_ref: updates[:new_ref],
+                new_version: updates[:new_version],
+                reason: updates[:reason],
+                start: replacement[:start],
+                end: replacement[:end],
+                old_value: value,
+                new_value: replacement[:new_scalar],
+                new_scalar: replacement[:new_scalar],
+                action: repo_ref
+              }
+            ensure
+              action_progress&.increment
+            end
           end
 
           if edits.any?
@@ -213,6 +220,9 @@ module Kettle
           opt.on("--json", "Emit JSON report") do
             @options[:json] = true
           end
+          opt.on("--[no-]progress", "Show progress feedback on STDERR (default: on unless --json)") do |bool|
+            @options[:progress] = bool
+          end
           opt.on("--skip-pattern PATTERN", "Skip workflow paths matching pattern (repeatable)") do |pattern|
             begin
               @options[:reject_patterns] << Regexp.new(pattern)
@@ -229,6 +239,53 @@ module Kettle
           end
         end
         parser.parse!(@argv)
+      end
+
+      def load_workflows(paths, state)
+        file_progress = progress_bar(title: "Files", total: paths.length)
+        paths.each_with_object([]) do |path, workflows|
+          begin
+            state[:files_scanned] += 1
+            text = begin
+              File.read(path)
+            rescue Errno::EACCES => e
+              record_failure(state, path: path, error: "read_error: #{e.message}")
+              next
+            end
+
+            parsed = begin
+              Psych.parse_stream(text)
+            rescue Psych::Exception => e
+              record_failure(state, path: path, error: "yaml_parse_error: #{e.message}")
+              next
+            end
+
+            uses_nodes = extract_uses_nodes(parsed)
+            workflows << {path: path, text: text, uses_nodes: uses_nodes} unless uses_nodes.empty?
+          ensure
+            file_progress&.increment
+          end
+        end
+      end
+
+      def progress_enabled?
+        return @options[:progress] unless @options[:progress].nil?
+
+        !@options[:json]
+      end
+
+      def progress_message(message)
+        return unless progress_enabled?
+
+        @err.puts("[kettle-gha-sha-pins] #{message}")
+      end
+
+      def progress_bar(title:, total:)
+        return unless progress_enabled?
+        return unless total.positive?
+        return unless defined?(ProgressBar)
+
+        ProgressBar.create(title: title, total: total, format: "%t %b %c/%C", length: 30, output: @err)
       end
 
       def discover_workflow_files(root, reject_patterns)

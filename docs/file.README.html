@@ -758,6 +758,27 @@ when a project needs to point at a specific version file.</li>
 <h3 id="pre-release-checks">Pre-release checks</h3>
 
 <ul>
+  <li>Script: <code>exe/kettle-gha-sha-pins</code> (run as <code>kettle-gha-sha-pins</code>)</li>
+  <li>Purpose: Validate and optionally update GitHub Actions <code>uses:</code> refs to pinned<br>
+SHAs and current allowed release versions.</li>
+  <li>Usage:
+    <ul>
+      <li><code>kettle-gha-sha-pins</code></li>
+      <li><code>kettle-gha-sha-pins --check</code></li>
+      <li><code>kettle-gha-sha-pins --write --upgrade patch</code></li>
+    </ul>
+  </li>
+  <li>Behavior:
+    <ul>
+      <li>Human output shows discovery, workflow scan, and action-resolution progress<br>
+on STDERR, then prints the final report on STDOUT.</li>
+      <li>JSON output keeps progress disabled by default so STDOUT remains parseable.<br>
+Use <code>--progress</code> to force progress or <code>--no-progress</code> to suppress it.</li>
+      <li>
+<code>--check</code> exits non-zero when workflow action pins are stale or mutable and<br>
+prints a recommended <code>kettle-gha-sha-pins --write --upgrade patch</code> command.</li>
+    </ul>
+  </li>
   <li>Script: <code>exe/kettle-pre-release</code> (run as <code>kettle-pre-release</code>)</li>
   <li>Purpose: Run a suite of pre-release validations to catch avoidable mistakes (resumable by check number).</li>
   <li>Usage:
@@ -1056,7 +1077,7 @@ Please consider sponsoring me or the project.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Mon Jun  8 03:35:35 2026 by
+  Generated on Mon Jun  8 03:52:41 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>

@@ -2,7 +2,7 @@
   "exe/kettle-gha-sha-pins:1198589381": [
     [40, 1, 25, "Lint/UselessRescue: Useless `rescue` detected.", 3216106097]
   ],
-  "spec/kettle/dev/gha_sha_pins_cli_spec.rb:1347601927": [
+  "spec/kettle/dev/gha_sha_pins_cli_spec.rb:2155415160": [
     [6, 1, 95, "Lint/MissingCopEnableDirective: Re-enable ThreadSafety/ClassInstanceVariable cop with `# rubocop:enable` after disabling it.", 1607411573],
     [33, 5, 52, "RSpec/AnyInstance: Avoid stubbing using `allow_any_instance_of`.", 2477653456],
     [34, 5, 52, "RSpec/AnyInstance: Avoid stubbing using `allow_any_instance_of`.", 2477653456],

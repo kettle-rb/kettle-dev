@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
   release setup starts.
 - `kettle-bump` now bumps a single gem's version file before `kettle-changelog`
   release prep.
+- `kettle-gha-sha-pins` now shows discovery, workflow scan, and action-resolution
+  progress on STDERR for human runs while keeping JSON output quiet by default.
 
 ### Changed
 
