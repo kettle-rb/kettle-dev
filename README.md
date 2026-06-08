@@ -303,6 +303,8 @@ Common local workflows:
 - `bundle exec rake appraisal:generate` regenerates Appraisal gemfiles.
 - `bundle exec rake appraisal:update` updates Appraisal locks and applies gradual RuboCop autocorrect.
 - `bundle exec rake appraisal:reset` removes Appraisal lockfiles below `gemfiles/`.
+- `kettle-bump patch` bumps the current gem's patch version before running
+  `kettle-changelog`.
 
 GitHub Actions local runner helper:
 
@@ -410,6 +412,22 @@ What it does:
     - The goalie file `commit-subjects-goalie.txt` controls when a footer is appended; customize `footer-template.erb.txt` as you like.
 
 ### Changelog generator
+
+- Script: `exe/kettle-bump` (run as `kettle-bump`)
+- Purpose: Bumps the current single gem's `lib/**/version.rb` before changelog
+  preparation. It accepts an exact version or `major`, `minor`, or `patch`.
+- Usage:
+    - `kettle-bump patch`
+    - `kettle-bump 1.2.4 --from 1.2.3`
+    - `kettle-bump minor --dry-run`
+    - `kettle-bump patch --check`
+- Behavior:
+    - Writes by default; use `--dry-run` to preview or `--check` to fail when a
+      bump would change files.
+    - Updates literal `spec.version = "..."` assignments in the gemspec when
+      they match the current version. Dynamic gemspec versions are left alone.
+    - Uses the same `K_CHANGELOG_VERSION_FILE` override as `kettle-changelog`
+      when a project needs to point at a specific version file.
 
 - Script: `exe/kettle-changelog` (run as `kettle-changelog`)
 - Purpose: Generates a new CHANGELOG.md section for the current version read from `lib/**/version.rb`, moves notes from the Unreleased section, and updates comparison links.

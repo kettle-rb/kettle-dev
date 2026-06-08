@@ -548,6 +548,9 @@ focused spec runs that should not fail whole-suite coverage thresholds.</li>
 <code>bundle exec rake appraisal:update</code> updates Appraisal locks and applies gradual RuboCop autocorrect.</li>
   <li>
 <code>bundle exec rake appraisal:reset</code> removes Appraisal lockfiles below <code>gemfiles/</code>.</li>
+  <li>
+<code>kettle-bump patch</code> bumps the current gem’s patch version before running<br>
+<code>kettle-changelog</code>.</li>
 </ul>
 
 <p>GitHub Actions local runner helper:</p>
@@ -706,6 +709,27 @@ Examples:</li>
 <h3 id="changelog-generator">Changelog generator</h3>
 
 <ul>
+  <li>Script: <code>exe/kettle-bump</code> (run as <code>kettle-bump</code>)</li>
+  <li>Purpose: Bumps the current single gem’s <code>lib/**/version.rb</code> before changelog<br>
+preparation. It accepts an exact version or <code>major</code>, <code>minor</code>, or <code>patch</code>.</li>
+  <li>Usage:
+    <ul>
+      <li><code>kettle-bump patch</code></li>
+      <li><code>kettle-bump 1.2.4 --from 1.2.3</code></li>
+      <li><code>kettle-bump minor --dry-run</code></li>
+      <li><code>kettle-bump patch --check</code></li>
+    </ul>
+  </li>
+  <li>Behavior:
+    <ul>
+      <li>Writes by default; use <code>--dry-run</code> to preview or <code>--check</code> to fail when a<br>
+bump would change files.</li>
+      <li>Updates literal <code>spec.version = "..."</code> assignments in the gemspec when<br>
+they match the current version. Dynamic gemspec versions are left alone.</li>
+      <li>Uses the same <code>K_CHANGELOG_VERSION_FILE</code> override as <code>kettle-changelog</code><br>
+when a project needs to point at a specific version file.</li>
+    </ul>
+  </li>
   <li>Script: <code>exe/kettle-changelog</code> (run as <code>kettle-changelog</code>)</li>
   <li>Purpose: Generates a new CHANGELOG.md section for the current version read from <code>lib/**/version.rb</code>, moves notes from the Unreleased section, and updates comparison links.</li>
   <li>Prerequisites:
@@ -1032,7 +1056,7 @@ Please consider sponsoring me or the project.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Mon Jun  8 03:10:43 2026 by
+  Generated on Mon Jun  8 03:35:35 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>

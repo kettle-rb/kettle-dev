@@ -26,6 +26,8 @@ Please file a bug if you notice a violation of semantic versioning.
   need updated SHA pins.
 - `kettle-release` now runs `kettle-pre-release` as a full-release gate before
   release setup starts.
+- `kettle-bump` now bumps a single gem's version file before `kettle-changelog`
+  release prep.
 
 ### Changed
 

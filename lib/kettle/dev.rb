@@ -19,6 +19,7 @@ module Kettle
   autoload :EmojiRegex, "kettle/emoji_regex"
   module Dev
     autoload :ChangelogCLI, "kettle/dev/changelog_cli"
+    autoload :BumpCLI, "kettle/dev/bump_cli"
     autoload :CIHelpers, "kettle/dev/ci_helpers"
     autoload :CIMonitor, "kettle/dev/ci_monitor"
     autoload :CommitMsg, "kettle/dev/commit_msg"

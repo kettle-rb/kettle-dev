@@ -1,0 +1,41 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# vim: set syntax=ruby
+
+# kettle-bump: Bump the current gem version before running kettle-changelog.
+
+$stdout.sync = true
+$stderr.sync = true
+
+begin
+  require "rubygems"
+rescue LoadError
+  # Older Rubies always have rubygems; continue anyway
+end
+
+script_basename = File.basename(__FILE__)
+
+begin
+  require "kettle/dev"
+  puts "== #{script_basename} v#{Kettle::Dev::Version::VERSION} =="
+rescue LoadError => e
+  warn("#{script_basename}: could not load dependency: #{e.class}: #{e.message}")
+  warn("Hint: Ensure the host project has kettle-dev as a dependency and run bundle install.")
+  exit(1)
+end
+
+begin
+  exit(Kettle::Dev::BumpCLI.new(ARGV).run!)
+rescue LoadError => e
+  warn("#{script_basename}: could not load dependency: #{e.class}: #{e.message}")
+  warn(e.backtrace.join("\n")) if ENV["DEBUG"]
+  exit(1)
+rescue SystemExit => e
+  warn("#{script_basename}: exited (status=#{e.status}, msg=#{e.message})") if e.status != 0
+  raise
+rescue => e
+  warn("#{script_basename}: unexpected error: #{e.class}: #{e.message}")
+  warn(e.backtrace.join("\n")) if ENV["DEBUG"]
+  exit(1)
+end

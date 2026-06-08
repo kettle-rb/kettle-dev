@@ -102,7 +102,7 @@ Gem::Specification.new do |spec|
   ]
   spec.bindir = "exe"
   # Listed files are the relative paths from bindir above.
-  spec.executables = ["kettle-changelog", "kettle-check-eof", "kettle-commit-msg", "kettle-dev-setup", "kettle-dvcs", "kettle-gh-release", "kettle-gha-sha-pins", "kettle-pre-release", "kettle-readme-backers", "kettle-release"]
+  spec.executables = ["kettle-bump", "kettle-changelog", "kettle-check-eof", "kettle-commit-msg", "kettle-dev-setup", "kettle-dvcs", "kettle-gh-release", "kettle-gha-sha-pins", "kettle-pre-release", "kettle-readme-backers", "kettle-release"]
 
   # kettle-jem:freeze
   # To retain chunks of comments & code during kettle-dev templating:
