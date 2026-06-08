@@ -84,11 +84,11 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 
 <ul>
   <li>
-<code>kettle-release start_step=10</code> now waits for GitHub Actions runs for the<br>
-local HEAD SHA to appear before evaluating results, avoiding stale failures<br>
-from the previous branch run.</li>
-  <li>Removed the duplicate <code>cgi</code> declaration from the <code>head</code> appraisal so<br>
-<code>kettle-release</code> can regenerate Appraisal gemfiles on Ruby 4.</li>
+<code>kettle-gha-sha-pins</code> now treats version-equivalent but unresolved action<br>
+refs as invalid and converts them to release SHAs instead of accepting<br>
+stripped tag names such as <code>6.0.2</code> when only <code>v6.0.2</code> exists.</li>
+  <li>Coverage workflow uploads now pin <code>codecov/codecov-action</code> and<br>
+<code>coverallsapp/github-action</code> to resolvable release SHAs.</li>
 </ul>
 
 <h3 id="security">Security</h3>
@@ -99,9 +99,9 @@ from the previous branch run.</li>
 <ul>
   <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v2.2.0">v2.2.0</a>
 </li>
-  <li>COVERAGE: 91.45% – 3530/3860 lines in 28 files</li>
-  <li>BRANCH COVERAGE: 72.85% – 1387/1904 branches in 28 files</li>
-  <li>70.65% documented</li>
+  <li>COVERAGE: 91.36% – 3552/3888 lines in 28 files</li>
+  <li>BRANCH COVERAGE: 72.91% – 1397/1916 branches in 28 files</li>
+  <li>69.68% documented</li>
 </ul>
 
 <h3 id="added-1">Added</h3>
@@ -130,9 +130,17 @@ every release tag through individual commit requests.</li>
 <h3 id="fixed-1">Fixed</h3>
 
 <ul>
-  <li>Minitest-only projects now keep <code>rake test</code> on the generated<br>
+  <li>
+    <p>Minitest-only projects now keep <code>rake test</code> on the generated<br>
 <code>Rake::TestTask</code> path instead of synthesizing a <code>kettle-test</code> RSpec task when<br>
-tests live directly under <code>test/</code>.</li>
+tests live directly under <code>test/</code>.</p>
+  </li>
+  <li>
+<code>kettle-release start_step=10</code> now waits for GitHub Actions runs for the<br>
+local HEAD SHA to appear before evaluating results, avoiding stale failures<br>
+from the previous branch run.</li>
+  <li>Removed the duplicate <code>cgi</code> declaration from the <code>head</code> appraisal so<br>
+<code>kettle-release</code> can regenerate Appraisal gemfiles on Ruby 4.</li>
 </ul>
 
 <h2 id="211---2026-06-06">
@@ -3119,7 +3127,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </div></div>
 
       <div id="footer">
-  Generated on Mon Jun  8 05:50:12 2026 by
+  Generated on Mon Jun  8 14:12:49 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>

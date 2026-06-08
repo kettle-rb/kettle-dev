@@ -28,20 +28,20 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- `kettle-release start_step=10` now waits for GitHub Actions runs for the
-  local HEAD SHA to appear before evaluating results, avoiding stale failures
-  from the previous branch run.
-- Removed the duplicate `cgi` declaration from the `head` appraisal so
-  `kettle-release` can regenerate Appraisal gemfiles on Ruby 4.
+- `kettle-gha-sha-pins` now treats version-equivalent but unresolved action
+  refs as invalid and converts them to release SHAs instead of accepting
+  stripped tag names such as `6.0.2` when only `v6.0.2` exists.
+- Coverage workflow uploads now pin `codecov/codecov-action` and
+  `coverallsapp/github-action` to resolvable release SHAs.
 
 ### Security
 
 ## [2.2.0] - 2026-06-08
 
 - TAG: [v2.2.0][2.2.0t]
-- COVERAGE: 91.45% -- 3530/3860 lines in 28 files
-- BRANCH COVERAGE: 72.85% -- 1387/1904 branches in 28 files
-- 70.65% documented
+- COVERAGE: 91.36% -- 3552/3888 lines in 28 files
+- BRANCH COVERAGE: 72.91% -- 1397/1916 branches in 28 files
+- 69.68% documented
 
 ### Added
 
@@ -64,6 +64,12 @@ Please file a bug if you notice a violation of semantic versioning.
 - Minitest-only projects now keep `rake test` on the generated
   `Rake::TestTask` path instead of synthesizing a `kettle-test` RSpec task when
   tests live directly under `test/`.
+
+- `kettle-release start_step=10` now waits for GitHub Actions runs for the
+  local HEAD SHA to appear before evaluating results, avoiding stale failures
+  from the previous branch run.
+- Removed the duplicate `cgi` declaration from the `head` appraisal so
+  `kettle-release` can regenerate Appraisal gemfiles on Ruby 4.
 
 ## [2.1.1] - 2026-06-06
 

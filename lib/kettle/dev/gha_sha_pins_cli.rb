@@ -404,7 +404,7 @@ module Kettle
       def matching_version_entry(versions, current_ref, current_sha, client, repo_ref)
         parsed = parse_release_version(current_ref)
         if parsed
-          direct = versions.find { |entry| entry[:version_obj] == parsed }
+          direct = versions.find { |entry| entry[:tag] == current_ref }
           return direct if direct
         end
 
@@ -462,7 +462,16 @@ module Kettle
         else
           client.commit_sha(repo_ref, current_ref)
         end
+        parsed_current_ref = parse_release_version(current_ref)
+        version_equivalent_entry = if parsed_current_ref
+          available_versions.find { |entry| entry[:version_obj] == parsed_current_ref }
+        end
         matched_entry = matching_version_entry(available_versions, current_ref, current_sha, client, repo_ref)
+        unresolved_version_ref = false
+        if matched_entry.nil? && current_sha.to_s.empty? && version_equivalent_entry && non_sha?(current_ref)
+          matched_entry = version_equivalent_entry
+          unresolved_version_ref = true
+        end
         current_version = matched_entry ? matched_entry[:version] : nil
 
         updates = nil
@@ -487,6 +496,19 @@ module Kettle
               reason: UPGRADE_REASON
             }
             reason ||= UPGRADE_REASON
+          end
+          if updates.nil? && unresolved_version_ref
+            matched_sha = version_entry_sha(matched_entry, client, repo_ref)
+            if stale_sha?(current_ref, matched_sha)
+              updates = {
+                sha: matched_sha,
+                version: nil,
+                reason: NON_SHA_REASON
+              }
+              latest_outdated ||= matched_entry.merge(sha: matched_sha)
+              is_outdated = true
+              reason ||= NON_SHA_REASON
+            end
           end
         elsif current_sha && non_sha?(current_ref)
           if stale_sha?(current_ref, current_sha)

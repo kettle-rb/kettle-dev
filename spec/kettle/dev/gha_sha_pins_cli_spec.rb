@@ -138,6 +138,16 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       expect(plan[:latest_outdated][:version]).to eq("2.0.0")
       expect(plan[:is_outdated]).to be(true)
     end
+
+    it "does not treat a version-equivalent but unresolved ref as a valid release tag" do
+      allow(client).to receive(:commit_sha).with("foo/bar", "1.2.3").and_return(nil)
+
+      plan = dummy_cli.send(:determine_upgrade_plan, old_ref: "1.2.3", repo_ref: "foo/bar", versions: versions, upgrade_level: "patch", client: client)
+
+      expect(plan[:updates]).to include(sha: "aaa", version: nil, reason: described_class::NON_SHA_REASON)
+      expect(plan[:current_version]).to eq("1.2.3")
+      expect(plan[:is_outdated]).to be(true)
+    end
   end
 
   describe described_class::GitHubClient do
@@ -242,6 +252,31 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       expect do
         expect(cli.run!).to eq(3)
       end.to output(/Outdated actions \(1\):.*Recommended fix: kettle-gha-sha-pins --write --upgrade minor/m).to_stdout
+    end
+
+    it "rewrites unresolved version-equivalent refs to release SHAs instead of stripped tag names" do
+      File.write(
+        workflow_path,
+        <<~YAML
+          name: ci
+          on: [push]
+          jobs:
+            test:
+              runs-on: ubuntu-latest
+              steps:
+                - uses: foo/bar@1.2.0 # v1.2.0
+        YAML
+      )
+      cli_client = instance_double(described_class::GitHubClient)
+      allow(described_class::GitHubClient).to receive(:new).and_return(cli_client)
+      allow(cli_client).to receive(:versions_for_repo).with("foo/bar").and_return(client_versions)
+      allow(cli_client).to receive(:commit_sha).with("foo/bar", "1.2.0").and_return(nil)
+
+      cli = described_class.new(["--root", workflow_root, "--upgrade", "patch", "--write"])
+      cli.run!
+
+      expect(File.read(workflow_path)).to include("uses: foo/bar@aaa # v1.2.0")
+      expect(File.read(workflow_path)).not_to include("foo/bar@1.2.0")
     end
 
     it "calls GitHub release-version lookup for each workflow action when evaluating pins" do
