@@ -432,7 +432,7 @@ What it does:
 - Options:
     - `--check-num N` Start from check number N (default: 1)
 - Checks:
-    - 1) Validate GitHub Actions workflow action refs with `kettle-gha-sha-pins --check`; if pins are stale, it exits non-zero and recommends `kettle-gha-sha-pins --write --upgrade patch`.
+    - 1) Validate GitHub Actions workflow action refs with `kettle-gha-sha-pins --check`; if pins are stale, it prints an outdated-actions summary, exits non-zero, and recommends `kettle-gha-sha-pins --write --upgrade patch`.
     - 2) Normalize Markdown image URLs.
     - 3) Validate that all image URLs referenced by Markdown files resolve (HTTP HEAD).
 

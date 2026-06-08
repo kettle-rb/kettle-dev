@@ -253,16 +253,16 @@
       <pre class="lines">
 
 
-640
-641
-642
-643
-644
-645
-646</pre>
+654
+655
+656
+657
+658
+659
+660</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gha_sha_pins_cli.rb', line 640</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gha_sha_pins_cli.rb', line 654</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='label'>token:</span><span class='comma'>,</span> <span class='label'>api_base:</span><span class='comma'>,</span> <span class='label'>user_agent:</span><span class='rparen'>)</span>
   <span class='ivar'>@token</span> <span class='op'>=</span> <span class='id identifier rubyid_token'>token</span>
@@ -298,22 +298,22 @@
       <pre class="lines">
 
 
-680
-681
-682
-683
-684
-685
-686
-687
-688
-689
-690
-691
-692</pre>
+694
+695
+696
+697
+698
+699
+700
+701
+702
+703
+704
+705
+706</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gha_sha_pins_cli.rb', line 680</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gha_sha_pins_cli.rb', line 694</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_commit_sha'>commit_sha</span><span class='lparen'>(</span><span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='comma'>,</span> <span class='id identifier rubyid_ref'>ref</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>nil</span> <span class='kw'>if</span> <span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span> <span class='op'>||</span> <span class='id identifier rubyid_ref'>ref</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
@@ -348,14 +348,14 @@
       <pre class="lines">
 
 
-694
-695
-696
-697
-698</pre>
+708
+709
+710
+711
+712</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gha_sha_pins_cli.rb', line 694</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gha_sha_pins_cli.rb', line 708</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_release_latest_sha'>release_latest_sha</span><span class='lparen'>(</span><span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_versions'>versions</span> <span class='op'>=</span> <span class='id identifier rubyid_versions_for_repo'>versions_for_repo</span><span class='lparen'>(</span><span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='rparen'>)</span>
@@ -382,20 +382,6 @@
       <pre class="lines">
 
 
-648
-649
-650
-651
-652
-653
-654
-655
-656
-657
-658
-659
-660
-661
 662
 663
 664
@@ -412,10 +398,24 @@
 675
 676
 677
-678</pre>
+678
+679
+680
+681
+682
+683
+684
+685
+686
+687
+688
+689
+690
+691
+692</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gha_sha_pins_cli.rb', line 648</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gha_sha_pins_cli.rb', line 662</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_versions_for_repo'>versions_for_repo</span><span class='lparen'>(</span><span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='lbracket'>[</span><span class='rbracket'>]</span> <span class='kw'>if</span> <span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
@@ -458,7 +458,7 @@
 </div>
 
       <div id="footer">
-  Generated on Mon Jun  8 03:02:25 2026 by
+  Generated on Mon Jun  8 03:05:16 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>

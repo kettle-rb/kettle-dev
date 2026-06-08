@@ -617,6 +617,20 @@ module Kettle
         end
 
         if state[:planned_changes].empty?
+          lines << "Outdated actions: none"
+        else
+          lines << "Outdated actions (#{state[:planned_changes].length}):"
+          lines << "Action Current Latest Location Reason"
+          state[:planned_changes].sort_by { |c| [c[:action], c[:path], c[:line]] }.each do |change|
+            current = change[:old_version] || change[:old_ref]
+            latest = change[:new_version] || change[:new_ref]
+            location = "#{change[:path]}:#{change[:line]}"
+            lines << "#{change[:action]} #{current} #{latest} #{location} #{change[:reason]}"
+          end
+          lines << ""
+        end
+
+        if state[:planned_changes].empty?
           lines << "No change candidates found."
         else
           lines << "Planned changes (#{state[:planned_changes].length}):"

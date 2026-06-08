@@ -201,7 +201,9 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
 
       expect do
         cli.run!
-      end.to output(%r{Outdated pins \(1\):\n- #{Regexp.escape(workflow_path)}:\d+ foo/bar 1\.2\.0 -> 1\.3\.0 #{Regexp.escape(described_class::UPGRADE_REASON)}}).to_stdout
+      end.to output(
+        %r{Outdated actions \(1\):\nAction Current Latest Location Reason\nfoo/bar 1\.2\.0 1\.3\.0 #{Regexp.escape(workflow_path)}:\d+ #{Regexp.escape(described_class::UPGRADE_REASON)}}
+      ).to_stdout
     end
 
     it "fails in check mode and recommends the write command when updates are needed" do
@@ -209,7 +211,7 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
 
       expect do
         expect(cli.run!).to eq(3)
-      end.to output(/Recommended fix: kettle-gha-sha-pins --write --upgrade minor/).to_stdout
+      end.to output(/Outdated actions \(1\):.*Recommended fix: kettle-gha-sha-pins --write --upgrade minor/m).to_stdout
     end
 
     it "calls GitHub release-version lookup for each workflow action when evaluating pins" do
