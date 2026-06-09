@@ -24,7 +24,7 @@ RSpec.describe Kettle::Dev::GemSpecReader do
       expect(info[:gem_name]).to eq("")
       expect(info[:min_ruby]).to be_a(Gem::Version)
       expect(info[:homepage]).to eq("")
-      expect(info[:forge_org]).to eq("kettle-rb") # fallback when no homepage and no git
+      expect(info[:forge_org]).to eq("kettle-dev") # fallback when no homepage and no git
     end
 
     it "normalizes the warning path for user-facing output", :check_output do
@@ -295,8 +295,8 @@ RSpec.describe Kettle::Dev::GemSpecReader do
       allow(Kettle::Dev::GitAdapter).to receive(:new).and_raise(RuntimeError.new("boom"))
       allow(Kettle::Dev).to receive(:debug_error)
       info = load_info
-      # default in caller will warn and fallback to kettle-rb for org
-      expect(info[:forge_org]).to eq("kettle-rb")
+      # default in caller will warn and fallback to kettle-dev for org
+      expect(info[:forge_org]).to eq("kettle-dev")
     end
   end
 

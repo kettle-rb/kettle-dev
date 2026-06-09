@@ -25,7 +25,7 @@ module Kettle
         # @option return [String] :gem_name gem name ("" when not derivable)
         # @option return [Gem::Version] :min_ruby minimum Ruby version derived or DEFAULT_MINIMUM_RUBY
         # @option return [String] :homepage homepage string (may be "")
-        # @option return [String] :gh_org GitHub org (falls back to "kettle-rb")
+        # @option return [String] :gh_org GitHub org (falls back to "kettle-dev")
         # @option return [String] :forge_org primary forge org (currently same as gh_org)
         # @option return [String, nil] :funding_org OpenCollective/org handle or nil when not discovered
         # @option return [String, nil] :gh_repo GitHub repo name, if discoverable
@@ -107,8 +107,8 @@ module Kettle
           forge_org = explicit_forge_org || forge_info[:forge_org]
           gh_repo = forge_info[:origin_repo]
           if forge_org.to_s.empty?
-            Kernel.warn("kettle-dev: Could not determine forge org from spec.homepage or git remote.\n  - Ensure gemspec.homepage is set to a GitHub URL or that the git remote 'origin' points to GitHub.\n  - Example homepage: https://github.com/<org>/<repo>\n  - Proceeding with default org: kettle-rb.")
-            forge_org = "kettle-rb"
+            Kernel.warn("kettle-dev: Could not determine forge org from spec.homepage or git remote.\n  - Ensure gemspec.homepage is set to a GitHub URL or that the git remote 'origin' points to GitHub.\n  - Example homepage: https://github.com/<org>/<repo>\n  - Proceeding with default org: kettle-dev.")
+            forge_org = "kettle-dev"
           end
 
           camel = lambda do |s|

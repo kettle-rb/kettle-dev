@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `Kettle::Dev::GemSpecReader` now falls back to the migrated `kettle-dev`
+  GitHub organization when no forge org can be derived.
 - `kettle-gha-sha-pins` now persists live ref-to-SHA lookup results in its action
   cache so a dry run followed by `--write` does not repeat the same API calls.
 
