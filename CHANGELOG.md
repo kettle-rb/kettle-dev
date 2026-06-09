@@ -22,24 +22,19 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
-- Runtime dependency `kettle-test` now requires 2.0.4 or newer.
-
 ### Deprecated
 
 ### Removed
 
 ### Fixed
 
-- Legacy CI appraisals now skip `kettle-bump` specs when Prism is unavailable,
-  and the Ruby 3.2 appraisal includes `prism` so the specs run where supported.
-
 ### Security
 
 ## [2.2.0] - 2026-06-08
 
 - TAG: [v2.2.0][2.2.0t]
-- COVERAGE: 91.81% -- 3722/4054 lines in 28 files
-- BRANCH COVERAGE: 73.05% -- 1461/2000 branches in 28 files
+- COVERAGE: 91.51% -- 3710/4054 lines in 28 files
+- BRANCH COVERAGE: 72.90% -- 1458/2000 branches in 28 files
 - 67.51% documented
 
 ### Added
@@ -89,10 +84,15 @@ Please file a bug if you notice a violation of semantic versioning.
   appraisals include `prism`, so `kettle-bump` and GitHub Action SHA pin specs
   run on the supported legacy matrix.
 
+- Legacy CI appraisals now skip `kettle-bump` specs when Prism is unavailable,
+  and the Ruby 3.2 appraisal includes `prism` so the specs run where supported.
+
 ### Changed
 
 - Retemplated project metadata with the latest `kettle-jem` stack, refreshing
   README and security-policy generated details for the current release line.
+
+- Runtime dependency `kettle-test` now requires 2.0.4 or newer.
 
 ## [2.1.1] - 2026-06-06
 

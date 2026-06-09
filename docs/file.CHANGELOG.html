@@ -90,8 +90,8 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 <ul>
   <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v2.2.0">v2.2.0</a>
 </li>
-  <li>COVERAGE: 91.81% – 3722/4054 lines in 28 files</li>
-  <li>BRANCH COVERAGE: 73.05% – 1461/2000 branches in 28 files</li>
+  <li>COVERAGE: 91.51% – 3710/4054 lines in 28 files</li>
+  <li>BRANCH COVERAGE: 72.90% – 1458/2000 branches in 28 files</li>
   <li>67.51% documented</li>
 </ul>
 
@@ -154,16 +154,25 @@ unauthenticated GitHub API rate limits are exhausted.</li>
     <p>Coverage workflow uploads now pin <code>codecov/codecov-action</code> and<br>
 <code>coverallsapp/github-action</code> to resolvable release SHAs.</p>
   </li>
-  <li>Ruby 2.4-2.6 CI appraisals now include <code>backports</code>, and Ruby 3.0-3.1<br>
+  <li>
+    <p>Ruby 2.4-2.6 CI appraisals now include <code>backports</code>, and Ruby 3.0-3.1<br>
 appraisals include <code>prism</code>, so <code>kettle-bump</code> and GitHub Action SHA pin specs<br>
-run on the supported legacy matrix.</li>
+run on the supported legacy matrix.</p>
+  </li>
+  <li>Legacy CI appraisals now skip <code>kettle-bump</code> specs when Prism is unavailable,<br>
+and the Ruby 3.2 appraisal includes <code>prism</code> so the specs run where supported.</li>
 </ul>
 
 <h3 id="changed-1">Changed</h3>
 
 <ul>
-  <li>Retemplated project metadata with the latest <code>kettle-jem</code> stack, refreshing<br>
-README and security-policy generated details for the current release line.</li>
+  <li>
+    <p>Retemplated project metadata with the latest <code>kettle-jem</code> stack, refreshing<br>
+README and security-policy generated details for the current release line.</p>
+  </li>
+  <li>
+    <p>Runtime dependency <code>kettle-test</code> now requires 2.0.4 or newer.</p>
+  </li>
 </ul>
 
 <h2 id="211---2026-06-06">
@@ -3150,7 +3159,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </div></div>
 
       <div id="footer">
-  Generated on Mon Jun  8 16:14:16 2026 by
+  Generated on Mon Jun  8 23:23:08 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>
