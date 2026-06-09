@@ -287,6 +287,31 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
 
       expect(versions.map { |entry| entry[:version] }).to eq(["1.2.1"])
     end
+
+    it "persists live commit SHA lookups for reuse by the next client run" do
+      cache_path = File.join(workflow_root, "gha-cache.json")
+      cache = Kettle::Dev::GhaShaPinsCLI::PersistentActionCache.new(path: cache_path, clock: -> { Time.utc(2026, 6, 8, 12, 0, 0) })
+      first_client = described_class.new(
+        token: nil,
+        api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE,
+        user_agent: "kettle-gha-sha-pins",
+        persistent_cache: cache
+      )
+      allow(first_client).to receive(:request_json).with("/repos/foo/bar/commits/v1.2.3").and_return({"sha" => "a" * 40})
+
+      expect(first_client.commit_sha("foo/bar", "v1.2.3")).to eq("a" * 40)
+
+      second_client = described_class.new(
+        token: nil,
+        api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE,
+        user_agent: "kettle-gha-sha-pins",
+        persistent_cache: Kettle::Dev::GhaShaPinsCLI::PersistentActionCache.new(path: cache_path, clock: -> { Time.utc(2026, 6, 8, 12, 1, 0) })
+      )
+      expect(second_client).not_to receive(:request_json)
+
+      expect(second_client.commit_sha("foo/bar", "v1.2.3")).to eq("a" * 40)
+      expect(JSON.parse(File.read(cache_path)).dig("actions", "foo/bar", "refs", "v1.2.3", "sha")).to eq("a" * 40)
+    end
   end
 
   describe "run! output" do

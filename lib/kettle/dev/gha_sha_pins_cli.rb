@@ -957,6 +957,32 @@ module Kettle
           save!
         end
 
+        def ref_sha(repo_ref, ref, fresh: true)
+          action = action_data(repo_ref)
+          return nil unless action
+
+          refs = action.fetch("refs", {})
+          entry = refs[ref.to_s]
+          return nil unless entry
+          return nil if fresh && !fresh_entry?(entry)
+
+          sha = entry["sha"].to_s
+          sha.empty? ? nil : sha
+        end
+
+        def write_ref_sha(repo_ref, ref, sha)
+          return if @path.to_s.empty?
+          return if repo_ref.to_s.empty? || ref.to_s.empty? || sha.to_s.empty?
+
+          action = data.fetch("actions")[repo_ref] ||= {}
+          refs = action["refs"] ||= {}
+          refs[ref.to_s] = {
+            "sha" => sha.to_s[0, 40],
+            "cached_at" => @clock.call.utc.iso8601
+          }
+          save!
+        end
+
         def to_h
           data
         end
@@ -1108,9 +1134,22 @@ module Kettle
           cache_key = "commit:#{repo_ref}:#{ref}"
           return @commit_cache[cache_key] if @commit_cache.key?(cache_key)
 
+          unless @refresh_cache
+            cached = @persistent_cache&.ref_sha(repo_ref, ref, fresh: true)
+            if cached
+              @commit_cache[cache_key] = cached
+              return cached
+            end
+          end
+
           data = request_json("/repos/#{repo_ref}/commits/#{uri_encode(ref)}")
           sha = if data.is_a?(Hash)
             data.fetch("sha", "")[0, 40]
+          end
+          if sha.to_s.empty?
+            sha = @persistent_cache&.ref_sha(repo_ref, ref, fresh: false)
+          else
+            @persistent_cache&.write_ref_sha(repo_ref, ref, sha)
           end
           @commit_cache[cache_key] = sha
           sha

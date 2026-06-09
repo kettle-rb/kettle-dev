@@ -28,6 +28,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-gha-sha-pins` now persists live ref-to-SHA lookup results in its action
+  cache so a dry run followed by `--write` does not repeat the same API calls.
+
 ### Security
 
 ## [2.2.0] - 2026-06-08
