@@ -28,12 +28,21 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [2.2.1] - 2026-06-09
+
+- TAG: [v2.2.1][2.2.1t]
+- COVERAGE: 91.61% -- 3736/4078 lines in 28 files
+- BRANCH COVERAGE: 72.78% -- 1473/2024 branches in 28 files
+- 66.83% documented
+
+### Fixed
+
 - `Kettle::Dev::GemSpecReader` now falls back to the migrated `kettle-dev`
   GitHub organization when no forge org can be derived.
 - `kettle-gha-sha-pins` now persists live ref-to-SHA lookup results in its action
   cache so a dry run followed by `--write` does not repeat the same API calls.
-
-### Security
 
 ## [2.2.0] - 2026-06-08
 
@@ -1982,7 +1991,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-rb/kettle-dev/compare/v2.2.0...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.1...HEAD
+[2.2.1]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.0...v2.2.1
+[2.2.1t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.1
 [2.2.0]: https://github.com/kettle-rb/kettle-dev/compare/v2.1.1...v2.2.0
 [2.2.0t]: https://github.com/kettle-rb/kettle-dev/releases/tag/v2.2.0
 [2.1.1]: https://github.com/kettle-rb/kettle-dev/compare/v2.1.0...v2.1.1
