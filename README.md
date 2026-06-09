@@ -108,9 +108,6 @@ CI workflows and Appraisals are generated for MRI Ruby 2.4+.
 This test floor is configured by `ruby.test_minimum` in `.kettle-jem.yml` and
 may be higher than the gem's runtime compatibility floor when legacy Rubies are
 not practical for the current toolchain.
-Projects installing kettle-dev on Ruby <= 2.6 should also add
-`gem "backports", ">= 3.25"` to their Gemfile so modern helper APIs are
-available on those legacy runtimes.
 
 | 🚚 _Amazing_ test matrix was brought to you by | 🔎 appraisal2 🔎 and the color 💚 green 💚 |
 |------------------------------------------------|--------------------------------------------------------|
