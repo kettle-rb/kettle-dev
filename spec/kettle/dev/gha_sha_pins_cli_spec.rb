@@ -30,10 +30,13 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
   end
 
   def stub_github_client(versions:, commit_shas: {})
-    allow_any_instance_of(described_class::GitHubClient).to receive(:versions_for_repo).and_return(versions)
-    allow_any_instance_of(described_class::GitHubClient).to receive(:commit_sha) do |_client, _repo, ref|
+    client = instance_double(described_class::GitHubClient)
+    allow(described_class::GitHubClient).to receive(:new).and_return(client)
+    allow(client).to receive(:versions_for_repo).and_return(versions)
+    allow(client).to receive(:commit_sha) do |_repo, ref|
       commit_shas[ref]
     end
+    client
   end
 
   describe "CLI options" do
@@ -110,7 +113,7 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
     let(:dummy_cli) { described_class.new(["--root", workflow_root]) }
 
     before do
-      allow_any_instance_of(described_class::GitHubClient).to receive(:commit_sha).and_return("777")
+      allow(client).to receive(:commit_sha).and_return("777")
     end
 
     it "selects minor-compatible upgrade target for minor strategy" do
@@ -324,16 +327,13 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
     it "emits JSON report with outdated_pins and version-equivalent values" do
       cli = described_class.new(["--root", workflow_root, "--upgrade", "minor", "--json"])
 
-      output = StringIO.new
-      original_stdout = $stdout
-      $stdout = output
-      begin
+      payload = nil
+      expect do
         cli.run!
-      ensure
-        $stdout = original_stdout
-      end
+      end.to output(satisfy { |stdout|
+        payload = JSON.parse(stdout)
+      }).to_stdout
 
-      payload = JSON.parse(output.string)
       expect(payload.fetch("outdated_pins")).to contain_exactly(
         a_hash_including(
           "path" => workflow_path,
@@ -447,11 +447,13 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
     it "calls GitHub release-version lookup for each workflow action when evaluating pins" do
       cli_client = instance_double(described_class::GitHubClient)
       allow(described_class::GitHubClient).to receive(:new).and_return(cli_client)
-      expect(cli_client).to receive(:versions_for_repo).with("foo/bar").and_return(client_versions)
+      allow(cli_client).to receive(:versions_for_repo).with("foo/bar").and_return(client_versions)
       allow(cli_client).to receive(:commit_sha).and_return("aaa")
 
       cli = described_class.new(["--root", workflow_root, "--upgrade", "minor"])
       cli.run!
+
+      expect(cli_client).to have_received(:versions_for_repo).with("foo/bar")
     end
 
     it "reuses one resolution plan for duplicate action repos" do
@@ -503,3 +505,4 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
     end
   end
 end
+# rubocop:enable RSpec/VerifiedDoubles, RSpec/MessageSpies, ThreadSafety/ClassInstanceVariable

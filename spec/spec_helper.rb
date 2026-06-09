@@ -49,9 +49,11 @@ RSpec.configure do |config|
   end
 
   config.before(:each, :prism_only) do
-    require "prism"
-  rescue LoadError
-    skip "Requires Prism, which is unavailable in this appraisal"
+    begin
+      require "prism"
+    rescue LoadError
+      skip "Requires Prism, which is unavailable in this appraisal"
+    end
   end
 
   config.before do

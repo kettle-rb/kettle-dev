@@ -37,6 +37,4 @@ rescue => e
   warn("#{script_basename}: unexpected error: #{e.class}: #{e.message}")
   warn(e.backtrace.join("\n"))
   Kettle::Dev::ExitAdapter.exit(1)
-rescue SystemExit
-  raise
 end
