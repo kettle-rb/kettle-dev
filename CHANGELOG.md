@@ -32,6 +32,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Updated generated project metadata links to use the migrated `kettle-dev`
+  GitHub organization, including README QLTY badge URLs.
+
 ### Security
 
 ## [2.2.1] - 2026-06-09
