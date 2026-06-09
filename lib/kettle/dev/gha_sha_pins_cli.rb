@@ -38,7 +38,7 @@ module Kettle
         @argv = argv
         @err = err
         @options = {
-          root: Dir.pwd,
+          root: File.join(Dir.pwd, ".github", "workflows"),
           dry_run: true,
           token: ENV["GITHUB_TOKEN"] || ENV["GH_TOKEN"],
           json: false,
@@ -227,7 +227,7 @@ module Kettle
           opt.banner = "Usage: kettle-gha-sha-pins [options]"
           opt.separator ""
           opt.separator "Normalize GitHub Actions workflow action refs to immutable commit SHAs."
-          opt.on("-r", "--root PATH", "Root directory to scan (defaults to cwd)") do |root|
+          opt.on("-r", "--root PATH", "Directory to scan (defaults to .github/workflows under cwd)") do |root|
             @options[:root] = root
           end
           opt.on("-w", "--write", "Write edits (dry-run is default)") do
@@ -367,12 +367,10 @@ module Kettle
       end
 
       def discover_workflow_files(root, reject_patterns)
-        expanded_root = Pathname.new(root).expand_path
+        expanded_root = workflow_analysis_root(root)
         patterns = [
-          File.join(expanded_root.to_s, "**/.github/workflows/**/*.yml"),
-          File.join(expanded_root.to_s, "**/.github/workflows/**/*.yaml"),
-          File.join(expanded_root.to_s, "**/.github/workflows/*.yml"),
-          File.join(expanded_root.to_s, "**/.github/workflows/*.yaml")
+          File.join(expanded_root.to_s, "*.yml"),
+          File.join(expanded_root.to_s, "*.yaml")
         ]
         files = Dir.glob(patterns, File::FNM_PATHNAME).uniq.sort
         files.select do |path|
@@ -380,6 +378,14 @@ module Kettle
           next false if reject_patterns.any? { |pattern| pattern.match?(path) }
           true
         end
+      end
+
+      def workflow_analysis_root(root)
+        expanded_root = Pathname.new(root).expand_path
+        workflow_root = expanded_root.join(".github", "workflows")
+        return workflow_root if workflow_root.directory?
+
+        expanded_root
       end
 
       def extract_uses_nodes(parsed, text = nil)

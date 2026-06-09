@@ -22,6 +22,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- `kettle-gha-sha-pins` now scans only the selected workflow directory,
+  defaulting to `.github/workflows`, instead of recursively searching every
+  nested `.github/workflows` directory under the project root.
+
 ### Deprecated
 
 ### Removed

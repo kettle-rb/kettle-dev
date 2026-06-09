@@ -57,6 +57,14 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       expect(options[:cache_path]).to eq(cache_path)
     end
 
+    it "defaults to the current project's .github/workflows directory" do
+      allow(Dir).to receive(:pwd).and_return(workflow_root)
+      cli = described_class.new([])
+      cli.send(:parse!)
+
+      expect(cli.instance_variable_get(:@options)[:root]).to eq(File.join(workflow_root, ".github", "workflows"))
+    end
+
     it "accepts major, minor, and patch for --upgrade", :real_exit_adapter do
       cli_major = described_class.new(["--upgrade", "major", "--root", workflow_root])
       cli_minor = described_class.new(["--upgrade", "minor", "--root", workflow_root])
@@ -76,6 +84,24 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       cli = described_class.new(["--upgrade", "garbage", "--root", workflow_root])
 
       expect { cli.send(:parse!) }.to raise_error(SystemExit)
+    end
+  end
+
+  describe "workflow discovery" do
+    it "scans only the selected workflow directory when given a project root" do
+      nested_workflow = File.join(workflow_root, "tmp", "template_test", "destination", ".github", "workflows", "ci.yml")
+      FileUtils.mkdir_p(File.dirname(nested_workflow))
+      File.write(nested_workflow, File.read(workflow_path))
+      cli = described_class.new(["--root", workflow_root])
+
+      expect(cli.send(:discover_workflow_files, workflow_root, Set.new)).to eq([workflow_path])
+    end
+
+    it "accepts a workflow directory as the analysis root" do
+      workflow_dir = File.dirname(workflow_path)
+      cli = described_class.new(["--root", workflow_dir])
+
+      expect(cli.send(:discover_workflow_files, workflow_dir, Set.new)).to eq([workflow_path])
     end
   end
 
