@@ -28,7 +28,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Restored `docs/CNAME` so the generated documentation site keeps its custom domain.
 ### Security
 
 ## [2.2.1] - 2026-06-09
@@ -44,6 +43,7 @@ Please file a bug if you notice a violation of semantic versioning.
   GitHub organization when no forge org can be derived.
 - `kettle-gha-sha-pins` now persists live ref-to-SHA lookup results in its action
   cache so a dry run followed by `--write` does not repeat the same API calls.
+- Restored `docs/CNAME` so the generated documentation site keeps its custom domain.
 
 ## [2.2.0] - 2026-06-08
 
