@@ -22,20 +22,31 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
-- `kettle-gha-sha-pins` now scans only the selected workflow directory,
-  defaulting to `.github/workflows`, instead of recursively searching every
-  nested `.github/workflows` directory under the project root.
-
 ### Deprecated
 
 ### Removed
 
 ### Fixed
 
+### Security
+
+## [2.2.2] - 2026-06-09
+
+- TAG: [v2.2.2][2.2.2t]
+- COVERAGE: 92.04% -- 3758/4083 lines in 28 files
+- BRANCH COVERAGE: 72.95% -- 1478/2026 branches in 28 files
+- 66.83% documented
+
+### Changed
+
+- `kettle-gha-sha-pins` now scans only the selected workflow directory,
+  defaulting to `.github/workflows`, instead of recursively searching every
+  nested `.github/workflows` directory under the project root.
+
+### Fixed
+
 - Updated generated project metadata links to use the migrated `kettle-dev`
   GitHub organization, including README QLTY badge URLs.
-
-### Security
 
 ## [2.2.1] - 2026-06-09
 
@@ -1999,7 +2010,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.1...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.2...HEAD
+[2.2.2]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.1...v2.2.2
+[2.2.2t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.2
 [2.2.1]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.0...v2.2.1
 [2.2.1t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.1
 [2.2.0]: https://github.com/kettle-rb/kettle-dev/compare/v2.1.1...v2.2.0
