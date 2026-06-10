@@ -28,10 +28,19 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [2.2.3] - 2026-06-09
+
+- TAG: [v2.2.3][2.2.3t]
+- COVERAGE: 91.76% -- 3762/4100 lines in 28 files
+- BRANCH COVERAGE: 72.91% -- 1483/2034 branches in 28 files
+- 67.00% documented
+
+### Fixed
+
 - `kettle-pre-release` Markdown image checks now inspect project Markdown files
   instead of recursive scratch output such as `tmp/template_test`.
-
-### Security
 
 ## [2.2.2] - 2026-06-09
 
@@ -2013,7 +2022,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.2...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.3...HEAD
+[2.2.3]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.2...v2.2.3
+[2.2.3t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.3
 [2.2.2]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.1...v2.2.2
 [2.2.2t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.2
 [2.2.1]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.0...v2.2.1
