@@ -28,6 +28,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-pre-release` Markdown image checks now inspect project Markdown files
+  instead of recursive scratch output such as `tmp/template_test`.
+
 ### Security
 
 ## [2.2.2] - 2026-06-09

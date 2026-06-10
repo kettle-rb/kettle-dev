@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "optparse"
+require "English"
 require "uri"
 require "net/http"
 require "openssl"
@@ -96,6 +97,11 @@ module Kettle
       module Markdown
         module_function
 
+        SCRATCH_PATH_PREFIXES = %w[
+          tmp/
+          .git/
+        ].freeze
+
         # Extract unique remote HTTP(S) image URLs from markdown or HTML images.
         # @param text [String]
         # @return [Array<String>]
@@ -125,11 +131,43 @@ module Kettle
           urls.uniq
         end
 
-        # Extract from files matching glob.
-        # @param glob_pattern [String]
+        # Find Markdown files that are part of the releasable project.
         # @return [Array<String>]
-        def extract_image_urls_from_files(glob_pattern = "*.md")
-          files = Dir.glob(glob_pattern)
+        def project_markdown_files
+          files = tracked_markdown_files
+          return files unless files.empty?
+
+          Dir.glob(["**/*.md", "**/*.md.example"], File::FNM_DOTMATCH).reject { |path| scratch_path?(path) }.sort
+        end
+
+        # @return [Array<String>]
+        def tracked_markdown_files
+          output = IO.popen(["git", "ls-files", "-z", "--", "*.md", "*.md.example"], err: File::NULL, &:read)
+          return [] unless $CHILD_STATUS.success?
+
+          output.split("\0").reject { |path| scratch_path?(path) }.sort
+        rescue Errno::ENOENT
+          []
+        end
+
+        # @param path [String]
+        # @return [Boolean]
+        def scratch_path?(path)
+          SCRATCH_PATH_PREFIXES.any? { |prefix| path.start_with?(prefix) }
+        end
+
+        # Extract from files matching glob.
+        # @param glob_pattern [String, Array<String>]
+        # @return [Array<String>]
+        def extract_image_urls_from_files(glob_pattern = nil)
+          files =
+            if glob_pattern.nil?
+              project_markdown_files
+            elsif glob_pattern.is_a?(String)
+              Dir.glob(glob_pattern)
+            else
+              Array(glob_pattern)
+            end
           urls = files.flat_map do |f|
             begin
               extract_image_urls_from_text(File.read(f))
@@ -183,7 +221,7 @@ module Kettle
       # @return [void]
       def check_markdown_uri_normalization!
         puts "[kettle-pre-release] Check 2: Normalize Markdown image URLs"
-        files = Dir.glob(["**/*.md", "**/*.md.example"])
+        files = Markdown.project_markdown_files
         changed = []
         total_candidates = 0
 
@@ -232,10 +270,7 @@ module Kettle
       # @return [void]
       def check_markdown_images_http!
         puts "[kettle-pre-release] Check 3: Validate Markdown image links (HTTP HEAD)"
-        urls = [
-          Markdown.extract_image_urls_from_files("**/*.md"),
-          Markdown.extract_image_urls_from_files("**/*.md.example")
-        ].flatten.uniq
+        urls = Markdown.extract_image_urls_from_files
         puts "[kettle-pre-release] Found #{urls.size} unique image URL(s)."
         failures = []
         urls.each do |url|

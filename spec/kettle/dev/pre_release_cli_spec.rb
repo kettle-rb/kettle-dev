@@ -64,6 +64,25 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
         expect(urls.sort).to eq(["https://e.com/a.png", "https://e.com/b.png"])
       end
     end
+
+    it "excludes scratch markdown artifacts from project file discovery" do
+      Dir.mktmpdir do |root|
+        readme = File.join(root, "README.md")
+        scratch = File.join(root, "tmp", "template_test", "output", "README.md")
+        FileUtils.mkdir_p(File.dirname(scratch))
+        File.write(readme, "![current](https://example.com/current.svg)\n")
+        File.write(scratch, "![stale](https://example.com/stale.svg)\n")
+
+        allow(described_class).to receive(:tracked_markdown_files).and_return([])
+
+        # rubocop:disable ThreadSafety/DirChdir
+        Dir.chdir(root) do
+          expect(described_class.project_markdown_files).to contain_exactly("README.md")
+          expect(described_class.extract_image_urls_from_files).to contain_exactly("https://example.com/current.svg")
+        end
+        # rubocop:enable ThreadSafety/DirChdir
+      end
+    end
   end
 
   describe Kettle::Dev::PreReleaseCLI::HTTP do
