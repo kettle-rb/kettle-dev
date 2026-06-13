@@ -368,6 +368,29 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       expect(cached.dig("actions", "foo/bar", "targets", "major", "*", "version")).to eq("2.0.0")
     end
 
+    it "caches an empty target map when an action has no SemVer releases" do
+      cache_path = File.join(workflow_root, "gha-cache.json")
+      client = described_class.new(
+        token: nil,
+        api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE,
+        user_agent: "kettle-gha-sha-pins",
+        persistent_cache: Kettle::Dev::GhaShaPinsCLI::PersistentActionCache.new(path: cache_path, clock: -> { Time.utc(2026, 6, 8, 12, 5, 0) })
+      )
+      allow(client).to receive(:request_json).with("/repos/foo/bar/releases?per_page=100").and_return([
+        {"tag_name" => "v2", "prerelease" => false}
+      ])
+      allow(client).to receive(:request_json).with("/repos/foo/bar/git/matching-refs/tags/").and_return([
+        {"ref" => "refs/tags/v2", "object" => {"type" => "commit", "sha" => "b" * 40}}
+      ])
+
+      versions = client.versions_for_repo("foo/bar")
+      cached = JSON.parse(File.read(cache_path))
+
+      expect(versions).to eq([])
+      expect(cached.dig("actions", "foo/bar", "versions")).to eq({})
+      expect(cached.dig("actions", "foo/bar", "targets")).to eq({})
+    end
+
     it "ignores persistent cache entries from older schemas" do
       cache_path = File.join(workflow_root, "gha-cache.json")
       File.write(

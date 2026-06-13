@@ -1051,6 +1051,7 @@ module Kettle
 
             deserialized.merge(cached_at: entry["cached_at"].to_s)
           end
+          return {} if entries.empty?
 
           {
             "patch" => entries.group_by { |entry| entry[:version_obj].segments[0, 2].join(".") }

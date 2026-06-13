@@ -28,6 +28,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-gha-sha-pins` persistent cache writes no longer crash for actions
+  whose releases and tags do not include `x.y.z` SemVer versions.
+
 ### Security
 
 ## [2.2.4] - 2026-06-12
