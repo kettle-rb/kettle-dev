@@ -204,6 +204,29 @@ includes coverage and YARD stats, and updates link references.</p>
         <li class="public ">
   <span class="summary_signature">
     
+      <a href="#pending_release_status-instance_method" title="#pending_release_status (instance method)">#<strong>pending_release_status</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
       <a href="#run-instance_method" title="#run (instance method)">#<strong>run</strong>  &#x21d2; void </a>
     
 
@@ -345,7 +368,99 @@ Sets up paths for CHANGELOG.md and coverage.json</p>
 
     
       <div class="method_details first">
-  <h3 class="signature first" id="run-instance_method">
+  <h3 class="signature first" id="pending_release_status-instance_method">
+  
+    #<strong>pending_release_status</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/changelog_cli.rb', line 138</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_pending_release_status'>pending_release_status</span>
+  <span class='id identifier rubyid_changelog'>changelog</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='lparen'>(</span><span class='ivar'>@changelog_path</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_unreleased_block'>unreleased_block</span><span class='comma'>,</span> <span class='id identifier rubyid__before'>_before</span><span class='comma'>,</span> <span class='id identifier rubyid_after'>after</span> <span class='op'>=</span> <span class='id identifier rubyid_extract_unreleased'>extract_unreleased</span><span class='lparen'>(</span><span class='id identifier rubyid_changelog'>changelog</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_unreleased_entries'>unreleased_entries</span> <span class='op'>=</span> <span class='id identifier rubyid_unreleased_block_has_entries?'>unreleased_block_has_entries?</span><span class='lparen'>(</span><span class='id identifier rubyid_unreleased_block'>unreleased_block</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_latest_changelog_version'>latest_changelog_version</span> <span class='op'>=</span> <span class='id identifier rubyid_detect_previous_version'>detect_previous_version</span><span class='lparen'>(</span><span class='id identifier rubyid_after'>after</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_gem_name'>gem_name</span> <span class='op'>=</span> <span class='kw'>nil</span>
+  <span class='id identifier rubyid_latest_overall'>latest_overall</span> <span class='op'>=</span> <span class='kw'>nil</span>
+  <span class='id identifier rubyid_latest_for_series'>latest_for_series</span> <span class='op'>=</span> <span class='kw'>nil</span>
+  <span class='id identifier rubyid_latest_target'>latest_target</span> <span class='op'>=</span> <span class='kw'>nil</span>
+
+  <span class='kw'>if</span> <span class='id identifier rubyid_latest_changelog_version'>latest_changelog_version</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_unreleased_entries'>unreleased_entries</span>
+    <span class='kw'>begin</span>
+      <span class='id identifier rubyid_gem_name'>gem_name</span> <span class='op'>=</span> <span class='id identifier rubyid_detect_gem_name'>detect_gem_name</span>
+      <span class='id identifier rubyid_latest_overall'>latest_overall</span><span class='comma'>,</span> <span class='id identifier rubyid_latest_for_series'>latest_for_series</span> <span class='op'>=</span> <span class='id identifier rubyid_latest_released_versions'>latest_released_versions</span><span class='lparen'>(</span><span class='id identifier rubyid_gem_name'>gem_name</span><span class='comma'>,</span> <span class='id identifier rubyid_latest_changelog_version'>latest_changelog_version</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_latest_target'>latest_target</span> <span class='op'>=</span> <span class='id identifier rubyid_latest_release_target'>latest_release_target</span><span class='lparen'>(</span><span class='id identifier rubyid_latest_changelog_version'>latest_changelog_version</span><span class='comma'>,</span> <span class='id identifier rubyid_latest_overall'>latest_overall</span><span class='comma'>,</span> <span class='id identifier rubyid_latest_for_series'>latest_for_series</span><span class='rparen'>)</span>
+    <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+      <span class='id identifier rubyid_warn'>warn</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>[kettle-changelog] gem.coop release check failed: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='embexpr_end'>}</span><span class='tstring_content'>: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_warn'>warn</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Treating the most recent CHANGELOG.md release section as pending because live release info is unavailable.</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+
+  <span class='id identifier rubyid_prepared_release_pending'>prepared_release_pending</span> <span class='op'>=</span> <span class='op'>!</span><span class='id identifier rubyid_unreleased_entries'>unreleased_entries</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='op'>!</span><span class='id identifier rubyid_latest_changelog_version'>latest_changelog_version</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_latest_target'>latest_target</span> <span class='op'>!=</span> <span class='id identifier rubyid_latest_changelog_version'>latest_changelog_version</span>
+
+  <span class='lbrace'>{</span>
+    <span class='label'>pending:</span> <span class='id identifier rubyid_unreleased_entries'>unreleased_entries</span> <span class='op'>||</span> <span class='id identifier rubyid_prepared_release_pending'>prepared_release_pending</span><span class='comma'>,</span>
+    <span class='label'>unreleased_entries:</span> <span class='id identifier rubyid_unreleased_entries'>unreleased_entries</span><span class='comma'>,</span>
+    <span class='label'>prepared_release_pending:</span> <span class='id identifier rubyid_prepared_release_pending'>prepared_release_pending</span><span class='comma'>,</span>
+    <span class='label'>latest_changelog_version:</span> <span class='id identifier rubyid_latest_changelog_version'>latest_changelog_version</span><span class='comma'>,</span>
+    <span class='label'>latest_released:</span> <span class='id identifier rubyid_latest_overall'>latest_overall</span><span class='comma'>,</span>
+    <span class='label'>latest_released_for_current_series:</span> <span class='id identifier rubyid_latest_for_series'>latest_for_series</span><span class='comma'>,</span>
+    <span class='label'>latest_release_target:</span> <span class='id identifier rubyid_latest_target'>latest_target</span><span class='comma'>,</span>
+    <span class='label'>gem_name:</span> <span class='id identifier rubyid_gem_name'>gem_name</span>
+  <span class='rbrace'>}</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="run-instance_method">
   
     #<strong>run</strong>  &#x21d2; <tt>void</tt> 
   
@@ -576,7 +691,7 @@ a new version section with coverage/YARD stats, and updates all link references.
 </div>
 
       <div id="footer">
-  Generated on Tue Jun  2 02:06:02 2026 by
+  Generated on Sat Jun 13 17:40:53 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>

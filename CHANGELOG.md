@@ -20,12 +20,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
-#### Changelog
-
-- Added `kettle-changelog --pending-release`, a non-mutating query that exits
-  successfully when `CHANGELOG.md` has unreleased entries or its most recent
-  release section has not been published yet.
-
 ### Changed
 
 ### Deprecated
@@ -35,6 +29,21 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Fixed
 
 ### Security
+
+## [2.2.6] - 2026-06-13
+
+- TAG: [v2.2.6][2.2.6t]
+- COVERAGE: 92.27% -- 3833/4154 lines in 28 files
+- BRANCH COVERAGE: 73.51% -- 1518/2065 branches in 28 files
+- 66.67% documented
+
+### Added
+
+#### Changelog
+
+- Added `kettle-changelog --pending-release`, a non-mutating query that exits
+  successfully when `CHANGELOG.md` has unreleased entries or its most recent
+  release section has not been published yet.
 
 ## [2.2.5] - 2026-06-13
 
@@ -2066,7 +2075,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.5...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.6...HEAD
+[2.2.6]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.5...v2.2.6
+[2.2.6t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.6
 [2.2.5]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.4...v2.2.5
 [2.2.5t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.5
 [2.2.4]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.3...v2.2.4
