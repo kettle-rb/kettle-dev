@@ -158,6 +158,21 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       expect(plan[:reason]).to eq(described_class::UPGRADE_REASON)
     end
 
+    it "selects major-line tag upgrades only for major strategy" do
+      major_line_versions = [
+        {tag: "v3", version_obj: Gem::Version.new("3"), version: "3", sha: "c" * 40},
+        {tag: "v2", version_obj: Gem::Version.new("2"), version: "2", sha: "b" * 40}
+      ]
+
+      major_plan = dummy_cli.send(:determine_upgrade_plan, old_ref: "v2", repo_ref: "foo/bar", versions: major_line_versions, upgrade_level: "major", client: client)
+      minor_plan = dummy_cli.send(:determine_upgrade_plan, old_ref: "v2", repo_ref: "foo/bar", versions: major_line_versions, upgrade_level: "minor", client: client)
+      patch_plan = dummy_cli.send(:determine_upgrade_plan, old_ref: "v2", repo_ref: "foo/bar", versions: major_line_versions, upgrade_level: "patch", client: client)
+
+      expect(major_plan[:updates]).to include(sha: "c" * 40, version: "3", reason: described_class::UPGRADE_REASON)
+      expect(minor_plan[:updates]).to be_nil
+      expect(patch_plan[:updates]).to be_nil
+    end
+
     it "selects latest patch for patch strategy" do
       plan = dummy_cli.send(:determine_upgrade_plan, old_ref: "v1.2.0", repo_ref: "foo/bar", versions: versions, upgrade_level: "patch", client: client)
       expect(plan[:updates][:sha]).to eq("aaa")
@@ -168,6 +183,7 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
 
     it "parses release tags and matches version-like values" do
       expect(dummy_cli.send(:parse_release_version, "v1.2.3")).to eq(Gem::Version.new("1.2.3"))
+      expect(dummy_cli.send(:parse_release_version, "v2")).to eq(Gem::Version.new("2"))
       expect(dummy_cli.send(:parse_release_version, "bad-tag")).to be_nil
     end
 
@@ -246,7 +262,7 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       expect(versions.map { |entry| entry[:sha] }).to contain_exactly("a" * 40, "b" * 40)
     end
 
-    it "includes version-like tags that do not have GitHub releases" do
+    it "includes version-like and major-line tags that do not have GitHub releases" do
       client = described_class.new(token: nil, api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE, user_agent: "kettle-gha-sha-pins")
       allow(client).to receive(:request_json).with("/repos/foo/bar/releases?per_page=100").and_return([
         {"tag_name" => "v1.0.0", "prerelease" => false}
@@ -259,8 +275,8 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
 
       versions = client.versions_for_repo("foo/bar")
 
-      expect(versions.map { |entry| entry[:version] }).to eq(%w[1.0.1 1.0.0])
-      expect(versions.map { |entry| entry[:sha] }).to eq(["b" * 40, "a" * 40])
+      expect(versions.map { |entry| entry[:version] }).to eq(%w[1.0.1 1 1.0.0])
+      expect(versions.map { |entry| entry[:sha] }).to eq(["b" * 40, "c" * 40, "a" * 40])
     end
 
     it "dereferences annotated tags when loading version-like tags" do
@@ -368,7 +384,7 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       expect(cached.dig("actions", "foo/bar", "targets", "major", "*", "version")).to eq("2.0.0")
     end
 
-    it "caches an empty target map when an action has no SemVer releases" do
+    it "caches major-line tags as major-only targets" do
       cache_path = File.join(workflow_root, "gha-cache.json")
       client = described_class.new(
         token: nil,
@@ -386,9 +402,11 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       versions = client.versions_for_repo("foo/bar")
       cached = JSON.parse(File.read(cache_path))
 
-      expect(versions).to eq([])
-      expect(cached.dig("actions", "foo/bar", "versions")).to eq({})
-      expect(cached.dig("actions", "foo/bar", "targets")).to eq({})
+      expect(versions.map { |entry| entry[:version] }).to eq(["2"])
+      expect(cached.dig("actions", "foo/bar", "versions")).to include("2")
+      expect(cached.dig("actions", "foo/bar", "targets", "patch")).to eq({})
+      expect(cached.dig("actions", "foo/bar", "targets", "minor")).to eq({})
+      expect(cached.dig("actions", "foo/bar", "targets", "major", "*", "version")).to eq("2")
     end
 
     it "ignores persistent cache entries from older schemas" do

@@ -478,7 +478,7 @@ module Kettle
 
       def parse_release_version(value)
         normalized = value.to_s.sub(/\A[vV]/, "")
-        return nil unless normalized.match?(/\A\d+\.\d+\.\d+(?:[-.]?[0-9A-Za-z.-]+)?\z/)
+        return nil unless normalized.match?(/\A(?:\d+|\d+\.\d+\.\d+(?:[-.]?[0-9A-Za-z.-]+)?)\z/)
 
         Gem::Version.new(normalized)
       rescue ArgumentError
@@ -504,11 +504,13 @@ module Kettle
       def choose_upgrade_target(current_version, versions, level)
         current = parse_release_version(current_version)
         return nil if current.nil?
+        return nil if level != "major" && major_line_version?(current_version)
 
         candidates = versions.select do |entry|
           next false unless entry[:version_obj].is_a?(Gem::Version)
           next false unless entry[:version_obj] > current
           next false if entry[:version_obj].prerelease? && !current.prerelease?
+          next false if level != "major" && major_line_version?(entry[:version])
 
           case level
           when "patch"
@@ -521,6 +523,10 @@ module Kettle
         end
 
         candidates.max_by { |entry| entry[:version_obj] }
+      end
+
+      def major_line_version?(value)
+        value.to_s.match?(/\A\d+\z/)
       end
 
       def latest_outdated_target(current_version, versions)
@@ -1053,10 +1059,11 @@ module Kettle
           end
           return {} if entries.empty?
 
+          full_semver_entries = entries.reject { |entry| major_line_version?(entry[:version]) }
           {
-            "patch" => entries.group_by { |entry| entry[:version_obj].segments[0, 2].join(".") }
+            "patch" => full_semver_entries.group_by { |entry| entry[:version_obj].segments[0, 2].join(".") }
               .transform_values { |group| serialize_target(group.max_by { |entry| entry[:version_obj] }) },
-            "minor" => entries.group_by { |entry| entry[:version_obj].segments[0].to_s }
+            "minor" => full_semver_entries.group_by { |entry| entry[:version_obj].segments[0].to_s }
               .transform_values { |group| serialize_target(group.max_by { |entry| entry[:version_obj] }) },
             "major" => {"*" => serialize_target(entries.max_by { |entry| entry[:version_obj] })}
           }
@@ -1075,6 +1082,10 @@ module Kettle
           Gem::Version.new(value)
         rescue ArgumentError
           nil
+        end
+
+        def major_line_version?(value)
+          value.to_s.match?(/\A\d+\z/)
         end
 
         def fresh_entry?(entry)
@@ -1192,7 +1203,7 @@ module Kettle
 
         def parse_release_version_text(value)
           normalized = value.to_s.sub(/\A[vV]/, "")
-          return nil unless normalized.match?(/\A\d+\.\d+\.\d+(?:[-.]?[0-9A-Za-z.-]+)?\z/)
+          return nil unless normalized.match?(/\A(?:\d+|\d+\.\d+\.\d+(?:[-.]?[0-9A-Za-z.-]+)?)\z/)
 
           Gem::Version.new(normalized)
         rescue ArgumentError

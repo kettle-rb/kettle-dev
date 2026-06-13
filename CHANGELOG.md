@@ -22,6 +22,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- `kettle-gha-sha-pins --upgrade major` now supports major-line action tags
+  such as `v2`, while patch and minor upgrade targeting remain limited to full
+  `x.y.z` SemVer tags.
+
 ### Deprecated
 
 ### Removed
@@ -29,7 +33,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Fixed
 
 - `kettle-gha-sha-pins` persistent cache writes no longer crash for actions
-  whose releases and tags do not include `x.y.z` SemVer versions.
+  whose releases and tags only include major-line versions such as `v2`.
 
 ### Security
 
