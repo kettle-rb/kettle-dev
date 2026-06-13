@@ -1,7 +1,6 @@
 module Kettle
   module Dev
     module Version
-      VERSION: String
     end
 
     class Error < ::StandardError

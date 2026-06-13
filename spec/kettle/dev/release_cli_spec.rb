@@ -1358,7 +1358,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         allow(Net::HTTP).to receive(:start).and_raise(Timeout::Error, "timeout")
         ok2, msg2 = cli.send(:github_create_release, owner: "me", repo: "r", token: "t", tag: "v1.0.0", title: "v1.0.0", body: "hi")
         expect(ok2).to be(false)
-        expect(msg2).to match(/Timeout::Error/)
+        expect(msg2).to include("Timeout::Error")
       end
     end
   end

@@ -72,7 +72,7 @@ RSpec.describe Kettle::Dev do
       stub_default_task_raising
       allow(Kernel).to receive(:warn)
       described_class.register_default(:qux)
-      expect(Kernel).to have_received(:warn).with(match(/kettle-dev: failed to enhance :default with qux: boom/))
+      expect(Kernel).to have_received(:warn).with(include("kettle-dev: failed to enhance :default with qux: boom"))
     end
 
     it "does not enhance when :default is not defined" do

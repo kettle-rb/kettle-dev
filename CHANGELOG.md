@@ -22,6 +22,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- Retemplated generated project files with the current `kettle-jem` template,
+  refreshing development dependency floors, binstubs, README metadata, and RBS
+  validation workflow output.
+
 ### Deprecated
 
 ### Removed
