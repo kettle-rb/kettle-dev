@@ -20,6 +20,12 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+#### Changelog
+
+- Added `kettle-changelog --pending-release`, a non-mutating query that exits
+  successfully when `CHANGELOG.md` has unreleased entries or its most recent
+  release section has not been published yet.
+
 ### Changed
 
 ### Deprecated

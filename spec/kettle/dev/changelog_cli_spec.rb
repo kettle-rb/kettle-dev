@@ -25,6 +25,105 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
     end
   end
 
+  describe "#pending_release_status" do
+    it "reports pending when the Unreleased section has entries" do
+      mkproj do |root|
+        File.write(File.join(root, "CHANGELOG.md"), <<~MD)
+          # Changelog
+
+          ## [Unreleased]
+
+          ### Fixed
+
+          - Fixed a bug.
+
+          ## [1.2.3] - 2025-08-30
+        MD
+        allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
+
+        cli = described_class.new(strict: false)
+        allow(cli).to receive(:latest_released_versions).and_return(["1.2.3", "1.2.3"])
+        status = cli.pending_release_status
+
+        expect(status).to include(
+          pending: true,
+          unreleased_entries: true,
+          prepared_release_pending: false
+        )
+      end
+    end
+
+    it "reports pending when the latest changelog release section has not been published" do
+      mkproj do |root|
+        File.write(File.join(root, "CHANGELOG.md"), <<~MD)
+          # Changelog
+
+          ## [Unreleased]
+
+          ### Added
+          ### Changed
+          ### Deprecated
+          ### Removed
+          ### Fixed
+          ### Security
+
+          ## [1.2.4] - 2025-08-31
+
+          ### Fixed
+
+          - Prepared release notes.
+
+          ## [1.2.3] - 2025-08-30
+        MD
+        allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
+
+        cli = described_class.new(strict: false)
+        allow(cli).to receive(:latest_released_versions).and_return(["1.2.3", "1.2.3"])
+        status = cli.pending_release_status
+
+        expect(status).to include(
+          pending: true,
+          unreleased_entries: false,
+          prepared_release_pending: true,
+          latest_changelog_version: "1.2.4",
+          latest_release_target: "1.2.3"
+        )
+      end
+    end
+
+    it "reports not pending when Unreleased is empty and the latest changelog release is published" do
+      mkproj do |root|
+        File.write(File.join(root, "CHANGELOG.md"), <<~MD)
+          # Changelog
+
+          ## [Unreleased]
+
+          ### Added
+          ### Changed
+          ### Deprecated
+          ### Removed
+          ### Fixed
+          ### Security
+
+          ## [1.2.3] - 2025-08-30
+        MD
+        allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
+
+        cli = described_class.new(strict: false)
+        allow(cli).to receive(:latest_released_versions).and_return(["1.2.3", "1.2.3"])
+        status = cli.pending_release_status
+
+        expect(status).to include(
+          pending: false,
+          unreleased_entries: false,
+          prepared_release_pending: false,
+          latest_changelog_version: "1.2.3",
+          latest_release_target: "1.2.3"
+        )
+      end
+    end
+  end
+
   describe "#run warnings and aborts" do
     it "warns when owner/repo cannot be determined and Unreleased is empty" do
       mkproj do |root|

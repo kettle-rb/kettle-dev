@@ -15,6 +15,8 @@ module Kettle
       # Main entry point that updates CHANGELOG.md
       def run: () -> void
 
+      def pending_release_status: () -> Hash[Symbol, untyped]
+
       private
 
       # Abort with error message
@@ -61,4 +63,3 @@ module Kettle
     end
   end
 end
-

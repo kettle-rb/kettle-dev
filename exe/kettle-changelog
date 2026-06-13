@@ -51,7 +51,7 @@ end
 begin
   if ARGV.include?("-h") || ARGV.include?("--help")
     puts <<~USAGE
-      Usage: kettle-changelog [--update-prep] [--no-strict] [--no-coverage-threshold]
+      Usage: kettle-changelog [--update-prep] [--pending-release] [--no-strict] [--no-coverage-threshold]
 
       Detects the current version from lib/**/version.rb, the latest live release, and
       the most recent CHANGELOG.md release section, then prompts to confirm the selected plan:
@@ -62,6 +62,7 @@ begin
 
       Options:
         --update-prep             Force updating the most recent prepared release section in place
+        --pending-release         Query whether the changelog has release work pending; exits 0 for yes, 1 for no
         --no-strict               Allow missing coverage and yard data (warnings only, no errors)
         --no-coverage-threshold   Generate coverage without hard-failing below configured thresholds
 
@@ -89,11 +90,19 @@ end
 begin
   # Determine if strict mode is enabled (default: true)
   strict_mode = !ARGV.include?("--no-strict") && ENV.fetch("K_CHANGELOG_STRICT", "true").downcase != "false"
-  update_prep = ARGV.include?("--update-prep")
+  update_prep = ARGV.delete("--update-prep")
+  pending_release_query = ARGV.delete("--pending-release")
   coverage_threshold_disabled = ARGV.include?("--no-coverage-threshold") || ARGV.include?("--no-coverage-thresholds")
   coverage_hard = !coverage_threshold_disabled && ENV.fetch("K_CHANGELOG_COVERAGE_HARD", "true").downcase != "false"
 
-  Kettle::Dev::ChangelogCLI.new(strict: strict_mode, enforce_coverage_thresholds: coverage_hard, update_prep: update_prep).run
+  cli = Kettle::Dev::ChangelogCLI.new(strict: strict_mode, enforce_coverage_thresholds: coverage_hard, update_prep: update_prep)
+  if pending_release_query
+    status = cli.pending_release_status
+    puts status.fetch(:pending) ? "true" : "false"
+    exit(status.fetch(:pending) ? 0 : 1)
+  end
+
+  cli.run
 rescue LoadError => e
   warn("#{script_basename}: could not load dependency: #{e.class}: #{e.message}")
   warn(e.backtrace.join("\n")) if ENV["DEBUG"]

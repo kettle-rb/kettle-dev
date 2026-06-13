@@ -135,6 +135,41 @@ module Kettle
         puts "CHANGELOG.md updated with v#{version} section."
       end
 
+      def pending_release_status
+        changelog = File.read(@changelog_path)
+        unreleased_block, _before, after = extract_unreleased(changelog)
+        unreleased_entries = unreleased_block_has_entries?(unreleased_block)
+        latest_changelog_version = detect_previous_version(after.to_s)
+        gem_name = nil
+        latest_overall = nil
+        latest_for_series = nil
+        latest_target = nil
+
+        if latest_changelog_version && !unreleased_entries
+          begin
+            gem_name = detect_gem_name
+            latest_overall, latest_for_series = latest_released_versions(gem_name, latest_changelog_version)
+            latest_target = latest_release_target(latest_changelog_version, latest_overall, latest_for_series)
+          rescue => e
+            warn("[kettle-changelog] gem.coop release check failed: #{e.class}: #{e.message}")
+            warn("Treating the most recent CHANGELOG.md release section as pending because live release info is unavailable.")
+          end
+        end
+
+        prepared_release_pending = !unreleased_entries && !!latest_changelog_version && latest_target != latest_changelog_version
+
+        {
+          pending: unreleased_entries || prepared_release_pending,
+          unreleased_entries: unreleased_entries,
+          prepared_release_pending: prepared_release_pending,
+          latest_changelog_version: latest_changelog_version,
+          latest_released: latest_overall,
+          latest_released_for_current_series: latest_for_series,
+          latest_release_target: latest_target,
+          gem_name: gem_name
+        }
+      end
+
       private
 
       def abort(msg)
