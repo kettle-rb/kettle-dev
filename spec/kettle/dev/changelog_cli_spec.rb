@@ -21,13 +21,26 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
   def mkproj
     Dir.mktmpdir do |root|
       FileUtils.mkdir_p(File.join(root, "lib", "my", "gem"))
+      File.write(File.join(root, "demo.gemspec"), <<~RB)
+        Gem::Specification.new do |spec|
+          spec.name = "demo"
+          spec.version = "1.2.3"
+        end
+      RB
       yield root
     end
   end
 
-  describe "#pending_release_status" do
-    it "reports pending when the Unreleased section has entries" do
+  def write_version(root, version = "1.2.3")
+    File.write(File.join(root, "lib", "my", "gem", "version.rb"), <<~RB)
+      module My; module Gem; VERSION = "#{version}"; end; end
+    RB
+  end
+
+  describe "#release_state" do
+    it "reports latest release data even when the Unreleased section has entries" do
       mkproj do |root|
+        write_version(root)
         File.write(File.join(root, "CHANGELOG.md"), <<~MD)
           # Changelog
 
@@ -46,15 +59,21 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
         status = cli.pending_release_status
 
         expect(status).to include(
+          gem_name: "demo",
+          version: "1.2.3",
           pending: true,
+          pending_release: true,
           unreleased_entries: true,
-          prepared_release_pending: false
+          prepared_release_pending: false,
+          latest_released: "1.2.3",
+          latest_changelog_version: "1.2.3"
         )
       end
     end
 
     it "reports pending when the latest changelog release section has not been published" do
       mkproj do |root|
+        write_version(root)
         File.write(File.join(root, "CHANGELOG.md"), <<~MD)
           # Changelog
 
@@ -93,6 +112,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
 
     it "reports not pending when Unreleased is empty and the latest changelog release is published" do
       mkproj do |root|
+        write_version(root)
         File.write(File.join(root, "CHANGELOG.md"), <<~MD)
           # Changelog
 
@@ -121,6 +141,36 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
           latest_release_target: "1.2.3"
         )
       end
+    end
+
+    it "formats release state as a single-gem table" do
+      cli = described_class.new(strict: false)
+      table = cli.release_state_table(
+        gem_name: "demo",
+        version: "1.2.4",
+        latest_released: "1.2.3",
+        latest_changelog_version: "1.2.4",
+        unreleased_entries: false,
+        prepared_release_pending: true,
+        pending_release: true
+      )
+
+      expect(table).to include("gem")
+      expect(table).to include("latest released")
+      expect(table).to include("demo")
+      expect(table).to include("1.2.3")
+      expect(table).to include("yes")
+    end
+  end
+
+  describe "#pending_release_status" do
+    it "delegates to release_state for backward-compatible pending queries" do
+      cli = described_class.new(strict: false)
+      state = {pending_release: true, pending: true}
+
+      allow(cli).to receive(:release_state).and_return(state)
+
+      expect(cli.pending_release_status).to eq(state)
     end
   end
 

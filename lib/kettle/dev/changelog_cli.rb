@@ -24,8 +24,8 @@ module Kettle
       # @param strict [Boolean] when true (default), require coverage and yard data; raise errors if unavailable
       # @param enforce_coverage_thresholds [Boolean] when true, fail strict coverage generation below project thresholds
       # @param update_prep [Boolean] when true, update the most recent prepared release section in place
-      def initialize(strict: true, enforce_coverage_thresholds: true, update_prep: false)
-        @root = Kettle::Dev::CIHelpers.project_root
+      def initialize(strict: true, enforce_coverage_thresholds: true, update_prep: false, root: Kettle::Dev::CIHelpers.project_root)
+        @root = root
         @changelog_path = File.join(@root, "CHANGELOG.md")
         @coverage_path = File.join(@root, "coverage", "coverage.json")
         @strict = strict
@@ -136,44 +136,68 @@ module Kettle
       end
 
       def pending_release_status
+        release_state
+      end
+
+      def release_state
         changelog = File.read(@changelog_path)
         unreleased_block, _before, after = extract_unreleased(changelog)
         unreleased_entries = unreleased_block_has_entries?(unreleased_block)
         latest_changelog_version = detect_previous_version(after.to_s)
-        gem_name = nil
-        latest_overall = nil
-        latest_for_series = nil
-        latest_target = nil
-
-        if latest_changelog_version && !unreleased_entries
-          begin
-            gem_name = detect_gem_name
-            latest_overall, latest_for_series = latest_released_versions(gem_name, latest_changelog_version)
-            latest_target = latest_release_target(latest_changelog_version, latest_overall, latest_for_series)
-          rescue => e
-            warn("[kettle-changelog] gem.coop release check failed: #{e.class}: #{e.message}")
-            warn("Treating the most recent CHANGELOG.md release section as pending because live release info is unavailable.")
-          end
-        end
-
-        prepared_release_pending = !unreleased_entries && !!latest_changelog_version && latest_target != latest_changelog_version
+        version = detect_version
+        gem_name = detect_gem_name
+        release_lookup_version = latest_changelog_version || version
+        latest_overall, latest_for_series = latest_released_versions(gem_name, release_lookup_version)
+        latest_target = latest_release_target(release_lookup_version, latest_overall, latest_for_series)
+        prepared_release_pending = !!latest_changelog_version && latest_target != latest_changelog_version
 
         {
+          root: @root,
+          gem_name: gem_name,
+          version: version,
           pending: unreleased_entries || prepared_release_pending,
+          pending_release: unreleased_entries || prepared_release_pending,
           unreleased_entries: unreleased_entries,
           prepared_release_pending: prepared_release_pending,
           latest_changelog_version: latest_changelog_version,
           latest_released: latest_overall,
           latest_released_for_current_series: latest_for_series,
-          latest_release_target: latest_target,
-          gem_name: gem_name
+          latest_release_target: latest_target
         }
+      end
+
+      def release_state_table(state = release_state)
+        rows = [
+          ["gem", "version.rb", "latest released", "latest changelog", "unreleased", "prepared", "pending"],
+          [
+            state.fetch(:gem_name),
+            state.fetch(:version),
+            state.fetch(:latest_released) || "unknown",
+            state.fetch(:latest_changelog_version) || "none",
+            yes_no(state.fetch(:unreleased_entries)),
+            yes_no(state.fetch(:prepared_release_pending)),
+            yes_no(state.fetch(:pending_release))
+          ]
+        ]
+        widths = rows.transpose.map { |column| column.map(&:length).max }
+        rows.map.with_index do |row, index|
+          line = row.each_with_index.map { |value, i| value.ljust(widths.fetch(i)) }.join("  ").rstrip
+          if index == 0
+            [line, widths.map { |width| "-" * width }.join("  ")].join("\n")
+          else
+            line
+          end
+        end.join("\n")
       end
 
       private
 
       def abort(msg)
         Kettle::Dev::ExitAdapter.abort(msg)
+      end
+
+      def yes_no(value)
+        value ? "yes" : "no"
       end
 
       def detect_plan(changelog, version)

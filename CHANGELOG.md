@@ -20,6 +20,14 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+#### Changelog
+
+- Added `kettle-changelog --release-state` / `--release-status` with optional
+  `--json` output for single-gem changelog release state reporting.
+- Added a richer `Kettle::Dev::ChangelogCLI#release_state` API that reports the
+  latest released version, latest changelog release section, and pending
+  changelog sources.
+
 ### Changed
 
 ### Deprecated

@@ -10,12 +10,16 @@ module Kettle
       @changelog_path: String
       @coverage_path: String
 
-      def initialize: () -> void
+      def initialize: (?strict: bool, ?enforce_coverage_thresholds: bool, ?update_prep: bool, ?root: String) -> void
 
       # Main entry point that updates CHANGELOG.md
       def run: () -> void
 
       def pending_release_status: () -> Hash[Symbol, untyped]
+
+      def release_state: () -> Hash[Symbol, untyped]
+
+      def release_state_table: (?Hash[Symbol, untyped] state) -> String
 
       private
 
