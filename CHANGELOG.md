@@ -22,20 +22,31 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
-- `kettle-gha-sha-pins --upgrade major` now supports major-line action tags
-  such as `v2`, while patch and minor upgrade targeting remain limited to full
-  `x.y.z` SemVer tags.
-
 ### Deprecated
 
 ### Removed
 
 ### Fixed
 
+### Security
+
+## [2.2.5] - 2026-06-13
+
+- TAG: [v2.2.5][2.2.5t]
+- COVERAGE: 92.29% -- 3818/4137 lines in 28 files
+- BRANCH COVERAGE: 73.49% -- 1516/2063 branches in 28 files
+- 67.00% documented
+
+### Changed
+
+- `kettle-gha-sha-pins --upgrade major` now supports major-line action tags
+  such as `v2`, while patch and minor upgrade targeting remain limited to full
+  `x.y.z` SemVer tags.
+
+### Fixed
+
 - `kettle-gha-sha-pins` persistent cache writes no longer crash for actions
   whose releases and tags only include major-line versions such as `v2`.
-
-### Security
 
 ## [2.2.4] - 2026-06-12
 
@@ -2049,7 +2060,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.4...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.5...HEAD
+[2.2.5]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.4...v2.2.5
+[2.2.5t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.5
 [2.2.4]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.3...v2.2.4
 [2.2.4t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.4
 [2.2.3]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.2...v2.2.3
