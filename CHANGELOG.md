@@ -28,6 +28,11 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-gha-sha-pins --upgrade` no longer downgrades action pins when the
+  current SHA matches a newer version-like tag that is a prerelease or lacks a
+  GitHub Release, including transferred action repositories that require GitHub
+  API redirects.
+
 ### Security
 
 ## [2.2.3] - 2026-06-09

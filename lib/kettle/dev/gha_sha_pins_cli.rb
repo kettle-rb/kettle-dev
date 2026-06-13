@@ -508,6 +508,7 @@ module Kettle
         candidates = versions.select do |entry|
           next false unless entry[:version_obj].is_a?(Gem::Version)
           next false unless entry[:version_obj] > current
+          next false if entry[:version_obj].prerelease? && !current.prerelease?
 
           case level
           when "patch"
@@ -527,7 +528,11 @@ module Kettle
         return nil if current.nil?
 
         versions
-          .select { |entry| entry[:version_obj].is_a?(Gem::Version) && entry[:version_obj] > current }
+          .select do |entry|
+            entry[:version_obj].is_a?(Gem::Version) &&
+              entry[:version_obj] > current &&
+              (!entry[:version_obj].prerelease? || current.prerelease?)
+          end
           .max_by { |entry| entry[:version_obj] }
       end
 
@@ -902,7 +907,7 @@ module Kettle
 
       # Persistent cache of GitHub Action release versions and target SHAs.
       class PersistentActionCache
-        VERSION = 1
+        VERSION = 2
 
         def self.default_path
           state_home = ENV["XDG_STATE_HOME"]
@@ -1008,6 +1013,7 @@ module Kettle
             JSON.parse(File.read(@path))
           end
           return empty_data unless parsed.is_a?(Hash)
+          return empty_data unless parsed["version"].to_i == VERSION
 
           parsed["version"] ||= VERSION
           parsed["actions"] = {} unless parsed["actions"].is_a?(Hash)
@@ -1113,7 +1119,6 @@ module Kettle
           tag_shas = tag_ref_shas(repo_ref)
           releases = data.filter_map do |release|
             next unless release.is_a?(Hash)
-            next if release["prerelease"] == true
 
             tag = release["tag_name"].to_s
             parsed = parse_release_version_text(tag)
@@ -1126,6 +1131,21 @@ module Kettle
               sha: tag_shas[tag]
             }
           end
+          released_tags = releases.each_with_object({}) { |release, memo| memo[release[:tag]] = true }
+          tag_versions = tag_shas.filter_map do |tag, sha|
+            next if released_tags[tag]
+
+            parsed = parse_release_version_text(tag)
+            next unless parsed
+
+            {
+              tag: tag,
+              version_obj: parsed,
+              version: parsed.to_s,
+              sha: sha
+            }
+          end
+          releases.concat(tag_versions)
 
           releases.sort_by! { |release| release[:version_obj] }
           releases.reverse!
@@ -1190,20 +1210,53 @@ module Kettle
             object = entry["object"]
             next unless object.is_a?(Hash)
 
-            memo[tag] = object["sha"].to_s[0, 40] if object["type"] == "commit"
+            sha = object["sha"].to_s[0, 40]
+            case object["type"]
+            when "commit"
+              memo[tag] = sha
+            when "tag"
+              dereferenced_sha = annotated_tag_commit_sha(repo_ref, sha)
+              memo[tag] = dereferenced_sha if dereferenced_sha
+            end
           end
         end
 
-        def request_json(path)
-          uri = URI.join(@api_base + "/", path)
-          request = Net::HTTP::Get.new(uri)
-          request["Accept"] = "application/vnd.github+json"
-          request["User-Agent"] = @user_agent
-          request["X-GitHub-Api-Version"] = "2022-11-28"
-          request["Authorization"] = "Bearer #{@token}" if @token && !@token.empty?
+        def annotated_tag_commit_sha(repo_ref, tag_sha)
+          return nil if tag_sha.to_s.empty?
 
-          response = Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == "https") do |http|
-            http.request(request)
+          data = request_json("/repos/#{repo_ref}/git/tags/#{tag_sha}")
+          return nil unless data.is_a?(Hash)
+
+          object = data["object"]
+          return nil unless object.is_a?(Hash)
+          return nil unless object["type"] == "commit"
+
+          object["sha"].to_s[0, 40]
+        end
+
+        def request_json(path, redirects: 3)
+          uri = URI.join(@api_base + "/", path)
+
+          response = nil
+          loop do
+            request = Net::HTTP::Get.new(uri)
+            request["Accept"] = "application/vnd.github+json"
+            request["User-Agent"] = @user_agent
+            request["X-GitHub-Api-Version"] = "2022-11-28"
+            request["Authorization"] = "Bearer #{@token}" if @token && !@token.empty?
+
+            response = Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == "https") do |http|
+              http.request(request)
+            end
+
+            break unless response.code.to_i.between?(300, 399)
+            redirects -= 1
+            return nil if redirects.negative?
+
+            location = response["location"].to_s
+            return nil if location.empty?
+
+            uri = URI.join(uri.to_s, location)
           end
 
           return nil unless response.code.to_i == 200

@@ -190,6 +190,19 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       expect(plan[:is_outdated]).to be(true)
     end
 
+    it "does not upgrade stable pins to prerelease-only tags" do
+      prerelease_versions = [
+        {tag: "v1.3.0.pre", version_obj: Gem::Version.new("1.3.0.pre"), version: "1.3.0.pre", sha: "pre"},
+        {tag: "v1.2.0", version_obj: Gem::Version.new("1.2.0"), version: "1.2.0", sha: "777"}
+      ]
+
+      plan = dummy_cli.send(:determine_upgrade_plan, old_ref: "v1.2.0", repo_ref: "foo/bar", versions: prerelease_versions, upgrade_level: "major", client: client)
+
+      expect(plan[:updates]).to be_nil
+      expect(plan[:latest_outdated]).to be_nil
+      expect(plan[:is_outdated]).to be(false)
+    end
+
     it "does not treat a version-equivalent but unresolved ref as a valid release tag" do
       allow(client).to receive(:commit_sha).with("foo/bar", "1.2.3").and_return(nil)
 
@@ -202,6 +215,18 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
   end
 
   describe described_class::GitHubClient do
+    it "follows GitHub API redirects for transferred action repositories" do
+      client = described_class.new(token: nil, api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE, user_agent: "kettle-gha-sha-pins")
+      redirect = instance_double(Net::HTTPMovedPermanently, code: "301")
+      success = instance_double(Net::HTTPOK, code: "200", body: JSON.generate("ok" => true))
+      http = instance_double(Net::HTTP)
+      allow(redirect).to receive(:[]).with("location").and_return("https://api.github.com/repositories/123/releases")
+      allow(http).to receive(:request).and_return(redirect, success)
+      allow(Net::HTTP).to receive(:start).and_yield(http).twice
+
+      expect(client.send(:request_json, "/repos/old/action/releases")).to eq("ok" => true)
+    end
+
     it "loads release tag SHAs through matching refs instead of resolving every release commit" do
       client = described_class.new(token: nil, api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE, user_agent: "kettle-gha-sha-pins")
       releases = [
@@ -219,6 +244,62 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       versions = client.versions_for_repo("foo/bar")
 
       expect(versions.map { |entry| entry[:sha] }).to contain_exactly("a" * 40, "b" * 40)
+    end
+
+    it "includes version-like tags that do not have GitHub releases" do
+      client = described_class.new(token: nil, api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE, user_agent: "kettle-gha-sha-pins")
+      allow(client).to receive(:request_json).with("/repos/foo/bar/releases?per_page=100").and_return([
+        {"tag_name" => "v1.0.0", "prerelease" => false}
+      ])
+      allow(client).to receive(:request_json).with("/repos/foo/bar/git/matching-refs/tags/").and_return([
+        {"ref" => "refs/tags/v1.0.0", "object" => {"type" => "commit", "sha" => "a" * 40}},
+        {"ref" => "refs/tags/v1.0.1", "object" => {"type" => "commit", "sha" => "b" * 40}},
+        {"ref" => "refs/tags/v1", "object" => {"type" => "commit", "sha" => "c" * 40}}
+      ])
+
+      versions = client.versions_for_repo("foo/bar")
+
+      expect(versions.map { |entry| entry[:version] }).to eq(%w[1.0.1 1.0.0])
+      expect(versions.map { |entry| entry[:sha] }).to eq(["b" * 40, "a" * 40])
+    end
+
+    it "dereferences annotated tags when loading version-like tags" do
+      client = described_class.new(token: nil, api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE, user_agent: "kettle-gha-sha-pins")
+      allow(client).to receive(:request_json).with("/repos/foo/bar/releases?per_page=100").and_return([
+        {"tag_name" => "v1.0.0", "prerelease" => false}
+      ])
+      allow(client).to receive(:request_json).with("/repos/foo/bar/git/matching-refs/tags/").and_return([
+        {"ref" => "refs/tags/v1.0.0", "object" => {"type" => "tag", "sha" => "1" * 40}},
+        {"ref" => "refs/tags/v1.0.1", "object" => {"type" => "tag", "sha" => "2" * 40}}
+      ])
+      allow(client).to receive(:request_json).with("/repos/foo/bar/git/tags/#{"1" * 40}").and_return(
+        "object" => {"type" => "commit", "sha" => "a" * 40}
+      )
+      allow(client).to receive(:request_json).with("/repos/foo/bar/git/tags/#{"2" * 40}").and_return(
+        "object" => {"type" => "commit", "sha" => "b" * 40}
+      )
+
+      versions = client.versions_for_repo("foo/bar")
+
+      expect(versions.map { |entry| entry[:version] }).to eq(%w[1.0.1 1.0.0])
+      expect(versions.map { |entry| entry[:sha] }).to eq(["b" * 40, "a" * 40])
+    end
+
+    it "includes prerelease tags so existing prerelease pins are not downgraded" do
+      client = described_class.new(token: nil, api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE, user_agent: "kettle-gha-sha-pins")
+      allow(client).to receive(:request_json).with("/repos/foo/bar/releases?per_page=100").and_return([
+        {"tag_name" => "v2.3.7", "prerelease" => true},
+        {"tag_name" => "v2.3.6", "prerelease" => false}
+      ])
+      allow(client).to receive(:request_json).with("/repos/foo/bar/git/matching-refs/tags/").and_return([
+        {"ref" => "refs/tags/v2.3.7", "object" => {"type" => "commit", "sha" => "b" * 40}},
+        {"ref" => "refs/tags/v2.3.6", "object" => {"type" => "commit", "sha" => "a" * 40}}
+      ])
+
+      versions = client.versions_for_repo("foo/bar")
+
+      expect(versions.map { |entry| entry[:version] }).to eq(%w[2.3.7 2.3.6])
+      expect(versions.map { |entry| entry[:sha] }).to eq(["b" * 40, "a" * 40])
     end
 
     it "uses fresh persistent cache entries without GitHub API calls" do
@@ -285,6 +366,44 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       expect(cached.dig("actions", "foo/bar", "targets", "patch", "1.2", "version")).to eq("1.2.3")
       expect(cached.dig("actions", "foo/bar", "targets", "minor", "1", "version")).to eq("1.3.0")
       expect(cached.dig("actions", "foo/bar", "targets", "major", "*", "version")).to eq("2.0.0")
+    end
+
+    it "ignores persistent cache entries from older schemas" do
+      cache_path = File.join(workflow_root, "gha-cache.json")
+      File.write(
+        cache_path,
+        JSON.pretty_generate(
+          "version" => Kettle::Dev::GhaShaPinsCLI::PersistentActionCache::VERSION - 1,
+          "actions" => {
+            "foo/bar" => {
+              "versions" => {
+                "1.0.0" => {
+                  "tag" => "v1.0.0",
+                  "version" => "1.0.0",
+                  "sha" => "a" * 40,
+                  "cached_at" => "2026-06-08T12:00:00Z"
+                }
+              }
+            }
+          }
+        )
+      )
+      client = described_class.new(
+        token: nil,
+        api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE,
+        user_agent: "kettle-gha-sha-pins",
+        persistent_cache: Kettle::Dev::GhaShaPinsCLI::PersistentActionCache.new(path: cache_path, clock: -> { Time.utc(2026, 6, 8, 12, 5, 0) })
+      )
+      allow(client).to receive(:request_json).with("/repos/foo/bar/releases?per_page=100").and_return([
+        {"tag_name" => "v1.0.1", "prerelease" => false}
+      ])
+      allow(client).to receive(:request_json).with("/repos/foo/bar/git/matching-refs/tags/").and_return([
+        {"ref" => "refs/tags/v1.0.1", "object" => {"type" => "commit", "sha" => "b" * 40}}
+      ])
+
+      versions = client.versions_for_repo("foo/bar")
+
+      expect(versions.map { |entry| entry[:version] }).to eq(["1.0.1"])
     end
 
     it "refreshes stale persistent cache entries after the TTL" do
