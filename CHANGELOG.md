@@ -22,13 +22,26 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
-- Retemplated generated project files with the current `kettle-jem` template,
-  refreshing development dependency floors, binstubs, README metadata, and RBS
-  validation workflow output.
-
 ### Deprecated
 
 ### Removed
+
+### Fixed
+
+### Security
+
+## [2.2.4] - 2026-06-12
+
+- TAG: [v2.2.4][2.2.4t]
+- COVERAGE: 92.18% -- 3806/4129 lines in 28 files
+- BRANCH COVERAGE: 73.26% -- 1507/2057 branches in 28 files
+- 67.00% documented
+
+### Changed
+
+- Retemplated generated project files with the current `kettle-jem` template,
+  refreshing development dependency floors, binstubs, README metadata, and RBS
+  validation workflow output.
 
 ### Fixed
 
@@ -36,8 +49,6 @@ Please file a bug if you notice a violation of semantic versioning.
   current SHA matches a newer version-like tag that is a prerelease or lacks a
   GitHub Release, including transferred action repositories that require GitHub
   API redirects.
-
-### Security
 
 ## [2.2.3] - 2026-06-09
 
@@ -2031,7 +2042,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.3...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.4...HEAD
+[2.2.4]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.3...v2.2.4
+[2.2.4t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.4
 [2.2.3]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.2...v2.2.3
 [2.2.3t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.3
 [2.2.2]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.1...v2.2.2
