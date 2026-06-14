@@ -580,6 +580,16 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       end.to output(/Outdated actions \(1\):.*Recommended fix: kettle-gha-sha-pins --write --upgrade minor/m).to_stdout
     end
 
+    it "does not fail check mode for broader outdated pins outside the selected upgrade level" do
+      cli = described_class.new(["--root", workflow_root, "--upgrade", "patch", "--check"])
+
+      expect do
+        expect(cli.run!).to eq(0)
+      end.to output(
+        /Outdated pins \(1\):.*Outdated actions: none.*No change candidates found\./m
+      ).to_stdout
+    end
+
     it "rewrites unresolved version-equivalent refs to release SHAs instead of stripped tag names" do
       File.write(
         workflow_path,

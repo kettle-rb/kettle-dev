@@ -210,7 +210,7 @@ module Kettle
       # @return [void]
       def check_github_actions_sha_pins!
         puts "[kettle-pre-release] Check 1: Validate GitHub Actions SHA pins"
-        status = Kettle::Dev::GhaShaPinsCLI.new(["--root", Dir.pwd, "--check"]).run!
+        status = Kettle::Dev::GhaShaPinsCLI.new(["--root", Dir.pwd, "--check", "--upgrade", "major"]).run!
         return nil if status.zero?
 
         Kettle::Dev::ExitAdapter.abort("GitHub Actions SHA pin validation failed")

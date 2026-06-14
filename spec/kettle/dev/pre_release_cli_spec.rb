@@ -137,7 +137,7 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
       expect {
         VCR.use_cassette("head_image_ok") { cli.run }
       }.not_to raise_error
-      expect(Kettle::Dev::GhaShaPinsCLI).to have_received(:new).with(["--root", Dir.pwd, "--check"])
+      expect(Kettle::Dev::GhaShaPinsCLI).to have_received(:new).with(["--root", Dir.pwd, "--check", "--upgrade", "major"])
     end
 
     it "aborts with the SHA pin recommendation when GitHub Actions pins are stale" do

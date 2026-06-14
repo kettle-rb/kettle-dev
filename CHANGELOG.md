@@ -28,6 +28,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-gha-sha-pins --check` no longer fails solely because releases outside
+  the selected `--upgrade` policy exist, and `kettle-pre-release` now validates
+  workflow pins with the inclusive `major` policy used for release readiness.
+
 ### Security
 
 ## [2.2.8] - 2026-06-13

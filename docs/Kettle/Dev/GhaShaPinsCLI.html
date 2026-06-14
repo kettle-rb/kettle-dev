@@ -682,7 +682,7 @@
 
   <span class='id identifier rubyid_print_report'>print_report</span><span class='lparen'>(</span><span class='id identifier rubyid_state'>state</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='int'>2</span> <span class='kw'>unless</span> <span class='id identifier rubyid_state'>state</span><span class='lbracket'>[</span><span class='symbol'>:failures</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_zero?'>zero?</span>
-  <span class='kw'>return</span> <span class='int'>3</span> <span class='kw'>if</span> <span class='ivar'>@options</span><span class='lbracket'>[</span><span class='symbol'>:check</span><span class='rbracket'>]</span> <span class='op'>&amp;&amp;</span> <span class='lparen'>(</span><span class='id identifier rubyid_state'>state</span><span class='lbracket'>[</span><span class='symbol'>:updates</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_positive?'>positive?</span> <span class='op'>||</span> <span class='id identifier rubyid_state'>state</span><span class='lbracket'>[</span><span class='symbol'>:outdated_pins</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_any?'>any?</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='int'>3</span> <span class='kw'>if</span> <span class='ivar'>@options</span><span class='lbracket'>[</span><span class='symbol'>:check</span><span class='rbracket'>]</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_state'>state</span><span class='lbracket'>[</span><span class='symbol'>:updates</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_positive?'>positive?</span>
 
   <span class='int'>0</span>
 <span class='kw'>end</span></pre>
@@ -696,7 +696,7 @@
 </div>
 
       <div id="footer">
-  Generated on Tue Jun  9 21:15:55 2026 by
+  Generated on Sun Jun 14 04:38:46 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>

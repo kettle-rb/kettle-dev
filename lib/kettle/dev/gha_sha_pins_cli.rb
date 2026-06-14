@@ -215,7 +215,7 @@ module Kettle
 
         print_report(state)
         return 2 unless state[:failures].zero?
-        return 3 if @options[:check] && (state[:updates].positive? || state[:outdated_pins].any?)
+        return 3 if @options[:check] && state[:updates].positive?
 
         0
       end
@@ -902,7 +902,7 @@ module Kettle
             lines << "- #{change[:path]}:#{change[:line]} #{from} -> #{to} #{change[:reason]}"
           end
         end
-        if @options[:check] && (state[:planned_changes].any? || state[:outdated_pins].any?)
+        if @options[:check] && state[:planned_changes].any?
           lines << ""
           lines << "Recommended fix: kettle-gha-sha-pins --write --upgrade #{@options[:upgrade]}"
         end
