@@ -20,14 +20,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
-#### Changelog
-
-- Added `kettle-changelog --release-state` / `--release-status` with optional
-  `--json` output for single-gem changelog release state reporting.
-- Added a richer `Kettle::Dev::ChangelogCLI#release_state` API that reports the
-  latest released version, latest changelog release section, and pending
-  changelog sources.
-
 ### Changed
 
 ### Deprecated
@@ -37,6 +29,23 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Fixed
 
 ### Security
+
+## [2.2.7] - 2026-06-13
+
+- TAG: [v2.2.7][2.2.7t]
+- COVERAGE: 92.36% -- 3843/4161 lines in 28 files
+- BRANCH COVERAGE: 73.54% -- 1520/2067 branches in 28 files
+- 66.02% documented
+
+### Added
+
+#### Changelog
+
+- Added `kettle-changelog --release-state` / `--release-status` with optional
+  `--json` output for single-gem changelog release state reporting.
+- Added a richer `Kettle::Dev::ChangelogCLI#release_state` API that reports the
+  latest released version, latest changelog release section, and pending
+  changelog sources.
 
 ## [2.2.6] - 2026-06-13
 
@@ -2083,7 +2092,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.6...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.7...HEAD
+[2.2.7]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.6...v2.2.7
+[2.2.7t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.7
 [2.2.6]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.5...v2.2.6
 [2.2.6t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.6
 [2.2.5]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.4...v2.2.5
