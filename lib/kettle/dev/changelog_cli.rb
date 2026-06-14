@@ -140,13 +140,32 @@ module Kettle
       end
 
       def release_state
-        ensure_changelog_for_release_state!
+        changelog_present = ensure_changelog_for_release_state!
+        version = detect_version
+        gem_name = detect_gem_name
+        unless changelog_present
+          latest_overall, latest_for_series = latest_released_versions(gem_name, version)
+          latest_target = latest_release_target(version, latest_overall, latest_for_series)
+          return {
+            root: @root,
+            gem_name: gem_name,
+            version: version,
+            changelog_present: false,
+            pending: false,
+            pending_release: false,
+            unreleased_entries: false,
+            prepared_release_pending: false,
+            latest_changelog_version: nil,
+            latest_released: latest_overall,
+            latest_released_for_current_series: latest_for_series,
+            latest_release_target: latest_target
+          }
+        end
+
         changelog = File.read(@changelog_path)
         unreleased_block, _before, after = extract_unreleased(changelog)
         unreleased_entries = unreleased_block_has_entries?(unreleased_block)
         latest_changelog_version = detect_previous_version(after.to_s)
-        version = detect_version
-        gem_name = detect_gem_name
         release_lookup_version = latest_changelog_version || version
         latest_overall, latest_for_series = latest_released_versions(gem_name, release_lookup_version)
         latest_target = latest_release_target(release_lookup_version, latest_overall, latest_for_series)
@@ -156,6 +175,7 @@ module Kettle
           root: @root,
           gem_name: gem_name,
           version: version,
+          changelog_present: true,
           pending: unreleased_entries || prepared_release_pending,
           pending_release: unreleased_entries || prepared_release_pending,
           unreleased_entries: unreleased_entries,
@@ -198,13 +218,13 @@ module Kettle
       end
 
       def ensure_changelog_for_release_state!
-        return if File.file?(@changelog_path)
+        return true if File.file?(@changelog_path)
 
         if File.file?(File.join(@root, "Gemfile")) && Dir.glob(File.join(@root, "*", "*.gemspec")).any?
           abort("Could not find CHANGELOG.md in #{Kettle::Dev.display_path(@root)}. This looks like a gem-family root; run `kettle-family release-state` from this directory, or run `kettle-changelog --release-state` from an individual gem directory.")
         end
 
-        abort("Could not find CHANGELOG.md in #{Kettle::Dev.display_path(@root)}.")
+        false
       end
 
       def yes_no(value)

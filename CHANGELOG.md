@@ -33,6 +33,8 @@ Please file a bug if you notice a violation of semantic versioning.
 - `kettle-changelog --release-state` now reports a clear family-root hint when
   run outside a single gem instead of raising a missing `CHANGELOG.md` stack
   trace.
+- `kettle-changelog --release-state` now reports a successful no-changelog state
+  for individual gems that do not have a `CHANGELOG.md`.
 
 ### Security
 

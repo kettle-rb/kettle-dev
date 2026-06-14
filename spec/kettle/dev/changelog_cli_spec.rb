@@ -86,6 +86,31 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       end
     end
 
+    it "reports no pending changelog work when an individual gem has no changelog" do
+      mkproj do |root|
+        write_version(root)
+        FileUtils.rm_f(File.join(root, "CHANGELOG.md"))
+        allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
+
+        cli = described_class.new(strict: false)
+        allow(cli).to receive(:latest_released_versions).and_return(["1.2.3", "1.2.3"])
+        status = cli.release_state
+
+        expect(status).to include(
+          gem_name: "demo",
+          version: "1.2.3",
+          changelog_present: false,
+          pending: false,
+          pending_release: false,
+          unreleased_entries: false,
+          prepared_release_pending: false,
+          latest_changelog_version: nil,
+          latest_released: "1.2.3",
+          latest_release_target: "1.2.3"
+        )
+      end
+    end
+
     it "reports pending when the latest changelog release section has not been published" do
       mkproj do |root|
         write_version(root)
