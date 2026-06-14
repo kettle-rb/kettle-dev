@@ -70,7 +70,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 and <a href="https://tom.preston-werner.com/2022/05/23/major-version-numbers-are-not-sacred.html">yes</a>, platform and engine support are part of the <a href="https://github.com/semver/semver/issues/716#issuecomment-869336139">public API</a>.<br>
 Please file a bug if you notice a violation of semantic versioning.</p>
 
-<h2 id="unreleased"><a href="https://github.com/kettle-dev/kettle-dev/compare/v2.2.8...HEAD">Unreleased</a></h2>
+<h2 id="unreleased"><a href="https://github.com/kettle-dev/kettle-dev/compare/v2.2.9...HEAD">Unreleased</a></h2>
 
 <h3 id="added">Added</h3>
 
@@ -82,14 +82,33 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 
 <h3 id="fixed">Fixed</h3>
 
+<h3 id="security">Security</h3>
+
+<h2 id="229---2026-06-14">
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v2.2.8...v2.2.9">2.2.9</a> - 2026-06-14</h2>
+
 <ul>
-  <li>
-<code>kettle-gha-sha-pins --check</code> no longer fails solely because releases outside<br>
-the selected <code>--upgrade</code> policy exist, and <code>kettle-pre-release</code> now validates<br>
-workflow pins with the inclusive <code>major</code> policy used for release readiness.</li>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.9">v2.2.9</a>
+</li>
+  <li>COVERAGE: 92.57% – 3863/4173 lines in 28 files</li>
+  <li>BRANCH COVERAGE: 74.00% – 1534/2073 branches in 28 files</li>
+  <li>65.38% documented</li>
 </ul>
 
-<h3 id="security">Security</h3>
+<h3 id="fixed-1">Fixed</h3>
+
+<ul>
+  <li>
+    <p><code>kettle-gha-sha-pins --check</code> no longer fails solely because releases outside<br>
+the selected <code>--upgrade</code> policy exist, and <code>kettle-pre-release</code> now validates<br>
+workflow pins with the inclusive <code>major</code> policy used for release readiness.</p>
+  </li>
+  <li>
+    <p><code>kettle-gha-sha-pins --write</code> now handles major-line adjacent version comments<br>
+such as <code># v7</code> idempotently instead of repeatedly planning the same<br>
+<code>update_version_comment</code> change.</p>
+  </li>
+</ul>
 
 <h2 id="228---2026-06-13">
 <a href="https://github.com/kettle-dev/kettle-dev/compare/v2.2.7...v2.2.8">2.2.8</a> - 2026-06-13</h2>
@@ -102,7 +121,7 @@ workflow pins with the inclusive <code>major</code> policy used for release read
   <li>66.02% documented</li>
 </ul>
 
-<h3 id="fixed-1">Fixed</h3>
+<h3 id="fixed-2">Fixed</h3>
 
 <h4 id="changelog-1">Changelog</h4>
 
@@ -180,7 +199,7 @@ such as <code>v2</code>, while patch and minor upgrade targeting remain limited 
 <code>x.y.z</code> SemVer tags.</li>
 </ul>
 
-<h3 id="fixed-2">Fixed</h3>
+<h3 id="fixed-3">Fixed</h3>
 
 <ul>
   <li>
@@ -207,7 +226,7 @@ refreshing development dependency floors, binstubs, README metadata, and RBS<br>
 validation workflow output.</li>
 </ul>
 
-<h3 id="fixed-3">Fixed</h3>
+<h3 id="fixed-4">Fixed</h3>
 
 <ul>
   <li>
@@ -228,7 +247,7 @@ API redirects.</li>
   <li>67.00% documented</li>
 </ul>
 
-<h3 id="fixed-4">Fixed</h3>
+<h3 id="fixed-5">Fixed</h3>
 
 <ul>
   <li>
@@ -256,7 +275,7 @@ defaulting to <code>.github/workflows</code>, instead of recursively searching e
 nested <code>.github/workflows</code> directory under the project root.</li>
 </ul>
 
-<h3 id="fixed-5">Fixed</h3>
+<h3 id="fixed-6">Fixed</h3>
 
 <ul>
   <li>Updated generated project metadata links to use the migrated <code>kettle-dev</code><br>
@@ -274,7 +293,7 @@ GitHub organization, including README QLTY badge URLs.</li>
   <li>66.83% documented</li>
 </ul>
 
-<h3 id="fixed-6">Fixed</h3>
+<h3 id="fixed-7">Fixed</h3>
 
 <ul>
   <li>
@@ -325,7 +344,7 @@ the XDG state location and supports <code>--refresh-cache</code> to bypass stale
 while preserving cached discoveries for other projects and actions.</li>
 </ul>
 
-<h3 id="fixed-7">Fixed</h3>
+<h3 id="fixed-8">Fixed</h3>
 
 <ul>
   <li>
@@ -440,7 +459,7 @@ Appraisal2 plugin hook such as <code>appraisal2-rubocop</code>.</li>
   <li>75.93% documented</li>
 </ul>
 
-<h3 id="fixed-8">Fixed</h3>
+<h3 id="fixed-9">Fixed</h3>
 
 <ul>
   <li>
@@ -468,7 +487,7 @@ Appraisal root lockfile does not exist yet.</li>
   <li>Lint / style updates</li>
 </ul>
 
-<h3 id="fixed-9">Fixed</h3>
+<h3 id="fixed-10">Fixed</h3>
 
 <ul>
   <li>Avoided moving mocked CI task input reads into a background thread for<br>
@@ -514,7 +533,7 @@ Synopsis heading with the current kettle-jem width defaults.</li>
 StructuredMerge as the templating and merge-contract tooling.</li>
 </ul>
 
-<h3 id="fixed-10">Fixed</h3>
+<h3 id="fixed-11">Fixed</h3>
 
 <ul>
   <li>Regenerated the spec helper so <code>kettle-dev</code> is required only after coverage<br>
@@ -550,7 +569,7 @@ bootstrap setup.</li>
   <li>76.40% documented</li>
 </ul>
 
-<h3 id="fixed-11">Fixed</h3>
+<h3 id="fixed-12">Fixed</h3>
 
 <ul>
   <li>
@@ -578,7 +597,7 @@ installed <code>kettle-jem</code> package does not expose rake task installation
   <li>76.40% documented</li>
 </ul>
 
-<h3 id="fixed-12">Fixed</h3>
+<h3 id="fixed-13">Fixed</h3>
 
 <ul>
   <li>The default rake task now includes documentation generation via <code>yard</code>, so<br>
@@ -620,7 +639,7 @@ Ruby 2.4-targeted RuboCop LTS style dependencies.</li>
   <li>Removed Ruby 2.3 and JRuby 9.1 CI workflows and appraisal gemfiles.</li>
 </ul>
 
-<h3 id="fixed-13">Fixed</h3>
+<h3 id="fixed-14">Fixed</h3>
 
 <ul>
   <li>
@@ -695,7 +714,7 @@ CHANGELOG.md release section before prompting for confirmation.</li>
   <li>Updated the development dependency on <code>kettle-test</code> to require 2.0.1 or newer.</li>
 </ul>
 
-<h3 id="fixed-14">Fixed</h3>
+<h3 id="fixed-15">Fixed</h3>
 
 <ul>
   <li>
@@ -805,7 +824,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </li>
 </ul>
 
-<h3 id="fixed-15">Fixed</h3>
+<h3 id="fixed-16">Fixed</h3>
 
 <ul>
   <li>Fixed <code>PrismAppraisals</code> various comment chunk spacing
@@ -958,7 +977,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>Updated <code>FREEZE_REMINDER</code> constant to include blank line before and empty comment line after</li>
 </ul>
 
-<h3 id="fixed-16">Fixed</h3>
+<h3 id="fixed-17">Fixed</h3>
 
 <ul>
   <li>Fixed <code>reminder_present?</code> to correctly detect freeze reminder when it has leading blank line</li>
@@ -975,7 +994,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>69.78% documented</li>
 </ul>
 
-<h3 id="fixed-17">Fixed</h3>
+<h3 id="fixed-18">Fixed</h3>
 
 <ul>
   <li>Fixed comment deduplication in <code>restore_custom_leading_comments</code> to prevent accumulation across multiple template runs
@@ -999,7 +1018,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>70.55% documented</li>
 </ul>
 
-<h3 id="fixed-18">Fixed</h3>
+<h3 id="fixed-19">Fixed</h3>
 
 <ul>
   <li>Fixed Gemfile parsing to properly deduplicate comments across multiple template runs
@@ -1091,7 +1110,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   </li>
 </ul>
 
-<h3 id="fixed-19">Fixed</h3>
+<h3 id="fixed-20">Fixed</h3>
 
 <ul>
   <li>Prevent double test runs by ensuring only one of test/coverage/spec are in default task
@@ -1118,7 +1137,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>Improved default devcontainer with common dependencies of most Ruby projects</li>
 </ul>
 
-<h3 id="fixed-20">Fixed</h3>
+<h3 id="fixed-21">Fixed</h3>
 
 <ul>
   <li>
@@ -1151,7 +1170,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>Ignore more .idea plugin artifacts</li>
 </ul>
 
-<h3 id="fixed-21">Fixed</h3>
+<h3 id="fixed-22">Fixed</h3>
 
 <ul>
   <li>bin/rake yard no longer overrides the .yardignore for checksums</li>
@@ -1175,7 +1194,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>Improved .env.local.example template</li>
 </ul>
 
-<h3 id="fixed-22">Fixed</h3>
+<h3 id="fixed-23">Fixed</h3>
 
 <ul>
   <li>.yardignore more comprehensively ignores directories that are not relevant to documentation</li>
@@ -1192,7 +1211,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>79.89% documented</li>
 </ul>
 
-<h3 id="fixed-23">Fixed</h3>
+<h3 id="fixed-24">Fixed</h3>
 
 <ul>
   <li>Appraisals template merge with existing header</li>
@@ -1312,7 +1331,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>79.89% documented</li>
 </ul>
 
-<h3 id="fixed-24">Fixed</h3>
+<h3 id="fixed-25">Fixed</h3>
 
 <ul>
   <li>invalid documentation (bad find/replace outcomes during templating)</li>
@@ -1347,7 +1366,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>79.89% documented</li>
 </ul>
 
-<h3 id="fixed-25">Fixed</h3>
+<h3 id="fixed-26">Fixed</h3>
 
 <ul>
   <li>Typo in markdown link</li>
@@ -1372,7 +1391,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>Intelligent templating of Appraisals</li>
 </ul>
 
-<h3 id="fixed-26">Fixed</h3>
+<h3 id="fixed-27">Fixed</h3>
 
 <ul>
   <li>Typos in funding links</li>
@@ -1395,7 +1414,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>Validate RBS Types within style workflow</li>
 </ul>
 
-<h3 id="fixed-27">Fixed</h3>
+<h3 id="fixed-28">Fixed</h3>
 
 <ul>
   <li>typos in README.md</li>
@@ -1438,7 +1457,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>prepare-commit-msg.example: no longer needed</li>
 </ul>
 
-<h3 id="fixed-28">Fixed</h3>
+<h3 id="fixed-29">Fixed</h3>
 
 <ul>
   <li>prepare-commit-msg git hook: incompatibility between direnv and mise by removing <code>direnv exec</code>
@@ -1456,7 +1475,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>79.68% documented</li>
 </ul>
 
-<h3 id="fixed-29">Fixed</h3>
+<h3 id="fixed-30">Fixed</h3>
 
 <ul>
   <li>typos in CONTRIBUTING.md used for templating</li>
@@ -1530,7 +1549,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>CONTRIBUTING.md.example tailored for the templated gem</li>
 </ul>
 
-<h3 id="fixed-30">Fixed</h3>
+<h3 id="fixed-31">Fixed</h3>
 
 <ul>
   <li>Minor typos</li>
@@ -1553,7 +1572,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>legacy ruby 3.1 pinned to bundler 2.6.9</li>
 </ul>
 
-<h3 id="fixed-31">Fixed</h3>
+<h3 id="fixed-32">Fixed</h3>
 
 <ul>
   <li>Corrected typo: truffleruby-24.1 (targets Ruby 3.3 compatibility)</li>
@@ -1601,7 +1620,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>More documentation of RC situation</li>
 </ul>
 
-<h3 id="fixed-32">Fixed</h3>
+<h3 id="fixed-33">Fixed</h3>
 
 <ul>
   <li>alphabetize dependencies</li>
@@ -1654,7 +1673,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>kettle-release: Ensure a final push of tags occurs after checksums and optional GitHub release; supports an ‘all’ remote aggregator when configured.</li>
 </ul>
 
-<h3 id="fixed-33">Fixed</h3>
+<h3 id="fixed-34">Fixed</h3>
 
 <ul>
   <li>fixed rake task compatibility with BUNDLE_PATH (i.e. vendored bundle)
@@ -1697,7 +1716,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>removed redundant github gem source</li>
 </ul>
 
-<h3 id="fixed-34">Fixed</h3>
+<h3 id="fixed-35">Fixed</h3>
 
 <ul>
   <li>added addressable to optional modular gemfile template, as it is required for kettle-pre-release</li>
@@ -1742,7 +1761,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>79.12% documented</li>
 </ul>
 
-<h3 id="fixed-35">Fixed</h3>
+<h3 id="fixed-36">Fixed</h3>
 
 <ul>
   <li>order of checksums and release / tag reversed
@@ -1801,7 +1820,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>79.12% documented</li>
 </ul>
 
-<h3 id="fixed-36">Fixed</h3>
+<h3 id="fixed-37">Fixed</h3>
 
 <ul>
   <li>kettle-release: restore compatability with MFA input</li>
@@ -1824,7 +1843,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>Use obfuscated URLs, and avatars from Open Collective in ReadmeBackers</li>
 </ul>
 
-<h3 id="fixed-37">Fixed</h3>
+<h3 id="fixed-38">Fixed</h3>
 
 <ul>
   <li>improved handling of flaky truffleruby builds in workflow templates</li>
@@ -1842,7 +1861,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>78.33% documented</li>
 </ul>
 
-<h3 id="fixed-38">Fixed</h3>
+<h3 id="fixed-39">Fixed</h3>
 
 <ul>
   <li>kettle-readme-backers fails gracefully when README_UPDATER_TOKEN is missing from org secrets</li>
@@ -1871,7 +1890,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>consolidated specs</li>
 </ul>
 
-<h3 id="fixed-39">Fixed</h3>
+<h3 id="fixed-40">Fixed</h3>
 
 <ul>
   <li>All .example files are now included in the gem package</li>
@@ -1889,7 +1908,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>77.97% documented</li>
 </ul>
 
-<h3 id="fixed-40">Fixed</h3>
+<h3 id="fixed-41">Fixed</h3>
 
 <ul>
   <li>GemSpecReader, ReadmeBackers now use shared OpenCollectiveConfig
@@ -1938,7 +1957,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>improved documentation</li>
 </ul>
 
-<h3 id="fixed-41">Fixed</h3>
+<h3 id="fixed-42">Fixed</h3>
 
 <ul>
   <li>kettle-readme-backers: read correct config file
@@ -1968,7 +1987,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>more test coverage</li>
 </ul>
 
-<h3 id="fixed-42">Fixed</h3>
+<h3 id="fixed-43">Fixed</h3>
 
 <ul>
   <li>Add .licenserc.yaml to gem package</li>
@@ -1999,7 +2018,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   </li>
 </ul>
 
-<h3 id="fixed-43">Fixed</h3>
+<h3 id="fixed-44">Fixed</h3>
 
 <ul>
   <li>fix duplicate headings in CHANGELOG.md Unreleased section</li>
@@ -2069,7 +2088,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>76.88% documented</li>
 </ul>
 
-<h3 id="fixed-44">Fixed</h3>
+<h3 id="fixed-45">Fixed</h3>
 
 <ul>
   <li>handling of alternate format of Unreleased section in CHANGELOG.md</li>
@@ -2086,7 +2105,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>76.88% documented</li>
 </ul>
 
-<h3 id="fixed-45">Fixed</h3>
+<h3 id="fixed-46">Fixed</h3>
 
 <ul>
   <li>fix appraisals for Ruby v2.7 to use correct x_std_libs</li>
@@ -2121,7 +2140,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>76.88% documented</li>
 </ul>
 
-<h3 id="fixed-46">Fixed</h3>
+<h3 id="fixed-47">Fixed</h3>
 
 <ul>
   <li>include .rubocop_rspec.yml during install / template task’s file copy</li>
@@ -2163,7 +2182,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>move kettle-dev-setup logic into Kettle::Dev::SetupCLI</li>
 </ul>
 
-<h3 id="fixed-47">Fixed</h3>
+<h3 id="fixed-48">Fixed</h3>
 
 <ul>
   <li>gem dependency detection in kettle-dev-setup to prevent duplication</li>
@@ -2200,13 +2219,13 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   </li>
 </ul>
 
-<h3 id="fixed-48">Fixed</h3>
+<h3 id="fixed-49">Fixed</h3>
 
 <ul>
   <li>Fix a typo in the README.md</li>
 </ul>
 
-<h3 id="fixed-49">Fixed</h3>
+<h3 id="fixed-50">Fixed</h3>
 
 <ul>
   <li>fix typo in the path to x_std_libs.gemfile</li>
@@ -2229,7 +2248,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>badge for current runtime heads in example readme</li>
 </ul>
 
-<h3 id="fixed-50">Fixed</h3>
+<h3 id="fixed-51">Fixed</h3>
 
 <ul>
   <li>Add gemfiles/modular/x_std_libs.gemfile &amp; injected.gemfile to template</li>
@@ -2271,7 +2290,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>Kettle::Dev.default_registered?</li>
 </ul>
 
-<h3 id="fixed-51">Fixed</h3>
+<h3 id="fixed-52">Fixed</h3>
 
 <ul>
   <li>run specs as part of the test task</li>
@@ -2319,7 +2338,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   </li>
 </ul>
 
-<h3 id="fixed-52">Fixed</h3>
+<h3 id="fixed-53">Fixed</h3>
 
 <ul>
   <li>Fix local CI via act for templated workflows (skip JRuby in nektos/act locally)</li>
@@ -2336,7 +2355,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>76.97% documented</li>
 </ul>
 
-<h3 id="fixed-53">Fixed</h3>
+<h3 id="fixed-54">Fixed</h3>
 
 <ul>
   <li>bin/rake test works for minitest</li>
@@ -2383,7 +2402,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>defensive NameError handling in ChangelogCLI.abort method</li>
 </ul>
 
-<h3 id="fixed-54">Fixed</h3>
+<h3 id="fixed-55">Fixed</h3>
 
 <ul>
   <li>replace token <code>{OPENCOLLECTIVE|ORG_NAME}</code> with funding org name</li>
@@ -2405,7 +2424,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>76.22% documented</li>
 </ul>
 
-<h3 id="fixed-55">Fixed</h3>
+<h3 id="fixed-56">Fixed</h3>
 
 <ul>
   <li>documentation of rake tasks from this gem no longer includes standard gem tasks</li>
@@ -2434,7 +2453,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   </li>
 </ul>
 
-<h3 id="fixed-56">Fixed</h3>
+<h3 id="fixed-57">Fixed</h3>
 
 <ul>
   <li>Stop double defining DEBUGGING constant</li>
@@ -2474,7 +2493,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>major spec refactoring</li>
 </ul>
 
-<h3 id="fixed-57">Fixed</h3>
+<h3 id="fixed-58">Fixed</h3>
 
 <ul>
   <li>(linting) rspec-pending_for 0.0.17+ (example gemspec)</li>
@@ -2499,7 +2518,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>.gitlab-ci.yml documentation</li>
 </ul>
 
-<h3 id="fixed-58">Fixed</h3>
+<h3 id="fixed-59">Fixed</h3>
 
 <ul>
   <li>reduce extra leading whitespace in info table column 2</li>
@@ -2569,7 +2588,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>75.00% documented</li>
 </ul>
 
-<h3 id="fixed-59">Fixed</h3>
+<h3 id="fixed-60">Fixed</h3>
 
 <ul>
   <li>.env.local.example is now included in the packaged gem
@@ -2635,7 +2654,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>move –help handling for kettle-changelog to kettle-changelog itself</li>
 </ul>
 
-<h3 id="fixed-60">Fixed</h3>
+<h3 id="fixed-61">Fixed</h3>
 
 <ul>
   <li>typos in README for gem &amp; template</li>
@@ -2668,7 +2687,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   </li>
 </ul>
 
-<h3 id="fixed-61">Fixed</h3>
+<h3 id="fixed-62">Fixed</h3>
 
 <ul>
   <li>include FUNDING.md in the released gem package</li>
@@ -2790,7 +2809,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>76.23% documented</li>
 </ul>
 
-<h3 id="fixed-62">Fixed</h3>
+<h3 id="fixed-63">Fixed</h3>
 
 <ul>
   <li>replacement logic handles a dashed gem-name which maps onto a nested path structure</li>
@@ -2820,7 +2839,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   </li>
 </ul>
 
-<h3 id="fixed-63">Fixed</h3>
+<h3 id="fixed-64">Fixed</h3>
 
 <ul>
   <li>kettle:dev:install remove “Works with MRI Ruby*” lines with no badges left</li>
@@ -2838,7 +2857,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>76.23% documented</li>
 </ul>
 
-<h3 id="fixed-64">Fixed</h3>
+<h3 id="fixed-65">Fixed</h3>
 
 <ul>
   <li>kettle-changelog added to exe files so packaged with released gem</li>
@@ -2855,7 +2874,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>76.23% documented</li>
 </ul>
 
-<h3 id="fixed-65">Fixed</h3>
+<h3 id="fixed-66">Fixed</h3>
 
 <ul>
   <li>default rake task must be defined before it can be enhanced</li>
@@ -2892,7 +2911,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   </li>
 </ul>
 
-<h3 id="fixed-66">Fixed</h3>
+<h3 id="fixed-67">Fixed</h3>
 
 <ul>
   <li>include gemfiles/modular/*gemfile.example with packaged gem</li>
@@ -2928,7 +2947,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>Improve .gitlab-ci.yml pipeline</li>
 </ul>
 
-<h3 id="fixed-67">Fixed</h3>
+<h3 id="fixed-68">Fixed</h3>
 
 <ul>
   <li>Removed README badges for unsupported old Ruby versions</li>
@@ -2987,7 +3006,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   </li>
 </ul>
 
-<h3 id="fixed-68">Fixed</h3>
+<h3 id="fixed-69">Fixed</h3>
 
 <ul>
   <li>added optional.gemfile.example, and handling for it in templating</li>
@@ -3051,7 +3070,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   </li>
 </ul>
 
-<h3 id="fixed-69">Fixed</h3>
+<h3 id="fixed-70">Fixed</h3>
 
 <ul>
   <li>Upgrade stone_checksums for release compatibility with bundler v2.7+
@@ -3101,7 +3120,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>attempts to make exe/* scripts work without bundler. Bundler is required.</li>
 </ul>
 
-<h3 id="fixed-70">Fixed</h3>
+<h3 id="fixed-71">Fixed</h3>
 
 <ul>
   <li>
@@ -3146,7 +3165,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>95.35% documented</li>
 </ul>
 
-<h3 id="fixed-71">Fixed</h3>
+<h3 id="fixed-72">Fixed</h3>
 
 <ul>
   <li>Can’t add checksums to the gem package, because it changes the checksum (duh!)</li>
@@ -3163,7 +3182,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>95.35% documented</li>
 </ul>
 
-<h3 id="fixed-72">Fixed</h3>
+<h3 id="fixed-73">Fixed</h3>
 
 <ul>
   <li>Reproducible builds, with consistent checksums, by <em>not</em> using SOURCE_DATE_EPOCH.
@@ -3184,7 +3203,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>95.35% documented</li>
 </ul>
 
-<h3 id="fixed-73">Fixed</h3>
+<h3 id="fixed-74">Fixed</h3>
 
 <ul>
   <li>kettle-release: ensure SOURCE_DATE_EPOCH is applied within the same shell for both build and release by prefixing the commands with the env var (e.g., <code>SOURCE_DATE_EPOCH=$epoch bundle exec rake build</code> and <code>... rake release</code>); prevents losing the variable across shell boundaries and improves reproducible checksums.</li>
@@ -3201,7 +3220,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>95.35% documented</li>
 </ul>
 
-<h3 id="fixed-74">Fixed</h3>
+<h3 id="fixed-75">Fixed</h3>
 
 <ul>
   <li>kettle-release: will run regardless of how it is invoked (i.e. works as binstub)</li>
@@ -3225,7 +3244,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>kettle-release: push logic improved — if a remote named <code>all</code> exists, push the current branch to it (assumed to cover multiple push URLs). Otherwise push the current branch to <code>origin</code> and to any GitHub, GitLab, and Codeberg remotes (whatever their names are).</li>
 </ul>
 
-<h3 id="fixed-75">Fixed</h3>
+<h3 id="fixed-76">Fixed</h3>
 
 <ul>
   <li>kettle-release now validates SHA256 checksums of the built gem against the recorded checksums and aborts on mismatch; helps ensure reproducible artifacts (honoring SOURCE_DATE_EPOCH).</li>
@@ -3250,7 +3269,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>template task now copies .git-hooks files necessary for git hooks to work</li>
 </ul>
 
-<h3 id="fixed-76">Fixed</h3>
+<h3 id="fixed-77">Fixed</h3>
 
 <ul>
   <li>kettle-release now uses the host project’s root, instead of this gem’s installed root.</li>
@@ -3268,7 +3287,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>94.59% documented</li>
 </ul>
 
-<h3 id="fixed-77">Fixed</h3>
+<h3 id="fixed-78">Fixed</h3>
 
 <ul>
   <li>Added files necessary for kettle:dev:template task to work</li>
@@ -3361,7 +3380,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </div></div>
 
       <div id="footer">
-  Generated on Sun Jun 14 04:38:45 2026 by
+  Generated on Sun Jun 14 05:50:45 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>

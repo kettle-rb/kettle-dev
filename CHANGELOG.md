@@ -28,15 +28,24 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- `kettle-gha-sha-pins --write` now handles major-line adjacent version comments
-  such as `# v7` idempotently instead of repeatedly planning the same
-  `update_version_comment` change.
+### Security
+
+## [2.2.9] - 2026-06-14
+
+- TAG: [v2.2.9][2.2.9t]
+- COVERAGE: 92.57% -- 3863/4173 lines in 28 files
+- BRANCH COVERAGE: 74.00% -- 1534/2073 branches in 28 files
+- 65.38% documented
+
+### Fixed
 
 - `kettle-gha-sha-pins --check` no longer fails solely because releases outside
   the selected `--upgrade` policy exist, and `kettle-pre-release` now validates
   workflow pins with the inclusive `major` policy used for release readiness.
 
-### Security
+- `kettle-gha-sha-pins --write` now handles major-line adjacent version comments
+  such as `# v7` idempotently instead of repeatedly planning the same
+  `update_version_comment` change.
 
 ## [2.2.8] - 2026-06-13
 
@@ -2117,7 +2126,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.8...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.9...HEAD
+[2.2.9]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.8...v2.2.9
+[2.2.9t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.9
 [2.2.8]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.7...v2.2.8
 [2.2.8t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.8
 [2.2.7]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.6...v2.2.7
