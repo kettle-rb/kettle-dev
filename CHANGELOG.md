@@ -28,6 +28,17 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [2.2.8] - 2026-06-13
+
+- TAG: [v2.2.8][2.2.8t]
+- COVERAGE: 92.40% -- 3854/4171 lines in 28 files
+- BRANCH COVERAGE: 73.37% -- 1521/2073 branches in 28 files
+- 66.02% documented
+
+### Fixed
+
 #### Changelog
 
 - `kettle-changelog --release-state` now reports a clear family-root hint when
@@ -35,8 +46,6 @@ Please file a bug if you notice a violation of semantic versioning.
   trace.
 - `kettle-changelog --release-state` now reports a successful no-changelog state
   for individual gems that do not have a `CHANGELOG.md`.
-
-### Security
 
 ## [2.2.7] - 2026-06-13
 
@@ -2100,7 +2109,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.7...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.8...HEAD
+[2.2.8]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.7...v2.2.8
+[2.2.8t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.8
 [2.2.7]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.6...v2.2.7
 [2.2.7t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.7
 [2.2.6]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.5...v2.2.6

@@ -3,7 +3,7 @@
 module Kettle
   module Dev
     module Version
-      VERSION = "2.2.7"
+      VERSION = "2.2.8"
     end
     VERSION = Version::VERSION # Traditional Constant Location
   end
