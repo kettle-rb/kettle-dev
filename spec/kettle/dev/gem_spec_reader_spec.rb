@@ -308,14 +308,15 @@ RSpec.describe Kettle::Dev::GemSpecReader do
           spec.version = "0.0.1"
         end
       G
-      # Make RubyGems loader blow up to exercise rescue at lines 48-49
-      allow(Gem::Specification).to receive(:load).and_raise(StandardError.new("load-fail"))
+      # Make RubyGems loader blow up to exercise the lenient gemspec-load rescue.
+      load_error = StandardError.new("load-fail")
+      allow(Gem::Specification).to receive(:load).and_raise(load_error)
       allow(Kettle::Dev).to receive(:debug_error)
       allow(Kernel).to receive(:warn).and_call_original
 
       info = load_info
 
-      expect(Kettle::Dev).to have_received(:debug_error)
+      expect(Kettle::Dev).to have_received(:debug_error).with(load_error, :load)
       expect(info[:gemspec_path]).to eq(gemspec_path)
       expect(info[:gem_name]).to eq("") # falls back when spec could not be loaded
       expect(Kernel).to have_received(:warn).with(/Could not derive gem name/)
