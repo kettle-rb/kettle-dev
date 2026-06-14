@@ -28,6 +28,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-gha-sha-pins --write` now handles major-line adjacent version comments
+  such as `# v7` idempotently instead of repeatedly planning the same
+  `update_version_comment` change.
+
 - `kettle-gha-sha-pins --check` no longer fails solely because releases outside
   the selected `--upgrade` policy exist, and `kettle-pre-release` now validates
   workflow pins with the inclusive `major` policy used for release readiness.

@@ -665,6 +665,34 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       expect(File.read(workflow_path)).not_to include("# v1.2.0")
     end
 
+    it "updates major-line version comments once and stays clean on the next run" do
+      File.write(
+        workflow_path,
+        <<~YAML
+          name: ci
+          on: [push]
+          jobs:
+            test:
+              runs-on: ubuntu-latest
+              steps:
+                - uses: foo/bar@bbb # v7.0.0
+        YAML
+      )
+      cli_client = instance_double(described_class::GitHubClient)
+      allow(described_class::GitHubClient).to receive(:new).and_return(cli_client)
+      allow(cli_client).to receive(:versions_for_repo).with("foo/bar").and_return([
+        {tag: "v7", version_obj: Gem::Version.new("7"), version: "7", sha: "bbb"}
+      ])
+      allow(cli_client).to receive(:commit_sha).with("foo/bar", "bbb").and_return("bbb")
+
+      first_run = described_class.new(["--root", workflow_root, "--upgrade", "major", "--write"])
+      second_run = described_class.new(["--root", workflow_root, "--upgrade", "major", "--check"])
+
+      expect(first_run.run!).to eq(0)
+      expect(File.read(workflow_path)).to include("uses: foo/bar@bbb # v7")
+      expect(second_run.run!).to eq(0)
+    end
+
     it "calls GitHub release-version lookup for each workflow action when evaluating pins" do
       cli_client = instance_double(described_class::GitHubClient)
       allow(described_class::GitHubClient).to receive(:new).and_return(cli_client)

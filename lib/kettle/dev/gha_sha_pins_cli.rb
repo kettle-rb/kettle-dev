@@ -33,6 +33,8 @@ module Kettle
       DEFAULT_UPGRADE_LEVEL = "patch"
       DEFAULT_CACHE_TTL_SECONDS = 24 * 60 * 60
       VALID_UPGRADE_LEVELS = %w[major minor patch].freeze
+      VERSION_COMMENT_SUFFIX_RE = /\A\s+#\s*v?(?<version>\d+(?:\.\d+\.\d+(?:[-.]?[0-9A-Za-z.-]+)?)?)/
+      VERSION_COMMENT_REPLACEMENT_RE = /\A(?<prefix>\s+#\s*)v?\d+(?:\.\d+\.\d+(?:[-.]?[0-9A-Za-z.-]+)?)?/
 
       def initialize(argv, err: $stderr)
         @argv = argv
@@ -745,8 +747,8 @@ module Kettle
         return nil unless token_info[:token] == old_token
 
         suffix = raw[token_info[:span]..-1].to_s
-        match = suffix.match(/\A\s+#\s*v?(\d+\.\d+\.\d+(?:[-.]?[0-9A-Za-z.-]+)?)/)
-        match && match[1]
+        match = suffix.match(VERSION_COMMENT_SUFFIX_RE)
+        match && match[:version]
       end
 
       def build_replacement_from_line(text, line, col, old_token, new_ref, new_version = nil)
@@ -767,7 +769,7 @@ module Kettle
         new_scalar = rendered[:quoted]
         if new_version && token_info[:quote] == :plain
           suffix = raw[span..-1].to_s
-          comment = suffix.match(/\A(?<prefix>\s+#\s*)v?\d+\.\d+\.\d+(?:[-.]?[0-9A-Za-z.-]+)?/)
+          comment = suffix.match(VERSION_COMMENT_REPLACEMENT_RE)
           if comment
             span += comment[0].length
             new_scalar += "#{comment[:prefix]}v#{new_version}"
