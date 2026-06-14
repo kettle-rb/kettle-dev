@@ -140,6 +140,7 @@ module Kettle
       end
 
       def release_state
+        ensure_changelog_for_release_state!
         changelog = File.read(@changelog_path)
         unreleased_block, _before, after = extract_unreleased(changelog)
         unreleased_entries = unreleased_block_has_entries?(unreleased_block)
@@ -194,6 +195,16 @@ module Kettle
 
       def abort(msg)
         Kettle::Dev::ExitAdapter.abort(msg)
+      end
+
+      def ensure_changelog_for_release_state!
+        return if File.file?(@changelog_path)
+
+        if File.file?(File.join(@root, "Gemfile")) && Dir.glob(File.join(@root, "*", "*.gemspec")).any?
+          abort("Could not find CHANGELOG.md in #{Kettle::Dev.display_path(@root)}. This looks like a gem-family root; run `kettle-family release-state` from this directory, or run `kettle-changelog --release-state` from an individual gem directory.")
+        end
+
+        abort("Could not find CHANGELOG.md in #{Kettle::Dev.display_path(@root)}.")
       end
 
       def yes_no(value)

@@ -71,6 +71,21 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       end
     end
 
+    it "aborts with a family-root hint when CHANGELOG.md is missing from a family root" do
+      mkproj do |root|
+        FileUtils.rm_rf(File.join(root, "lib"))
+        FileUtils.rm_f(File.join(root, "demo.gemspec"))
+        File.write(File.join(root, "Gemfile"), %(gem "kettle-family"\n))
+        FileUtils.mkdir_p(File.join(root, "demo"))
+        File.write(File.join(root, "demo", "demo.gemspec"), "Gem::Specification.new { |spec| spec.name = \"demo\"; spec.version = \"1.0.0\" }\n")
+        allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
+
+        cli = described_class.new(strict: false)
+
+        expect { cli.release_state }.to raise_error(MockSystemExit, /kettle-family release-state/)
+      end
+    end
+
     it "reports pending when the latest changelog release section has not been published" do
       mkproj do |root|
         write_version(root)

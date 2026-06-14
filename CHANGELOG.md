@@ -28,6 +28,12 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+#### Changelog
+
+- `kettle-changelog --release-state` now reports a clear family-root hint when
+  run outside a single gem instead of raising a missing `CHANGELOG.md` stack
+  trace.
+
 ### Security
 
 ## [2.2.7] - 2026-06-13
