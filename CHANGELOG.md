@@ -28,6 +28,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-bump` now prefers the gemspec-declared version file before scanning
+  `lib/**/version.rb`, so compatibility alias version files do not block version
+  bumps.
+
 ### Security
 
 ## [2.2.10] - 2026-06-16

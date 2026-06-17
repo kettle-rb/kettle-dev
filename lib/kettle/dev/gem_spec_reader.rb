@@ -195,6 +195,21 @@ module Kettle
           CACHE.mutex.synchronize { CACHE.entries.clear }
         end
 
+        def declared_version_file_path(root)
+          gemspec_path = Dir.glob(File.join(root.to_s, "*.gemspec")).sort.first
+          return unless gemspec_path && File.file?(gemspec_path)
+
+          gemspec_source = File.read(gemspec_path)
+          entrypoint_require = extract_entrypoint_require_from_gemspec_source(gemspec_source)
+          return if entrypoint_require.to_s.strip.empty?
+
+          path = File.join(root.to_s, "lib", entrypoint_require, "version.rb")
+          File.file?(path) ? path : nil
+        rescue => error
+          Kettle::Dev.debug_error(error, __method__)
+          nil
+        end
+
         private
 
         # Derive the forge organization and origin repository name using homepage or git remotes.

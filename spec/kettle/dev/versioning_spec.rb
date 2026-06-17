@@ -49,6 +49,36 @@ RSpec.describe Kettle::Dev::Versioning do
         expect(described_class.detect_version(dir)).to eq("7.1.2")
       end
     end
+
+    it "prefers the gemspec-declared version file over compatibility aliases" do
+      Dir.mktmpdir do |dir|
+        alias_file = File.join(dir, "lib", "omniauth", "jwt", "version.rb")
+        version_file = File.join(dir, "lib", "omniauth", "jwt2", "version.rb")
+        FileUtils.mkdir_p(File.dirname(alias_file))
+        FileUtils.mkdir_p(File.dirname(version_file))
+        File.write(alias_file, <<~RUBY)
+          require_relative "../jwt2/version"
+          module Omniauth
+            module JWT
+              VERSION = JWT2::VERSION unless const_defined?(:VERSION, false)
+            end
+          end
+        RUBY
+        File.write(version_file, "module Omniauth; module JWT2; VERSION = '0.1.1'; end; end\n")
+        File.write(File.join(dir, "omniauth-jwt2.gemspec"), <<~RUBY)
+          Gem::Specification.new do |spec|
+            spec.name = "omniauth-jwt2"
+            spec.version = Kernel.load("\#{__dir__}/lib/omniauth/jwt2/version.rb", Module.new)::Omniauth::JWT2::VERSION
+          rescue LoadError
+            require_relative "lib/omniauth/jwt2/version"
+            spec.version = Omniauth::JWT2::VERSION
+          end
+        RUBY
+
+        expect(described_class.version_file_candidates(dir)).to eq([version_file])
+        expect(described_class.detect_version(dir)).to eq("0.1.1")
+      end
+    end
   end
 
   describe "::epic_major?" do

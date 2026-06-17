@@ -90,6 +90,51 @@ RSpec.describe Kettle::Dev::BumpCLI, :check_output, :prism_only do
     end
   end
 
+  it "bumps the gemspec-declared version file when a compatibility alias exists" do
+    Dir.mktmpdir do |root|
+      alias_file = File.join(root, "lib", "omniauth", "jwt", "version.rb")
+      version_file = File.join(root, "lib", "omniauth", "jwt2", "version.rb")
+      gemspec_path = File.join(root, "omniauth-jwt2.gemspec")
+      FileUtils.mkdir_p(File.dirname(alias_file))
+      FileUtils.mkdir_p(File.dirname(version_file))
+      File.write(alias_file, <<~RUBY)
+        require_relative "../jwt2/version"
+        module Omniauth
+          module JWT
+            Version = JWT2::Version unless const_defined?(:Version, false)
+            VERSION = JWT2::VERSION unless const_defined?(:VERSION, false)
+          end
+        end
+      RUBY
+      File.write(version_file, <<~RUBY)
+        module Omniauth
+          module JWT2
+            module Version
+              VERSION = "0.1.1"
+            end
+            VERSION = Version::VERSION
+          end
+        end
+      RUBY
+      File.write(gemspec_path, <<~RUBY)
+        Gem::Specification.new do |spec|
+          spec.name = "omniauth-jwt2"
+          spec.version = Kernel.load("\#{__dir__}/lib/omniauth/jwt2/version.rb", Module.new)::Omniauth::JWT2::Version::VERSION
+        rescue LoadError
+          require_relative "lib/omniauth/jwt2/version"
+          spec.version = Omniauth::JWT2::Version::VERSION
+        end
+      RUBY
+      allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
+
+      expect(described_class.new(["patch"]).run!).to eq(0)
+
+      expect(File.read(version_file)).to include('VERSION = "0.1.2"')
+      expect(File.read(alias_file)).to include("VERSION = JWT2::VERSION")
+      expect(File.read(gemspec_path)).to include("Omniauth::JWT2::Version::VERSION")
+    end
+  end
+
   it "rejects non-numeric bump keywords for prerelease versions" do
     with_project(version: "1.2.3.pre") do
       expect { described_class.new(["patch"]).run! }

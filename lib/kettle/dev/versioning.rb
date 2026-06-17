@@ -34,6 +34,9 @@ module Kettle
           return [path]
         end
 
+        declared_path = Kettle::Dev::GemSpecReader.declared_version_file_path(root)
+        return [declared_path] if declared_path
+
         candidates = Dir[File.join(root, "lib", "**", "version.rb")]
         abort!("Could not find version.rb under lib/**.") if candidates.empty?
         candidates
