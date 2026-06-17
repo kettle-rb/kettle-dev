@@ -2,9 +2,12 @@
 
 require "optparse"
 require "English"
+require "json"
+require "fileutils"
 require "uri"
 require "net/http"
 require "openssl"
+require "time"
 begin
   require "addressable/uri"
 rescue LoadError
@@ -21,6 +24,8 @@ module Kettle
     #
     # Usage: Kettle::Dev::PreReleaseCLI.new(check_num: 1).run
     class PreReleaseCLI
+      IMAGE_URL_CACHE_TTL_SECONDS = 7 * 24 * 60 * 60
+
       # Simple HTTP helpers for link validation
       module HTTP
         module_function
@@ -89,6 +94,85 @@ module Kettle
           end
         rescue Timeout::Error, Errno::ECONNREFUSED, Errno::EHOSTUNREACH, SocketError, OpenSSL::SSL::SSLError => e
           warn("[kettle-pre-release] HTTP error for #{uri}: #{e.class}: #{e.message}")
+          false
+        end
+      end
+
+      # Persistent cache of successfully validated Markdown image URLs.
+      class ImageUrlCache
+        VERSION = 1
+
+        def self.default_path
+          state_home = ENV["XDG_STATE_HOME"]
+          state_home = File.join(Dir.home, ".local", "state") if state_home.to_s.empty?
+          File.join(state_home, "kettle-dev", "image-url-cache.json")
+        rescue ArgumentError
+          nil
+        end
+
+        def initialize(path:, ttl_seconds: IMAGE_URL_CACHE_TTL_SECONDS, clock: -> { Time.now })
+          @path = path
+          @ttl_seconds = ttl_seconds
+          @clock = clock
+          @data = nil
+        end
+
+        def fresh_success?(url)
+          entry = data.fetch("images")[url.to_s]
+          return false unless entry.is_a?(Hash)
+          return false unless entry["ok"] == true
+
+          fresh_entry?(entry)
+        end
+
+        def write_success(url)
+          return if @path.to_s.empty?
+          return if url.to_s.empty?
+
+          data.fetch("images")[url.to_s] = {
+            "ok" => true,
+            "cached_at" => @clock.call.utc.iso8601
+          }
+          save!
+        end
+
+        def to_h
+          data
+        end
+
+        private
+
+        def data
+          @data ||= load_data
+        end
+
+        def load_data
+          parsed = if @path && File.file?(@path)
+            JSON.parse(File.read(@path))
+          end
+          return empty_data unless parsed.is_a?(Hash)
+          return empty_data unless parsed["version"].to_i == VERSION
+
+          parsed["version"] ||= VERSION
+          parsed["images"] = {} unless parsed["images"].is_a?(Hash)
+          parsed
+        rescue JSON::ParserError, Errno::EACCES
+          empty_data
+        end
+
+        def empty_data
+          {"version" => VERSION, "images" => {}}
+        end
+
+        def save!
+          FileUtils.mkdir_p(File.dirname(@path))
+          File.write(@path, JSON.pretty_generate(data) + "\n")
+        end
+
+        def fresh_entry?(entry)
+          cached_at = Time.iso8601(entry["cached_at"].to_s)
+          cached_at >= @clock.call - @ttl_seconds
+        rescue ArgumentError
           false
         end
       end
@@ -184,6 +268,8 @@ module Kettle
       def initialize(check_num: 1)
         @check_num = (check_num || 1).to_i
         @check_num = 1 if @check_num < 1
+        @image_url_cache_path = configured_image_url_cache_path
+        @refresh_image_url_cache = env_truthy?(ENV["KETTLE_IMAGE_URL_CACHE_REFRESH"])
       end
 
       # Execute configured checks starting from @check_num.
@@ -272,12 +358,19 @@ module Kettle
         puts "[kettle-pre-release] Check 3: Validate Markdown image links (HTTP HEAD)"
         urls = Markdown.extract_image_urls_from_files
         puts "[kettle-pre-release] Found #{urls.size} unique image URL(s)."
+        cache = image_url_cache
         failures = []
         urls.each do |url|
           print("  -> #{url} … ")
+          if cache && !@refresh_image_url_cache && cache.fresh_success?(url)
+            puts "OK (cached)"
+            next
+          end
+
           ok = HTTP.head_ok?(url)
           if ok
             puts "OK"
+            cache&.write_success(url)
           else
             puts "FAIL"
             failures << url
@@ -291,6 +384,26 @@ module Kettle
           puts "[kettle-pre-release] All image links validated."
         end
         nil
+      end
+
+      private
+
+      def image_url_cache
+        return nil if @image_url_cache_path.to_s.empty?
+
+        @image_url_cache ||= ImageUrlCache.new(path: @image_url_cache_path)
+      end
+
+      def configured_image_url_cache_path
+        value = ENV.fetch("KETTLE_IMAGE_URL_CACHE", nil)
+        return ImageUrlCache.default_path if value.nil? || value.to_s.strip.empty?
+        return nil if value.to_s.strip.match?(Kettle::Dev::ENV_FALSE_RE)
+
+        value
+      end
+
+      def env_truthy?(value)
+        !!value.to_s.strip.match?(/\A(true|y|yes|1|on)\z/i)
       end
     end
   end

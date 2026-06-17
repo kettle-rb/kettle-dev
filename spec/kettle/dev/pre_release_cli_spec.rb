@@ -4,6 +4,7 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
   let(:gha_sha_pins_cli) { instance_double(Kettle::Dev::GhaShaPinsCLI, run!: 0) }
 
   before do
+    stub_env("KETTLE_IMAGE_URL_CACHE" => "false")
     allow(Kettle::Dev::GhaShaPinsCLI).to receive(:new).and_return(gha_sha_pins_cli)
   end
 
@@ -161,6 +162,88 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
         end
       end
       expect { cli.run }.to raise_error(MockSystemExit)
+    end
+
+    it "uses fresh successful image URL cache entries instead of repeating HTTP checks" do
+      Dir.mktmpdir do |root|
+        cache_path = File.join(root, "image-url-cache.json")
+        cache = Kettle::Dev::PreReleaseCLI::ImageUrlCache.new(
+          path: cache_path,
+          clock: -> { Time.utc(2026, 6, 16, 12, 0, 0) }
+        )
+        cache.write_success("https://example.com/logo.svg")
+
+        stub_env("KETTLE_IMAGE_URL_CACHE" => cache_path)
+        allow(Kettle::Dev::PreReleaseCLI::Markdown).to receive(:extract_image_urls_from_files).and_return([
+          "https://example.com/logo.svg"
+        ])
+        expect(Kettle::Dev::PreReleaseCLI::HTTP).not_to receive(:head_ok?)
+
+        expect { described_class.new(check_num: 3).run }.not_to raise_error
+      end
+    end
+
+    it "refreshes stale image URL cache entries and records successful revalidation" do
+      Dir.mktmpdir do |root|
+        cache_path = File.join(root, "image-url-cache.json")
+        old_cache = Kettle::Dev::PreReleaseCLI::ImageUrlCache.new(
+          path: cache_path,
+          clock: -> { Time.utc(2026, 6, 1, 12, 0, 0) }
+        )
+        old_cache.write_success("https://example.com/logo.svg")
+
+        stub_env("KETTLE_IMAGE_URL_CACHE" => cache_path)
+        allow(Kettle::Dev::PreReleaseCLI::Markdown).to receive(:extract_image_urls_from_files).and_return([
+          "https://example.com/logo.svg"
+        ])
+        allow(Kettle::Dev::PreReleaseCLI::HTTP).to receive(:head_ok?).and_return(true)
+
+        expect { described_class.new(check_num: 3).run }.not_to raise_error
+
+        expect(Kettle::Dev::PreReleaseCLI::HTTP).to have_received(:head_ok?).with("https://example.com/logo.svg")
+        cached_at = JSON.parse(File.read(cache_path)).dig("images", "https://example.com/logo.svg", "cached_at")
+        expect(Time.iso8601(cached_at)).to be > Time.utc(2026, 6, 1, 12, 0, 0)
+      end
+    end
+
+    it "does not cache failed image URL validations" do
+      Dir.mktmpdir do |root|
+        cache_path = File.join(root, "image-url-cache.json")
+        stub_env("KETTLE_IMAGE_URL_CACHE" => cache_path)
+        allow(Kettle::Dev::PreReleaseCLI::Markdown).to receive(:extract_image_urls_from_files).and_return([
+          "https://example.com/missing.svg"
+        ])
+        allow(Kettle::Dev::PreReleaseCLI::HTTP).to receive(:head_ok?).and_return(false)
+
+        expect { described_class.new(check_num: 3).run }.to raise_error(MockSystemExit)
+
+        cached = File.file?(cache_path) ? JSON.parse(File.read(cache_path)) : {}
+        expect(cached.fetch("images", {})).not_to include("https://example.com/missing.svg")
+      end
+    end
+
+    it "bypasses fresh image URL cache entries when refresh is requested" do
+      Dir.mktmpdir do |root|
+        cache_path = File.join(root, "image-url-cache.json")
+        cache = Kettle::Dev::PreReleaseCLI::ImageUrlCache.new(
+          path: cache_path,
+          clock: -> { Time.utc(2026, 6, 16, 12, 0, 0) }
+        )
+        cache.write_success("https://example.com/logo.svg")
+
+        stub_env(
+          "KETTLE_IMAGE_URL_CACHE" => cache_path,
+          "KETTLE_IMAGE_URL_CACHE_REFRESH" => "true"
+        )
+        allow(Kettle::Dev::PreReleaseCLI::Markdown).to receive(:extract_image_urls_from_files).and_return([
+          "https://example.com/logo.svg"
+        ])
+        allow(Kettle::Dev::PreReleaseCLI::HTTP).to receive(:head_ok?).and_return(true)
+
+        expect { described_class.new(check_num: 3).run }.not_to raise_error
+
+        expect(Kettle::Dev::PreReleaseCLI::HTTP).to have_received(:head_ok?).with("https://example.com/logo.svg")
+      end
     end
 
     it "respects starting check index (no-op when > number of checks)" do

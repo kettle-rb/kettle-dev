@@ -11,6 +11,16 @@ module Kettle
         def self.extract_image_urls_from_files: (?String glob_pattern) -> Array[String]
       end
 
+      class ImageUrlCache
+        VERSION: Integer
+
+        def self.default_path: () -> String?
+        def initialize: (path: String?, ?ttl_seconds: Integer, ?clock: ^() -> Time) -> void
+        def fresh_success?: (String url) -> bool
+        def write_success: (String url) -> void
+        def to_h: () -> Hash[String, untyped]
+      end
+
       def initialize: (?check_num: Integer) -> void
       def run: () -> void
       def check_markdown_uri_normalization!: () -> void

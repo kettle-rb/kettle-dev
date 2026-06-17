@@ -22,6 +22,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- `kettle-pre-release` now caches successful Markdown image URL validations in
+  the global kettle-dev state cache for seven days to avoid repeated network
+  HEAD requests during release readiness checks.
+
 ### Deprecated
 
 ### Removed
