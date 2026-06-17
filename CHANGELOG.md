@@ -22,10 +22,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
-- `kettle-pre-release` now caches successful Markdown image URL validations in
-  the global kettle-dev state cache for seven days to avoid repeated network
-  HEAD requests during release readiness checks.
-
 ### Deprecated
 
 ### Removed
@@ -33,6 +29,19 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Fixed
 
 ### Security
+
+## [2.2.10] - 2026-06-16
+
+- TAG: [v2.2.10][2.2.10t]
+- COVERAGE: 92.24% -- 3911/4240 lines in 28 files
+- BRANCH COVERAGE: 73.87% -- 1552/2101 branches in 28 files
+- 64.35% documented
+
+### Changed
+
+- `kettle-pre-release` now caches successful Markdown image URL validations in
+  the global kettle-dev state cache for seven days to avoid repeated network
+  HEAD requests during release readiness checks.
 
 ## [2.2.9] - 2026-06-14
 
@@ -2130,7 +2139,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.9...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.10...HEAD
+[2.2.10]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.9...v2.2.10
+[2.2.10t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.10
 [2.2.9]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.8...v2.2.9
 [2.2.9t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.9
 [2.2.8]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.7...v2.2.8
