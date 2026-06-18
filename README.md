@@ -375,7 +375,8 @@ What it does:
 
 - Script: `exe/kettle-release` (run as `kettle-release`)
 - Purpose: guided release helper that:
-    - Runs `kettle-pre-release` before the numbered release steps on full releases, aborting before release setup if any pre-release gate fails.
+    - Runs `kettle-pre-release` as step 0 on full releases, aborting before release setup if any pre-release gate fails.
+    - Skips pre-release checks for any `start_step` greater than `0`, so resumptions begin directly at the requested numbered step.
     - Runs sanity checks (`bin/setup`, `bin/rake`), confirms version/changelog, optionally updates Appraisals, regenerates docs via `bin/rake yard`, commits “🔖 Prepare release vX.Y.Z”.
     - Optionally runs your CI locally with `act` before any push:
         - Enable with env: `K_RELEASE_LOCAL_CI="true"` (run automatically) or `K_RELEASE_LOCAL_CI="ask"` (prompt \[Y/n\]).
@@ -385,7 +386,8 @@ What it does:
     - Exports `SOURCE_DATE_EPOCH`, builds (optionally signed), creates gem checksums, and runs `bundle exec rake release` (prompts for signing key + RubyGems MFA OTP as needed).
 - Options:
     - `start_step` map (skip directly to a phase):
-        1.  Verify Bundler \>= 2.7 (always runs; start at 1 to do everything)
+        0.  Run `kettle-pre-release` gates
+        1.  Verify Bundler \>= 2.7 (start at 1 to skip pre-release checks)
         2.  Detect version; RubyGems sanity check; confirm CHANGELOG/version; sync copyright years; update badges/headers
         3.  Run bin/setup
         4.  Run bin/rake (default task)
@@ -406,7 +408,8 @@ What it does:
         19. Push tags to remotes (final)
 - Examples:
     - After intermittent CI failure, restart from monitoring: `bundle exec kettle-release start_step=10`
-    - After fixing a failed pre-release gate, rerun from the top: `bundle exec kettle-release`
+    - After fixing a failed pre-release gate, rerun from step 0: `bundle exec kettle-release`
+    - After intentionally handling a failed pre-release gate, skip it and start numbered release steps: `bundle exec kettle-release start_step=1`
 - Tips:
     - The commit message helper `exe/kettle-commit-msg` prefers project-local `.git-hooks` (then falls back to `~/.git-hooks`).
     - The goalie file `commit-subjects-goalie.txt` controls when a footer is appended; customize `footer-template.erb.txt` as you like.

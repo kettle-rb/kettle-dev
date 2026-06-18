@@ -720,6 +720,18 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect { cli.run }.to raise_error(MockSystemExit, /pre-release failed/)
       end
 
+      it "skips pre-release checks when resuming at step 1" do
+        resumed_cli = described_class.new(start_step: 1)
+        allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("n\n")
+        allow(resumed_cli).to receive(:ensure_bundler_2_7_plus!)
+        allow(resumed_cli).to receive(:detect_version).and_return("9.9.9")
+        allow(resumed_cli).to receive(:detect_gem_name).and_return("mygem")
+        allow(resumed_cli).to receive(:latest_released_versions).and_return([nil, nil])
+        expect(resumed_cli).not_to receive(:run_pre_release_checks!)
+
+        expect { resumed_cli.run }.to raise_error(MockSystemExit, /please update version.rb/)
+      end
+
       it "skips pre-release checks when resuming after step 1" do
         resumed_cli = described_class.new(start_step: 2)
         allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("n\n")

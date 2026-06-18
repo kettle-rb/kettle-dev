@@ -43,16 +43,17 @@ end
 # Do not guard with __FILE__ == $PROGRAM_NAME because binstubs use Kernel.load.
 if ARGV.include?("-h") || ARGV.include?("--help")
   puts <<~USAGE
-    Usage: kettle-release [--version VERSION] [--local-ci] [start_step=<1-19>]
+    Usage: kettle-release [--version VERSION] [--local-ci] [start_step=<0-19>]
 
     Automates the release flow for a Ruby gem in the host project.
 
-    Full releases run `kettle-pre-release` before step 1 and abort if any
-    pre-release gate fails. Resume with start_step > 1 only after the gate has
-    passed or after intentionally handling the failure.
+    Full releases start at step 0 and run `kettle-pre-release` before the
+    numbered release steps. Any start_step greater than 0 skips pre-release
+    checks and resumes directly at the requested numbered step.
 
     Start steps (use start_step=<n> to begin at that step):
-      1. Verify Bundler >= 2.7 (always runs; start at 1 to do everything)
+      0. Run kettle-pre-release gates
+      1. Verify Bundler >= 2.7 (start at 1 to skip pre-release checks)
       2. Detect version; RubyGems sanity check; confirm CHANGELOG/version; sync copyright years; update badges/headers
       3. Run bin/setup
       4. Run bin/rake (default task)
@@ -88,8 +89,9 @@ if ARGV.include?("-h") || ARGV.include?("--help")
       DEBUG=true                  # Print backtraces on errors
 
     Examples:
-      kettle-release                       # full flow from the top (start_step=1)
+      kettle-release                       # full flow from the top (start_step=0)
       kettle-release --local-ci            # run local act CI, publish gem, then push commits/tags
+      kettle-release start_step=1          # skip pre-release checks and start numbered release steps
       kettle-release start_step=10         # resume by monitoring CI for the current branch
       SKIP_GEM_SIGNING=true kettle-release start_step=14  # build+release without signing
   USAGE
@@ -117,7 +119,7 @@ end
 
 local_ci = ARGV.include?("--local-ci")
 start_step_arg = ARGV.find { |a| a.start_with?("start_step=") }
-start_step = start_step_arg ? start_step_arg.split("=", 2)[1].to_i : 1
+start_step = start_step_arg ? start_step_arg.split("=", 2)[1].to_i : 0
 version_override = extract_version_arg!(ARGV)
 
 begin

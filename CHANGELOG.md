@@ -28,6 +28,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-release` now treats `kettle-pre-release` as step 0, so any
+  `start_step` greater than 0 skips pre-release gates and resumes directly at
+  the requested numbered release step.
+
 ### Security
 
 ## [2.2.12] - 2026-06-18

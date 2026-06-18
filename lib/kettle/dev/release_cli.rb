@@ -70,17 +70,17 @@ module Kettle
 
       public
 
-      def initialize(start_step: 1, local_ci: false, version: nil)
+      def initialize(start_step: 0, local_ci: false, version: nil)
         @root = Kettle::Dev::CIHelpers.project_root
         @git = Kettle::Dev::GitAdapter.new
-        @start_step = (start_step || 1).to_i
-        @start_step = 1 if @start_step < 1
+        @start_step = (start_step || 0).to_i
+        @start_step = 0 if @start_step < 0
         @local_ci = !!local_ci
         @version_override = Kettle::Dev::Versioning.normalize_explicit_version(version)
       end
 
       def run
-        run_pre_release_checks! if @start_step <= 1
+        run_pre_release_checks! if @start_step <= 0
 
         # 1. Ensure Bundler version ✓
         ensure_bundler_2_7_plus!
