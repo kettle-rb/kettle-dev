@@ -28,11 +28,20 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [2.2.13] - 2026-06-18
+
+- TAG: [v2.2.13][2.2.13t]
+- COVERAGE: 92.15% -- 3931/4266 lines in 28 files
+- BRANCH COVERAGE: 73.97% -- 1566/2117 branches in 28 files
+- 63.76% documented
+
+### Fixed
+
 - `kettle-release` now treats `kettle-pre-release` as step 0, so any
   `start_step` greater than 0 skips pre-release gates and resumes directly at
   the requested numbered release step.
-
-### Security
 
 ## [2.2.12] - 2026-06-18
 
@@ -2174,7 +2183,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.12...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.13...HEAD
+[2.2.13]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.12...v2.2.13
+[2.2.13t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.13
 [2.2.12]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.11...v2.2.12
 [2.2.12t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.12
 [2.2.11]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.10...v2.2.11

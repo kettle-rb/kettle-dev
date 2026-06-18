@@ -649,7 +649,8 @@ Examples:</li>
   <li>Script: <code>exe/kettle-release</code> (run as <code>kettle-release</code>)</li>
   <li>Purpose: guided release helper that:
     <ul>
-      <li>Runs <code>kettle-pre-release</code> before the numbered release steps on full releases, aborting before release setup if any pre-release gate fails.</li>
+      <li>Runs <code>kettle-pre-release</code> as step 0 on full releases, aborting before release setup if any pre-release gate fails.</li>
+      <li>Skips pre-release checks for any <code>start_step</code> greater than <code>0</code>, so resumptions begin directly at the requested numbered step.</li>
       <li>Runs sanity checks (<code>bin/setup</code>, <code>bin/rake</code>), confirms version/changelog, optionally updates Appraisals, regenerates docs via <code>bin/rake yard</code>, commits “🔖 Prepare release vX.Y.Z”.</li>
       <li>Optionally runs your CI locally with <code>act</code> before any push:
         <ul>
@@ -667,7 +668,8 @@ Examples:</li>
       <li>
 <code>start_step</code> map (skip directly to a phase):
         <ol>
-          <li>Verify Bundler &gt;= 2.7 (always runs; start at 1 to do everything)</li>
+          <li>Run <code>kettle-pre-release</code> gates</li>
+          <li>Verify Bundler &gt;= 2.7 (start at 1 to skip pre-release checks)</li>
           <li>Detect version; RubyGems sanity check; confirm CHANGELOG/version; sync copyright years; update badges/headers</li>
           <li>Run bin/setup</li>
           <li>Run bin/rake (default task)</li>
@@ -694,7 +696,9 @@ Examples:</li>
     <ul>
       <li>After intermittent CI failure, restart from monitoring: <code>bundle exec kettle-release start_step=10</code>
 </li>
-      <li>After fixing a failed pre-release gate, rerun from the top: <code>bundle exec kettle-release</code>
+      <li>After fixing a failed pre-release gate, rerun from step 0: <code>bundle exec kettle-release</code>
+</li>
+      <li>After intentionally handling a failed pre-release gate, skip it and start numbered release steps: <code>bundle exec kettle-release start_step=1</code>
 </li>
     </ul>
   </li>
@@ -1083,7 +1087,7 @@ Please consider sponsoring me or the project.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Thu Jun 18 06:34:14 2026 by
+  Generated on Thu Jun 18 17:13:55 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>
