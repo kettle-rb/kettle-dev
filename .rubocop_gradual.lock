@@ -1,0 +1,5 @@
+{
+  "lib/kettle/dev/gem_spec_reader.rb:1194368979": [
+    [199, 70, 10, "Style/RedundantSort: Use `min` instead of `sort...first`.", 1099809899]
+  ]
+}

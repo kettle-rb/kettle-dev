@@ -28,11 +28,20 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [2.2.11] - 2026-06-17
+
+- TAG: [v2.2.11][2.2.11t]
+- COVERAGE: 92.38% -- 3928/4252 lines in 28 files
+- BRANCH COVERAGE: 73.97% -- 1560/2109 branches in 28 files
+- 64.06% documented
+
+### Fixed
+
 - `kettle-bump` now prefers the gemspec-declared version file before scanning
   `lib/**/version.rb`, so compatibility alias version files do not block version
   bumps.
-
-### Security
 
 ## [2.2.10] - 2026-06-16
 
@@ -2143,7 +2152,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.10...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.11...HEAD
+[2.2.11]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.10...v2.2.11
+[2.2.11t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.11
 [2.2.10]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.9...v2.2.10
 [2.2.10t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.10
 [2.2.9]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.8...v2.2.9
