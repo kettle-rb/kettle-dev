@@ -20,10 +20,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
-- Added `--version VERSION` support to `kettle-changelog` and `kettle-release`
-  for shim gems whose release version is intentionally sourced outside the local
-  `lib/**/version.rb` file.
-
 ### Changed
 
 ### Deprecated
@@ -32,10 +28,25 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [2.2.12] - 2026-06-18
+
+- TAG: [v2.2.12][2.2.12t]
+- COVERAGE: 92.52% -- 3947/4266 lines in 28 files
+- BRANCH COVERAGE: 74.11% -- 1569/2117 branches in 28 files
+- 63.76% documented
+
+### Added
+
+- Added `--version VERSION` support to `kettle-changelog` and `kettle-release`
+  for shim gems whose release version is intentionally sourced outside the local
+  `lib/**/version.rb` file.
+
+### Fixed
+
 - Updated `kettle-changelog` and `kettle-pre-release` help text to match current
   coverage generation, documentation stats, and image URL cache behavior.
-
-### Security
 
 ## [2.2.11] - 2026-06-17
 
@@ -2159,7 +2170,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.11...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.12...HEAD
+[2.2.12]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.11...v2.2.12
+[2.2.12t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.12
 [2.2.11]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.10...v2.2.11
 [2.2.11t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.11
 [2.2.10]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.9...v2.2.10

@@ -105,7 +105,7 @@ def extract_version_arg!(argv)
     argv.slice!(idx, 2)
   end
   argv.delete_if do |arg|
-    if arg.start_with?("--version=") || arg.start_with?("version=")
+    if arg.start_with?("--version=", "version=")
       version = arg.split("=", 2)[1]
       true
     else

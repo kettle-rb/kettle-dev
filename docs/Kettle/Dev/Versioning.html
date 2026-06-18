@@ -160,7 +160,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#detect_version-class_method" title="detect_version (class method)">.<strong>detect_version</strong>(root)  &#x21d2; String </a>
+      <a href="#detect_version-class_method" title="detect_version (class method)">.<strong>detect_version</strong>(root, override: nil)  &#x21d2; String </a>
     
 
     
@@ -198,6 +198,29 @@
 
   
     <span class="summary_desc"><div class='inline'><p>Whether MAJOR is an EPIC version (strictly &gt; 1000).</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#normalize_explicit_version-class_method" title="normalize_explicit_version (class method)">.<strong>normalize_explicit_version</strong>(value)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
 </div></span>
   
 </li>
@@ -276,12 +299,12 @@
       <pre class="lines">
 
 
-83
-84
-85</pre>
+97
+98
+99</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/versioning.rb', line 83</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/versioning.rb', line 97</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_abort!'>abort!</span><span class='lparen'>(</span><span class='id identifier rubyid_msg'>msg</span><span class='rparen'>)</span>
   <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="ExitAdapter.html" title="Kettle::Dev::ExitAdapter (module)">ExitAdapter</a></span></span><span class='period'>.</span><span class='id identifier rubyid_abort'><span class='object_link'><a href="ExitAdapter.html#abort-class_method" title="Kettle::Dev::ExitAdapter.abort (method)">abort</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_msg'>msg</span><span class='rparen'>)</span>
@@ -368,20 +391,6 @@ EPIC is a MAJOR &gt; 1000.</p>
       <pre class="lines">
 
 
-50
-51
-52
-53
-54
-55
-56
-57
-58
-59
-60
-61
-62
-63
 64
 65
 66
@@ -389,10 +398,24 @@ EPIC is a MAJOR &gt; 1000.</p>
 68
 69
 70
-71</pre>
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/versioning.rb', line 50</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/versioning.rb', line 64</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_classify_bump'>classify_bump</span><span class='lparen'>(</span><span class='id identifier rubyid_prev'>prev</span><span class='comma'>,</span> <span class='id identifier rubyid_cur'>cur</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_pv'>pv</span> <span class='op'>=</span> <span class='const'>Gem</span><span class='op'>::</span><span class='const'>Version</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_prev'>prev</span><span class='rparen'>)</span>
@@ -424,7 +447,7 @@ EPIC is a MAJOR &gt; 1000.</p>
       <div class="method_details ">
   <h3 class="signature " id="detect_version-class_method">
   
-    .<strong>detect_version</strong>(root)  &#x21d2; <tt>String</tt> 
+    .<strong>detect_version</strong>(root, override: nil)  &#x21d2; <tt>String</tt> 
   
 
   
@@ -458,6 +481,23 @@ to point at a representative package version file.</p>
       
     </li>
   
+    <li>
+      
+        <span class='name'>override</span>
+      
+      
+        <span class='type'>(<tt>String</tt>, <tt>nil</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>nil</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>explicit version supplied by caller</p>
+</div>
+      
+    </li>
+  
 </ul>
 
 <p class="tag_title">Returns:</p>
@@ -484,7 +524,6 @@ to point at a representative package version file.</p>
       <pre class="lines">
 
 
-14
 15
 16
 17
@@ -496,12 +535,19 @@ to point at a representative package version file.</p>
 23
 24
 25
-26</pre>
+26
+27
+28
+29
+30</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/versioning.rb', line 14</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/versioning.rb', line 15</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_detect_version'>detect_version</span><span class='lparen'>(</span><span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_detect_version'>detect_version</span><span class='lparen'>(</span><span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span><span class='comma'>,</span> <span class='label'>override:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_explicit'>explicit</span> <span class='op'>=</span> <span class='id identifier rubyid_normalize_explicit_version'>normalize_explicit_version</span><span class='lparen'>(</span><span class='id identifier rubyid_override'>override</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='id identifier rubyid_explicit'>explicit</span> <span class='kw'>if</span> <span class='id identifier rubyid_explicit'>explicit</span>
+
   <span class='id identifier rubyid_candidates'>candidates</span> <span class='op'>=</span> <span class='id identifier rubyid_version_file_candidates'>version_file_candidates</span><span class='lparen'>(</span><span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span><span class='rparen'>)</span>
   <span class='id identifier rubyid_versions'>versions</span> <span class='op'>=</span> <span class='id identifier rubyid_candidates'>candidates</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_path'>path</span><span class='op'>|</span>
     <span class='id identifier rubyid_content'>content</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span>
@@ -572,15 +618,57 @@ to point at a representative package version file.</p>
       <pre class="lines">
 
 
-76
-77
-78</pre>
+90
+91
+92</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/versioning.rb', line 76</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/versioning.rb', line 90</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_epic_major?'>epic_major?</span><span class='lparen'>(</span><span class='id identifier rubyid_major'>major</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_major'>major</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_major'>major</span> <span class='op'>&gt;</span> <span class='int'>1000</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="normalize_explicit_version-class_method">
+  
+    .<strong>normalize_explicit_version</strong>(value)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+32
+33
+34
+35
+36
+37
+38
+39
+40</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/versioning.rb', line 32</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_normalize_explicit_version'>normalize_explicit_version</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_version'>version</span> <span class='op'>=</span> <span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span>
+  <span class='kw'>return</span> <span class='kw'>nil</span> <span class='kw'>if</span> <span class='id identifier rubyid_version'>version</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+
+  <span class='const'>Gem</span><span class='op'>::</span><span class='const'>Version</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_version'>version</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_version'>version</span>
+<span class='kw'>rescue</span> <span class='const'>ArgumentError</span>
+  <span class='id identifier rubyid_abort!'>abort!</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Invalid version override: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_version'>version</span><span class='period'>.</span><span class='id identifier rubyid_inspect'>inspect</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -602,25 +690,25 @@ to point at a representative package version file.</p>
       <pre class="lines">
 
 
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
 42
-43</pre>
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/versioning.rb', line 28</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/versioning.rb', line 42</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_version_file_candidates'>version_file_candidates</span><span class='lparen'>(</span><span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span><span class='rparen'>)</span>
   <span class='id identifier rubyid_override'>override</span> <span class='op'>=</span> <span class='const'>ENV</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>K_CHANGELOG_VERSION_FILE</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span>
@@ -648,7 +736,7 @@ to point at a representative package version file.</p>
 </div>
 
       <div id="footer">
-  Generated on Wed Jun 17 18:29:19 2026 by
+  Generated on Thu Jun 18 06:34:14 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>

@@ -179,7 +179,7 @@ includes coverage and YARD stats, and updates link references.</p>
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#initialize-instance_method" title="#initialize (instance method)">#<strong>initialize</strong>(strict: true, enforce_coverage_thresholds: true, update_prep: false, root: Kettle::Dev::CIHelpers.project_root)  &#x21d2; ChangelogCLI </a>
+      <a href="#initialize-instance_method" title="#initialize (instance method)">#<strong>initialize</strong>(strict: true, enforce_coverage_thresholds: true, update_prep: false, version: nil, root: Kettle::Dev::CIHelpers.project_root)  &#x21d2; ChangelogCLI </a>
     
 
     
@@ -303,7 +303,7 @@ includes coverage and YARD stats, and updates link references.</p>
     <div class="method_details first">
   <h3 class="signature first" id="initialize-instance_method">
   
-    #<strong>initialize</strong>(strict: true, enforce_coverage_thresholds: true, update_prep: false, root: Kettle::Dev::CIHelpers.project_root)  &#x21d2; <tt><span class='object_link'><a href="" title="Kettle::Dev::ChangelogCLI (class)">ChangelogCLI</a></span></tt> 
+    #<strong>initialize</strong>(strict: true, enforce_coverage_thresholds: true, update_prep: false, version: nil, root: Kettle::Dev::CIHelpers.project_root)  &#x21d2; <tt><span class='object_link'><a href="" title="Kettle::Dev::ChangelogCLI (class)">ChangelogCLI</a></span></tt> 
   
 
   
@@ -372,6 +372,23 @@ Sets up paths for CHANGELOG.md and coverage.json</p>
       
     </li>
   
+    <li>
+      
+        <span class='name'>version</span>
+      
+      
+        <span class='type'>(<tt>String</tt>, <tt>nil</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>nil</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>explicit version override for gems without a literal VERSION constant</p>
+</div>
+      
+    </li>
+  
 </ul>
 
 
@@ -381,25 +398,27 @@ Sets up paths for CHANGELOG.md and coverage.json</p>
       <pre class="lines">
 
 
-27
 28
 29
 30
 31
 32
 33
-34</pre>
+34
+35
+36</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/changelog_cli.rb', line 27</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/changelog_cli.rb', line 28</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='label'>strict:</span> <span class='kw'>true</span><span class='comma'>,</span> <span class='label'>enforce_coverage_thresholds:</span> <span class='kw'>true</span><span class='comma'>,</span> <span class='label'>update_prep:</span> <span class='kw'>false</span><span class='comma'>,</span> <span class='label'>root:</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="CIHelpers.html" title="Kettle::Dev::CIHelpers (module)">CIHelpers</a></span></span><span class='period'>.</span><span class='id identifier rubyid_project_root'><span class='object_link'><a href="CIHelpers.html#project_root-class_method" title="Kettle::Dev::CIHelpers.project_root (method)">project_root</a></span></span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='label'>strict:</span> <span class='kw'>true</span><span class='comma'>,</span> <span class='label'>enforce_coverage_thresholds:</span> <span class='kw'>true</span><span class='comma'>,</span> <span class='label'>update_prep:</span> <span class='kw'>false</span><span class='comma'>,</span> <span class='label'>version:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>root:</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="CIHelpers.html" title="Kettle::Dev::CIHelpers (module)">CIHelpers</a></span></span><span class='period'>.</span><span class='id identifier rubyid_project_root'><span class='object_link'><a href="CIHelpers.html#project_root-class_method" title="Kettle::Dev::CIHelpers.project_root (method)">project_root</a></span></span><span class='rparen'>)</span>
   <span class='ivar'>@root</span> <span class='op'>=</span> <span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span>
   <span class='ivar'>@changelog_path</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='ivar'>@root</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>CHANGELOG.md</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
   <span class='ivar'>@coverage_path</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='ivar'>@root</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>coverage</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>coverage.json</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
   <span class='ivar'>@strict</span> <span class='op'>=</span> <span class='id identifier rubyid_strict'>strict</span>
   <span class='ivar'>@enforce_coverage_thresholds</span> <span class='op'>=</span> <span class='id identifier rubyid_enforce_coverage_thresholds'>enforce_coverage_thresholds</span>
   <span class='ivar'>@update_prep</span> <span class='op'>=</span> <span class='id identifier rubyid_update_prep'>update_prep</span>
+  <span class='ivar'>@version_override</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Versioning.html" title="Kettle::Dev::Versioning (module)">Versioning</a></span></span><span class='period'>.</span><span class='id identifier rubyid_normalize_explicit_version'><span class='object_link'><a href="Versioning.html#normalize_explicit_version-class_method" title="Kettle::Dev::Versioning.normalize_explicit_version (method)">normalize_explicit_version</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_version'>version</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -428,12 +447,12 @@ Sets up paths for CHANGELOG.md and coverage.json</p>
       <pre class="lines">
 
 
-138
-139
-140</pre>
+140
+141
+142</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/changelog_cli.rb', line 138</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/changelog_cli.rb', line 140</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_pending_release_status'>pending_release_status</span>
   <span class='id identifier rubyid_release_state'>release_state</span>
@@ -458,8 +477,6 @@ Sets up paths for CHANGELOG.md and coverage.json</p>
       <pre class="lines">
 
 
-142
-143
 144
 145
 146
@@ -504,10 +521,12 @@ Sets up paths for CHANGELOG.md and coverage.json</p>
 185
 186
 187
-188</pre>
+188
+189
+190</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/changelog_cli.rb', line 142</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/changelog_cli.rb', line 144</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_release_state'>release_state</span>
   <span class='id identifier rubyid_changelog_present'>changelog_present</span> <span class='op'>=</span> <span class='id identifier rubyid_ensure_changelog_for_release_state!'>ensure_changelog_for_release_state!</span>
@@ -576,8 +595,6 @@ Sets up paths for CHANGELOG.md and coverage.json</p>
       <pre class="lines">
 
 
-190
-191
 192
 193
 194
@@ -598,10 +615,12 @@ Sets up paths for CHANGELOG.md and coverage.json</p>
 209
 210
 211
-212</pre>
+212
+213
+214</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/changelog_cli.rb', line 190</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/changelog_cli.rb', line 192</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_release_state_table'>release_state_table</span><span class='lparen'>(</span><span class='id identifier rubyid_state'>state</span> <span class='op'>=</span> <span class='id identifier rubyid_release_state'>release_state</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_rows'>rows</span> <span class='op'>=</span> <span class='lbracket'>[</span>
@@ -659,8 +678,6 @@ a new version section with coverage/YARD stats, and updates all link references.
       <pre class="lines">
 
 
-42
-43
 44
 45
 46
@@ -753,13 +770,15 @@ a new version section with coverage/YARD stats, and updates all link references.
 133
 134
 135
-136</pre>
+136
+137
+138</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/changelog_cli.rb', line 42</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/changelog_cli.rb', line 44</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_run'>run</span>
-  <span class='id identifier rubyid_version'>version</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Versioning.html" title="Kettle::Dev::Versioning (module)">Versioning</a></span></span><span class='period'>.</span><span class='id identifier rubyid_detect_version'><span class='object_link'><a href="Versioning.html#detect_version-class_method" title="Kettle::Dev::Versioning.detect_version (method)">detect_version</a></span></span><span class='lparen'>(</span><span class='ivar'>@root</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_version'>version</span> <span class='op'>=</span> <span class='id identifier rubyid_detect_version'>detect_version</span>
   <span class='id identifier rubyid_today'>today</span> <span class='op'>=</span> <span class='const'>Time</span><span class='period'>.</span><span class='id identifier rubyid_now'>now</span><span class='period'>.</span><span class='id identifier rubyid_strftime'>strftime</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>%Y-%m-%d</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
   <span class='id identifier rubyid_owner'>owner</span><span class='comma'>,</span> <span class='id identifier rubyid_repo'>repo</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="CIHelpers.html" title="Kettle::Dev::CIHelpers (module)">CIHelpers</a></span></span><span class='period'>.</span><span class='id identifier rubyid_repo_info'><span class='object_link'><a href="CIHelpers.html#repo_info-class_method" title="Kettle::Dev::CIHelpers.repo_info (method)">repo_info</a></span></span>
   <span class='kw'>unless</span> <span class='id identifier rubyid_owner'>owner</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_repo'>repo</span>
@@ -863,7 +882,7 @@ a new version section with coverage/YARD stats, and updates all link references.
 </div>
 
       <div id="footer">
-  Generated on Sat Jun 13 23:06:30 2026 by
+  Generated on Thu Jun 18 06:34:15 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>
