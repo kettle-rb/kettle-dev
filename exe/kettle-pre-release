@@ -5,7 +5,8 @@
 
 # kettle-pre-release: Run pre-release checks to catch avoidable mistakes.
 # - Structured as a sequence of checks that can be resumed via check_num
-# - Checks GitHub Actions SHA pins and validates Markdown image links.
+# - Checks GitHub Actions SHA pins, normalizes Markdown image URLs, and
+#   validates Markdown image links with a global seven-day success cache.
 
 require "optparse"
 
@@ -47,7 +48,13 @@ parser = OptionParser.new do |opts|
     puts "Checks:"
     puts "  1) Validate GitHub Actions SHA pins"
     puts "  2) Normalize Markdown image URLs"
-    puts "  3) Validate Markdown image links (HTTP HEAD)"
+    puts "  3) Validate Markdown image links (cached HTTP HEAD, with GET fallback)"
+    puts
+    puts "Image URL cache:"
+    puts "  Successful image URL validations are cached globally for seven days."
+    puts "  KETTLE_IMAGE_URL_CACHE=/path/to/cache.json  Use a custom cache path"
+    puts "  KETTLE_IMAGE_URL_CACHE=false                Disable the image URL cache"
+    puts "  KETTLE_IMAGE_URL_CACHE_REFRESH=true         Ignore cached successes and refresh"
     exit(0)
   end
 end

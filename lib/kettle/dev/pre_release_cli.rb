@@ -20,7 +20,7 @@ module Kettle
     # Checks:
     #   1) Ensure GitHub Actions workflow actions are pinned to current SHAs.
     #   2) Normalize Markdown image URLs using Addressable normalization.
-    #   3) Validate Markdown image links resolve via HTTP(S) HEAD.
+    #   3) Validate Markdown image links resolve via cached HTTP(S) HEAD/GET.
     #
     # Usage: Kettle::Dev::PreReleaseCLI.new(check_num: 1).run
     class PreReleaseCLI
@@ -352,10 +352,10 @@ module Kettle
         nil
       end
 
-      # Check 3: Validate Markdown image links by HTTP HEAD (no rescue for parse failures)
+      # Check 3: Validate Markdown image links by cached HTTP HEAD/GET.
       # @return [void]
       def check_markdown_images_http!
-        puts "[kettle-pre-release] Check 3: Validate Markdown image links (HTTP HEAD)"
+        puts "[kettle-pre-release] Check 3: Validate Markdown image links (cached HTTP HEAD, with GET fallback)"
         urls = Markdown.extract_image_urls_from_files
         puts "[kettle-pre-release] Found #{urls.size} unique image URL(s)."
         cache = image_url_cache

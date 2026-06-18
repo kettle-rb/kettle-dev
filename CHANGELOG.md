@@ -28,6 +28,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Updated `kettle-changelog` and `kettle-pre-release` help text to match current
+  coverage generation, documentation stats, and image URL cache behavior.
+
 ### Security
 
 ## [2.2.11] - 2026-06-17
