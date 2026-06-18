@@ -598,6 +598,15 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
   end
 
   describe "#detect_version" do
+    it "uses an explicit version override when no version.rb is present" do
+      mkproj do |root|
+        allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
+        cli = described_class.new(strict: false, version: "4.5.6")
+        expect(cli.send(:detect_version)).to eq("4.5.6")
+        expect(cli.send(:version_source_label, {explicit: false})).to eq("version override")
+      end
+    end
+
     it "errors when no version.rb present" do
       mkproj do |root|
         allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)

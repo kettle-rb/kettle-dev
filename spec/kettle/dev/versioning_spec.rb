@@ -29,6 +29,17 @@ RSpec.describe Kettle::Dev::Versioning do
   end
 
   describe "::detect_version" do
+    it "returns an explicit version override without requiring version.rb" do
+      Dir.mktmpdir do |dir|
+        expect(described_class.detect_version(dir, override: "1.2.3")).to eq("1.2.3")
+      end
+    end
+
+    it "aborts when an explicit version override is invalid", :real_exit_adapter do
+      allow(Kettle::Dev::ExitAdapter).to receive(:abort).and_raise(SystemExit.new(1))
+      expect { described_class.detect_version("unused", override: "not a version") }.to raise_error(SystemExit)
+    end
+
     it "aborts when no version.rb exists under lib/**", :real_exit_adapter do
       Dir.mktmpdir do |dir|
         # Ensure an empty project structure with no lib/**/version.rb

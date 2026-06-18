@@ -70,12 +70,13 @@ module Kettle
 
       public
 
-      def initialize(start_step: 1, local_ci: false)
+      def initialize(start_step: 1, local_ci: false, version: nil)
         @root = Kettle::Dev::CIHelpers.project_root
         @git = Kettle::Dev::GitAdapter.new
         @start_step = (start_step || 1).to_i
         @start_step = 1 if @start_step < 1
         @local_ci = !!local_ci
+        @version_override = Kettle::Dev::Versioning.normalize_explicit_version(version)
       end
 
       def run
@@ -671,7 +672,7 @@ module Kettle
       end
 
       def detect_version
-        Kettle::Dev::Versioning.detect_version(@root)
+        Kettle::Dev::Versioning.detect_version(@root, override: @version_override)
       end
 
       def detect_gem_name

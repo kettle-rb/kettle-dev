@@ -55,7 +55,7 @@ end
 begin
   if ARGV.include?("-h") || ARGV.include?("--help")
     puts <<~USAGE
-      Usage: kettle-changelog [--update-prep] [--pending-release] [--release-state] [--json] [--no-strict] [--no-coverage-threshold]
+      Usage: kettle-changelog [--version VERSION] [--update-prep] [--pending-release] [--release-state] [--json] [--no-strict] [--no-coverage-threshold]
 
       Detects the current version from lib/**/version.rb, the latest live release, and
       the most recent CHANGELOG.md release section, then prompts to confirm the selected plan:
@@ -65,6 +65,7 @@ begin
       and update bottom link references to GitHub style.
 
       Options:
+        --version VERSION         Use this version instead of detecting VERSION from lib/**/version.rb
         --update-prep             Force updating the most recent prepared release section in place
         --pending-release         Query whether the changelog has release work pending; exits 0 for yes, 1 for no
         --release-state,
@@ -104,6 +105,24 @@ begin
 end
 
 begin
+  def extract_version_arg!(argv)
+    version = nil
+    if (idx = argv.index("--version"))
+      version = argv[idx + 1]
+      Kettle::Dev::ExitAdapter.abort("--version requires a VERSION") if version.to_s.empty?
+      argv.slice!(idx, 2)
+    end
+    argv.delete_if do |arg|
+      if arg.start_with?("--version=") || arg.start_with?("version=")
+        version = arg.split("=", 2)[1]
+        true
+      else
+        false
+      end
+    end
+    Kettle::Dev::Versioning.normalize_explicit_version(version)
+  end
+
   # Determine if strict mode is enabled (default: true)
   strict_mode = !ARGV.include?("--no-strict") && ENV.fetch("K_CHANGELOG_STRICT", "true").downcase != "false"
   update_prep = ARGV.delete("--update-prep")
@@ -112,8 +131,9 @@ begin
   json_output = ARGV.delete("--json")
   coverage_threshold_disabled = ARGV.include?("--no-coverage-threshold") || ARGV.include?("--no-coverage-thresholds")
   coverage_hard = !coverage_threshold_disabled && ENV.fetch("K_CHANGELOG_COVERAGE_HARD", "true").downcase != "false"
+  version_override = extract_version_arg!(ARGV)
 
-  cli = Kettle::Dev::ChangelogCLI.new(strict: strict_mode, enforce_coverage_thresholds: coverage_hard, update_prep: update_prep)
+  cli = Kettle::Dev::ChangelogCLI.new(strict: strict_mode, enforce_coverage_thresholds: coverage_hard, update_prep: update_prep, version: version_override)
   if release_state_query
     state = cli.release_state
     puts(json_output ? JSON.pretty_generate(state) : cli.release_state_table(state))

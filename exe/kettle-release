@@ -43,7 +43,7 @@ end
 # Do not guard with __FILE__ == $PROGRAM_NAME because binstubs use Kernel.load.
 if ARGV.include?("-h") || ARGV.include?("--help")
   puts <<~USAGE
-    Usage: kettle-release [--local-ci] [start_step=<1-19>]
+    Usage: kettle-release [--version VERSION] [--local-ci] [start_step=<1-19>]
 
     Automates the release flow for a Ruby gem in the host project.
 
@@ -74,6 +74,7 @@ if ARGV.include?("-h") || ARGV.include?("--help")
 
     Options:
       start_step=<number>         # Begin at the numbered step above (e.g., 10 to resume at CI monitoring)
+      --version VERSION           # Use this version instead of detecting VERSION from lib/**/version.rb
       --local-ci                  # Sensitive release mode: run act locally, publish before any git push,
                                   # create the git tag locally, then push commits and tags after publish
 
@@ -96,12 +97,31 @@ if ARGV.include?("-h") || ARGV.include?("--help")
 end
 
 # Parse start_step=<n> from ARGV
+def extract_version_arg!(argv)
+  version = nil
+  if (idx = argv.index("--version"))
+    version = argv[idx + 1]
+    Kettle::Dev::ExitAdapter.abort("--version requires a VERSION") if version.to_s.empty?
+    argv.slice!(idx, 2)
+  end
+  argv.delete_if do |arg|
+    if arg.start_with?("--version=") || arg.start_with?("version=")
+      version = arg.split("=", 2)[1]
+      true
+    else
+      false
+    end
+  end
+  Kettle::Dev::Versioning.normalize_explicit_version(version)
+end
+
 local_ci = ARGV.include?("--local-ci")
 start_step_arg = ARGV.find { |a| a.start_with?("start_step=") }
 start_step = start_step_arg ? start_step_arg.split("=", 2)[1].to_i : 1
+version_override = extract_version_arg!(ARGV)
 
 begin
-  Kettle::Dev::ReleaseCLI.new(start_step: start_step, local_ci: local_ci).run
+  Kettle::Dev::ReleaseCLI.new(start_step: start_step, local_ci: local_ci, version: version_override).run
 rescue LoadError => e
   warn("#{script_basename}: could not load dependency: #{e.class}: #{e.message}")
   warn(Array(e.backtrace).join("\n")) if ENV["DEBUG"]

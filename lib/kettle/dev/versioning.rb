@@ -10,8 +10,12 @@ module Kettle
       # or in K_CHANGELOG_VERSION_FILE when a monorepo/root changelog needs
       # to point at a representative package version file.
       # @param root [String] project root
+      # @param override [String, nil] explicit version supplied by caller
       # @return [String] version string
-      def detect_version(root)
+      def detect_version(root, override: nil)
+        explicit = normalize_explicit_version(override)
+        return explicit if explicit
+
         candidates = version_file_candidates(root)
         versions = candidates.map do |path|
           content = File.read(path)
@@ -23,6 +27,16 @@ module Kettle
         abort!("VERSION constant not found in #{root}/lib/**/version.rb") if versions.none?
         abort!("Multiple VERSION constants found to be out of sync (#{versions.inspect}) in #{root}/lib/**/version.rb") unless versions.uniq.length == 1
         versions.first
+      end
+
+      def normalize_explicit_version(value)
+        version = value.to_s.strip
+        return nil if version.empty?
+
+        Gem::Version.new(version)
+        version
+      rescue ArgumentError
+        abort!("Invalid version override: #{version.inspect}")
       end
 
       def version_file_candidates(root)

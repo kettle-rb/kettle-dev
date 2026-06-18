@@ -20,6 +20,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- Added `--version VERSION` support to `kettle-changelog` and `kettle-release`
+  for shim gems whose release version is intentionally sourced outside the local
+  `lib/**/version.rb` file.
+
 ### Changed
 
 ### Deprecated

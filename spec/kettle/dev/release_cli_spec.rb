@@ -36,6 +36,14 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       end
     end
 
+    it "uses an explicit version override when no version.rb is present" do
+      Dir.mktmpdir do |root|
+        allow(ci_helpers).to receive(:project_root).and_return(root)
+        local_cli = described_class.new(version: "4.5.6")
+        expect(local_cli.send(:detect_version)).to eq("4.5.6")
+      end
+    end
+
     describe "#run_cmd! (signing env injection)", :real_release_rake do
       it "prefixes SKIP_GEM_SIGNING for 'bundle exec rake build' when env set" do
         stub_env("SKIP_GEM_SIGNING" => "true")

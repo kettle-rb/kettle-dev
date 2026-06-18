@@ -24,13 +24,15 @@ module Kettle
       # @param strict [Boolean] when true (default), require coverage and yard data; raise errors if unavailable
       # @param enforce_coverage_thresholds [Boolean] when true, fail strict coverage generation below project thresholds
       # @param update_prep [Boolean] when true, update the most recent prepared release section in place
-      def initialize(strict: true, enforce_coverage_thresholds: true, update_prep: false, root: Kettle::Dev::CIHelpers.project_root)
+      # @param version [String, nil] explicit version override for gems without a literal VERSION constant
+      def initialize(strict: true, enforce_coverage_thresholds: true, update_prep: false, version: nil, root: Kettle::Dev::CIHelpers.project_root)
         @root = root
         @changelog_path = File.join(@root, "CHANGELOG.md")
         @coverage_path = File.join(@root, "coverage", "coverage.json")
         @strict = strict
         @enforce_coverage_thresholds = enforce_coverage_thresholds
         @update_prep = update_prep
+        @version_override = Kettle::Dev::Versioning.normalize_explicit_version(version)
       end
 
       # Main entry point to update CHANGELOG.md
@@ -40,7 +42,7 @@ module Kettle
       #
       # @return [void]
       def run
-        version = Kettle::Dev::Versioning.detect_version(@root)
+        version = detect_version
         today = Time.now.strftime("%Y-%m-%d")
         owner, repo = Kettle::Dev::CIHelpers.repo_info
         unless owner && repo
@@ -299,7 +301,7 @@ module Kettle
 
       def confirm_plan!(plan)
         puts "kettle-changelog selected plan: #{plan_label(plan.fetch(:action))}"
-        puts "  version.rb: #{plan.fetch(:version)}"
+        puts "  #{version_source_label(plan)}: #{plan.fetch(:version)}"
         puts "  latest released: #{plan.fetch(:latest_overall) || "unknown"}"
         puts "  latest released for current series: #{plan.fetch(:latest_for_series) || "unknown"}"
         puts "  latest CHANGELOG.md release: #{plan.fetch(:latest_changelog_version) || "none"}"
@@ -309,6 +311,13 @@ module Kettle
         return if ans == "y" || ans == "yes"
 
         abort("Aborting: changelog plan was not confirmed.")
+      end
+
+      def version_source_label(plan)
+        return "prepared release" if plan.fetch(:explicit, false)
+        return "version override" if @version_override
+
+        "version.rb"
       end
 
       def plan_label(action)
@@ -389,7 +398,7 @@ module Kettle
       end
 
       def detect_version
-        Kettle::Dev::Versioning.detect_version(@root)
+        Kettle::Dev::Versioning.detect_version(@root, override: @version_override)
       end
 
       def extract_unreleased(content)
