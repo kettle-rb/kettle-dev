@@ -321,7 +321,7 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       expect(versions.map { |entry| entry[:sha] }).to eq(["b" * 40, "c" * 40, "a" * 40])
     end
 
-    it "dereferences annotated tags when loading version-like tags" do
+    it "defers annotated tag commit resolution until a specific version is needed" do
       client = described_class.new(token: nil, api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE, user_agent: "kettle-gha-sha-pins")
       allow(client).to receive(:request_json).with("/repos/foo/bar/releases?per_page=100").and_return([
         {"tag_name" => "v1.0.0", "prerelease" => false}
@@ -330,17 +330,32 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
         {"ref" => "refs/tags/v1.0.0", "object" => {"type" => "tag", "sha" => "1" * 40}},
         {"ref" => "refs/tags/v1.0.1", "object" => {"type" => "tag", "sha" => "2" * 40}}
       ])
-      allow(client).to receive(:request_json).with("/repos/foo/bar/git/tags/#{"1" * 40}").and_return(
-        "object" => {"type" => "commit", "sha" => "a" * 40}
-      )
-      allow(client).to receive(:request_json).with("/repos/foo/bar/git/tags/#{"2" * 40}").and_return(
-        "object" => {"type" => "commit", "sha" => "b" * 40}
-      )
+      expect(client).not_to receive(:request_json).with(%r{/repos/foo/bar/git/tags/})
 
       versions = client.versions_for_repo("foo/bar")
 
       expect(versions.map { |entry| entry[:version] }).to eq(%w[1.0.1 1.0.0])
-      expect(versions.map { |entry| entry[:sha] }).to eq(["b" * 40, "a" * 40])
+      expect(versions.map { |entry| entry[:sha] }).to eq([nil, nil])
+      allow(client).to receive(:request_json).with("/repos/foo/bar/commits/v1.0.1").and_return({"sha" => "b" * 40})
+
+      expect(client.commit_sha("foo/bar", "v1.0.1")).to eq("b" * 40)
+    end
+
+    it "does not dereference annotated tags that cannot be action release versions" do
+      client = described_class.new(token: nil, api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE, user_agent: "kettle-gha-sha-pins")
+      allow(client).to receive(:request_json).with("/repos/foo/bar/releases?per_page=100").and_return([
+        {"tag_name" => "v1.0.0", "prerelease" => false}
+      ])
+      allow(client).to receive(:request_json).with("/repos/foo/bar/git/matching-refs/tags/").and_return([
+        {"ref" => "refs/tags/v1.0.0", "object" => {"type" => "commit", "sha" => "a" * 40}},
+        {"ref" => "refs/tags/codeql-bundle-v2.25.6", "object" => {"type" => "tag", "sha" => "1" * 40}}
+      ])
+      expect(client).not_to receive(:request_json).with("/repos/foo/bar/git/tags/#{"1" * 40}")
+
+      versions = client.versions_for_repo("foo/bar")
+
+      expect(versions.map { |entry| entry[:version] }).to eq(["1.0.0"])
+      expect(versions.map { |entry| entry[:sha] }).to eq(["a" * 40])
     end
 
     it "includes prerelease tags so existing prerelease pins are not downgraded" do

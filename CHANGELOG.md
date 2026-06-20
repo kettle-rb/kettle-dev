@@ -36,8 +36,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- `kettle-gha-sha-pins` now bounds GitHub API requests with explicit timeouts
-  and falls back to stale cache data when a refresh request times out.
+- `kettle-gha-sha-pins` now refreshes large action repositories without eagerly
+  dereferencing irrelevant annotated tags, bounds GitHub API refreshes with
+  explicit timeouts, and falls back to stale cache data only when refresh fails.
 
 ### Security
 

@@ -1242,6 +1242,8 @@ module Kettle
             next unless ref.start_with?("refs/tags/")
 
             tag = ref.sub(%r{\Arefs/tags/}, "")
+            next unless parse_release_version_text(tag)
+
             object = entry["object"]
             next unless object.is_a?(Hash)
 
@@ -1250,8 +1252,7 @@ module Kettle
             when "commit"
               memo[tag] = sha
             when "tag"
-              dereferenced_sha = annotated_tag_commit_sha(repo_ref, sha)
-              memo[tag] = dereferenced_sha if dereferenced_sha
+              memo[tag] = nil
             end
           end
         end
