@@ -24,6 +24,8 @@ Please file a bug if you notice a violation of semantic versioning.
   an existing templated `## [Unreleased]` subsection using the Markly CRISPR
   Markdown adapter, failing closed when the expected section shape is absent.
 
+- Added support for JRuby 10.1 and TruffleRuby 34.0.
+
 ### Changed
 
 - Retemplated project metadata and CI/development automation with `kettle-jem` v7.0.0.
