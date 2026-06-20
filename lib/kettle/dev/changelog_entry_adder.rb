@@ -20,7 +20,7 @@ module Kettle
         source = File.read(@changelog_path)
         context = Ast::Crispr::Markdown::Markly.document_context(content: source, source_label: @changelog_path)
         sections = context.structural_owners(owner_scope: :heading_sections)
-        unreleased = find_heading!(sections, heading_text: "[Unreleased]", level: 2)
+        unreleased = find_unreleased_heading!(sections)
         target = find_unreleased_section!(sections, unreleased)
         slice = target_slice(source, target)
         return :unchanged if entry_present?(slice)
@@ -48,6 +48,15 @@ module Kettle
       def find_heading!(sections, heading_text:, level:)
         matches = sections.select { |owner| owner.heading_text.to_s.strip == heading_text && owner.level == level }
         raise Error, "expected exactly one #{heading(level, heading_text)} section in CHANGELOG.md, found #{matches.length}" unless matches.length == 1
+
+        matches.first
+      end
+
+      def find_unreleased_heading!(sections)
+        matches = sections.select do |owner|
+          owner.level == 2 && owner.heading_source.to_s.strip == "## [Unreleased]"
+        end
+        raise Error, "expected exactly one ## [Unreleased] section in CHANGELOG.md, found #{matches.length}" unless matches.length == 1
 
         matches.first
       end
