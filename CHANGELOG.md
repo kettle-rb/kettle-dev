@@ -30,6 +30,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - Retemplated project metadata and CI/development automation with `kettle-jem` v7.0.0.
 
+- Allow local coverage runs to opt into a vendored `simplecov` checkout through
+  the existing nomono `VENDORED_GEMS` workflow.
+
 ### Deprecated
 
 ### Removed
