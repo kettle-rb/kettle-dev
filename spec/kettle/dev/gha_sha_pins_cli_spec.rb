@@ -235,12 +235,54 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       client = described_class.new(token: nil, api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE, user_agent: "kettle-gha-sha-pins")
       redirect = instance_double(Net::HTTPMovedPermanently, code: "301")
       success = instance_double(Net::HTTPOK, code: "200", body: JSON.generate("ok" => true))
-      http = instance_double(Net::HTTP)
+      first_http = instance_double(Net::HTTP)
+      second_http = instance_double(Net::HTTP)
       allow(redirect).to receive(:[]).with("location").and_return("https://api.github.com/repositories/123/releases")
-      allow(http).to receive(:request).and_return(redirect, success)
-      allow(Net::HTTP).to receive(:start).and_yield(http).twice
+      [first_http, second_http].each do |http|
+        allow(http).to receive(:use_ssl=).with(true)
+        allow(http).to receive(:open_timeout=).with(Kettle::Dev::GhaShaPinsCLI::DEFAULT_HTTP_OPEN_TIMEOUT_SECONDS)
+        allow(http).to receive(:read_timeout=).with(Kettle::Dev::GhaShaPinsCLI::DEFAULT_HTTP_READ_TIMEOUT_SECONDS)
+        allow(http).to receive(:respond_to?).with(:ssl_timeout=).and_return(true)
+        allow(http).to receive(:ssl_timeout=).with(Kettle::Dev::GhaShaPinsCLI::DEFAULT_HTTP_OPEN_TIMEOUT_SECONDS)
+      end
+      allow(first_http).to receive(:start).and_yield(first_http)
+      allow(second_http).to receive(:start).and_yield(second_http)
+      allow(first_http).to receive(:request).and_return(redirect)
+      allow(second_http).to receive(:request).and_return(success)
+      allow(Net::HTTP).to receive(:new).and_return(first_http, second_http)
 
       expect(client.send(:request_json, "/repos/old/action/releases")).to eq("ok" => true)
+    end
+
+    it "bounds live GitHub refreshes and falls back to stale cache on timeout" do
+      cache_path = File.join(workflow_root, "gha-cache.json")
+      Kettle::Dev::GhaShaPinsCLI::PersistentActionCache.new(
+        path: cache_path,
+        clock: -> { Time.utc(2026, 6, 7, 11, 59, 0) }
+      ).write_versions(
+        "foo/bar",
+        [{tag: "v1.2.0", version_obj: Gem::Version.new("1.2.0"), version: "1.2.0", sha: "a" * 40}]
+      )
+      client = described_class.new(
+        token: nil,
+        api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE,
+        user_agent: "kettle-gha-sha-pins",
+        persistent_cache: Kettle::Dev::GhaShaPinsCLI::PersistentActionCache.new(path: cache_path, clock: -> { Time.utc(2026, 6, 8, 12, 0, 1) }),
+        open_timeout: 1,
+        read_timeout: 2
+      )
+      http = instance_double(Net::HTTP)
+      allow(http).to receive(:use_ssl=).with(true)
+      allow(http).to receive(:open_timeout=).with(1)
+      allow(http).to receive(:read_timeout=).with(2)
+      allow(http).to receive(:respond_to?).with(:ssl_timeout=).and_return(true)
+      allow(http).to receive(:ssl_timeout=).with(1)
+      allow(http).to receive(:start).and_raise(Timeout::Error, "execution expired")
+      allow(Net::HTTP).to receive(:new).with("api.github.com", 443).and_return(http)
+
+      versions = client.versions_for_repo("foo/bar")
+
+      expect(versions.map { |entry| entry[:version] }).to eq(["1.2.0"])
     end
 
     it "loads release tag SHAs through matching refs instead of resolving every release commit" do

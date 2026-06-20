@@ -32,6 +32,9 @@ module Kettle
       COMMENT_REASON = "update_version_comment"
       DEFAULT_UPGRADE_LEVEL = "patch"
       DEFAULT_CACHE_TTL_SECONDS = 24 * 60 * 60
+      DEFAULT_HTTP_OPEN_TIMEOUT_SECONDS = 5
+      DEFAULT_HTTP_READ_TIMEOUT_SECONDS = 10
+      DEFAULT_HTTP_REFRESH_TIMEOUT_SECONDS = 20
       VALID_UPGRADE_LEVELS = %w[major minor patch].freeze
       VERSION_COMMENT_SUFFIX_RE = /\A\s+#\s*v?(?<version>\d+(?:\.\d+\.\d+(?:[-.]?[0-9A-Za-z.-]+)?)?)/
       VERSION_COMMENT_REPLACEMENT_RE = /\A(?<prefix>\s+#\s*)v?\d+(?:\.\d+\.\d+(?:[-.]?[0-9A-Za-z.-]+)?)?/
@@ -1100,12 +1103,15 @@ module Kettle
 
       # Lightweight GitHub API client for commit and release SHA resolution.
       class GitHubClient
-        def initialize(token:, api_base:, user_agent:, persistent_cache: nil, refresh_cache: false)
+        def initialize(token:, api_base:, user_agent:, persistent_cache: nil, refresh_cache: false, open_timeout: DEFAULT_HTTP_OPEN_TIMEOUT_SECONDS, read_timeout: DEFAULT_HTTP_READ_TIMEOUT_SECONDS, refresh_timeout: DEFAULT_HTTP_REFRESH_TIMEOUT_SECONDS)
           @token = token
           @api_base = api_base
           @user_agent = user_agent
           @persistent_cache = persistent_cache
           @refresh_cache = refresh_cache
+          @open_timeout = open_timeout
+          @read_timeout = read_timeout
+          @refresh_timeout = refresh_timeout
           @commit_cache = {}
           @release_cache = {}
         end
@@ -1114,58 +1120,31 @@ module Kettle
           return [] if repo_ref.to_s.empty?
           return @release_cache[repo_ref] if @release_cache.key?(repo_ref)
 
+          stale = nil
           unless @refresh_cache
             cached = @persistent_cache&.versions_for_repo(repo_ref, fresh: true)
             if cached
               @release_cache[repo_ref] = cached
               return cached
             end
+            stale = @persistent_cache&.versions_for_repo(repo_ref, fresh: false)
           end
 
-          data = request_json("/repos/#{repo_ref}/releases?per_page=100")
-          unless data.is_a?(Array)
-            fallback = @persistent_cache&.versions_for_repo(repo_ref, fresh: false)
-            return fallback if fallback
+          releases = nil
+          Timeout.timeout(@refresh_timeout) do
+            data = request_json("/repos/#{repo_ref}/releases?per_page=100")
+            return cached_versions(repo_ref, stale) unless data.is_a?(Array)
 
-            return []
+            tag_shas = tag_ref_shas(repo_ref)
+            return cached_versions(repo_ref, stale) unless tag_shas
+
+            releases = build_release_versions(data, tag_shas)
           end
-
-          tag_shas = tag_ref_shas(repo_ref)
-          releases = data.filter_map do |release|
-            next unless release.is_a?(Hash)
-
-            tag = release["tag_name"].to_s
-            parsed = parse_release_version_text(tag)
-            next unless parsed
-
-            {
-              tag: tag,
-              version_obj: parsed,
-              version: parsed.to_s,
-              sha: tag_shas[tag]
-            }
-          end
-          released_tags = releases.each_with_object({}) { |release, memo| memo[release[:tag]] = true }
-          tag_versions = tag_shas.filter_map do |tag, sha|
-            next if released_tags[tag]
-
-            parsed = parse_release_version_text(tag)
-            next unless parsed
-
-            {
-              tag: tag,
-              version_obj: parsed,
-              version: parsed.to_s,
-              sha: sha
-            }
-          end
-          releases.concat(tag_versions)
-
-          releases.sort_by! { |release| release[:version_obj] }
-          releases.reverse!
           @persistent_cache&.write_versions(repo_ref, releases)
           @release_cache[repo_ref] = releases
           releases
+        rescue Timeout::Error
+          cached_versions(repo_ref, stale)
         end
 
         def commit_sha(repo_ref, ref)
@@ -1203,6 +1182,48 @@ module Kettle
 
         private
 
+        def cached_versions(repo_ref, stale)
+          versions = stale || []
+          @release_cache[repo_ref] = versions
+          versions
+        end
+
+        def build_release_versions(data, tag_shas)
+          releases = data.filter_map do |release|
+            next unless release.is_a?(Hash)
+
+            tag = release["tag_name"].to_s
+            parsed = parse_release_version_text(tag)
+            next unless parsed
+
+            {
+              tag: tag,
+              version_obj: parsed,
+              version: parsed.to_s,
+              sha: tag_shas[tag]
+            }
+          end
+          released_tags = releases.each_with_object({}) { |release, memo| memo[release[:tag]] = true }
+          tag_versions = tag_shas.filter_map do |tag, sha|
+            next if released_tags[tag]
+
+            parsed = parse_release_version_text(tag)
+            next unless parsed
+
+            {
+              tag: tag,
+              version_obj: parsed,
+              version: parsed.to_s,
+              sha: sha
+            }
+          end
+          releases.concat(tag_versions)
+
+          releases.sort_by! { |release| release[:version_obj] }
+          releases.reverse!
+          releases
+        end
+
         def parse_release_version_text(value)
           normalized = value.to_s.sub(/\A[vV]/, "")
           return nil unless normalized.match?(/\A(?:\d+|\d+\.\d+\.\d+(?:[-.]?[0-9A-Za-z.-]+)?)\z/)
@@ -1214,7 +1235,7 @@ module Kettle
 
         def tag_ref_shas(repo_ref)
           data = request_json("/repos/#{repo_ref}/git/matching-refs/tags/")
-          return {} unless data.is_a?(Array)
+          return nil unless data.is_a?(Array)
 
           data.each_with_object({}) do |entry, memo|
             ref = entry["ref"].to_s
@@ -1259,9 +1280,7 @@ module Kettle
             request["X-GitHub-Api-Version"] = "2022-11-28"
             request["Authorization"] = "Bearer #{@token}" if @token && !@token.empty?
 
-            response = Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == "https") do |http|
-              http.request(request)
-            end
+            response = http_request(uri, request)
 
             break unless response.code.to_i.between?(300, 399)
             redirects -= 1
@@ -1280,6 +1299,17 @@ module Kettle
           rescue JSON::ParserError
             nil
           end
+        rescue IOError, SystemCallError, Net::OpenTimeout, Net::ReadTimeout
+          nil
+        end
+
+        def http_request(uri, request)
+          http = Net::HTTP.new(uri.host, uri.port)
+          http.use_ssl = uri.scheme == "https"
+          http.open_timeout = @open_timeout
+          http.read_timeout = @read_timeout
+          http.ssl_timeout = @open_timeout if http.respond_to?(:ssl_timeout=)
+          http.start { |connection| connection.request(request) }
         end
 
         def uri_encode(value)

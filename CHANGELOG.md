@@ -36,6 +36,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-gha-sha-pins` now bounds GitHub API requests with explicit timeouts
+  and falls back to stale cache data when a refresh request times out.
+
 ### Security
 
 ## [2.2.13] - 2026-06-18
