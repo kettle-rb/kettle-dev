@@ -40,6 +40,9 @@ Please file a bug if you notice a violation of semantic versioning.
   dereferencing irrelevant annotated tags, bounds GitHub API refreshes with
   explicit timeouts, and falls back to stale cache data only when refresh fails.
 
+- Covered `kettle-changelog --add-unreleased-entry` insertion, duplicate, and
+  fail-closed error behavior in the normal development bundle.
+
 ### Security
 
 ## [2.2.13] - 2026-06-18
