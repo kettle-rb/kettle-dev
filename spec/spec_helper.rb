@@ -56,6 +56,14 @@ RSpec.configure do |config|
     end
   end
 
+  config.before(:each, :markly_crispr) do
+    begin
+      require "ast/crispr/markdown/markly"
+    rescue LoadError
+      skip "Requires ast-crispr-markdown-markly, which is unavailable in this appraisal"
+    end
+  end
+
   config.before do
     # Speed up polling loops
     allow(described_class).to receive(:sleep) unless described_class.nil?

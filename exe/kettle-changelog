@@ -55,7 +55,7 @@ end
 begin
   if ARGV.include?("-h") || ARGV.include?("--help")
     puts <<~USAGE
-      Usage: kettle-changelog [--version VERSION] [--update-prep] [--pending-release] [--release-state] [--json] [--no-strict] [--no-coverage-threshold]
+      Usage: kettle-changelog [--version VERSION] [--update-prep] [--pending-release] [--release-state] [--add-unreleased-entry --section SECTION --entry TEXT] [--json] [--no-strict] [--no-coverage-threshold]
 
       Detects the current version from lib/**/version.rb, the latest live release, and
       the most recent CHANGELOG.md release section, then prompts to confirm the selected plan:
@@ -70,6 +70,9 @@ begin
         --pending-release         Query whether the changelog has release work pending; exits 0 for yes, 1 for no
         --release-state,
         --release-status          Print changelog release state, including latest published release and pending sources
+        --add-unreleased-entry    Add one entry to an existing section under ## [Unreleased]
+        --section SECTION         Unreleased section to receive the entry (Added, Changed, Deprecated, Removed, Fixed, Security)
+        --entry TEXT              Changelog entry text; "- " is added when omitted
         --json                    Print query output as JSON
         --no-strict               Allow missing coverage and yard data (warnings only, no errors)
         --no-coverage-threshold   Generate coverage without hard-failing below configured thresholds
@@ -128,10 +131,41 @@ begin
   update_prep = ARGV.delete("--update-prep")
   pending_release_query = ARGV.delete("--pending-release")
   release_state_query = ARGV.delete("--release-state") || ARGV.delete("--release-status")
+  add_unreleased_entry = ARGV.delete("--add-unreleased-entry") || ARGV.delete("--add-changelog-entry")
   json_output = ARGV.delete("--json")
   coverage_threshold_disabled = ARGV.include?("--no-coverage-threshold") || ARGV.include?("--no-coverage-thresholds")
   coverage_hard = !coverage_threshold_disabled && ENV.fetch("K_CHANGELOG_COVERAGE_HARD", "true").downcase != "false"
   version_override = extract_version_arg!(ARGV)
+
+  def extract_option_arg!(argv, name)
+    value = nil
+    if (idx = argv.index(name))
+      value = argv[idx + 1]
+      Kettle::Dev::ExitAdapter.abort("#{name} requires a value") if value.to_s.empty?
+      argv.slice!(idx, 2)
+    end
+    argv.delete_if do |arg|
+      if arg.start_with?("#{name}=")
+        value = arg.split("=", 2)[1]
+        true
+      else
+        false
+      end
+    end
+    value
+  end
+
+  if add_unreleased_entry
+    section = extract_option_arg!(ARGV, "--section")
+    entry = extract_option_arg!(ARGV, "--entry")
+    Kettle::Dev::ExitAdapter.abort("--section is required with --add-unreleased-entry") if section.to_s.empty?
+    Kettle::Dev::ExitAdapter.abort("--entry is required with --add-unreleased-entry") if entry.to_s.empty?
+
+    result = Kettle::Dev::ChangelogEntryAdder.new(section: section, entry: entry).run
+    message = result == :changed ? "CHANGELOG.md updated under Unreleased #{section}." : "CHANGELOG.md already contains that Unreleased #{section} entry."
+    puts(json_output ? JSON.pretty_generate({changed: result == :changed, section: section, entry: entry}) : message)
+    exit(0)
+  end
 
   cli = Kettle::Dev::ChangelogCLI.new(strict: strict_mode, enforce_coverage_thresholds: coverage_hard, update_prep: update_prep, version: version_override)
   if release_state_query

@@ -20,6 +20,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- `kettle-changelog --add-unreleased-entry` now adds one non-duplicate entry to
+  an existing templated `## [Unreleased]` subsection using the Markly CRISPR
+  Markdown adapter, failing closed when the expected section shape is absent.
+
 ### Changed
 
 - Retemplated project metadata and CI/development automation with `kettle-jem` v7.0.0.
