@@ -159,7 +159,9 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
       stub_env("OPENCOLLECTIVE_HANDLE" => nil)
       path = described_class::OC_YML_PATH
       expect(File.file?(path)).to be true
-      expect(described_class.new(readme_path: tmp_readme).send(:resolve_handle)).to eq("kettle-rb")
+      yml = YAML.safe_load(File.read(path))
+      expected_handle = yml.fetch("collective")
+      expect(described_class.new(readme_path: tmp_readme).send(:resolve_handle)).to eq(expected_handle)
     end
 
     it "aborts when missing" do
