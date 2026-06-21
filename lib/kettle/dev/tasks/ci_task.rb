@@ -326,10 +326,10 @@ module Kettle
                 end
               rescue Exception => e # rubocop:disable Lint/RescueException
                 Kettle::Dev.debug_error(e, __method__)
-                # :nocov:
+                # simplecov:disable
                 # Catch all exceptions in the worker thread boundary, including SystemExit
                 status_q << [c, f, "err"]
-                # :nocov:
+                # simplecov:enable
               end
             end
           end

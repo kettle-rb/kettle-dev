@@ -19,9 +19,9 @@ end
 # External gems
 
 # It's not reasonable to test this ENV variable
-# :nocov:
+# simplecov:disable
 require "require_bench" if ENV.fetch("REQUIRE_BENCH", "false").casecmp("true").zero?
-# :nocov:
+# simplecov:enable
 
 # Autoload public CLI/APIs so requiring "kettle-dev" exposes them lazily
 # for tests and executables. Files will be loaded on first constant access.
@@ -203,9 +203,9 @@ module Kettle
           Kettle::Soup::Cover.install_tasks
           # NOTE: Coverage on CI is configured independent of this task.
           #       This task is for local development, as it opens results in browser
-          # :nocov:
+          # simplecov:disable
           Kettle::Dev.register_default("coverage") unless Kettle::Dev::IS_CI
-          # :nocov:
+          # simplecov:enable
         rescue LoadError
           # OK, no soup for you.
         end

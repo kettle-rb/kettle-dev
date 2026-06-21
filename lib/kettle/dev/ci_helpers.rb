@@ -20,11 +20,11 @@ module Kettle
       # @return [String] absolute path to the project root
       def project_root
         # Too difficult to test every possible branch here, so ignoring
-        # :nocov:
+        # simplecov:disable
         dir = if defined?(Rake) && Rake&.application&.respond_to?(:original_dir)
           Rake.application.original_dir
         end
-        # :nocov:
+        # simplecov:enable
         dir || Dir.pwd
       end
 
