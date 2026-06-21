@@ -181,6 +181,21 @@
         </dt>
         <dd><pre class="code"><span class='int'>24</span> <span class='op'>*</span> <span class='int'>60</span> <span class='op'>*</span> <span class='int'>60</span></pre></dd>
       
+        <dt id="DEFAULT_HTTP_OPEN_TIMEOUT_SECONDS-constant" class="">DEFAULT_HTTP_OPEN_TIMEOUT_SECONDS =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>5</span></pre></dd>
+      
+        <dt id="DEFAULT_HTTP_READ_TIMEOUT_SECONDS-constant" class="">DEFAULT_HTTP_READ_TIMEOUT_SECONDS =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>10</span></pre></dd>
+      
+        <dt id="DEFAULT_HTTP_REFRESH_TIMEOUT_SECONDS-constant" class="">DEFAULT_HTTP_REFRESH_TIMEOUT_SECONDS =
+          
+        </dt>
+        <dd><pre class="code"><span class='int'>20</span></pre></dd>
+      
         <dt id="VALID_UPGRADE_LEVELS-constant" class="">VALID_UPGRADE_LEVELS =
           
         </dt>
@@ -293,9 +308,6 @@
       <pre class="lines">
 
 
-39
-40
-41
 42
 43
 44
@@ -312,10 +324,13 @@
 55
 56
 57
-58</pre>
+58
+59
+60
+61</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gha_sha_pins_cli.rb', line 39</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gha_sha_pins_cli.rb', line 42</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_argv'>argv</span><span class='comma'>,</span> <span class='label'>err:</span> <span class='gvar'>$stderr</span><span class='rparen'>)</span>
   <span class='ivar'>@argv</span> <span class='op'>=</span> <span class='id identifier rubyid_argv'>argv</span>
@@ -364,9 +379,6 @@
       <pre class="lines">
 
 
-60
-61
-62
 63
 64
 65
@@ -527,10 +539,13 @@
 220
 221
 222
-223</pre>
+223
+224
+225
+226</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gha_sha_pins_cli.rb', line 60</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gha_sha_pins_cli.rb', line 63</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_run!'>run!</span>
   <span class='id identifier rubyid_parse!'>parse!</span>
@@ -706,7 +721,7 @@
 </div>
 
       <div id="footer">
-  Generated on Sun Jun 14 05:50:45 2026 by
+  Generated on Sun Jun 21 08:33:40 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>

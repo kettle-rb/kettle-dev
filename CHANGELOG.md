@@ -20,6 +20,25 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [2.2.14] - 2026-06-21
+
+- TAG: [v2.2.14][2.2.14t]
+- COVERAGE: 91.28% -- 4020/4404 lines in 32 files
+- BRANCH COVERAGE: 72.68% -- 1591/2189 branches in 32 files
+- 62.67% documented
+
+### Added
+
 - `kettle-changelog --add-unreleased-entry` now adds one non-duplicate entry to
   an existing templated `## [Unreleased]` subsection using the Markly CRISPR
   Markdown adapter, failing closed when the expected section shape is absent.
@@ -33,10 +52,6 @@ Please file a bug if you notice a violation of semantic versioning.
 - Allow local coverage runs to opt into a vendored `simplecov` checkout through
   the existing nomono `VENDORED_GEMS` workflow.
 
-### Deprecated
-
-### Removed
-
 ### Fixed
 
 - Corrected OpenCollective funding metadata to use the `kettle-dev` collective.
@@ -46,8 +61,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - Covered `kettle-changelog --add-unreleased-entry` insertion, duplicate, and
   fail-closed error behavior in the normal development bundle.
-
-### Security
 
 ## [2.2.13] - 2026-06-18
 
@@ -2202,7 +2215,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.13...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.14...HEAD
+[2.2.14]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.13...v2.2.14
+[2.2.14t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.14
 [2.2.13]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.12...v2.2.13
 [2.2.13t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.13
 [2.2.12]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.11...v2.2.12

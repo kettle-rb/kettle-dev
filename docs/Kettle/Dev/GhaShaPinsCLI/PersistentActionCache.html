@@ -348,15 +348,15 @@
       <pre class="lines">
 
 
-928
-929
-930
 931
 932
-933</pre>
+933
+934
+935
+936</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gha_sha_pins_cli.rb', line 928</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gha_sha_pins_cli.rb', line 931</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='label'>path:</span><span class='comma'>,</span> <span class='label'>ttl_seconds:</span> <span class='const'><span class='object_link'><a href="../GhaShaPinsCLI.html#DEFAULT_CACHE_TTL_SECONDS-constant" title="Kettle::Dev::GhaShaPinsCLI::DEFAULT_CACHE_TTL_SECONDS (constant)">DEFAULT_CACHE_TTL_SECONDS</a></span></span><span class='comma'>,</span> <span class='label'>clock:</span> <span class='tlambda'>-&gt;</span> <span class='tlambeg'>{</span> <span class='const'>Time</span><span class='period'>.</span><span class='id identifier rubyid_now'>now</span> <span class='rbrace'>}</span><span class='rparen'>)</span>
   <span class='ivar'>@path</span> <span class='op'>=</span> <span class='id identifier rubyid_path'>path</span>
@@ -391,16 +391,16 @@
       <pre class="lines">
 
 
-920
-921
-922
 923
 924
 925
-926</pre>
+926
+927
+928
+929</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gha_sha_pins_cli.rb', line 920</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gha_sha_pins_cli.rb', line 923</span>
 
 <span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_default_path'>default_path</span>
   <span class='id identifier rubyid_state_home'>state_home</span> <span class='op'>=</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>XDG_STATE_HOME</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
@@ -435,9 +435,6 @@
       <pre class="lines">
 
 
-979
-980
-981
 982
 983
 984
@@ -446,10 +443,13 @@
 987
 988
 989
-990</pre>
+990
+991
+992
+993</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gha_sha_pins_cli.rb', line 979</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gha_sha_pins_cli.rb', line 982</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_ref_sha'>ref_sha</span><span class='lparen'>(</span><span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='comma'>,</span> <span class='id identifier rubyid_ref'>ref</span><span class='comma'>,</span> <span class='label'>fresh:</span> <span class='kw'>true</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_action'>action</span> <span class='op'>=</span> <span class='id identifier rubyid_action_data'>action_data</span><span class='lparen'>(</span><span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='rparen'>)</span>
@@ -483,12 +483,12 @@
       <pre class="lines">
 
 
-1005
-1006
-1007</pre>
+1008
+1009
+1010</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gha_sha_pins_cli.rb', line 1005</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gha_sha_pins_cli.rb', line 1008</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_to_h'>to_h</span>
   <span class='id identifier rubyid_data'>data</span>
@@ -513,9 +513,6 @@
       <pre class="lines">
 
 
-935
-936
-937
 938
 939
 940
@@ -531,10 +528,13 @@
 950
 951
 952
-953</pre>
+953
+954
+955
+956</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gha_sha_pins_cli.rb', line 935</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gha_sha_pins_cli.rb', line 938</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_versions_for_repo'>versions_for_repo</span><span class='lparen'>(</span><span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='comma'>,</span> <span class='label'>fresh:</span> <span class='kw'>true</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_action'>action</span> <span class='op'>=</span> <span class='id identifier rubyid_action_data'>action_data</span><span class='lparen'>(</span><span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='rparen'>)</span>
@@ -575,9 +575,6 @@
       <pre class="lines">
 
 
-992
-993
-994
 995
 996
 997
@@ -586,10 +583,13 @@
 1000
 1001
 1002
-1003</pre>
+1003
+1004
+1005
+1006</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gha_sha_pins_cli.rb', line 992</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gha_sha_pins_cli.rb', line 995</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_write_ref_sha'>write_ref_sha</span><span class='lparen'>(</span><span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='comma'>,</span> <span class='id identifier rubyid_ref'>ref</span><span class='comma'>,</span> <span class='id identifier rubyid_sha'>sha</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>if</span> <span class='ivar'>@path</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
@@ -623,9 +623,6 @@
       <pre class="lines">
 
 
-955
-956
-957
 958
 959
 960
@@ -645,10 +642,13 @@
 974
 975
 976
-977</pre>
+977
+978
+979
+980</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gha_sha_pins_cli.rb', line 955</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gha_sha_pins_cli.rb', line 958</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_write_versions'>write_versions</span><span class='lparen'>(</span><span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='comma'>,</span> <span class='id identifier rubyid_versions'>versions</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>if</span> <span class='ivar'>@path</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
@@ -683,7 +683,7 @@
 </div>
 
       <div id="footer">
-  Generated on Sun Jun 14 05:50:45 2026 by
+  Generated on Sun Jun 21 08:33:40 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>

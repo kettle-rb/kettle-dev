@@ -81,7 +81,7 @@
   <dl>
     <dt>Defined in:</dt>
     <dd>lib/kettle/dev.rb<span class="defines">,<br>
-  lib/kettle/dev/version.rb,<br> lib/kettle/dev/bump_cli.rb,<br> lib/kettle/dev/dvcs_cli.rb,<br> lib/kettle/dev/ci_helpers.rb,<br> lib/kettle/dev/ci_monitor.rb,<br> lib/kettle/dev/commit_msg.rb,<br> lib/kettle/dev/versioning.rb,<br> lib/kettle/dev/git_adapter.rb,<br> lib/kettle/dev/release_cli.rb,<br> lib/kettle/dev/exit_adapter.rb,<br> lib/kettle/dev/changelog_cli.rb,<br> lib/kettle/dev/input_adapter.rb,<br> lib/kettle/dev/tasks/ci_task.rb,<br> lib/kettle/dev/readme_backers.rb,<br> lib/kettle/dev/gem_spec_reader.rb,<br> lib/kettle/dev/pre_release_cli.rb,<br> lib/kettle/dev/gha_sha_pins_cli.rb,<br> lib/kettle/dev/git_commit_footer.rb,<br> lib/kettle/dev/open_collective_config.rb</span>
+  lib/kettle/dev/version.rb,<br> lib/kettle/dev/bump_cli.rb,<br> lib/kettle/dev/dvcs_cli.rb,<br> lib/kettle/dev/ci_helpers.rb,<br> lib/kettle/dev/ci_monitor.rb,<br> lib/kettle/dev/commit_msg.rb,<br> lib/kettle/dev/versioning.rb,<br> lib/kettle/dev/git_adapter.rb,<br> lib/kettle/dev/release_cli.rb,<br> lib/kettle/dev/exit_adapter.rb,<br> lib/kettle/dev/changelog_cli.rb,<br> lib/kettle/dev/input_adapter.rb,<br> lib/kettle/dev/tasks/ci_task.rb,<br> lib/kettle/dev/readme_backers.rb,<br> lib/kettle/dev/gem_spec_reader.rb,<br> lib/kettle/dev/pre_release_cli.rb,<br> lib/kettle/dev/gha_sha_pins_cli.rb,<br> lib/kettle/dev/git_commit_footer.rb,<br> lib/kettle/dev/changelog_entry_adder.rb,<br> lib/kettle/dev/open_collective_config.rb</span>
 
 </dd>
   </dl>
@@ -96,7 +96,7 @@
     
   
     
-      <strong class="classes">Classes:</strong> <span class='object_link'><a href="Dev/BumpCLI.html" title="Kettle::Dev::BumpCLI (class)">BumpCLI</a></span>, <span class='object_link'><a href="Dev/ChangelogCLI.html" title="Kettle::Dev::ChangelogCLI (class)">ChangelogCLI</a></span>, <span class='object_link'><a href="Dev/DvcsCLI.html" title="Kettle::Dev::DvcsCLI (class)">DvcsCLI</a></span>, <span class='object_link'><a href="Dev/Error.html" title="Kettle::Dev::Error (class)">Error</a></span>, <span class='object_link'><a href="Dev/GemSpecReader.html" title="Kettle::Dev::GemSpecReader (class)">GemSpecReader</a></span>, <span class='object_link'><a href="Dev/GhaShaPinsCLI.html" title="Kettle::Dev::GhaShaPinsCLI (class)">GhaShaPinsCLI</a></span>, <span class='object_link'><a href="Dev/GitAdapter.html" title="Kettle::Dev::GitAdapter (class)">GitAdapter</a></span>, <span class='object_link'><a href="Dev/GitCommitFooter.html" title="Kettle::Dev::GitCommitFooter (class)">GitCommitFooter</a></span>, <span class='object_link'><a href="Dev/PreReleaseCLI.html" title="Kettle::Dev::PreReleaseCLI (class)">PreReleaseCLI</a></span>, <span class='object_link'><a href="Dev/ReadmeBackers.html" title="Kettle::Dev::ReadmeBackers (class)">ReadmeBackers</a></span>, <span class='object_link'><a href="Dev/ReleaseCLI.html" title="Kettle::Dev::ReleaseCLI (class)">ReleaseCLI</a></span>
+      <strong class="classes">Classes:</strong> <span class='object_link'><a href="Dev/BumpCLI.html" title="Kettle::Dev::BumpCLI (class)">BumpCLI</a></span>, <span class='object_link'><a href="Dev/ChangelogCLI.html" title="Kettle::Dev::ChangelogCLI (class)">ChangelogCLI</a></span>, <span class='object_link'><a href="Dev/ChangelogEntryAdder.html" title="Kettle::Dev::ChangelogEntryAdder (class)">ChangelogEntryAdder</a></span>, <span class='object_link'><a href="Dev/DvcsCLI.html" title="Kettle::Dev::DvcsCLI (class)">DvcsCLI</a></span>, <span class='object_link'><a href="Dev/Error.html" title="Kettle::Dev::Error (class)">Error</a></span>, <span class='object_link'><a href="Dev/GemSpecReader.html" title="Kettle::Dev::GemSpecReader (class)">GemSpecReader</a></span>, <span class='object_link'><a href="Dev/GhaShaPinsCLI.html" title="Kettle::Dev::GhaShaPinsCLI (class)">GhaShaPinsCLI</a></span>, <span class='object_link'><a href="Dev/GitAdapter.html" title="Kettle::Dev::GitAdapter (class)">GitAdapter</a></span>, <span class='object_link'><a href="Dev/GitCommitFooter.html" title="Kettle::Dev::GitCommitFooter (class)">GitCommitFooter</a></span>, <span class='object_link'><a href="Dev/PreReleaseCLI.html" title="Kettle::Dev::PreReleaseCLI (class)">PreReleaseCLI</a></span>, <span class='object_link'><a href="Dev/ReadmeBackers.html" title="Kettle::Dev::ReadmeBackers (class)">ReadmeBackers</a></span>, <span class='object_link'><a href="Dev/ReleaseCLI.html" title="Kettle::Dev::ReleaseCLI (class)">ReleaseCLI</a></span>
     
   
 </p>
@@ -596,12 +596,12 @@ Accepts false, n, no, 0 (any case).</p>
       <pre class="lines">
 
 
-148
 149
-150</pre>
+150
+151</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 148</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 149</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_defaults'>defaults</span>
   <span class='ivar'>@defaults</span>
@@ -693,7 +693,6 @@ Controlled by KETTLE_DEV_DEBUG=true.</p>
       <pre class="lines">
 
 
-112
 113
 114
 115
@@ -701,10 +700,11 @@ Controlled by KETTLE_DEV_DEBUG=true.</p>
 117
 118
 119
-120</pre>
+120
+121</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 112</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 113</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_debug_error'>debug_error</span><span class='lparen'>(</span><span class='id identifier rubyid_error'>error</span><span class='comma'>,</span> <span class='id identifier rubyid_context'>context</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>backtrace:</span> <span class='kw'>true</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='const'><span class='object_link'><a href="#DEBUGGING-constant" title="Kettle::Dev::DEBUGGING (constant)">DEBUGGING</a></span></span>
@@ -761,17 +761,17 @@ Controlled by KETTLE_DEV_DEBUG=true.</p>
       <pre class="lines">
 
 
-126
 127
 128
 129
 130
 131
 132
-133</pre>
+133
+134</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 126</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 127</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_debug_log'>debug_log</span><span class='lparen'>(</span><span class='id identifier rubyid_msg'>msg</span><span class='comma'>,</span> <span class='id identifier rubyid_context'>context</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='const'><span class='object_link'><a href="#DEBUGGING-constant" title="Kettle::Dev::DEBUGGING (constant)">DEBUGGING</a></span></span>
@@ -824,12 +824,12 @@ Controlled by KETTLE_DEV_DEBUG=true.</p>
       <pre class="lines">
 
 
-169
 170
-171</pre>
+171
+172</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 169</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 170</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_default_registered?'>default_registered?</span><span class='lparen'>(</span><span class='id identifier rubyid_task_name'>task_name</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_defaults'>defaults</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_task_name'>task_name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span>
@@ -854,14 +854,14 @@ Controlled by KETTLE_DEV_DEBUG=true.</p>
       <pre class="lines">
 
 
-94
 95
 96
 97
-98</pre>
+98
+99</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 94</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 95</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_display_path'>display_path</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='id identifier rubyid_path'>path</span> <span class='kw'>if</span> <span class='id identifier rubyid_path'>path</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -888,14 +888,14 @@ Controlled by KETTLE_DEV_DEBUG=true.</p>
       <pre class="lines">
 
 
-100
 101
 102
 103
-104</pre>
+104
+105</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 100</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 101</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_display_text'>display_text</span><span class='lparen'>(</span><span class='id identifier rubyid_text'>text</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='id identifier rubyid_text'>text</span> <span class='kw'>if</span> <span class='id identifier rubyid_text'>text</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -935,14 +935,14 @@ gem-shipped rakelib directory so host projects get tasks from this gem.</p>
       <pre class="lines">
 
 
-140
 141
 142
 143
-144</pre>
+144
+145</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 140</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 141</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_install_tasks'>install_tasks</span>
   <span class='id identifier rubyid_linting_tasks'>linting_tasks</span>
@@ -1012,7 +1012,6 @@ Also enhances the :default task immediately if it exists.</p>
       <pre class="lines">
 
 
-154
 155
 156
 157
@@ -1025,10 +1024,11 @@ Also enhances the :default task immediately if it exists.</p>
 164
 165
 166
-167</pre>
+167
+168</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 154</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 155</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_register_default'>register_default</span><span class='lparen'>(</span><span class='id identifier rubyid_task_name'>task_name</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_task_name'>task_name</span> <span class='op'>=</span> <span class='id identifier rubyid_task_name'>task_name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
@@ -1054,7 +1054,7 @@ Also enhances the :default task immediately if it exists.</p>
 </div>
 
       <div id="footer">
-  Generated on Mon Jun  8 15:52:26 2026 by
+  Generated on Sun Jun 21 08:33:39 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>

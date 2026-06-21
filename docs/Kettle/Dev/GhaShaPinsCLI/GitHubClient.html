@@ -153,7 +153,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#initialize-instance_method" title="#initialize (instance method)">#<strong>initialize</strong>(token:, api_base:, user_agent:, persistent_cache: nil, refresh_cache: false)  &#x21d2; GitHubClient </a>
+      <a href="#initialize-instance_method" title="#initialize (instance method)">#<strong>initialize</strong>(token:, api_base:, user_agent:, persistent_cache: nil, refresh_cache: false, open_timeout: DEFAULT_HTTP_OPEN_TIMEOUT_SECONDS, read_timeout: DEFAULT_HTTP_READ_TIMEOUT_SECONDS, refresh_timeout: DEFAULT_HTTP_REFRESH_TIMEOUT_SECONDS)  &#x21d2; GitHubClient </a>
     
 
     
@@ -231,7 +231,7 @@
     <div class="method_details first">
   <h3 class="signature first" id="initialize-instance_method">
   
-    #<strong>initialize</strong>(token:, api_base:, user_agent:, persistent_cache: nil, refresh_cache: false)  &#x21d2; <tt><span class='object_link'><a href="" title="Kettle::Dev::GhaShaPinsCLI::GitHubClient (class)">GitHubClient</a></span></tt> 
+    #<strong>initialize</strong>(token:, api_base:, user_agent:, persistent_cache: nil, refresh_cache: false, open_timeout: DEFAULT_HTTP_OPEN_TIMEOUT_SECONDS, read_timeout: DEFAULT_HTTP_READ_TIMEOUT_SECONDS, refresh_timeout: DEFAULT_HTTP_REFRESH_TIMEOUT_SECONDS)  &#x21d2; <tt><span class='object_link'><a href="" title="Kettle::Dev::GhaShaPinsCLI::GitHubClient (class)">GitHubClient</a></span></tt> 
   
 
   
@@ -253,25 +253,31 @@
       <pre class="lines">
 
 
-1103
-1104
-1105
 1106
 1107
 1108
 1109
 1110
-1111</pre>
+1111
+1112
+1113
+1114
+1115
+1116
+1117</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gha_sha_pins_cli.rb', line 1103</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gha_sha_pins_cli.rb', line 1106</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='label'>token:</span><span class='comma'>,</span> <span class='label'>api_base:</span><span class='comma'>,</span> <span class='label'>user_agent:</span><span class='comma'>,</span> <span class='label'>persistent_cache:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>refresh_cache:</span> <span class='kw'>false</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='label'>token:</span><span class='comma'>,</span> <span class='label'>api_base:</span><span class='comma'>,</span> <span class='label'>user_agent:</span><span class='comma'>,</span> <span class='label'>persistent_cache:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>refresh_cache:</span> <span class='kw'>false</span><span class='comma'>,</span> <span class='label'>open_timeout:</span> <span class='const'><span class='object_link'><a href="../GhaShaPinsCLI.html#DEFAULT_HTTP_OPEN_TIMEOUT_SECONDS-constant" title="Kettle::Dev::GhaShaPinsCLI::DEFAULT_HTTP_OPEN_TIMEOUT_SECONDS (constant)">DEFAULT_HTTP_OPEN_TIMEOUT_SECONDS</a></span></span><span class='comma'>,</span> <span class='label'>read_timeout:</span> <span class='const'><span class='object_link'><a href="../GhaShaPinsCLI.html#DEFAULT_HTTP_READ_TIMEOUT_SECONDS-constant" title="Kettle::Dev::GhaShaPinsCLI::DEFAULT_HTTP_READ_TIMEOUT_SECONDS (constant)">DEFAULT_HTTP_READ_TIMEOUT_SECONDS</a></span></span><span class='comma'>,</span> <span class='label'>refresh_timeout:</span> <span class='const'><span class='object_link'><a href="../GhaShaPinsCLI.html#DEFAULT_HTTP_REFRESH_TIMEOUT_SECONDS-constant" title="Kettle::Dev::GhaShaPinsCLI::DEFAULT_HTTP_REFRESH_TIMEOUT_SECONDS (constant)">DEFAULT_HTTP_REFRESH_TIMEOUT_SECONDS</a></span></span><span class='rparen'>)</span>
   <span class='ivar'>@token</span> <span class='op'>=</span> <span class='id identifier rubyid_token'>token</span>
   <span class='ivar'>@api_base</span> <span class='op'>=</span> <span class='id identifier rubyid_api_base'>api_base</span>
   <span class='ivar'>@user_agent</span> <span class='op'>=</span> <span class='id identifier rubyid_user_agent'>user_agent</span>
   <span class='ivar'>@persistent_cache</span> <span class='op'>=</span> <span class='id identifier rubyid_persistent_cache'>persistent_cache</span>
   <span class='ivar'>@refresh_cache</span> <span class='op'>=</span> <span class='id identifier rubyid_refresh_cache'>refresh_cache</span>
+  <span class='ivar'>@open_timeout</span> <span class='op'>=</span> <span class='id identifier rubyid_open_timeout'>open_timeout</span>
+  <span class='ivar'>@read_timeout</span> <span class='op'>=</span> <span class='id identifier rubyid_read_timeout'>read_timeout</span>
+  <span class='ivar'>@refresh_timeout</span> <span class='op'>=</span> <span class='id identifier rubyid_refresh_timeout'>refresh_timeout</span>
   <span class='ivar'>@commit_cache</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
   <span class='ivar'>@release_cache</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
 <span class='kw'>end</span></pre>
@@ -302,35 +308,35 @@
       <pre class="lines">
 
 
+1150
+1151
+1152
+1153
+1154
+1155
+1156
+1157
+1158
+1159
+1160
+1161
+1162
+1163
+1164
+1165
+1166
+1167
+1168
+1169
+1170
 1171
 1172
 1173
 1174
-1175
-1176
-1177
-1178
-1179
-1180
-1181
-1182
-1183
-1184
-1185
-1186
-1187
-1188
-1189
-1190
-1191
-1192
-1193
-1194
-1195
-1196</pre>
+1175</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gha_sha_pins_cli.rb', line 1171</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gha_sha_pins_cli.rb', line 1150</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_commit_sha'>commit_sha</span><span class='lparen'>(</span><span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='comma'>,</span> <span class='id identifier rubyid_ref'>ref</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>nil</span> <span class='kw'>if</span> <span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span> <span class='op'>||</span> <span class='id identifier rubyid_ref'>ref</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
@@ -378,14 +384,14 @@
       <pre class="lines">
 
 
-1198
-1199
-1200
-1201
-1202</pre>
+1177
+1178
+1179
+1180
+1181</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gha_sha_pins_cli.rb', line 1198</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gha_sha_pins_cli.rb', line 1177</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_release_latest_sha'>release_latest_sha</span><span class='lparen'>(</span><span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_versions'>versions</span> <span class='op'>=</span> <span class='id identifier rubyid_versions_for_repo'>versions_for_repo</span><span class='lparen'>(</span><span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='rparen'>)</span>
@@ -412,12 +418,6 @@
       <pre class="lines">
 
 
-1113
-1114
-1115
-1116
-1117
-1118
 1119
 1120
 1121
@@ -447,88 +447,40 @@
 1145
 1146
 1147
-1148
-1149
-1150
-1151
-1152
-1153
-1154
-1155
-1156
-1157
-1158
-1159
-1160
-1161
-1162
-1163
-1164
-1165
-1166
-1167
-1168
-1169</pre>
+1148</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gha_sha_pins_cli.rb', line 1113</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gha_sha_pins_cli.rb', line 1119</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_versions_for_repo'>versions_for_repo</span><span class='lparen'>(</span><span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='lbracket'>[</span><span class='rbracket'>]</span> <span class='kw'>if</span> <span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
   <span class='kw'>return</span> <span class='ivar'>@release_cache</span><span class='lbracket'>[</span><span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='rbracket'>]</span> <span class='kw'>if</span> <span class='ivar'>@release_cache</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='rparen'>)</span>
 
+  <span class='id identifier rubyid_stale'>stale</span> <span class='op'>=</span> <span class='kw'>nil</span>
   <span class='kw'>unless</span> <span class='ivar'>@refresh_cache</span>
     <span class='id identifier rubyid_cached'>cached</span> <span class='op'>=</span> <span class='ivar'>@persistent_cache</span><span class='op'>&amp;.</span><span class='id identifier rubyid_versions_for_repo'>versions_for_repo</span><span class='lparen'>(</span><span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='comma'>,</span> <span class='label'>fresh:</span> <span class='kw'>true</span><span class='rparen'>)</span>
     <span class='kw'>if</span> <span class='id identifier rubyid_cached'>cached</span>
       <span class='ivar'>@release_cache</span><span class='lbracket'>[</span><span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_cached'>cached</span>
       <span class='kw'>return</span> <span class='id identifier rubyid_cached'>cached</span>
     <span class='kw'>end</span>
+    <span class='id identifier rubyid_stale'>stale</span> <span class='op'>=</span> <span class='ivar'>@persistent_cache</span><span class='op'>&amp;.</span><span class='id identifier rubyid_versions_for_repo'>versions_for_repo</span><span class='lparen'>(</span><span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='comma'>,</span> <span class='label'>fresh:</span> <span class='kw'>false</span><span class='rparen'>)</span>
   <span class='kw'>end</span>
 
-  <span class='id identifier rubyid_data'>data</span> <span class='op'>=</span> <span class='id identifier rubyid_request_json'>request_json</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/repos/</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='embexpr_end'>}</span><span class='tstring_content'>/releases?per_page=100</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-  <span class='kw'>unless</span> <span class='id identifier rubyid_data'>data</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Array</span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_fallback'>fallback</span> <span class='op'>=</span> <span class='ivar'>@persistent_cache</span><span class='op'>&amp;.</span><span class='id identifier rubyid_versions_for_repo'>versions_for_repo</span><span class='lparen'>(</span><span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='comma'>,</span> <span class='label'>fresh:</span> <span class='kw'>false</span><span class='rparen'>)</span>
-    <span class='kw'>return</span> <span class='id identifier rubyid_fallback'>fallback</span> <span class='kw'>if</span> <span class='id identifier rubyid_fallback'>fallback</span>
+  <span class='id identifier rubyid_releases'>releases</span> <span class='op'>=</span> <span class='kw'>nil</span>
+  <span class='const'>Timeout</span><span class='period'>.</span><span class='id identifier rubyid_timeout'>timeout</span><span class='lparen'>(</span><span class='ivar'>@refresh_timeout</span><span class='rparen'>)</span> <span class='kw'>do</span>
+    <span class='id identifier rubyid_data'>data</span> <span class='op'>=</span> <span class='id identifier rubyid_request_json'>request_json</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/repos/</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='embexpr_end'>}</span><span class='tstring_content'>/releases?per_page=100</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+    <span class='kw'>return</span> <span class='id identifier rubyid_cached_versions'>cached_versions</span><span class='lparen'>(</span><span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='comma'>,</span> <span class='id identifier rubyid_stale'>stale</span><span class='rparen'>)</span> <span class='kw'>unless</span> <span class='id identifier rubyid_data'>data</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Array</span><span class='rparen'>)</span>
 
-    <span class='kw'>return</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+    <span class='id identifier rubyid_tag_shas'>tag_shas</span> <span class='op'>=</span> <span class='id identifier rubyid_tag_ref_shas'>tag_ref_shas</span><span class='lparen'>(</span><span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='rparen'>)</span>
+    <span class='kw'>return</span> <span class='id identifier rubyid_cached_versions'>cached_versions</span><span class='lparen'>(</span><span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='comma'>,</span> <span class='id identifier rubyid_stale'>stale</span><span class='rparen'>)</span> <span class='kw'>unless</span> <span class='id identifier rubyid_tag_shas'>tag_shas</span>
+
+    <span class='id identifier rubyid_releases'>releases</span> <span class='op'>=</span> <span class='id identifier rubyid_build_release_versions'>build_release_versions</span><span class='lparen'>(</span><span class='id identifier rubyid_data'>data</span><span class='comma'>,</span> <span class='id identifier rubyid_tag_shas'>tag_shas</span><span class='rparen'>)</span>
   <span class='kw'>end</span>
-
-  <span class='id identifier rubyid_tag_shas'>tag_shas</span> <span class='op'>=</span> <span class='id identifier rubyid_tag_ref_shas'>tag_ref_shas</span><span class='lparen'>(</span><span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_releases'>releases</span> <span class='op'>=</span> <span class='id identifier rubyid_data'>data</span><span class='period'>.</span><span class='id identifier rubyid_filter_map'>filter_map</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_release'>release</span><span class='op'>|</span>
-    <span class='kw'>next</span> <span class='kw'>unless</span> <span class='id identifier rubyid_release'>release</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Hash</span><span class='rparen'>)</span>
-
-    <span class='id identifier rubyid_tag'>tag</span> <span class='op'>=</span> <span class='id identifier rubyid_release'>release</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>tag_name</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
-    <span class='id identifier rubyid_parsed'>parsed</span> <span class='op'>=</span> <span class='id identifier rubyid_parse_release_version_text'>parse_release_version_text</span><span class='lparen'>(</span><span class='id identifier rubyid_tag'>tag</span><span class='rparen'>)</span>
-    <span class='kw'>next</span> <span class='kw'>unless</span> <span class='id identifier rubyid_parsed'>parsed</span>
-
-    <span class='lbrace'>{</span>
-      <span class='label'>tag:</span> <span class='id identifier rubyid_tag'>tag</span><span class='comma'>,</span>
-      <span class='label'>version_obj:</span> <span class='id identifier rubyid_parsed'>parsed</span><span class='comma'>,</span>
-      <span class='label'>version:</span> <span class='id identifier rubyid_parsed'>parsed</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span>
-      <span class='label'>sha:</span> <span class='id identifier rubyid_tag_shas'>tag_shas</span><span class='lbracket'>[</span><span class='id identifier rubyid_tag'>tag</span><span class='rbracket'>]</span>
-    <span class='rbrace'>}</span>
-  <span class='kw'>end</span>
-  <span class='id identifier rubyid_released_tags'>released_tags</span> <span class='op'>=</span> <span class='id identifier rubyid_releases'>releases</span><span class='period'>.</span><span class='id identifier rubyid_each_with_object'>each_with_object</span><span class='lparen'>(</span><span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_release'>release</span><span class='comma'>,</span> <span class='id identifier rubyid_memo'>memo</span><span class='op'>|</span> <span class='id identifier rubyid_memo'>memo</span><span class='lbracket'>[</span><span class='id identifier rubyid_release'>release</span><span class='lbracket'>[</span><span class='symbol'>:tag</span><span class='rbracket'>]</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='kw'>true</span> <span class='rbrace'>}</span>
-  <span class='id identifier rubyid_tag_versions'>tag_versions</span> <span class='op'>=</span> <span class='id identifier rubyid_tag_shas'>tag_shas</span><span class='period'>.</span><span class='id identifier rubyid_filter_map'>filter_map</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_tag'>tag</span><span class='comma'>,</span> <span class='id identifier rubyid_sha'>sha</span><span class='op'>|</span>
-    <span class='kw'>next</span> <span class='kw'>if</span> <span class='id identifier rubyid_released_tags'>released_tags</span><span class='lbracket'>[</span><span class='id identifier rubyid_tag'>tag</span><span class='rbracket'>]</span>
-
-    <span class='id identifier rubyid_parsed'>parsed</span> <span class='op'>=</span> <span class='id identifier rubyid_parse_release_version_text'>parse_release_version_text</span><span class='lparen'>(</span><span class='id identifier rubyid_tag'>tag</span><span class='rparen'>)</span>
-    <span class='kw'>next</span> <span class='kw'>unless</span> <span class='id identifier rubyid_parsed'>parsed</span>
-
-    <span class='lbrace'>{</span>
-      <span class='label'>tag:</span> <span class='id identifier rubyid_tag'>tag</span><span class='comma'>,</span>
-      <span class='label'>version_obj:</span> <span class='id identifier rubyid_parsed'>parsed</span><span class='comma'>,</span>
-      <span class='label'>version:</span> <span class='id identifier rubyid_parsed'>parsed</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span>
-      <span class='label'>sha:</span> <span class='id identifier rubyid_sha'>sha</span>
-    <span class='rbrace'>}</span>
-  <span class='kw'>end</span>
-  <span class='id identifier rubyid_releases'>releases</span><span class='period'>.</span><span class='id identifier rubyid_concat'>concat</span><span class='lparen'>(</span><span class='id identifier rubyid_tag_versions'>tag_versions</span><span class='rparen'>)</span>
-
-  <span class='id identifier rubyid_releases'>releases</span><span class='period'>.</span><span class='id identifier rubyid_sort_by!'>sort_by!</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_release'>release</span><span class='op'>|</span> <span class='id identifier rubyid_release'>release</span><span class='lbracket'>[</span><span class='symbol'>:version_obj</span><span class='rbracket'>]</span> <span class='rbrace'>}</span>
-  <span class='id identifier rubyid_releases'>releases</span><span class='period'>.</span><span class='id identifier rubyid_reverse!'>reverse!</span>
   <span class='ivar'>@persistent_cache</span><span class='op'>&amp;.</span><span class='id identifier rubyid_write_versions'>write_versions</span><span class='lparen'>(</span><span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='comma'>,</span> <span class='id identifier rubyid_releases'>releases</span><span class='rparen'>)</span>
   <span class='ivar'>@release_cache</span><span class='lbracket'>[</span><span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_releases'>releases</span>
   <span class='id identifier rubyid_releases'>releases</span>
+<span class='kw'>rescue</span> <span class='const'>Timeout</span><span class='op'>::</span><span class='const'>Error</span>
+  <span class='id identifier rubyid_cached_versions'>cached_versions</span><span class='lparen'>(</span><span class='id identifier rubyid_repo_ref'>repo_ref</span><span class='comma'>,</span> <span class='id identifier rubyid_stale'>stale</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -540,7 +492,7 @@
 </div>
 
       <div id="footer">
-  Generated on Sun Jun 14 05:50:45 2026 by
+  Generated on Sun Jun 21 08:33:40 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>
