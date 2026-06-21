@@ -5,7 +5,7 @@ module Kettle
     class ChangelogEntryAdder
       SECTIONS = %w[Added Changed Deprecated Removed Fixed Security].freeze
 
-      def initialize(root: Kettle::Dev::CIHelpers.project_root, section:, entry:)
+      def initialize(section:, entry:, root: Kettle::Dev::CIHelpers.project_root)
         @root = root
         @section = section.to_s
         @entry = normalize_entry(entry)
@@ -107,7 +107,7 @@ module Kettle
         previous_line = lines[insertion_index - 1].to_s
         next_line = lines[insertion_index].to_s
         before = previous_line.strip.empty? ? "" : "\n"
-        after = next_line.empty? || next_line.strip.empty? ? "" : "\n"
+        after = (next_line.empty? || next_line.strip.empty?) ? "" : "\n"
         "#{before}#{@entry}\n#{after}"
       end
     end

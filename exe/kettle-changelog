@@ -162,7 +162,7 @@ begin
     Kettle::Dev::ExitAdapter.abort("--entry is required with --add-unreleased-entry") if entry.to_s.empty?
 
     result = Kettle::Dev::ChangelogEntryAdder.new(section: section, entry: entry).run
-    message = result == :changed ? "CHANGELOG.md updated under Unreleased #{section}." : "CHANGELOG.md already contains that Unreleased #{section} entry."
+    message = (result == :changed) ? "CHANGELOG.md updated under Unreleased #{section}." : "CHANGELOG.md already contains that Unreleased #{section} entry."
     puts(json_output ? JSON.pretty_generate({changed: result == :changed, section: section, entry: entry}) : message)
     exit(0)
   end
