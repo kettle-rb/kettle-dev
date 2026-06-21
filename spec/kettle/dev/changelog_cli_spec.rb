@@ -698,7 +698,10 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
         File.write(File.join(root, "coverage", "coverage.json"), "not json")
         allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
         cli = described_class.new(strict: false)
-        line_cov, branch_cov = cli.send(:coverage_lines)
+        line_cov = branch_cov = nil
+        expect {
+          line_cov, branch_cov = cli.send(:coverage_lines)
+        }.to output(/Failed to parse coverage: JSON::ParserError:/).to_stderr
         expect(line_cov).to be_nil
         expect(branch_cov).to be_nil
       end
