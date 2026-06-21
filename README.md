@@ -22,7 +22,7 @@ I've summarized my thoughts in [this blog post](https://dev.to/galtzo/hostile-ta
 ## 🌻 Synopsis <a href="https://discord.gg/3qme4XHNKN"><img alt="Galtzo FLOSS Logo by Aboling0, CC BY-SA 4.0" src="https://logos.galtzo.com/assets/images/galtzo-floss/avatar-128px.svg" width="8%" align="right"/></a> <a href="https://ruby-toolbox.com"><img alt="ruby-lang Logo, Yukihiro Matsumoto, Ruby Visual Identity Team, CC BY-SA 2.5" src="https://logos.galtzo.com/assets/images/ruby-lang/avatar-128px.svg" width="8%" align="right"/></a>
 
 Kettle::Dev is the development, CI, changelog, and release harness used by
-kettle-rb gems. It installs rake tasks when loaded from a project's `Rakefile`,
+kettle-dev gems. It installs rake tasks when loaded from a project's `Rakefile`,
 and it ships command-line tools for changelog preparation, release automation,
 multi-forge git remotes, commit-message hooks, and Open Collective README
 updates.
@@ -42,14 +42,14 @@ require "kettle/dev"
 ```
 
 For RSpec projects, use the matching test harness from
-[kettle-test](https://github.com/kettle-rb/kettle-test):
+[kettle-test](https://github.com/kettle-dev/kettle-test):
 
 ```ruby
 require "kettle/test/rspec"
 ```
 
 Project setup and template refreshes are now owned by
-[kettle-jem](https://github.com/kettle-rb/kettle-jem), not kettle-dev:
+[kettle-jem](https://github.com/kettle-dev/kettle-jem), not kettle-dev:
 
 ```console
 gem install kettle-jem
@@ -77,7 +77,7 @@ bin/kettle-release
 - Rake task loading from `require "kettle/dev"`.
 - RuboCop Gradual, Reek, YARD, appraisal, local CI, benchmark, and coverage task wiring.
 - `kettle-changelog` for moving Unreleased changelog notes into a versioned release section with coverage and documentation stats.
-- `kettle-release` for the canonical kettle-rb release flow.
+- `kettle-release` for the canonical kettle-dev release flow.
 - `kettle-pre-release` for release readiness checks.
 - `kettle-dvcs` for normalizing GitHub, GitLab, Codeberg, and aggregate remotes.
 - `kettle-commit-msg` for shared commit-message hook behavior.
@@ -202,7 +202,7 @@ require "kettle/dev"
 
 ### RSpec
 
-This gem integrates tightly with [kettle-test](https://github.com/kettle-rb/kettle-test).
+This gem integrates tightly with [kettle-test](https://github.com/kettle-dev/kettle-test).
 
 ```ruby
 require "kettle/test/rspec"
@@ -542,7 +542,7 @@ What it does:
     - Sponsors (Organizations): `<!-- <TAG>-ORGANIZATIONS:START --> … <!-- <TAG>-ORGANIZATIONS:END -->`
 - Handle resolution:
     1.  `OPENCOLLECTIVE_HANDLE` environment variable, if set
-    2.  `opencollective.yml` in the project root (e.g., `collective: "kettle-rb"` in this repo)
+    2.  `opencollective.yml` in the project root (e.g., `collective: "kettle-dev"` in this repo)
 - Usage:
     - `exe/kettle-readme-backers`
     - `OPENCOLLECTIVE_HANDLE=my-collective exe/kettle-readme-backers`
@@ -902,9 +902,9 @@ Thanks for RTFM. ☺️
 | Field | Value |
 |---|---|
 | Package | kettle-dev |
-| Description | 🍲 Kettle::Dev is a meta tool from kettle-rb to streamline development and testing. Acts as a shim dependency, pulling in many other dependencies, to give you OOTB productivity with a RubyGem, or Ruby app project. Configures a complete set of Rake tasks, for all the libraries is brings in, so they arrive ready to go. Fund overlooked open source projects - bottom of stack, dev/test dependencies: floss-funding.dev |
+| Description | 🍲 Kettle::Dev is a meta tool from kettle-dev to streamline development and testing. Acts as a shim dependency, pulling in many other dependencies, to give you OOTB productivity with a RubyGem, or Ruby app project. Configures a complete set of Rake tasks, for all the libraries is brings in, so they arrive ready to go. Fund overlooked open source projects - bottom of stack, dev/test dependencies: floss-funding.dev |
 | Homepage | https://github.com/kettle-dev/kettle-dev |
 | Source | https://github.com/kettle-dev/kettle-dev |
 | License | `AGPL-3.0-only` |
-| Funding | https://github.com/sponsors/pboling, https://issuehunt.io/u/pboling, https://ko-fi.com/pboling, https://liberapay.com/pboling/donate, https://opencollective.com/kettle-dev, https://opencollective.com/kettle-rb, https://patreon.com/galtzo, https://polar.sh/pboling, https://thanks.dev/u/gh/pboling, https://tidelift.com/funding/github/rubygems/kettle-dev, https://www.buymeacoffee.com/pboling |
+| Funding | https://github.com/sponsors/pboling, https://issuehunt.io/u/pboling, https://ko-fi.com/pboling, https://liberapay.com/pboling/donate, https://opencollective.com/kettle-dev, https://patreon.com/galtzo, https://polar.sh/pboling, https://thanks.dev/u/gh/pboling, https://tidelift.com/funding/github/rubygems/kettle-dev, https://www.buymeacoffee.com/pboling |
 <!-- kettle-jem:metadata:end -->

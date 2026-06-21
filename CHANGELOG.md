@@ -39,6 +39,7 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Corrected OpenCollective funding metadata to use the `kettle-dev` collective.
 - `kettle-gha-sha-pins` now refreshes large action repositories without eagerly
   dereferencing irrelevant annotated tags, bounds GitHub API refreshes with
   explicit timeouts, and falls back to stale cache data only when refresh fails.
