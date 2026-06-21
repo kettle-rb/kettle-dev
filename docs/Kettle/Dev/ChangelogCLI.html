@@ -129,6 +129,16 @@ includes coverage and YARD stats, and updates link references.</p>
         </dt>
         <dd><pre class="code"><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>[Unreleased]:</span><span class='tstring_end'>&quot;</span></span></pre></dd>
       
+        <dt id="CHANGELOG_VERSION_PATTERN-constant" class="">CHANGELOG_VERSION_PATTERN =
+          
+        </dt>
+        <dd><pre class="code"><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\d+\.\d+\.\d+(?:[.-][0-9A-Za-z]+)*</span><span class='regexp_end'>/</span></span></pre></dd>
+      
+        <dt id="CHANGELOG_VERSION_PATTERN_SOURCE-constant" class="">CHANGELOG_VERSION_PATTERN_SOURCE =
+          
+        </dt>
+        <dd><pre class="code"><span class='const'><span class='object_link'><a href="#CHANGELOG_VERSION_PATTERN-constant" title="Kettle::Dev::ChangelogCLI::CHANGELOG_VERSION_PATTERN (constant)">CHANGELOG_VERSION_PATTERN</a></span></span><span class='period'>.</span><span class='id identifier rubyid_source'>source</span></pre></dd>
+      
         <dt id="LINK_REF_DEF_RE-constant" class="">LINK_REF_DEF_RE =
           <div class="docstring">
   <div class="discussion">
@@ -398,18 +408,18 @@ Sets up paths for CHANGELOG.md and coverage.json</p>
       <pre class="lines">
 
 
-28
-29
 30
 31
 32
 33
 34
 35
-36</pre>
+36
+37
+38</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/changelog_cli.rb', line 28</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/changelog_cli.rb', line 30</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='label'>strict:</span> <span class='kw'>true</span><span class='comma'>,</span> <span class='label'>enforce_coverage_thresholds:</span> <span class='kw'>true</span><span class='comma'>,</span> <span class='label'>update_prep:</span> <span class='kw'>false</span><span class='comma'>,</span> <span class='label'>version:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>root:</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="CIHelpers.html" title="Kettle::Dev::CIHelpers (module)">CIHelpers</a></span></span><span class='period'>.</span><span class='id identifier rubyid_project_root'><span class='object_link'><a href="CIHelpers.html#project_root-class_method" title="Kettle::Dev::CIHelpers.project_root (method)">project_root</a></span></span><span class='rparen'>)</span>
   <span class='ivar'>@root</span> <span class='op'>=</span> <span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span>
@@ -447,12 +457,12 @@ Sets up paths for CHANGELOG.md and coverage.json</p>
       <pre class="lines">
 
 
-140
-141
-142</pre>
+142
+143
+144</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/changelog_cli.rb', line 140</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/changelog_cli.rb', line 142</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_pending_release_status'>pending_release_status</span>
   <span class='id identifier rubyid_release_state'>release_state</span>
@@ -477,8 +487,6 @@ Sets up paths for CHANGELOG.md and coverage.json</p>
       <pre class="lines">
 
 
-144
-145
 146
 147
 148
@@ -523,10 +531,12 @@ Sets up paths for CHANGELOG.md and coverage.json</p>
 187
 188
 189
-190</pre>
+190
+191
+192</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/changelog_cli.rb', line 144</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/changelog_cli.rb', line 146</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_release_state'>release_state</span>
   <span class='id identifier rubyid_changelog_present'>changelog_present</span> <span class='op'>=</span> <span class='id identifier rubyid_ensure_changelog_for_release_state!'>ensure_changelog_for_release_state!</span>
@@ -595,8 +605,6 @@ Sets up paths for CHANGELOG.md and coverage.json</p>
       <pre class="lines">
 
 
-192
-193
 194
 195
 196
@@ -617,10 +625,12 @@ Sets up paths for CHANGELOG.md and coverage.json</p>
 211
 212
 213
-214</pre>
+214
+215
+216</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/changelog_cli.rb', line 192</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/changelog_cli.rb', line 194</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_release_state_table'>release_state_table</span><span class='lparen'>(</span><span class='id identifier rubyid_state'>state</span> <span class='op'>=</span> <span class='id identifier rubyid_release_state'>release_state</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_rows'>rows</span> <span class='op'>=</span> <span class='lbracket'>[</span>
@@ -678,8 +688,6 @@ a new version section with coverage/YARD stats, and updates all link references.
       <pre class="lines">
 
 
-44
-45
 46
 47
 48
@@ -772,10 +780,12 @@ a new version section with coverage/YARD stats, and updates all link references.
 135
 136
 137
-138</pre>
+138
+139
+140</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/changelog_cli.rb', line 44</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/changelog_cli.rb', line 46</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_run'>run</span>
   <span class='id identifier rubyid_version'>version</span> <span class='op'>=</span> <span class='id identifier rubyid_detect_version'>detect_version</span>
@@ -882,7 +892,7 @@ a new version section with coverage/YARD stats, and updates all link references.
 </div>
 
       <div id="footer">
-  Generated on Thu Jun 18 06:34:15 2026 by
+  Generated on Sun Jun 21 10:42:52 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>

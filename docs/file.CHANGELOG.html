@@ -70,9 +70,32 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 and <a href="https://tom.preston-werner.com/2022/05/23/major-version-numbers-are-not-sacred.html">yes</a>, platform and engine support are part of the <a href="https://github.com/semver/semver/issues/716#issuecomment-869336139">public API</a>.<br>
 Please file a bug if you notice a violation of semantic versioning.</p>
 
-<h2 id="unreleased"><a href="https://github.com/kettle-dev/kettle-dev/compare/v2.2.13...HEAD">Unreleased</a></h2>
+<h2 id="unreleased"><a href="https://github.com/kettle-dev/kettle-dev/compare/v2.2.14...HEAD">Unreleased</a></h2>
 
 <h3 id="added">Added</h3>
+
+<h3 id="changed">Changed</h3>
+
+<h3 id="deprecated">Deprecated</h3>
+
+<h3 id="removed">Removed</h3>
+
+<h3 id="fixed">Fixed</h3>
+
+<h3 id="security">Security</h3>
+
+<h2 id="2214---2026-06-21">
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v2.2.13...v2.2.14">2.2.14</a> - 2026-06-21</h2>
+
+<ul>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.14">v2.2.14</a>
+</li>
+  <li>COVERAGE: 91.20% – 4023/4411 lines in 33 files</li>
+  <li>BRANCH COVERAGE: 72.64% – 1590/2189 branches in 33 files</li>
+  <li>62.11% documented</li>
+</ul>
+
+<h3 id="added-1">Added</h3>
 
 <ul>
   <li>
@@ -85,7 +108,7 @@ Markdown adapter, failing closed when the expected section shape is absent.</p>
   </li>
 </ul>
 
-<h3 id="changed">Changed</h3>
+<h3 id="changed-1">Changed</h3>
 
 <ul>
   <li>
@@ -97,11 +120,7 @@ the existing nomono <code>VENDORED_GEMS</code> workflow.</p>
   </li>
 </ul>
 
-<h3 id="deprecated">Deprecated</h3>
-
-<h3 id="removed">Removed</h3>
-
-<h3 id="fixed">Fixed</h3>
+<h3 id="fixed-1">Fixed</h3>
 
 <ul>
   <li>Corrected OpenCollective funding metadata to use the <code>kettle-dev</code> collective.</li>
@@ -110,11 +129,17 @@ the existing nomono <code>VENDORED_GEMS</code> workflow.</p>
 dereferencing irrelevant annotated tags, bounds GitHub API refreshes with<br>
 explicit timeouts, and falls back to stale cache data only when refresh fails.</p>
   </li>
-  <li>Covered <code>kettle-changelog --add-unreleased-entry</code> insertion, duplicate, and<br>
-fail-closed error behavior in the normal development bundle.</li>
+  <li>
+    <p>Covered <code>kettle-changelog --add-unreleased-entry</code> insertion, duplicate, and<br>
+fail-closed error behavior in the normal development bundle.</p>
+  </li>
+  <li>
+<code>kettle-changelog</code> now treats prerelease sections such as <code>3.0.0.rc3</code> as<br>
+release sections when detecting or updating the latest prepared release.</li>
+  <li>Fixed seed-dependent coverage by starting SimpleCov before test support loads,<br>
+covering <code>version.rb</code>, and making rake task specs cover their task wiring<br>
+branches deterministically.</li>
 </ul>
-
-<h3 id="security">Security</h3>
 
 <h2 id="2213---2026-06-18">
 <a href="https://github.com/kettle-dev/kettle-dev/compare/v2.2.12...v2.2.13">2.2.13</a> - 2026-06-18</h2>
@@ -127,7 +152,7 @@ fail-closed error behavior in the normal development bundle.</li>
   <li>63.76% documented</li>
 </ul>
 
-<h3 id="fixed-1">Fixed</h3>
+<h3 id="fixed-2">Fixed</h3>
 
 <ul>
   <li>
@@ -147,7 +172,7 @@ the requested numbered release step.</li>
   <li>63.76% documented</li>
 </ul>
 
-<h3 id="added-1">Added</h3>
+<h3 id="added-2">Added</h3>
 
 <ul>
   <li>Added <code>--version VERSION</code> support to <code>kettle-changelog</code> and <code>kettle-release</code><br>
@@ -155,7 +180,7 @@ for shim gems whose release version is intentionally sourced outside the local<b
 <code>lib/**/version.rb</code> file.</li>
 </ul>
 
-<h3 id="fixed-2">Fixed</h3>
+<h3 id="fixed-3">Fixed</h3>
 
 <ul>
   <li>Updated <code>kettle-changelog</code> and <code>kettle-pre-release</code> help text to match current<br>
@@ -173,7 +198,7 @@ coverage generation, documentation stats, and image URL cache behavior.</li>
   <li>64.06% documented</li>
 </ul>
 
-<h3 id="fixed-3">Fixed</h3>
+<h3 id="fixed-4">Fixed</h3>
 
 <ul>
   <li>
@@ -193,7 +218,7 @@ bumps.</li>
   <li>64.35% documented</li>
 </ul>
 
-<h3 id="changed-1">Changed</h3>
+<h3 id="changed-2">Changed</h3>
 
 <ul>
   <li>
@@ -213,7 +238,7 @@ HEAD requests during release readiness checks.</li>
   <li>65.38% documented</li>
 </ul>
 
-<h3 id="fixed-4">Fixed</h3>
+<h3 id="fixed-5">Fixed</h3>
 
 <ul>
   <li>
@@ -239,7 +264,7 @@ such as <code># v7</code> idempotently instead of repeatedly planning the same<b
   <li>66.02% documented</li>
 </ul>
 
-<h3 id="fixed-5">Fixed</h3>
+<h3 id="fixed-6">Fixed</h3>
 
 <h4 id="changelog-1">Changelog</h4>
 
@@ -264,7 +289,7 @@ for individual gems that do not have a <code>CHANGELOG.md</code>.</li>
   <li>66.02% documented</li>
 </ul>
 
-<h3 id="added-2">Added</h3>
+<h3 id="added-3">Added</h3>
 
 <h4 id="changelog-2">Changelog</h4>
 
@@ -287,7 +312,7 @@ changelog sources.</li>
   <li>66.67% documented</li>
 </ul>
 
-<h3 id="added-3">Added</h3>
+<h3 id="added-4">Added</h3>
 
 <h4 id="changelog-3">Changelog</h4>
 
@@ -308,7 +333,7 @@ release section has not been published yet.</li>
   <li>67.00% documented</li>
 </ul>
 
-<h3 id="changed-2">Changed</h3>
+<h3 id="changed-3">Changed</h3>
 
 <ul>
   <li>
@@ -317,7 +342,7 @@ such as <code>v2</code>, while patch and minor upgrade targeting remain limited 
 <code>x.y.z</code> SemVer tags.</li>
 </ul>
 
-<h3 id="fixed-6">Fixed</h3>
+<h3 id="fixed-7">Fixed</h3>
 
 <ul>
   <li>
@@ -336,7 +361,7 @@ whose releases and tags only include major-line versions such as <code>v2</code>
   <li>67.00% documented</li>
 </ul>
 
-<h3 id="changed-3">Changed</h3>
+<h3 id="changed-4">Changed</h3>
 
 <ul>
   <li>Retemplated generated project files with the current <code>kettle-jem</code> template,<br>
@@ -344,7 +369,7 @@ refreshing development dependency floors, binstubs, README metadata, and RBS<br>
 validation workflow output.</li>
 </ul>
 
-<h3 id="fixed-7">Fixed</h3>
+<h3 id="fixed-8">Fixed</h3>
 
 <ul>
   <li>
@@ -365,7 +390,7 @@ API redirects.</li>
   <li>67.00% documented</li>
 </ul>
 
-<h3 id="fixed-8">Fixed</h3>
+<h3 id="fixed-9">Fixed</h3>
 
 <ul>
   <li>
@@ -384,7 +409,7 @@ instead of recursive scratch output such as <code>tmp/template_test</code>.</li>
   <li>66.83% documented</li>
 </ul>
 
-<h3 id="changed-4">Changed</h3>
+<h3 id="changed-5">Changed</h3>
 
 <ul>
   <li>
@@ -393,7 +418,7 @@ defaulting to <code>.github/workflows</code>, instead of recursively searching e
 nested <code>.github/workflows</code> directory under the project root.</li>
 </ul>
 
-<h3 id="fixed-9">Fixed</h3>
+<h3 id="fixed-10">Fixed</h3>
 
 <ul>
   <li>Updated generated project metadata links to use the migrated <code>kettle-dev</code><br>
@@ -411,7 +436,7 @@ GitHub organization, including README QLTY badge URLs.</li>
   <li>66.83% documented</li>
 </ul>
 
-<h3 id="fixed-10">Fixed</h3>
+<h3 id="fixed-11">Fixed</h3>
 
 <ul>
   <li>
@@ -424,17 +449,17 @@ cache so a dry run followed by <code>--write</code> does not repeat the same API
 </ul>
 
 <h2 id="220---2026-06-08">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v2.1.1...v2.2.0">2.2.0</a> - 2026-06-08</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v2.1.1...v2.2.0">2.2.0</a> - 2026-06-08</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v2.2.0">v2.2.0</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.0">v2.2.0</a>
 </li>
   <li>COVERAGE: 91.51% – 3710/4054 lines in 28 files</li>
   <li>BRANCH COVERAGE: 72.90% – 1458/2000 branches in 28 files</li>
   <li>67.51% documented</li>
 </ul>
 
-<h3 id="added-4">Added</h3>
+<h3 id="added-5">Added</h3>
 
 <ul>
   <li>
@@ -462,7 +487,7 @@ the XDG state location and supports <code>--refresh-cache</code> to bypass stale
 while preserving cached discoveries for other projects and actions.</li>
 </ul>
 
-<h3 id="fixed-11">Fixed</h3>
+<h3 id="fixed-12">Fixed</h3>
 
 <ul>
   <li>
@@ -502,7 +527,7 @@ run on the supported legacy matrix.</p>
 and the Ruby 3.2 appraisal includes <code>prism</code> so the specs run where supported.</li>
 </ul>
 
-<h3 id="changed-5">Changed</h3>
+<h3 id="changed-6">Changed</h3>
 
 <ul>
   <li>
@@ -515,17 +540,17 @@ README and security-policy generated details for the current release line.</p>
 </ul>
 
 <h2 id="211---2026-06-06">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v2.1.0...v2.1.1">2.1.1</a> - 2026-06-06</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v2.1.0...v2.1.1">2.1.1</a> - 2026-06-06</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v2.1.1">v2.1.1</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v2.1.1">v2.1.1</a>
 </li>
   <li>COVERAGE: 93.11% – 2988/3209 lines in 25 files</li>
   <li>BRANCH COVERAGE: 77.58% – 1218/1570 branches in 25 files</li>
   <li>75.93% documented</li>
 </ul>
 
-<h3 id="added-5">Added</h3>
+<h3 id="added-6">Added</h3>
 
 <ul>
   <li>
@@ -534,7 +559,7 @@ publish the gem before any git push, create the release tag locally, and push<br
 commits and tags only after publishing succeeds.</li>
 </ul>
 
-<h3 id="changed-6">Changed</h3>
+<h3 id="changed-7">Changed</h3>
 
 <ul>
   <li>Refreshed kettle-jem template output, including Appraisal2 plugin wiring and<br>
@@ -543,17 +568,17 @@ current dependency floors for <code>appraisal2</code>, <code>appraisal2-rubocop<
 </ul>
 
 <h2 id="210---2026-06-06">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v2.0.8...v2.1.0">2.1.0</a> - 2026-06-06</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v2.0.8...v2.1.0">2.1.0</a> - 2026-06-06</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v2.1.0">v2.1.0</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v2.1.0">v2.1.0</a>
 </li>
   <li>COVERAGE: 93.52% – 2973/3179 lines in 25 files</li>
   <li>BRANCH COVERAGE: 77.58% – 1204/1552 branches in 25 files</li>
   <li>75.93% documented</li>
 </ul>
 
-<h3 id="changed-7">Changed</h3>
+<h3 id="changed-8">Changed</h3>
 
 <ul>
   <li>
@@ -567,17 +592,17 @@ Appraisal2 plugin hook such as <code>appraisal2-rubocop</code>.</li>
 </ul>
 
 <h2 id="208---2026-06-02">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v2.0.7...v2.0.8">2.0.8</a> - 2026-06-02</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v2.0.7...v2.0.8">2.0.8</a> - 2026-06-02</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v2.0.8">v2.0.8</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v2.0.8">v2.0.8</a>
 </li>
   <li>COVERAGE: 92.83% – 2953/3181 lines in 25 files</li>
   <li>BRANCH COVERAGE: 76.59% – 1201/1568 branches in 25 files</li>
   <li>75.93% documented</li>
 </ul>
 
-<h3 id="fixed-12">Fixed</h3>
+<h3 id="fixed-13">Fixed</h3>
 
 <ul>
   <li>
@@ -587,17 +612,17 @@ Appraisal root lockfile does not exist yet.</li>
 </ul>
 
 <h2 id="207---2026-06-01">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v2.0.6...v2.0.7">2.0.7</a> - 2026-06-01</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v2.0.6...v2.0.7">2.0.7</a> - 2026-06-01</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v2.0.7">v2.0.7</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v2.0.7">v2.0.7</a>
 </li>
   <li>COVERAGE: 93.14% – 2961/3179 lines in 25 files</li>
   <li>BRANCH COVERAGE: 76.88% – 1204/1566 branches in 25 files</li>
   <li>75.93% documented</li>
 </ul>
 
-<h3 id="changed-8">Changed</h3>
+<h3 id="changed-9">Changed</h3>
 
 <ul>
   <li>Runtime dependency <code>kettle-test</code> now requires 2.0.2 or newer.</li>
@@ -605,7 +630,7 @@ Appraisal root lockfile does not exist yet.</li>
   <li>Lint / style updates</li>
 </ul>
 
-<h3 id="fixed-13">Fixed</h3>
+<h3 id="fixed-14">Fixed</h3>
 
 <ul>
   <li>Avoided moving mocked CI task input reads into a background thread for<br>
@@ -613,17 +638,17 @@ non-interactive runs, fixing TruffleRuby v23.0-v23.1 CI stability.</li>
 </ul>
 
 <h2 id="206---2026-05-31">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v2.0.5...v2.0.6">2.0.6</a> - 2026-05-31</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v2.0.5...v2.0.6">2.0.6</a> - 2026-05-31</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v2.0.6">v2.0.6</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v2.0.6">v2.0.6</a>
 </li>
   <li>COVERAGE: 93.14% – 2961/3179 lines in 25 files</li>
   <li>BRANCH COVERAGE: 76.95% – 1205/1566 branches in 25 files</li>
   <li>75.93% documented</li>
 </ul>
 
-<h3 id="added-6">Added</h3>
+<h3 id="added-7">Added</h3>
 
 <ul>
   <li>
@@ -631,7 +656,7 @@ non-interactive runs, fixing TruffleRuby v23.0-v23.1 CI stability.</li>
 preparation for gems whose version constants live below subproject roots.</li>
 </ul>
 
-<h3 id="changed-9">Changed</h3>
+<h3 id="changed-10">Changed</h3>
 
 <ul>
   <li>
@@ -651,7 +676,7 @@ Synopsis heading with the current kettle-jem width defaults.</li>
 StructuredMerge as the templating and merge-contract tooling.</li>
 </ul>
 
-<h3 id="fixed-14">Fixed</h3>
+<h3 id="fixed-15">Fixed</h3>
 
 <ul>
   <li>Regenerated the spec helper so <code>kettle-dev</code> is required only after coverage<br>
@@ -659,17 +684,17 @@ bootstrap setup.</li>
 </ul>
 
 <h2 id="205---2026-05-28">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v2.0.4...v2.0.5">2.0.5</a> - 2026-05-28</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v2.0.4...v2.0.5">2.0.5</a> - 2026-05-28</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v2.0.5">v2.0.5</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v2.0.5">v2.0.5</a>
 </li>
   <li>COVERAGE: 93.46% – 2972/3180 lines in 25 files</li>
   <li>BRANCH COVERAGE: 76.94% – 1208/1570 branches in 25 files</li>
   <li>76.40% documented</li>
 </ul>
 
-<h3 id="added-7">Added</h3>
+<h3 id="added-8">Added</h3>
 
 <ul>
   <li>Added <code>appraisal:generate</code>, which regenerates Appraisal gemfiles inside the<br>
@@ -677,17 +702,17 @@ bootstrap setup.</li>
 </ul>
 
 <h2 id="204---2026-05-27">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v2.0.3...v2.0.4">2.0.4</a> - 2026-05-27</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v2.0.3...v2.0.4">2.0.4</a> - 2026-05-27</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v2.0.4">v2.0.4</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v2.0.4">v2.0.4</a>
 </li>
   <li>COVERAGE: 94.42% – 2944/3118 lines in 24 files</li>
   <li>BRANCH COVERAGE: 78.22% – 1203/1538 branches in 24 files</li>
   <li>76.40% documented</li>
 </ul>
 
-<h3 id="fixed-15">Fixed</h3>
+<h3 id="fixed-16">Fixed</h3>
 
 <ul>
   <li>
@@ -705,17 +730,17 @@ installed <code>kettle-jem</code> package does not expose rake task installation
 </ul>
 
 <h2 id="203---2026-05-27">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v2.0.2...v2.0.3">2.0.3</a> - 2026-05-27</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v2.0.2...v2.0.3">2.0.3</a> - 2026-05-27</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v2.0.3">v2.0.3</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v2.0.3">v2.0.3</a>
 </li>
   <li>COVERAGE: 94.62% – 2956/3124 lines in 24 files</li>
   <li>BRANCH COVERAGE: 78.21% – 1206/1542 branches in 24 files</li>
   <li>76.40% documented</li>
 </ul>
 
-<h3 id="fixed-16">Fixed</h3>
+<h3 id="fixed-17">Fixed</h3>
 
 <ul>
   <li>The default rake task now includes documentation generation via <code>yard</code>, so<br>
@@ -728,17 +753,17 @@ known release.</li>
 </ul>
 
 <h2 id="202---2026-05-27">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v2.0.1...v2.0.2">2.0.2</a> - 2026-05-27</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v2.0.1...v2.0.2">2.0.2</a> - 2026-05-27</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v2.0.2">v2.0.2</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v2.0.2">v2.0.2</a>
 </li>
   <li>COVERAGE: 94.71% – 2937/3101 lines in 23 files</li>
   <li>BRANCH COVERAGE: 78.23% – 1200/1534 branches in 23 files</li>
   <li>76.40% documented</li>
 </ul>
 
-<h3 id="changed-10">Changed</h3>
+<h3 id="changed-11">Changed</h3>
 
 <ul>
   <li>
@@ -757,7 +782,7 @@ Ruby 2.4-targeted RuboCop LTS style dependencies.</li>
   <li>Removed Ruby 2.3 and JRuby 9.1 CI workflows and appraisal gemfiles.</li>
 </ul>
 
-<h3 id="fixed-17">Fixed</h3>
+<h3 id="fixed-18">Fixed</h3>
 
 <ul>
   <li>
@@ -788,17 +813,17 @@ stays clean with newer RuboCop performance cops.</li>
 </ul>
 
 <h2 id="201---2026-05-25">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v2.0.0...v2.0.1">2.0.1</a> - 2026-05-25</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v2.0.0...v2.0.1">2.0.1</a> - 2026-05-25</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v2.0.1">v2.0.1</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v2.0.1">v2.0.1</a>
 </li>
   <li>COVERAGE: 94.88% – 2911/3068 lines in 21 files</li>
   <li>BRANCH COVERAGE: 78.43% – 1200/1530 branches in 21 files</li>
   <li>76.25% documented</li>
 </ul>
 
-<h3 id="added-8">Added</h3>
+<h3 id="added-9">Added</h3>
 
 <ul>
   <li>Added <code>kettle-changelog --update-prep</code> to refresh the most recent prepared<br>
@@ -806,7 +831,7 @@ release section in place, including date, coverage, documentation stats, and<br>
 any follow-up Unreleased notes.</li>
 </ul>
 
-<h3 id="changed-11">Changed</h3>
+<h3 id="changed-12">Changed</h3>
 
 <ul>
   <li>
@@ -832,7 +857,7 @@ CHANGELOG.md release section before prompting for confirmation.</li>
   <li>Updated the development dependency on <code>kettle-test</code> to require 2.0.1 or newer.</li>
 </ul>
 
-<h3 id="fixed-18">Fixed</h3>
+<h3 id="fixed-19">Fixed</h3>
 
 <ul>
   <li>
@@ -849,17 +874,17 @@ instead of writing a single blank line.</li>
 </ul>
 
 <h2 id="200---2026-02-25">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.2.5...v2.0.0">2.0.0</a> - 2026-02-25</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.2.5...v2.0.0">2.0.0</a> - 2026-02-25</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v2.0.0">v2.0.0</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v2.0.0">v2.0.0</a>
 </li>
   <li>COVERAGE: 96.06% – 2683/2793 lines in 20 files</li>
   <li>BRANCH COVERAGE: 79.16% – 1113/1406 branches in 20 files</li>
   <li>80.25% documented</li>
 </ul>
 
-<h3 id="added-9">Added</h3>
+<h3 id="added-10">Added</h3>
 
 <ul>
   <li>New <code>kettle-gh-release</code> executable for standalone GitHub release creation
@@ -884,7 +909,7 @@ instead of writing a single blank line.</li>
   </li>
 </ul>
 
-<h3 id="changed-12">Changed</h3>
+<h3 id="changed-13">Changed</h3>
 
 <ul>
   <li>Updated documentation on hostile takeover of RubyGems
@@ -942,7 +967,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </li>
 </ul>
 
-<h3 id="fixed-19">Fixed</h3>
+<h3 id="fixed-20">Fixed</h3>
 
 <ul>
   <li>Fixed <code>PrismAppraisals</code> various comment chunk spacing
@@ -1066,17 +1091,17 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="125---2025-11-28">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.2.4...v1.2.5">1.2.5</a> - 2025-11-28</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.2.4...v1.2.5">1.2.5</a> - 2025-11-28</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.2.5">v1.2.5</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.2.5">v1.2.5</a>
 </li>
   <li>COVERAGE: 93.53% – 4726/5053 lines in 31 files</li>
   <li>BRANCH COVERAGE: 76.62% – 1924/2511 branches in 31 files</li>
   <li>69.89% documented</li>
 </ul>
 
-<h3 id="added-10">Added</h3>
+<h3 id="added-11">Added</h3>
 
 <ul>
   <li>Comprehensive newline normalization in templated Ruby files:
@@ -1089,30 +1114,30 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   </li>
 </ul>
 
-<h3 id="changed-13">Changed</h3>
+<h3 id="changed-14">Changed</h3>
 
 <ul>
   <li>Updated <code>FREEZE_REMINDER</code> constant to include blank line before and empty comment line after</li>
 </ul>
 
-<h3 id="fixed-20">Fixed</h3>
+<h3 id="fixed-21">Fixed</h3>
 
 <ul>
   <li>Fixed <code>reminder_present?</code> to correctly detect freeze reminder when it has leading blank line</li>
 </ul>
 
 <h2 id="124---2025-11-28">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.2.3...v1.2.4">1.2.4</a> - 2025-11-28</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.2.3...v1.2.4">1.2.4</a> - 2025-11-28</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.2.4">v1.2.4</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.2.4">v1.2.4</a>
 </li>
   <li>COVERAGE: 93.53% – 4701/5026 lines in 31 files</li>
   <li>BRANCH COVERAGE: 76.61% – 1913/2497 branches in 31 files</li>
   <li>69.78% documented</li>
 </ul>
 
-<h3 id="fixed-21">Fixed</h3>
+<h3 id="fixed-22">Fixed</h3>
 
 <ul>
   <li>Fixed comment deduplication in <code>restore_custom_leading_comments</code> to prevent accumulation across multiple template runs
@@ -1126,17 +1151,17 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="123---2025-11-28vari">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.2.2...v1.2.3">1.2.3</a> - 2025-11-28vari</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.2.2...v1.2.3">1.2.3</a> - 2025-11-28vari</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.2.3">v1.2.3</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.2.3">v1.2.3</a>
 </li>
   <li>COVERAGE: 93.43% – 4681/5010 lines in 31 files</li>
   <li>BRANCH COVERAGE: 76.63% – 1912/2495 branches in 31 files</li>
   <li>70.55% documented</li>
 </ul>
 
-<h3 id="fixed-22">Fixed</h3>
+<h3 id="fixed-23">Fixed</h3>
 
 <ul>
   <li>Fixed Gemfile parsing to properly deduplicate comments across multiple template runs
@@ -1151,17 +1176,17 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="122---2025-11-27">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.2.1...v1.2.2">1.2.2</a> - 2025-11-27</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.2.1...v1.2.2">1.2.2</a> - 2025-11-27</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.2.2">v1.2.2</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.2.2">v1.2.2</a>
 </li>
   <li>COVERAGE: 93.28% – 4596/4927 lines in 31 files</li>
   <li>BRANCH COVERAGE: 76.45% – 1883/2463 branches in 31 files</li>
   <li>70.00% documented</li>
 </ul>
 
-<h3 id="added-11">Added</h3>
+<h3 id="added-12">Added</h3>
 
 <ul>
   <li>Prism AST-based manipulation of ruby during templating
@@ -1189,14 +1214,14 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 <h2 id="121---2025-11-25">[1.2.1] - 2025-11-25</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.2.0">v1.2.0</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.2.0">v1.2.0</a>
 </li>
   <li>COVERAGE: 94.38% – 4066/4308 lines in 26 files</li>
   <li>BRANCH COVERAGE: 78.81% – 1674/2124 branches in 26 files</li>
   <li>69.14% documented</li>
 </ul>
 
-<h3 id="changed-14">Changed</h3>
+<h3 id="changed-15">Changed</h3>
 
 <ul>
   <li>Source merging switched from Regex-based string manipulation to Prism AST-based manipulation
@@ -1207,17 +1232,17 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="1160---2025-11-23">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.59...v1.1.60">1.1.60</a> - 2025-11-23</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.59...v1.1.60">1.1.60</a> - 2025-11-23</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.60">v1.1.60</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.60">v1.1.60</a>
 </li>
   <li>COVERAGE: 94.38% – 4066/4308 lines in 26 files</li>
   <li>BRANCH COVERAGE: 78.86% – 1675/2124 branches in 26 files</li>
   <li>79.89% documented</li>
 </ul>
 
-<h3 id="added-12">Added</h3>
+<h3 id="added-13">Added</h3>
 
 <ul>
   <li>Add KETTLE_DEV_DEBUG to direnv defaults</li>
@@ -1228,7 +1253,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   </li>
 </ul>
 
-<h3 id="fixed-23">Fixed</h3>
+<h3 id="fixed-24">Fixed</h3>
 
 <ul>
   <li>Prevent double test runs by ensuring only one of test/coverage/spec are in default task
@@ -1239,23 +1264,23 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="1159---2025-11-13">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.58...v1.1.59">1.1.59</a> - 2025-11-13</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.58...v1.1.59">1.1.59</a> - 2025-11-13</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.59">v1.1.59</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.59">v1.1.59</a>
 </li>
   <li>COVERAGE: 94.38% – 4066/4308 lines in 26 files</li>
   <li>BRANCH COVERAGE: 78.77% – 1673/2124 branches in 26 files</li>
   <li>79.89% documented</li>
 </ul>
 
-<h3 id="changed-15">Changed</h3>
+<h3 id="changed-16">Changed</h3>
 
 <ul>
   <li>Improved default devcontainer with common dependencies of most Ruby projects</li>
 </ul>
 
-<h3 id="fixed-24">Fixed</h3>
+<h3 id="fixed-25">Fixed</h3>
 
 <ul>
   <li>
@@ -1272,64 +1297,64 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="1158---2025-11-13">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.57...v1.1.58">1.1.58</a> - 2025-11-13</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.57...v1.1.58">1.1.58</a> - 2025-11-13</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.58">v1.1.58</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.58">v1.1.58</a>
 </li>
   <li>COVERAGE: 94.41% – 4067/4308 lines in 26 files</li>
   <li>BRANCH COVERAGE: 78.77% – 1673/2124 branches in 26 files</li>
   <li>79.89% documented</li>
 </ul>
 
-<h3 id="added-13">Added</h3>
+<h3 id="added-14">Added</h3>
 
 <ul>
   <li>Ignore more .idea plugin artifacts</li>
 </ul>
 
-<h3 id="fixed-25">Fixed</h3>
+<h3 id="fixed-26">Fixed</h3>
 
 <ul>
   <li>bin/rake yard no longer overrides the .yardignore for checksums</li>
 </ul>
 
 <h2 id="1157---2025-11-13">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.56...v1.1.57">1.1.57</a> - 2025-11-13</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.56...v1.1.57">1.1.57</a> - 2025-11-13</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.57">v1.1.57</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.57">v1.1.57</a>
 </li>
   <li>COVERAGE: 94.36% – 4065/4308 lines in 26 files</li>
   <li>BRANCH COVERAGE: 78.81% – 1674/2124 branches in 26 files</li>
   <li>79.89% documented</li>
 </ul>
 
-<h3 id="added-14">Added</h3>
+<h3 id="added-15">Added</h3>
 
 <ul>
   <li>New Rake task: <code>appraisal:reset</code> — deletes all Appraisal lockfiles (<code>gemfiles/*.gemfile.lock</code>).</li>
   <li>Improved .env.local.example template</li>
 </ul>
 
-<h3 id="fixed-26">Fixed</h3>
+<h3 id="fixed-27">Fixed</h3>
 
 <ul>
   <li>.yardignore more comprehensively ignores directories that are not relevant to documentation</li>
 </ul>
 
 <h2 id="1156---2025-11-11">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.55...v1.1.56">1.1.56</a> - 2025-11-11</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.55...v1.1.56">1.1.56</a> - 2025-11-11</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.56">v1.1.56</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.56">v1.1.56</a>
 </li>
   <li>COVERAGE: 94.38% – 4066/4308 lines in 26 files</li>
   <li>BRANCH COVERAGE: 78.77% – 1673/2124 branches in 26 files</li>
   <li>79.89% documented</li>
 </ul>
 
-<h3 id="fixed-27">Fixed</h3>
+<h3 id="fixed-28">Fixed</h3>
 
 <ul>
   <li>Appraisals template merge with existing header</li>
@@ -1339,29 +1364,12 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="1155---2025-11-11">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.54...v1.1.55">1.1.55</a> - 2025-11-11</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.54...v1.1.55">1.1.55</a> - 2025-11-11</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.55">v1.1.55</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.55">v1.1.55</a>
 </li>
   <li>COVERAGE: 94.41% – 4039/4278 lines in 26 files</li>
-  <li>BRANCH COVERAGE: 78.88% – 1662/2107 branches in 26 files</li>
-  <li>79.89% documented</li>
-</ul>
-
-<h3 id="added-15">Added</h3>
-
-<ul>
-  <li>GitLab Pipelines for Ruby 2.7, 3.0, 3.0</li>
-</ul>
-
-<h2 id="1154---2025-11-11">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.53...v1.1.54">1.1.54</a> - 2025-11-11</h2>
-
-<ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.54">v1.1.54</a>
-</li>
-  <li>COVERAGE: 94.39% – 4038/4278 lines in 26 files</li>
   <li>BRANCH COVERAGE: 78.88% – 1662/2107 branches in 26 files</li>
   <li>79.89% documented</li>
 </ul>
@@ -1369,21 +1377,38 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 <h3 id="added-16">Added</h3>
 
 <ul>
+  <li>GitLab Pipelines for Ruby 2.7, 3.0, 3.0</li>
+</ul>
+
+<h2 id="1154---2025-11-11">
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.53...v1.1.54">1.1.54</a> - 2025-11-11</h2>
+
+<ul>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.54">v1.1.54</a>
+</li>
+  <li>COVERAGE: 94.39% – 4038/4278 lines in 26 files</li>
+  <li>BRANCH COVERAGE: 78.88% – 1662/2107 branches in 26 files</li>
+  <li>79.89% documented</li>
+</ul>
+
+<h3 id="added-17">Added</h3>
+
+<ul>
   <li>.idea/.gitignore is now part of template</li>
 </ul>
 
 <h2 id="1153---2025-11-10">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.52...v1.1.53">1.1.53</a> - 2025-11-10</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.52...v1.1.53">1.1.53</a> - 2025-11-10</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.53">v1.1.53</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.53">v1.1.53</a>
 </li>
   <li>COVERAGE: 94.41% – 4039/4278 lines in 26 files</li>
   <li>BRANCH COVERAGE: 78.93% – 1663/2107 branches in 26 files</li>
   <li>79.89% documented</li>
 </ul>
 
-<h3 id="added-17">Added</h3>
+<h3 id="added-18">Added</h3>
 
 <ul>
   <li>Template .yardopts now includes yard-yaml plugin (for CITATION.cff)</li>
@@ -1395,33 +1420,33 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="1152---2025-11-08">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.51...v1.1.52">1.1.52</a> - 2025-11-08</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.51...v1.1.52">1.1.52</a> - 2025-11-08</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.52">v1.1.52</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.52">v1.1.52</a>
 </li>
   <li>COVERAGE: 94.37% – 4037/4278 lines in 26 files</li>
   <li>BRANCH COVERAGE: 78.93% – 1663/2107 branches in 26 files</li>
   <li>79.89% documented</li>
 </ul>
 
-<h3 id="added-18">Added</h3>
+<h3 id="added-19">Added</h3>
 
 <ul>
   <li>Update documentation</li>
 </ul>
 
-<h3 id="changed-16">Changed</h3>
+<h3 id="changed-17">Changed</h3>
 
 <ul>
   <li>Upgrade to yard-fence v0.8.0</li>
 </ul>
 
 <h2 id="1151---2025-11-07">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.50...v1.1.51">1.1.51</a> - 2025-11-07</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.50...v1.1.51">1.1.51</a> - 2025-11-07</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.51">v1.1.51</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.51">v1.1.51</a>
 </li>
   <li>COVERAGE: 94.41% – 4039/4278 lines in 26 files</li>
   <li>BRANCH COVERAGE: 78.88% – 1662/2107 branches in 26 files</li>
@@ -1439,34 +1464,34 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="1150---2025-11-07">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.49...v1.1.50">1.1.50</a> - 2025-11-07</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.49...v1.1.50">1.1.50</a> - 2025-11-07</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.50">v1.1.50</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.50">v1.1.50</a>
 </li>
   <li>COVERAGE: 94.41% – 4039/4278 lines in 26 files</li>
   <li>BRANCH COVERAGE: 78.88% – 1662/2107 branches in 26 files</li>
   <li>79.89% documented</li>
 </ul>
 
-<h3 id="fixed-28">Fixed</h3>
+<h3 id="fixed-29">Fixed</h3>
 
 <ul>
   <li>invalid documentation (bad find/replace outcomes during templating)</li>
 </ul>
 
 <h2 id="1149---2025-11-07">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.48...v1.1.49">1.1.49</a> - 2025-11-07</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.48...v1.1.49">1.1.49</a> - 2025-11-07</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.49">v1.1.49</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.49">v1.1.49</a>
 </li>
   <li>COVERAGE: 94.39% – 4038/4278 lines in 26 files</li>
   <li>BRANCH COVERAGE: 78.93% – 1663/2107 branches in 26 files</li>
   <li>79.89% documented</li>
 </ul>
 
-<h3 id="added-19">Added</h3>
+<h3 id="added-20">Added</h3>
 
 <ul>
   <li>yard-fence for handling braces in fenced code blocks in yard docs</li>
@@ -1474,17 +1499,17 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="1148---2025-11-06">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.47...v1.1.48">1.1.48</a> - 2025-11-06</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.47...v1.1.48">1.1.48</a> - 2025-11-06</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.48">v1.1.48</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.48">v1.1.48</a>
 </li>
   <li>COVERAGE: 94.39% – 4038/4278 lines in 26 files</li>
   <li>BRANCH COVERAGE: 78.93% – 1663/2107 branches in 26 files</li>
   <li>79.89% documented</li>
 </ul>
 
-<h3 id="fixed-29">Fixed</h3>
+<h3 id="fixed-30">Fixed</h3>
 
 <ul>
   <li>Typo in markdown link</li>
@@ -1492,74 +1517,74 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="1147---2025-11-06">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.46...v1.1.47">1.1.47</a> - 2025-11-06</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.46...v1.1.47">1.1.47</a> - 2025-11-06</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.47">v1.1.47</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.47">v1.1.47</a>
 </li>
   <li>COVERAGE: 95.68% – 4054/4237 lines in 26 files</li>
   <li>BRANCH COVERAGE: 80.45% – 1675/2082 branches in 26 files</li>
   <li>79.89% documented</li>
 </ul>
 
-<h3 id="added-20">Added</h3>
+<h3 id="added-21">Added</h3>
 
 <ul>
   <li>Handle custom dependencies in Gemfiles gracefully</li>
   <li>Intelligent templating of Appraisals</li>
 </ul>
 
-<h3 id="fixed-30">Fixed</h3>
+<h3 id="fixed-31">Fixed</h3>
 
 <ul>
   <li>Typos in funding links</li>
 </ul>
 
 <h2 id="1146---2025-11-04">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.45...v1.1.46">1.1.46</a> - 2025-11-04</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.45...v1.1.46">1.1.46</a> - 2025-11-04</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.46">v1.1.46</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.46">v1.1.46</a>
 </li>
   <li>COVERAGE: 96.25% – 3958/4112 lines in 26 files</li>
   <li>BRANCH COVERAGE: 80.95% – 1636/2021 branches in 26 files</li>
   <li>79.68% documented</li>
 </ul>
 
-<h3 id="added-21">Added</h3>
+<h3 id="added-22">Added</h3>
 
 <ul>
   <li>Validate RBS Types within style workflow</li>
 </ul>
 
-<h3 id="fixed-31">Fixed</h3>
+<h3 id="fixed-32">Fixed</h3>
 
 <ul>
   <li>typos in README.md</li>
 </ul>
 
 <h2 id="1145---2025-10-31">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.44...v1.1.45">1.1.45</a> - 2025-10-31</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.44...v1.1.45">1.1.45</a> - 2025-10-31</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.45">v1.1.45</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.45">v1.1.45</a>
 </li>
   <li>COVERAGE: 96.33% – 3961/4112 lines in 26 files</li>
   <li>BRANCH COVERAGE: 81.00% – 1637/2021 branches in 26 files</li>
   <li>79.68% documented</li>
 </ul>
 
-<h3 id="changed-17">Changed</h3>
+<h3 id="changed-18">Changed</h3>
 
 <ul>
   <li>floss-funding related documentation improvements</li>
 </ul>
 
 <h2 id="1144---2025-10-31">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.43...v1.1.44">1.1.44</a> - 2025-10-31</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.43...v1.1.44">1.1.44</a> - 2025-10-31</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.44">v1.1.44</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.44">v1.1.44</a>
 </li>
   <li>COVERAGE: 96.04% – 3949/4112 lines in 26 files</li>
   <li>BRANCH COVERAGE: 80.85% – 1634/2021 branches in 26 files</li>
@@ -1575,7 +1600,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>prepare-commit-msg.example: no longer needed</li>
 </ul>
 
-<h3 id="fixed-32">Fixed</h3>
+<h3 id="fixed-33">Fixed</h3>
 
 <ul>
   <li>prepare-commit-msg git hook: incompatibility between direnv and mise by removing <code>direnv exec</code>
@@ -1583,27 +1608,27 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="1143---2025-10-30">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.42...v1.1.43">1.1.43</a> - 2025-10-30</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.42...v1.1.43">1.1.43</a> - 2025-10-30</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.43">v1.1.43</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.43">v1.1.43</a>
 </li>
   <li>COVERAGE: 96.06% – 3950/4112 lines in 26 files</li>
   <li>BRANCH COVERAGE: 80.85% – 1634/2021 branches in 26 files</li>
   <li>79.68% documented</li>
 </ul>
 
-<h3 id="fixed-33">Fixed</h3>
+<h3 id="fixed-34">Fixed</h3>
 
 <ul>
   <li>typos in CONTRIBUTING.md used for templating</li>
 </ul>
 
 <h2 id="1142---2025-10-29">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.41...v1.1.42">1.1.42</a> - 2025-10-29</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.41...v1.1.42">1.1.42</a> - 2025-10-29</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.42">v1.1.42</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.42">v1.1.42</a>
 </li>
   <li>COVERAGE: 96.04% – 3949/4112 lines in 26 files</li>
   <li>BRANCH COVERAGE: 80.85% – 1634/2021 branches in 26 files</li>
@@ -1617,29 +1642,12 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="1141---2025-10-28">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.40...v1.1.41">1.1.41</a> - 2025-10-28</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.40...v1.1.41">1.1.41</a> - 2025-10-28</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.41">v1.1.41</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.41">v1.1.41</a>
 </li>
   <li>COVERAGE: 96.06% – 3950/4112 lines in 26 files</li>
-  <li>BRANCH COVERAGE: 80.85% – 1634/2021 branches in 26 files</li>
-  <li>79.68% documented</li>
-</ul>
-
-<h3 id="changed-18">Changed</h3>
-
-<ul>
-  <li>Improved formatting of errors</li>
-</ul>
-
-<h2 id="1140---2025-10-28">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.39...v1.1.40">1.1.40</a> - 2025-10-28</h2>
-
-<ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.40">v1.1.40</a>
-</li>
-  <li>COVERAGE: 96.04% – 3949/4112 lines in 26 files</li>
   <li>BRANCH COVERAGE: 80.85% – 1634/2021 branches in 26 files</li>
   <li>79.68% documented</li>
 </ul>
@@ -1647,67 +1655,84 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 <h3 id="changed-19">Changed</h3>
 
 <ul>
-  <li>Improved copy for this gem and templated gems</li>
+  <li>Improved formatting of errors</li>
 </ul>
 
-<h2 id="1139---2025-10-27">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.38...v1.1.39">1.1.39</a> - 2025-10-27</h2>
+<h2 id="1140---2025-10-28">
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.39...v1.1.40">1.1.40</a> - 2025-10-28</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.39">v1.1.39</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.40">v1.1.40</a>
 </li>
   <li>COVERAGE: 96.04% – 3949/4112 lines in 26 files</li>
   <li>BRANCH COVERAGE: 80.85% – 1634/2021 branches in 26 files</li>
   <li>79.68% documented</li>
 </ul>
 
-<h3 id="added-22">Added</h3>
+<h3 id="changed-20">Changed</h3>
+
+<ul>
+  <li>Improved copy for this gem and templated gems</li>
+</ul>
+
+<h2 id="1139---2025-10-27">
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.38...v1.1.39">1.1.39</a> - 2025-10-27</h2>
+
+<ul>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.39">v1.1.39</a>
+</li>
+  <li>COVERAGE: 96.04% – 3949/4112 lines in 26 files</li>
+  <li>BRANCH COVERAGE: 80.85% – 1634/2021 branches in 26 files</li>
+  <li>79.68% documented</li>
+</ul>
+
+<h3 id="added-23">Added</h3>
 
 <ul>
   <li>CONTRIBUTING.md.example tailored for the templated gem</li>
 </ul>
 
-<h3 id="fixed-34">Fixed</h3>
+<h3 id="fixed-35">Fixed</h3>
 
 <ul>
   <li>Minor typos</li>
 </ul>
 
 <h2 id="1138---2025-10-21">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.37...v1.1.38">1.1.38</a> - 2025-10-21</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.37...v1.1.38">1.1.38</a> - 2025-10-21</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.38">v1.1.38</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.38">v1.1.38</a>
 </li>
   <li>COVERAGE: 96.04% – 3949/4112 lines in 26 files</li>
   <li>BRANCH COVERAGE: 80.80% – 1633/2021 branches in 26 files</li>
   <li>79.68% documented</li>
 </ul>
 
-<h3 id="changed-20">Changed</h3>
+<h3 id="changed-21">Changed</h3>
 
 <ul>
   <li>legacy ruby 3.1 pinned to bundler 2.6.9</li>
 </ul>
 
-<h3 id="fixed-35">Fixed</h3>
+<h3 id="fixed-36">Fixed</h3>
 
 <ul>
   <li>Corrected typo: truffleruby-24.1 (targets Ruby 3.3 compatibility)</li>
 </ul>
 
 <h2 id="1137---2025-10-21">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.36...v1.1.37">1.1.37</a> - 2025-10-21</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.36...v1.1.37">1.1.37</a> - 2025-10-21</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.37">v1.1.37</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.37">v1.1.37</a>
 </li>
   <li>COVERAGE: 96.04% – 3949/4112 lines in 26 files</li>
   <li>BRANCH COVERAGE: 80.80% – 1633/2021 branches in 26 files</li>
   <li>79.68% documented</li>
 </ul>
 
-<h3 id="added-23">Added</h3>
+<h3 id="added-24">Added</h3>
 
 <ul>
   <li>kettle-release: improved –help</li>
@@ -1715,40 +1740,17 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>improved documentation of spec setup with kettle-test</li>
 </ul>
 
-<h3 id="changed-21">Changed</h3>
+<h3 id="changed-22">Changed</h3>
 
 <ul>
   <li>upgrade to kettle-test v1.0.6</li>
 </ul>
 
 <h2 id="1136---2025-10-20">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.35...v1.1.36">1.1.36</a> - 2025-10-20</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.35...v1.1.36">1.1.36</a> - 2025-10-20</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.36">v1.1.36</a>
-</li>
-  <li>COVERAGE: 96.04% – 3949/4112 lines in 26 files</li>
-  <li>BRANCH COVERAGE: 80.85% – 1634/2021 branches in 26 files</li>
-  <li>79.68% documented</li>
-</ul>
-
-<h3 id="added-24">Added</h3>
-
-<ul>
-  <li>More documentation of RC situation</li>
-</ul>
-
-<h3 id="fixed-36">Fixed</h3>
-
-<ul>
-  <li>alphabetize dependencies</li>
-</ul>
-
-<h2 id="1135---2025-10-20">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.34...v1.1.35">1.1.35</a> - 2025-10-20</h2>
-
-<ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.35">v1.1.35</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.36">v1.1.36</a>
 </li>
   <li>COVERAGE: 96.04% – 3949/4112 lines in 26 files</li>
   <li>BRANCH COVERAGE: 80.85% – 1634/2021 branches in 26 files</li>
@@ -1758,10 +1760,33 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 <h3 id="added-25">Added</h3>
 
 <ul>
+  <li>More documentation of RC situation</li>
+</ul>
+
+<h3 id="fixed-37">Fixed</h3>
+
+<ul>
+  <li>alphabetize dependencies</li>
+</ul>
+
+<h2 id="1135---2025-10-20">
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.34...v1.1.35">1.1.35</a> - 2025-10-20</h2>
+
+<ul>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.35">v1.1.35</a>
+</li>
+  <li>COVERAGE: 96.04% – 3949/4112 lines in 26 files</li>
+  <li>BRANCH COVERAGE: 80.85% – 1634/2021 branches in 26 files</li>
+  <li>79.68% documented</li>
+</ul>
+
+<h3 id="added-26">Added</h3>
+
+<ul>
   <li>more documentation of the RC.O situation</li>
 </ul>
 
-<h3 id="changed-22">Changed</h3>
+<h3 id="changed-23">Changed</h3>
 
 <ul>
   <li>upgraded kettle-test to v1.0.5</li>
@@ -1774,24 +1799,24 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="1134---2025-10-20">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.33...v1.1.34">1.1.34</a> - 2025-10-20</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.33...v1.1.34">1.1.34</a> - 2025-10-20</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.34">v1.1.34</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.34">v1.1.34</a>
 </li>
   <li>COVERAGE: 96.10% – 3938/4098 lines in 26 files</li>
   <li>BRANCH COVERAGE: 80.92% – 1624/2007 branches in 26 files</li>
   <li>79.68% documented</li>
 </ul>
 
-<h3 id="changed-23">Changed</h3>
+<h3 id="changed-24">Changed</h3>
 
 <ul>
   <li>kettle-release: Make step 17 only push the checksum commit; bin/gem_checksums creates the commit internally.</li>
   <li>kettle-release: Ensure a final push of tags occurs after checksums and optional GitHub release; supports an ‘all’ remote aggregator when configured.</li>
 </ul>
 
-<h3 id="fixed-37">Fixed</h3>
+<h3 id="fixed-38">Fixed</h3>
 
 <ul>
   <li>fixed rake task compatibility with BUNDLE_PATH (i.e. vendored bundle)
@@ -1804,17 +1829,17 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="1133---2025-10-13">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.32...v1.1.33">1.1.33</a> - 2025-10-13</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.32...v1.1.33">1.1.33</a> - 2025-10-13</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.33">v1.1.33</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.33">v1.1.33</a>
 </li>
   <li>COVERAGE: 20.83% – 245/1176 lines in 9 files</li>
   <li>BRANCH COVERAGE: 7.31% – 43/588 branches in 9 files</li>
   <li>79.57% documented</li>
 </ul>
 
-<h3 id="added-26">Added</h3>
+<h3 id="added-27">Added</h3>
 
 <ul>
   <li>handling for no open source collective, specified by:
@@ -1828,13 +1853,13 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>added codeberg gem source</li>
 </ul>
 
-<h3 id="changed-24">Changed</h3>
+<h3 id="changed-25">Changed</h3>
 
 <ul>
   <li>removed redundant github gem source</li>
 </ul>
 
-<h3 id="fixed-38">Fixed</h3>
+<h3 id="fixed-39">Fixed</h3>
 
 <ul>
   <li>added addressable to optional modular gemfile template, as it is required for kettle-pre-release</li>
@@ -1842,23 +1867,23 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="1132---2025-10-07">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.31...v1.1.32">1.1.32</a> - 2025-10-07</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.31...v1.1.32">1.1.32</a> - 2025-10-07</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.32">v1.1.32</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.32">v1.1.32</a>
 </li>
   <li>COVERAGE: 96.39% – 3929/4076 lines in 26 files</li>
   <li>BRANCH COVERAGE: 81.07% – 1619/1997 branches in 26 files</li>
   <li>79.12% documented</li>
 </ul>
 
-<h3 id="added-27">Added</h3>
+<h3 id="added-28">Added</h3>
 
 <ul>
   <li>A top-level note on gem server switch in README.md &amp; template</li>
 </ul>
 
-<h3 id="changed-25">Changed</h3>
+<h3 id="changed-26">Changed</h3>
 
 <ul>
   <li>Switch to cooperative gem server
@@ -1869,17 +1894,17 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="1131---2025-09-21">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.30...v1.1.31">1.1.31</a> - 2025-09-21</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.30...v1.1.31">1.1.31</a> - 2025-09-21</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.31">v1.1.31</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.31">v1.1.31</a>
 </li>
   <li>COVERAGE: 96.39% – 3929/4076 lines in 26 files</li>
   <li>BRANCH COVERAGE: 81.07% – 1619/1997 branches in 26 files</li>
   <li>79.12% documented</li>
 </ul>
 
-<h3 id="fixed-39">Fixed</h3>
+<h3 id="fixed-40">Fixed</h3>
 
 <ul>
   <li>order of checksums and release / tag reversed
@@ -1890,17 +1915,17 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="1130---2025-09-21">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.29...v1.1.30">1.1.30</a> - 2025-09-21</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.29...v1.1.30">1.1.30</a> - 2025-09-21</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.30">v1.1.30</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.30">v1.1.30</a>
 </li>
   <li>COVERAGE: 96.27% – 3926/4078 lines in 26 files</li>
   <li>BRANCH COVERAGE: 80.97% – 1617/1997 branches in 26 files</li>
   <li>79.12% documented</li>
 </ul>
 
-<h3 id="added-28">Added</h3>
+<h3 id="added-29">Added</h3>
 
 <ul>
   <li>kettle-changelog: handle legacy tag-in-release-heading style
@@ -1911,57 +1936,57 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="1129---2025-09-21">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.28...v1.1.29">1.1.29</a> - 2025-09-21</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.28...v1.1.29">1.1.29</a> - 2025-09-21</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.29">v1.1.29</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.29">v1.1.29</a>
 </li>
   <li>COVERAGE: 96.19% – 3861/4014 lines in 26 files</li>
   <li>BRANCH COVERAGE: 80.74% – 1589/1968 branches in 26 files</li>
   <li>79.12% documented</li>
 </ul>
 
-<h3 id="changed-26">Changed</h3>
+<h3 id="changed-27">Changed</h3>
 
 <ul>
   <li>Testing release</li>
 </ul>
 
 <h2 id="1128---2025-09-21">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.27...v1.1.28">1.1.28</a> - 2025-09-21</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.27...v1.1.28">1.1.28</a> - 2025-09-21</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.28">v1.1.28</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.28">v1.1.28</a>
 </li>
   <li>COVERAGE: 96.19% – 3861/4014 lines in 26 files</li>
   <li>BRANCH COVERAGE: 80.89% – 1592/1968 branches in 26 files</li>
   <li>79.12% documented</li>
 </ul>
 
-<h3 id="fixed-40">Fixed</h3>
+<h3 id="fixed-41">Fixed</h3>
 
 <ul>
   <li>kettle-release: restore compatability with MFA input</li>
 </ul>
 
 <h2 id="1127---2025-09-20">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.25...v1.1.27">1.1.27</a> - 2025-09-20</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.25...v1.1.27">1.1.27</a> - 2025-09-20</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.27">v1.1.27</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.27">v1.1.27</a>
 </li>
   <li>COVERAGE: 96.33% – 3860/4007 lines in 26 files</li>
   <li>BRANCH COVERAGE: 81.09% – 1591/1962 branches in 26 files</li>
   <li>79.12% documented</li>
 </ul>
 
-<h3 id="changed-27">Changed</h3>
+<h3 id="changed-28">Changed</h3>
 
 <ul>
   <li>Use obfuscated URLs, and avatars from Open Collective in ReadmeBackers</li>
 </ul>
 
-<h3 id="fixed-41">Fixed</h3>
+<h3 id="fixed-42">Fixed</h3>
 
 <ul>
   <li>improved handling of flaky truffleruby builds in workflow templates</li>
@@ -1969,46 +1994,46 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="1125---2025-09-18">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.24...v1.1.25">1.1.25</a> - 2025-09-18</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.24...v1.1.25">1.1.25</a> - 2025-09-18</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.25">v1.1.25</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.25">v1.1.25</a>
 </li>
   <li>COVERAGE: 96.87% – 3708/3828 lines in 26 files</li>
   <li>BRANCH COVERAGE: 81.69% – 1526/1868 branches in 26 files</li>
   <li>78.33% documented</li>
 </ul>
 
-<h3 id="fixed-42">Fixed</h3>
+<h3 id="fixed-43">Fixed</h3>
 
 <ul>
   <li>kettle-readme-backers fails gracefully when README_UPDATER_TOKEN is missing from org secrets</li>
 </ul>
 
 <h2 id="1124---2025-09-17">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.23...v1.1.24">1.1.24</a> - 2025-09-17</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.23...v1.1.24">1.1.24</a> - 2025-09-17</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.24">v1.1.24</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.24">v1.1.24</a>
 </li>
   <li>COVERAGE: 96.85% – 3694/3814 lines in 26 files</li>
   <li>BRANCH COVERAGE: 81.81% – 1520/1858 branches in 26 files</li>
   <li>78.21% documented</li>
 </ul>
 
-<h3 id="added-29">Added</h3>
+<h3 id="added-30">Added</h3>
 
 <ul>
   <li>Replace template tokens with real minimum ruby versions for runtime and development</li>
 </ul>
 
-<h3 id="changed-28">Changed</h3>
+<h3 id="changed-29">Changed</h3>
 
 <ul>
   <li>consolidated specs</li>
 </ul>
 
-<h3 id="fixed-43">Fixed</h3>
+<h3 id="fixed-44">Fixed</h3>
 
 <ul>
   <li>All .example files are now included in the gem package</li>
@@ -2016,17 +2041,17 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="1123---2025-09-16">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.22...v1.1.23">1.1.23</a> - 2025-09-16</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.22...v1.1.23">1.1.23</a> - 2025-09-16</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.23">v1.1.23</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.23">v1.1.23</a>
 </li>
   <li>COVERAGE: 96.71% – 3673/3798 lines in 26 files</li>
   <li>BRANCH COVERAGE: 81.57% – 1509/1850 branches in 26 files</li>
   <li>77.97% documented</li>
 </ul>
 
-<h3 id="fixed-44">Fixed</h3>
+<h3 id="fixed-45">Fixed</h3>
 
 <ul>
   <li>GemSpecReader, ReadmeBackers now use shared OpenCollectiveConfig
@@ -2037,17 +2062,17 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="1122---2025-09-16">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.21...v1.1.22">1.1.22</a> - 2025-09-16</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.21...v1.1.22">1.1.22</a> - 2025-09-16</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.22">v1.1.22</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.22">v1.1.22</a>
 </li>
   <li>COVERAGE: 96.83% – 3661/3781 lines in 25 files</li>
   <li>BRANCH COVERAGE: 81.70% – 1505/1842 branches in 25 files</li>
   <li>77.01% documented</li>
 </ul>
 
-<h3 id="changed-29">Changed</h3>
+<h3 id="changed-30">Changed</h3>
 
 <ul>
   <li>Revert “🔒️ Use pull_request_target in workflows”
@@ -2058,24 +2083,24 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="1121---2025-09-16">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.20...v1.1.21">1.1.21</a> - 2025-09-16</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.20...v1.1.21">1.1.21</a> - 2025-09-16</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.21">v1.1.21</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.21">v1.1.21</a>
 </li>
   <li>COVERAGE: 96.83% – 3661/3781 lines in 25 files</li>
   <li>BRANCH COVERAGE: 81.65% – 1504/1842 branches in 25 files</li>
   <li>77.01% documented</li>
 </ul>
 
-<h3 id="changed-30">Changed</h3>
+<h3 id="changed-31">Changed</h3>
 
 <ul>
   <li>improved templating</li>
   <li>improved documentation</li>
 </ul>
 
-<h3 id="fixed-45">Fixed</h3>
+<h3 id="fixed-46">Fixed</h3>
 
 <ul>
   <li>kettle-readme-backers: read correct config file
@@ -2086,17 +2111,17 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="1120---2025-09-15">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.19...v1.1.20">1.1.20</a> - 2025-09-15</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.19...v1.1.20">1.1.20</a> - 2025-09-15</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.20">v1.1.20</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.20">v1.1.20</a>
 </li>
   <li>COVERAGE: 96.80% – 3660/3781 lines in 25 files</li>
   <li>BRANCH COVERAGE: 81.65% – 1504/1842 branches in 25 files</li>
   <li>77.01% documented</li>
 </ul>
 
-<h3 id="added-30">Added</h3>
+<h3 id="added-31">Added</h3>
 
 <ul>
   <li>Allow reformating of CHANGELOG.md without version bump</li>
@@ -2105,7 +2130,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>more test coverage</li>
 </ul>
 
-<h3 id="fixed-46">Fixed</h3>
+<h3 id="fixed-47">Fixed</h3>
 
 <ul>
   <li>Add .licenserc.yaml to gem package</li>
@@ -2115,17 +2140,17 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="1119---2025-09-14">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.18...v1.1.19">1.1.19</a> - 2025-09-14</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.18...v1.1.19">1.1.19</a> - 2025-09-14</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.19">v1.1.19</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.19">v1.1.19</a>
 </li>
   <li>COVERAGE: 96.58% – 3531/3656 lines in 25 files</li>
   <li>BRANCH COVERAGE: 81.11% – 1443/1779 branches in 25 files</li>
   <li>76.88% documented</li>
 </ul>
 
-<h3 id="added-31">Added</h3>
+<h3 id="added-32">Added</h3>
 
 <ul>
   <li>documentation of vcr on Ruby 2.4</li>
@@ -2136,17 +2161,17 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   </li>
 </ul>
 
-<h3 id="fixed-47">Fixed</h3>
+<h3 id="fixed-48">Fixed</h3>
 
 <ul>
   <li>fix duplicate headings in CHANGELOG.md Unreleased section</li>
 </ul>
 
 <h2 id="1118---2025-09-12">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.17...v1.1.18">1.1.18</a> - 2025-09-12</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.17...v1.1.18">1.1.18</a> - 2025-09-12</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.18">v1.1.18</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.18">v1.1.18</a>
 </li>
   <li>COVERAGE: 96.24% – 3477/3613 lines in 25 files</li>
   <li>BRANCH COVERAGE: 81.01% – 1425/1759 branches in 25 files</li>
@@ -2160,17 +2185,17 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="1117---2025-09-11">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.16...v1.1.17">1.1.17</a> - 2025-09-11</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.16...v1.1.17">1.1.17</a> - 2025-09-11</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.17">v1.1.17</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.17">v1.1.17</a>
 </li>
   <li>COVERAGE: 96.29% – 3479/3613 lines in 25 files</li>
   <li>BRANCH COVERAGE: 81.01% – 1425/1759 branches in 25 files</li>
   <li>76.88% documented</li>
 </ul>
 
-<h3 id="added-32">Added</h3>
+<h3 id="added-33">Added</h3>
 
 <ul>
   <li>improved documentation</li>
@@ -2182,7 +2207,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   </li>
 </ul>
 
-<h3 id="changed-31">Changed</h3>
+<h3 id="changed-32">Changed</h3>
 
 <ul>
   <li>update template to version_gem v1.1.9</li>
@@ -2196,62 +2221,27 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="1116---2025-09-10">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.15...v1.1.16">1.1.16</a> - 2025-09-10</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.15...v1.1.16">1.1.16</a> - 2025-09-10</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.16">v1.1.16</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.16">v1.1.16</a>
 </li>
   <li>COVERAGE: 96.24% – 3477/3613 lines in 25 files</li>
   <li>BRANCH COVERAGE: 81.01% – 1425/1759 branches in 25 files</li>
   <li>76.88% documented</li>
 </ul>
 
-<h3 id="fixed-48">Fixed</h3>
+<h3 id="fixed-49">Fixed</h3>
 
 <ul>
   <li>handling of alternate format of Unreleased section in CHANGELOG.md</li>
 </ul>
 
 <h2 id="1115---2025-09-10">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.14...v1.1.15">1.1.15</a> - 2025-09-10</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.14...v1.1.15">1.1.15</a> - 2025-09-10</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.15">v1.1.15</a>
-</li>
-  <li>COVERAGE: 96.29% – 3479/3613 lines in 25 files</li>
-  <li>BRANCH COVERAGE: 80.96% – 1424/1759 branches in 25 files</li>
-  <li>76.88% documented</li>
-</ul>
-
-<h3 id="fixed-49">Fixed</h3>
-
-<ul>
-  <li>fix appraisals for Ruby v2.7 to use correct x_std_libs</li>
-</ul>
-
-<h2 id="1114---2025-09-10">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.13...v1.1.14">1.1.14</a> - 2025-09-10</h2>
-
-<ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.14">v1.1.14</a>
-</li>
-  <li>COVERAGE: 96.24% – 3477/3613 lines in 25 files</li>
-  <li>BRANCH COVERAGE: 80.96% – 1424/1759 branches in 25 files</li>
-  <li>76.88% documented</li>
-</ul>
-
-<h3 id="changed-32">Changed</h3>
-
-<ul>
-  <li>use current x_std_libs modular gemfile for all appraisals that are pinned to current ruby</li>
-  <li>fix appraisals for Ruby v2 to use correct version of erb</li>
-</ul>
-
-<h2 id="1113---2025-09-09">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.12...v1.1.13">1.1.13</a> - 2025-09-09</h2>
-
-<ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.13">v1.1.13</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.15">v1.1.15</a>
 </li>
   <li>COVERAGE: 96.29% – 3479/3613 lines in 25 files</li>
   <li>BRANCH COVERAGE: 80.96% – 1424/1759 branches in 25 files</li>
@@ -2261,22 +2251,57 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 <h3 id="fixed-50">Fixed</h3>
 
 <ul>
+  <li>fix appraisals for Ruby v2.7 to use correct x_std_libs</li>
+</ul>
+
+<h2 id="1114---2025-09-10">
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.13...v1.1.14">1.1.14</a> - 2025-09-10</h2>
+
+<ul>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.14">v1.1.14</a>
+</li>
+  <li>COVERAGE: 96.24% – 3477/3613 lines in 25 files</li>
+  <li>BRANCH COVERAGE: 80.96% – 1424/1759 branches in 25 files</li>
+  <li>76.88% documented</li>
+</ul>
+
+<h3 id="changed-33">Changed</h3>
+
+<ul>
+  <li>use current x_std_libs modular gemfile for all appraisals that are pinned to current ruby</li>
+  <li>fix appraisals for Ruby v2 to use correct version of erb</li>
+</ul>
+
+<h2 id="1113---2025-09-09">
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.12...v1.1.13">1.1.13</a> - 2025-09-09</h2>
+
+<ul>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.13">v1.1.13</a>
+</li>
+  <li>COVERAGE: 96.29% – 3479/3613 lines in 25 files</li>
+  <li>BRANCH COVERAGE: 80.96% – 1424/1759 branches in 25 files</li>
+  <li>76.88% documented</li>
+</ul>
+
+<h3 id="fixed-51">Fixed</h3>
+
+<ul>
   <li>include .rubocop_rspec.yml during install / template task’s file copy</li>
   <li>kettle-dev-setup now honors <code>--force</code> option</li>
 </ul>
 
 <h2 id="1112---2025-09-09">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.11...v1.1.12">1.1.12</a> - 2025-09-09</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.11...v1.1.12">1.1.12</a> - 2025-09-09</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.12">v1.1.12</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.12">v1.1.12</a>
 </li>
   <li>COVERAGE: 94.84% – 3422/3608 lines in 25 files</li>
   <li>BRANCH COVERAGE: 78.97% – 1386/1755 branches in 25 files</li>
   <li>76.88% documented</li>
 </ul>
 
-<h3 id="changed-33">Changed</h3>
+<h3 id="changed-34">Changed</h3>
 
 <ul>
   <li>improve Gemfile updates during kettle-dev-setup</li>
@@ -2284,40 +2309,40 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="1111---2025-09-08">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.10...v1.1.11">1.1.11</a> - 2025-09-08</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.10...v1.1.11">1.1.11</a> - 2025-09-08</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.11">v1.1.11</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.11">v1.1.11</a>
 </li>
   <li>COVERAGE: 96.56% – 3396/3517 lines in 24 files</li>
   <li>BRANCH COVERAGE: 81.33% – 1385/1703 branches in 24 files</li>
   <li>77.06% documented</li>
 </ul>
 
-<h3 id="changed-34">Changed</h3>
+<h3 id="changed-35">Changed</h3>
 
 <ul>
   <li>move kettle-dev-setup logic into Kettle::Dev::SetupCLI</li>
 </ul>
 
-<h3 id="fixed-51">Fixed</h3>
+<h3 id="fixed-52">Fixed</h3>
 
 <ul>
   <li>gem dependency detection in kettle-dev-setup to prevent duplication</li>
 </ul>
 
 <h2 id="1110---2025-09-08">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.9...v1.1.10">1.1.10</a> - 2025-09-08</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.9...v1.1.10">1.1.10</a> - 2025-09-08</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.10">v1.1.10</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.10">v1.1.10</a>
 </li>
   <li>COVERAGE: 97.14% – 3256/3352 lines in 23 files</li>
   <li>BRANCH COVERAGE: 81.91% – 1345/1642 branches in 23 files</li>
   <li>76.65% documented</li>
 </ul>
 
-<h3 id="added-33">Added</h3>
+<h3 id="added-34">Added</h3>
 
 <ul>
   <li>Improve documentation
@@ -2327,7 +2352,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   </li>
 </ul>
 
-<h3 id="changed-35">Changed</h3>
+<h3 id="changed-36">Changed</h3>
 
 <ul>
   <li>template task no longer overwrites CHANGELOG.md completely
@@ -2337,36 +2362,36 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   </li>
 </ul>
 
-<h3 id="fixed-52">Fixed</h3>
+<h3 id="fixed-53">Fixed</h3>
 
 <ul>
   <li>Fix a typo in the README.md</li>
 </ul>
 
-<h3 id="fixed-53">Fixed</h3>
+<h3 id="fixed-54">Fixed</h3>
 
 <ul>
   <li>fix typo in the path to x_std_libs.gemfile</li>
 </ul>
 
 <h2 id="119---2025-09-07">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.8...v1.1.9">1.1.9</a> - 2025-09-07</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.8...v1.1.9">1.1.9</a> - 2025-09-07</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.9">v1.1.9</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.9">v1.1.9</a>
 </li>
   <li>COVERAGE: 97.11% – 3255/3352 lines in 23 files</li>
   <li>BRANCH COVERAGE: 81.91% – 1345/1642 branches in 23 files</li>
   <li>76.65% documented</li>
 </ul>
 
-<h3 id="added-34">Added</h3>
+<h3 id="added-35">Added</h3>
 
 <ul>
   <li>badge for current runtime heads in example readme</li>
 </ul>
 
-<h3 id="fixed-54">Fixed</h3>
+<h3 id="fixed-55">Fixed</h3>
 
 <ul>
   <li>Add gemfiles/modular/x_std_libs.gemfile &amp; injected.gemfile to template</li>
@@ -2378,17 +2403,17 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="118---2025-09-07">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.7...v1.1.8">1.1.8</a> - 2025-09-07</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.7...v1.1.8">1.1.8</a> - 2025-09-07</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.8">v1.1.8</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.8">v1.1.8</a>
 </li>
   <li>COVERAGE: 97.16% – 3246/3341 lines in 23 files</li>
   <li>BRANCH COVERAGE: 81.95% – 1344/1640 branches in 23 files</li>
   <li>76.97% documented</li>
 </ul>
 
-<h3 id="added-35">Added</h3>
+<h3 id="added-36">Added</h3>
 
 <ul>
   <li>add .aiignore to the template</li>
@@ -2408,24 +2433,24 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>Kettle::Dev.default_registered?</li>
 </ul>
 
-<h3 id="fixed-55">Fixed</h3>
+<h3 id="fixed-56">Fixed</h3>
 
 <ul>
   <li>run specs as part of the test task</li>
 </ul>
 
 <h2 id="117---2025-09-06">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.6...v1.1.7">1.1.7</a> - 2025-09-06</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.6...v1.1.7">1.1.7</a> - 2025-09-06</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.7">v1.1.7</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.7">v1.1.7</a>
 </li>
   <li>COVERAGE: 97.12% – 3237/3333 lines in 23 files</li>
   <li>BRANCH COVERAGE: 81.95% – 1344/1640 branches in 23 files</li>
   <li>76.97% documented</li>
 </ul>
 
-<h3 id="added-36">Added</h3>
+<h3 id="added-37">Added</h3>
 
 <ul>
   <li>rake task - <code>appraisal:install</code>
@@ -2435,7 +2460,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   </li>
 </ul>
 
-<h3 id="changed-36">Changed</h3>
+<h3 id="changed-37">Changed</h3>
 
 <ul>
   <li>.git-hooks/commit-msg allows commit if gitmoji-regex is unavailable</li>
@@ -2456,41 +2481,41 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   </li>
 </ul>
 
-<h3 id="fixed-56">Fixed</h3>
+<h3 id="fixed-57">Fixed</h3>
 
 <ul>
   <li>Fix local CI via act for templated workflows (skip JRuby in nektos/act locally)</li>
 </ul>
 
 <h2 id="116---2025-09-05">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.5...v1.1.6">1.1.6</a> - 2025-09-05</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.5...v1.1.6">1.1.6</a> - 2025-09-05</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.6">v1.1.6</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.6">v1.1.6</a>
 </li>
   <li>COVERAGE: 97.06% – 3241/3339 lines in 23 files</li>
   <li>BRANCH COVERAGE: 81.83% – 1347/1646 branches in 23 files</li>
   <li>76.97% documented</li>
 </ul>
 
-<h3 id="fixed-57">Fixed</h3>
+<h3 id="fixed-58">Fixed</h3>
 
 <ul>
   <li>bin/rake test works for minitest</li>
 </ul>
 
 <h2 id="115---2025-09-04">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.4...v1.1.5">1.1.5</a> - 2025-09-04</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.4...v1.1.5">1.1.5</a> - 2025-09-04</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.5">v1.1.5</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.5">v1.1.5</a>
 </li>
   <li>COVERAGE: 33.87% – 1125/3322 lines in 22 files</li>
   <li>BRANCH COVERAGE: 22.04% – 361/1638 branches in 22 files</li>
   <li>76.83% documented</li>
 </ul>
 
-<h3 id="added-37">Added</h3>
+<h3 id="added-38">Added</h3>
 
 <ul>
   <li>kettle-pre-release: run re-release checks on a library
@@ -2506,7 +2531,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>how to set up forge tokens for ci:act, and other tools, instructions for README.md</li>
 </ul>
 
-<h3 id="changed-37">Changed</h3>
+<h3 id="changed-38">Changed</h3>
 
 <ul>
   <li>expanded use of adapter patterns (Exit, Git, and Input)</li>
@@ -2520,7 +2545,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>defensive NameError handling in ChangelogCLI.abort method</li>
 </ul>
 
-<h3 id="fixed-58">Fixed</h3>
+<h3 id="fixed-59">Fixed</h3>
 
 <ul>
   <li>replace token <code>{OPENCOLLECTIVE|ORG_NAME}</code> with funding org name</li>
@@ -2532,17 +2557,17 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="114---2025-09-02">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.3...v1.1.4">1.1.4</a> - 2025-09-02</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.3...v1.1.4">1.1.4</a> - 2025-09-02</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.4">v1.1.4</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.4">v1.1.4</a>
 </li>
   <li>COVERAGE: 67.64% – 554/819 lines in 9 files</li>
   <li>BRANCH COVERAGE: 53.25% – 221/415 branches in 9 files</li>
   <li>76.22% documented</li>
 </ul>
 
-<h3 id="fixed-59">Fixed</h3>
+<h3 id="fixed-60">Fixed</h3>
 
 <ul>
   <li>documentation of rake tasks from this gem no longer includes standard gem tasks</li>
@@ -2551,17 +2576,17 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="113---2025-09-02">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.2...v1.1.3">1.1.3</a> - 2025-09-02</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.2...v1.1.3">1.1.3</a> - 2025-09-02</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.3">v1.1.3</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.3">v1.1.3</a>
 </li>
   <li>COVERAGE: 97.14% – 2857/2941 lines in 22 files</li>
   <li>BRANCH COVERAGE: 82.29% – 1194/1451 branches in 22 files</li>
   <li>76.22% documented</li>
 </ul>
 
-<h3 id="changed-38">Changed</h3>
+<h3 id="changed-39">Changed</h3>
 
 <ul>
   <li>URL for migrating repo to CodeBerg:
@@ -2571,24 +2596,24 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   </li>
 </ul>
 
-<h3 id="fixed-60">Fixed</h3>
+<h3 id="fixed-61">Fixed</h3>
 
 <ul>
   <li>Stop double defining DEBUGGING constant</li>
 </ul>
 
 <h2 id="112---2025-09-02">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.1...v1.1.2">1.1.2</a> - 2025-09-02</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.1...v1.1.2">1.1.2</a> - 2025-09-02</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.2">v1.1.2</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.2">v1.1.2</a>
 </li>
   <li>COVERAGE: 97.14% – 2858/2942 lines in 22 files</li>
   <li>BRANCH COVERAGE: 82.29% – 1194/1451 branches in 22 files</li>
   <li>76.76% documented</li>
 </ul>
 
-<h3 id="added-38">Added</h3>
+<h3 id="added-39">Added</h3>
 
 <ul>
   <li>.gitlab-ci.yml documentation (in example)</li>
@@ -2605,30 +2630,30 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>Specs for DvcsCLI covering remote normalization, fetch outcomes, and README updates</li>
 </ul>
 
-<h3 id="changed-39">Changed</h3>
+<h3 id="changed-40">Changed</h3>
 
 <ul>
   <li>major spec refactoring</li>
 </ul>
 
-<h3 id="fixed-61">Fixed</h3>
+<h3 id="fixed-62">Fixed</h3>
 
 <ul>
   <li>(linting) rspec-pending_for 0.0.17+ (example gemspec)</li>
 </ul>
 
 <h2 id="111---2025-09-02">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.1.0...v1.1.1">1.1.1</a> - 2025-09-02</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.1.0...v1.1.1">1.1.1</a> - 2025-09-02</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.1">v1.1.1</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.1">v1.1.1</a>
 </li>
   <li>COVERAGE: 97.04% – 2655/2736 lines in 21 files</li>
   <li>BRANCH COVERAGE: 82.21% – 1109/1349 branches in 21 files</li>
   <li>76.81% documented</li>
 </ul>
 
-<h3 id="added-39">Added</h3>
+<h3 id="added-40">Added</h3>
 
 <ul>
   <li>.simplecov.example - keeps it generic</li>
@@ -2636,24 +2661,24 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>.gitlab-ci.yml documentation</li>
 </ul>
 
-<h3 id="fixed-62">Fixed</h3>
+<h3 id="fixed-63">Fixed</h3>
 
 <ul>
   <li>reduce extra leading whitespace in info table column 2</li>
 </ul>
 
 <h2 id="110---2025-09-02">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.0.27...v1.1.0">1.1.0</a> - 2025-09-02</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.0.27...v1.1.0">1.1.0</a> - 2025-09-02</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.1.0">v1.1.0</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.1.0">v1.1.0</a>
 </li>
   <li>COVERAGE: 97.03% – 2649/2730 lines in 21 files</li>
   <li>BRANCH COVERAGE: 82.16% – 1105/1345 branches in 21 files</li>
   <li>76.81% documented</li>
 </ul>
 
-<h3 id="added-40">Added</h3>
+<h3 id="added-41">Added</h3>
 
 <ul>
   <li>exe/kettle-dev-setup - bootstrap templating in any RubyGem</li>
@@ -2673,17 +2698,17 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="1027---2025-09-01">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.0.26...v1.0.27">1.0.27</a> - 2025-09-01</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.0.26...v1.0.27">1.0.27</a> - 2025-09-01</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.27">v1.0.27</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.0.27">v1.0.27</a>
 </li>
   <li>COVERAGE: 97.77% – 2629/2689 lines in 22 files</li>
   <li>BRANCH COVERAGE: 82.40% – 1100/1335 branches in 22 files</li>
   <li>76.47% documented</li>
 </ul>
 
-<h3 id="changed-40">Changed</h3>
+<h3 id="changed-41">Changed</h3>
 
 <ul>
   <li>Use semver version dependency (~&gt; 1.0) on kettle-dev when templating</li>
@@ -2696,17 +2721,17 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="1026---2025-09-01">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.0.25...v1.0.26">1.0.26</a> - 2025-09-01</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.0.25...v1.0.26">1.0.26</a> - 2025-09-01</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.26">v1.0.26</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.0.26">v1.0.26</a>
 </li>
   <li>COVERAGE: 97.81% – 2630/2689 lines in 22 files</li>
   <li>BRANCH COVERAGE: 82.40% – 1100/1335 branches in 22 files</li>
   <li>75.00% documented</li>
 </ul>
 
-<h3 id="fixed-63">Fixed</h3>
+<h3 id="fixed-64">Fixed</h3>
 
 <ul>
   <li>.env.local.example is now included in the packaged gem
@@ -2717,40 +2742,40 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="1025---2025-08-31">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.0.24...v1.0.25">1.0.25</a> - 2025-08-31</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.0.24...v1.0.25">1.0.25</a> - 2025-08-31</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.25">v1.0.25</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.0.25">v1.0.25</a>
 </li>
   <li>COVERAGE: 97.81% – 2630/2689 lines in 22 files</li>
   <li>BRANCH COVERAGE: 82.40% – 1100/1335 branches in 22 files</li>
   <li>75.00% documented</li>
 </ul>
 
-<h3 id="added-41">Added</h3>
+<h3 id="added-42">Added</h3>
 
 <ul>
   <li>test that .env.local.example is copied by install / template tasks</li>
 </ul>
 
-<h3 id="changed-41">Changed</h3>
+<h3 id="changed-42">Changed</h3>
 
 <ul>
   <li>update Appraisals.example template’s instructions for updating appraisals</li>
 </ul>
 
 <h2 id="1024---2025-08-31">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.0.23...v1.0.24">1.0.24</a> - 2025-08-31</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.0.23...v1.0.24">1.0.24</a> - 2025-08-31</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.24">v1.0.24</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.0.24">v1.0.24</a>
 </li>
   <li>COVERAGE: 97.51% – 2625/2692 lines in 22 files</li>
   <li>BRANCH COVERAGE: 81.97% – 1096/1337 branches in 22 files</li>
   <li>75.00% documented</li>
 </ul>
 
-<h3 id="added-42">Added</h3>
+<h3 id="added-43">Added</h3>
 
 <ul>
   <li>improved documentation</li>
@@ -2759,7 +2784,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>integration test for kettle-changelog using KEEP_A_CHANGELOG.md.</li>
 </ul>
 
-<h3 id="changed-42">Changed</h3>
+<h3 id="changed-43">Changed</h3>
 
 <ul>
   <li>add output to error handling related to release creation on GitHub</li>
@@ -2772,7 +2797,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>move –help handling for kettle-changelog to kettle-changelog itself</li>
 </ul>
 
-<h3 id="fixed-64">Fixed</h3>
+<h3 id="fixed-65">Fixed</h3>
 
 <ul>
   <li>typos in README for gem &amp; template</li>
@@ -2784,17 +2809,17 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="1023---2025-08-30">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.0.22...v1.0.23">1.0.23</a> - 2025-08-30</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.0.22...v1.0.23">1.0.23</a> - 2025-08-30</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.23">v1.0.23</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.0.23">v1.0.23</a>
 </li>
   <li>COVERAGE: 97.75% – 2428/2484 lines in 21 files</li>
   <li>BRANCH COVERAGE: 81.76% – 1013/1239 branches in 21 files</li>
   <li>76.00% documented</li>
 </ul>
 
-<h3 id="added-43">Added</h3>
+<h3 id="added-44">Added</h3>
 
 <ul>
   <li>Carryover important fields from the original gemspec during templating
@@ -2805,7 +2830,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   </li>
 </ul>
 
-<h3 id="fixed-65">Fixed</h3>
+<h3 id="fixed-66">Fixed</h3>
 
 <ul>
   <li>include FUNDING.md in the released gem package</li>
@@ -2813,17 +2838,17 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="1022---2025-08-30">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.0.21...v1.0.22">1.0.22</a> - 2025-08-30</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.0.21...v1.0.22">1.0.22</a> - 2025-08-30</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.22">v1.0.22</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.0.22">v1.0.22</a>
 </li>
   <li>COVERAGE: 97.82% – 2375/2428 lines in 20 files</li>
   <li>BRANCH COVERAGE: 81.34% – 972/1195 branches in 20 files</li>
   <li>76.23% documented</li>
 </ul>
 
-<h3 id="added-44">Added</h3>
+<h3 id="added-45">Added</h3>
 
 <ul>
   <li>improved documentation</li>
@@ -2835,17 +2860,17 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="1021---2025-08-30">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.0.20...v1.0.21">1.0.21</a> - 2025-08-30</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.0.20...v1.0.21">1.0.21</a> - 2025-08-30</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.21">v1.0.21</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.0.21">v1.0.21</a>
 </li>
   <li>COVERAGE: 97.82% – 2375/2428 lines in 20 files</li>
   <li>BRANCH COVERAGE: 81.34% – 972/1195 branches in 20 files</li>
   <li>76.23% documented</li>
 </ul>
 
-<h3 id="added-45">Added</h3>
+<h3 id="added-46">Added</h3>
 
 <ul>
   <li>FUNDING.md in support of a funding footer on release notes
@@ -2891,7 +2916,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>improved documentation</li>
 </ul>
 
-<h3 id="changed-43">Changed</h3>
+<h3 id="changed-44">Changed</h3>
 
 <ul>
   <li>dependabot: ignore rubocop-lts for updates</li>
@@ -2899,17 +2924,17 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="1020---2025-08-29">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.0.19...v1.0.20">1.0.20</a> - 2025-08-29</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.0.19...v1.0.20">1.0.20</a> - 2025-08-29</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.20">v1.0.20</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.0.20">v1.0.20</a>
 </li>
   <li>COVERAGE: 14.01% – 96/685 lines in 8 files</li>
   <li>BRANCH COVERAGE: 0.30% – 1/338 branches in 8 files</li>
   <li>76.23% documented</li>
 </ul>
 
-<h3 id="changed-44">Changed</h3>
+<h3 id="changed-45">Changed</h3>
 
 <ul>
   <li>Use example version of ancient.yml workflow since local version has been customized</li>
@@ -2917,34 +2942,34 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="1019---2025-08-29">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.0.18...v1.0.19">1.0.19</a> - 2025-08-29</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.0.18...v1.0.19">1.0.19</a> - 2025-08-29</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.19">v1.0.19</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.0.19">v1.0.19</a>
 </li>
   <li>COVERAGE: 97.84% – 2350/2402 lines in 20 files</li>
   <li>BRANCH COVERAGE: 81.46% – 962/1181 branches in 20 files</li>
   <li>76.23% documented</li>
 </ul>
 
-<h3 id="fixed-66">Fixed</h3>
+<h3 id="fixed-67">Fixed</h3>
 
 <ul>
   <li>replacement logic handles a dashed gem-name which maps onto a nested path structure</li>
 </ul>
 
 <h2 id="1018---2025-08-29">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.0.17...v1.0.18">1.0.18</a> - 2025-08-29</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.0.17...v1.0.18">1.0.18</a> - 2025-08-29</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.18">v1.0.18</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.0.18">v1.0.18</a>
 </li>
   <li>COVERAGE: 71.70% – 456/636 lines in 9 files</li>
   <li>BRANCH COVERAGE: 51.17% – 153/299 branches in 9 files</li>
   <li>76.23% documented</li>
 </ul>
 
-<h3 id="added-46">Added</h3>
+<h3 id="added-47">Added</h3>
 
 <ul>
   <li>kettle:dev:install can overwrite gemspec with example gemspec</li>
@@ -2957,7 +2982,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   </li>
 </ul>
 
-<h3 id="fixed-67">Fixed</h3>
+<h3 id="fixed-68">Fixed</h3>
 
 <ul>
   <li>kettle:dev:install remove “Works with MRI Ruby*” lines with no badges left</li>
@@ -2965,27 +2990,10 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="1017---2025-08-29">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.0.16...v1.0.17">1.0.17</a> - 2025-08-29</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.0.16...v1.0.17">1.0.17</a> - 2025-08-29</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.17">v1.0.17</a>
-</li>
-  <li>COVERAGE: 98.14% – 2271/2314 lines in 20 files</li>
-  <li>BRANCH COVERAGE: 81.42% – 916/1125 branches in 20 files</li>
-  <li>76.23% documented</li>
-</ul>
-
-<h3 id="fixed-68">Fixed</h3>
-
-<ul>
-  <li>kettle-changelog added to exe files so packaged with released gem</li>
-</ul>
-
-<h2 id="1016---2025-08-29">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.0.15...v1.0.16">1.0.16</a> - 2025-08-29</h2>
-
-<ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.16">v1.0.16</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.0.17">v1.0.17</a>
 </li>
   <li>COVERAGE: 98.14% – 2271/2314 lines in 20 files</li>
   <li>BRANCH COVERAGE: 81.42% – 916/1125 branches in 20 files</li>
@@ -2995,21 +3003,38 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 <h3 id="fixed-69">Fixed</h3>
 
 <ul>
+  <li>kettle-changelog added to exe files so packaged with released gem</li>
+</ul>
+
+<h2 id="1016---2025-08-29">
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.0.15...v1.0.16">1.0.16</a> - 2025-08-29</h2>
+
+<ul>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.0.16">v1.0.16</a>
+</li>
+  <li>COVERAGE: 98.14% – 2271/2314 lines in 20 files</li>
+  <li>BRANCH COVERAGE: 81.42% – 916/1125 branches in 20 files</li>
+  <li>76.23% documented</li>
+</ul>
+
+<h3 id="fixed-70">Fixed</h3>
+
+<ul>
   <li>default rake task must be defined before it can be enhanced</li>
 </ul>
 
 <h2 id="1015---2025-08-29">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.0.14...v1.0.15">1.0.15</a> - 2025-08-29</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.0.14...v1.0.15">1.0.15</a> - 2025-08-29</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.15">v1.0.15</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.0.15">v1.0.15</a>
 </li>
   <li>COVERAGE: 98.17% – 2259/2301 lines in 20 files</li>
   <li>BRANCH COVERAGE: 81.00% – 908/1121 branches in 20 files</li>
   <li>76.03% documented</li>
 </ul>
 
-<h3 id="added-47">Added</h3>
+<h3 id="added-48">Added</h3>
 
 <ul>
   <li>kettle-release: early validation of identical set of copyright years in README.md and CHANGELOG.md, adds current year if missing, aborts on mismatch</li>
@@ -3017,7 +3042,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>kettle-release: update Rakefile.example with version and date</li>
 </ul>
 
-<h3 id="changed-45">Changed</h3>
+<h3 id="changed-46">Changed</h3>
 
 <ul>
   <li>kettle-release: print package name and version released as final line</li>
@@ -3029,7 +3054,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   </li>
 </ul>
 
-<h3 id="fixed-70">Fixed</h3>
+<h3 id="fixed-71">Fixed</h3>
 
 <ul>
   <li>include gemfiles/modular/*gemfile.example with packaged gem</li>
@@ -3043,29 +3068,29 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="1014---2025-08-28">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.0.13...v1.0.14">1.0.14</a> - 2025-08-28</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.0.13...v1.0.14">1.0.14</a> - 2025-08-28</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.14">v1.0.14</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.0.14">v1.0.14</a>
 </li>
   <li>COVERAGE: 97.70% – 2125/2175 lines in 20 files</li>
   <li>BRANCH COVERAGE: 78.77% – 842/1069 branches in 20 files</li>
   <li>76.03% documented</li>
 </ul>
 
-<h3 id="added-48">Added</h3>
+<h3 id="added-49">Added</h3>
 
 <ul>
   <li>kettle-release: Push tags to additional remotes after release</li>
 </ul>
 
-<h3 id="changed-46">Changed</h3>
+<h3 id="changed-47">Changed</h3>
 
 <ul>
   <li>Improve .gitlab-ci.yml pipeline</li>
 </ul>
 
-<h3 id="fixed-71">Fixed</h3>
+<h3 id="fixed-72">Fixed</h3>
 
 <ul>
   <li>Removed README badges for unsupported old Ruby versions</li>
@@ -3074,34 +3099,34 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="1013---2025-08-28">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.0.12...v1.0.13">1.0.13</a> - 2025-08-28</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.0.12...v1.0.13">1.0.13</a> - 2025-08-28</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.13">v1.0.13</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.0.13">v1.0.13</a>
 </li>
   <li>COVERAGE: 41.94% – 65/155 lines in 6 files</li>
   <li>BRANCH COVERAGE: 1.92% – 1/52 branches in 6 files</li>
   <li>76.03% documented</li>
 </ul>
 
-<h3 id="added-49">Added</h3>
+<h3 id="added-50">Added</h3>
 
 <ul>
   <li>kettle-release: Create GitHub release from tag &amp; changelog entry</li>
 </ul>
 
 <h2 id="1012---2025-08-28">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.0.11...v1.0.12">1.0.12</a> - 2025-08-28</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.0.11...v1.0.12">1.0.12</a> - 2025-08-28</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.12">v1.0.12</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.0.12">v1.0.12</a>
 </li>
   <li>COVERAGE: 97.80% – 1957/2001 lines in 19 files</li>
   <li>BRANCH COVERAGE: 79.98% – 763/954 branches in 19 files</li>
   <li>78.70% documented</li>
 </ul>
 
-<h3 id="added-50">Added</h3>
+<h3 id="added-51">Added</h3>
 
 <ul>
   <li>CIMonitor to consolidate workflow / pipeline monitoring logic for GH/GL across kettle-release and rake tasks, with handling for:
@@ -3124,7 +3149,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   </li>
 </ul>
 
-<h3 id="fixed-72">Fixed</h3>
+<h3 id="fixed-73">Fixed</h3>
 
 <ul>
   <li>added optional.gemfile.example, and handling for it in templating</li>
@@ -3138,17 +3163,17 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="1011---2025-08-28">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/v1.0.10...v1.0.11">1.0.11</a> - 2025-08-28</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v1.0.10...v1.0.11">1.0.11</a> - 2025-08-28</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.11">v1.0.11</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.0.11">v1.0.11</a>
 </li>
   <li>COVERAGE: 97.90% – 1959/2001 lines in 19 files</li>
   <li>BRANCH COVERAGE: 79.98% – 763/954 branches in 19 files</li>
   <li>78.70% documented</li>
 </ul>
 
-<h3 id="added-51">Added</h3>
+<h3 id="added-52">Added</h3>
 
 <ul>
   <li>Add more .example templates
@@ -3168,7 +3193,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>new exe script: kettle-changelog - transitions a changelog from unreleased to next release</li>
 </ul>
 
-<h3 id="changed-47">Changed</h3>
+<h3 id="changed-48">Changed</h3>
 
 <ul>
   <li>Make ‘git’ gem dependency optional; fall back to raw <code>git</code> commands when the gem is not present (rescues LoadError). See Kettle::Dev::GitAdapter.</li>
@@ -3188,7 +3213,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   </li>
 </ul>
 
-<h3 id="fixed-73">Fixed</h3>
+<h3 id="fixed-74">Fixed</h3>
 
 <ul>
   <li>Upgrade stone_checksums for release compatibility with bundler v2.7+
@@ -3209,20 +3234,20 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 <a href="https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.9...v1.0.10">1.0.10</a> - 2025-08-24</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.10">v1.0.10</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.0.10">v1.0.10</a>
 </li>
   <li>COVERAGE: 97.68% – 1685/1725 lines in 17 files</li>
   <li>BRANCH COVERAGE: 77.54% – 618/797 branches in 17 files</li>
   <li>95.35% documented</li>
 </ul>
 
-<h3 id="added-52">Added</h3>
+<h3 id="added-53">Added</h3>
 
 <ul>
   <li>runs git add –all before git commit, to ensure all files are committed.</li>
 </ul>
 
-<h3 id="changed-48">Changed</h3>
+<h3 id="changed-49">Changed</h3>
 
 <ul>
   <li>This gem is now loaded via Ruby’s standard <code>autoload</code> feature.</li>
@@ -3238,7 +3263,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>attempts to make exe/* scripts work without bundler. Bundler is required.</li>
 </ul>
 
-<h3 id="fixed-74">Fixed</h3>
+<h3 id="fixed-75">Fixed</h3>
 
 <ul>
   <li>
@@ -3252,14 +3277,14 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 <a href="https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.8...v1.0.9">1.0.9</a> - 2025-08-24</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.9">v1.0.9</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.0.9">v1.0.9</a>
 </li>
   <li>COVERAGE: 100.00% – 130/130 lines in 7 files</li>
   <li>BRANCH COVERAGE: 96.00% – 48/50 branches in 7 files</li>
   <li>95.35% documented</li>
 </ul>
 
-<h3 id="added-53">Added</h3>
+<h3 id="added-54">Added</h3>
 
 <ul>
   <li>kettle-release: Add a sanity check for the latest released version of the gem being released, and display it during the confirmation with user that CHANGELOG.md and version.rb have been updated, so they can compare the value in version.rb with the value of the latest released version.
@@ -3276,14 +3301,14 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 <a href="https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.7...v1.0.8">1.0.8</a> - 2025-08-24</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.8">v1.0.8</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.0.8">v1.0.8</a>
 </li>
   <li>COVERAGE: 100.00% – 130/130 lines in 7 files</li>
   <li>BRANCH COVERAGE: 96.00% – 48/50 branches in 7 files</li>
   <li>95.35% documented</li>
 </ul>
 
-<h3 id="fixed-75">Fixed</h3>
+<h3 id="fixed-76">Fixed</h3>
 
 <ul>
   <li>Can’t add checksums to the gem package, because it changes the checksum (duh!)</li>
@@ -3293,14 +3318,14 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 <a href="https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.6...v1.0.7">1.0.7</a> - 2025-08-24</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.7">v1.0.7</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.0.7">v1.0.7</a>
 </li>
   <li>COVERAGE: 100.00% – 130/130 lines in 7 files</li>
   <li>BRANCH COVERAGE: 96.00% – 48/50 branches in 7 files</li>
   <li>95.35% documented</li>
 </ul>
 
-<h3 id="fixed-76">Fixed</h3>
+<h3 id="fixed-77">Fixed</h3>
 
 <ul>
   <li>Reproducible builds, with consistent checksums, by <em>not</em> using SOURCE_DATE_EPOCH.
@@ -3314,24 +3339,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 <a href="https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.5...v1.0.6">1.0.6</a> - 2025-08-24</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.6">v1.0.6</a>
-</li>
-  <li>COVERAGE: 100.00% – 130/130 lines in 7 files</li>
-  <li>BRANCH COVERAGE: 96.00% – 48/50 branches in 7 files</li>
-  <li>95.35% documented</li>
-</ul>
-
-<h3 id="fixed-77">Fixed</h3>
-
-<ul>
-  <li>kettle-release: ensure SOURCE_DATE_EPOCH is applied within the same shell for both build and release by prefixing the commands with the env var (e.g., <code>SOURCE_DATE_EPOCH=$epoch bundle exec rake build</code> and <code>... rake release</code>); prevents losing the variable across shell boundaries and improves reproducible checksums.</li>
-</ul>
-
-<h2 id="105---2025-08-24">
-<a href="https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.4...v1.0.5">1.0.5</a> - 2025-08-24</h2>
-
-<ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.5">v1.0.5</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.0.6">v1.0.6</a>
 </li>
   <li>COVERAGE: 100.00% – 130/130 lines in 7 files</li>
   <li>BRANCH COVERAGE: 96.00% – 48/50 branches in 7 files</li>
@@ -3341,6 +3349,23 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 <h3 id="fixed-78">Fixed</h3>
 
 <ul>
+  <li>kettle-release: ensure SOURCE_DATE_EPOCH is applied within the same shell for both build and release by prefixing the commands with the env var (e.g., <code>SOURCE_DATE_EPOCH=$epoch bundle exec rake build</code> and <code>... rake release</code>); prevents losing the variable across shell boundaries and improves reproducible checksums.</li>
+</ul>
+
+<h2 id="105---2025-08-24">
+<a href="https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.4...v1.0.5">1.0.5</a> - 2025-08-24</h2>
+
+<ul>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.0.5">v1.0.5</a>
+</li>
+  <li>COVERAGE: 100.00% – 130/130 lines in 7 files</li>
+  <li>BRANCH COVERAGE: 96.00% – 48/50 branches in 7 files</li>
+  <li>95.35% documented</li>
+</ul>
+
+<h3 id="fixed-79">Fixed</h3>
+
+<ul>
   <li>kettle-release: will run regardless of how it is invoked (i.e. works as binstub)</li>
 </ul>
 
@@ -3348,21 +3373,21 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 <a href="https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.3...v1.0.4">1.0.4</a> - 2025-08-24</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.4">v1.0.4</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.0.4">v1.0.4</a>
 </li>
   <li>COVERAGE: 100.00% – 130/130 lines in 7 files</li>
   <li>BRANCH COVERAGE: 96.00% – 48/50 branches in 7 files</li>
   <li>95.35% documented</li>
 </ul>
 
-<h3 id="added-54">Added</h3>
+<h3 id="added-55">Added</h3>
 
 <ul>
   <li>kettle-release: checks all remotes for a GitHub remote and syncs origin/trunk with it; prompts to rebase or –no-ff merge when histories diverge; pushes to both origin and the GitHub remote on merge; uses the GitHub remote for GitHub Actions CI checks, and also checks GitLab CI when a GitLab remote and .gitlab-ci.yml are present.</li>
   <li>kettle-release: push logic improved — if a remote named <code>all</code> exists, push the current branch to it (assumed to cover multiple push URLs). Otherwise push the current branch to <code>origin</code> and to any GitHub, GitLab, and Codeberg remotes (whatever their names are).</li>
 </ul>
 
-<h3 id="fixed-79">Fixed</h3>
+<h3 id="fixed-80">Fixed</h3>
 
 <ul>
   <li>kettle-release now validates SHA256 checksums of the built gem against the recorded checksums and aborts on mismatch; helps ensure reproducible artifacts (honoring SOURCE_DATE_EPOCH).</li>
@@ -3374,20 +3399,20 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 <a href="https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.2...v1.0.3">1.0.3</a> - 2025-08-24</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.3">v1.0.3</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.0.3">v1.0.3</a>
 </li>
   <li>COVERAGE: 100.00% – 98/98 lines in 7 files</li>
   <li>BRANCH COVERAGE: 100.00% – 30/30 branches in 7 files</li>
   <li>94.59% documented</li>
 </ul>
 
-<h3 id="added-55">Added</h3>
+<h3 id="added-56">Added</h3>
 
 <ul>
   <li>template task now copies .git-hooks files necessary for git hooks to work</li>
 </ul>
 
-<h3 id="fixed-80">Fixed</h3>
+<h3 id="fixed-81">Fixed</h3>
 
 <ul>
   <li>kettle-release now uses the host project’s root, instead of this gem’s installed root.</li>
@@ -3398,14 +3423,14 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 <a href="https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.1...v1.0.2">1.0.2</a> - 2025-08-24</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.2">v1.0.2</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.0.2">v1.0.2</a>
 </li>
   <li>COVERAGE: 100.00% – 98/98 lines in 7 files</li>
   <li>BRANCH COVERAGE: 100.00% – 30/30 branches in 7 files</li>
   <li>94.59% documented</li>
 </ul>
 
-<h3 id="fixed-81">Fixed</h3>
+<h3 id="fixed-82">Fixed</h3>
 
 <ul>
   <li>Added files necessary for kettle:dev:template task to work</li>
@@ -3416,14 +3441,14 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 <a href="https://gitlab.com/kettle-rb/kettle-dev/-/compare/v1.0.0...v1.0.1">1.0.1</a> - 2025-08-24</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.1">v1.0.1</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.0.1">v1.0.1</a>
 </li>
   <li>COVERAGE: 100.00% – 98/98 lines in 7 files</li>
   <li>BRANCH COVERAGE: 100.00% – 30/30 branches in 7 files</li>
   <li>94.59% documented</li>
 </ul>
 
-<h3 id="added-56">Added</h3>
+<h3 id="added-57">Added</h3>
 
 <ul>
   <li>These were documented but not yet released:
@@ -3445,17 +3470,17 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </ul>
 
 <h2 id="100---2025-08-24">
-<a href="https://github.com/kettle-rb/kettle-dev/compare/a427c302df09cfe4253a7c8d400333f9a4c1a208...v1.0.0">1.0.0</a> - 2025-08-24</h2>
+<a href="https://github.com/kettle-dev/kettle-dev/compare/a427c302df09cfe4253a7c8d400333f9a4c1a208...v1.0.0">1.0.0</a> - 2025-08-24</h2>
 
 <ul>
-  <li>TAG: <a href="https://github.com/kettle-rb/kettle-dev/releases/tag/v1.0.0">v1.0.0</a>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v1.0.0">v1.0.0</a>
 </li>
   <li>COVERAGE: 100.00% – 98/98 lines in 7 files</li>
   <li>BRANCH COVERAGE: 100.00% – 30/30 branches in 7 files</li>
   <li>94.59% documented</li>
 </ul>
 
-<h3 id="added-57">Added</h3>
+<h3 id="added-58">Added</h3>
 
 <ul>
   <li>initial release, with auto-config support for:
@@ -3498,7 +3523,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </div></div>
 
       <div id="footer">
-  Generated on Sun Jun 21 08:33:39 2026 by
+  Generated on Sun Jun 21 10:42:52 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>

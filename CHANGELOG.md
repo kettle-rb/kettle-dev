@@ -28,20 +28,14 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- `kettle-changelog` now treats prerelease sections such as `3.0.0.rc3` as
-  release sections when detecting or updating the latest prepared release.
-- Fixed seed-dependent coverage by starting SimpleCov before test support loads,
-  covering `version.rb`, and making rake task specs cover their task wiring
-  branches deterministically.
-
 ### Security
 
 ## [2.2.14] - 2026-06-21
 
 - TAG: [v2.2.14][2.2.14t]
-- COVERAGE: 91.28% -- 4020/4404 lines in 32 files
-- BRANCH COVERAGE: 72.68% -- 1591/2189 branches in 32 files
-- 62.67% documented
+- COVERAGE: 91.20% -- 4023/4411 lines in 33 files
+- BRANCH COVERAGE: 72.64% -- 1590/2189 branches in 33 files
+- 62.11% documented
 
 ### Added
 
@@ -67,6 +61,12 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - Covered `kettle-changelog --add-unreleased-entry` insertion, duplicate, and
   fail-closed error behavior in the normal development bundle.
+
+- `kettle-changelog` now treats prerelease sections such as `3.0.0.rc3` as
+  release sections when detecting or updating the latest prepared release.
+- Fixed seed-dependent coverage by starting SimpleCov before test support loads,
+  covering `version.rb`, and making rake task specs cover their task wiring
+  branches deterministically.
 
 ## [2.2.13] - 2026-06-18
 
