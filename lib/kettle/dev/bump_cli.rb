@@ -6,7 +6,7 @@ module Kettle
   module Dev
     # CLI for bumping the current project's gem version before changelog prep.
     class BumpCLI
-      BUMP_TYPES = %w[major minor patch].freeze
+      BUMP_TYPES = %w[major minor patch pre].freeze
 
       def initialize(argv = [], out: $stdout, err: $stderr, root: Kettle::Dev::CIHelpers.project_root)
         @argv = argv.dup
@@ -39,7 +39,7 @@ module Kettle
       def parse_options
         options = {mode: :execute, help: false}
         parser = OptionParser.new do |opts|
-          opts.banner = "Usage: kettle-bump VERSION|major|minor|patch [options]"
+          opts.banner = "Usage: kettle-bump VERSION|major|minor|patch|pre [options]"
           opts.on("--from VERSION", "Require the current version before bumping") { |value| options[:from] = validate_version(value) }
           opts.on("--check", "Exit non-zero when the bump would change files") { options[:mode] = :check }
           opts.on("--dry-run", "Print planned changes without writing files") { options[:mode] = :dry_run }
@@ -51,7 +51,7 @@ module Kettle
         end
         parser.parse!(argv)
         options[:target] = argv.shift
-        raise Kettle::Dev::Error, "kettle-bump requires VERSION, major, minor, or patch" unless options[:target] || options[:help]
+        raise Kettle::Dev::Error, "kettle-bump requires VERSION, major, minor, patch, or pre" unless options[:target] || options[:help]
         raise Kettle::Dev::Error, "unexpected arguments: #{argv.join(" ")}" unless argv.empty?
 
         options
@@ -68,6 +68,8 @@ module Kettle
       end
 
       def bumped_version(type, current_version)
+        return bumped_prerelease_version(current_version) if type == "pre"
+
         version = Gem::Version.new(current_version)
         segments = version.segments
         unless segments.all? { |segment| segment.is_a?(Integer) }
@@ -83,6 +85,33 @@ module Kettle
         when "patch"
           "#{major}.#{minor}.#{patch + 1}"
         end
+      end
+
+      def bumped_prerelease_version(current_version)
+        version = Gem::Version.new(current_version)
+        segments = version.segments
+        prerelease_index = segments.index { |segment| !segment.is_a?(Integer) }
+        unless prerelease_index
+          raise Kettle::Dev::Error, "cannot pre-bump version without prerelease segment #{current_version.inspect}"
+        end
+
+        release_core = segments[0...prerelease_index].join(".")
+        prerelease_suffix = prerelease_suffix_for(current_version, release_core)
+        "#{release_core}.#{prerelease_suffix.next}"
+      end
+
+      def prerelease_suffix_for(current_version, release_core)
+        prefix = "#{release_core}."
+        return string_tail(current_version, prefix.length) if current_version.start_with?(prefix)
+
+        canonical_version = Gem::Version.new(current_version).to_s
+        return string_tail(canonical_version, prefix.length) if canonical_version.start_with?(prefix)
+
+        raise Kettle::Dev::Error, "cannot find prerelease segment in version #{current_version.inspect}"
+      end
+
+      def string_tail(value, offset)
+        value[offset, value.length - offset]
       end
 
       def validate_version(version)

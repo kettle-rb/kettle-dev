@@ -47,6 +47,26 @@ RSpec.describe Kettle::Dev::BumpCLI, :check_output, :prism_only do
     end
   end
 
+  it "bumps prerelease suffixes with String#next" do
+    with_project(version: "3.0.0.rc3") do |_root, version_file, gemspec_path|
+      status = described_class.new(["pre"]).run!
+
+      expect(status).to eq(0)
+      expect(File.read(version_file)).to include('VERSION = "3.0.0.rc4"')
+      expect(File.read(gemspec_path)).to include('spec.version = "3.0.0.rc4"')
+    end
+  end
+
+  it "uses String#next semantics for alphanumeric prerelease suffixes" do
+    with_project(version: "1.2.3.rc9") do |_root, version_file, gemspec_path|
+      status = described_class.new(["pre"]).run!
+
+      expect(status).to eq(0)
+      expect(File.read(version_file)).to include('VERSION = "1.2.3.rd0"')
+      expect(File.read(gemspec_path)).to include('spec.version = "1.2.3.rd0"')
+    end
+  end
+
   it "prints planned changes without writing in dry-run mode" do
     with_project do |_root, version_file, gemspec_path|
       expect do
@@ -139,6 +159,13 @@ RSpec.describe Kettle::Dev::BumpCLI, :check_output, :prism_only do
     with_project(version: "1.2.3.pre") do
       expect { described_class.new(["patch"]).run! }
         .to raise_error(Kettle::Dev::Error, /cannot patch-bump non-numeric version/)
+    end
+  end
+
+  it "rejects pre bumps for stable versions" do
+    with_project(version: "1.2.3") do
+      expect { described_class.new(["pre"]).run! }
+        .to raise_error(Kettle::Dev::Error, /cannot pre-bump version without prerelease segment/)
     end
   end
 end

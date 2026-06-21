@@ -20,6 +20,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- `kettle-bump pre` now bumps prerelease versions by applying `String#next` to
+  the prerelease suffix.
+
 ### Changed
 
 ### Deprecated

@@ -433,9 +433,11 @@ What it does:
 
 - Script: `exe/kettle-bump` (run as `kettle-bump`)
 - Purpose: Bumps the current single gem's `lib/**/version.rb` before changelog
-  preparation. It accepts an exact version or `major`, `minor`, or `patch`.
+  preparation. It accepts an exact version or `major`, `minor`, `patch`, or
+  `pre`.
 - Usage:
     - `kettle-bump patch`
+    - `kettle-bump pre`
     - `kettle-bump 1.2.4 --from 1.2.3`
     - `kettle-bump minor --dry-run`
     - `kettle-bump patch --check`
