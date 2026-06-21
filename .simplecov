@@ -12,9 +12,4 @@ require "kettle/soup/cover/config"
 #   and in 2 places in .github/workflows/coverage.yml.
 SimpleCov.configure do
   cover "lib/**/*.rb", "lib/**/*.rake", "exe/*.rb"
-
-  # Version *is* tested (see spec/kettle/dev/version_spec.rb).
-  # Due to early loading, the Version class can't be tracked by SimpleCov.
-  # So we disable coverage here.
-  skip "lib/kettle/dev/version.rb"
 end

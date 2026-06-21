@@ -54,4 +54,28 @@ RSpec.describe "spec and test rake tasks" do # rubocop:disable RSpec/DescribeCla
     expect(Rake::Task.task_defined?(:spec)).to be true
     expect(Rake::Task[:spec].prerequisites).to be_empty
   end
+
+  it "registers spec as the default RSpec task on CI" do
+    stub_const("Kettle::Dev::IS_CI", true)
+    FileUtils.mkdir_p("spec")
+    File.write("spec/example_spec.rb", "# frozen_string_literal: true\n")
+
+    load_spec_test_tasks
+
+    expect(Rake::Task.task_defined?(:spec)).to be true
+    expect(Kettle::Dev.defaults).to include("spec")
+  end
+
+  it "wires test to spec when coverage is already registered as the default" do
+    FileUtils.mkdir_p("spec")
+    File.write("spec/example_spec.rb", "# frozen_string_literal: true\n")
+    Kettle::Dev.register_default("coverage")
+
+    load_spec_test_tasks
+
+    expect(Rake::Task.task_defined?(:test)).to be true
+    expect(Rake::Task[:test].prerequisites).to include("spec")
+    expect(Kettle::Dev.defaults).to include("coverage")
+    expect(Kettle::Dev.defaults).not_to include("spec")
+  end
 end

@@ -28,6 +28,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Fixed seed-dependent coverage by starting SimpleCov before test support loads,
+  covering `version.rb`, and making rake task specs cover their task wiring
+  branches deterministically.
+
 ### Security
 
 ## [2.2.14] - 2026-06-21

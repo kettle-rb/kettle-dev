@@ -1,12 +1,5 @@
 # frozen_string_literal: true
 
-# External RSpec & related config
-require "kettle/test/rspec"
-
-# Internal ENV config
-require_relative "config/debug"
-require_relative "config/vcr"
-
 # Config for development dependencies of this library
 # i.e., not configured by this library
 #
@@ -24,6 +17,13 @@ rescue LoadError => error
   # check the error message and re-raise when unexpected
   raise error unless error.message.include?("kettle")
 end
+
+# External RSpec & related config
+require "kettle/test/rspec"
+
+# Internal ENV config
+require_relative "config/debug"
+require_relative "config/vcr"
 
 # this library
 require "kettle-dev"

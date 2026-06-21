@@ -16,7 +16,10 @@ RSpec.shared_context("with rake") do |task_base_name|
   let(:rake_task) { Rake::Task[task_name] }
 
   def loaded_files_excluding_current_rake_file(task_base_name)
-    $".reject { |file| file == File.join(rakelib, "#{task_base_name}.rake").to_s }
+    rake_file = "#{task_base_name}.rake"
+    rake_path = File.join(rakelib, rake_file).to_s
+
+    $".reject { |file| file == rake_file || file == rake_path }
   end
 
   before do
