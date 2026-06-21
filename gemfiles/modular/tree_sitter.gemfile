@@ -2,7 +2,7 @@
 
 # Tree-sitter parser backends and AST infrastructure have moved to kettle-jem.
 # These were only needed for the *-merge gems used in templating.
-# See: https://github.com/kettle-rb/kettle-jem
+# See: https://github.com/kettle-dev/kettle-jem
 #
 # This file is retained as a no-op so that any existing eval_gemfile
 # references do not raise errors during migration.

@@ -44,7 +44,7 @@ Gem::Specification.new do |spec|
     for every CI platform, batteries included.
     Fund overlooked open source projects - bottom of stack, dev/test dependencies: floss-funding.dev
   DESC
-  gh_mirror = "https://github.com/kettle-rb/#{spec.name}"
+  gh_mirror = "https://github.com/kettle-dev/#{spec.name}"
   gl_homepage = "https://gitlab.com/kettle-rb/#{spec.name}"
   spec.homepage = gl_homepage
   spec.license = "MIT"
