@@ -21,6 +21,35 @@ gemspec
 # Local workspace dependency wiring for *_local.gemfile overrides
 gem "nomono", "~> 1.0", ">= 1.0.4", require: false # ruby >= 2.2
 
+# Direct sibling dependencies (env-switched via KETTLE_DEV_DEV)
+direct_sibling_gems = %w[
+  kettle-test
+]
+direct_sibling_dev = ENV.fetch("KETTLE_DEV_DEV", "")
+direct_sibling_local =
+  !direct_sibling_dev.empty? && !%w[false 0 no off].include?(direct_sibling_dev.downcase)
+direct_sibling_templating = ENV.fetch("K_JEM_TEMPLATING", "false").casecmp("true").zero?
+
+if direct_sibling_gems.any? &&
+    (direct_sibling_local ||
+      ENV.fetch("K_JEM_TEMPLATING", "false").casecmp("true").zero?)
+  begin
+    require "nomono/bundler"
+    if direct_sibling_templating && !direct_sibling_local
+      ENV["KETTLE_DEV_DEV"] = File.expand_path("..", __dir__)
+    end
+
+    eval_nomono_gems(
+      gems: direct_sibling_gems,
+      prefix: "KETTLE_DEV",
+      path_env: "KETTLE_DEV_DEV",
+      root: ["src", "my", "kettle-dev"]
+    )
+  rescue LoadError
+    warn "Install nomono to enable KETTLE_DEV_DEV local sibling-gem dependencies."
+  end
+end
+
 # Debugging
 eval_gemfile "gemfiles/modular/debug.gemfile"
 
