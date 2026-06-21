@@ -150,6 +150,45 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       end
     end
 
+    it "treats prerelease sections as the latest changelog release section" do
+      mkproj do |root|
+        write_version(root, "3.0.0.rc3")
+        File.write(File.join(root, "CHANGELOG.md"), <<~MD)
+          # Changelog
+
+          ## [Unreleased]
+
+          ### Added
+          ### Changed
+          ### Deprecated
+          ### Removed
+          ### Fixed
+          ### Security
+
+          ## [3.0.0.rc3] - 2026-06-21
+
+          ### Fixed
+
+          - Prepared prerelease notes.
+
+          ## [2.0.2] - 2026-06-20
+        MD
+        allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
+
+        cli = described_class.new(strict: false)
+        allow(cli).to receive(:latest_released_versions).and_return(["2.0.2", "2.0.2"])
+        status = cli.pending_release_status
+
+        expect(status).to include(
+          pending: true,
+          unreleased_entries: false,
+          prepared_release_pending: true,
+          latest_changelog_version: "3.0.0.rc3",
+          latest_release_target: "2.0.2"
+        )
+      end
+    end
+
     it "reports not pending when Unreleased is empty and the latest changelog release is published" do
       mkproj do |root|
         write_version(root)
@@ -472,6 +511,71 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
         expect(updated).to match(/### Fixed\n\n- Prepared the release\.\n\n- Fixed a release-prep follow-up\./)
         expect(updated).to match(/## \[Unreleased\]\n\n### Added\n\n### Changed\n\n### Deprecated\n\n### Removed\n\n### Fixed\n\n### Security/)
         expect(updated).to include("[Unreleased]: https://github.com/o/r/compare/v1.2.4...HEAD")
+      end
+    end
+
+    it "updates a prerelease prepared release in place" do
+      mkproj do |root|
+        File.write(File.join(root, "lib", "my", "gem", "version.rb"), <<~RB)
+          module My; module Gem; VERSION = "3.0.0.rc3"; end; end
+        RB
+        FileUtils.mkdir_p(File.join(root, "coverage"))
+        File.write(File.join(root, "coverage", "coverage.json"), {"coverage" => {}}.to_json)
+        File.write(File.join(root, "CHANGELOG.md"), <<~MD)
+          # Changelog
+
+          ## [Unreleased]
+
+          ### Fixed
+
+          - Fixed a prerelease follow-up.
+
+          ## [3.0.0.rc3] - 2026-06-20
+
+          - TAG: [v3.0.0.rc3][3.0.0.rc3t]
+          - COVERAGE: 90.00% -- 90/100 lines in 2 files
+          - BRANCH COVERAGE: 70.00% -- 7/10 branches in 2 files
+          - 10.00% documented
+
+          ### Fixed
+
+          - Prepared the prerelease.
+
+          ## [2.0.2] - 2026-06-01
+
+          ### Fixed
+
+          - Previous stable release.
+
+          [Unreleased]: https://github.com/o/r/compare/v3.0.0.rc3...HEAD
+          [3.0.0.rc3]: https://github.com/o/r/compare/v3.0.0.rc2...v3.0.0.rc3
+          [3.0.0.rc3t]: https://github.com/o/r/releases/tag/v3.0.0.rc3
+          [2.0.2]: https://github.com/o/r/compare/v2.0.1...v2.0.2
+          [2.0.2t]: https://github.com/o/r/releases/tag/v2.0.2
+        MD
+        allow(Kettle::Dev::CIHelpers).to receive_messages(project_root: root, repo_info: ["o", "r"])
+        allow(Time).to receive(:now).and_return(Time.new(2026, 6, 21))
+
+        cli = described_class.new(strict: false, update_prep: true)
+        allow(cli).to receive_messages(
+          coverage_lines: [
+            "COVERAGE: 95.00% -- 95/100 lines in 2 files",
+            "BRANCH COVERAGE: 80.00% -- 8/10 branches in 2 files"
+          ],
+          yard_percent_documented: "20.00% documented"
+        )
+
+        expect { cli.run }.not_to raise_error
+        updated = File.read(File.join(root, "CHANGELOG.md"))
+
+        expect(updated.scan(/^## \[3\.0\.0\.rc3\]/).size).to eq(1)
+        expect(updated).to include("## [3.0.0.rc3] - 2026-06-21")
+        expect(updated).to include("- TAG: [v3.0.0.rc3][3.0.0.rc3t]")
+        expect(updated).to include("- COVERAGE: 95.00% -- 95/100 lines in 2 files")
+        expect(updated).to include("- BRANCH COVERAGE: 80.00% -- 8/10 branches in 2 files")
+        expect(updated).to include("- 20.00% documented")
+        expect(updated).to match(/### Fixed\n\n- Prepared the prerelease\.\n\n- Fixed a prerelease follow-up\./)
+        expect(updated).to include("[Unreleased]: https://github.com/o/r/compare/v3.0.0.rc3...HEAD")
       end
     end
 

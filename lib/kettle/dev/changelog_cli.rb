@@ -14,6 +14,8 @@ module Kettle
     # includes coverage and YARD stats, and updates link references.
     class ChangelogCLI
       UNRELEASED_SECTION_HEADING = "[Unreleased]:"
+      CHANGELOG_VERSION_PATTERN = /\d+\.\d+\.\d+(?:[.-][0-9A-Za-z]+)*/
+      CHANGELOG_VERSION_PATTERN_SOURCE = CHANGELOG_VERSION_PATTERN.source
       # Matches a Markdown link-reference definition line, e.g. `[key]: https://...`
       LINK_REF_DEF_RE = /^\s*\[[^\]]+\]:\s+\S+/
       # Matches an ATX heading at H4 or deeper (####, #####, ...)
@@ -435,7 +437,7 @@ module Kettle
 
       def detect_previous_version(after_text)
         # after_text begins with the first released section following Unreleased
-        m = after_text.match(/^## \[(\d+\.\d+\.\d+)\]/)
+        m = after_text.match(/^## \[(#{CHANGELOG_VERSION_PATTERN_SOURCE})\]/)
         return m[1] if m
 
         nil
@@ -445,7 +447,7 @@ module Kettle
         unreleased_block, before, after = extract_unreleased(changelog)
         abort("Could not find '## [Unreleased]' section in CHANGELOG.md") if unreleased_block.nil?
 
-        release_heading = after.to_s.match(/\A## \[(\d+\.\d+\.\d+)\][^\n]*\n/)
+        release_heading = after.to_s.match(/\A## \[(#{CHANGELOG_VERSION_PATTERN_SOURCE})\][^\n]*\n/)
         abort("Could not find a prepared release section after '## [Unreleased]' in CHANGELOG.md") unless release_heading
 
         prepared_version = release_heading[1]
@@ -790,16 +792,16 @@ module Kettle
         non_t_tag_refs = {}
         lines[scan_start..-1].to_a.each do |l|
           # Case A: explicit tag ref key like [1.2.3t]: ...
-          if (m = l.match(/^\[(\d+\.\d+\.\d+)t\]:\s+(\S+)/))
+          if (m = l.match(/^\[(#{CHANGELOG_VERSION_PATTERN_SOURCE})t\]:\s+(\S+)/))
             t_versions[m[1]] = true
             next
           end
           # Case B: non-t ref that nevertheless points to a tag URL (GitHub or GitLab)
-          if (m2 = l.match(/^\[(\d+\.\d+\.\d+)\]:\s+(\S+)/))
+          if (m2 = l.match(/^\[(#{CHANGELOG_VERSION_PATTERN_SOURCE})\]:\s+(\S+)/))
             url = m2[2]
             # Accept only when the URL clearly points to a tag for the SAME version
             # Support both GitHub and GitLab style tag URLs
-            if (murl = url.match(%r{/(?:releases/)?tags?/v(\d+\.\d+\.\d+)}i))
+            if (murl = url.match(%r{/(?:releases/)?tags?/v(#{CHANGELOG_VERSION_PATTERN_SOURCE})}i))
               version_in_url = murl[1]
               if version_in_url == m2[1]
                 non_t_tag_refs[m2[1]] = url
@@ -817,7 +819,7 @@ module Kettle
         while i < lines.length
           line = lines[i]
           # Case 1: Heading contains legacy tag suffix we should convert
-          m = line.match(/^## \[(\d+\.\d+\.\d+)\](.*)\(\[tag\]\[(\d+\.\d+\.\d+)t\]\)\s*$/i)
+          m = line.match(/^## \[(#{CHANGELOG_VERSION_PATTERN_SOURCE})\](.*)\(\[tag\]\[(#{CHANGELOG_VERSION_PATTERN_SOURCE})t\]\)\s*$/i)
           if m && m[1] == m[3]
             ver = m[1]
             middle = m[2]
@@ -837,7 +839,7 @@ module Kettle
           end
 
           # Case 2: Heading does NOT contain suffix, but a matching tag ref exists; ensure a TAG list item
-          if (m2 = line.match(/^## \[(\d+\.\d+\.\d+)\](.*)$/))
+          if (m2 = line.match(/^## \[(#{CHANGELOG_VERSION_PATTERN_SOURCE})\](.*)$/))
             ver2 = m2[1]
             # Skip Unreleased heading and non-release headings
             unless ver2.nil?
@@ -858,7 +860,7 @@ module Kettle
           # Footer duplication: if we are in the footer block and encounter a non-t tag-ref
           # without a matching t-ref, emit the t-ref immediately after with the same URL.
           if i >= scan_start
-            if (mref = line.match(/^\[(\d+\.\d+\.\d+)\]:\s+(\S+)/))
+            if (mref = line.match(/^\[(#{CHANGELOG_VERSION_PATTERN_SOURCE})\]:\s+(\S+)/))
               vref = mref[1]
               mref[2]
               if non_t_tag_refs[vref] && !t_versions[vref]
@@ -949,9 +951,9 @@ module Kettle
         compares = {}
         tags = {}
         by_key.each do |k, v|
-          if k =~ /^(\d+\.\d+\.\d+)$/
+          if k =~ /^(#{CHANGELOG_VERSION_PATTERN_SOURCE})$/
             compares[$1] = v
-          elsif k =~ /^(\d+\.\d+\.\d+)t$/
+          elsif k =~ /^(#{CHANGELOG_VERSION_PATTERN_SOURCE})t$/
             tags[$1] = v
           end
         end
