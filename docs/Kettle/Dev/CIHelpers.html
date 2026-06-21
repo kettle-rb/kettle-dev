@@ -1636,11 +1636,11 @@ kettle-release executable.</p>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_project_root'>project_root</span>
   <span class='comment'># Too difficult to test every possible branch here, so ignoring
-</span>  <span class='comment'># :nocov:
+</span>  <span class='comment'># simplecov:disable
 </span>  <span class='id identifier rubyid_dir'>dir</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='const'>Rake</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='const'>Rake</span><span class='op'>&amp;.</span><span class='id identifier rubyid_application'>application</span><span class='op'>&amp;.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:original_dir</span><span class='rparen'>)</span>
     <span class='const'>Rake</span><span class='period'>.</span><span class='id identifier rubyid_application'>application</span><span class='period'>.</span><span class='id identifier rubyid_original_dir'>original_dir</span>
   <span class='kw'>end</span>
-  <span class='comment'># :nocov:
+  <span class='comment'># simplecov:enable
 </span>  <span class='id identifier rubyid_dir'>dir</span> <span class='op'>||</span> <span class='const'>Dir</span><span class='period'>.</span><span class='id identifier rubyid_pwd'>pwd</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -1939,7 +1939,7 @@ Excludes maintenance workflows defined by <span class='object_link'>#exclusions<
 </div>
 
       <div id="footer">
-  Generated on Mon Jun  8 05:50:13 2026 by
+  Generated on Sun Jun 21 16:27:50 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>

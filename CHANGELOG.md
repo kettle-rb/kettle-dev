@@ -20,9 +20,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
-- `kettle-bump pre` now bumps prerelease versions by applying `String#next` to
-  the prerelease suffix.
-
 ### Changed
 
 ### Deprecated
@@ -32,6 +29,18 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Fixed
 
 ### Security
+
+## [2.2.15] - 2026-06-21
+
+- TAG: [v2.2.15][2.2.15t]
+- COVERAGE: 91.83% -- 4067/4429 lines in 33 files
+- BRANCH COVERAGE: 72.57% -- 1595/2198 branches in 33 files
+- 62.11% documented
+
+### Added
+
+- `kettle-bump pre` now bumps prerelease versions by applying `String#next` to
+  the prerelease suffix.
 
 ## [2.2.14] - 2026-06-21
 
@@ -2224,7 +2233,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.14...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.15...HEAD
+[2.2.15]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.14...v2.2.15
+[2.2.15t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.15
 [2.2.14]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.13...v2.2.14
 [2.2.14t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.14
 [2.2.13]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.12...v2.2.13
