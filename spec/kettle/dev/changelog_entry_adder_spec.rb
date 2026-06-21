@@ -10,6 +10,7 @@ RSpec.describe Kettle::Dev::ChangelogEntryAdder do
 
   before do
     install_fake_markly_context
+    allow_any_instance_of(described_class).to receive(:require_markly_crispr!) # rubocop:disable RSpec/AnyInstance
     $LOADED_FEATURES << markly_feature unless $LOADED_FEATURES.include?(markly_feature)
   end
 
@@ -142,6 +143,7 @@ RSpec.describe Kettle::Dev::ChangelogEntryAdder do
   end
 
   it "wraps the Markly CRISPR load error in a kettle-dev error" do
+    allow_any_instance_of(described_class).to receive(:require_markly_crispr!).and_call_original # rubocop:disable RSpec/AnyInstance
     $LOADED_FEATURES.delete(markly_feature)
     adder = described_class.new(root: @root, section: "Changed", entry: "Entry.")
     adder.define_singleton_method(:require) do |name|
