@@ -22,10 +22,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
-- `kettle-release` start step 0 now runs `kettle-changelog` after the
-  `kettle-pre-release` gates so release prep generates the versioned changelog
-  section before the numbered release steps.
-
 ### Deprecated
 
 ### Removed
@@ -33,6 +29,19 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Fixed
 
 ### Security
+
+## [2.2.16] - 2026-06-24
+
+- TAG: [v2.2.16][2.2.16t]
+- COVERAGE: 91.48% -- 4059/4437 lines in 33 files
+- BRANCH COVERAGE: 72.43% -- 1592/2198 branches in 33 files
+- 62.11% documented
+
+### Changed
+
+- `kettle-release` start step 0 now runs `kettle-changelog` after the
+  `kettle-pre-release` gates so release prep generates the versioned changelog
+  section before the numbered release steps.
 
 ## [2.2.15] - 2026-06-21
 
@@ -2237,7 +2246,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.15...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.16...HEAD
+[2.2.16]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.15...v2.2.16
+[2.2.16t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.16
 [2.2.15]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.14...v2.2.15
 [2.2.15t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.15
 [2.2.14]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.13...v2.2.14
