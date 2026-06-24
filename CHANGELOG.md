@@ -28,17 +28,13 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- `kettle-release` now invokes `bundle exec kettle-changelog` as an interactive
-  command, making the changelog plan banner and confirmation prompt visible
-  during release prep.
-
 ### Security
 
 ## [2.2.16] - 2026-06-24
 
 - TAG: [v2.2.16][2.2.16t]
-- COVERAGE: 91.48% -- 4059/4437 lines in 33 files
-- BRANCH COVERAGE: 72.43% -- 1592/2198 branches in 33 files
+- COVERAGE: 92.23% -- 4093/4438 lines in 33 files
+- BRANCH COVERAGE: 73.14% -- 1609/2200 branches in 33 files
 - 62.11% documented
 
 ### Changed
@@ -46,6 +42,12 @@ Please file a bug if you notice a violation of semantic versioning.
 - `kettle-release` start step 0 now runs `kettle-changelog` after the
   `kettle-pre-release` gates so release prep generates the versioned changelog
   section before the numbered release steps.
+
+### Fixed
+
+- `kettle-release` now invokes `bundle exec kettle-changelog` as an interactive
+  command, making the changelog plan banner and confirmation prompt visible
+  during release prep.
 
 ## [2.2.15] - 2026-06-21
 
