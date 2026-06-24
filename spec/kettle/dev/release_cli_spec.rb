@@ -112,9 +112,15 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     end
 
     describe "#run_pre_release_checks!" do
-      it "runs kettle-pre-release checks from the beginning" do
+      it "runs kettle-pre-release checks from the beginning and generates the changelog" do
         pre_release = instance_double(Kettle::Dev::PreReleaseCLI, run: nil)
+        changelog = instance_double(Kettle::Dev::ChangelogCLI, run: nil)
         expect(Kettle::Dev::PreReleaseCLI).to receive(:new).with(check_num: 1).and_return(pre_release)
+        expect(Kettle::Dev::ChangelogCLI).to receive(:new).with(
+          strict: true,
+          enforce_coverage_thresholds: true,
+          version: nil
+        ).and_return(changelog)
 
         cli.send(:run_pre_release_checks!)
       end

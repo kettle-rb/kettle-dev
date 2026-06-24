@@ -327,6 +327,24 @@ module Kettle
       def run_pre_release_checks!
         puts "Running pre-release checks via kettle-pre-release..."
         Kettle::Dev::PreReleaseCLI.new(check_num: 1).run
+        run_changelog!
+      end
+
+      def run_changelog!
+        puts "Generating release changelog via kettle-changelog..."
+        Kettle::Dev::ChangelogCLI.new(
+          strict: changelog_strict?,
+          enforce_coverage_thresholds: changelog_coverage_hard?,
+          version: @version_override
+        ).run
+      end
+
+      def changelog_strict?
+        ENV.fetch("K_CHANGELOG_STRICT", "true").downcase != "false"
+      end
+
+      def changelog_coverage_hard?
+        ENV.fetch("K_CHANGELOG_COVERAGE_HARD", "true").downcase != "false"
       end
 
       # Update the README KLOC badge number based on the denominator in the current version's COVERAGE line in CHANGELOG.md.

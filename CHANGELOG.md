@@ -22,6 +22,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- `kettle-release` start step 0 now runs `kettle-changelog` after the
+  `kettle-pre-release` gates so release prep generates the versioned changelog
+  section before the numbered release steps.
+
 ### Deprecated
 
 ### Removed
