@@ -28,12 +28,21 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [2.2.18] - 2026-06-24
+
+- TAG: [v2.2.18][2.2.18t]
+- COVERAGE: 92.26% -- 4102/4446 lines in 33 files
+- BRANCH COVERAGE: 73.19% -- 1616/2208 branches in 33 files
+- 62.11% documented
+
+### Fixed
+
 - `kettle-changelog --release-state` now reports the latest released version
   for the current major line as `latest_released`, so branch-stacked gems such
   as `rubocop-lts` do not display the newest release from a different major
   branch in family release-state tables.
-
-### Security
 
 ## [2.2.17] - 2026-06-24
 
@@ -2270,7 +2279,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.17...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.18...HEAD
+[2.2.18]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.17...v2.2.18
+[2.2.18t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.18
 [2.2.17]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.16...v2.2.17
 [2.2.17t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.17
 [2.2.16]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.15...v2.2.16

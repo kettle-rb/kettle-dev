@@ -533,7 +533,11 @@ Sets up paths for CHANGELOG.md and coverage.json</p>
 189
 190
 191
-192</pre>
+192
+193
+194
+195
+196</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/kettle/dev/changelog_cli.rb', line 146</span>
@@ -543,8 +547,8 @@ Sets up paths for CHANGELOG.md and coverage.json</p>
   <span class='id identifier rubyid_version'>version</span> <span class='op'>=</span> <span class='id identifier rubyid_detect_version'>detect_version</span>
   <span class='id identifier rubyid_gem_name'>gem_name</span> <span class='op'>=</span> <span class='id identifier rubyid_detect_gem_name'>detect_gem_name</span>
   <span class='kw'>unless</span> <span class='id identifier rubyid_changelog_present'>changelog_present</span>
-    <span class='id identifier rubyid_latest_overall'>latest_overall</span><span class='comma'>,</span> <span class='id identifier rubyid_latest_for_series'>latest_for_series</span> <span class='op'>=</span> <span class='id identifier rubyid_latest_released_versions'>latest_released_versions</span><span class='lparen'>(</span><span class='id identifier rubyid_gem_name'>gem_name</span><span class='comma'>,</span> <span class='id identifier rubyid_version'>version</span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_latest_target'>latest_target</span> <span class='op'>=</span> <span class='id identifier rubyid_latest_release_target'>latest_release_target</span><span class='lparen'>(</span><span class='id identifier rubyid_version'>version</span><span class='comma'>,</span> <span class='id identifier rubyid_latest_overall'>latest_overall</span><span class='comma'>,</span> <span class='id identifier rubyid_latest_for_series'>latest_for_series</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_latest_overall'>latest_overall</span><span class='comma'>,</span> <span class='id identifier rubyid_latest_for_series'>latest_for_series</span><span class='comma'>,</span> <span class='id identifier rubyid_latest_for_major'>latest_for_major</span> <span class='op'>=</span> <span class='id identifier rubyid_latest_released_versions'>latest_released_versions</span><span class='lparen'>(</span><span class='id identifier rubyid_gem_name'>gem_name</span><span class='comma'>,</span> <span class='id identifier rubyid_version'>version</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_latest_target'>latest_target</span> <span class='op'>=</span> <span class='id identifier rubyid_latest_release_target'>latest_release_target</span><span class='lparen'>(</span><span class='id identifier rubyid_version'>version</span><span class='comma'>,</span> <span class='id identifier rubyid_latest_overall'>latest_overall</span><span class='comma'>,</span> <span class='id identifier rubyid_latest_for_series'>latest_for_series</span><span class='comma'>,</span> <span class='id identifier rubyid_latest_for_major'>latest_for_major</span><span class='rparen'>)</span>
     <span class='kw'>return</span> <span class='lbrace'>{</span>
       <span class='label'>root:</span> <span class='ivar'>@root</span><span class='comma'>,</span>
       <span class='label'>gem_name:</span> <span class='id identifier rubyid_gem_name'>gem_name</span><span class='comma'>,</span>
@@ -555,7 +559,9 @@ Sets up paths for CHANGELOG.md and coverage.json</p>
       <span class='label'>unreleased_entries:</span> <span class='kw'>false</span><span class='comma'>,</span>
       <span class='label'>prepared_release_pending:</span> <span class='kw'>false</span><span class='comma'>,</span>
       <span class='label'>latest_changelog_version:</span> <span class='kw'>nil</span><span class='comma'>,</span>
-      <span class='label'>latest_released:</span> <span class='id identifier rubyid_latest_overall'>latest_overall</span><span class='comma'>,</span>
+      <span class='label'>latest_released:</span> <span class='id identifier rubyid_latest_target'>latest_target</span> <span class='op'>||</span> <span class='id identifier rubyid_latest_overall'>latest_overall</span><span class='comma'>,</span>
+      <span class='label'>latest_released_overall:</span> <span class='id identifier rubyid_latest_overall'>latest_overall</span><span class='comma'>,</span>
+      <span class='label'>latest_released_for_current_major:</span> <span class='id identifier rubyid_latest_for_major'>latest_for_major</span><span class='comma'>,</span>
       <span class='label'>latest_released_for_current_series:</span> <span class='id identifier rubyid_latest_for_series'>latest_for_series</span><span class='comma'>,</span>
       <span class='label'>latest_release_target:</span> <span class='id identifier rubyid_latest_target'>latest_target</span>
     <span class='rbrace'>}</span>
@@ -566,8 +572,8 @@ Sets up paths for CHANGELOG.md and coverage.json</p>
   <span class='id identifier rubyid_unreleased_entries'>unreleased_entries</span> <span class='op'>=</span> <span class='id identifier rubyid_unreleased_block_has_entries?'>unreleased_block_has_entries?</span><span class='lparen'>(</span><span class='id identifier rubyid_unreleased_block'>unreleased_block</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_latest_changelog_version'>latest_changelog_version</span> <span class='op'>=</span> <span class='id identifier rubyid_detect_previous_version'>detect_previous_version</span><span class='lparen'>(</span><span class='id identifier rubyid_after'>after</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_release_lookup_version'>release_lookup_version</span> <span class='op'>=</span> <span class='id identifier rubyid_latest_changelog_version'>latest_changelog_version</span> <span class='op'>||</span> <span class='id identifier rubyid_version'>version</span>
-  <span class='id identifier rubyid_latest_overall'>latest_overall</span><span class='comma'>,</span> <span class='id identifier rubyid_latest_for_series'>latest_for_series</span> <span class='op'>=</span> <span class='id identifier rubyid_latest_released_versions'>latest_released_versions</span><span class='lparen'>(</span><span class='id identifier rubyid_gem_name'>gem_name</span><span class='comma'>,</span> <span class='id identifier rubyid_release_lookup_version'>release_lookup_version</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_latest_target'>latest_target</span> <span class='op'>=</span> <span class='id identifier rubyid_latest_release_target'>latest_release_target</span><span class='lparen'>(</span><span class='id identifier rubyid_release_lookup_version'>release_lookup_version</span><span class='comma'>,</span> <span class='id identifier rubyid_latest_overall'>latest_overall</span><span class='comma'>,</span> <span class='id identifier rubyid_latest_for_series'>latest_for_series</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_latest_overall'>latest_overall</span><span class='comma'>,</span> <span class='id identifier rubyid_latest_for_series'>latest_for_series</span><span class='comma'>,</span> <span class='id identifier rubyid_latest_for_major'>latest_for_major</span> <span class='op'>=</span> <span class='id identifier rubyid_latest_released_versions'>latest_released_versions</span><span class='lparen'>(</span><span class='id identifier rubyid_gem_name'>gem_name</span><span class='comma'>,</span> <span class='id identifier rubyid_release_lookup_version'>release_lookup_version</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_latest_target'>latest_target</span> <span class='op'>=</span> <span class='id identifier rubyid_latest_release_target'>latest_release_target</span><span class='lparen'>(</span><span class='id identifier rubyid_release_lookup_version'>release_lookup_version</span><span class='comma'>,</span> <span class='id identifier rubyid_latest_overall'>latest_overall</span><span class='comma'>,</span> <span class='id identifier rubyid_latest_for_series'>latest_for_series</span><span class='comma'>,</span> <span class='id identifier rubyid_latest_for_major'>latest_for_major</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_prepared_release_pending'>prepared_release_pending</span> <span class='op'>=</span> <span class='op'>!</span><span class='op'>!</span><span class='id identifier rubyid_latest_changelog_version'>latest_changelog_version</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_latest_target'>latest_target</span> <span class='op'>!=</span> <span class='id identifier rubyid_latest_changelog_version'>latest_changelog_version</span>
 
   <span class='lbrace'>{</span>
@@ -580,7 +586,9 @@ Sets up paths for CHANGELOG.md and coverage.json</p>
     <span class='label'>unreleased_entries:</span> <span class='id identifier rubyid_unreleased_entries'>unreleased_entries</span><span class='comma'>,</span>
     <span class='label'>prepared_release_pending:</span> <span class='id identifier rubyid_prepared_release_pending'>prepared_release_pending</span><span class='comma'>,</span>
     <span class='label'>latest_changelog_version:</span> <span class='id identifier rubyid_latest_changelog_version'>latest_changelog_version</span><span class='comma'>,</span>
-    <span class='label'>latest_released:</span> <span class='id identifier rubyid_latest_overall'>latest_overall</span><span class='comma'>,</span>
+    <span class='label'>latest_released:</span> <span class='id identifier rubyid_latest_target'>latest_target</span> <span class='op'>||</span> <span class='id identifier rubyid_latest_overall'>latest_overall</span><span class='comma'>,</span>
+    <span class='label'>latest_released_overall:</span> <span class='id identifier rubyid_latest_overall'>latest_overall</span><span class='comma'>,</span>
+    <span class='label'>latest_released_for_current_major:</span> <span class='id identifier rubyid_latest_for_major'>latest_for_major</span><span class='comma'>,</span>
     <span class='label'>latest_released_for_current_series:</span> <span class='id identifier rubyid_latest_for_series'>latest_for_series</span><span class='comma'>,</span>
     <span class='label'>latest_release_target:</span> <span class='id identifier rubyid_latest_target'>latest_target</span>
   <span class='rbrace'>}</span>
@@ -605,10 +613,6 @@ Sets up paths for CHANGELOG.md and coverage.json</p>
       <pre class="lines">
 
 
-194
-195
-196
-197
 198
 199
 200
@@ -627,10 +631,14 @@ Sets up paths for CHANGELOG.md and coverage.json</p>
 213
 214
 215
-216</pre>
+216
+217
+218
+219
+220</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/changelog_cli.rb', line 194</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/changelog_cli.rb', line 198</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_release_state_table'>release_state_table</span><span class='lparen'>(</span><span class='id identifier rubyid_state'>state</span> <span class='op'>=</span> <span class='id identifier rubyid_release_state'>release_state</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_rows'>rows</span> <span class='op'>=</span> <span class='lbracket'>[</span>
@@ -892,7 +900,7 @@ a new version section with coverage/YARD stats, and updates all link references.
 </div>
 
       <div id="footer">
-  Generated on Sun Jun 21 10:42:52 2026 by
+  Generated on Wed Jun 24 06:21:14 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>
