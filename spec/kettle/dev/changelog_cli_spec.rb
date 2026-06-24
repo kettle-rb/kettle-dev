@@ -150,6 +150,35 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       end
     end
 
+    it "reports the latest released version for the current major on branch-stacked gems" do
+      mkproj do |root|
+        write_version(root, "0.3.0")
+        File.write(File.join(root, "CHANGELOG.md"), <<~MD)
+          # Changelog
+
+          ## [Unreleased]
+
+          ### Fixed
+
+          - Fixed a bug.
+
+          ## [0.3.0] - 2026-06-24
+        MD
+        allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
+
+        cli = described_class.new(strict: false)
+        allow(cli).to receive(:latest_released_versions).and_return(["24.2.0", "0.3.0", "0.3.0"])
+        status = cli.pending_release_status
+
+        expect(status).to include(
+          latest_released: "0.3.0",
+          latest_released_overall: "24.2.0",
+          latest_released_for_current_major: "0.3.0",
+          latest_release_target: "0.3.0"
+        )
+      end
+    end
+
     it "treats prerelease sections as the latest changelog release section" do
       mkproj do |root|
         write_version(root, "3.0.0.rc3")

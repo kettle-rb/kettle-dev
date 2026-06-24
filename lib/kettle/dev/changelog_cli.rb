@@ -148,8 +148,8 @@ module Kettle
         version = detect_version
         gem_name = detect_gem_name
         unless changelog_present
-          latest_overall, latest_for_series = latest_released_versions(gem_name, version)
-          latest_target = latest_release_target(version, latest_overall, latest_for_series)
+          latest_overall, latest_for_series, latest_for_major = latest_released_versions(gem_name, version)
+          latest_target = latest_release_target(version, latest_overall, latest_for_series, latest_for_major)
           return {
             root: @root,
             gem_name: gem_name,
@@ -160,7 +160,9 @@ module Kettle
             unreleased_entries: false,
             prepared_release_pending: false,
             latest_changelog_version: nil,
-            latest_released: latest_overall,
+            latest_released: latest_target || latest_overall,
+            latest_released_overall: latest_overall,
+            latest_released_for_current_major: latest_for_major,
             latest_released_for_current_series: latest_for_series,
             latest_release_target: latest_target
           }
@@ -171,8 +173,8 @@ module Kettle
         unreleased_entries = unreleased_block_has_entries?(unreleased_block)
         latest_changelog_version = detect_previous_version(after.to_s)
         release_lookup_version = latest_changelog_version || version
-        latest_overall, latest_for_series = latest_released_versions(gem_name, release_lookup_version)
-        latest_target = latest_release_target(release_lookup_version, latest_overall, latest_for_series)
+        latest_overall, latest_for_series, latest_for_major = latest_released_versions(gem_name, release_lookup_version)
+        latest_target = latest_release_target(release_lookup_version, latest_overall, latest_for_series, latest_for_major)
         prepared_release_pending = !!latest_changelog_version && latest_target != latest_changelog_version
 
         {
@@ -185,7 +187,9 @@ module Kettle
           unreleased_entries: unreleased_entries,
           prepared_release_pending: prepared_release_pending,
           latest_changelog_version: latest_changelog_version,
-          latest_released: latest_overall,
+          latest_released: latest_target || latest_overall,
+          latest_released_overall: latest_overall,
+          latest_released_for_current_major: latest_for_major,
           latest_released_for_current_series: latest_for_series,
           latest_release_target: latest_target
         }
@@ -372,25 +376,36 @@ module Kettle
 
         cur = Gem::Version.new(current_version)
         series = cur.segments[0, 2]
+        major = cur.segments.fetch(0)
         latest_series = gversions.reverse.find { |gv| gv.segments[0, 2] == series }&.to_s
-        [latest_overall, latest_series]
+        latest_major = gversions.reverse.find { |gv| gv.segments.fetch(0, nil) == major }&.to_s
+        [latest_overall, latest_series, latest_major]
       rescue => e
         Kettle::Dev.debug_error(e, __method__)
-        [nil, nil]
+        [nil, nil, nil]
       end
 
-      def latest_release_target(version, latest_overall, latest_for_series)
+      def latest_release_target(version, latest_overall, latest_for_series, latest_for_major = nil)
         return unless latest_overall
 
         cur = Gem::Version.new(version)
         overall = Gem::Version.new(latest_overall)
         cur_series = cur.segments[0, 2]
         overall_series = overall.segments[0, 2]
+        cur_major = cur.segments.fetch(0)
+        overall_major = overall.segments.fetch(0)
 
         if latest_for_series
           lfs_series = Gem::Version.new(latest_for_series).segments[0, 2]
           latest_for_series = nil unless lfs_series == cur_series
         end
+
+        if latest_for_major
+          lfm_major = Gem::Version.new(latest_for_major).segments.fetch(0, nil)
+          latest_for_major = nil unless lfm_major == cur_major
+        end
+
+        return latest_for_major || latest_for_series if cur_major < overall_major
 
         if (cur_series <=> overall_series) == -1
           latest_for_series

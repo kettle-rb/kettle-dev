@@ -28,6 +28,11 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-changelog --release-state` now reports the latest released version
+  for the current major line as `latest_released`, so branch-stacked gems such
+  as `rubocop-lts` do not display the newest release from a different major
+  branch in family release-state tables.
+
 ### Security
 
 ## [2.2.17] - 2026-06-24
