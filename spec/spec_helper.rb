@@ -11,6 +11,7 @@ begin
   if Kettle::Soup::Cover::DO_COV
     # Requiring simplecov loads `.simplecov`; keep that file configuration-only.
     require "simplecov"
+    require "kettle/soup/cover/config"
     SimpleCov.start
   end
 rescue LoadError => error
