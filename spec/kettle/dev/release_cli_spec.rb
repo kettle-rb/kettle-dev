@@ -51,6 +51,13 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect(Open3).to receive(:capture3).with(kind_of(Hash), "SKIP_GEM_SIGNING=true bundle exec rake build").and_return(["", "", status])
         cli.send(:run_cmd!, "bundle exec rake build")
       end
+
+      it "runs kettle-changelog with the current TTY so its confirmation prompt is visible" do
+        allow(described_class).to receive(:system).with(kind_of(Hash), "bundle exec kettle-changelog").and_return(true)
+        expect(Open3).not_to receive(:capture3)
+
+        cli.send(:run_cmd!, "bundle exec kettle-changelog")
+      end
     end
 
     describe "#ensure_bundler_2_7_plus!" do
@@ -112,17 +119,21 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     end
 
     describe "#run_pre_release_checks!" do
-      it "runs kettle-pre-release checks from the beginning and generates the changelog" do
+      it "runs kettle-pre-release checks from the beginning and invokes kettle-changelog" do
         pre_release = instance_double(Kettle::Dev::PreReleaseCLI, run: nil)
-        changelog = instance_double(Kettle::Dev::ChangelogCLI, run: nil)
         expect(Kettle::Dev::PreReleaseCLI).to receive(:new).with(check_num: 1).and_return(pre_release)
-        expect(Kettle::Dev::ChangelogCLI).to receive(:new).with(
-          strict: true,
-          enforce_coverage_thresholds: true,
-          version: nil
-        ).and_return(changelog)
+        expect(cli).to receive(:run_cmd!).with("bundle exec kettle-changelog")
 
         cli.send(:run_pre_release_checks!)
+      end
+
+      it "passes an explicit version override to kettle-changelog" do
+        versioned_cli = described_class.new(version: "3.2.1")
+        pre_release = instance_double(Kettle::Dev::PreReleaseCLI, run: nil)
+        expect(Kettle::Dev::PreReleaseCLI).to receive(:new).with(check_num: 1).and_return(pre_release)
+        expect(versioned_cli).to receive(:run_cmd!).with("bundle exec kettle-changelog --version 3.2.1")
+
+        versioned_cli.send(:run_pre_release_checks!)
       end
     end
 

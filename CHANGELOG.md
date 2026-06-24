@@ -28,6 +28,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-release` now invokes `bundle exec kettle-changelog` as an interactive
+  command, making the changelog plan banner and confirmation prompt visible
+  during release prep.
+
 ### Security
 
 ## [2.2.16] - 2026-06-24

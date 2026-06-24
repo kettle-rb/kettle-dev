@@ -31,7 +31,9 @@ module Kettle
           # Some commands are interactive (e.g., `bundle exec rake release` prompting for RubyGems MFA).
           # Using capture3 detaches STDIN, preventing prompts from working. For such commands, use system
           # so they inherit the current TTY and can read the user's input.
-          interactive = /\Abundle(\s+exec)?\s+rake\s+release\b/.match?(cmd) || /\Agem\s+push\b/.match?(cmd)
+          interactive = /\Abundle(\s+exec)?\s+rake\s+release\b/.match?(cmd) ||
+            /\Agem\s+push\b/.match?(cmd) ||
+            /\A(bundle\s+exec\s+)?kettle-changelog\b/.match?(cmd)
           if interactive
             ok = system(env_hash, cmd)
             unless ok
@@ -331,12 +333,9 @@ module Kettle
       end
 
       def run_changelog!
-        puts "Generating release changelog via kettle-changelog..."
-        Kettle::Dev::ChangelogCLI.new(
-          strict: changelog_strict?,
-          enforce_coverage_thresholds: changelog_coverage_hard?,
-          version: @version_override
-        ).run
+        cmd = "bundle exec kettle-changelog"
+        cmd = "#{cmd} --version #{Shellwords.escape(@version_override)}" if @version_override
+        run_cmd!(cmd)
       end
 
       def changelog_strict?
