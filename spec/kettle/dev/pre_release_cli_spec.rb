@@ -169,11 +169,11 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
         cache_path = File.join(root, "image-url-cache.json")
         cache = Kettle::Dev::PreReleaseCLI::ImageUrlCache.new(
           path: cache_path,
-          clock: -> { Time.utc(2026, 6, 16, 12, 0, 0) }
+          clock: -> { Time.now.utc }
         )
         cache.write_success("https://example.com/logo.svg")
 
-        stub_env("KETTLE_IMAGE_URL_CACHE" => cache_path)
+        stub_env("KETTLE_IMAGE_URL_CACHE" => cache_path, "KETTLE_IMAGE_URL_CACHE_REFRESH" => "false")
         allow(Kettle::Dev::PreReleaseCLI::Markdown).to receive(:extract_image_urls_from_files).and_return([
           "https://example.com/logo.svg"
         ])
