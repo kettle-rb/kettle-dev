@@ -30,6 +30,19 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Security
 
+## [2.2.17] - 2026-06-24
+
+- TAG: [v2.2.17][2.2.17t]
+- COVERAGE: 91.71% -- 4070/4438 lines in 33 files
+- BRANCH COVERAGE: 72.73% -- 1600/2200 branches in 33 files
+- 62.11% documented
+
+### Added
+
+- Updated to latest kettle-jem template
+  - Updated GHA SHA pins
+  - Updated dependencies
+
 ## [2.2.16] - 2026-06-24
 
 - TAG: [v2.2.16][2.2.16t]
@@ -2252,7 +2265,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.16...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.17...HEAD
+[2.2.17]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.16...v2.2.17
+[2.2.17t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.17
 [2.2.16]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.15...v2.2.16
 [2.2.16t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.16
 [2.2.15]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.14...v2.2.15
