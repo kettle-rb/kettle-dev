@@ -19,13 +19,12 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
 
   before do
     # Ensure default env unless specific test overrides
-    stub_env(
-      "KETTLE_DEV_BACKER_README_OSC_TAG" => nil,
-      "OPENCOLLECTIVE_HANDLE" => nil,
-      "KETTLE_README_BACKERS_COMMIT_SUBJECT" => nil,
-      # Required by ReadmeBackers#validate
-      "README_UPDATER_TOKEN" => "test-token"
-    )
+    stub_env("KETTLE_DEV_BACKER_README_OSC_TAG" => nil)
+    stub_env("OPENCOLLECTIVE_HANDLE" => nil)
+    stub_env("FUNDING_ORG" => nil)
+    stub_env("KETTLE_README_BACKERS_COMMIT_SUBJECT" => nil)
+    # Required by ReadmeBackers#validate
+    stub_env("README_UPDATER_TOKEN" => "test-token")
   end
 
   describe "#run!" do
@@ -122,7 +121,7 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
     it "falls back to .opencollective.yml" do
       yml_path = described_class::OC_YML_PATH
       allow(File).to receive(:file?).with(yml_path).and_return(true)
-      allow(File).to receive(:read).with(yml_path).and_return({"readme-osc-tag" => "YML_TAG"}.to_yaml)
+      allow(YAML).to receive(:safe_load_file).with(yml_path).and_return({"readme-osc-tag" => "YML_TAG"})
       expect(instance.send(:readme_osc_tag)).to eq("YML_TAG")
     end
 
@@ -151,7 +150,7 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
     it "reads from .opencollective.yml when no env" do
       yml_path = described_class::OC_YML_PATH
       allow(File).to receive(:file?).with(yml_path).and_return(true)
-      allow(File).to receive(:read).with(yml_path).and_return({"collective" => "yml_handle"}.to_yaml)
+      allow(YAML).to receive(:safe_load_file).with(yml_path).and_return({"collective" => "yml_handle"})
       expect(described_class.new(readme_path: tmp_readme).send(:resolve_handle)).to eq("yml_handle")
     end
 
@@ -380,7 +379,7 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
     it "falls back to yml" do
       yml_path = described_class::OC_YML_PATH
       allow(File).to receive(:file?).with(yml_path).and_return(true)
-      allow(File).to receive(:read).with(yml_path).and_return({"readme-backers-commit-subject" => "YML_SUBJ"}.to_yaml)
+      allow(YAML).to receive(:safe_load_file).with(yml_path).and_return({"readme-backers-commit-subject" => "YML_SUBJ"})
       expect(instance.send(:commit_subject)).to eq("YML_SUBJ")
     end
 

@@ -74,6 +74,9 @@ eval_gemfile "gemfiles/modular/debug.gemfile"
 # Code Coverage (env-switched: KETTLE_RB_DEV=true for local paths)
 eval_gemfile "gemfiles/modular/coverage.gemfile"
 
+# Test HTTP Interaction Recording
+eval_gemfile "gemfiles/modular/recording/r4/recording.gemfile"
+
 # Linting
 eval_gemfile "gemfiles/modular/style.gemfile"
 
