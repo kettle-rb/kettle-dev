@@ -65,14 +65,14 @@ if direct_sibling_gems.any? &&
   end
 end
 
+# Templating (env-switched: SMORG_RB_DEV=/path/to/structuredmerge/ruby/gems for local paths)
+eval_gemfile "gemfiles/modular/templating.gemfile" if ENV.fetch("K_JEM_TEMPLATING", "false").casecmp("true").zero?
+
 # Debugging
 eval_gemfile "gemfiles/modular/debug.gemfile"
 
 # Code Coverage (env-switched: KETTLE_RB_DEV=true for local paths)
 eval_gemfile "gemfiles/modular/coverage.gemfile"
-
-# Test HTTP Interaction Recording
-eval_gemfile "gemfiles/modular/recording/r3/recording.gemfile"
 
 # Linting
 eval_gemfile "gemfiles/modular/style.gemfile"
@@ -88,6 +88,3 @@ eval_gemfile "gemfiles/modular/x_std_libs.gemfile"
 
 # See unlocked_deps appraisal for more details on irb inclusion
 gem "irb", "~> 1.17" # ruby >= 2.7
-
-# Templating (env-switched: SMORG_RB_DEV=/path/to/structuredmerge/ruby/gems for local paths)
-eval_gemfile "gemfiles/modular/templating.gemfile" if ENV.fetch("K_JEM_TEMPLATING", "false").casecmp("true").zero?

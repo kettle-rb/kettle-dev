@@ -54,19 +54,15 @@ RSpec.configure do |config|
   end
 
   config.before(:each, :prism_only) do
-    begin
-      require "prism"
-    rescue LoadError
-      skip "Requires Prism, which is unavailable in this appraisal"
-    end
+    require "prism"
+  rescue LoadError
+    skip "Requires Prism, which is unavailable in this appraisal"
   end
 
   config.before(:each, :markly_crispr) do
-    begin
-      require "ast/crispr/markdown/markly"
-    rescue LoadError
-      skip "Requires ast-crispr-markdown-markly, which is unavailable in this appraisal"
-    end
+    require "ast/crispr/markdown/markly"
+  rescue LoadError
+    skip "Requires ast-crispr-markdown-markly, which is unavailable in this appraisal"
   end
 
   config.before do

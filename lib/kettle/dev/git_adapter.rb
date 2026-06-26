@@ -53,26 +53,24 @@ module Kettle
       # Create a new adapter rooted at the current working directory.
       # @return [void]
       def initialize
-        begin
-          # Allow users/CI to opt out of using the 'git' gem even when available.
-          # Set KETTLE_DEV_DISABLE_GIT_GEM to a truthy value ("1", "true", "yes") to force CLI backend.
-          env_val = ENV["KETTLE_DEV_DISABLE_GIT_GEM"]
-          # Ruby 2.3 compatibility: String#match? was added in 2.4; use Regexp#=== / =~ instead
-          disable_gem = env_val && !!(/\A(1|true|yes)\z/i =~ env_val)
-          if disable_gem
-            @backend = :cli
-          else
-            Kernel.require "git"
-            @backend = :gem
-            @git = ::Git.open(Dir.pwd)
-          end
-        rescue LoadError => e
-          Kettle::Dev.debug_error(e, __method__, backtrace: false)
-          # Optional dependency: fall back to CLI
+        # Allow users/CI to opt out of using the 'git' gem even when available.
+        # Set KETTLE_DEV_DISABLE_GIT_GEM to a truthy value ("1", "true", "yes") to force CLI backend.
+        env_val = ENV["KETTLE_DEV_DISABLE_GIT_GEM"]
+        # Ruby 2.3 compatibility: String#match? was added in 2.4; use Regexp#=== / =~ instead
+        disable_gem = env_val && !!(/\A(1|true|yes)\z/i =~ env_val)
+        if disable_gem
           @backend = :cli
-        rescue => e
-          raise Kettle::Dev::Error, "Failed to open git repository: #{e.message}"
+        else
+          Kernel.require "git"
+          @backend = :gem
+          @git = ::Git.open(Dir.pwd)
         end
+      rescue LoadError => e
+        Kettle::Dev.debug_error(e, __method__, backtrace: false)
+        # Optional dependency: fall back to CLI
+        @backend = :cli
+      rescue => e
+        raise Kettle::Dev::Error, "Failed to open git repository: #{e.message}"
       end
 
       # Push a branch to a remote.
@@ -200,12 +198,10 @@ module Kettle
       def remotes_with_urls
         if @backend == :gem
           @git.remotes.each_with_object({}) do |r, h|
-            begin
-              h[r.name] = r.url
-            rescue => e
-              Kettle::Dev.debug_error(e, __method__)
-              # ignore
-            end
+            h[r.name] = r.url
+          rescue => e
+            Kettle::Dev.debug_error(e, __method__)
+            # ignore
           end
         else
           out, status = Open3.capture2("git", "remote", "-v")

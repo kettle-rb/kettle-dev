@@ -177,38 +177,34 @@ module Kettle
       # Set up rubocop-lts, which cascades to rubocop-rubyX_X => rubocop_gradual)
       # @return [void]
       def linting_tasks
-        begin
-          # Lazy loaded because it won't be installed for Ruby < 2.7
-          require "rubocop/lts"
+        # Lazy loaded because it won't be installed for Ruby < 2.7
+        require "rubocop/lts"
 
-          Rubocop::Lts.install_tasks
-          if Kettle::Dev::IS_CI
-            Kettle::Dev.register_default("rubocop_gradual:check")
-          else
-            Kettle::Dev.register_default("rubocop_gradual:autocorrect")
-          end
-        rescue LoadError
-          # OK, no styles for you.
+        Rubocop::Lts.install_tasks
+        if Kettle::Dev::IS_CI
+          Kettle::Dev.register_default("rubocop_gradual:check")
+        else
+          Kettle::Dev.register_default("rubocop_gradual:autocorrect")
         end
+      rescue LoadError
+        # OK, no styles for you.
       end
 
       ### TEST COVERAGE TASKS
       # Set up kettle-soup-cover
       # @return [void]
       def coverage_tasks
-        begin
-          # Lazy loaded because it won't be installed for Ruby < 2.7
-          require "kettle-soup-cover"
+        # Lazy loaded because it won't be installed for Ruby < 2.7
+        require "kettle-soup-cover"
 
-          Kettle::Soup::Cover.install_tasks
-          # NOTE: Coverage on CI is configured independent of this task.
-          #       This task is for local development, as it opens results in browser
-          # simplecov:disable
-          Kettle::Dev.register_default("coverage") unless Kettle::Dev::IS_CI
-          # simplecov:enable
-        rescue LoadError
-          # OK, no soup for you.
-        end
+        Kettle::Soup::Cover.install_tasks
+        # NOTE: Coverage on CI is configured independent of this task.
+        #       This task is for local development, as it opens results in browser
+        # simplecov:disable
+        Kettle::Dev.register_default("coverage") unless Kettle::Dev::IS_CI
+        # simplecov:enable
+      rescue LoadError
+        # OK, no soup for you.
       end
     end
   end

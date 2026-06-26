@@ -8,10 +8,8 @@ RSpec.describe "::ExitAdapter", :real_exit_adapter do
   end
 
   it "raises SystemExit with status via exit" do
-    begin
-      Kettle::Dev::ExitAdapter.exit(3)
-    rescue SystemExit => e
-      expect(e.status).to eq(3)
-    end
+    Kettle::Dev::ExitAdapter.exit(3)
+  rescue SystemExit => e
+    expect(e.status).to eq(3)
   end
 end

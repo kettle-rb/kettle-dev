@@ -5,7 +5,6 @@ require "yaml"
 require "json"
 require "uri"
 require "net/http"
-require "set"
 
 module Kettle
   module Dev
@@ -244,7 +243,7 @@ module Kettle
 
         if File.file?(OC_YML_PATH)
           begin
-            yml = YAML.safe_load(File.read(OC_YML_PATH))
+            yml = YAML.safe_load_file(OC_YML_PATH)
             if yml.is_a?(Hash)
               from_yml = yml["readme-osc-tag"] || yml[:"readme-osc-tag"]
               from_yml = from_yml.to_s if from_yml
@@ -660,7 +659,7 @@ module Kettle
 
         if File.file?(OC_YML_PATH)
           begin
-            yml = YAML.safe_load(File.read(OC_YML_PATH))
+            yml = YAML.safe_load_file(OC_YML_PATH)
             if yml.is_a?(Hash)
               from_yml = yml["readme-backers-commit-subject"] || yml[:"readme-backers-commit-subject"]
               from_yml = from_yml.to_s if from_yml

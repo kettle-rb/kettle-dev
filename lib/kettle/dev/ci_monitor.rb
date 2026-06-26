@@ -297,13 +297,13 @@ module Kettle
         end
         # Small initial delay to allow GitHub to register the newly pushed commit and enqueue workflows.
         # Configurable via K_RELEASE_CI_INITIAL_SLEEP (seconds); defaults to 3s.
-        begin
-          initial_sleep = begin
-            Integer(ENV["K_RELEASE_CI_INITIAL_SLEEP"])
-          rescue
-            nil
-          end
+
+        initial_sleep = begin
+          Integer(ENV["K_RELEASE_CI_INITIAL_SLEEP"])
+        rescue
+          nil
         end
+
         sleep((initial_sleep && initial_sleep >= 0) ? initial_sleep : 3)
         start_timeout = github_start_timeout
         poll_interval = github_poll_interval

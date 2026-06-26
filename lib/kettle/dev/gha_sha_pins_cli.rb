@@ -6,7 +6,6 @@ require "net/http"
 require "open3"
 require "optparse"
 require "pathname"
-require "set"
 require "time"
 require "uri"
 
@@ -265,11 +264,9 @@ module Kettle
             @options[:progress] = bool
           end
           opt.on("--skip-pattern PATTERN", "Skip workflow paths matching pattern (repeatable)") do |pattern|
-            begin
-              @options[:reject_patterns] << Regexp.new(pattern)
-            rescue RegexpError => e
-              Kettle::Dev::ExitAdapter.abort("Invalid --skip-pattern #{pattern.inspect}: #{e.message}")
-            end
+            @options[:reject_patterns] << Regexp.new(pattern)
+          rescue RegexpError => e
+            Kettle::Dev::ExitAdapter.abort("Invalid --skip-pattern #{pattern.inspect}: #{e.message}")
           end
           opt.on("--[no-]validate", "Validate YAML after editing") do |bool|
             @options[:validate] = bool
@@ -285,27 +282,25 @@ module Kettle
       def load_workflows(paths, state)
         file_progress = progress_bar(title: "Files", total: paths.length)
         paths.each_with_object([]) do |path, workflows|
-          begin
-            state[:files_scanned] += 1
-            text = begin
-              File.read(path)
-            rescue Errno::EACCES => e
-              record_failure(state, path: path, error: "read_error: #{e.message}")
-              next
-            end
-
-            parsed = begin
-              Psych.parse_stream(text)
-            rescue Psych::Exception => e
-              record_failure(state, path: path, error: "yaml_parse_error: #{e.message}")
-              next
-            end
-
-            uses_nodes = extract_uses_nodes(parsed, text)
-            workflows << {path: path, text: text, uses_nodes: uses_nodes} unless uses_nodes.empty?
-          ensure
-            file_progress&.increment
+          state[:files_scanned] += 1
+          text = begin
+            File.read(path)
+          rescue Errno::EACCES => e
+            record_failure(state, path: path, error: "read_error: #{e.message}")
+            next
           end
+
+          parsed = begin
+            Psych.parse_stream(text)
+          rescue Psych::Exception => e
+            record_failure(state, path: path, error: "yaml_parse_error: #{e.message}")
+            next
+          end
+
+          uses_nodes = extract_uses_nodes(parsed, text)
+          workflows << {path: path, text: text, uses_nodes: uses_nodes} unless uses_nodes.empty?
+        ensure
+          file_progress&.increment
         end
       end
 

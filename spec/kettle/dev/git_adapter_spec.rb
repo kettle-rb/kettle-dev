@@ -259,12 +259,10 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
     # We attempt to require it; if it is not installed, we'll skip tests that
     # need the constant ::Git to exist.
     let(:git_gem_available) do
-      begin
-        require "git"
-        true
-      rescue LoadError
-        false
-      end
+      require "git"
+      true
+    rescue LoadError
+      false
     end
 
     it "uses gem backend when available and no override" do

@@ -415,7 +415,6 @@ module Kettle
       # This helps ensure docs are kept in sync when bumping the years.
       # Aborts with a helpful message when they differ.
       def validate_copyright_years!
-        require "set"
         readme = File.join(@root, "README.md")
         license = File.join(@root, "LICENSE.txt")
         unless File.file?(readme) && File.file?(license)
@@ -456,7 +455,6 @@ module Kettle
       # then parses four-digit years and year ranges like "2012-2015" (hyphen or en dash).
       # Returns Set[Integer].
       def extract_years_from_file(path)
-        require "set"
         years = Set.new
         content = File.read(path)
         # Only consider lines that look like copyright notices to reduce false positives

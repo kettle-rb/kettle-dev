@@ -1,5 +1,50 @@
 {
+  "kettle-dev.gemspec:3985098891": [
+    [30, 32, 10, "Gemspec/RequiredRubyVersion: `required_ruby_version` and `TargetRubyVersion` (3.2, which may be specified in .rubocop.yml) should be equal.", 4109400112]
+  ],
+  "lib/kettle/dev/changelog_cli.rb:2025903220": [
+    [119, 43, 24, "Style/SlicingWithRange: Prefer `[unreleased_ref_idx..]` over `[unreleased_ref_idx..-1]`.", 3348125965],
+    [434, 28, 12, "Style/SlicingWithRange: Prefer `[next_i..]` over `[next_i..-1]`.", 2124827054],
+    [443, 42, 14, "Style/SlicingWithRange: Prefer `[footer_i..]` over `[footer_i..-1]`.", 2377888684],
+    [470, 46, 7, "Style/SlicingWithRange: Prefer `[1..]` over `[1..-1]`.", 1439778702],
+    [473, 32, 24, "Style/SlicingWithRange: Prefer `[release_line_count..]` over `[release_line_count..-1]`.", 2424433883],
+    [475, 37, 7, "Style/SlicingWithRange: Prefer `[1..]` over `[1..-1]`.", 1439778702],
+    [808, 14, 16, "Style/SlicingWithRange: Prefer `[scan_start..]` over `[scan_start..-1]`.", 4064532703],
+    [956, 26, 15, "Style/SlicingWithRange: Prefer `[first_ref..]` over `[first_ref..-1]`.", 4126436875],
+    [1040, 21, 9, "Style/SlicingWithRange: Prefer `[idx..]` over `[idx..-1]`.", 610899530]
+  ],
+  "lib/kettle/dev/ci_monitor.rb:41421349": [
+    [301, 25, 99, "Lint/SuppressedExceptionInNumberConversion: Use `Integer(ENV[\"K_RELEASE_CI_INITIAL_SLEEP\"], exception: false)` instead.", 2875814618],
+    [350, 19, 99, "Lint/SuppressedExceptionInNumberConversion: Use `Integer(ENV[\"K_RELEASE_CI_START_TIMEOUT\"], exception: false)` instead.", 698373104],
+    [360, 19, 97, "Lint/SuppressedExceptionInNumberConversion: Use `Float(ENV[\"K_RELEASE_CI_POLL_INTERVAL\"], exception: false)` instead.", 2418575965]
+  ],
   "lib/kettle/dev/gem_spec_reader.rb:1194368979": [
     [199, 70, 10, "Style/RedundantSort: Use `min` instead of `sort...first`.", 1099809899]
+  ],
+  "lib/kettle/dev/gha_sha_pins_cli.rb:1787122607": [
+    [473, 45, 7, "Style/SlicingWithRange: Prefer `[2..]` over `[2..-1]`.", 1402943341],
+    [740, 24, 9, "Style/SlicingWithRange: Prefer `[col..]` over `[col..-1]`.", 2935103327],
+    [747, 21, 23, "Style/SlicingWithRange: Prefer `[token_info[:span]..]` over `[token_info[:span]..-1]`.", 3747509701],
+    [756, 24, 9, "Style/SlicingWithRange: Prefer `[col..]` over `[col..-1]`.", 2935103327],
+    [769, 23, 10, "Style/SlicingWithRange: Prefer `[span..]` over `[span..-1]`.", 2330246099],
+    [798, 76, 17, "Style/SlicingWithRange: Prefer `[entry[:end]..]` over `[entry[:end]..-1]`.", 2696100248]
+  ],
+  "lib/kettle/dev/pre_release_cli.rb:1753154530": [
+    [285, 15, 15, "Style/SlicingWithRange: Prefer `[begin_idx..]` over `[begin_idx..-1]`.", 1042036690]
+  ],
+  "lib/kettle/dev/readme_backers.rb:2326712595": [
+    [118, 34, 8, "Style/TallyMethod: Use `tally` instead of `group_by` and `transform_values`.", 2372747646],
+    [457, 24, 15, "Style/SlicingWithRange: Prefer `[end_index..]` over `[end_index..-1]`.", 2785125521],
+    [464, 25, 20, "Style/SlicingWithRange: Prefer `[end_tag.length..]` over `[end_tag.length..-1]`.", 1079439215]
+  ],
+  "lib/kettle/dev/release_cli.rb:1477701584": [
+    [491, 12, 7, "Style/SlicingWithRange: Prefer `[1..]` over `[1..-1]`.", 1439778702]
+  ],
+  "spec/kettle/dev/changelog_entry_adder_spec.rb:3012052104": [
+    [192, 58, 25, "Style/SlicingWithRange: Prefer `[(heading_level + 1)..]` over `[(heading_level + 1)..-1]`.", 945490021],
+    [196, 34, 17, "Style/SlicingWithRange: Prefer `[(index + 1)..]` over `[(index + 1)..-1]`.", 2379829754]
+  ],
+  "spec/kettle/emoji_regex_spec.rb:358575307": [
+    [20, 22, 20, "Style/SlicingWithRange: Prefer `[cluster.length..]` over `[cluster.length..-1]`.", 3005914759]
   ]
 }

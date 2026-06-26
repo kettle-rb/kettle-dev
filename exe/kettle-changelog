@@ -52,59 +52,57 @@ rescue LoadError => e
   exit(1)
 end
 
-begin
-  if ARGV.include?("-h") || ARGV.include?("--help")
-    puts <<~USAGE
-      Usage: kettle-changelog [--version VERSION] [--update-prep] [--pending-release] [--release-state] [--add-unreleased-entry --section SECTION --entry TEXT] [--json] [--no-strict] [--no-coverage-threshold]
+if ARGV.include?("-h") || ARGV.include?("--help")
+  puts <<~USAGE
+    Usage: kettle-changelog [--version VERSION] [--update-prep] [--pending-release] [--release-state] [--add-unreleased-entry --section SECTION --entry TEXT] [--json] [--no-strict] [--no-coverage-threshold]
 
-      Detects the current version from lib/**/version.rb, the latest live release, and
-      the most recent CHANGELOG.md release section, then prompts to confirm the selected plan:
-      create a new release section, update the prepared release section in place, or reformat only.
+    Detects the current version from lib/**/version.rb, the latest live release, and
+    the most recent CHANGELOG.md release section, then prompts to confirm the selected plan:
+    create a new release section, update the prepared release section in place, or reformat only.
 
-      Release plans add coverage and documentation stats, move entries from [Unreleased],
-      and update bottom link references to GitHub style.
+    Release plans add coverage and documentation stats, move entries from [Unreleased],
+    and update bottom link references to GitHub style.
 
-      Options:
-        --version VERSION         Use this version instead of detecting VERSION from lib/**/version.rb
-        --update-prep             Force updating the most recent prepared release section in place
-        --pending-release         Query whether the changelog has release work pending; exits 0 for yes, 1 for no
-        --release-state,
-        --release-status          Print changelog release state, including latest published release and pending sources
-        --add-unreleased-entry    Add one entry to an existing section under ## [Unreleased]
-        --section SECTION         Unreleased section to receive the entry (Added, Changed, Deprecated, Removed, Fixed, Security)
-        --entry TEXT              Changelog entry text; "- " is added when omitted
-        --json                    Print query output as JSON
-        --no-strict               Allow missing coverage and yard data (warnings only, no errors)
-        --no-coverage-threshold   Generate coverage without hard-failing below configured thresholds
+    Options:
+      --version VERSION         Use this version instead of detecting VERSION from lib/**/version.rb
+      --update-prep             Force updating the most recent prepared release section in place
+      --pending-release         Query whether the changelog has release work pending; exits 0 for yes, 1 for no
+      --release-state,
+      --release-status          Print changelog release state, including latest published release and pending sources
+      --add-unreleased-entry    Add one entry to an existing section under ## [Unreleased]
+      --section SECTION         Unreleased section to receive the entry (Added, Changed, Deprecated, Removed, Fixed, Security)
+      --entry TEXT              Changelog entry text; "- " is added when omitted
+      --json                    Print query output as JSON
+      --no-strict               Allow missing coverage and yard data (warnings only, no errors)
+      --no-coverage-threshold   Generate coverage without hard-failing below configured thresholds
 
-      Environment:
-        K_CHANGELOG_STRICT=false              Disable strict mode (equivalent to --no-strict flag)
-        K_CHANGELOG_COVERAGE_HARD=false       Disable coverage threshold hard-failure
-        K_CHANGELOG_VERSION_FILE=path         Read VERSION from this file instead of lib/**/version.rb
+    Environment:
+      K_CHANGELOG_STRICT=false              Disable strict mode (equivalent to --no-strict flag)
+      K_CHANGELOG_COVERAGE_HARD=false       Disable coverage threshold hard-failure
+      K_CHANGELOG_VERSION_FILE=path         Read VERSION from this file instead of lib/**/version.rb
 
-      Data generation:
-        Strict mode is the default. Release plans remove stale coverage output,
-        run bundle exec kettle-test with JSON coverage enabled, read the resulting
-        coverage/coverage.json, and collect documentation stats from bin/rake yard
-        or bin/yard.
+    Data generation:
+      Strict mode is the default. Release plans remove stale coverage output,
+      run bundle exec kettle-test with JSON coverage enabled, read the resulting
+      coverage/coverage.json, and collect documentation stats from bin/rake yard
+      or bin/yard.
 
-        Strict mode fails if specs fail, coverage JSON is not produced, coverage
-        is below the configured project thresholds, or documentation stats cannot
-        be collected.
+      Strict mode fails if specs fail, coverage JSON is not produced, coverage
+      is below the configured project thresholds, or documentation stats cannot
+      be collected.
 
-        Non-strict mode does not generate missing coverage or documentation data;
-        it warns and leaves unavailable stats blank.
+      Non-strict mode does not generate missing coverage or documentation data;
+      it warns and leaves unavailable stats blank.
 
-      Runtime requirements:
-        - bundle exec kettle-test available for strict coverage generation
-        - bin/rake yard or bin/yard available for strict documentation stats
+    Runtime requirements:
+      - bundle exec kettle-test available for strict coverage generation
+      - bin/rake yard or bin/yard available for strict documentation stats
 
-      Use --no-strict or K_CHANGELOG_STRICT=false to allow missing data.
-      Use --no-coverage-threshold or K_CHANGELOG_COVERAGE_HARD=false to run fresh
-      coverage without hard-failing below configured thresholds.
-    USAGE
-    exit(0)
-  end
+    Use --no-strict or K_CHANGELOG_STRICT=false to allow missing data.
+    Use --no-coverage-threshold or K_CHANGELOG_COVERAGE_HARD=false to run fresh
+    coverage without hard-failing below configured thresholds.
+  USAGE
+  exit(0)
 end
 
 begin

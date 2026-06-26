@@ -430,7 +430,7 @@ RSpec.describe Kettle::Dev::Tasks::CITask do
             raise ThreadError
           else
             # Fallback to real behavior
-            Queue.instance_method(:pop).bind(q).call(true)
+            Queue.instance_method(:pop).bind_call(q, true)
           end
         end
         allow(Queue).to receive(:new).and_return(q)

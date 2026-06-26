@@ -33,20 +33,18 @@ begin
   end
 
   run_appraisal_task = lambda do |task_name, primary_steps = nil|
-    begin
-      if primary_steps
-        begin
-          primary_steps.call
-        rescue RuntimeError => e
-          warn("[kettle-dev][#{task_name}] #{e.message}; falling back to appraisal:generate")
-          run_generate_steps.call
-        end
-      else
+    if primary_steps
+      begin
+        primary_steps.call
+      rescue RuntimeError => e
+        warn("[kettle-dev][#{task_name}] #{e.message}; falling back to appraisal:generate")
         run_generate_steps.call
       end
-    rescue RuntimeError => e
-      abort(e.message)
+    else
+      run_generate_steps.call
     end
+  rescue RuntimeError => e
+    abort(e.message)
   end
 
   desc("Install Appraisal gemfiles (initial setup for projects that didn't previously use Appraisal)")
@@ -159,13 +157,11 @@ begin
       else
         failures = []
         locks.each do |f|
-          begin
-            File.delete(f)
-          rescue Errno::ENOENT
-            # Ignore if already gone
-          rescue => e
-            failures << [f, e]
-          end
+          File.delete(f)
+        rescue Errno::ENOENT
+          # Ignore if already gone
+        rescue => e
+          failures << [f, e]
         end
 
         unless failures.empty?

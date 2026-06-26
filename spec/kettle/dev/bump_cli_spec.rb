@@ -2,29 +2,27 @@
 
 RSpec.describe Kettle::Dev::BumpCLI, :check_output, :prism_only do
   def with_project(version: "1.2.3", gemspec_version: version)
-    begin
-      Dir.mktmpdir do |root|
-        FileUtils.mkdir_p(File.join(root, "lib", "demo"))
-        version_file = File.join(root, "lib", "demo", "version.rb")
-        File.write(version_file, <<~RUBY)
-          module Demo
-            VERSION = "#{version}"
-          end
-        RUBY
-        gemspec_path = File.join(root, "demo.gemspec")
-        File.write(gemspec_path, <<~RUBY)
-          Gem::Specification.new do |spec|
-            spec.name = "demo"
-            spec.version = "#{gemspec_version}"
-          end
-        RUBY
-        Kettle::Dev::GemSpecReader.clear_cache!
-        allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
-        yield root, version_file, gemspec_path
-      end
-    ensure
+    Dir.mktmpdir do |root|
+      FileUtils.mkdir_p(File.join(root, "lib", "demo"))
+      version_file = File.join(root, "lib", "demo", "version.rb")
+      File.write(version_file, <<~RUBY)
+        module Demo
+          VERSION = "#{version}"
+        end
+      RUBY
+      gemspec_path = File.join(root, "demo.gemspec")
+      File.write(gemspec_path, <<~RUBY)
+        Gem::Specification.new do |spec|
+          spec.name = "demo"
+          spec.version = "#{gemspec_version}"
+        end
+      RUBY
       Kettle::Dev::GemSpecReader.clear_cache!
+      allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
+      yield root, version_file, gemspec_path
     end
+  ensure
+    Kettle::Dev::GemSpecReader.clear_cache!
   end
 
   it "bumps patch versions and writes version files by default" do

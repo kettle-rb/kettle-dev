@@ -5,7 +5,7 @@ module Kettle
     class GitCommitFooter
       # Regex to extract `name = "value"` assignments from a gemspec.
       # @return [Regexp]
-      NAME_ASSIGNMENT_REGEX = /\bname\s*=\s*(["'])([^"']+)\1/.freeze
+      NAME_ASSIGNMENT_REGEX = /\bname\s*=\s*(["'])([^"']+)\1/
 
       # Whether footer appending is enabled (via GIT_HOOK_FOOTER_APPEND=true)
       # @return [Boolean]
