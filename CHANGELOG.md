@@ -22,11 +22,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
-- `kettle-release` now runs `bin/rake appraisal:generate` by default when
-  `Appraisals` is present; use `--appraisal-update` or
-  `KETTLE_RELEASE_APPRAISAL_TASK=appraisal:update` for the slower lock-resolving
-  update path.
-
 ### Deprecated
 
 ### Removed
@@ -34,6 +29,20 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Fixed
 
 ### Security
+
+## [2.2.19] - 2026-06-26
+
+- TAG: [v2.2.19][2.2.19t]
+- COVERAGE: 91.75% -- 4082/4449 lines in 33 files
+- BRANCH COVERAGE: 72.94% -- 1615/2214 branches in 33 files
+- 61.84% documented
+
+### Changed
+
+- `kettle-release` now runs `bin/rake appraisal:generate` by default when
+  `Appraisals` is present; use `--appraisal-update` or
+  `KETTLE_RELEASE_APPRAISAL_TASK=appraisal:update` for the slower lock-resolving
+  update path.
 
 ## [2.2.18] - 2026-06-24
 
@@ -2284,7 +2293,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.18...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.19...HEAD
+[2.2.19]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.18...v2.2.19
+[2.2.19t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.19
 [2.2.18]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.17...v2.2.18
 [2.2.18t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.18
 [2.2.17]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.16...v2.2.17

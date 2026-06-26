@@ -1421,13 +1421,13 @@ Designed for kettle-release.</p>
   <span class='kw'>end</span>
   <span class='comment'># Small initial delay to allow GitHub to register the newly pushed commit and enqueue workflows.
 </span>  <span class='comment'># Configurable via K_RELEASE_CI_INITIAL_SLEEP (seconds); defaults to 3s.
-</span>  <span class='kw'>begin</span>
-    <span class='id identifier rubyid_initial_sleep'>initial_sleep</span> <span class='op'>=</span> <span class='kw'>begin</span>
-      <span class='const'>Integer</span><span class='lparen'>(</span><span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>K_RELEASE_CI_INITIAL_SLEEP</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='rparen'>)</span>
-    <span class='kw'>rescue</span>
-      <span class='kw'>nil</span>
-    <span class='kw'>end</span>
+</span>
+  <span class='id identifier rubyid_initial_sleep'>initial_sleep</span> <span class='op'>=</span> <span class='kw'>begin</span>
+    <span class='const'>Integer</span><span class='lparen'>(</span><span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>K_RELEASE_CI_INITIAL_SLEEP</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='rparen'>)</span>
+  <span class='kw'>rescue</span>
+    <span class='kw'>nil</span>
   <span class='kw'>end</span>
+
   <span class='id identifier rubyid_sleep'>sleep</span><span class='lparen'>(</span><span class='lparen'>(</span><span class='id identifier rubyid_initial_sleep'>initial_sleep</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_initial_sleep'>initial_sleep</span> <span class='op'>&gt;=</span> <span class='int'>0</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_initial_sleep'>initial_sleep</span> <span class='op'>:</span> <span class='int'>3</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_start_timeout'>start_timeout</span> <span class='op'>=</span> <span class='id identifier rubyid_github_start_timeout'>github_start_timeout</span>
   <span class='id identifier rubyid_poll_interval'>poll_interval</span> <span class='op'>=</span> <span class='id identifier rubyid_github_poll_interval'>github_poll_interval</span>
@@ -2059,7 +2059,7 @@ Reused by ci:act and release summary.</p>
 </div>
 
       <div id="footer">
-  Generated on Mon Jun  8 05:50:13 2026 by
+  Generated on Fri Jun 26 06:16:13 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>

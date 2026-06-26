@@ -282,13 +282,13 @@ Prefer OpenCollectiveConfig.yaml_path going forward, but resolve to the host pro
       <pre class="lines">
 
 
+58
 59
 60
-61
-62</pre>
+61</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/readme_backers.rb', line 59</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/readme_backers.rb', line 58</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='label'>handle:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>readme_path:</span> <span class='const'><span class='object_link'><a href="#README_PATH-constant" title="Kettle::Dev::ReadmeBackers::README_PATH (constant)">README_PATH</a></span></span><span class='rparen'>)</span>
   <span class='ivar'>@handle</span> <span class='op'>=</span> <span class='id identifier rubyid_handle'>handle</span> <span class='op'>||</span> <span class='id identifier rubyid_resolve_handle'>resolve_handle</span>
@@ -321,6 +321,7 @@ Prefer OpenCollectiveConfig.yaml_path going forward, but resolve to the host pro
       <pre class="lines">
 
 
+87
 88
 89
 90
@@ -469,11 +470,10 @@ Prefer OpenCollectiveConfig.yaml_path going forward, but resolve to the host pro
 233
 234
 235
-236
-237</pre>
+236</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/readme_backers.rb', line 88</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/readme_backers.rb', line 87</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_run!'>run!</span>
   <span class='id identifier rubyid_validate'>validate</span>
@@ -673,6 +673,7 @@ Ensures README_UPDATER_TOKEN is present. If missing, prints guidance and raises.
       <pre class="lines">
 
 
+68
 69
 70
 71
@@ -689,11 +690,10 @@ Ensures README_UPDATER_TOKEN is present. If missing, prints guidance and raises.
 82
 83
 84
-85
-86</pre>
+85</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/readme_backers.rb', line 69</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/readme_backers.rb', line 68</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_validate'>validate</span>
   <span class='id identifier rubyid_token'>token</span> <span class='op'>=</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>README_UPDATER_TOKEN</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
@@ -723,7 +723,7 @@ Ensures README_UPDATER_TOKEN is present. If missing, prints guidance and raises.
 </div>
 
       <div id="footer">
-  Generated on Tue Jun  2 02:06:02 2026 by
+  Generated on Fri Jun 26 06:16:14 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>

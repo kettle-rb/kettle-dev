@@ -513,34 +513,30 @@ the system <code>git</code> executable for the small set of operations we need.<
 71
 72
 73
-74
-75
-76</pre>
+74</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 55</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span>
-  <span class='kw'>begin</span>
-    <span class='comment'># Allow users/CI to opt out of using the &#39;git&#39; gem even when available.
-</span>    <span class='comment'># Set KETTLE_DEV_DISABLE_GIT_GEM to a truthy value (&quot;1&quot;, &quot;true&quot;, &quot;yes&quot;) to force CLI backend.
-</span>    <span class='id identifier rubyid_env_val'>env_val</span> <span class='op'>=</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>KETTLE_DEV_DISABLE_GIT_GEM</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
-    <span class='comment'># Ruby 2.3 compatibility: String#match? was added in 2.4; use Regexp#=== / =~ instead
-</span>    <span class='id identifier rubyid_disable_gem'>disable_gem</span> <span class='op'>=</span> <span class='id identifier rubyid_env_val'>env_val</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='op'>!</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\A(1|true|yes)\z</span><span class='regexp_end'>/i</span></span> <span class='op'>=~</span> <span class='id identifier rubyid_env_val'>env_val</span><span class='rparen'>)</span>
-    <span class='kw'>if</span> <span class='id identifier rubyid_disable_gem'>disable_gem</span>
-      <span class='ivar'>@backend</span> <span class='op'>=</span> <span class='symbol'>:cli</span>
-    <span class='kw'>else</span>
-      <span class='const'>Kernel</span><span class='period'>.</span><span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>git</span><span class='tstring_end'>&quot;</span></span>
-      <span class='ivar'>@backend</span> <span class='op'>=</span> <span class='symbol'>:gem</span>
-      <span class='ivar'>@git</span> <span class='op'>=</span> <span class='op'>::</span><span class='const'>Git</span><span class='period'>.</span><span class='id identifier rubyid_open'>open</span><span class='lparen'>(</span><span class='const'>Dir</span><span class='period'>.</span><span class='id identifier rubyid_pwd'>pwd</span><span class='rparen'>)</span>
-    <span class='kw'>end</span>
-  <span class='kw'>rescue</span> <span class='const'>LoadError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-    <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_error'><span class='object_link'><a href="../Dev.html#debug_error-class_method" title="Kettle::Dev.debug_error (method)">debug_error</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid___method__'>__method__</span><span class='comma'>,</span> <span class='label'>backtrace:</span> <span class='kw'>false</span><span class='rparen'>)</span>
-    <span class='comment'># Optional dependency: fall back to CLI
-</span>    <span class='ivar'>@backend</span> <span class='op'>=</span> <span class='symbol'>:cli</span>
-  <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-    <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Error.html" title="Kettle::Dev::Error (class)">Error</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Failed to open git repository: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+  <span class='comment'># Allow users/CI to opt out of using the &#39;git&#39; gem even when available.
+</span>  <span class='comment'># Set KETTLE_DEV_DISABLE_GIT_GEM to a truthy value (&quot;1&quot;, &quot;true&quot;, &quot;yes&quot;) to force CLI backend.
+</span>  <span class='id identifier rubyid_env_val'>env_val</span> <span class='op'>=</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>KETTLE_DEV_DISABLE_GIT_GEM</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
+  <span class='comment'># Ruby 2.3 compatibility: String#match? was added in 2.4; use Regexp#=== / =~ instead
+</span>  <span class='id identifier rubyid_disable_gem'>disable_gem</span> <span class='op'>=</span> <span class='id identifier rubyid_env_val'>env_val</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='op'>!</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\A(1|true|yes)\z</span><span class='regexp_end'>/i</span></span> <span class='op'>=~</span> <span class='id identifier rubyid_env_val'>env_val</span><span class='rparen'>)</span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_disable_gem'>disable_gem</span>
+    <span class='ivar'>@backend</span> <span class='op'>=</span> <span class='symbol'>:cli</span>
+  <span class='kw'>else</span>
+    <span class='const'>Kernel</span><span class='period'>.</span><span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>git</span><span class='tstring_end'>&quot;</span></span>
+    <span class='ivar'>@backend</span> <span class='op'>=</span> <span class='symbol'>:gem</span>
+    <span class='ivar'>@git</span> <span class='op'>=</span> <span class='op'>::</span><span class='const'>Git</span><span class='period'>.</span><span class='id identifier rubyid_open'>open</span><span class='lparen'>(</span><span class='const'>Dir</span><span class='period'>.</span><span class='id identifier rubyid_pwd'>pwd</span><span class='rparen'>)</span>
   <span class='kw'>end</span>
+<span class='kw'>rescue</span> <span class='const'>LoadError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+  <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_error'><span class='object_link'><a href="../Dev.html#debug_error-class_method" title="Kettle::Dev.debug_error (method)">debug_error</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid___method__'>__method__</span><span class='comma'>,</span> <span class='label'>backtrace:</span> <span class='kw'>false</span><span class='rparen'>)</span>
+  <span class='comment'># Optional dependency: fall back to CLI
+</span>  <span class='ivar'>@backend</span> <span class='op'>=</span> <span class='symbol'>:cli</span>
+<span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+  <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Error.html" title="Kettle::Dev::Error (class)">Error</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Failed to open git repository: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -619,16 +615,16 @@ string (e.g. +CopyrightCollector+) should stub this method in specs.</p>
       <pre class="lines">
 
 
+176
+177
 178
 179
 180
 181
-182
-183
-184</pre>
+182</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 178</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 176</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_blame_porcelain'>blame_porcelain</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_out'>out</span><span class='comma'>,</span> <span class='id identifier rubyid_status'>status</span> <span class='op'>=</span> <span class='const'>Open3</span><span class='period'>.</span><span class='id identifier rubyid_capture2'>capture2</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>git</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>blame</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>--porcelain</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_path'>path</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span>
@@ -778,20 +774,20 @@ this method to avoid shelling out.</p>
       <pre class="lines">
 
 
+242
+243
+244
+245
 246
 247
 248
 249
 250
 251
-252
-253
-254
-255
-256</pre>
+252</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 246</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 242</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_checkout'>checkout</span><span class='lparen'>(</span><span class='id identifier rubyid_branch'>branch</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='ivar'>@backend</span> <span class='op'>==</span> <span class='symbol'>:gem</span>
@@ -938,6 +934,8 @@ this method to avoid shelling out.</p>
       <pre class="lines">
 
 
+136
+137
 138
 139
 140
@@ -946,12 +944,10 @@ this method to avoid shelling out.</p>
 143
 144
 145
-146
-147
-148</pre>
+146</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 138</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 136</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_current_branch'>current_branch</span>
   <span class='kw'>if</span> <span class='ivar'>@backend</span> <span class='op'>==</span> <span class='symbol'>:gem</span>
@@ -1035,6 +1031,10 @@ this method to avoid shelling out.</p>
       <pre class="lines">
 
 
+274
+275
+276
+277
 278
 279
 280
@@ -1047,14 +1047,10 @@ this method to avoid shelling out.</p>
 287
 288
 289
-290
-291
-292
-293
-294</pre>
+290</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 278</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 274</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='id identifier rubyid_remote'>remote</span><span class='comma'>,</span> <span class='id identifier rubyid_ref'>ref</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='ivar'>@backend</span> <span class='op'>==</span> <span class='symbol'>:gem</span>
@@ -1120,6 +1116,8 @@ this method to avoid shelling out.</p>
       <pre class="lines">
 
 
+151
+152
 153
 154
 155
@@ -1133,12 +1131,10 @@ this method to avoid shelling out.</p>
 163
 164
 165
-166
-167
-168</pre>
+166</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 153</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 151</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_ls_files'>ls_files</span>
   <span class='kw'>if</span> <span class='ivar'>@backend</span> <span class='op'>==</span> <span class='symbol'>:gem</span>
@@ -1225,20 +1221,20 @@ this method to avoid shelling out.</p>
       <pre class="lines">
 
 
+258
+259
+260
+261
 262
 263
 264
 265
 266
 267
-268
-269
-270
-271
-272</pre>
+268</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 262</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 258</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_pull'>pull</span><span class='lparen'>(</span><span class='id identifier rubyid_remote'>remote</span><span class='comma'>,</span> <span class='id identifier rubyid_branch'>branch</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='ivar'>@backend</span> <span class='op'>==</span> <span class='symbol'>:gem</span>
@@ -1349,6 +1345,8 @@ this method to avoid shelling out.</p>
       <pre class="lines">
 
 
+81
+82
 83
 84
 85
@@ -1369,12 +1367,10 @@ this method to avoid shelling out.</p>
 100
 101
 102
-103
-104
-105</pre>
+103</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 83</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 81</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_push'>push</span><span class='lparen'>(</span><span class='id identifier rubyid_remote'>remote</span><span class='comma'>,</span> <span class='id identifier rubyid_branch'>branch</span><span class='comma'>,</span> <span class='label'>force:</span> <span class='kw'>false</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='ivar'>@backend</span> <span class='op'>==</span> <span class='symbol'>:gem</span>
@@ -1474,6 +1470,8 @@ which typically uses the current branch’s upstream.</p>
       <pre class="lines">
 
 
+116
+117
 118
 119
 120
@@ -1489,12 +1487,10 @@ which typically uses the current branch’s upstream.</p>
 130
 131
 132
-133
-134
-135</pre>
+133</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 118</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 116</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_push_tags'>push_tags</span><span class='lparen'>(</span><span class='id identifier rubyid_remote'>remote</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='ivar'>@backend</span> <span class='op'>==</span> <span class='symbol'>:gem</span>
@@ -1572,6 +1568,10 @@ which typically uses the current branch’s upstream.</p>
       <pre class="lines">
 
 
+226
+227
+228
+229
 230
 231
 232
@@ -1579,14 +1579,10 @@ which typically uses the current branch’s upstream.</p>
 234
 235
 236
-237
-238
-239
-240
-241</pre>
+237</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 230</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 226</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_remote_url'>remote_url</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='ivar'>@backend</span> <span class='op'>==</span> <span class='symbol'>:gem</span>
@@ -1647,6 +1643,8 @@ which typically uses the current branch’s upstream.</p>
       <pre class="lines">
 
 
+185
+186
 187
 188
 189
@@ -1655,12 +1653,10 @@ which typically uses the current branch’s upstream.</p>
 192
 193
 194
-195
-196
-197</pre>
+195</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 187</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 185</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_remotes'>remotes</span>
   <span class='kw'>if</span> <span class='ivar'>@backend</span> <span class='op'>==</span> <span class='symbol'>:gem</span>
@@ -1720,6 +1716,8 @@ which typically uses the current branch’s upstream.</p>
       <pre class="lines">
 
 
+198
+199
 200
 201
 202
@@ -1742,25 +1740,19 @@ which typically uses the current branch’s upstream.</p>
 219
 220
 221
-222
-223
-224
-225
-226</pre>
+222</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 200</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 198</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_remotes_with_urls'>remotes_with_urls</span>
   <span class='kw'>if</span> <span class='ivar'>@backend</span> <span class='op'>==</span> <span class='symbol'>:gem</span>
     <span class='ivar'>@git</span><span class='period'>.</span><span class='id identifier rubyid_remotes'>remotes</span><span class='period'>.</span><span class='id identifier rubyid_each_with_object'>each_with_object</span><span class='lparen'>(</span><span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_r'>r</span><span class='comma'>,</span> <span class='id identifier rubyid_h'>h</span><span class='op'>|</span>
-      <span class='kw'>begin</span>
-        <span class='id identifier rubyid_h'>h</span><span class='lbracket'>[</span><span class='id identifier rubyid_r'>r</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_r'>r</span><span class='period'>.</span><span class='id identifier rubyid_url'>url</span>
-      <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-        <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_error'><span class='object_link'><a href="../Dev.html#debug_error-class_method" title="Kettle::Dev.debug_error (method)">debug_error</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span>
-        <span class='comment'># ignore
-</span>      <span class='kw'>end</span>
-    <span class='kw'>end</span>
+      <span class='id identifier rubyid_h'>h</span><span class='lbracket'>[</span><span class='id identifier rubyid_r'>r</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_r'>r</span><span class='period'>.</span><span class='id identifier rubyid_url'>url</span>
+    <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+      <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_error'><span class='object_link'><a href="../Dev.html#debug_error-class_method" title="Kettle::Dev.debug_error (method)">debug_error</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span>
+      <span class='comment'># ignore
+</span>    <span class='kw'>end</span>
   <span class='kw'>else</span>
     <span class='id identifier rubyid_out'>out</span><span class='comma'>,</span> <span class='id identifier rubyid_status'>status</span> <span class='op'>=</span> <span class='const'>Open3</span><span class='period'>.</span><span class='id identifier rubyid_capture2'>capture2</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>git</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>remote</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>-v</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
     <span class='kw'>return</span> <span class='lbrace'>{</span><span class='rbrace'>}</span> <span class='kw'>unless</span> <span class='id identifier rubyid_status'>status</span><span class='period'>.</span><span class='id identifier rubyid_success?'>success?</span>
@@ -1788,7 +1780,7 @@ which typically uses the current branch’s upstream.</p>
 </div>
 
       <div id="footer">
-  Generated on Tue Jun  2 02:06:02 2026 by
+  Generated on Fri Jun 26 06:16:14 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>
