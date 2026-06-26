@@ -43,7 +43,7 @@ end
 # Do not guard with __FILE__ == $PROGRAM_NAME because binstubs use Kernel.load.
 if ARGV.include?("-h") || ARGV.include?("--help")
   puts <<~USAGE
-    Usage: kettle-release [--version VERSION] [--local-ci] [start_step=<0-19>]
+    Usage: kettle-release [--version VERSION] [--local-ci] [--appraisal-update] [start_step=<0-19>]
 
     Automates the release flow for a Ruby gem in the host project.
 
@@ -58,7 +58,7 @@ if ARGV.include?("-h") || ARGV.include?("--help")
       2. Detect version; RubyGems sanity check; confirm CHANGELOG/version; sync copyright years; update badges/headers
       3. Run bin/setup
       4. Run bin/rake (default task)
-      5. Run bin/rake appraisal:update if Appraisals present
+      5. Run bin/rake appraisal:generate if Appraisals present
       6. Ensure git user configured; commit release prep
       7. Optional local CI with `act` (controlled by K_RELEASE_LOCAL_CI)
       8. Ensure trunk in sync across remotes; rebase feature as needed
@@ -77,6 +77,7 @@ if ARGV.include?("-h") || ARGV.include?("--help")
     Options:
       start_step=<number>         # Begin at the numbered step above (e.g., 10 to resume at CI monitoring)
       --version VERSION           # Use this version instead of detecting VERSION from lib/**/version.rb
+      --appraisal-update          # Use slower appraisal:update instead of default appraisal:generate
       --local-ci                  # Sensitive release mode: run act locally, publish before any git push,
                                   # create the git tag locally, then push commits and tags after publish
 
@@ -85,6 +86,8 @@ if ARGV.include?("-h") || ARGV.include?("--help")
       GEM_CERT_USER=<user>        # Select certs/<user>.pem for signing
       K_RELEASE_LOCAL_CI=ask|1|0  # Use 'act' locally before push; 'ask' prompts, '1' forces, default off
       K_RELEASE_LOCAL_CI_WORKFLOW # Name of workflow (without .yml) for local CI; defaults to locked_deps or first
+      KETTLE_RELEASE_APPRAISAL_TASK=appraisal:update
+                                  # Use slower appraisal:update instead of default appraisal:generate
       GITHUB_TOKEN / GH_TOKEN     # Optional; enables GitHub release creation and API queries
       GITLAB_TOKEN / GL_TOKEN     # Optional; enables GitLab API queries when applicable
       DEBUG=true                  # Print backtraces on errors
@@ -119,12 +122,13 @@ def extract_version_arg!(argv)
 end
 
 local_ci = ARGV.include?("--local-ci")
+appraisal_task = ARGV.delete("--appraisal-update") ? "appraisal:update" : nil
 start_step_arg = ARGV.find { |a| a.start_with?("start_step=") }
 start_step = start_step_arg ? start_step_arg.split("=", 2)[1].to_i : 0
 version_override = extract_version_arg!(ARGV)
 
 begin
-  Kettle::Dev::ReleaseCLI.new(start_step: start_step, local_ci: local_ci, version: version_override).run
+  Kettle::Dev::ReleaseCLI.new(start_step: start_step, local_ci: local_ci, version: version_override, appraisal_task: appraisal_task).run
 rescue LoadError => e
   warn("#{script_basename}: could not load dependency: #{e.class}: #{e.message}")
   warn(Array(e.backtrace).join("\n")) if ENV["DEBUG"]

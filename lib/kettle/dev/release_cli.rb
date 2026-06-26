@@ -72,13 +72,14 @@ module Kettle
 
       public
 
-      def initialize(start_step: 0, local_ci: false, version: nil)
+      def initialize(start_step: 0, local_ci: false, version: nil, appraisal_task: nil)
         @root = Kettle::Dev::CIHelpers.project_root
         @git = Kettle::Dev::GitAdapter.new
         @start_step = (start_step || 0).to_i
         @start_step = 0 if @start_step < 0
         @local_ci = !!local_ci
         @version_override = Kettle::Dev::Versioning.normalize_explicit_version(version)
+        @appraisal_task = normalize_appraisal_task(appraisal_task || ENV["KETTLE_RELEASE_APPRAISAL_TASK"])
       end
 
       def run
@@ -190,14 +191,14 @@ module Kettle
         # 4. bin/rake
         run_cmd!("bin/rake") if @start_step <= 4
 
-        # 5. appraisal:update (optional) + canonical docs build
+        # 5. appraisal:generate (optional) + canonical docs build
         if @start_step <= 5
           appraisals_path = File.join(@root, "Appraisals")
           if File.file?(appraisals_path)
-            puts "Appraisals detected at #{Kettle::Dev.display_path(appraisals_path)}. Running: bin/rake appraisal:update"
-            run_cmd!("bin/rake appraisal:update")
+            puts "Appraisals detected at #{Kettle::Dev.display_path(appraisals_path)}. Running: bin/rake #{@appraisal_task}"
+            run_cmd!("bin/rake #{@appraisal_task}")
           else
-            puts "No Appraisals file found; skipping appraisal:update"
+            puts "No Appraisals file found; skipping #{@appraisal_task}"
           end
 
           puts "Generating docs site via canonical task: bin/rake yard"
@@ -318,6 +319,15 @@ module Kettle
           # Fallback if detection fails for any reason
           puts "\n🚀 Release v#{version || "unknown"} Complete 🚀"
         end
+      end
+
+      def normalize_appraisal_task(value)
+        task = value.to_s.strip
+        return "appraisal:generate" if task.empty?
+        return "appraisal:generate" if task == "generate" || task == "appraisal:generate"
+        return "appraisal:update" if task == "update" || task == "appraisal:update"
+
+        abort("Unsupported appraisal task #{value.inspect}; use appraisal:generate or appraisal:update.")
       end
 
       private

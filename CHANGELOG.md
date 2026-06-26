@@ -22,6 +22,11 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- `kettle-release` now runs `bin/rake appraisal:generate` by default when
+  `Appraisals` is present; use `--appraisal-update` or
+  `KETTLE_RELEASE_APPRAISAL_TASK=appraisal:update` for the slower lock-resolving
+  update path.
+
 ### Deprecated
 
 ### Removed

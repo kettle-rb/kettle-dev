@@ -607,7 +607,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect(cli).to have_received(:run_pre_release_checks!)
         expect(cli).to have_received(:run_cmd!).with("bin/setup")
         expect(cli).to have_received(:run_cmd!).with("bin/rake")
-        expect(cli).to have_received(:run_cmd!).with("bin/rake appraisal:update")
+        expect(cli).to have_received(:run_cmd!).with("bin/rake appraisal:generate")
         expect(cli).to have_received(:run_cmd!).with("bin/rake yard")
         expect(cli).to have_received(:run_cmd!).with("bundle exec rake build")
         expect(cli).to have_received(:run_cmd!).with("bundle exec rake release")
@@ -650,7 +650,41 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect(local_cli).not_to have_received(:run_cmd!).with("bundle exec rake release")
       end
 
-      it "skips appraisal:update when Appraisals file missing" do
+      it "uses appraisal:update when explicitly requested" do
+        update_cli = described_class.new(appraisal_task: "appraisal:update")
+        allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("y\n")
+        stub_env("SKIP_GEM_SIGNING" => "true")
+
+        allow(update_cli).to receive(:run_pre_release_checks!)
+        allow(update_cli).to receive(:ensure_bundler_2_7_plus!)
+        allow(update_cli).to receive(:detect_version).and_return("9.9.9")
+        allow(update_cli).to receive(:detect_gem_name).and_return("mygem")
+        allow(update_cli).to receive(:latest_released_versions).and_return([nil, nil])
+        allow(update_cli).to receive(:validate_copyright_years!)
+        allow(update_cli).to receive(:update_readme_kloc_badge!)
+        allow(update_cli).to receive(:update_rakefile_example_header!)
+        allow(update_cli).to receive(:run_cmd!).and_return(true)
+        allow(update_cli).to receive(:ensure_git_user!)
+        allow(update_cli).to receive(:commit_release_prep!).and_return(true)
+        allow(update_cli).to receive(:maybe_run_local_ci_before_push!)
+        allow(update_cli).to receive(:detect_trunk_branch).and_return("main")
+        allow(update_cli).to receive(:current_branch).and_return("feature/my-work")
+        allow(update_cli).to receive(:ensure_trunk_synced_before_push!)
+        allow(update_cli).to receive(:push!)
+        allow(update_cli).to receive(:monitor_workflows_after_push!)
+        allow(update_cli).to receive(:merge_feature_into_trunk_and_push!)
+        allow(update_cli).to receive(:checkout!)
+        allow(update_cli).to receive(:pull!)
+        allow(update_cli).to receive(:ensure_signing_setup_or_skip!)
+        allow(update_cli).to receive(:push_tags!)
+        allow(update_cli).to receive(:validate_checksums!)
+
+        expect { update_cli.run }.not_to raise_error
+
+        expect(update_cli).to have_received(:run_cmd!).with("bin/rake appraisal:update")
+      end
+
+      it "skips appraisal generation when Appraisals file missing" do
         # Accept initial prompt via input adapter
         allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("y\n")
 
@@ -693,7 +727,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect { cli.run }.not_to raise_error
         expect(cli).to have_received(:run_cmd!).with("bin/setup")
         expect(cli).to have_received(:run_cmd!).with("bin/rake")
-        expect(cli).not_to have_received(:run_cmd!).with("bin/rake appraisal:update")
+        expect(cli).not_to have_received(:run_cmd!).with("bin/rake appraisal:generate")
         expect(cli).to have_received(:run_cmd!).with("bin/rake yard")
       end
 
@@ -1192,7 +1226,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
         expect(local_cli).not_to have_received(:run_cmd!).with("bin/setup")
         expect(local_cli).not_to have_received(:run_cmd!).with("bin/rake")
-        expect(local_cli).not_to have_received(:run_cmd!).with("bin/rake appraisal:update")
+        expect(local_cli).not_to have_received(:run_cmd!).with("bin/rake appraisal:generate")
       end
     end
 
