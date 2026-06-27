@@ -1888,6 +1888,5 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         end
       end
     end
-
   end
 end

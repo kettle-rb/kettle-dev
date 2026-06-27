@@ -22,25 +22,20 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
-- `kettle-release` now reads RuboCop LTS branch selection from
-  `Kettle::Rb::CompatMatrix`.
-
 ### Deprecated
 
 ### Removed
 
 ### Fixed
 
-- Restored Ruby 2.4 parser compatibility for recent release and CI helper code.
-
 ### Security
 
 ## [2.2.20] - 2026-06-27
 
 - TAG: [v2.2.20][2.2.20t]
-- COVERAGE: 91.95% -- 4137/4499 lines in 33 files
-- BRANCH COVERAGE: 72.99% -- 1638/2244 branches in 33 files
-- 60.78% documented
+- COVERAGE: 91.82% -- 4131/4499 lines in 33 files
+- BRANCH COVERAGE: 72.73% -- 1632/2244 branches in 33 files
+- 61.04% documented
 
 ### Added
 
@@ -55,6 +50,13 @@ Please file a bug if you notice a violation of semantic versioning.
 - `kettle-release` now switches a local `RUBOCOP_LTS_LOCAL` checkout to the
   branch matching the project's selected `rubocop-rubyN_N` style gem before
   running setup and default rake tasks.
+
+- Restored Ruby 2.4 parser compatibility for recent release and CI helper code.
+
+### Changed
+
+- `kettle-release` now reads RuboCop LTS branch selection from
+  `Kettle::Rb::CompatMatrix`.
 
 ## [2.2.19] - 2026-06-26
 
