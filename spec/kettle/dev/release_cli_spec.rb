@@ -52,6 +52,74 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         cli.send(:run_cmd!, "bundle exec rake build")
       end
 
+      it "disables noisy Bundler and debug environment for release child commands" do
+        stub_env(
+          "DEBUG" => "true",
+          "BUNDLE_DEBUG" => "true",
+          "BUNDLER_DEBUG" => "true",
+          "BUNDLE_VERBOSE" => "true",
+          "DEBUG_RESOLVER" => "true"
+        )
+        allow(ENV).to receive(:to_hash).and_return(ENV.to_hash.merge(
+          "DEBUG" => "true",
+          "BUNDLE_DEBUG" => "true",
+          "BUNDLER_DEBUG" => "true",
+          "BUNDLE_VERBOSE" => "true",
+          "DEBUG_RESOLVER" => "true"
+        ))
+        status = instance_double(Process::Status, success?: true, exitstatus: 0)
+        expect(Open3).to receive(:capture3) do |env, command|
+          expect(command).to eq("bin/setup")
+          expect(env).to include(
+            "DEBUG" => nil,
+            "BUNDLE_QUIET" => "true",
+            "BUNDLE_DEBUG" => "false",
+            "BUNDLER_DEBUG" => "false",
+            "BUNDLE_VERBOSE" => "false",
+            "DEBUG_RESOLVER" => nil,
+            "BUNDLER_DEBUG_RESOLVER" => nil,
+            "BUNDLE_SUPPRESS_INSTALL_USING_MESSAGES" => "true"
+          )
+          ["", "", status]
+        end
+
+        cli.send(:run_cmd!, "bin/setup")
+      end
+
+      it "preserves noisy environment when release debug is explicitly enabled" do
+        stub_env(
+          "KETTLE_DEV_DEBUG" => "true",
+          "DEBUG" => "true",
+          "BUNDLE_DEBUG" => "true",
+          "BUNDLER_DEBUG" => "true",
+          "BUNDLE_VERBOSE" => "true",
+          "DEBUG_RESOLVER" => "true"
+        )
+        allow(ENV).to receive(:to_hash).and_return(ENV.to_hash.merge(
+          "KETTLE_DEV_DEBUG" => "true",
+          "DEBUG" => "true",
+          "BUNDLE_DEBUG" => "true",
+          "BUNDLER_DEBUG" => "true",
+          "BUNDLE_VERBOSE" => "true",
+          "DEBUG_RESOLVER" => "true"
+        ))
+        status = instance_double(Process::Status, success?: true, exitstatus: 0)
+        expect(Open3).to receive(:capture3) do |env, command|
+          expect(command).to eq("bin/setup")
+          expect(env).to include(
+            "KETTLE_DEV_DEBUG" => "true",
+            "DEBUG" => "true",
+            "BUNDLE_DEBUG" => "true",
+            "BUNDLER_DEBUG" => "true",
+            "BUNDLE_VERBOSE" => "true",
+            "DEBUG_RESOLVER" => "true"
+          )
+          ["", "", status]
+        end
+
+        cli.send(:run_cmd!, "bin/setup")
+      end
+
       it "runs kettle-changelog with the current TTY so its confirmation prompt is visible" do
         allow(described_class).to receive(:system).with(kind_of(Hash), "bundle exec kettle-changelog").and_return(true)
         expect(Open3).not_to receive(:capture3)

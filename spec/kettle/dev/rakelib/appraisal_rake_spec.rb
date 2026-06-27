@@ -5,9 +5,33 @@ require "spec_helper"
 RSpec.describe "appraisal rake tasks" do # rubocop:disable RSpec/DescribeClass
   include_context "with rake", "appraisal"
 
+  let(:quiet_env) do
+    {
+      "KETTLE_JEM_QUIET" => "true",
+      "KETTLE_JEM_DEBUG" => "false",
+      "KETTLE_DEV_DEBUG" => "false",
+      "SMORG_RB_DEBUG" => "false",
+      "DEBUG" => nil,
+      "BUNDLE_QUIET" => "true",
+      "BUNDLE_DEBUG" => "false",
+      "BUNDLER_DEBUG" => "false",
+      "BUNDLE_VERBOSE" => "false",
+      "DEBUG_RESOLVER" => nil,
+      "DEBUG_RESOLVER_TREE" => nil,
+      "BUNDLER_DEBUG_RESOLVER" => nil,
+      "BUNDLER_DEBUG_RESOLVER_TREE" => nil,
+      "DEBUG_COMPACT_INDEX" => nil,
+      "MOLINILLO_DEBUG" => nil,
+      "BUNDLE_SILENCE_DEPRECATIONS" => "true",
+      "BUNDLE_SILENCE_ROOT_WARNING" => "true",
+      "BUNDLE_SUPPRESS_INSTALL_USING_MESSAGES" => "true"
+    }
+  end
+  let(:appraisal_env) { quiet_env.merge("BUNDLE_GEMFILE" => "Appraisal.root.gemfile") }
+  let(:bundle_install_call) { [appraisal_env, "bundle", "install", "--quiet"] }
+
   describe "rake appraisal:generate" do
     let(:task_name) { "appraisal:generate" }
-    let(:appraisal_env) { {"BUNDLE_GEMFILE" => "Appraisal.root.gemfile"} }
     let(:system_calls) { [] }
 
     before do
@@ -22,7 +46,7 @@ RSpec.describe "appraisal rake tasks" do # rubocop:disable RSpec/DescribeClass
       invoke
 
       expect(system_calls).to eq([
-        [appraisal_env, "bundle", "install"],
+        bundle_install_call,
         [appraisal_env, "bundle", "exec", "appraisal", "generate"]
       ])
     end
@@ -30,7 +54,6 @@ RSpec.describe "appraisal rake tasks" do # rubocop:disable RSpec/DescribeClass
 
   describe "rake appraisal:install" do
     let(:task_name) { "appraisal:install" }
-    let(:appraisal_env) { {"BUNDLE_GEMFILE" => "Appraisal.root.gemfile"} }
     let(:appraisal_install_call) { [appraisal_env, "bundle", "exec", "appraisal", "generate-install"] }
     let(:failed_calls) { [] }
     let(:system_calls) { [] }
@@ -48,7 +71,7 @@ RSpec.describe "appraisal rake tasks" do # rubocop:disable RSpec/DescribeClass
       invoke
 
       expect(system_calls).to eq([
-        [appraisal_env, "bundle", "install"],
+        bundle_install_call,
         appraisal_install_call
       ])
     end
@@ -60,9 +83,9 @@ RSpec.describe "appraisal rake tasks" do # rubocop:disable RSpec/DescribeClass
         invoke
 
         expect(system_calls).to eq([
-          [appraisal_env, "bundle", "install"],
+          bundle_install_call,
           appraisal_install_call,
-          [appraisal_env, "bundle", "install"],
+          bundle_install_call,
           [appraisal_env, "bundle", "exec", "appraisal", "generate"]
         ])
       end
@@ -71,7 +94,6 @@ RSpec.describe "appraisal rake tasks" do # rubocop:disable RSpec/DescribeClass
 
   describe "rake appraisal:update" do
     let(:task_name) { "appraisal:update" }
-    let(:appraisal_env) { {"BUNDLE_GEMFILE" => "Appraisal.root.gemfile"} }
     let(:appraisal_update_call) { [appraisal_env, "bundle", "exec", "appraisal", "generate-update"] }
     let(:failed_calls) { [] }
     let(:system_calls) { [] }
@@ -89,9 +111,9 @@ RSpec.describe "appraisal rake tasks" do # rubocop:disable RSpec/DescribeClass
       invoke
 
       expect(system_calls).to eq([
-        [appraisal_env, "bundle", "install"],
+        bundle_install_call,
         [appraisal_env, "bundle", "update", "--bundler"],
-        [appraisal_env, "bundle", "install"],
+        bundle_install_call,
         appraisal_update_call
       ])
     end
@@ -103,11 +125,11 @@ RSpec.describe "appraisal rake tasks" do # rubocop:disable RSpec/DescribeClass
         invoke
 
         expect(system_calls).to eq([
-          [appraisal_env, "bundle", "install"],
+          bundle_install_call,
           [appraisal_env, "bundle", "update", "--bundler"],
-          [appraisal_env, "bundle", "install"],
+          bundle_install_call,
           appraisal_update_call,
-          [appraisal_env, "bundle", "install"],
+          bundle_install_call,
           [appraisal_env, "bundle", "exec", "appraisal", "generate"]
         ])
       end

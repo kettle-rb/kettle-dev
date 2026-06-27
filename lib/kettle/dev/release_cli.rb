@@ -16,6 +16,28 @@ require "ruby-progressbar"
 module Kettle
   module Dev
     class ReleaseCLI
+      QUIET_ENV = {
+        "KETTLE_JEM_QUIET" => "true",
+        "KETTLE_JEM_DEBUG" => "false",
+        "KETTLE_DEV_DEBUG" => "false",
+        "SMORG_RB_DEBUG" => "false",
+        "DEBUG" => nil,
+        "BUNDLE_QUIET" => "true",
+        "BUNDLE_DEBUG" => "false",
+        "BUNDLER_DEBUG" => "false",
+        "BUNDLE_VERBOSE" => "false",
+        "DEBUG_RESOLVER" => nil,
+        "DEBUG_RESOLVER_TREE" => nil,
+        "BUNDLER_DEBUG_RESOLVER" => nil,
+        "BUNDLER_DEBUG_RESOLVER_TREE" => nil,
+        "DEBUG_COMPACT_INDEX" => nil,
+        "MOLINILLO_DEBUG" => nil,
+        "BUNDLE_SILENCE_DEPRECATIONS" => "true",
+        "BUNDLE_SILENCE_ROOT_WARNING" => "true",
+        "BUNDLE_SUPPRESS_INSTALL_USING_MESSAGES" => "true"
+      }.freeze
+      DEBUG_TRUE_VALUES = %w[1 true yes on].freeze
+
       class << self
         def run_cmd!(cmd)
           # For Bundler-invoked build/release, explicitly prefix SKIP_GEM_SIGNING so
@@ -26,7 +48,7 @@ module Kettle
           end
           puts "$ #{cmd}"
           # Pass a plain Hash for the environment to satisfy tests and avoid ENV object oddities
-          env_hash = ENV.respond_to?(:to_hash) ? ENV.to_hash : ENV.to_h
+          env_hash = command_env
 
           # Some commands are interactive (e.g., `bundle exec rake release` prompting for RubyGems MFA).
           # Using capture3 detaches STDIN, preventing prompts from working. For such commands, use system
@@ -61,6 +83,19 @@ module Kettle
             end
             abort("Command failed: #{cmd} (exit #{exit_code})#{diag}")
           end
+        end
+
+        private
+
+        def command_env
+          env_hash = ENV.respond_to?(:to_hash) ? ENV.to_hash : ENV.to_h
+          return env_hash if debug_env_enabled?
+
+          env_hash.merge(QUIET_ENV)
+        end
+
+        def debug_env_enabled?
+          DEBUG_TRUE_VALUES.include?(ENV.fetch("KETTLE_DEV_DEBUG", "").downcase)
         end
       end
 

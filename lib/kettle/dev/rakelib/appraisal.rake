@@ -5,7 +5,27 @@ begin
   require "appraisal/task"
 
   bundle = "bundle"
-  appraisal_env = {"BUNDLE_GEMFILE" => "Appraisal.root.gemfile"}
+  quiet_env = {
+    "KETTLE_JEM_QUIET" => "true",
+    "KETTLE_JEM_DEBUG" => "false",
+    "KETTLE_DEV_DEBUG" => "false",
+    "SMORG_RB_DEBUG" => "false",
+    "DEBUG" => nil,
+    "BUNDLE_QUIET" => "true",
+    "BUNDLE_DEBUG" => "false",
+    "BUNDLER_DEBUG" => "false",
+    "BUNDLE_VERBOSE" => "false",
+    "DEBUG_RESOLVER" => nil,
+    "DEBUG_RESOLVER_TREE" => nil,
+    "BUNDLER_DEBUG_RESOLVER" => nil,
+    "BUNDLER_DEBUG_RESOLVER_TREE" => nil,
+    "DEBUG_COMPACT_INDEX" => nil,
+    "MOLINILLO_DEBUG" => nil,
+    "BUNDLE_SILENCE_DEPRECATIONS" => "true",
+    "BUNDLE_SILENCE_ROOT_WARNING" => "true",
+    "BUNDLE_SUPPRESS_INSTALL_USING_MESSAGES" => "true"
+  }
+  appraisal_env = quiet_env.merge("BUNDLE_GEMFILE" => "Appraisal.root.gemfile")
 
   run_command = lambda do |failure_message, *args|
     ok = system(*args)
@@ -18,7 +38,8 @@ begin
       "appraisal:generate failed: BUNDLE_GEMFILE=Appraisal.root.gemfile bundle install",
       appraisal_env,
       bundle,
-      "install"
+      "install",
+      "--quiet"
     )
 
     # 2) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle exec appraisal generate
@@ -58,7 +79,8 @@ begin
             "appraisal:install failed: BUNDLE_GEMFILE=Appraisal.root.gemfile bundle install",
             appraisal_env,
             bundle,
-            "install"
+            "install",
+            "--quiet"
           )
 
           # 2) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle exec appraisal generate-install
@@ -105,7 +127,8 @@ begin
             "appraisal:update failed: BUNDLE_GEMFILE=Appraisal.root.gemfile bundle install",
             appraisal_env,
             bundle,
-            "install"
+            "install",
+            "--quiet"
           )
 
           # 2) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle update --bundler
@@ -122,7 +145,8 @@ begin
             "appraisal:update failed: BUNDLE_GEMFILE=Appraisal.root.gemfile bundle install",
             appraisal_env,
             bundle,
-            "install"
+            "install",
+            "--quiet"
           )
 
           # 4) BUNDLE_GEMFILE=Appraisal.root.gemfile bundle exec appraisal generate-update

@@ -28,6 +28,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-release` now suppresses inherited Bundler/debug verbosity when running
+  release child commands and Appraisal bundle installs.
+
 ### Security
 
 ## [2.2.19] - 2026-06-26
