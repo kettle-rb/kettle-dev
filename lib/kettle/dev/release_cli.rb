@@ -107,21 +107,22 @@ module Kettle
 
       public
 
-      def initialize(start_step: 0, local_ci: false, version: nil, appraisal_task: nil)
+      def initialize(start_step: 0, local_ci: false, version: nil, appraisal_task: nil, skip_steps: nil)
         @root = Kettle::Dev::CIHelpers.project_root
         @git = Kettle::Dev::GitAdapter.new
         @start_step = (start_step || 0).to_i
         @start_step = 0 if @start_step < 0
+        @skip_steps = normalize_skip_steps(skip_steps)
         @local_ci = !!local_ci
         @version_override = Kettle::Dev::Versioning.normalize_explicit_version(version)
         @appraisal_task = normalize_appraisal_task(appraisal_task || ENV["KETTLE_RELEASE_APPRAISAL_TASK"])
       end
 
       def run
-        run_pre_release_checks! if @start_step <= 0
+        run_pre_release_checks! if run_step?(0)
 
         # 1. Ensure Bundler version ✓
-        ensure_bundler_2_7_plus!
+        ensure_bundler_2_7_plus! if run_step?(1)
 
         version = nil
         committed = nil
@@ -129,7 +130,7 @@ module Kettle
         feature = nil
 
         # 2. Version detection and sanity checks + prompt
-        if @start_step <= 2
+        if run_step?(2)
           version = detect_version
           puts "Detected version: #{version.inspect}"
 
@@ -222,12 +223,12 @@ module Kettle
         end
 
         # 3. bin/setup
-        run_cmd!("bin/setup") if @start_step <= 3
+        run_cmd!("bin/setup") if run_step?(3)
         # 4. bin/rake
-        run_cmd!("bin/rake") if @start_step <= 4
+        run_cmd!("bin/rake") if run_step?(4)
 
         # 5. appraisal:generate (optional) + canonical docs build
-        if @start_step <= 5
+        if run_step?(5)
           appraisals_path = File.join(@root, "Appraisals")
           if File.file?(appraisals_path)
             puts "Appraisals detected at #{Kettle::Dev.display_path(appraisals_path)}. Running: bin/rake #{@appraisal_task}"
@@ -241,47 +242,47 @@ module Kettle
         end
 
         # 6. git user + commit release prep
-        if @start_step <= 6
+        if run_step?(6)
           ensure_git_user!
           version ||= detect_version
           committed = commit_release_prep!(version)
         end
 
         # 7. optional local CI via act
-        maybe_run_local_ci_before_push!(committed, force: local_ci?) if @start_step <= 7
+        maybe_run_local_ci_before_push!(committed, force: local_ci?) if run_step?(7)
 
         # 8. ensure trunk synced
-        if @start_step <= 8 && !local_ci?
+        if run_step?(8) && !local_ci?
           trunk = detect_trunk_branch
           feature = current_branch
           puts "Trunk branch detected: #{trunk}"
           ensure_trunk_synced_before_push!(trunk, feature)
-        elsif @start_step <= 8
+        elsif run_step?(8)
           puts "Local CI release mode: skipping remote trunk sync before publishing."
         end
 
         # 9. push branches
-        push! if @start_step <= 9 && !local_ci?
+        push! if run_step?(9) && !local_ci?
 
         # 10. monitor CI after push
-        monitor_workflows_after_push! if @start_step <= 10 && !local_ci?
+        monitor_workflows_after_push! if run_step?(10) && !local_ci?
 
         # 11. merge feature into trunk and push
-        if @start_step <= 11 && !local_ci?
+        if run_step?(11) && !local_ci?
           trunk ||= detect_trunk_branch
           feature ||= current_branch
           merge_feature_into_trunk_and_push!(trunk, feature)
         end
 
         # 12. checkout trunk and pull
-        if @start_step <= 12 && !local_ci?
+        if run_step?(12) && !local_ci?
           trunk ||= detect_trunk_branch
           checkout!(trunk)
           pull!(trunk)
         end
 
         # 13. signing guidance and checks
-        if @start_step <= 13
+        if run_step?(13)
           if ENV.fetch("SKIP_GEM_SIGNING", "false").casecmp("false").zero?
             puts "TIP: For local dry-runs or testing the release workflow, set SKIP_GEM_SIGNING=true to avoid PEM password prompts."
             if Kettle::Dev::InputAdapter.tty?
@@ -302,13 +303,13 @@ module Kettle
         end
 
         # 14. build
-        if @start_step <= 14
+        if run_step?(14)
           puts "Running build (you may be prompted for the signing key password)..."
           run_cmd!("bundle exec rake build")
         end
 
         # 15. release and tag
-        if @start_step <= 15
+        if run_step?(15)
           if local_ci?
             version ||= detect_version
             release_gem_and_tag_locally!(version)
@@ -322,7 +323,7 @@ module Kettle
         #    Checksums are generated after release to avoid including checksums/ in gem package
         #    Rationale: Running gem_checksums before release may commit checksums/ and cause Bundler's
         #    release build to include them in the gem, thus altering the artifact, and invalidating the checksums.
-        if @start_step <= 16
+        if run_step?(16)
           # Generate checksums for the just-built artifact, commit them, then validate
           run_cmd!("bin/gem_checksums")
           version ||= detect_version
@@ -330,19 +331,19 @@ module Kettle
         end
 
         # 17. push checksum commit (gem_checksums already commits)
-        if @start_step <= 17
+        if run_step?(17)
           push!
           push_tags! if local_ci?
         end
 
         # 18. create GitHub release (optional)
-        if @start_step <= 18
+        if run_step?(18)
           version ||= detect_version
           maybe_create_github_release!(version)
         end
 
         # 19. push tags to remotes (final step)
-        push_tags! if @start_step <= 19 && !local_ci?
+        push_tags! if run_step?(19) && !local_ci?
 
         # Final success message
         begin
@@ -365,10 +366,26 @@ module Kettle
         abort("Unsupported appraisal task #{value.inspect}; use appraisal:generate or appraisal:update.")
       end
 
+      def normalize_skip_steps(value)
+        raw_steps = Array(value).flat_map { |part| part.to_s.split(",") }.map(&:strip).reject(&:empty?)
+        raw_steps.map do |raw|
+          abort("Invalid skip_steps value #{raw.inspect}; use comma-separated release step numbers from 0 to 19.") unless raw.match?(/\A\d+\z/)
+
+          step = raw.to_i
+          abort("Invalid skip_steps value #{raw.inspect}; release steps are numbered 0 to 19.") unless step.between?(0, 19)
+
+          step
+        end.uniq
+      end
+
       private
 
       def local_ci?
         @local_ci
+      end
+
+      def run_step?(step)
+        @start_step <= step && !@skip_steps.include?(step)
       end
 
       def run_pre_release_checks!

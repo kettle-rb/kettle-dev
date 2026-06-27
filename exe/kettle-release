@@ -43,7 +43,7 @@ end
 # Do not guard with __FILE__ == $PROGRAM_NAME because binstubs use Kernel.load.
 if ARGV.include?("-h") || ARGV.include?("--help")
   puts <<~USAGE
-    Usage: kettle-release [--version VERSION] [--local-ci] [--appraisal-update] [start_step=<0-19>]
+    Usage: kettle-release [--version VERSION] [--local-ci] [--appraisal-update] [--skip-steps STEPS] [start_step=<0-19>]
 
     Automates the release flow for a Ruby gem in the host project.
 
@@ -76,6 +76,8 @@ if ARGV.include?("-h") || ARGV.include?("--help")
 
     Options:
       start_step=<number>         # Begin at the numbered step above (e.g., 10 to resume at CI monitoring)
+      skip_steps=<numbers>        # Comma-separated numbered steps to skip while running the rest
+      --skip-steps NUMBERS        # Alias for skip_steps=NUMBERS (e.g., --skip-steps 10 or --skip-steps 10,18)
       --version VERSION           # Use this version instead of detecting VERSION from lib/**/version.rb
       --appraisal-update          # Use slower appraisal:update instead of default appraisal:generate
       --local-ci                  # Sensitive release mode: run act locally, publish before any git push,
@@ -97,12 +99,13 @@ if ARGV.include?("-h") || ARGV.include?("--help")
       kettle-release --local-ci            # run local act CI, publish gem, then push commits/tags
       kettle-release start_step=1          # skip pre-release checks and start numbered release steps
       kettle-release start_step=10         # resume by monitoring CI for the current branch
+      kettle-release skip_steps=10         # run the release but skip remote CI monitoring
       SKIP_GEM_SIGNING=true kettle-release start_step=14  # build+release without signing
   USAGE
   exit 0
 end
 
-# Parse start_step=<n> from ARGV
+# Parse release options from ARGV
 def extract_version_arg!(argv)
   version = nil
   if (idx = argv.index("--version"))
@@ -121,14 +124,33 @@ def extract_version_arg!(argv)
   Kettle::Dev::Versioning.normalize_explicit_version(version)
 end
 
+def extract_skip_steps_arg!(argv)
+  skip_steps = nil
+  if (idx = argv.index("--skip-steps"))
+    skip_steps = argv[idx + 1]
+    Kettle::Dev::ExitAdapter.abort("--skip-steps requires a comma-separated step list") if skip_steps.to_s.empty?
+    argv.slice!(idx, 2)
+  end
+  argv.delete_if do |arg|
+    if arg.start_with?("--skip-steps=", "skip_steps=")
+      skip_steps = arg.split("=", 2)[1]
+      true
+    else
+      false
+    end
+  end
+  skip_steps
+end
+
 local_ci = ARGV.include?("--local-ci")
 appraisal_task = ARGV.delete("--appraisal-update") ? "appraisal:update" : nil
 start_step_arg = ARGV.find { |a| a.start_with?("start_step=") }
 start_step = start_step_arg ? start_step_arg.split("=", 2)[1].to_i : 0
 version_override = extract_version_arg!(ARGV)
+skip_steps = extract_skip_steps_arg!(ARGV)
 
 begin
-  Kettle::Dev::ReleaseCLI.new(start_step: start_step, local_ci: local_ci, version: version_override, appraisal_task: appraisal_task).run
+  Kettle::Dev::ReleaseCLI.new(start_step: start_step, local_ci: local_ci, version: version_override, appraisal_task: appraisal_task, skip_steps: skip_steps).run
 rescue LoadError => e
   warn("#{script_basename}: could not load dependency: #{e.class}: #{e.message}")
   warn(Array(e.backtrace).join("\n")) if ENV["DEBUG"]

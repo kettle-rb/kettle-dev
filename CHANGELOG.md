@@ -20,6 +20,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- `kettle-release` now accepts `skip_steps=...` / `--skip-steps ...` to skip
+  selected numbered release steps while running the rest of the release flow.
+
 ### Changed
 
 ### Deprecated

@@ -1296,6 +1296,36 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect(local_cli).not_to have_received(:run_cmd!).with("bin/rake")
         expect(local_cli).not_to have_received(:run_cmd!).with("bin/rake appraisal:generate")
       end
+
+      it "skips selected numbered steps while running later steps" do
+        allow(Kettle::Dev::InputAdapter).to receive(:tty?).and_return(false)
+        stub_env("GITHUB_TOKEN" => nil)
+        local_cli = described_class.new(start_step: 10, skip_steps: "10")
+        allow(local_cli).to receive(:detect_version).and_return("1.2.3")
+        allow(local_cli).to receive(:detect_gem_name).and_return("example")
+        allow(local_cli).to receive(:detect_trunk_branch).and_return("main")
+        allow(local_cli).to receive(:current_branch).and_return("feat")
+        allow(local_cli).to receive(:ensure_bundler_2_7_plus!)
+        allow(local_cli).to receive(:monitor_workflows_after_push!)
+        allow(local_cli).to receive(:merge_feature_into_trunk_and_push!)
+        allow(local_cli).to receive(:checkout!)
+        allow(local_cli).to receive(:pull!)
+        allow(local_cli).to receive(:ensure_signing_setup_or_skip!)
+        allow(local_cli).to receive(:run_cmd!)
+        allow(local_cli).to receive(:validate_checksums!)
+        allow(local_cli).to receive(:push_tags!)
+
+        expect { local_cli.run }.not_to raise_error
+
+        expect(local_cli).not_to have_received(:monitor_workflows_after_push!)
+        expect(local_cli).to have_received(:merge_feature_into_trunk_and_push!).with("main", "feat")
+        expect(local_cli).to have_received(:run_cmd!).with("bundle exec rake build")
+      end
+
+      it "rejects invalid skip step values" do
+        expect { described_class.new(skip_steps: "10,nope") }
+          .to raise_error(MockSystemExit, /Invalid skip_steps value "nope"/)
+      end
     end
 
     describe "#update_rakefile_example_header!" do
