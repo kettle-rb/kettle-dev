@@ -198,10 +198,12 @@ module Kettle
       def remotes_with_urls
         if @backend == :gem
           @git.remotes.each_with_object({}) do |r, h|
-            h[r.name] = r.url
-          rescue => e
-            Kettle::Dev.debug_error(e, __method__)
-            # ignore
+            begin
+              h[r.name] = r.url
+            rescue => e
+              Kettle::Dev.debug_error(e, __method__)
+              # ignore
+            end
           end
         else
           out, status = Open3.capture2("git", "remote", "-v")

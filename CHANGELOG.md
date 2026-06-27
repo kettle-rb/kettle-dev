@@ -31,6 +31,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Restored Ruby 2.4 parser compatibility for recent release and CI helper code.
+
 ### Security
 
 ## [2.2.20] - 2026-06-27

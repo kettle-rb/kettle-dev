@@ -91,46 +91,48 @@ module Kettle
 
           # Print GitLab pipeline status (if configured) for the current branch.
           print_gitlab_status = proc do
-            branch = Kettle::Dev::CIHelpers.current_branch
-            # Detect any GitLab remote (not just origin), mirroring CIMonitor behavior
-            gl_remotes = Kettle::Dev::CIMonitor.gitlab_remote_candidates
-            if gl_remotes.nil? || gl_remotes.empty? || branch.nil?
-              puts "Latest GL (#{branch || "n/a"}) pipeline: n/a"
-              next
-            end
-
-            # Parse owner/repo from the first GitLab remote URL
-            gl_url = Kettle::Dev::CIMonitor.remote_url(gl_remotes.first)
-            owner = repo = nil
-            if gl_url =~ %r{git@gitlab.com:(.+?)/(.+?)(\.git)?$}
-              owner = Regexp.last_match(1)
-              repo = Regexp.last_match(2).sub(/\.git\z/, "")
-            elsif gl_url =~ %r{https://gitlab.com/(.+?)/(.+?)(\.git)?$}
-              owner = Regexp.last_match(1)
-              repo = Regexp.last_match(2).sub(/\.git\z/, "")
-            end
-
-            unless owner && repo
-              puts "Latest GL (#{branch}) pipeline: n/a"
-              next
-            end
-
-            pipe = Kettle::Dev::CIHelpers.gitlab_latest_pipeline(owner: owner, repo: repo, branch: branch)
-            if pipe
-              st = pipe["status"].to_s
-              status = if st == "success"
-                "success"
-              else
-                ((st == "failed") ? "failure" : nil)
+            begin
+              branch = Kettle::Dev::CIHelpers.current_branch
+              # Detect any GitLab remote (not just origin), mirroring CIMonitor behavior
+              gl_remotes = Kettle::Dev::CIMonitor.gitlab_remote_candidates
+              if gl_remotes.nil? || gl_remotes.empty? || branch.nil?
+                puts "Latest GL (#{branch || "n/a"}) pipeline: n/a"
+                next
               end
-              emoji = Kettle::Dev::CIMonitor.status_emoji(st, status)
-              details = [st, pipe["failure_reason"]].compact.join("/")
-              puts "Latest GL (#{branch}) pipeline: #{emoji} (#{details})"
-            else
-              puts "Latest GL (#{branch}) pipeline: none"
+
+              # Parse owner/repo from the first GitLab remote URL
+              gl_url = Kettle::Dev::CIMonitor.remote_url(gl_remotes.first)
+              owner = repo = nil
+              if gl_url =~ %r{git@gitlab.com:(.+?)/(.+?)(\.git)?$}
+                owner = Regexp.last_match(1)
+                repo = Regexp.last_match(2).sub(/\.git\z/, "")
+              elsif gl_url =~ %r{https://gitlab.com/(.+?)/(.+?)(\.git)?$}
+                owner = Regexp.last_match(1)
+                repo = Regexp.last_match(2).sub(/\.git\z/, "")
+              end
+
+              unless owner && repo
+                puts "Latest GL (#{branch}) pipeline: n/a"
+                next
+              end
+
+              pipe = Kettle::Dev::CIHelpers.gitlab_latest_pipeline(owner: owner, repo: repo, branch: branch)
+              if pipe
+                st = pipe["status"].to_s
+                status = if st == "success"
+                  "success"
+                else
+                  ((st == "failed") ? "failure" : nil)
+                end
+                emoji = Kettle::Dev::CIMonitor.status_emoji(st, status)
+                details = [st, pipe["failure_reason"]].compact.join("/")
+                puts "Latest GL (#{branch}) pipeline: #{emoji} (#{details})"
+              else
+                puts "Latest GL (#{branch}) pipeline: none"
+              end
+            rescue => e
+              puts "GL status: error #{e.class}: #{e.message}"
             end
-          rescue => e
-            puts "GL status: error #{e.class}: #{e.message}"
           end
 
           run_act_for = proc do |file_path|
@@ -262,10 +264,12 @@ module Kettle
           selected = nil
           input_thread = nil
           read_input = proc do
-            selected = Kettle::Dev::InputAdapter.gets&.strip
-          rescue StandardError, SystemExit, Interrupt => error
-            puts "Error reading input: #{error.class}: #{error.message}" if Kettle::Dev::DEBUGGING
-            selected = :input_error
+            begin
+              selected = Kettle::Dev::InputAdapter.gets&.strip
+            rescue StandardError, SystemExit, Interrupt => error
+              puts "Error reading input: #{error.class}: #{error.message}" if Kettle::Dev::DEBUGGING
+              selected = :input_error
+            end
           end
           if tty
             input_thread = Thread.new(&read_input) # rubocop:disable ThreadSafety/NewThread
@@ -279,52 +283,54 @@ module Kettle
 
           options.each do |code, file|
             workers << Thread.new(code, file, owner, repo, branch, token, start_at) do |c, f, ow, rp, br, tk, st_at| # rubocop:disable ThreadSafety/NewThread
-              now = Process.clock_gettime(Process::CLOCK_MONOTONIC)
-              delay = 0.12 - (now - st_at)
-              sleep(delay) if delay && delay > 0
+              begin
+                now = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+                delay = 0.12 - (now - st_at)
+                sleep(delay) if delay && delay > 0
 
-              if ow.nil? || rp.nil? || br.nil?
-                status_q << [c, f, "n/a"]
-                Thread.exit
-              end
-              uri = URI("https://api.github.com/repos/#{ow}/#{rp}/actions/workflows/#{f}/runs?branch=#{URI.encode_www_form_component(br)}&per_page=1")
-              poll_interval = Integer(ENV["CI_ACT_POLL_INTERVAL"] || 5)
-              loop do
-                begin
-                  req = Net::HTTP::Get.new(uri)
-                  req["User-Agent"] = "ci:act rake task"
-                  req["Authorization"] = "token #{tk}" if tk && !tk.empty?
-                  res = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) { |http| http.request(req) }
-                  if res.is_a?(Net::HTTPSuccess)
-                    data = JSON.parse(res.body)
-                    run = data["workflow_runs"]&.first
-                    if run
-                      st = run["status"]
-                      con = run["conclusion"]
-                      emoji = Kettle::Dev::CIMonitor.status_emoji(st, con)
-                      details = [st, con].compact.join("/")
-                      status_q << [c, f, "#{emoji} (#{details})"]
-                      break if st == "completed"
-                    else
-                      status_q << [c, f, "none"]
-                      break
-                    end
-                  else
-                    status_q << [c, f, "fail #{res.code}"]
-                  end
-                rescue Exception => e # rubocop:disable Lint/RescueException
-                  Kettle::Dev.debug_error(e, __method__)
-                  # Catch all exceptions to prevent crashing the process from a worker thread
-                  status_q << [c, f, "err"]
+                if ow.nil? || rp.nil? || br.nil?
+                  status_q << [c, f, "n/a"]
+                  Thread.exit
                 end
-                sleep(poll_interval)
+                uri = URI("https://api.github.com/repos/#{ow}/#{rp}/actions/workflows/#{f}/runs?branch=#{URI.encode_www_form_component(br)}&per_page=1")
+                poll_interval = Integer(ENV["CI_ACT_POLL_INTERVAL"] || 5)
+                loop do
+                  begin
+                    req = Net::HTTP::Get.new(uri)
+                    req["User-Agent"] = "ci:act rake task"
+                    req["Authorization"] = "token #{tk}" if tk && !tk.empty?
+                    res = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) { |http| http.request(req) }
+                    if res.is_a?(Net::HTTPSuccess)
+                      data = JSON.parse(res.body)
+                      run = data["workflow_runs"]&.first
+                      if run
+                        st = run["status"]
+                        con = run["conclusion"]
+                        emoji = Kettle::Dev::CIMonitor.status_emoji(st, con)
+                        details = [st, con].compact.join("/")
+                        status_q << [c, f, "#{emoji} (#{details})"]
+                        break if st == "completed"
+                      else
+                        status_q << [c, f, "none"]
+                        break
+                      end
+                    else
+                      status_q << [c, f, "fail #{res.code}"]
+                    end
+                  rescue Exception => e # rubocop:disable Lint/RescueException
+                    Kettle::Dev.debug_error(e, __method__)
+                    # Catch all exceptions to prevent crashing the process from a worker thread
+                    status_q << [c, f, "err"]
+                  end
+                  sleep(poll_interval)
+                end
+              rescue Exception => e # rubocop:disable Lint/RescueException
+                Kettle::Dev.debug_error(e, __method__)
+                # simplecov:disable
+                # Catch all exceptions in the worker thread boundary, including SystemExit
+                status_q << [c, f, "err"]
+                # simplecov:enable
               end
-            rescue Exception => e # rubocop:disable Lint/RescueException
-              Kettle::Dev.debug_error(e, __method__)
-              # simplecov:disable
-              # Catch all exceptions in the worker thread boundary, including SystemExit
-              status_q << [c, f, "err"]
-              # simplecov:enable
             end
           end
 

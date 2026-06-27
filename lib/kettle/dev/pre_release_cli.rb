@@ -253,10 +253,12 @@ module Kettle
               Array(glob_pattern)
             end
           urls = files.flat_map do |f|
-            extract_image_urls_from_text(File.read(f))
-          rescue => e
-            warn("[kettle-pre-release] Could not read #{Kettle::Dev.display_path(f)}: #{e.class}: #{e.message}")
-            []
+            begin
+              extract_image_urls_from_text(File.read(f))
+            rescue => e
+              warn("[kettle-pre-release] Could not read #{Kettle::Dev.display_path(f)}: #{e.class}: #{e.message}")
+              []
+            end
           end
           urls.uniq
         end
