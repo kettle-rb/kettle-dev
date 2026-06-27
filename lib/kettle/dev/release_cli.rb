@@ -37,6 +37,21 @@ module Kettle
         "BUNDLE_SUPPRESS_INSTALL_USING_MESSAGES" => "true"
       }.freeze
       DEBUG_TRUE_VALUES = %w[1 true yes on].freeze
+      RUBOCOP_LTS_BRANCH_BY_GEM = {
+        "rubocop-ruby1_8" => "r1_8-even-v0",
+        "rubocop-ruby1_9" => "r1_9-even-v2",
+        "rubocop-ruby2_0" => "r2_0-even-v4",
+        "rubocop-ruby2_1" => "r2_1-even-v6",
+        "rubocop-ruby2_2" => "r2_2-even-v8",
+        "rubocop-ruby2_3" => "r2_3-even-v10",
+        "rubocop-ruby2_4" => "r2_4-even-v12",
+        "rubocop-ruby2_5" => "r2_5-even-v14",
+        "rubocop-ruby2_6" => "r2_6-even-v16",
+        "rubocop-ruby2_7" => "r2_7-even-v18",
+        "rubocop-ruby3_0" => "r3_0-even-v20",
+        "rubocop-ruby3_1" => "r3_1-even-v22",
+        "rubocop-ruby3_2" => "r3_2-even-v24"
+      }.freeze
 
       class << self
         def run_cmd!(cmd)
@@ -222,6 +237,8 @@ module Kettle
           end
         end
 
+        prepare_rubocop_lts_local_branch! if rubocop_lts_release_preflight_needed?
+
         # 3. bin/setup
         run_cmd!("bin/setup") if run_step?(3)
         # 4. bin/rake
@@ -386,6 +403,50 @@ module Kettle
 
       def run_step?(step)
         @start_step <= step && !@skip_steps.include?(step)
+      end
+
+      def rubocop_lts_release_preflight_needed?
+        (3..5).any? { |step| run_step?(step) }
+      end
+
+      def prepare_rubocop_lts_local_branch!
+        local_root = rubocop_lts_local_root
+        return unless local_root
+
+        ruby_gem = selected_rubocop_lts_ruby_gem
+        return unless ruby_gem
+
+        branch = RUBOCOP_LTS_BRANCH_BY_GEM[ruby_gem]
+        abort("Cannot select RUBOCOP_LTS_LOCAL branch for #{ruby_gem.inspect}.") unless branch
+
+        checkout = File.join(local_root, "rubocop-lts")
+        current, ok = git_output(["-C", checkout, "branch", "--show-current"])
+        abort("Cannot inspect RUBOCOP_LTS_LOCAL checkout at #{checkout}.") unless ok
+        return if current == branch
+
+        puts "Switching RUBOCOP_LTS_LOCAL checkout #{checkout} to #{branch} for #{ruby_gem}."
+        _stdout, switched = git_output(["-C", checkout, "switch", branch])
+        abort("Cannot switch RUBOCOP_LTS_LOCAL checkout at #{checkout} to #{branch}. Commit or stash local changes, then retry.") unless switched
+      end
+
+      def rubocop_lts_local_root
+        value = ENV["RUBOCOP_LTS_LOCAL"].to_s.strip
+        return nil if value.empty? || %w[false 0 no off].include?(value.downcase)
+        return File.join(Dir.home, "src", "rubocop-lts") if %w[true 1 yes on].include?(value.downcase)
+        return value if value.start_with?("/")
+
+        File.join(Dir.home, value)
+      end
+
+      def selected_rubocop_lts_ruby_gem
+        path = File.join(@root, "gemfiles", "modular", "style_local.gemfile")
+        return nil unless File.file?(path)
+
+        content = File.read(path)
+        # This reads the generated kettle-jem style_local.gemfile declaration
+        # without evaluating the Gemfile during release preflight.
+        local_gems = content[/\blocal_gems\s*=\s*%w\[(.*?)\]/m, 1].to_s.split
+        local_gems.find { |gem_name| RUBOCOP_LTS_BRANCH_BY_GEM.key?(gem_name) }
       end
 
       def run_pre_release_checks!

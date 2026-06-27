@@ -20,9 +20,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
-- `kettle-release` now accepts `skip_steps=...` / `--skip-steps ...` to skip
-  selected numbered release steps while running the rest of the release flow.
-
 ### Changed
 
 ### Deprecated
@@ -31,10 +28,28 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [2.2.20] - 2026-06-27
+
+- TAG: [v2.2.20][2.2.20t]
+- COVERAGE: 91.95% -- 4137/4499 lines in 33 files
+- BRANCH COVERAGE: 72.99% -- 1638/2244 branches in 33 files
+- 60.78% documented
+
+### Added
+
+- `kettle-release` now accepts `skip_steps=...` / `--skip-steps ...` to skip
+  selected numbered release steps while running the rest of the release flow.
+
+### Fixed
+
 - `kettle-release` now suppresses inherited Bundler/debug verbosity when running
   release child commands and Appraisal bundle installs.
 
-### Security
+- `kettle-release` now switches a local `RUBOCOP_LTS_LOCAL` checkout to the
+  branch matching the project's selected `rubocop-rubyN_N` style gem before
+  running setup and default rake tasks.
 
 ## [2.2.19] - 2026-06-26
 
@@ -2299,7 +2314,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.19...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.20...HEAD
+[2.2.20]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.19...v2.2.20
+[2.2.20t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.20
 [2.2.19]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.18...v2.2.19
 [2.2.19t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.19
 [2.2.18]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.17...v2.2.18

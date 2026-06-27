@@ -6,6 +6,16 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     let(:ci_helpers) { Kettle::Dev::CIHelpers }
     let(:cli) { described_class.new }
 
+    def write_style_local(root, ruby_gem)
+      gemfile_dir = File.join(root, "gemfiles", "modular")
+      FileUtils.mkdir_p(gemfile_dir)
+      File.write(File.join(gemfile_dir, "style_local.gemfile"), <<~RUBY)
+        # frozen_string_literal: true
+
+        local_gems = %w[rubocop-lts rubocop-lts-rspec #{ruby_gem} standard-rubocop-lts]
+      RUBY
+    end
+
     it "detects version and gem name from a temporary project root" do
       Dir.mktmpdir do |root|
         # Arrange version file
@@ -1328,6 +1338,70 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       end
     end
 
+    describe "RUBOCOP_LTS_LOCAL release preflight" do
+      it "switches the local RuboCop-LTS checkout to the selected wrapper branch" do
+        Dir.mktmpdir do |root|
+          write_style_local(root, "rubocop-ruby2_4")
+          allow(ci_helpers).to receive(:project_root).and_return(root)
+          local_cli = described_class.new
+          git = instance_double(Kettle::Dev::GitAdapter)
+          local_cli.instance_variable_set(:@git, git)
+          checkout = File.join("/workspace/rubocop-lts", "rubocop-lts")
+          stub_env("RUBOCOP_LTS_LOCAL" => "/workspace/rubocop-lts")
+
+          expect(git).to receive(:capture)
+            .with(["-C", checkout, "branch", "--show-current"])
+            .and_return(["r1_8-even-v0", true])
+          expect(git).to receive(:capture)
+            .with(["-C", checkout, "switch", "r2_4-even-v12"])
+            .and_return(["", true])
+
+          expect { local_cli.send(:prepare_rubocop_lts_local_branch!) }.not_to raise_error
+        end
+      end
+
+      it "does not switch when the local RuboCop-LTS checkout is already on the selected branch" do
+        Dir.mktmpdir do |root|
+          write_style_local(root, "rubocop-ruby3_2")
+          allow(ci_helpers).to receive(:project_root).and_return(root)
+          local_cli = described_class.new
+          git = instance_double(Kettle::Dev::GitAdapter)
+          local_cli.instance_variable_set(:@git, git)
+          checkout = File.join("/workspace/rubocop-lts", "rubocop-lts")
+          stub_env("RUBOCOP_LTS_LOCAL" => "/workspace/rubocop-lts")
+
+          expect(git).to receive(:capture)
+            .with(["-C", checkout, "branch", "--show-current"])
+            .and_return(["r3_2-even-v24", true])
+          expect(git).not_to receive(:capture).with(["-C", checkout, "switch", anything])
+
+          expect { local_cli.send(:prepare_rubocop_lts_local_branch!) }.not_to raise_error
+        end
+      end
+
+      it "aborts when the local RuboCop-LTS checkout cannot switch branches" do
+        Dir.mktmpdir do |root|
+          write_style_local(root, "rubocop-ruby2_4")
+          allow(ci_helpers).to receive(:project_root).and_return(root)
+          local_cli = described_class.new
+          git = instance_double(Kettle::Dev::GitAdapter)
+          local_cli.instance_variable_set(:@git, git)
+          checkout = File.join("/workspace/rubocop-lts", "rubocop-lts")
+          stub_env("RUBOCOP_LTS_LOCAL" => "/workspace/rubocop-lts")
+
+          allow(git).to receive(:capture)
+            .with(["-C", checkout, "branch", "--show-current"])
+            .and_return(["r1_8-even-v0", true])
+          allow(git).to receive(:capture)
+            .with(["-C", checkout, "switch", "r2_4-even-v12"])
+            .and_return(["", false])
+
+          expect { local_cli.send(:prepare_rubocop_lts_local_branch!) }
+            .to raise_error(MockSystemExit, /Cannot switch RUBOCOP_LTS_LOCAL checkout/)
+        end
+      end
+    end
+
     describe "#update_rakefile_example_header!" do
       it "updates header line to current version and date when file exists" do
         Dir.mktmpdir do |root|
@@ -1814,5 +1888,6 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         end
       end
     end
+
   end
 end
