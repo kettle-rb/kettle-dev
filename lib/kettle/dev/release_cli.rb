@@ -11,6 +11,7 @@ require "json"
 require "uri"
 
 # External gems
+require "kettle/rb/compat_matrix"
 require "ruby-progressbar"
 
 module Kettle
@@ -37,22 +38,6 @@ module Kettle
         "BUNDLE_SUPPRESS_INSTALL_USING_MESSAGES" => "true"
       }.freeze
       DEBUG_TRUE_VALUES = %w[1 true yes on].freeze
-      RUBOCOP_LTS_BRANCH_BY_GEM = {
-        "rubocop-ruby1_8" => "r1_8-even-v0",
-        "rubocop-ruby1_9" => "r1_9-even-v2",
-        "rubocop-ruby2_0" => "r2_0-even-v4",
-        "rubocop-ruby2_1" => "r2_1-even-v6",
-        "rubocop-ruby2_2" => "r2_2-even-v8",
-        "rubocop-ruby2_3" => "r2_3-even-v10",
-        "rubocop-ruby2_4" => "r2_4-even-v12",
-        "rubocop-ruby2_5" => "r2_5-even-v14",
-        "rubocop-ruby2_6" => "r2_6-even-v16",
-        "rubocop-ruby2_7" => "r2_7-even-v18",
-        "rubocop-ruby3_0" => "r3_0-even-v20",
-        "rubocop-ruby3_1" => "r3_1-even-v22",
-        "rubocop-ruby3_2" => "r3_2-even-v24"
-      }.freeze
-
       class << self
         def run_cmd!(cmd)
           # For Bundler-invoked build/release, explicitly prefix SKIP_GEM_SIGNING so
@@ -416,7 +401,7 @@ module Kettle
         ruby_gem = selected_rubocop_lts_ruby_gem
         return unless ruby_gem
 
-        branch = RUBOCOP_LTS_BRANCH_BY_GEM[ruby_gem]
+        branch = Kettle::Rb::CompatMatrix.rubocop_lts_branch_for_gem(ruby_gem)
         abort("Cannot select RUBOCOP_LTS_LOCAL branch for #{ruby_gem.inspect}.") unless branch
 
         checkout = File.join(local_root, "rubocop-lts")
@@ -446,7 +431,7 @@ module Kettle
         # This reads the generated kettle-jem style_local.gemfile declaration
         # without evaluating the Gemfile during release preflight.
         local_gems = content[/\blocal_gems\s*=\s*%w\[(.*?)\]/m, 1].to_s.split
-        local_gems.find { |gem_name| RUBOCOP_LTS_BRANCH_BY_GEM.key?(gem_name) }
+        local_gems.find { |gem_name| Kettle::Rb::CompatMatrix.rubocop_ruby_gem?(gem_name) }
       end
 
       def run_pre_release_checks!

@@ -126,6 +126,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   # Utilities
+  spec.add_dependency("kettle-rb", "~> 0.1", ">= 0.1.0")                  # ruby >= 1.8.7
   spec.add_dependency("kettle-test", "~> 2.0", ">= 2.0.4")              # ruby >= 2.4
   spec.add_dependency("version_gem", "~> 1.1", ">= 1.1.13")              # ruby >= 2.2.0
 

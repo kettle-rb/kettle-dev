@@ -22,6 +22,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- `kettle-release` now reads RuboCop LTS branch selection from
+  `Kettle::Rb::CompatMatrix`.
+
 ### Deprecated
 
 ### Removed
