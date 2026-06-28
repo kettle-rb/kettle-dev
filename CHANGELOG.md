@@ -28,6 +28,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-release` now detects local `.kettle-family.yml` branch-stack release
+  targets and skips trunk sync, trunk merge, and trunk checkout for those release
+  branches.
+
 ### Security
 
 ## [2.2.20] - 2026-06-27

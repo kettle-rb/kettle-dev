@@ -9,6 +9,7 @@ require "fileutils"
 require "net/http"
 require "json"
 require "uri"
+require "yaml"
 
 # External gems
 require "kettle/rb/compat_matrix"
@@ -128,6 +129,7 @@ module Kettle
         committed = nil
         trunk = nil
         feature = nil
+        branch_stack_release = false
 
         # 2. Version detection and sanity checks + prompt
         if run_step?(2)
@@ -257,8 +259,12 @@ module Kettle
         if run_step?(8) && !local_ci?
           trunk = detect_trunk_branch
           feature = current_branch
+          branch_stack_release = branch_stack_release_branch?(feature, trunk)
+          if branch_stack_release
+            puts "Kettle-family branch stack release branch detected: #{feature}; skipping trunk sync/rebase."
+          end
           puts "Trunk branch detected: #{trunk}"
-          ensure_trunk_synced_before_push!(trunk, feature)
+          ensure_trunk_synced_before_push!(trunk, feature) unless branch_stack_release
         elsif run_step?(8)
           puts "Local CI release mode: skipping remote trunk sync before publishing."
         end
@@ -273,14 +279,25 @@ module Kettle
         if run_step?(11) && !local_ci?
           trunk ||= detect_trunk_branch
           feature ||= current_branch
-          merge_feature_into_trunk_and_push!(trunk, feature)
+          branch_stack_release = branch_stack_release_branch?(feature, trunk) unless branch_stack_release
+          if branch_stack_release
+            puts "Kettle-family branch stack release branch detected: #{feature}; skipping merge into #{trunk}."
+          else
+            merge_feature_into_trunk_and_push!(trunk, feature)
+          end
         end
 
         # 12. checkout trunk and pull
         if run_step?(12) && !local_ci?
           trunk ||= detect_trunk_branch
-          checkout!(trunk)
-          pull!(trunk)
+          feature ||= current_branch
+          branch_stack_release = branch_stack_release_branch?(feature, trunk) unless branch_stack_release
+          if branch_stack_release
+            puts "Kettle-family branch stack release branch detected: #{feature}; staying on release branch."
+          else
+            checkout!(trunk)
+            pull!(trunk)
+          end
         end
 
         # 13. signing guidance and checks
@@ -1084,6 +1101,42 @@ module Kettle
         run_cmd!("git merge #{Shellwords.escape(feature)}")
         run_cmd!("git push origin #{Shellwords.escape(trunk)}")
         puts "Merged #{feature} into #{trunk} and pushed. The PR (if any) should auto-close."
+      end
+
+      def branch_stack_release_branch?(branch, trunk = nil)
+        return false if branch.to_s.empty?
+        return false if trunk && branch == trunk
+
+        local_kettle_family_release_target_branches.include?(branch)
+      end
+
+      def local_kettle_family_release_target_branches
+        local_kettle_family_config_paths.each do |path|
+          next unless File.file?(path)
+
+          data = YAML.safe_load(File.read(path), permitted_classes: [], aliases: false) || {}
+          branches = Array(dig_string_keys(data, "release", "target_branches")) +
+            Array(dig_string_keys(data, "branches", "release_targets"))
+          return branches.map(&:to_s).reject(&:empty?) unless branches.empty?
+        rescue Psych::Exception => e
+          warn("Ignoring invalid kettle-family config #{Kettle::Dev.display_path(path)}: #{e.message}")
+        end
+        []
+      end
+
+      def local_kettle_family_config_paths
+        [
+          File.join(@root, ".kettle-family.yml"),
+          File.join(@root, ".structuredmerge", "kettle-family.yml")
+        ]
+      end
+
+      def dig_string_keys(data, *keys)
+        keys.reduce(data) do |memo, key|
+          break nil unless memo.is_a?(Hash)
+
+          memo[key] || memo[key.to_sym]
+        end
       end
 
       def ensure_signing_setup_or_skip!

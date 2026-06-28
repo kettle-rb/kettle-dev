@@ -495,6 +495,52 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       end
     end
 
+    describe "kettle-family branch stack releases" do
+      it "detects local release target branches from .kettle-family.yml" do
+        Dir.mktmpdir do |root|
+          File.write(File.join(root, ".kettle-family.yml"), <<~YAML)
+            release:
+              target_branches:
+                - r1_8-even-v0
+                - main
+          YAML
+          allow(ci_helpers).to receive(:project_root).and_return(root)
+          local_cli = described_class.new
+
+          expect(local_cli.send(:branch_stack_release_branch?, "r1_8-even-v0", "main")).to be(true)
+          expect(local_cli.send(:branch_stack_release_branch?, "main", "main")).to be(false)
+          expect(local_cli.send(:branch_stack_release_branch?, "feature", "main")).to be(false)
+        end
+      end
+
+      it "skips trunk sync, merge, and checkout for a local branch-stack release branch" do
+        Dir.mktmpdir do |root|
+          File.write(File.join(root, ".kettle-family.yml"), <<~YAML)
+            release:
+              target_branches:
+                - r1_8-even-v0
+                - main
+          YAML
+          allow(ci_helpers).to receive(:project_root).and_return(root)
+          local_cli = described_class.new(start_step: 8, skip_steps: "9,10,13,14,15,16,17,18,19")
+          allow(local_cli).to receive(:detect_trunk_branch).and_return("main")
+          allow(local_cli).to receive(:current_branch).and_return("r1_8-even-v0")
+          allow(local_cli).to receive(:push!)
+          allow(local_cli).to receive(:monitor_workflows_after_push!)
+          allow(local_cli).to receive(:ensure_signing_setup_or_skip!)
+          allow(local_cli).to receive(:validate_checksums!)
+          allow(local_cli).to receive(:push_tags!)
+
+          expect(local_cli).not_to receive(:ensure_trunk_synced_before_push!)
+          expect(local_cli).not_to receive(:merge_feature_into_trunk_and_push!)
+          expect(local_cli).not_to receive(:checkout!)
+          expect(local_cli).not_to receive(:pull!)
+
+          expect { local_cli.run }.not_to raise_error
+        end
+      end
+    end
+
     describe "#ensure_signing_setup_or_skip!" do
       it "returns early when SKIP_GEM_SIGNING is set to true" do
         stub_env("SKIP_GEM_SIGNING" => "true")
