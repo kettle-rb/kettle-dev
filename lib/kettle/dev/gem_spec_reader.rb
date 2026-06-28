@@ -196,7 +196,7 @@ module Kettle
         end
 
         def declared_version_file_path(root)
-          gemspec_path = Dir.glob(File.join(root.to_s, "*.gemspec")).sort.first
+          gemspec_path = Dir.glob(File.join(root.to_s, "*.gemspec")).min
           return unless gemspec_path && File.file?(gemspec_path)
 
           gemspec_source = File.read(gemspec_path)

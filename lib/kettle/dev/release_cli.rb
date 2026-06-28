@@ -279,7 +279,7 @@ module Kettle
         if run_step?(11) && !local_ci?
           trunk ||= detect_trunk_branch
           feature ||= current_branch
-          branch_stack_release = branch_stack_release_branch?(feature, trunk) unless branch_stack_release
+          branch_stack_release ||= branch_stack_release_branch?(feature, trunk)
           if branch_stack_release
             puts "Kettle-family branch stack release branch detected: #{feature}; skipping merge into #{trunk}."
           else
@@ -291,7 +291,7 @@ module Kettle
         if run_step?(12) && !local_ci?
           trunk ||= detect_trunk_branch
           feature ||= current_branch
-          branch_stack_release = branch_stack_release_branch?(feature, trunk) unless branch_stack_release
+          branch_stack_release ||= branch_stack_release_branch?(feature, trunk)
           if branch_stack_release
             puts "Kettle-family branch stack release branch detected: #{feature}; staying on release branch."
           else
@@ -1114,12 +1114,14 @@ module Kettle
         local_kettle_family_config_paths.each do |path|
           next unless File.file?(path)
 
-          data = YAML.safe_load(File.read(path), permitted_classes: [], aliases: false) || {}
-          branches = Array(dig_string_keys(data, "release", "target_branches")) +
-            Array(dig_string_keys(data, "branches", "release_targets"))
-          return branches.map(&:to_s).reject(&:empty?) unless branches.empty?
-        rescue Psych::Exception => e
-          warn("Ignoring invalid kettle-family config #{Kettle::Dev.display_path(path)}: #{e.message}")
+          begin
+            data = YAML.safe_load(File.read(path), permitted_classes: [], aliases: false) || {}
+            branches = Array(dig_string_keys(data, "release", "target_branches")) +
+              Array(dig_string_keys(data, "branches", "release_targets"))
+            return branches.map(&:to_s).reject(&:empty?) unless branches.empty?
+          rescue Psych::Exception => e
+            warn("Ignoring invalid kettle-family config #{Kettle::Dev.display_path(path)}: #{e.message}")
+          end
         end
         []
       end
