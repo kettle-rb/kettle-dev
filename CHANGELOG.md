@@ -28,11 +28,20 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [2.2.21] - 2026-06-28
+
+- TAG: [v2.2.21][2.2.21t]
+- COVERAGE: 92.34% -- 4182/4529 lines in 33 files
+- BRANCH COVERAGE: 73.34% -- 1659/2262 branches in 33 files
+- 61.04% documented
+
+### Fixed
+
 - `kettle-release` now detects local `.kettle-family.yml` branch-stack release
   targets and skips trunk sync, trunk merge, and trunk checkout for those release
   branches.
-
-### Security
 
 ## [2.2.20] - 2026-06-27
 
@@ -2325,7 +2334,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.20...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.21...HEAD
+[2.2.21]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.20...v2.2.21
+[2.2.21t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.21
 [2.2.20]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.19...v2.2.20
 [2.2.20t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.20
 [2.2.19]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.18...v2.2.19

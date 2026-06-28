@@ -316,7 +316,6 @@
       <pre class="lines">
 
 
-110
 111
 112
 113
@@ -325,10 +324,11 @@
 116
 117
 118
-119</pre>
+119
+120</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 110</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 111</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='label'>start_step:</span> <span class='int'>0</span><span class='comma'>,</span> <span class='label'>local_ci:</span> <span class='kw'>false</span><span class='comma'>,</span> <span class='label'>version:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>appraisal_task:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>skip_steps:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='ivar'>@root</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="CIHelpers.html" title="Kettle::Dev::CIHelpers (module)">CIHelpers</a></span></span><span class='period'>.</span><span class='id identifier rubyid_project_root'><span class='object_link'><a href="CIHelpers.html#project_root-class_method" title="Kettle::Dev::CIHelpers.project_root (method)">project_root</a></span></span>
@@ -367,7 +367,6 @@
       <pre class="lines">
 
 
-42
 43
 44
 45
@@ -411,10 +410,11 @@
 83
 84
 85
-86</pre>
+86
+87</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 42</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 43</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_run_cmd!'>run_cmd!</span><span class='lparen'>(</span><span class='id identifier rubyid_cmd'>cmd</span><span class='rparen'>)</span>
   <span class='comment'># For Bundler-invoked build/release, explicitly prefix SKIP_GEM_SIGNING so
@@ -487,17 +487,17 @@
       <pre class="lines">
 
 
-362
-363
-364
-365
-366
-367
-368
-369</pre>
+379
+380
+381
+382
+383
+384
+385
+386</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 362</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 379</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_normalize_appraisal_task'>normalize_appraisal_task</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_task'>task</span> <span class='op'>=</span> <span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span>
@@ -527,20 +527,20 @@
       <pre class="lines">
 
 
-371
-372
-373
-374
-375
-376
-377
-378
-379
-380
-381</pre>
+388
+389
+390
+391
+392
+393
+394
+395
+396
+397
+398</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 371</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 388</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_normalize_skip_steps'>normalize_skip_steps</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_raw_steps'>raw_steps</span> <span class='op'>=</span> <span class='const'>Array</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_flat_map'>flat_map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_part'>part</span><span class='op'>|</span> <span class='id identifier rubyid_part'>part</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>,</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:strip</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_reject'>reject</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:empty?</span><span class='rparen'>)</span>
@@ -573,7 +573,6 @@
       <pre class="lines">
 
 
-121
 122
 123
 124
@@ -812,10 +811,27 @@
 357
 358
 359
-360</pre>
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 121</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 122</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_run'>run</span>
   <span class='id identifier rubyid_run_pre_release_checks!'>run_pre_release_checks!</span> <span class='kw'>if</span> <span class='id identifier rubyid_run_step?'>run_step?</span><span class='lparen'>(</span><span class='int'>0</span><span class='rparen'>)</span>
@@ -827,6 +843,7 @@
   <span class='id identifier rubyid_committed'>committed</span> <span class='op'>=</span> <span class='kw'>nil</span>
   <span class='id identifier rubyid_trunk'>trunk</span> <span class='op'>=</span> <span class='kw'>nil</span>
   <span class='id identifier rubyid_feature'>feature</span> <span class='op'>=</span> <span class='kw'>nil</span>
+  <span class='id identifier rubyid_branch_stack_release'>branch_stack_release</span> <span class='op'>=</span> <span class='kw'>false</span>
 
   <span class='comment'># 2. Version detection and sanity checks + prompt
 </span>  <span class='kw'>if</span> <span class='id identifier rubyid_run_step?'>run_step?</span><span class='lparen'>(</span><span class='int'>2</span><span class='rparen'>)</span>
@@ -956,8 +973,12 @@
 </span>  <span class='kw'>if</span> <span class='id identifier rubyid_run_step?'>run_step?</span><span class='lparen'>(</span><span class='int'>8</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_local_ci?'>local_ci?</span>
     <span class='id identifier rubyid_trunk'>trunk</span> <span class='op'>=</span> <span class='id identifier rubyid_detect_trunk_branch'>detect_trunk_branch</span>
     <span class='id identifier rubyid_feature'>feature</span> <span class='op'>=</span> <span class='id identifier rubyid_current_branch'>current_branch</span>
+    <span class='id identifier rubyid_branch_stack_release'>branch_stack_release</span> <span class='op'>=</span> <span class='id identifier rubyid_branch_stack_release_branch?'>branch_stack_release_branch?</span><span class='lparen'>(</span><span class='id identifier rubyid_feature'>feature</span><span class='comma'>,</span> <span class='id identifier rubyid_trunk'>trunk</span><span class='rparen'>)</span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_branch_stack_release'>branch_stack_release</span>
+      <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Kettle-family branch stack release branch detected: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_feature'>feature</span><span class='embexpr_end'>}</span><span class='tstring_content'>; skipping trunk sync/rebase.</span><span class='tstring_end'>&quot;</span></span>
+    <span class='kw'>end</span>
     <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Trunk branch detected: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_trunk'>trunk</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
-    <span class='id identifier rubyid_ensure_trunk_synced_before_push!'>ensure_trunk_synced_before_push!</span><span class='lparen'>(</span><span class='id identifier rubyid_trunk'>trunk</span><span class='comma'>,</span> <span class='id identifier rubyid_feature'>feature</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_ensure_trunk_synced_before_push!'>ensure_trunk_synced_before_push!</span><span class='lparen'>(</span><span class='id identifier rubyid_trunk'>trunk</span><span class='comma'>,</span> <span class='id identifier rubyid_feature'>feature</span><span class='rparen'>)</span> <span class='kw'>unless</span> <span class='id identifier rubyid_branch_stack_release'>branch_stack_release</span>
   <span class='kw'>elsif</span> <span class='id identifier rubyid_run_step?'>run_step?</span><span class='lparen'>(</span><span class='int'>8</span><span class='rparen'>)</span>
     <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Local CI release mode: skipping remote trunk sync before publishing.</span><span class='tstring_end'>&quot;</span></span>
   <span class='kw'>end</span>
@@ -972,14 +993,25 @@
 </span>  <span class='kw'>if</span> <span class='id identifier rubyid_run_step?'>run_step?</span><span class='lparen'>(</span><span class='int'>11</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_local_ci?'>local_ci?</span>
     <span class='id identifier rubyid_trunk'>trunk</span> <span class='op'>||=</span> <span class='id identifier rubyid_detect_trunk_branch'>detect_trunk_branch</span>
     <span class='id identifier rubyid_feature'>feature</span> <span class='op'>||=</span> <span class='id identifier rubyid_current_branch'>current_branch</span>
-    <span class='id identifier rubyid_merge_feature_into_trunk_and_push!'>merge_feature_into_trunk_and_push!</span><span class='lparen'>(</span><span class='id identifier rubyid_trunk'>trunk</span><span class='comma'>,</span> <span class='id identifier rubyid_feature'>feature</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_branch_stack_release'>branch_stack_release</span> <span class='op'>||=</span> <span class='id identifier rubyid_branch_stack_release_branch?'>branch_stack_release_branch?</span><span class='lparen'>(</span><span class='id identifier rubyid_feature'>feature</span><span class='comma'>,</span> <span class='id identifier rubyid_trunk'>trunk</span><span class='rparen'>)</span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_branch_stack_release'>branch_stack_release</span>
+      <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Kettle-family branch stack release branch detected: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_feature'>feature</span><span class='embexpr_end'>}</span><span class='tstring_content'>; skipping merge into </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_trunk'>trunk</span><span class='embexpr_end'>}</span><span class='tstring_content'>.</span><span class='tstring_end'>&quot;</span></span>
+    <span class='kw'>else</span>
+      <span class='id identifier rubyid_merge_feature_into_trunk_and_push!'>merge_feature_into_trunk_and_push!</span><span class='lparen'>(</span><span class='id identifier rubyid_trunk'>trunk</span><span class='comma'>,</span> <span class='id identifier rubyid_feature'>feature</span><span class='rparen'>)</span>
+    <span class='kw'>end</span>
   <span class='kw'>end</span>
 
   <span class='comment'># 12. checkout trunk and pull
 </span>  <span class='kw'>if</span> <span class='id identifier rubyid_run_step?'>run_step?</span><span class='lparen'>(</span><span class='int'>12</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_local_ci?'>local_ci?</span>
     <span class='id identifier rubyid_trunk'>trunk</span> <span class='op'>||=</span> <span class='id identifier rubyid_detect_trunk_branch'>detect_trunk_branch</span>
-    <span class='id identifier rubyid_checkout!'>checkout!</span><span class='lparen'>(</span><span class='id identifier rubyid_trunk'>trunk</span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_pull!'>pull!</span><span class='lparen'>(</span><span class='id identifier rubyid_trunk'>trunk</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_feature'>feature</span> <span class='op'>||=</span> <span class='id identifier rubyid_current_branch'>current_branch</span>
+    <span class='id identifier rubyid_branch_stack_release'>branch_stack_release</span> <span class='op'>||=</span> <span class='id identifier rubyid_branch_stack_release_branch?'>branch_stack_release_branch?</span><span class='lparen'>(</span><span class='id identifier rubyid_feature'>feature</span><span class='comma'>,</span> <span class='id identifier rubyid_trunk'>trunk</span><span class='rparen'>)</span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_branch_stack_release'>branch_stack_release</span>
+      <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Kettle-family branch stack release branch detected: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_feature'>feature</span><span class='embexpr_end'>}</span><span class='tstring_content'>; staying on release branch.</span><span class='tstring_end'>&quot;</span></span>
+    <span class='kw'>else</span>
+      <span class='id identifier rubyid_checkout!'>checkout!</span><span class='lparen'>(</span><span class='id identifier rubyid_trunk'>trunk</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_pull!'>pull!</span><span class='lparen'>(</span><span class='id identifier rubyid_trunk'>trunk</span><span class='rparen'>)</span>
+    <span class='kw'>end</span>
   <span class='kw'>end</span>
 
   <span class='comment'># 13. signing guidance and checks
@@ -1067,7 +1099,7 @@
 </div>
 
       <div id="footer">
-  Generated on Sat Jun 27 11:29:25 2026 by
+  Generated on Sun Jun 28 17:23:31 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>
