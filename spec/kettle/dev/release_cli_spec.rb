@@ -1344,6 +1344,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         # Ensure optional GitHub release (step 17) is a no-op to avoid real HTTP
         stub_env("GITHUB_TOKEN" => nil)
         local_cli = described_class.new(start_step: 10)
+        stub_checksum_artifact(local_cli, "2.2.22", "kettle-dev")
         allow(local_cli).to receive(:ensure_bundler_2_7_plus!)
         # Spy on run_cmd! to ensure early commands are not invoked
         allow(local_cli).to receive(:run_cmd!)
