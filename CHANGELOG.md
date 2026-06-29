@@ -28,6 +28,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-release` now passes the exact built gem artifact to `bin/gem_checksums`
+  so stale packages in `pkg/` cannot cause checksums for the wrong version.
+
 ### Security
 
 ## [2.2.21] - 2026-06-28

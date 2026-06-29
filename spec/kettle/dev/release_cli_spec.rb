@@ -16,6 +16,12 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       RUBY
     end
 
+    def stub_checksum_artifact(release_cli, version, gem_name = "mygem")
+      gem_path = File.join(Dir.pwd, "pkg", "#{gem_name}-#{version}.gem")
+      allow(release_cli).to receive(:checksum_gem_path_for_version!).with(version).and_return(gem_path)
+      gem_path
+    end
+
     it "detects version and gem name from a temporary project root" do
       Dir.mktmpdir do |root|
         # Arrange version file
@@ -702,6 +708,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         allow(cli).to receive(:ensure_bundler_2_7_plus!)
         allow(cli).to receive(:detect_version).and_return("9.9.9")
         allow(cli).to receive(:detect_gem_name).and_return("mygem")
+        gem_path = stub_checksum_artifact(cli, "9.9.9")
         allow(cli).to receive(:latest_released_versions).and_return([nil, nil])
         allow(cli).to receive(:validate_copyright_years!)
         allow(cli).to receive(:update_readme_kloc_badge!)
@@ -735,7 +742,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect(cli).to have_received(:run_cmd!).with("bin/rake yard")
         expect(cli).to have_received(:run_cmd!).with("bundle exec rake build")
         expect(cli).to have_received(:run_cmd!).with("bundle exec rake release")
-        expect(cli).to have_received(:run_cmd!).with("bin/gem_checksums")
+        expect(cli).to have_received(:run_cmd!).with("bin/gem_checksums #{gem_path}")
       end
 
       it "runs local-ci mode without pushing until after the gem is published" do
@@ -747,6 +754,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         allow(local_cli).to receive(:ensure_bundler_2_7_plus!)
         allow(local_cli).to receive(:detect_version).and_return("9.9.9")
         allow(local_cli).to receive(:detect_gem_name).and_return("mygem")
+        stub_checksum_artifact(local_cli, "9.9.9")
         allow(local_cli).to receive(:latest_released_versions).and_return([nil, nil])
         allow(local_cli).to receive(:validate_copyright_years!)
         allow(local_cli).to receive(:update_readme_kloc_badge!)
@@ -783,6 +791,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         allow(update_cli).to receive(:ensure_bundler_2_7_plus!)
         allow(update_cli).to receive(:detect_version).and_return("9.9.9")
         allow(update_cli).to receive(:detect_gem_name).and_return("mygem")
+        stub_checksum_artifact(update_cli, "9.9.9")
         allow(update_cli).to receive(:latest_released_versions).and_return([nil, nil])
         allow(update_cli).to receive(:validate_copyright_years!)
         allow(update_cli).to receive(:update_readme_kloc_badge!)
@@ -818,6 +827,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         allow(cli).to receive(:ensure_bundler_2_7_plus!)
         allow(cli).to receive(:detect_version).and_return("9.9.9")
         allow(cli).to receive(:detect_gem_name).and_return("mygem")
+        stub_checksum_artifact(cli, "9.9.9")
         allow(cli).to receive(:latest_released_versions).and_return([nil, nil])
         allow(cli).to receive(:validate_copyright_years!)
         allow(cli).to receive(:update_readme_kloc_badge!)
@@ -936,6 +946,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         allow(cli).to receive(:ensure_bundler_2_7_plus!)
         allow(cli).to receive(:detect_version).and_return("1.2.10")
         allow(cli).to receive(:detect_gem_name).and_return("mygem")
+        stub_checksum_artifact(cli, "1.2.10")
         allow(cli).to receive(:latest_released_versions).and_return(%w[1.3.0 1.2.9]) # triggers line 36 and 47 branch
         allow(cli).to receive(:validate_copyright_years!)
         allow(cli).to receive(:update_readme_kloc_badge!)
@@ -988,6 +999,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         allow(cli).to receive(:ensure_bundler_2_7_plus!)
         allow(cli).to receive(:detect_version).and_return("1.2.3")
         allow(cli).to receive(:detect_gem_name).and_return("kettle-dev")
+        stub_checksum_artifact(cli, "1.2.3", "kettle-dev")
         # Simulate overall from a newer series (2.0.0) but no latest for current series -> target=nil
         allow(cli).to receive(:latest_released_versions).and_return(["2.0.0", nil])
         # Proceed past the prompt and subsequent steps quickly
@@ -1359,6 +1371,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         local_cli = described_class.new(start_step: 10, skip_steps: "10")
         allow(local_cli).to receive(:detect_version).and_return("1.2.3")
         allow(local_cli).to receive(:detect_gem_name).and_return("example")
+        stub_checksum_artifact(local_cli, "1.2.3", "example")
         allow(local_cli).to receive(:detect_trunk_branch).and_return("main")
         allow(local_cli).to receive(:current_branch).and_return("feat")
         allow(local_cli).to receive(:ensure_bundler_2_7_plus!)
@@ -1501,6 +1514,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
           # Force detect_version to desired next version and make gem.coop suggest a higher overall
           allow(cli).to receive(:detect_version).and_return("1.0.15")
           allow(cli).to receive(:detect_gem_name).and_return("kettle-dev")
+          stub_checksum_artifact(cli, "1.0.15", "kettle-dev")
           allow(cli).to receive(:latest_released_versions).and_return(%w[1.2.10 1.2.10]) # overall and series
           allow(cli).to receive(:validate_copyright_years!)
           allow(cli).to receive(:update_readme_kloc_badge!)

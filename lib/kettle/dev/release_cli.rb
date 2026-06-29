@@ -344,8 +344,9 @@ module Kettle
         #    release build to include them in the gem, thus altering the artifact, and invalidating the checksums.
         if run_step?(16)
           # Generate checksums for the just-built artifact, commit them, then validate
-          run_cmd!("bin/gem_checksums")
           version ||= detect_version
+          gem_path = checksum_gem_path_for_version!(version)
+          run_cmd!("bin/gem_checksums #{Shellwords.escape(gem_path)}")
           validate_checksums!(version, stage: "after release")
         end
 
@@ -1159,10 +1160,7 @@ module Kettle
       end
 
       def validate_checksums!(version, stage: "")
-        gem_path = gem_file_for_version(version)
-        unless gem_path && File.file?(gem_path)
-          abort("Unable to locate built gem for version #{version} in pkg/. Did the build succeed?")
-        end
+        gem_path = checksum_gem_path_for_version!(version)
         actual = compute_sha256(gem_path)
         checks_path = File.join(@root, "checksums", "#{File.basename(gem_path)}.sha256")
         unless File.file?(checks_path)
@@ -1182,6 +1180,14 @@ module Kettle
         else
           puts "Checksum OK #{stage}: #{File.basename(gem_path)}"
         end
+      end
+
+      def checksum_gem_path_for_version!(version)
+        gem_path = gem_file_for_version(version)
+        unless gem_path && File.file?(gem_path)
+          abort("Unable to locate built gem for version #{version} in pkg/. Did the build succeed?")
+        end
+        gem_path
       end
 
       def gem_file_for_version(version)
