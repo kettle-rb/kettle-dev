@@ -1439,6 +1439,50 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         end
       end
 
+      it "does not switch an active local branch-stack checkout when releasing that checkout" do
+        Dir.mktmpdir do |workspace|
+          root = File.join(workspace, "rubocop-lts")
+          FileUtils.mkdir_p(root)
+          File.write(File.join(root, ".kettle-family.yml"), <<~YAML)
+            release:
+              target_branches:
+                - r1_8-even-v0
+          YAML
+          write_style_local(root, "rubocop-ruby3_2")
+          allow(ci_helpers).to receive(:project_root).and_return(root)
+          local_cli = described_class.new
+          git = instance_double(Kettle::Dev::GitAdapter)
+          local_cli.instance_variable_set(:@git, git)
+          stub_env("RUBOCOP_LTS_LOCAL" => workspace)
+
+          expect(git).not_to receive(:capture)
+
+          expect { local_cli.send(:prepare_rubocop_lts_local_branch!) }.not_to raise_error
+        end
+      end
+
+      it "still switches a same-family local checkout when it is not a branch-stack release checkout" do
+        Dir.mktmpdir do |workspace|
+          root = File.join(workspace, "rubocop-lts")
+          FileUtils.mkdir_p(root)
+          write_style_local(root, "rubocop-ruby3_2")
+          allow(ci_helpers).to receive(:project_root).and_return(root)
+          local_cli = described_class.new
+          git = instance_double(Kettle::Dev::GitAdapter)
+          local_cli.instance_variable_set(:@git, git)
+          stub_env("RUBOCOP_LTS_LOCAL" => workspace)
+
+          expect(git).to receive(:capture)
+            .with(["-C", root, "branch", "--show-current"])
+            .and_return(["main", true])
+          expect(git).to receive(:capture)
+            .with(["-C", root, "switch", "r3_2-even-v24"])
+            .and_return(["", true])
+
+          expect { local_cli.send(:prepare_rubocop_lts_local_branch!) }.not_to raise_error
+        end
+      end
+
       it "aborts when the local RuboCop-LTS checkout cannot switch branches" do
         Dir.mktmpdir do |root|
           write_style_local(root, "rubocop-ruby2_4")

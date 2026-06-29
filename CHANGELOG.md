@@ -28,6 +28,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-release` no longer tries to switch an active local/dev checkout when
+  the release is running from that same branch-stack checkout.
+
 ### Security
 
 ## [2.2.22] - 2026-06-28

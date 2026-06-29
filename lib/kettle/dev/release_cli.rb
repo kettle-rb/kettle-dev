@@ -423,6 +423,8 @@ module Kettle
         abort("Cannot select RUBOCOP_LTS_LOCAL branch for #{ruby_gem.inspect}.") unless branch
 
         checkout = File.join(local_root, "rubocop-lts")
+        return if active_local_branch_stack_release_checkout?(checkout)
+
         current, ok = git_output(["-C", checkout, "branch", "--show-current"])
         abort("Cannot inspect RUBOCOP_LTS_LOCAL checkout at #{checkout}.") unless ok
         return if current == branch
@@ -430,6 +432,18 @@ module Kettle
         puts "Switching RUBOCOP_LTS_LOCAL checkout #{checkout} to #{branch} for #{ruby_gem}."
         _stdout, switched = git_output(["-C", checkout, "switch", branch])
         abort("Cannot switch RUBOCOP_LTS_LOCAL checkout at #{checkout} to #{branch}. Commit or stash local changes, then retry.") unless switched
+      end
+
+      def active_local_branch_stack_release_checkout?(checkout)
+        return false if local_kettle_family_release_target_branches.empty?
+
+        same_path?(@root, checkout)
+      end
+
+      def same_path?(left, right)
+        File.realpath(left) == File.realpath(right)
+      rescue Errno::ENOENT
+        false
       end
 
       def rubocop_lts_local_root
