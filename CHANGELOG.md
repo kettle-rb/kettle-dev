@@ -22,10 +22,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
-- `kettle-pre-release` image URL validation and `kettle-gha-sha-pins` action
-  resolution now report cached and live checks with progress bars instead of
-  printing every checked URL or action reference.
-
 ### Deprecated
 
 ### Removed
@@ -33,6 +29,21 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Fixed
 
 ### Security
+
+## [2.2.24] - 2026-06-29
+
+- TAG: [v2.2.24][2.2.24t]
+- COVERAGE: 92.02% -- 4198/4562 lines in 34 files
+- BRANCH COVERAGE: 73.26% -- 1660/2266 branches in 34 files
+- 59.83% documented
+
+### Changed
+
+- `Kettle::EmojiRegex::REGEX` now delegates to the `emoji_regex` runtime
+  dependency instead of carrying a vendored regex snapshot.
+- `kettle-pre-release` image URL validation and `kettle-gha-sha-pins` action
+  resolution now report cached and live checks with progress bars instead of
+  printing every checked URL or action reference.
 
 ## [2.2.23] - 2026-06-28
 
@@ -2362,7 +2373,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.23...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.24...HEAD
+[2.2.24]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.23...v2.2.24
+[2.2.24t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.24
 [2.2.23]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.22...v2.2.23
 [2.2.23t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.23
 [2.2.22]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.21...v2.2.22
