@@ -35,6 +35,8 @@ direct_sibling_templating = ENV.fetch("K_JEM_TEMPLATING", "false").casecmp("true
 if direct_sibling_gems.any? &&
     (direct_sibling_local ||
       ENV.fetch("K_JEM_TEMPLATING", "false").casecmp("true").zero?)
+  direct_sibling_dev_was_set = ENV.key?("KETTLE_DEV_DEV")
+  direct_sibling_dev_original = ENV.fetch("KETTLE_DEV_DEV", nil)
   begin
     nomono_activation_requirements = nomono_requirements
     nomono_lockfile = File.expand_path("Gemfile.lock", __dir__)
@@ -63,6 +65,14 @@ if direct_sibling_gems.any? &&
     )
   rescue LoadError
     warn "Install nomono to enable KETTLE_DEV_DEV local sibling-gem dependencies."
+  ensure
+    if direct_sibling_templating && !direct_sibling_local
+      if direct_sibling_dev_was_set
+        ENV["KETTLE_DEV_DEV"] = direct_sibling_dev_original
+      else
+        ENV.delete("KETTLE_DEV_DEV")
+      end
+    end
   end
 end
 
