@@ -28,10 +28,19 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [2.2.22] - 2026-06-28
+
+- TAG: [v2.2.22][2.2.22t]
+- COVERAGE: 92.01% -- 4171/4533 lines in 33 files
+- BRANCH COVERAGE: 73.08% -- 1653/2262 branches in 33 files
+- 61.04% documented
+
+### Fixed
+
 - `kettle-release` now passes the exact built gem artifact to `bin/gem_checksums`
   so stale packages in `pkg/` cannot cause checksums for the wrong version.
-
-### Security
 
 ## [2.2.21] - 2026-06-28
 
@@ -2337,7 +2346,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.21...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.22...HEAD
+[2.2.22]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.21...v2.2.22
+[2.2.22t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.22
 [2.2.21]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.20...v2.2.21
 [2.2.21t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.21
 [2.2.20]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.19...v2.2.20
