@@ -87,6 +87,9 @@ Gem::Specification.new do |spec|
   spec.bindir = "exe"
   spec.executables = ["kettle-changelog", "kettle-commit-msg", "kettle-dev-setup", "kettle-pre-release", "kettle-readme-backers", "kettle-release", "kettle-dvcs", "kettle-gha-sha-pins"]
 
+  # Utilities
+  spec.add_dependency("ruby-progressbar", "~> 1.13")
+
   # NOTE: It is preferable to list development dependencies in the gemspec due to increased
   #       visibility and discoverability.
   #       However, development dependencies in gemspec will install on
@@ -114,7 +117,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency("kettle-test", "~> 1.0", ">= 1.0.6")
 
   # Releasing
-  spec.add_development_dependency("ruby-progressbar", "~> 1.13")
   spec.add_development_dependency("stone_checksums", "~> 1.0", ">= 1.0.3")
 
   spec.add_development_dependency("gitmoji-regex", "~> 1.0", ">= 1.0.3")

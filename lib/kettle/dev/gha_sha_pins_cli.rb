@@ -10,11 +10,8 @@ require "time"
 require "uri"
 
 require "psych"
-begin
-  require "ruby-progressbar"
-rescue LoadError
-  # Progress feedback is helpful but optional; fall back to plain status lines.
-end
+require "ruby-progressbar"
+require_relative "cache_progress"
 
 module Kettle
   module Dev
@@ -94,7 +91,13 @@ module Kettle
         workflows = load_workflows(workflow_files, state)
         action_count = workflows.sum { |workflow| workflow[:uses_nodes].count { |node| classify_action_ref(node[:value].to_s) } }
         progress_message("Resolving #{action_count} GitHub action reference(s)...") if action_count.positive?
-        action_progress = progress_bar(title: "Actions", total: action_count)
+        action_progress = CacheProgress.new(
+          total: action_count,
+          cached_title: "Actions cached",
+          live_title: "Actions live",
+          output: @err,
+          enabled: progress_enabled?
+        )
         action_plan_cache = {}
 
         workflows.each do |workflow|
@@ -183,8 +186,6 @@ module Kettle
                 new_scalar: replacement[:new_scalar],
                 action: repo_ref
               }
-            ensure
-              action_progress&.increment
             end
           end
 
@@ -216,6 +217,7 @@ module Kettle
             end
           end
         end
+        progress_message("Action resolution checks: #{action_progress.cached_count} cached, #{action_progress.live_count} live.") if action_count.positive?
 
         print_report(state)
         return 2 unless state[:failures].zero?
@@ -309,10 +311,9 @@ module Kettle
       end
 
       def resolve_action_plan(cache:, client:, progress:, repo_ref:, old_ref:)
-        started_at = monotonic_time
         if cache.key?(repo_ref)
           versions = cache.fetch(repo_ref)
-          progress&.log(format("Reused %<ref>s in %<elapsed>.2fs", ref: "#{repo_ref}@#{old_ref}", elapsed: monotonic_time - started_at))
+          progress.cached
           return determine_upgrade_plan(
             old_ref: old_ref,
             repo_ref: repo_ref,
@@ -322,7 +323,6 @@ module Kettle
           )
         end
 
-        progress&.log("Resolving #{repo_ref}@#{old_ref}")
         versions = client.versions_for_repo(repo_ref)
         cache[repo_ref] = versions
         plan = determine_upgrade_plan(
@@ -332,12 +332,8 @@ module Kettle
           upgrade_level: @options[:upgrade],
           client: client
         )
-        progress&.log(format("Resolved %<ref>s in %<elapsed>.2fs", ref: "#{repo_ref}@#{old_ref}", elapsed: monotonic_time - started_at))
+        progress.live
         plan
-      end
-
-      def monotonic_time
-        Process.clock_gettime(Process::CLOCK_MONOTONIC)
       end
 
       def progress_enabled?
@@ -365,7 +361,6 @@ module Kettle
       def progress_bar(title:, total:)
         return unless progress_enabled?
         return unless total.positive?
-        return unless defined?(ProgressBar)
 
         ProgressBar.create(title: title, total: total, format: "%t %b %c/%C", length: 30, output: @err)
       end

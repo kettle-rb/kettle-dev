@@ -179,7 +179,8 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
         ])
         expect(Kettle::Dev::PreReleaseCLI::HTTP).not_to receive(:head_ok?)
 
-        expect { described_class.new(check_num: 3).run }.not_to raise_error
+        expect { described_class.new(check_num: 3).run }
+          .to output(/Image URL checks: 1 cached, 0 live\./).to_stdout
       end
     end
 

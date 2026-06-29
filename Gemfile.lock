@@ -11,6 +11,7 @@ PATH
     kettle-dev (2.2.23)
       kettle-rb (~> 0.1, >= 0.1.0)
       kettle-test (~> 2.0, >= 2.0.4)
+      ruby-progressbar (~> 1.13)
       version_gem (~> 1.1, >= 1.1.13)
 
 PATH
@@ -431,7 +432,6 @@ DEPENDENCIES
   rubocop-on-rbs (~> 2.0, >= 2.0.0)
   rubocop-packaging (~> 0.6, >= 0.6.0)
   rubocop-ruby2_4!
-  ruby-progressbar (~> 1.13)
   simplecov!
   standard (~> 1.54, >= 1.54.0)
   standard-rubocop-lts!

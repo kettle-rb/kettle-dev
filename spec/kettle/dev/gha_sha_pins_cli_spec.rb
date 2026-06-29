@@ -798,7 +798,9 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       expect(err.string).to include("Discovering workflow files")
       expect(err.string).to include("Discovered 1 workflow file")
       expect(err.string).to include("Resolving 1 GitHub action reference")
-      expect(err.string).to include("Resolved foo/bar@v1.2.0 in")
+      expect(err.string).to include("Actions live")
+      expect(err.string).to include("Action resolution checks: 0 cached, 1 live.")
+      expect(err.string).not_to include("Resolved foo/bar@v1.2.0 in")
     end
 
     it "keeps progress disabled by default for JSON output" do

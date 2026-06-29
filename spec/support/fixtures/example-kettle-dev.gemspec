@@ -156,6 +156,7 @@ Gem::Specification.new do |spec|
   #       The kettle-dev-setup script and kettle:dev:install rake task ensure libraries meet the requirements.
 
   # Utilities
+  spec.add_dependency("ruby-progressbar", "~> 1.13")                    # ruby >= 0
   # spec.add_dependency("version_gem", "~> 1.1", ">= 1.1.9")              # ruby >= 2.2.0
   # kettle-dev:unfreeze
 
@@ -186,7 +187,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency("kettle-test", "~> 1.0", ">= 1.0.6")              # ruby >= 2.3
 
   # Releasing
-  spec.add_development_dependency("ruby-progressbar", "~> 1.13")                    # ruby >= 0
   spec.add_development_dependency("stone_checksums", "~> 1.0", ">= 1.0.3")          # ruby >= 2.2.0
 
   # Git integration (optional)

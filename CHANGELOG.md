@@ -22,6 +22,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- `kettle-pre-release` image URL validation and `kettle-gha-sha-pins` action
+  resolution now report cached and live checks with progress bars instead of
+  printing every checked URL or action reference.
+
 ### Deprecated
 
 ### Removed

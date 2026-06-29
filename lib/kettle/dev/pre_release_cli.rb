@@ -8,6 +8,7 @@ require "uri"
 require "net/http"
 require "openssl"
 require "time"
+require_relative "cache_progress"
 begin
   require "addressable/uri"
 rescue LoadError
@@ -359,23 +360,28 @@ module Kettle
         urls = Markdown.extract_image_urls_from_files
         puts "[kettle-pre-release] Found #{urls.size} unique image URL(s)."
         cache = image_url_cache
+        progress = CacheProgress.new(
+          total: urls.size,
+          cached_title: "Images cached",
+          live_title: "Images live",
+          output: $stdout
+        )
         failures = []
         urls.each do |url|
-          print("  -> #{url} … ")
           if cache && !@refresh_image_url_cache && cache.fresh_success?(url)
-            puts "OK (cached)"
+            progress.cached
             next
           end
 
           ok = HTTP.head_ok?(url)
+          progress.live
           if ok
-            puts "OK"
             cache&.write_success(url)
           else
-            puts "FAIL"
             failures << url
           end
         end
+        puts "[kettle-pre-release] Image URL checks: #{progress.cached_count} cached, #{progress.live_count} live."
         if failures.any?
           warn("[kettle-pre-release] #{failures.size} image URL(s) failed validation:")
           failures.each { |u| warn("  - #{u}") }
