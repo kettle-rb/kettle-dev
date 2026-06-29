@@ -88,6 +88,7 @@ Gem::Specification.new do |spec|
   spec.executables = ["kettle-changelog", "kettle-commit-msg", "kettle-dev-setup", "kettle-pre-release", "kettle-readme-backers", "kettle-release", "kettle-dvcs", "kettle-gha-sha-pins"]
 
   # Utilities
+  spec.add_dependency("emoji_regex", ">= 15.0")
   spec.add_dependency("ruby-progressbar", "~> 1.13")
 
   # NOTE: It is preferable to list development dependencies in the gemspec due to increased
