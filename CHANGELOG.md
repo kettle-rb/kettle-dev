@@ -28,10 +28,19 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [2.2.23] - 2026-06-28
+
+- TAG: [v2.2.23][2.2.23t]
+- COVERAGE: 91.63% -- 4160/4540 lines in 33 files
+- BRANCH COVERAGE: 72.82% -- 1650/2266 branches in 33 files
+- 61.04% documented
+
+### Fixed
+
 - `kettle-release` no longer tries to switch an active local/dev checkout when
   the release is running from that same branch-stack checkout.
-
-### Security
 
 ## [2.2.22] - 2026-06-28
 
@@ -2349,7 +2358,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.22...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.23...HEAD
+[2.2.23]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.22...v2.2.23
+[2.2.23t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.23
 [2.2.22]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.21...v2.2.22
 [2.2.22t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.22
 [2.2.21]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.20...v2.2.21
