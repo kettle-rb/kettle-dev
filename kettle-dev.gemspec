@@ -66,6 +66,9 @@ Gem::Specification.new do |spec|
 
   # Specify which files are part of the released package.
   spec.files = [
+    # Root license files
+    "LICENSE.md",
+    "AGPL-3.0-only.md",
     # Code / tasks / data (NOTE: exe/ is specified via spec.bindir and spec.executables below)
     *enumerate_package_files.call("lib"),
     # Executables and executable support scripts
