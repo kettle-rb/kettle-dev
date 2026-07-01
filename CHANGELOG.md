@@ -28,6 +28,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- JRuby head CI is now bounded and filters repeated `jopenssl/load.rb` warning
+  floods so upstream loader regressions report a concise timeout instead of
+  emitting tens of thousands of duplicate warnings.
+
 ### Security
 
 ## [2.2.25] - 2026-07-01
