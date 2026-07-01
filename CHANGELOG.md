@@ -28,9 +28,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- JRuby head CI is now bounded and filters repeated `jopenssl/load.rb` warning
-  floods so upstream loader regressions report a concise timeout instead of
-  emitting tens of thousands of duplicate warnings.
+- JRuby head CI now skips the release-flow specs that trigger repeated
+  `jopenssl/load.rb` warning floods while the upstream JRuby/JOpenSSL recursion
+  is investigated.
 
 ### Security
 

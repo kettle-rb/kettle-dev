@@ -698,7 +698,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect { cli.run }.to raise_error(MockSystemExit, /version bump required/)
       end
 
-      it "runs happy path when gem.coop is offline and Appraisals exist and SKIP_GEM_SIGNING is set" do
+      it "runs happy path when gem.coop is offline and Appraisals exist and SKIP_GEM_SIGNING is set", :jruby_head_release_flow do
         # Make prompts auto-accept via input adapter
         allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("y\n")
 
@@ -745,7 +745,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect(cli).to have_received(:run_cmd!).with("bin/gem_checksums #{gem_path}")
       end
 
-      it "runs local-ci mode without pushing until after the gem is published" do
+      it "runs local-ci mode without pushing until after the gem is published", :jruby_head_release_flow do
         local_cli = described_class.new(local_ci: true)
         allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("y\n")
         stub_env("SKIP_GEM_SIGNING" => "true", "GITHUB_TOKEN" => nil)
@@ -782,7 +782,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect(local_cli).not_to have_received(:run_cmd!).with("bundle exec rake release")
       end
 
-      it "uses appraisal:update when explicitly requested" do
+      it "uses appraisal:update when explicitly requested", :jruby_head_release_flow do
         update_cli = described_class.new(appraisal_task: "appraisal:update")
         allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("y\n")
         stub_env("SKIP_GEM_SIGNING" => "true")
@@ -817,7 +817,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect(update_cli).to have_received(:run_cmd!).with("bin/rake appraisal:update")
       end
 
-      it "skips appraisal generation when Appraisals file missing" do
+      it "skips appraisal generation when Appraisals file missing", :jruby_head_release_flow do
         # Accept initial prompt via input adapter
         allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("y\n")
 
@@ -865,7 +865,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect(cli).to have_received(:run_cmd!).with("bin/rake yard")
       end
 
-      it "aborts when signing enabled on tty and user declines prompt" do
+      it "aborts when signing enabled on tty and user declines prompt", :jruby_head_release_flow do
         allow(Kettle::Dev::InputAdapter).to receive(:tty?).and_return(true)
         # Two prompts: first we answer 'y' to proceed, second we answer 'n' to abort signing
         allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("y\n", "n\n")
@@ -940,7 +940,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         end
       end
 
-      it "prints series info when latest overall is different series and continues" do
+      it "prints series info when latest overall is different series and continues", :jruby_head_release_flow do
         allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("y\n")
         allow(cli).to receive(:run_pre_release_checks!)
         allow(cli).to receive(:ensure_bundler_2_7_plus!)
@@ -993,7 +993,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         end.to raise_error(MockSystemExit, /version must be bumped above 1.2.4/)
       end
 
-      it "prints offline message when target cannot be determined even though overall present", :check_output do
+      it "prints offline message when target cannot be determined even though overall present", :check_output, :jruby_head_release_flow do
         cli = described_class.new
         allow(cli).to receive(:run_pre_release_checks!)
         allow(cli).to receive(:ensure_bundler_2_7_plus!)
@@ -1339,7 +1339,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     end
 
     describe "start_step skipping" do
-      it "skips initial steps when start_step is 10 (CI validation)" do
+      it "skips initial steps when start_step is 10 (CI validation)", :jruby_head_release_flow do
         allow(Kettle::Dev::InputAdapter).to receive(:tty?).and_return(false)
         # Ensure optional GitHub release (step 17) is a no-op to avoid real HTTP
         stub_env("GITHUB_TOKEN" => nil)
@@ -1367,7 +1367,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect(local_cli).not_to have_received(:run_cmd!).with("bin/rake appraisal:generate")
       end
 
-      it "skips selected numbered steps while running later steps" do
+      it "skips selected numbered steps while running later steps", :jruby_head_release_flow do
         allow(Kettle::Dev::InputAdapter).to receive(:tty?).and_return(false)
         stub_env("GITHUB_TOKEN" => nil)
         local_cli = described_class.new(start_step: 10, skip_steps: "10")

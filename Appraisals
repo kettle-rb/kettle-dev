@@ -53,6 +53,10 @@ appraise "unlocked_deps" do
 end
 
 appraise "head" do
+  gem "rspec-pending_for",
+    "~> 0.1",
+    ">= 0.1.21"
+
   eval_gemfile "modular/recording/r4/recording.gemfile"
   eval_gemfile "modular/x_std_libs.gemfile"
 end

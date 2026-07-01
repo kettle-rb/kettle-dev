@@ -53,6 +53,14 @@ RSpec.configure do |config|
     skip_for(reason: "Requires prism-merge which is unavailable on Ruby < 2.7", versions: %w[2.3 2.4 2.5 2.6])
   end
 
+  config.before(:each, :jruby_head_release_flow) do
+    skip_for(
+      engine: "jruby",
+      versions: "head",
+      reason: "JRuby head repeatedly reloads jopenssl/load.rb during release-flow specs; see jruby/jruby-openssl#251"
+    )
+  end
+
   config.before(:each, :prism_only) do
     begin
       require "prism"
