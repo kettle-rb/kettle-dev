@@ -22,17 +22,28 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
-- Updated the `kettle-rb` runtime dependency floor to 0.1.1.
-
 ### Deprecated
 
 ### Removed
 
 ### Fixed
 
-- Package configured license files in gem release file lists.
-
 ### Security
+
+## [2.2.25] - 2026-07-01
+
+- TAG: [v2.2.25][2.2.25t]
+- COVERAGE: 91.80% -- 4188/4562 lines in 34 files
+- BRANCH COVERAGE: 73.12% -- 1657/2266 branches in 34 files
+- 59.83% documented
+
+### Changed
+
+- Updated the `kettle-rb` runtime dependency floor to 0.1.1.
+
+### Fixed
+
+- Package configured license files in gem release file lists.
 
 ## [2.2.24] - 2026-06-29
 
@@ -2377,7 +2388,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.24...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.25...HEAD
+[2.2.25]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.24...v2.2.25
+[2.2.25t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.25
 [2.2.24]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.23...v2.2.24
 [2.2.24t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.24
 [2.2.23]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.22...v2.2.23
