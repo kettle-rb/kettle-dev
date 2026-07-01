@@ -90,8 +90,8 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 <ul>
   <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.25">v2.2.25</a>
 </li>
-  <li>COVERAGE: 92.18% – 4210/4567 lines in 34 files</li>
-  <li>BRANCH COVERAGE: 73.21% – 1659/2266 branches in 34 files</li>
+  <li>COVERAGE: 91.66% – 4186/4567 lines in 34 files</li>
+  <li>BRANCH COVERAGE: 72.82% – 1650/2266 branches in 34 files</li>
   <li>59.34% documented</li>
 </ul>
 
@@ -111,6 +111,11 @@ Please file a bug if you notice a violation of semantic versioning.</p>
     <p>YAML config loading remains compatible with older Psych releases on legacy<br>
 Rubies that do not provide <code>YAML.safe_load_file</code> or keyword options for<br>
 <code>YAML.safe_load</code>.</p>
+  </li>
+  <li>
+    <p>JRuby head CI now skips the release-flow specs that trigger repeated<br>
+<code>jopenssl/load.rb</code> warning floods while the upstream JRuby/JOpenSSL recursion<br>
+is investigated.</p>
   </li>
 </ul>
 
@@ -3790,7 +3795,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </div></div>
 
       <div id="footer">
-  Generated on Wed Jul  1 04:23:07 2026 by
+  Generated on Wed Jul  1 11:04:06 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>

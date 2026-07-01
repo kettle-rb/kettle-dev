@@ -28,17 +28,13 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- JRuby head CI now skips the release-flow specs that trigger repeated
-  `jopenssl/load.rb` warning floods while the upstream JRuby/JOpenSSL recursion
-  is investigated.
-
 ### Security
 
 ## [2.2.25] - 2026-07-01
 
 - TAG: [v2.2.25][2.2.25t]
-- COVERAGE: 92.18% -- 4210/4567 lines in 34 files
-- BRANCH COVERAGE: 73.21% -- 1659/2266 branches in 34 files
+- COVERAGE: 91.66% -- 4186/4567 lines in 34 files
+- BRANCH COVERAGE: 72.82% -- 1650/2266 branches in 34 files
 - 59.34% documented
 
 ### Changed
@@ -52,6 +48,10 @@ Please file a bug if you notice a violation of semantic versioning.
 - YAML config loading remains compatible with older Psych releases on legacy
   Rubies that do not provide `YAML.safe_load_file` or keyword options for
   `YAML.safe_load`.
+
+- JRuby head CI now skips the release-flow specs that trigger repeated
+  `jopenssl/load.rb` warning floods while the upstream JRuby/JOpenSSL recursion
+  is investigated.
 
 ## [2.2.24] - 2026-06-29
 
