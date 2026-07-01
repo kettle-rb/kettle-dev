@@ -406,7 +406,7 @@ DEPENDENCIES
   kramdown (~> 2.5, >= 2.5.1)
   kramdown-parser-gfm (~> 1.1)
   mutex_m (~> 0.2)
-  nomono (~> 1.0, >= 1.0.6)
+  nomono (~> 1.0, >= 1.0.7)
   rake (~> 13.0)
   rbs (>= 3.0)
   rdoc (~> 6.11)
