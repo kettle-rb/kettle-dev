@@ -20,6 +20,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- `Kettle::Dev::VersionBump` now exposes the reusable engine behind
+  `kettle-bump`, so other tools can share version detection, target resolution,
+  Prism edits, and write behavior without shelling out or duplicating logic.
+
 ### Changed
 
 ### Deprecated

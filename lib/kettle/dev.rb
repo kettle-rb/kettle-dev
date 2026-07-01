@@ -47,6 +47,7 @@ module Kettle
     autoload :ReleaseCLI, "kettle/dev/release_cli"
     autoload :PreReleaseCLI, "kettle/dev/pre_release_cli"
     autoload :Version, "kettle/dev/version"
+    autoload :VersionBump, "kettle/dev/version_bump"
     autoload :Versioning, "kettle/dev/versioning"
 
     # Nested tasks namespace with autoloaded task modules
