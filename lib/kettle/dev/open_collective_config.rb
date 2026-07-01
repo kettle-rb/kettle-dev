@@ -44,14 +44,14 @@ module Kettle
 
         ypath = yaml_path(root)
         if strict
-          yml = YAML.safe_load_file(ypath)
+          yml = Kettle::Dev.safe_load_yaml_file(ypath)
           if yml.is_a?(Hash)
             handle = yml["collective"] || yml[:collective] || yml["org"] || yml[:org]
             return handle.to_s unless handle.nil? || handle.to_s.strip.empty? || handle.to_s.match?(/\{KJ\|[^}]+}/)
           end
         elsif File.file?(ypath)
           begin
-            yml = YAML.safe_load_file(ypath)
+            yml = Kettle::Dev.safe_load_yaml_file(ypath)
             if yml.is_a?(Hash)
               handle = yml["collective"] || yml[:collective] || yml["org"] || yml[:org]
               return handle.to_s unless handle.nil? || handle.to_s.strip.empty? || handle.to_s.match?(/\{KJ\|[^}]+}/)

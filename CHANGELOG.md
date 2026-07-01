@@ -28,6 +28,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- YAML config loading remains compatible with older Psych releases on legacy
+  Rubies that do not provide `YAML.safe_load_file` or keyword options for
+  `YAML.safe_load`.
+
 ### Security
 
 ## [2.2.25] - 2026-07-01

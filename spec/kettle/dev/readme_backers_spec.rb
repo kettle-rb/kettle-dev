@@ -121,7 +121,7 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
     it "falls back to .opencollective.yml" do
       yml_path = described_class::OC_YML_PATH
       allow(File).to receive(:file?).with(yml_path).and_return(true)
-      allow(YAML).to receive(:safe_load_file).with(yml_path).and_return({"readme-osc-tag" => "YML_TAG"})
+      allow(Kettle::Dev).to receive(:safe_load_yaml_file).with(yml_path).and_return({"readme-osc-tag" => "YML_TAG"})
       expect(instance.send(:readme_osc_tag)).to eq("YML_TAG")
     end
 
@@ -150,7 +150,7 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
     it "reads from .opencollective.yml when no env" do
       yml_path = described_class::OC_YML_PATH
       allow(File).to receive(:file?).with(yml_path).and_return(true)
-      allow(YAML).to receive(:safe_load_file).with(yml_path).and_return({"collective" => "yml_handle"})
+      allow(Kettle::Dev).to receive(:safe_load_yaml_file).with(yml_path).and_return({"collective" => "yml_handle"})
       expect(described_class.new(readme_path: tmp_readme).send(:resolve_handle)).to eq("yml_handle")
     end
 
@@ -158,7 +158,7 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
       stub_env("OPENCOLLECTIVE_HANDLE" => nil)
       path = described_class::OC_YML_PATH
       expect(File.file?(path)).to be true
-      yml = YAML.safe_load_file(path)
+      yml = Kettle::Dev.safe_load_yaml_file(path)
       expected_handle = yml.fetch("collective")
       expect(described_class.new(readme_path: tmp_readme).send(:resolve_handle)).to eq(expected_handle)
     end
@@ -379,7 +379,7 @@ RSpec.describe Kettle::Dev::ReadmeBackers do
     it "falls back to yml" do
       yml_path = described_class::OC_YML_PATH
       allow(File).to receive(:file?).with(yml_path).and_return(true)
-      allow(YAML).to receive(:safe_load_file).with(yml_path).and_return({"readme-backers-commit-subject" => "YML_SUBJ"})
+      allow(Kettle::Dev).to receive(:safe_load_yaml_file).with(yml_path).and_return({"readme-backers-commit-subject" => "YML_SUBJ"})
       expect(instance.send(:commit_subject)).to eq("YML_SUBJ")
     end
 

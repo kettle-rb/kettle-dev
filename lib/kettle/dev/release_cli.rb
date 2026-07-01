@@ -1130,7 +1130,7 @@ module Kettle
           next unless File.file?(path)
 
           begin
-            data = YAML.safe_load(File.read(path), permitted_classes: [], aliases: false) || {}
+            data = Kettle::Dev.safe_load_yaml_file(path) || {}
             branches = Array(dig_string_keys(data, "release", "target_branches")) +
               Array(dig_string_keys(data, "branches", "release_targets"))
             return branches.map(&:to_s).reject(&:empty?) unless branches.empty?

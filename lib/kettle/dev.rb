@@ -20,6 +20,7 @@ end
 
 # It's not reasonable to test this ENV variable
 # simplecov:disable
+require "yaml"
 require "require_bench" if ENV.fetch("REQUIRE_BENCH", "false").casecmp("true").zero?
 # simplecov:enable
 
@@ -102,6 +103,16 @@ module Kettle
         return text if text.nil?
 
         text.to_s.gsub(VAR_HOME_TEXT, "/home")
+      end
+
+      def safe_load_yaml(content)
+        YAML.safe_load(content, permitted_classes: [], aliases: false)
+      rescue ArgumentError
+        YAML.safe_load(content, [], [], false)
+      end
+
+      def safe_load_yaml_file(path)
+        safe_load_yaml(File.read(path))
       end
 
       # Emit a debug warning for rescued errors when kettle-dev debugging is enabled.
