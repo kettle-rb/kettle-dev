@@ -548,6 +548,52 @@ Accepts false, n, no, 0 (any case).</p>
 </li>
 
       
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#safe_load_yaml-class_method" title="safe_load_yaml (class method)">.<strong>safe_load_yaml</strong>(content)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#safe_load_yaml_file-class_method" title="safe_load_yaml_file (class method)">.<strong>safe_load_yaml_file</strong>(path)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+</div></span>
+  
+</li>
+
+      
     </ul>
     
   
@@ -596,12 +642,12 @@ Accepts false, n, no, 0 (any case).</p>
       <pre class="lines">
 
 
-149
-150
-151</pre>
+160
+161
+162</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 149</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 160</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_defaults'>defaults</span>
   <span class='ivar'>@defaults</span>
@@ -693,18 +739,18 @@ Controlled by KETTLE_DEV_DEBUG=true.</p>
       <pre class="lines">
 
 
-113
-114
-115
-116
-117
-118
-119
-120
-121</pre>
+124
+125
+126
+127
+128
+129
+130
+131
+132</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 113</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 124</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_debug_error'>debug_error</span><span class='lparen'>(</span><span class='id identifier rubyid_error'>error</span><span class='comma'>,</span> <span class='id identifier rubyid_context'>context</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>backtrace:</span> <span class='kw'>true</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='const'><span class='object_link'><a href="#DEBUGGING-constant" title="Kettle::Dev::DEBUGGING (constant)">DEBUGGING</a></span></span>
@@ -761,17 +807,17 @@ Controlled by KETTLE_DEV_DEBUG=true.</p>
       <pre class="lines">
 
 
-127
-128
-129
-130
-131
-132
-133
-134</pre>
+138
+139
+140
+141
+142
+143
+144
+145</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 127</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 138</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_debug_log'>debug_log</span><span class='lparen'>(</span><span class='id identifier rubyid_msg'>msg</span><span class='comma'>,</span> <span class='id identifier rubyid_context'>context</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='const'><span class='object_link'><a href="#DEBUGGING-constant" title="Kettle::Dev::DEBUGGING (constant)">DEBUGGING</a></span></span>
@@ -824,12 +870,12 @@ Controlled by KETTLE_DEV_DEBUG=true.</p>
       <pre class="lines">
 
 
-170
-171
-172</pre>
+181
+182
+183</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 170</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 181</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_default_registered?'>default_registered?</span><span class='lparen'>(</span><span class='id identifier rubyid_task_name'>task_name</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_defaults'>defaults</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_task_name'>task_name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span>
@@ -854,14 +900,14 @@ Controlled by KETTLE_DEV_DEBUG=true.</p>
       <pre class="lines">
 
 
-95
 96
 97
 98
-99</pre>
+99
+100</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 95</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 96</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_display_path'>display_path</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='id identifier rubyid_path'>path</span> <span class='kw'>if</span> <span class='id identifier rubyid_path'>path</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -888,14 +934,14 @@ Controlled by KETTLE_DEV_DEBUG=true.</p>
       <pre class="lines">
 
 
-101
 102
 103
 104
-105</pre>
+105
+106</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 101</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 102</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_display_text'>display_text</span><span class='lparen'>(</span><span class='id identifier rubyid_text'>text</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='id identifier rubyid_text'>text</span> <span class='kw'>if</span> <span class='id identifier rubyid_text'>text</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -935,14 +981,14 @@ gem-shipped rakelib directory so host projects get tasks from this gem.</p>
       <pre class="lines">
 
 
-141
-142
-143
-144
-145</pre>
+152
+153
+154
+155
+156</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 141</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 152</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_install_tasks'>install_tasks</span>
   <span class='id identifier rubyid_linting_tasks'>linting_tasks</span>
@@ -1012,23 +1058,23 @@ Also enhances the :default task immediately if it exists.</p>
       <pre class="lines">
 
 
-155
-156
-157
-158
-159
-160
-161
-162
-163
-164
-165
 166
 167
-168</pre>
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 155</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 166</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_register_default'>register_default</span><span class='lparen'>(</span><span class='id identifier rubyid_task_name'>task_name</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_task_name'>task_name</span> <span class='op'>=</span> <span class='id identifier rubyid_task_name'>task_name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
@@ -1049,12 +1095,76 @@ Also enhances the :default task immediately if it exists.</p>
 </table>
 </div>
     
+      <div class="method_details ">
+  <h3 class="signature " id="safe_load_yaml-class_method">
+  
+    .<strong>safe_load_yaml</strong>(content)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+108
+109
+110
+111
+112</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 108</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_safe_load_yaml'>safe_load_yaml</span><span class='lparen'>(</span><span class='id identifier rubyid_content'>content</span><span class='rparen'>)</span>
+  <span class='const'>YAML</span><span class='period'>.</span><span class='id identifier rubyid_safe_load'>safe_load</span><span class='lparen'>(</span><span class='id identifier rubyid_content'>content</span><span class='comma'>,</span> <span class='label'>permitted_classes:</span> <span class='lbracket'>[</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='label'>aliases:</span> <span class='kw'>false</span><span class='rparen'>)</span>
+<span class='kw'>rescue</span> <span class='const'>ArgumentError</span>
+  <span class='const'>YAML</span><span class='period'>.</span><span class='id identifier rubyid_safe_load'>safe_load</span><span class='lparen'>(</span><span class='id identifier rubyid_content'>content</span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='kw'>false</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="safe_load_yaml_file-class_method">
+  
+    .<strong>safe_load_yaml_file</strong>(path)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+114
+115
+116</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 114</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_safe_load_yaml_file'>safe_load_yaml_file</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_safe_load_yaml'>safe_load_yaml</span><span class='lparen'>(</span><span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
   </div>
 
 </div>
 
       <div id="footer">
-  Generated on Mon Jun 29 02:25:25 2026 by
+  Generated on Wed Jul  1 04:13:17 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>
