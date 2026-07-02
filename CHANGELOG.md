@@ -30,10 +30,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Security
 
-## [2.3.0] - 2026-07-01
+## [2.3.0] - 2026-07-02
 
 - TAG: [v2.3.0][2.3.0t]
-- COVERAGE: 91.84% -- 4211/4585 lines in 35 files
+- COVERAGE: 91.95% -- 4216/4585 lines in 35 files
 - BRANCH COVERAGE: 73.19% -- 1660/2268 branches in 35 files
 - 58.02% documented
 
