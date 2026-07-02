@@ -70,7 +70,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 and <a href="https://tom.preston-werner.com/2022/05/23/major-version-numbers-are-not-sacred.html">yes</a>, platform and engine support are part of the <a href="https://github.com/semver/semver/issues/716#issuecomment-869336139">public API</a>.<br>
 Please file a bug if you notice a violation of semantic versioning.</p>
 
-<h2 id="unreleased"><a href="https://github.com/kettle-dev/kettle-dev/compare/v2.2.25...HEAD">Unreleased</a></h2>
+<h2 id="unreleased"><a href="https://github.com/kettle-dev/kettle-dev/compare/v2.3.0...HEAD">Unreleased</a></h2>
 
 <h3 id="added">Added</h3>
 
@@ -83,6 +83,26 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 <h3 id="fixed">Fixed</h3>
 
 <h3 id="security">Security</h3>
+
+<h2 id="230---2026-07-01">
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v2.2.25...v2.3.0">2.3.0</a> - 2026-07-01</h2>
+
+<ul>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v2.3.0">v2.3.0</a>
+</li>
+  <li>COVERAGE: 91.84% – 4211/4585 lines in 35 files</li>
+  <li>BRANCH COVERAGE: 73.19% – 1660/2268 branches in 35 files</li>
+  <li>58.02% documented</li>
+</ul>
+
+<h3 id="added-1">Added</h3>
+
+<ul>
+  <li>
+<code>Kettle::Dev::VersionBump</code> now exposes the reusable engine behind<br>
+<code>kettle-bump</code>, so other tools can share version detection, target resolution,<br>
+Prism edits, and write behavior without shelling out or duplicating logic.</li>
+</ul>
 
 <h2 id="2225---2026-07-01">
 <a href="https://github.com/kettle-dev/kettle-dev/compare/v2.2.24...v2.2.25">2.2.25</a> - 2026-07-01</h2>
@@ -211,7 +231,7 @@ branches.</li>
   <li>61.04% documented</li>
 </ul>
 
-<h3 id="added-1">Added</h3>
+<h3 id="added-2">Added</h3>
 
 <ul>
   <li>
@@ -297,7 +317,7 @@ branch in family release-state tables.</li>
   <li>62.11% documented</li>
 </ul>
 
-<h3 id="added-2">Added</h3>
+<h3 id="added-3">Added</h3>
 
 <ul>
   <li>Updated to latest kettle-jem template
@@ -348,7 +368,7 @@ during release prep.</li>
   <li>62.11% documented</li>
 </ul>
 
-<h3 id="added-3">Added</h3>
+<h3 id="added-4">Added</h3>
 
 <ul>
   <li>
@@ -367,7 +387,7 @@ the prerelease suffix.</li>
   <li>62.11% documented</li>
 </ul>
 
-<h3 id="added-4">Added</h3>
+<h3 id="added-5">Added</h3>
 
 <ul>
   <li>
@@ -444,7 +464,7 @@ the requested numbered release step.</li>
   <li>63.76% documented</li>
 </ul>
 
-<h3 id="added-5">Added</h3>
+<h3 id="added-6">Added</h3>
 
 <ul>
   <li>Added <code>--version VERSION</code> support to <code>kettle-changelog</code> and <code>kettle-release</code><br>
@@ -561,7 +581,7 @@ for individual gems that do not have a <code>CHANGELOG.md</code>.</li>
   <li>66.02% documented</li>
 </ul>
 
-<h3 id="added-6">Added</h3>
+<h3 id="added-7">Added</h3>
 
 <h4 id="changelog-2">Changelog</h4>
 
@@ -584,7 +604,7 @@ changelog sources.</li>
   <li>66.67% documented</li>
 </ul>
 
-<h3 id="added-7">Added</h3>
+<h3 id="added-8">Added</h3>
 
 <h4 id="changelog-3">Changelog</h4>
 
@@ -731,7 +751,7 @@ cache so a dry run followed by <code>--write</code> does not repeat the same API
   <li>67.51% documented</li>
 </ul>
 
-<h3 id="added-8">Added</h3>
+<h3 id="added-9">Added</h3>
 
 <ul>
   <li>
@@ -822,7 +842,7 @@ README and security-policy generated details for the current release line.</p>
   <li>75.93% documented</li>
 </ul>
 
-<h3 id="added-9">Added</h3>
+<h3 id="added-10">Added</h3>
 
 <ul>
   <li>
@@ -920,7 +940,7 @@ non-interactive runs, fixing TruffleRuby v23.0-v23.1 CI stability.</li>
   <li>75.93% documented</li>
 </ul>
 
-<h3 id="added-10">Added</h3>
+<h3 id="added-11">Added</h3>
 
 <ul>
   <li>
@@ -966,7 +986,7 @@ bootstrap setup.</li>
   <li>76.40% documented</li>
 </ul>
 
-<h3 id="added-11">Added</h3>
+<h3 id="added-12">Added</h3>
 
 <ul>
   <li>Added <code>appraisal:generate</code>, which regenerates Appraisal gemfiles inside the<br>
@@ -1095,7 +1115,7 @@ stays clean with newer RuboCop performance cops.</li>
   <li>76.25% documented</li>
 </ul>
 
-<h3 id="added-12">Added</h3>
+<h3 id="added-13">Added</h3>
 
 <ul>
   <li>Added <code>kettle-changelog --update-prep</code> to refresh the most recent prepared<br>
@@ -1156,7 +1176,7 @@ instead of writing a single blank line.</li>
   <li>80.25% documented</li>
 </ul>
 
-<h3 id="added-13">Added</h3>
+<h3 id="added-14">Added</h3>
 
 <ul>
   <li>New <code>kettle-gh-release</code> executable for standalone GitHub release creation
@@ -1373,7 +1393,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>69.89% documented</li>
 </ul>
 
-<h3 id="added-14">Added</h3>
+<h3 id="added-15">Added</h3>
 
 <ul>
   <li>Comprehensive newline normalization in templated Ruby files:
@@ -1458,7 +1478,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>70.00% documented</li>
 </ul>
 
-<h3 id="added-15">Added</h3>
+<h3 id="added-16">Added</h3>
 
 <ul>
   <li>Prism AST-based manipulation of ruby during templating
@@ -1514,7 +1534,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>79.89% documented</li>
 </ul>
 
-<h3 id="added-16">Added</h3>
+<h3 id="added-17">Added</h3>
 
 <ul>
   <li>Add KETTLE_DEV_DEBUG to direnv defaults</li>
@@ -1579,7 +1599,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>79.89% documented</li>
 </ul>
 
-<h3 id="added-17">Added</h3>
+<h3 id="added-18">Added</h3>
 
 <ul>
   <li>Ignore more .idea plugin artifacts</li>
@@ -1602,7 +1622,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>79.89% documented</li>
 </ul>
 
-<h3 id="added-18">Added</h3>
+<h3 id="added-19">Added</h3>
 
 <ul>
   <li>New Rake task: <code>appraisal:reset</code> — deletes all Appraisal lockfiles (<code>gemfiles/*.gemfile.lock</code>).</li>
@@ -1646,7 +1666,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>79.89% documented</li>
 </ul>
 
-<h3 id="added-19">Added</h3>
+<h3 id="added-20">Added</h3>
 
 <ul>
   <li>GitLab Pipelines for Ruby 2.7, 3.0, 3.0</li>
@@ -1663,7 +1683,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>79.89% documented</li>
 </ul>
 
-<h3 id="added-20">Added</h3>
+<h3 id="added-21">Added</h3>
 
 <ul>
   <li>.idea/.gitignore is now part of template</li>
@@ -1680,7 +1700,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>79.89% documented</li>
 </ul>
 
-<h3 id="added-21">Added</h3>
+<h3 id="added-22">Added</h3>
 
 <ul>
   <li>Template .yardopts now includes yard-yaml plugin (for CITATION.cff)</li>
@@ -1702,7 +1722,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>79.89% documented</li>
 </ul>
 
-<h3 id="added-22">Added</h3>
+<h3 id="added-23">Added</h3>
 
 <ul>
   <li>Update documentation</li>
@@ -1763,7 +1783,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>79.89% documented</li>
 </ul>
 
-<h3 id="added-23">Added</h3>
+<h3 id="added-24">Added</h3>
 
 <ul>
   <li>yard-fence for handling braces in fenced code blocks in yard docs</li>
@@ -1799,7 +1819,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>79.89% documented</li>
 </ul>
 
-<h3 id="added-24">Added</h3>
+<h3 id="added-25">Added</h3>
 
 <ul>
   <li>Handle custom dependencies in Gemfiles gracefully</li>
@@ -1823,7 +1843,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>79.68% documented</li>
 </ul>
 
-<h3 id="added-25">Added</h3>
+<h3 id="added-26">Added</h3>
 
 <ul>
   <li>Validate RBS Types within style workflow</li>
@@ -1958,7 +1978,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>79.68% documented</li>
 </ul>
 
-<h3 id="added-26">Added</h3>
+<h3 id="added-27">Added</h3>
 
 <ul>
   <li>CONTRIBUTING.md.example tailored for the templated gem</li>
@@ -2004,7 +2024,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>79.68% documented</li>
 </ul>
 
-<h3 id="added-27">Added</h3>
+<h3 id="added-28">Added</h3>
 
 <ul>
   <li>kettle-release: improved –help</li>
@@ -2029,7 +2049,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>79.68% documented</li>
 </ul>
 
-<h3 id="added-28">Added</h3>
+<h3 id="added-29">Added</h3>
 
 <ul>
   <li>More documentation of RC situation</li>
@@ -2052,7 +2072,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>79.68% documented</li>
 </ul>
 
-<h3 id="added-29">Added</h3>
+<h3 id="added-30">Added</h3>
 
 <ul>
   <li>more documentation of the RC.O situation</li>
@@ -2111,7 +2131,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>79.57% documented</li>
 </ul>
 
-<h3 id="added-30">Added</h3>
+<h3 id="added-31">Added</h3>
 
 <ul>
   <li>handling for no open source collective, specified by:
@@ -2149,7 +2169,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>79.12% documented</li>
 </ul>
 
-<h3 id="added-31">Added</h3>
+<h3 id="added-32">Added</h3>
 
 <ul>
   <li>A top-level note on gem server switch in README.md &amp; template</li>
@@ -2197,7 +2217,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>79.12% documented</li>
 </ul>
 
-<h3 id="added-32">Added</h3>
+<h3 id="added-33">Added</h3>
 
 <ul>
   <li>kettle-changelog: handle legacy tag-in-release-heading style
@@ -2293,7 +2313,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>78.21% documented</li>
 </ul>
 
-<h3 id="added-33">Added</h3>
+<h3 id="added-34">Added</h3>
 
 <ul>
   <li>Replace template tokens with real minimum ruby versions for runtime and development</li>
@@ -2393,7 +2413,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>77.01% documented</li>
 </ul>
 
-<h3 id="added-34">Added</h3>
+<h3 id="added-35">Added</h3>
 
 <ul>
   <li>Allow reformating of CHANGELOG.md without version bump</li>
@@ -2422,7 +2442,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>76.88% documented</li>
 </ul>
 
-<h3 id="added-35">Added</h3>
+<h3 id="added-36">Added</h3>
 
 <ul>
   <li>documentation of vcr on Ruby 2.4</li>
@@ -2467,7 +2487,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>76.88% documented</li>
 </ul>
 
-<h3 id="added-36">Added</h3>
+<h3 id="added-37">Added</h3>
 
 <ul>
   <li>improved documentation</li>
@@ -2614,7 +2634,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>76.65% documented</li>
 </ul>
 
-<h3 id="added-37">Added</h3>
+<h3 id="added-38">Added</h3>
 
 <ul>
   <li>Improve documentation
@@ -2657,7 +2677,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>76.65% documented</li>
 </ul>
 
-<h3 id="added-38">Added</h3>
+<h3 id="added-39">Added</h3>
 
 <ul>
   <li>badge for current runtime heads in example readme</li>
@@ -2685,7 +2705,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>76.97% documented</li>
 </ul>
 
-<h3 id="added-39">Added</h3>
+<h3 id="added-40">Added</h3>
 
 <ul>
   <li>add .aiignore to the template</li>
@@ -2722,7 +2742,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>76.97% documented</li>
 </ul>
 
-<h3 id="added-40">Added</h3>
+<h3 id="added-41">Added</h3>
 
 <ul>
   <li>rake task - <code>appraisal:install</code>
@@ -2787,7 +2807,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>76.83% documented</li>
 </ul>
 
-<h3 id="added-41">Added</h3>
+<h3 id="added-42">Added</h3>
 
 <ul>
   <li>kettle-pre-release: run re-release checks on a library
@@ -2885,7 +2905,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>76.76% documented</li>
 </ul>
 
-<h3 id="added-42">Added</h3>
+<h3 id="added-43">Added</h3>
 
 <ul>
   <li>.gitlab-ci.yml documentation (in example)</li>
@@ -2925,7 +2945,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>76.81% documented</li>
 </ul>
 
-<h3 id="added-43">Added</h3>
+<h3 id="added-44">Added</h3>
 
 <ul>
   <li>.simplecov.example - keeps it generic</li>
@@ -2950,7 +2970,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>76.81% documented</li>
 </ul>
 
-<h3 id="added-44">Added</h3>
+<h3 id="added-45">Added</h3>
 
 <ul>
   <li>exe/kettle-dev-setup - bootstrap templating in any RubyGem</li>
@@ -3024,7 +3044,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>75.00% documented</li>
 </ul>
 
-<h3 id="added-45">Added</h3>
+<h3 id="added-46">Added</h3>
 
 <ul>
   <li>test that .env.local.example is copied by install / template tasks</li>
@@ -3047,7 +3067,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>75.00% documented</li>
 </ul>
 
-<h3 id="added-46">Added</h3>
+<h3 id="added-47">Added</h3>
 
 <ul>
   <li>improved documentation</li>
@@ -3091,7 +3111,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>76.00% documented</li>
 </ul>
 
-<h3 id="added-47">Added</h3>
+<h3 id="added-48">Added</h3>
 
 <ul>
   <li>Carryover important fields from the original gemspec during templating
@@ -3120,7 +3140,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>76.23% documented</li>
 </ul>
 
-<h3 id="added-48">Added</h3>
+<h3 id="added-49">Added</h3>
 
 <ul>
   <li>improved documentation</li>
@@ -3142,7 +3162,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>76.23% documented</li>
 </ul>
 
-<h3 id="added-49">Added</h3>
+<h3 id="added-50">Added</h3>
 
 <ul>
   <li>FUNDING.md in support of a funding footer on release notes
@@ -3241,7 +3261,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>76.23% documented</li>
 </ul>
 
-<h3 id="added-50">Added</h3>
+<h3 id="added-51">Added</h3>
 
 <ul>
   <li>kettle:dev:install can overwrite gemspec with example gemspec</li>
@@ -3306,7 +3326,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>76.03% documented</li>
 </ul>
 
-<h3 id="added-51">Added</h3>
+<h3 id="added-52">Added</h3>
 
 <ul>
   <li>kettle-release: early validation of identical set of copyright years in README.md and CHANGELOG.md, adds current year if missing, aborts on mismatch</li>
@@ -3350,7 +3370,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>76.03% documented</li>
 </ul>
 
-<h3 id="added-52">Added</h3>
+<h3 id="added-53">Added</h3>
 
 <ul>
   <li>kettle-release: Push tags to additional remotes after release</li>
@@ -3381,7 +3401,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>76.03% documented</li>
 </ul>
 
-<h3 id="added-53">Added</h3>
+<h3 id="added-54">Added</h3>
 
 <ul>
   <li>kettle-release: Create GitHub release from tag &amp; changelog entry</li>
@@ -3398,7 +3418,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>78.70% documented</li>
 </ul>
 
-<h3 id="added-54">Added</h3>
+<h3 id="added-55">Added</h3>
 
 <ul>
   <li>CIMonitor to consolidate workflow / pipeline monitoring logic for GH/GL across kettle-release and rake tasks, with handling for:
@@ -3445,7 +3465,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>78.70% documented</li>
 </ul>
 
-<h3 id="added-55">Added</h3>
+<h3 id="added-56">Added</h3>
 
 <ul>
   <li>Add more .example templates
@@ -3513,7 +3533,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>95.35% documented</li>
 </ul>
 
-<h3 id="added-56">Added</h3>
+<h3 id="added-57">Added</h3>
 
 <ul>
   <li>runs git add –all before git commit, to ensure all files are committed.</li>
@@ -3556,7 +3576,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>95.35% documented</li>
 </ul>
 
-<h3 id="added-57">Added</h3>
+<h3 id="added-58">Added</h3>
 
 <ul>
   <li>kettle-release: Add a sanity check for the latest released version of the gem being released, and display it during the confirmation with user that CHANGELOG.md and version.rb have been updated, so they can compare the value in version.rb with the value of the latest released version.
@@ -3652,7 +3672,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>95.35% documented</li>
 </ul>
 
-<h3 id="added-58">Added</h3>
+<h3 id="added-59">Added</h3>
 
 <ul>
   <li>kettle-release: checks all remotes for a GitHub remote and syncs origin/trunk with it; prompts to rebase or –no-ff merge when histories diverge; pushes to both origin and the GitHub remote on merge; uses the GitHub remote for GitHub Actions CI checks, and also checks GitLab CI when a GitLab remote and .gitlab-ci.yml are present.</li>
@@ -3678,7 +3698,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>94.59% documented</li>
 </ul>
 
-<h3 id="added-59">Added</h3>
+<h3 id="added-60">Added</h3>
 
 <ul>
   <li>template task now copies .git-hooks files necessary for git hooks to work</li>
@@ -3720,7 +3740,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>94.59% documented</li>
 </ul>
 
-<h3 id="added-60">Added</h3>
+<h3 id="added-61">Added</h3>
 
 <ul>
   <li>These were documented but not yet released:
@@ -3752,7 +3772,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
   <li>94.59% documented</li>
 </ul>
 
-<h3 id="added-61">Added</h3>
+<h3 id="added-62">Added</h3>
 
 <ul>
   <li>initial release, with auto-config support for:
@@ -3795,7 +3815,7 @@ Only <code>.env.local.example</code> is retained as a dev resource for all desti
 </div></div>
 
       <div id="footer">
-  Generated on Wed Jul  1 11:04:06 2026 by
+  Generated on Wed Jul  1 22:08:30 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>

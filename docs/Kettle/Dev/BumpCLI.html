@@ -113,22 +113,6 @@
   
 
 </div>
-  
-    <h2>
-      Constant Summary
-      <small><a href="#" class="constants_summary_toggle">collapse</a></small>
-    </h2>
-
-    <dl class="constants">
-      
-        <dt id="BUMP_TYPES-constant" class="">BUMP_TYPES =
-          
-        </dt>
-        <dd><pre class="code"><span class='qwords_beg'>%w[</span><span class='tstring_content'>major</span><span class='words_sep'> </span><span class='tstring_content'>minor</span><span class='words_sep'> </span><span class='tstring_content'>patch</span><span class='words_sep'> </span><span class='tstring_content'>pre</span><span class='tstring_end'>]</span></span><span class='period'>.</span><span class='id identifier rubyid_freeze'>freeze</span></pre></dd>
-      
-    </dl>
-  
-
 
 
 
@@ -223,15 +207,15 @@
       <pre class="lines">
 
 
+9
+10
 11
 12
 13
-14
-15
-16</pre>
+14</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/bump_cli.rb', line 11</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/bump_cli.rb', line 9</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_argv'>argv</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='label'>out:</span> <span class='gvar'>$stdout</span><span class='comma'>,</span> <span class='label'>err:</span> <span class='gvar'>$stderr</span><span class='comma'>,</span> <span class='label'>root:</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="CIHelpers.html" title="Kettle::Dev::CIHelpers (module)">CIHelpers</a></span></span><span class='period'>.</span><span class='id identifier rubyid_project_root'><span class='object_link'><a href="CIHelpers.html#project_root-class_method" title="Kettle::Dev::CIHelpers.project_root (method)">project_root</a></span></span><span class='rparen'>)</span>
   <span class='ivar'>@argv</span> <span class='op'>=</span> <span class='id identifier rubyid_argv'>argv</span><span class='period'>.</span><span class='id identifier rubyid_dup'>dup</span>
@@ -266,6 +250,8 @@
       <pre class="lines">
 
 
+16
+17
 18
 19
 20
@@ -278,28 +264,24 @@
 27
 28
 29
-30
-31
-32
-33</pre>
+30</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/bump_cli.rb', line 18</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/bump_cli.rb', line 16</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_run!'>run!</span>
   <span class='id identifier rubyid_options'>options</span> <span class='op'>=</span> <span class='id identifier rubyid_parse_options'>parse_options</span>
   <span class='kw'>return</span> <span class='int'>0</span> <span class='kw'>if</span> <span class='id identifier rubyid_options'>options</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:help</span><span class='rparen'>)</span>
 
-  <span class='id identifier rubyid_current_version'>current_version</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Versioning.html" title="Kettle::Dev::Versioning (module)">Versioning</a></span></span><span class='period'>.</span><span class='id identifier rubyid_detect_version'><span class='object_link'><a href="Versioning.html#detect_version-class_method" title="Kettle::Dev::Versioning.detect_version (method)">detect_version</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_target_version'>target_version</span> <span class='op'>=</span> <span class='id identifier rubyid_resolve_target_version'>resolve_target_version</span><span class='lparen'>(</span><span class='id identifier rubyid_options'>options</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:target</span><span class='rparen'>)</span><span class='comma'>,</span> <span class='id identifier rubyid_current_version'>current_version</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_edits'>edits</span> <span class='op'>=</span> <span class='id identifier rubyid_collect_edits'>collect_edits</span><span class='lparen'>(</span>
-    <span class='label'>current_version:</span> <span class='id identifier rubyid_current_version'>current_version</span><span class='comma'>,</span>
-    <span class='label'>target_version:</span> <span class='id identifier rubyid_target_version'>target_version</span><span class='comma'>,</span>
+  <span class='id identifier rubyid_bump'>bump</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="VersionBump.html" title="Kettle::Dev::VersionBump (class)">VersionBump</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="VersionBump.html#initialize-instance_method" title="Kettle::Dev::VersionBump#initialize (method)">new</a></span></span><span class='lparen'>(</span>
+    <span class='label'>root:</span> <span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span><span class='comma'>,</span>
+    <span class='label'>target_version:</span> <span class='id identifier rubyid_options'>options</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:target</span><span class='rparen'>)</span><span class='comma'>,</span>
     <span class='label'>from_version:</span> <span class='id identifier rubyid_options'>options</span><span class='lbracket'>[</span><span class='symbol'>:from</span><span class='rbracket'>]</span>
   <span class='rparen'>)</span>
-  <span class='id identifier rubyid_write_edits'>write_edits</span><span class='lparen'>(</span><span class='id identifier rubyid_edits'>edits</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='id identifier rubyid_options'>options</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:mode</span><span class='rparen'>)</span> <span class='op'>==</span> <span class='symbol'>:execute</span>
+  <span class='id identifier rubyid_edits'>edits</span> <span class='op'>=</span> <span class='id identifier rubyid_bump'>bump</span><span class='period'>.</span><span class='id identifier rubyid_edits'>edits</span>
+  <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="VersionBump.html" title="Kettle::Dev::VersionBump (class)">VersionBump</a></span></span><span class='period'>.</span><span class='id identifier rubyid_write_edits'><span class='object_link'><a href="VersionBump.html#write_edits-class_method" title="Kettle::Dev::VersionBump.write_edits (method)">write_edits</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_edits'>edits</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='id identifier rubyid_options'>options</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:mode</span><span class='rparen'>)</span> <span class='op'>==</span> <span class='symbol'>:execute</span>
 
-  <span class='id identifier rubyid_out'>out</span><span class='period'>.</span><span class='id identifier rubyid_puts'>puts</span><span class='lparen'>(</span><span class='id identifier rubyid_summary'>summary</span><span class='lparen'>(</span><span class='label'>edits:</span> <span class='id identifier rubyid_edits'>edits</span><span class='comma'>,</span> <span class='label'>current_version:</span> <span class='id identifier rubyid_current_version'>current_version</span><span class='comma'>,</span> <span class='label'>target_version:</span> <span class='id identifier rubyid_target_version'>target_version</span><span class='comma'>,</span> <span class='label'>mode:</span> <span class='id identifier rubyid_options'>options</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:mode</span><span class='rparen'>)</span><span class='rparen'>)</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_out'>out</span><span class='period'>.</span><span class='id identifier rubyid_puts'>puts</span><span class='lparen'>(</span><span class='id identifier rubyid_summary'>summary</span><span class='lparen'>(</span><span class='label'>edits:</span> <span class='id identifier rubyid_edits'>edits</span><span class='comma'>,</span> <span class='label'>current_version:</span> <span class='id identifier rubyid_bump'>bump</span><span class='period'>.</span><span class='id identifier rubyid_current_version'>current_version</span><span class='comma'>,</span> <span class='label'>target_version:</span> <span class='id identifier rubyid_bump'>bump</span><span class='period'>.</span><span class='id identifier rubyid_target_version'>target_version</span><span class='comma'>,</span> <span class='label'>mode:</span> <span class='id identifier rubyid_options'>options</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:mode</span><span class='rparen'>)</span><span class='rparen'>)</span><span class='rparen'>)</span>
   <span class='lparen'>(</span><span class='id identifier rubyid_options'>options</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='symbol'>:mode</span><span class='rparen'>)</span> <span class='op'>==</span> <span class='symbol'>:check</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_edits'>edits</span><span class='period'>.</span><span class='id identifier rubyid_any?'>any?</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='int'>1</span> <span class='op'>:</span> <span class='int'>0</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -312,7 +294,7 @@
 </div>
 
       <div id="footer">
-  Generated on Sun Jun 21 16:27:50 2026 by
+  Generated on Wed Jul  1 22:08:30 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>

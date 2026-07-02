@@ -20,10 +20,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
-- `Kettle::Dev::VersionBump` now exposes the reusable engine behind
-  `kettle-bump`, so other tools can share version detection, target resolution,
-  Prism edits, and write behavior without shelling out or duplicating logic.
-
 ### Changed
 
 ### Deprecated
@@ -33,6 +29,19 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Fixed
 
 ### Security
+
+## [2.3.0] - 2026-07-01
+
+- TAG: [v2.3.0][2.3.0t]
+- COVERAGE: 91.84% -- 4211/4585 lines in 35 files
+- BRANCH COVERAGE: 73.19% -- 1660/2268 branches in 35 files
+- 58.02% documented
+
+### Added
+
+- `Kettle::Dev::VersionBump` now exposes the reusable engine behind
+  `kettle-bump`, so other tools can share version detection, target resolution,
+  Prism edits, and write behavior without shelling out or duplicating logic.
 
 ## [2.2.25] - 2026-07-01
 
@@ -2400,7 +2409,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.25...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.0...HEAD
+[2.3.0]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.25...v2.3.0
+[2.3.0t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.3.0
 [2.2.25]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.24...v2.2.25
 [2.2.25t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.2.25
 [2.2.24]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.23...v2.2.24
