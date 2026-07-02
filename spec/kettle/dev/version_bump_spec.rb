@@ -2,12 +2,14 @@
 
 RSpec.describe Kettle::Dev::VersionBump, :check_output, :prism_only do
   around do |example|
-    Dir.mktmpdir do |root|
-      @root = root
-      example.run
+    begin
+      Dir.mktmpdir do |root|
+        @root = root
+        example.run
+      end
+    ensure
+      Kettle::Dev::GemSpecReader.clear_cache!
     end
-  ensure
-    Kettle::Dev::GemSpecReader.clear_cache!
   end
 
   it "resolves relative bump targets from a supplied current version" do
