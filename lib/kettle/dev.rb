@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "version_gem"
 require_relative "dev/version"
 
 if Gem.ruby_version < Gem::Version.new("2.7")
@@ -13,9 +12,6 @@ if Gem.ruby_version < Gem::Version.new("2.7")
   end
 end
 
-Kettle::Dev::Version.class_eval do
-  extend VersionGem::Basic
-end
 # External gems
 
 # It's not reasonable to test this ENV variable
