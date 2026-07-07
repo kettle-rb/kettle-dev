@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "kettle/dev/version_gem"
+
 RSpec.describe Kettle::Dev::Version do
   before do
     stub_const("Kettle::Dev::Version::VERSION", "12.34.56.pre-78")
