@@ -26,6 +26,7 @@ AllCops:
     - spec/fixtures/**/*
     - tmp/**/*
     - vendor/**/*
+    - "**/vendor/**/*"
     - AGENTS.md
 
 RBS:

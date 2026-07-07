@@ -36,6 +36,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Legacy-engine CI workflows now install Bundler gems under
+  `${RUNNER_TEMP}/bundle` instead of `vendor/bundle`, and RuboCop now excludes
+  nested `vendor/` trees such as `gemfiles/vendor`.
+
 ### Security
 
 ## [2.3.0] - 2026-07-02
