@@ -1,6 +1,10 @@
 module Kettle
   module Dev
     class PreReleaseCLI
+      IMAGE_URL_CACHE_TTL_SECONDS: Integer
+      DEFAULT_IMAGE_URL_SKIP_PATTERNS: Array[String]
+      FAMILY_CONFIG_PATHS: Array[String]
+
       module HTTP
         def self.parse_http_uri: (String url_str) -> ::URI
         def self.head_ok?: (String url_str, ?limit: Integer, ?timeout: Integer) -> bool

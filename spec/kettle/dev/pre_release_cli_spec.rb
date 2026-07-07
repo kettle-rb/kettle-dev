@@ -184,6 +184,59 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
       end
     end
 
+    it "skips built-in volatile star-history image URLs by default" do
+      allow(Kettle::Dev::PreReleaseCLI::Markdown).to receive(:extract_image_urls_from_files).and_return([
+        "https://api.star-history.com/svg?repos=kettle-dev/kettle-test&type=Date"
+      ])
+      expect(Kettle::Dev::PreReleaseCLI::HTTP).not_to receive(:head_ok?)
+
+      expect { described_class.new(check_num: 3).run }
+        .to output(/Image URL checks: 0 cached, 0 live\.\n\[kettle-pre-release\] Skipped 1 image URL check\(s\)\./).to_stdout
+    end
+
+    it "skips image URLs matched by kettle-family config patterns" do
+      Dir.mktmpdir do |root|
+        File.write(File.join(root, ".kettle-family.yml"), <<~YAML)
+          pre_release:
+            image_url_skip_patterns:
+              - https://assets.example.com/generated/*
+        YAML
+
+        # rubocop:disable ThreadSafety/DirChdir
+        Dir.chdir(root) do
+          allow(Kettle::Dev::PreReleaseCLI::Markdown).to receive(:extract_image_urls_from_files).and_return([
+            "https://assets.example.com/generated/badge.svg",
+            "https://assets.example.com/stable/logo.svg"
+          ])
+          allow(Kettle::Dev::PreReleaseCLI::HTTP).to receive(:head_ok?).and_return(true)
+
+          expect { described_class.new(check_num: 3).run }.not_to raise_error
+
+          expect(Kettle::Dev::PreReleaseCLI::HTTP).to have_received(:head_ok?).once.with("https://assets.example.com/stable/logo.svg")
+        end
+        # rubocop:enable ThreadSafety/DirChdir
+      end
+    end
+
+    it "loads kettle-family skip patterns from KETTLE_FAMILY_CONFIG" do
+      Dir.mktmpdir do |root|
+        config_path = File.join(root, "family.yml")
+        File.write(config_path, <<~YAML)
+          pre_release:
+            image_url_skip_patterns:
+              - https://volatile.example.com/*
+        YAML
+
+        stub_env("KETTLE_FAMILY_CONFIG" => config_path)
+        allow(Kettle::Dev::PreReleaseCLI::Markdown).to receive(:extract_image_urls_from_files).and_return([
+          "https://volatile.example.com/badge.svg"
+        ])
+        expect(Kettle::Dev::PreReleaseCLI::HTTP).not_to receive(:head_ok?)
+
+        expect { described_class.new(check_num: 3).run }.not_to raise_error
+      end
+    end
+
     it "refreshes stale image URL cache entries and records successful revalidation" do
       Dir.mktmpdir do |root|
         cache_path = File.join(root, "image-url-cache.json")

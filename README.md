@@ -496,6 +496,14 @@ What it does:
     - 1) Validate GitHub Actions workflow action refs with `kettle-gha-sha-pins --check`; if pins are stale, it prints an outdated-actions summary, exits non-zero, and recommends `kettle-gha-sha-pins --write --upgrade patch`.
     - 2) Normalize Markdown image URLs.
     - 3) Validate that all image URLs referenced by Markdown files resolve (HTTP HEAD).
+- Image URL skips:
+    - Star-history image API URLs are skipped by default because they are volatile.
+    - Add project-specific shell-style URL patterns in `.kettle-family.yml` or a config path pointed to by `KETTLE_FAMILY_CONFIG`:
+        ```yaml
+        pre_release:
+          image_url_skip_patterns:
+            - https://assets.example.com/generated/*
+        ```
 
 ### Commit message helper (git hook)
 

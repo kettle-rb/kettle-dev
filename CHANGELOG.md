@@ -20,6 +20,11 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- `kettle-pre-release` now skips volatile star-history image URLs by default
+  during Markdown image validation, and accepts additional
+  `.kettle-family.yml` or `KETTLE_FAMILY_CONFIG` patterns under
+  `pre_release.image_url_skip_patterns`.
+
 ### Changed
 
 - `require "kettle/dev"` no longer loads `version_gem` by default; require

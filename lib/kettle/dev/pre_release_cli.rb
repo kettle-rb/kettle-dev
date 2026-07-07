@@ -4,6 +4,7 @@ require "optparse"
 require "English"
 require "json"
 require "fileutils"
+require "yaml"
 require "uri"
 require "net/http"
 require "openssl"
@@ -26,6 +27,10 @@ module Kettle
     # Usage: Kettle::Dev::PreReleaseCLI.new(check_num: 1).run
     class PreReleaseCLI
       IMAGE_URL_CACHE_TTL_SECONDS = 7 * 24 * 60 * 60
+      DEFAULT_IMAGE_URL_SKIP_PATTERNS = [
+        "https://api.star-history.com/svg*"
+      ].freeze
+      FAMILY_CONFIG_PATHS = [".kettle-family.yml", ".structuredmerge/kettle-family.yml"].freeze
 
       # Simple HTTP helpers for link validation
       module HTTP
@@ -271,6 +276,7 @@ module Kettle
         @check_num = 1 if @check_num < 1
         @image_url_cache_path = configured_image_url_cache_path
         @refresh_image_url_cache = env_truthy?(ENV["KETTLE_IMAGE_URL_CACHE_REFRESH"])
+        @image_url_skip_patterns = configured_image_url_skip_patterns
       end
 
       # Execute configured checks starting from @check_num.
@@ -359,15 +365,23 @@ module Kettle
         puts "[kettle-pre-release] Check 3: Validate Markdown image links (cached HTTP HEAD, with GET fallback)"
         urls = Markdown.extract_image_urls_from_files
         puts "[kettle-pre-release] Found #{urls.size} unique image URL(s)."
+        skipped = []
         cache = image_url_cache
         progress = CacheProgress.new(
           total: urls.size,
           cached_title: "Images cached",
           live_title: "Images live",
+          skipped_title: "Images skipped",
           output: $stdout
         )
         failures = []
         urls.each do |url|
+          if image_url_skipped?(url)
+            skipped << url
+            progress.skipped
+            next
+          end
+
           if cache && !@refresh_image_url_cache && cache.fresh_success?(url)
             progress.cached
             next
@@ -382,6 +396,7 @@ module Kettle
           end
         end
         puts "[kettle-pre-release] Image URL checks: #{progress.cached_count} cached, #{progress.live_count} live."
+        puts "[kettle-pre-release] Skipped #{progress.skipped_count} image URL check(s)." if skipped.any?
         if failures.any?
           warn("[kettle-pre-release] #{failures.size} image URL(s) failed validation:")
           failures.each { |u| warn("  - #{u}") }
@@ -410,6 +425,51 @@ module Kettle
 
       def env_truthy?(value)
         !!value.to_s.strip.match?(/\A(true|y|yes|1|on)\z/i)
+      end
+
+      def configured_image_url_skip_patterns
+        DEFAULT_IMAGE_URL_SKIP_PATTERNS + family_configured_image_url_skip_patterns
+      end
+
+      def family_configured_image_url_skip_patterns
+        data = family_config_data
+        patterns = data.dig("pre_release", "image_url_skip_patterns")
+        Array(patterns).map(&:to_s).reject(&:empty?)
+      end
+
+      def family_config_data
+        config_path = configured_family_config_path
+        return {} unless config_path
+
+        data = stringify_keys(YAML.load_file(config_path) || {})
+        data.is_a?(Hash) ? data : {}
+      rescue Psych::SyntaxError, Errno::EACCES => e
+        warn("[kettle-pre-release] Could not read #{config_path}: #{e.class}: #{e.message}")
+        {}
+      end
+
+      def configured_family_config_path
+        env_path = ENV.fetch("KETTLE_FAMILY_CONFIG", nil)
+        return File.expand_path(env_path) if env_path && File.file?(File.expand_path(env_path))
+
+        FAMILY_CONFIG_PATHS.find { |path| File.file?(path) }
+      end
+
+      def image_url_skipped?(url)
+        @image_url_skip_patterns.any? do |pattern|
+          File.fnmatch?(pattern, url, File::FNM_CASEFOLD)
+        end
+      end
+
+      def stringify_keys(value)
+        case value
+        when Hash
+          value.to_h { |key, item| [key.to_s, stringify_keys(item)] }
+        when Array
+          value.map { |item| stringify_keys(item) }
+        else
+          value
+        end
       end
     end
   end
