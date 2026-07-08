@@ -147,7 +147,7 @@ end
 
 local_ci = ARGV.include?("--local-ci")
 appraisal_task = ARGV.delete("--appraisal-update") ? "appraisal:update" : nil
-skip_bundle_audit = ARGV.delete("--skip-bundle-audit")
+skip_bundle_audit = !!ARGV.delete("--skip-bundle-audit")
 start_step_arg = ARGV.find { |a| a.start_with?("start_step=") }
 start_step = start_step_arg ? start_step_arg.split("=", 2)[1].to_i : 0
 version_override = extract_version_arg!(ARGV)

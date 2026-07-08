@@ -40,6 +40,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-release --skip-bundle-audit` now also prefixes release `bin/rake`
+  commands with `KETTLE_DEV_SKIP_BUNDLE_AUDIT=true`, ensuring the skip reaches
+  the rake process during release checks.
+
 - Legacy-engine CI workflows now install Bundler gems under
   `${RUNNER_TEMP}/bundle` instead of `vendor/bundle`, and RuboCop now excludes
   nested `vendor/` trees such as `gemfiles/vendor`.

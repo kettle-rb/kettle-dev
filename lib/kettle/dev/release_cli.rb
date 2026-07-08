@@ -716,9 +716,18 @@ module Kettle
       end
 
       def run_cmd!(cmd)
+        cmd = bundle_audit_skip_command(cmd)
         with_bundle_audit_skip_env do
           self.class.run_cmd!(cmd)
         end
+      end
+
+      def bundle_audit_skip_command(cmd)
+        return cmd unless skip_bundle_audit?
+        return cmd unless cmd.start_with?("bin/rake")
+        return cmd if cmd.start_with?("KETTLE_DEV_SKIP_BUNDLE_AUDIT=")
+
+        "KETTLE_DEV_SKIP_BUNDLE_AUDIT=true #{cmd}"
       end
 
       def with_bundle_audit_skip_env

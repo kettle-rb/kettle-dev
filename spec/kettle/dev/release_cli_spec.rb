@@ -106,7 +106,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         local_cli = described_class.new(skip_bundle_audit: true)
         status = instance_double(Process::Status, success?: true, exitstatus: 0)
         expect(Open3).to receive(:capture3) do |env, command|
-          expect(command).to eq("bin/rake")
+          expect(command).to eq("KETTLE_DEV_SKIP_BUNDLE_AUDIT=true bin/rake")
           expect(env.fetch("KETTLE_DEV_SKIP_BUNDLE_AUDIT")).to eq("true")
           ["", "", status]
         end
