@@ -36,10 +36,12 @@ setup_spec_task = ->(default:) {
   unless Rake::Task.task_defined?(:spec)
     desc("Run RSpec code examples")
     task(:spec) do
-      skip_bundle_audit = ENV.delete("KETTLE_DEV_SKIP_BUNDLE_AUDIT")
-      sh("bundle", "exec", "kettle-test")
-    ensure
-      ENV["KETTLE_DEV_SKIP_BUNDLE_AUDIT"] = skip_bundle_audit if skip_bundle_audit
+      begin
+        skip_bundle_audit = ENV.delete("KETTLE_DEV_SKIP_BUNDLE_AUDIT")
+        sh("bundle", "exec", "kettle-test")
+      ensure
+        ENV["KETTLE_DEV_SKIP_BUNDLE_AUDIT"] = skip_bundle_audit if skip_bundle_audit
+      end
     end
   end
 

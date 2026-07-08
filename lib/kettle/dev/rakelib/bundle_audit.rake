@@ -2,15 +2,22 @@
 
 skip_bundle_audit = %w[1 true yes on].include?(ENV.fetch("KETTLE_DEV_SKIP_BUNDLE_AUDIT", "").downcase)
 
-if skip_bundle_audit
-  desc("(skipped) bundle:audit is disabled by KETTLE_DEV_SKIP_BUNDLE_AUDIT")
+define_bundle_audit_stub_tasks = lambda do |description_prefix, warning|
+  desc("#{description_prefix} bundle:audit")
   task("bundle:audit") do
-    warn("NOTE: bundle:audit skipped because KETTLE_DEV_SKIP_BUNDLE_AUDIT is enabled")
+    warn(warning.call("bundle:audit"))
   end
-  desc("(skipped) bundle:audit:update is disabled by KETTLE_DEV_SKIP_BUNDLE_AUDIT")
+  desc("#{description_prefix} bundle:audit:update")
   task("bundle:audit:update") do
-    warn("NOTE: bundle:audit:update skipped because KETTLE_DEV_SKIP_BUNDLE_AUDIT is enabled")
+    warn(warning.call("bundle:audit:update"))
   end
+end
+
+if skip_bundle_audit
+  define_bundle_audit_stub_tasks.call(
+    "(skipped)",
+    ->(task_name) { "NOTE: #{task_name} skipped because KETTLE_DEV_SKIP_BUNDLE_AUDIT is enabled" }
+  )
 else
   # Setup Bundle Audit
   begin
@@ -21,13 +28,9 @@ else
     Kettle::Dev.register_default("bundle:audit")
   rescue LoadError
     warn("[kettle-dev][bundle_audit.rake] failed to load bundle/audit/task") if Kettle::Dev::DEBUGGING
-    desc("(stub) bundle:audit is unavailable")
-    task("bundle:audit") do
-      warn("NOTE: bundler-audit isn't installed, or is disabled for #{RUBY_VERSION} in the current environment")
-    end
-    desc("(stub) bundle:audit:update is unavailable")
-    task("bundle:audit:update") do
-      warn("NOTE: bundler-audit isn't installed, or is disabled for #{RUBY_VERSION} in the current environment")
-    end
+    define_bundle_audit_stub_tasks.call(
+      "(stub)",
+      ->(_task_name) { "NOTE: bundler-audit isn't installed, or is disabled for #{RUBY_VERSION} in the current environment" }
+    )
   end
 end
