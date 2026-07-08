@@ -43,7 +43,7 @@ end
 # Do not guard with __FILE__ == $PROGRAM_NAME because binstubs use Kernel.load.
 if ARGV.include?("-h") || ARGV.include?("--help")
   puts <<~USAGE
-    Usage: kettle-release [--version VERSION] [--local-ci] [--appraisal-update] [--skip-steps STEPS] [start_step=<0-19>]
+    Usage: kettle-release [--version VERSION] [--local-ci] [--appraisal-update] [--skip-bundle-audit] [--skip-steps STEPS] [start_step=<0-19>]
 
     Automates the release flow for a Ruby gem in the host project.
 
@@ -80,6 +80,7 @@ if ARGV.include?("-h") || ARGV.include?("--help")
       --skip-steps NUMBERS        # Alias for skip_steps=NUMBERS (e.g., --skip-steps 10 or --skip-steps 10,18)
       --version VERSION           # Use this version instead of detecting VERSION from lib/**/version.rb
       --appraisal-update          # Use slower appraisal:update instead of default appraisal:generate
+      --skip-bundle-audit         # Skip bundle:audit/update during release rake checks
       --local-ci                  # Sensitive release mode: run act locally, publish before any git push,
                                   # create the git tag locally, then push commits and tags after publish
 
@@ -90,6 +91,8 @@ if ARGV.include?("-h") || ARGV.include?("--help")
       K_RELEASE_LOCAL_CI_WORKFLOW # Name of workflow (without .yml) for local CI; defaults to locked_deps or first
       KETTLE_RELEASE_APPRAISAL_TASK=appraisal:update
                                   # Use slower appraisal:update instead of default appraisal:generate
+      KETTLE_DEV_SKIP_BUNDLE_AUDIT=true
+                                  # Skip bundle:audit/update during release rake checks
       GITHUB_TOKEN / GH_TOKEN     # Optional; enables GitHub release creation and API queries
       GITLAB_TOKEN / GL_TOKEN     # Optional; enables GitLab API queries when applicable
       DEBUG=true                  # Print backtraces on errors
@@ -144,13 +147,14 @@ end
 
 local_ci = ARGV.include?("--local-ci")
 appraisal_task = ARGV.delete("--appraisal-update") ? "appraisal:update" : nil
+skip_bundle_audit = ARGV.delete("--skip-bundle-audit")
 start_step_arg = ARGV.find { |a| a.start_with?("start_step=") }
 start_step = start_step_arg ? start_step_arg.split("=", 2)[1].to_i : 0
 version_override = extract_version_arg!(ARGV)
 skip_steps = extract_skip_steps_arg!(ARGV)
 
 begin
-  Kettle::Dev::ReleaseCLI.new(start_step: start_step, local_ci: local_ci, version: version_override, appraisal_task: appraisal_task, skip_steps: skip_steps).run
+  Kettle::Dev::ReleaseCLI.new(start_step: start_step, local_ci: local_ci, version: version_override, appraisal_task: appraisal_task, skip_steps: skip_steps, skip_bundle_audit: skip_bundle_audit).run
 rescue LoadError => e
   warn("#{script_basename}: could not load dependency: #{e.class}: #{e.message}")
   warn(Array(e.backtrace).join("\n")) if ENV["DEBUG"]

@@ -108,18 +108,25 @@ module Kettle
 
       public
 
-      def initialize(start_step: 0, local_ci: false, version: nil, appraisal_task: nil, skip_steps: nil)
+      def initialize(start_step: 0, local_ci: false, version: nil, appraisal_task: nil, skip_steps: nil, skip_bundle_audit: nil)
         @root = Kettle::Dev::CIHelpers.project_root
         @git = Kettle::Dev::GitAdapter.new
         @start_step = (start_step || 0).to_i
         @start_step = 0 if @start_step < 0
         @skip_steps = normalize_skip_steps(skip_steps)
         @local_ci = !!local_ci
+        @skip_bundle_audit = truthy_value?(skip_bundle_audit) || truthy_value?(ENV["KETTLE_DEV_SKIP_BUNDLE_AUDIT"])
         @version_override = Kettle::Dev::Versioning.normalize_explicit_version(version)
         @appraisal_task = normalize_appraisal_task(appraisal_task || ENV["KETTLE_RELEASE_APPRAISAL_TASK"])
       end
 
       def run
+        with_bundle_audit_skip_env do
+          run_with_release_environment
+        end
+      end
+
+      def run_with_release_environment
         run_pre_release_checks! if run_step?(0)
 
         # 1. Ensure Bundler version ✓
@@ -402,6 +409,14 @@ module Kettle
 
       def local_ci?
         @local_ci
+      end
+
+      def skip_bundle_audit?
+        @skip_bundle_audit
+      end
+
+      def truthy_value?(value)
+        DEBUG_TRUE_VALUES.include?(value.to_s.downcase)
       end
 
       def run_step?(step)
@@ -701,7 +716,21 @@ module Kettle
       end
 
       def run_cmd!(cmd)
-        self.class.run_cmd!(cmd)
+        with_bundle_audit_skip_env do
+          self.class.run_cmd!(cmd)
+        end
+      end
+
+      def with_bundle_audit_skip_env
+        return yield unless skip_bundle_audit?
+
+        previous = ENV["KETTLE_DEV_SKIP_BUNDLE_AUDIT"]
+        ENV["KETTLE_DEV_SKIP_BUNDLE_AUDIT"] = "true"
+        yield
+      ensure
+        if skip_bundle_audit?
+          previous.nil? ? ENV.delete("KETTLE_DEV_SKIP_BUNDLE_AUDIT") : ENV["KETTLE_DEV_SKIP_BUNDLE_AUDIT"] = previous
+        end
       end
 
       def git_output(args)

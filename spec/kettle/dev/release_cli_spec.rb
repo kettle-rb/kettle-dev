@@ -102,6 +102,29 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         cli.send(:run_cmd!, "bin/setup")
       end
 
+      it "sets bundle audit skip env for release child commands when requested" do
+        local_cli = described_class.new(skip_bundle_audit: true)
+        status = instance_double(Process::Status, success?: true, exitstatus: 0)
+        expect(Open3).to receive(:capture3) do |env, command|
+          expect(command).to eq("bin/rake")
+          expect(env.fetch("KETTLE_DEV_SKIP_BUNDLE_AUDIT")).to eq("true")
+          ["", "", status]
+        end
+
+        local_cli.send(:run_cmd!, "bin/rake")
+        expect(ENV["KETTLE_DEV_SKIP_BUNDLE_AUDIT"]).to be_nil
+      end
+
+      it "sets bundle audit skip env around the full release run" do
+        local_cli = described_class.new(skip_bundle_audit: true, skip_steps: "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19")
+        expect(local_cli).to receive(:run_pre_release_checks!) do
+          expect(ENV.fetch("KETTLE_DEV_SKIP_BUNDLE_AUDIT")).to eq("true")
+        end
+
+        local_cli.run
+        expect(ENV["KETTLE_DEV_SKIP_BUNDLE_AUDIT"]).to be_nil
+      end
+
       it "preserves noisy environment when release debug is explicitly enabled" do
         stub_env(
           "KETTLE_DEV_DEBUG" => "true",

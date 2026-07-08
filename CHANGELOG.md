@@ -20,6 +20,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- `kettle-release --skip-bundle-audit` and `KETTLE_DEV_SKIP_BUNDLE_AUDIT=true`
+  now disable the release-flow `bundle:audit` and `bundle:audit:update` rake
+  defaults so a known advisory can be handled outside the automated release.
+
 - `kettle-pre-release` now skips volatile star-history image URLs by default
   during Markdown image validation, and accepts additional
   `.kettle-family.yml` or `KETTLE_FAMILY_CONFIG` patterns under

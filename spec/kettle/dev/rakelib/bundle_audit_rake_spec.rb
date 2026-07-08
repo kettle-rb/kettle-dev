@@ -51,6 +51,24 @@ RSpec.describe "bundle audit rake tasks" do # rubocop:disable RSpec/DescribeClas
     expect(Kettle::Dev.defaults).to include("bundle:audit", "bundle:audit:update")
   end
 
+  it "defines skipped audit tasks without adding them to defaults when disabled by environment" do
+    stub_env("KETTLE_DEV_SKIP_BUNDLE_AUDIT" => "true")
+    FileUtils.mkdir_p(File.dirname(fake_task_file))
+    File.write(fake_task_file, <<~RUBY)
+      # frozen_string_literal: true
+
+      raise "bundler-audit should not load when disabled"
+    RUBY
+    $LOAD_PATH.unshift(fake_load_path)
+
+    load_bundle_audit_tasks
+
+    expect(Rake::Task.task_defined?("bundle:audit")).to be true
+    expect(Rake::Task.task_defined?("bundle:audit:update")).to be true
+    expect(Kettle::Dev.defaults).not_to include("bundle:audit", "bundle:audit:update")
+    expect { Rake::Task["bundle:audit"].invoke }.to output(/bundle:audit skipped/).to_stderr
+  end
+
   it "defines stub tasks when bundler-audit is unavailable" do
     FileUtils.mkdir_p(File.dirname(fake_task_file))
     File.write(fake_task_file, <<~RUBY)
