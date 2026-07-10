@@ -416,6 +416,8 @@ module Kettle
       end
 
       def truthy_value?(value)
+        return true if value == true
+
         DEBUG_TRUE_VALUES.include?(value.to_s.downcase)
       end
 

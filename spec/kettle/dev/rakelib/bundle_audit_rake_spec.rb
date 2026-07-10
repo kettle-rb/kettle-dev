@@ -27,6 +27,8 @@ RSpec.describe "bundle audit rake tasks" do # rubocop:disable RSpec/DescribeClas
   end
 
   it "registers bundler-audit tasks and defaults when bundler-audit is available" do
+    allow(ENV).to receive(:fetch).and_call_original
+    allow(ENV).to receive(:fetch).with("KETTLE_DEV_SKIP_BUNDLE_AUDIT", "").and_return("")
     FileUtils.mkdir_p(File.dirname(fake_task_file))
     File.write(fake_task_file, <<~RUBY)
       # frozen_string_literal: true
@@ -70,6 +72,8 @@ RSpec.describe "bundle audit rake tasks" do # rubocop:disable RSpec/DescribeClas
   end
 
   it "defines stub tasks when bundler-audit is unavailable" do
+    allow(ENV).to receive(:fetch).and_call_original
+    allow(ENV).to receive(:fetch).with("KETTLE_DEV_SKIP_BUNDLE_AUDIT", "").and_return("")
     FileUtils.mkdir_p(File.dirname(fake_task_file))
     File.write(fake_task_file, <<~RUBY)
       # frozen_string_literal: true
