@@ -642,12 +642,12 @@ Accepts false, n, no, 0 (any case).</p>
       <pre class="lines">
 
 
-161
-162
-163</pre>
+157
+158
+159</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 161</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 157</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_defaults'>defaults</span>
   <span class='ivar'>@defaults</span>
@@ -739,18 +739,18 @@ Controlled by KETTLE_DEV_DEBUG=true.</p>
       <pre class="lines">
 
 
+121
+122
+123
+124
 125
 126
 127
 128
-129
-130
-131
-132
-133</pre>
+129</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 125</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 121</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_debug_error'>debug_error</span><span class='lparen'>(</span><span class='id identifier rubyid_error'>error</span><span class='comma'>,</span> <span class='id identifier rubyid_context'>context</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>backtrace:</span> <span class='kw'>true</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='const'><span class='object_link'><a href="#DEBUGGING-constant" title="Kettle::Dev::DEBUGGING (constant)">DEBUGGING</a></span></span>
@@ -807,17 +807,17 @@ Controlled by KETTLE_DEV_DEBUG=true.</p>
       <pre class="lines">
 
 
+135
+136
+137
+138
 139
 140
 141
-142
-143
-144
-145
-146</pre>
+142</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 139</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 135</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_debug_log'>debug_log</span><span class='lparen'>(</span><span class='id identifier rubyid_msg'>msg</span><span class='comma'>,</span> <span class='id identifier rubyid_context'>context</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='const'><span class='object_link'><a href="#DEBUGGING-constant" title="Kettle::Dev::DEBUGGING (constant)">DEBUGGING</a></span></span>
@@ -870,12 +870,12 @@ Controlled by KETTLE_DEV_DEBUG=true.</p>
       <pre class="lines">
 
 
-182
-183
-184</pre>
+178
+179
+180</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 182</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 178</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_default_registered?'>default_registered?</span><span class='lparen'>(</span><span class='id identifier rubyid_task_name'>task_name</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_defaults'>defaults</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_task_name'>task_name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span>
@@ -900,14 +900,14 @@ Controlled by KETTLE_DEV_DEBUG=true.</p>
       <pre class="lines">
 
 
-97
-98
-99
-100
-101</pre>
+93
+94
+95
+96
+97</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 97</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 93</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_display_path'>display_path</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='id identifier rubyid_path'>path</span> <span class='kw'>if</span> <span class='id identifier rubyid_path'>path</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -934,14 +934,14 @@ Controlled by KETTLE_DEV_DEBUG=true.</p>
       <pre class="lines">
 
 
-103
-104
-105
-106
-107</pre>
+99
+100
+101
+102
+103</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 103</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 99</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_display_text'>display_text</span><span class='lparen'>(</span><span class='id identifier rubyid_text'>text</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='id identifier rubyid_text'>text</span> <span class='kw'>if</span> <span class='id identifier rubyid_text'>text</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -981,14 +981,14 @@ gem-shipped rakelib directory so host projects get tasks from this gem.</p>
       <pre class="lines">
 
 
-153
-154
-155
-156
-157</pre>
+149
+150
+151
+152
+153</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 153</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 149</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_install_tasks'>install_tasks</span>
   <span class='id identifier rubyid_linting_tasks'>linting_tasks</span>
@@ -1058,6 +1058,10 @@ Also enhances the :default task immediately if it exists.</p>
       <pre class="lines">
 
 
+163
+164
+165
+166
 167
 168
 169
@@ -1067,14 +1071,10 @@ Also enhances the :default task immediately if it exists.</p>
 173
 174
 175
-176
-177
-178
-179
-180</pre>
+176</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 167</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 163</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_register_default'>register_default</span><span class='lparen'>(</span><span class='id identifier rubyid_task_name'>task_name</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_task_name'>task_name</span> <span class='op'>=</span> <span class='id identifier rubyid_task_name'>task_name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
@@ -1110,14 +1110,14 @@ Also enhances the :default task immediately if it exists.</p>
       <pre class="lines">
 
 
-109
-110
-111
-112
-113</pre>
+105
+106
+107
+108
+109</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 109</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 105</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_safe_load_yaml'>safe_load_yaml</span><span class='lparen'>(</span><span class='id identifier rubyid_content'>content</span><span class='rparen'>)</span>
   <span class='const'>YAML</span><span class='period'>.</span><span class='id identifier rubyid_safe_load'>safe_load</span><span class='lparen'>(</span><span class='id identifier rubyid_content'>content</span><span class='comma'>,</span> <span class='label'>permitted_classes:</span> <span class='lbracket'>[</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='label'>aliases:</span> <span class='kw'>false</span><span class='rparen'>)</span>
@@ -1144,12 +1144,12 @@ Also enhances the :default task immediately if it exists.</p>
       <pre class="lines">
 
 
-115
-116
-117</pre>
+111
+112
+113</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 115</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev.rb', line 111</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_safe_load_yaml_file'>safe_load_yaml_file</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_safe_load_yaml'>safe_load_yaml</span><span class='lparen'>(</span><span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span><span class='rparen'>)</span>
@@ -1164,7 +1164,7 @@ Also enhances the :default task immediately if it exists.</p>
 </div>
 
       <div id="footer">
-  Generated on Wed Jul  1 22:08:30 2026 by
+  Generated on Fri Jul 10 07:39:58 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>

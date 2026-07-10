@@ -200,7 +200,7 @@ bin/kettle-release
     <tr>
       <td>Source</td>
       <td>
-<a href="https://gitlab.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitLab-FBA326?style=for-the-badge&amp;logo=Gitlab&amp;logoColor=orange" alt="Source on GitLab.com"></a> <a href="https://codeberg.org/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/CodeBerg-4893CC?style=for-the-badge&amp;logo=CodeBerg&amp;logoColor=blue" alt="Source on CodeBerg.org"></a> <a href="https://github.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitHub-238636?style=for-the-badge&amp;logo=Github&amp;logoColor=green" alt="Source on Github.com"></a> <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"><img src="https://img.shields.io/badge/KLOC-4.585-FFDD67.svg?style=for-the-badge&amp;logo=YouTube&amp;logoColor=blue" alt="The best SHA: dQw4w9WgXcQ!"></a>
+<a href="https://gitlab.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitLab-FBA326?style=for-the-badge&amp;logo=Gitlab&amp;logoColor=orange" alt="Source on GitLab.com"></a> <a href="https://codeberg.org/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/CodeBerg-4893CC?style=for-the-badge&amp;logo=CodeBerg&amp;logoColor=blue" alt="Source on CodeBerg.org"></a> <a href="https://github.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitHub-238636?style=for-the-badge&amp;logo=Github&amp;logoColor=green" alt="Source on Github.com"></a> <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"><img src="https://img.shields.io/badge/KLOC-4.658-FFDD67.svg?style=for-the-badge&amp;logo=YouTube&amp;logoColor=blue" alt="The best SHA: dQw4w9WgXcQ!"></a>
 </td>
     </tr>
     <tr>
@@ -862,6 +862,17 @@ prints a recommended <code>kettle-gha-sha-pins --write --upgrade patch</code> co
       <li>3) Validate that all image URLs referenced by Markdown files resolve (HTTP HEAD).</li>
     </ul>
   </li>
+  <li>Image URL skips:
+    <ul>
+      <li>Star-history image API URLs are skipped by default because they are volatile.</li>
+      <li>Add project-specific shell-style URL patterns in <code>.kettle-family.yml</code> or a config path pointed to by <code>KETTLE_FAMILY_CONFIG</code>:
+        <pre class="code language-yaml"><code class="language-yaml">  pre_release:
+    image_url_skip_patterns:
+      - https://assets.example.com/generated/*
+</code></pre>
+      </li>
+    </ul>
+  </li>
 </ul>
 
 <h3 id="commit-message-helper-git-hook">Commit message helper (git hook)</h3>
@@ -1138,7 +1149,7 @@ Please consider sponsoring me or the project.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Wed Jul  1 22:08:30 2026 by
+  Generated on Fri Jul 10 07:39:57 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.44 (ruby-4.0.5).
 </div>

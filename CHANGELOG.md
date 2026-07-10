@@ -20,19 +20,7 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
-- `kettle-release --skip-bundle-audit` and `KETTLE_DEV_SKIP_BUNDLE_AUDIT=true`
-  now disable the release-flow `bundle:audit` and `bundle:audit:update` rake
-  defaults so a known advisory can be handled outside the automated release.
-
-- `kettle-pre-release` now skips volatile star-history image URLs by default
-  during Markdown image validation, and accepts additional
-  `.kettle-family.yml` or `KETTLE_FAMILY_CONFIG` patterns under
-  `pre_release.image_url_skip_patterns`.
-
 ### Changed
-
-- `require "kettle/dev"` no longer loads `version_gem` by default; require
-  `kettle/dev/version_gem` for the optional `VersionGem::Basic` extension.
 
 ### Deprecated
 
@@ -40,15 +28,40 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- `kettle-release --skip-bundle-audit` now also prefixes release `bin/rake`
-  commands with `KETTLE_DEV_SKIP_BUNDLE_AUDIT=true`, ensuring the skip reaches
-  the rake process during release checks.
+### Security
+
+## [2.3.1] - 2026-07-10
+
+- TAG: [v2.3.1][2.3.1t]
+- COVERAGE: 91.69% -- 4271/4658 lines in 36 files
+- BRANCH COVERAGE: 73.08% -- 1683/2303 branches in 36 files
+- 57.30% documented
+
+### Added
+
+- `kettle-pre-release` now skips volatile star-history image URLs by default
+  during Markdown image validation, and accepts additional
+  `.kettle-family.yml` or `KETTLE_FAMILY_CONFIG` patterns under
+  `pre_release.image_url_skip_patterns`.
+
+- `kettle-release --skip-bundle-audit` and `KETTLE_DEV_SKIP_BUNDLE_AUDIT=true`
+  now disable the release-flow `bundle:audit` and `bundle:audit:update` rake
+  defaults so a known advisory can be handled outside the automated release.
+
+### Changed
+
+- `require "kettle/dev"` no longer loads `version_gem` by default; require
+  `kettle/dev/version_gem` for the optional `VersionGem::Basic` extension.
+
+### Fixed
 
 - Legacy-engine CI workflows now install Bundler gems under
   `${RUNNER_TEMP}/bundle` instead of `vendor/bundle`, and RuboCop now excludes
   nested `vendor/` trees such as `gemfiles/vendor`.
 
-### Security
+- `kettle-release --skip-bundle-audit` now also prefixes release `bin/rake`
+  commands with `KETTLE_DEV_SKIP_BUNDLE_AUDIT=true`, ensuring the skip reaches
+  the rake process during release checks.
 
 ## [2.3.0] - 2026-07-02
 
@@ -2429,7 +2442,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.0...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.1...HEAD
+[2.3.1]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.0...v2.3.1
+[2.3.1t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.3.1
 [2.3.0]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.25...v2.3.0
 [2.3.0t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.3.0
 [2.2.25]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.24...v2.2.25
