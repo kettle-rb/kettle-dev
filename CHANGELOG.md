@@ -28,11 +28,20 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [2.3.4] - 2026-07-14
+
+- TAG: [v2.3.4][2.3.4t]
+- COVERAGE: 91.96% -- 4292/4667 lines in 36 files
+- BRANCH COVERAGE: 74.22% -- 1687/2273 branches in 36 files
+- 56.88% documented
+
+### Fixed
+
 - GitHub Actions release monitoring now ignores `scorecard-analysis.yml` by
   default, matching other maintenance workflows that may not start on release
   commits.
-
-### Security
 
 ## [2.3.3] - 2026-07-13
 
@@ -2470,7 +2479,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.3...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.4...HEAD
+[2.3.4]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.3...v2.3.4
+[2.3.4t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.3.4
 [2.3.3]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.2...v2.3.3
 [2.3.3t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.3.3
 [2.3.2]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.1...v2.3.2
