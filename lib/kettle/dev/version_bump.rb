@@ -127,10 +127,21 @@ module Kettle
           edits.group_by { |edit| edit.fetch(:path) }.each_value do |file_edits|
             source = file_edits.first.fetch(:source)
             file_edits.sort_by { |edit| -edit.fetch(:start_offset) }.each do |edit|
-              source[edit.fetch(:start_offset)...edit.fetch(:end_offset)] = edit.fetch(:replacement)
+              source = replace_byte_range(
+                source,
+                edit.fetch(:start_offset),
+                edit.fetch(:end_offset),
+                edit.fetch(:replacement)
+              )
             end
             File.write(file_edits.first.fetch(:path), source)
           end
+        end
+
+        def replace_byte_range(source, start_offset, end_offset, replacement)
+          before = source.byteslice(0, start_offset) || +""
+          after = source.byteslice(end_offset, source.bytesize - end_offset) || +""
+          "#{before}#{replacement}#{after}"
         end
       end
 

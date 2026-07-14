@@ -48,7 +48,19 @@ RSpec.describe Kettle::Dev::VersionBump, :check_output, :prism_only do
     expect(File.read(gemspec_path)).to include('spec.version = "1.2.4"')
   end
 
-  def write_project(version:)
+  it "writes Prism byte-offset edits after non-ASCII content" do
+    _version_file, gemspec_path = write_project(version: "1.2.3", pre_version_content: 'spec.summary = "🔖 release metadata"')
+    bump = described_class.new(root: @root, target_version: "1.2.4")
+
+    described_class.write_edits(bump.edits)
+
+    content = File.read(gemspec_path)
+    expect(content).to include('spec.summary = "🔖 release metadata"')
+    expect(content).to include('spec.version = "1.2.4"')
+    expect(RubyVM::InstructionSequence.compile(content)).to be_a(RubyVM::InstructionSequence) if defined?(RubyVM::InstructionSequence)
+  end
+
+  def write_project(version:, pre_version_content: nil)
     FileUtils.mkdir_p(File.join(@root, "lib", "demo"))
     version_file = File.join(@root, "lib", "demo", "version.rb")
     File.write(version_file, <<~RUBY)
@@ -60,6 +72,7 @@ RSpec.describe Kettle::Dev::VersionBump, :check_output, :prism_only do
     File.write(gemspec_path, <<~RUBY)
       Gem::Specification.new do |spec|
         spec.name = "demo"
+        #{pre_version_content}
         spec.version = "#{version}"
       end
     RUBY

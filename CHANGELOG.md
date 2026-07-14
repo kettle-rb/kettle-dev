@@ -28,6 +28,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- AST-based version edits now apply Prism byte offsets as byte offsets, avoiding
+  corrupted Ruby when non-ASCII content appears before the edited string.
+
 ### Security
 
 ## [2.3.2] - 2026-07-13
