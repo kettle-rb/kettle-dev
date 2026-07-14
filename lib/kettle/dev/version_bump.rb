@@ -27,6 +27,8 @@ module Kettle
 
           version = Gem::Version.new(current_version)
           segments = version.segments
+          return released_patch_version(segments) if type == "patch" && segments.any? { |segment| !segment.is_a?(Integer) }
+
           unless segments.all? { |segment| segment.is_a?(Integer) }
             raise Kettle::Dev::Error, "cannot #{type}-bump non-numeric version #{current_version.inspect}"
           end
@@ -40,6 +42,12 @@ module Kettle
           when "patch"
             "#{major}.#{minor}.#{patch + 1}"
           end
+        end
+
+        def released_patch_version(segments)
+          release_segments = segments.take_while { |segment| segment.is_a?(Integer) }
+          major, minor, patch = (release_segments + [0, 0, 0])[0, 3]
+          "#{major}.#{minor}.#{patch}"
         end
 
         def bumped_prerelease_version(current_version)

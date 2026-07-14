@@ -153,10 +153,11 @@ RSpec.describe Kettle::Dev::BumpCLI, :check_output, :prism_only do
     end
   end
 
-  it "rejects non-numeric bump keywords for prerelease versions" do
-    with_project(version: "1.2.3.pre") do
-      expect { described_class.new(["patch"]).run! }
-        .to raise_error(Kettle::Dev::Error, /cannot patch-bump non-numeric version/)
+  it "patch-bumps prerelease versions to their matching full release" do
+    with_project(version: "1.2.3.pre") do |_root, version_file, gemspec_path|
+      expect(described_class.new(["patch"]).run!).to eq(0)
+      expect(File.read(version_file)).to include('VERSION = "1.2.3"')
+      expect(File.read(gemspec_path)).to include('spec.version = "1.2.3"')
     end
   end
 

@@ -19,6 +19,12 @@ RSpec.describe Kettle::Dev::VersionBump, :check_output, :prism_only do
     expect(described_class.resolve_target_version("pre", "1.2.3.rc9")).to eq("1.2.3.rd0")
   end
 
+  it "resolves patch bumps from prerelease versions to the matching full release" do
+    expect(described_class.resolve_target_version("patch", "3.0.pre")).to eq("3.0.0")
+    expect(described_class.resolve_target_version("patch", "3.0.0.rc6")).to eq("3.0.0")
+    expect(described_class.resolve_target_version("patch", "3.0.5.pre")).to eq("3.0.5")
+  end
+
   it "collects version file and literal gemspec version edits without writing" do
     version_file, gemspec_path = write_project(version: "1.2.3")
 

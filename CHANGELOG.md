@@ -28,6 +28,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-bump patch` now finalizes prerelease versions to the matching full
+  release instead of rejecting non-numeric prerelease segments.
+
 ### Security
 
 ## [2.3.1] - 2026-07-10
