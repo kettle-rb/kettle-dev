@@ -8,7 +8,7 @@ GIT
 PATH
   remote: .
   specs:
-    kettle-dev (2.3.1)
+    kettle-dev (2.3.2)
       emoji_regex (>= 15.0)
       kettle-rb (~> 0.1, >= 0.1.1)
       kettle-test (~> 2.0, >= 2.0.4)
@@ -471,7 +471,7 @@ CHECKSUMS
   io-console (0.8.2) sha256=d6e3ae7a7cc7574f4b8893b4fca2162e57a825b223a177b7afa236c5ef9814cc
   irb (1.18.0) sha256=de9454a0703a54704b9811a5ef31a60c86949fbf4013fcf244fabc7c775248e3
   json (2.20.0) sha256=9362bc6e55a952b056abf9167cf053358181c904cb70cd6eee0808ea830fc32b
-  kettle-dev (2.3.1)
+  kettle-dev (2.3.2)
   kettle-rb (0.1.1) sha256=2e793d817f5150339770c547a2c72ed0c1a23b5e5a3ef46f462500dcb10dec4d
   kettle-soup-cover (3.0.0.rc6) sha256=13af4d6c3d090a8e2eed3ff02d0eb688771c7e55b80398cf8143791378812f62
   kettle-test (2.0.9) sha256=df8e8aa70a497ab636391c65d08f617c34e4cdfcb8d0e03907d38854e1465758

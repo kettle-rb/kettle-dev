@@ -28,10 +28,19 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [2.3.2] - 2026-07-13
+
+- TAG: [v2.3.2][2.3.2t]
+- COVERAGE: 91.89% -- 4285/4663 lines in 36 files
+- BRANCH COVERAGE: 73.15% -- 1686/2305 branches in 36 files
+- 57.09% documented
+
+### Fixed
+
 - `kettle-bump patch` now finalizes prerelease versions to the matching full
   release instead of rejecting non-numeric prerelease segments.
-
-### Security
 
 ## [2.3.1] - 2026-07-10
 
@@ -2445,7 +2454,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.1...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.2...HEAD
+[2.3.2]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.1...v2.3.2
+[2.3.2t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.3.2
 [2.3.1]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.0...v2.3.1
 [2.3.1t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.3.1
 [2.3.0]: https://github.com/kettle-dev/kettle-dev/compare/v2.2.25...v2.3.0
