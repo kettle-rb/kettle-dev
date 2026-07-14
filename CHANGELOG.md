@@ -28,10 +28,19 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [2.3.3] - 2026-07-13
+
+- TAG: [v2.3.3][2.3.3t]
+- COVERAGE: 91.62% -- 4276/4667 lines in 36 files
+- BRANCH COVERAGE: 72.80% -- 1678/2305 branches in 36 files
+- 56.88% documented
+
+### Fixed
+
 - AST-based version edits now apply Prism byte offsets as byte offsets, avoiding
   corrupted Ruby when non-ASCII content appears before the edited string.
-
-### Security
 
 ## [2.3.2] - 2026-07-13
 
@@ -2457,7 +2466,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.2...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.3...HEAD
+[2.3.3]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.2...v2.3.3
+[2.3.3t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.3.3
 [2.3.2]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.1...v2.3.2
 [2.3.2t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.3.2
 [2.3.1]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.0...v2.3.1
