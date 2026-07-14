@@ -2,9 +2,11 @@
 
 module Kettle
   module Dev
-    module Version
-      VERSION = "2.3.3"
+    module Tasks
+      module Version
+        VERSION = "2.3.3"
+      end
+      VERSION = Version::VERSION # Traditional Constant Location
     end
-    VERSION = Version::VERSION # Traditional Constant Location
   end
 end
