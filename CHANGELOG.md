@@ -28,6 +28,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- GitHub Actions release monitoring now ignores `scorecard-analysis.yml` by
+  default, matching other maintenance workflows that may not start on release
+  commits.
+
 ### Security
 
 ## [2.3.3] - 2026-07-13

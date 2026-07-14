@@ -78,6 +78,7 @@ module Kettle
           dependency-review.yml
           discord-notifier.yml
           opencollective.yml
+          scorecard-analysis.yml
         ]
       end
 

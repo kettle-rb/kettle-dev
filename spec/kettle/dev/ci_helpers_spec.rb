@@ -115,12 +115,12 @@ RSpec.describe Kettle::Dev::CIHelpers do
       Dir.mktmpdir("root") do |root|
         dir = File.join(root, ".github", "workflows")
         FileUtils.mkdir_p(dir)
-        %w[ci.yml style.yaml codeql-analysis.yml].each do |f|
+        %w[ci.yml style.yaml codeql-analysis.yml scorecard-analysis.yml].each do |f|
           File.write(File.join(dir, f), "name: test\n")
         end
         list = described_class.workflows_list(root)
         expect(list).to include("ci.yml", "style.yaml")
-        expect(list).not_to include("codeql-analysis.yml")
+        expect(list).not_to include("codeql-analysis.yml", "scorecard-analysis.yml")
       end
     end
 
