@@ -1,10 +1,8 @@
 module Kettle
   module Dev
-    module Tasks
-      module Version
-        VERSION: String
-      end
+    module Version
       VERSION: String
     end
+    VERSION: String
   end
 end
