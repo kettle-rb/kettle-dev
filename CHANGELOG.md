@@ -22,6 +22,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- Updated the `kettle-rb` runtime dependency floor to `>= 0.1.2`.
+
 ### Deprecated
 
 ### Removed
