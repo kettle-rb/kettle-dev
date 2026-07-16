@@ -282,6 +282,21 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
     end
   end
 
+  describe "#detect_gem_name" do
+    it "uses K_CHANGELOG_GEM_NAME before root gemspec discovery" do
+      mkproj do |root|
+        FileUtils.rm_f(File.join(root, "demo.gemspec"))
+        allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
+        stub_env("K_CHANGELOG_GEM_NAME" => "structuredmerge-ruby")
+
+        cli = described_class.new(strict: false)
+        allow(cli).to receive(:detect_gem_name).and_call_original
+
+        expect(cli.send(:detect_gem_name)).to eq("structuredmerge-ruby")
+      end
+    end
+  end
+
   describe "#run warnings and aborts" do
     it "warns when owner/repo cannot be determined and Unreleased is empty" do
       mkproj do |root|

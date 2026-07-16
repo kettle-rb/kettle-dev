@@ -458,6 +458,11 @@ What it does:
     - `kettle-changelog`
 - Behavior:
     - Reads version from the unique `lib/**/version.rb` in the project.
+    - Reads the gem name from the root `.gemspec`; set
+      `K_CHANGELOG_GEM_NAME` when a root changelog represents a family instead
+      of a single gem checkout.
+    - Set `K_CHANGELOG_VERSION_FILE` when a root changelog should use a specific
+      version file outside the default `lib/**/version.rb` discovery path.
     - Moves entries from the `[Unreleased]` section into a new `[#.#.#] - YYYY-MM-DD` section.
     - Prepends 4 lines with TAG, line coverage, branch coverage, and percent documented.
     - Converts any GitLab-style compare links at the bottom to GitHub style, adds new tag/compare links for the new release and a temporary tag reference `[X.Y.Zt]`.

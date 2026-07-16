@@ -30,6 +30,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-changelog` now honors `K_CHANGELOG_GEM_NAME` before root gemspec
+  discovery, allowing root changelogs for gem families to query live release
+  data without requiring a synthetic root gemspec.
+
 ### Security
 
 ## [2.3.4] - 2026-07-14

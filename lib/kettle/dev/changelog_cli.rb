@@ -353,6 +353,9 @@ module Kettle
       end
 
       def detect_gem_name
+        env_gem_name = ENV.fetch("K_CHANGELOG_GEM_NAME", "").to_s.strip
+        return env_gem_name unless env_gem_name.empty?
+
         gemspecs = Dir[File.join(@root, "*.gemspec")]
         abort("Could not find a .gemspec in project root.") if gemspecs.empty?
         path = gemspecs.min
