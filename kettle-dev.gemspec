@@ -157,7 +157,7 @@ Gem::Specification.new do |spec|
 
   # Testing
   spec.add_development_dependency("appraisal2", "~> 3.1", ">= 3.1.4")               # ruby >= 1.8.7, for testing against multiple versions of dependencies
-  spec.add_development_dependency("turbo_tests2", "~> 3.1", ">= 3.1.7")            # ruby >= 2.4.0, default kettle-test runner
+  spec.add_development_dependency("turbo_tests2", "~> 3.1", ">= 3.1.10")           # ruby >= 2.4.0, default kettle-test runner
 
   # Releasing
   spec.add_development_dependency("stone_checksums", "~> 1.0", ">= 1.0.6")          # ruby >= 2.2.0
