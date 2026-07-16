@@ -6,7 +6,7 @@
 <title>
   File: README
   
-    &mdash; Documentation by YARD 0.9.44
+    &mdash; Documentation by YARD 0.9.45
   
 </title>
 
@@ -200,7 +200,7 @@ bin/kettle-release
     <tr>
       <td>Source</td>
       <td>
-<a href="https://gitlab.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitLab-FBA326?style=for-the-badge&amp;logo=Gitlab&amp;logoColor=orange" alt="Source on GitLab.com"></a> <a href="https://codeberg.org/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/CodeBerg-4893CC?style=for-the-badge&amp;logo=CodeBerg&amp;logoColor=blue" alt="Source on CodeBerg.org"></a> <a href="https://github.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitHub-238636?style=for-the-badge&amp;logo=Github&amp;logoColor=green" alt="Source on Github.com"></a> <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"><img src="https://img.shields.io/badge/KLOC-4.667-FFDD67.svg?style=for-the-badge&amp;logo=YouTube&amp;logoColor=blue" alt="The best SHA: dQw4w9WgXcQ!"></a>
+<a href="https://gitlab.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitLab-FBA326?style=for-the-badge&amp;logo=Gitlab&amp;logoColor=orange" alt="Source on GitLab.com"></a> <a href="https://codeberg.org/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/CodeBerg-4893CC?style=for-the-badge&amp;logo=CodeBerg&amp;logoColor=blue" alt="Source on CodeBerg.org"></a> <a href="https://github.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitHub-238636?style=for-the-badge&amp;logo=Github&amp;logoColor=green" alt="Source on Github.com"></a> <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"><img src="https://img.shields.io/badge/KLOC-4.669-FFDD67.svg?style=for-the-badge&amp;logo=YouTube&amp;logoColor=blue" alt="The best SHA: dQw4w9WgXcQ!"></a>
 </td>
     </tr>
     <tr>
@@ -803,6 +803,11 @@ when a project needs to point at a specific version file.</li>
   <li>Behavior:
     <ul>
       <li>Reads version from the unique <code>lib/**/version.rb</code> in the project.</li>
+      <li>Reads the gem name from the root <code>.gemspec</code>; set<br>
+<code>K_CHANGELOG_GEM_NAME</code> when a root changelog represents a family instead<br>
+of a single gem checkout.</li>
+      <li>Set <code>K_CHANGELOG_VERSION_FILE</code> when a root changelog should use a specific<br>
+version file outside the default <code>lib/**/version.rb</code> discovery path.</li>
       <li>Moves entries from the <code>[Unreleased]</code> section into a new <code>[#.#.#] - YYYY-MM-DD</code> section.</li>
       <li>Prepends 4 lines with TAG, line coverage, branch coverage, and percent documented.</li>
       <li>Converts any GitLab-style compare links at the bottom to GitHub style, adds new tag/compare links for the new release and a temporary tag reference <code>[X.Y.Zt]</code>.</li>
@@ -1149,9 +1154,9 @@ Please consider sponsoring me or the project.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Mon Jul 13 22:39:12 2026 by
+  Generated on Thu Jul 16 03:42:58 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.44 (ruby-4.0.5).
+  0.9.45 (ruby-4.0.6).
 </div>
 
     </div>
