@@ -44,7 +44,7 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
-- Updated the `kettle-dev` runtime dependency floor to `>= 0.1.2`.
+- Updated the `kettle-rb` runtime dependency floor to `>= 0.1.2`.
 
 ### Fixed
 
@@ -144,7 +144,7 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
-- Updated the `kettle-dev` runtime dependency floor to 0.1.1.
+- Updated the `kettle-rb` runtime dependency floor to 0.1.1.
 
 ### Fixed
 
