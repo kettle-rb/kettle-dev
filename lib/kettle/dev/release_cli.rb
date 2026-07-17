@@ -108,12 +108,13 @@ module Kettle
 
       public
 
-      def initialize(start_step: 0, local_ci: false, version: nil, appraisal_task: nil, skip_steps: nil, skip_bundle_audit: nil)
+      def initialize(start_step: 0, local_ci: false, version: nil, appraisal_task: nil, skip_steps: nil, skip_bundle_audit: nil, ci_workflows: nil)
         @root = Kettle::Dev::CIHelpers.project_root
         @git = Kettle::Dev::GitAdapter.new
         @start_step = (start_step || 0).to_i
         @start_step = 0 if @start_step < 0
         @skip_steps = normalize_skip_steps(skip_steps)
+        @ci_workflows = normalize_ci_workflows(ci_workflows || ENV["K_RELEASE_CI_WORKFLOWS"])
         @local_ci = !!local_ci
         @skip_bundle_audit = truthy_value?(skip_bundle_audit) || truthy_value?(ENV["KETTLE_DEV_SKIP_BUNDLE_AUDIT"])
         @version_override = Kettle::Dev::Versioning.normalize_explicit_version(version)
@@ -403,6 +404,11 @@ module Kettle
 
           step
         end.uniq
+      end
+
+      def normalize_ci_workflows(value)
+        workflows = Array(value).flat_map { |part| part.to_s.split(",") }.map(&:strip).reject(&:empty?)
+        workflows.map { |workflow| workflow.match?(/\.ya?ml\z/) ? workflow : "#{workflow}.yml" }.uniq
       end
 
       private
@@ -714,7 +720,7 @@ module Kettle
 
       def monitor_workflows_after_push!
         # Use abort-on-failure CI monitor to match historical behavior and specs
-        Kettle::Dev::CIMonitor.monitor_all!(restart_hint: "bundle exec kettle-release start_step=10")
+        Kettle::Dev::CIMonitor.monitor_all!(restart_hint: "bundle exec kettle-release start_step=10", workflows: @ci_workflows)
       end
 
       def run_cmd!(cmd)

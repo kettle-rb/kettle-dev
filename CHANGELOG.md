@@ -20,6 +20,11 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- `kettle-release` now accepts `--ci-workflows` and
+  `K_RELEASE_CI_WORKFLOWS` to monitor an explicit workflow subset at the CI
+  wait step while retaining the default behavior of waiting for all applicable
+  workflows.
+
 ### Changed
 
 ### Deprecated
