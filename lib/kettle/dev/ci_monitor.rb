@@ -47,7 +47,7 @@ module Kettle
       #
       # @param restart_hint [String] guidance command shown on failure
       # @return [void]
-      def monitor_all!(restart_hint: "bundle exec kettle-release start_step=10", workflows: nil, **_options)
+      def monitor_all!(restart_hint: "bundle exec kettle-release start_step=10", workflows: nil, **options)
         checks_any = false
         checks_any |= monitor_github_internal!(restart_hint: restart_hint, workflows: workflows)
         checks_any |= monitor_gitlab_internal!(restart_hint: restart_hint)
