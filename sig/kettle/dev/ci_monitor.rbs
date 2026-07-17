@@ -2,7 +2,7 @@ module Kettle
   module Dev
     module CIMonitor
       def self.status_emoji: (String? status, String? conclusion) -> String
-      def self.monitor_all!: (?restart_hint: String) -> void
+      def self.monitor_all!: (?restart_hint: String, ?workflows: Array[String]?, **untyped) -> void
       def self.monitor_gitlab!: (?restart_hint: String) -> bool
       def self.collect_all: () -> { github: Array[untyped], gitlab: untyped? }
       def self.summarize_results: ({ github: Array[untyped], gitlab: untyped? }) -> bool
