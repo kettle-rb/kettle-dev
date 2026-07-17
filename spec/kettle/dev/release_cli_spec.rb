@@ -655,6 +655,31 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect { cli.send(:monitor_workflows_after_push!) }.not_to raise_error
       end
 
+      it "passes an explicit normalized workflow subset to the CI monitor" do
+        release_cli = described_class.new(ci_workflows: "current,style.yml")
+        allow(Kettle::Dev::CIMonitor).to receive(:monitor_all!)
+
+        release_cli.send(:monitor_workflows_after_push!)
+
+        expect(Kettle::Dev::CIMonitor).to have_received(:monitor_all!).with(
+          restart_hint: "bundle exec kettle-release start_step=10",
+          workflows: %w[current.yml style.yml]
+        )
+      end
+
+      it "uses K_RELEASE_CI_WORKFLOWS when no explicit workflow subset is passed" do
+        stub_env("K_RELEASE_CI_WORKFLOWS" => "current,style.yml")
+        release_cli = described_class.new
+        allow(Kettle::Dev::CIMonitor).to receive(:monitor_all!)
+
+        release_cli.send(:monitor_workflows_after_push!)
+
+        expect(Kettle::Dev::CIMonitor).to have_received(:monitor_all!).with(
+          restart_hint: "bundle exec kettle-release start_step=10",
+          workflows: %w[current.yml style.yml]
+        )
+      end
+
       it "aborts when a GitHub workflow fails" do
         allow(ci_helpers).to receive(:workflows_list).and_return(["ci.yml"])
         allow(File).to receive(:exist?).and_call_original

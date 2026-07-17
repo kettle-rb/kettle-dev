@@ -47,9 +47,9 @@ module Kettle
       #
       # @param restart_hint [String] guidance command shown on failure
       # @return [void]
-      def monitor_all!(restart_hint: "bundle exec kettle-release start_step=10")
+      def monitor_all!(restart_hint: "bundle exec kettle-release start_step=10", workflows: nil)
         checks_any = false
-        checks_any |= monitor_github_internal!(restart_hint: restart_hint)
+        checks_any |= monitor_github_internal!(restart_hint: restart_hint, workflows: workflows)
         checks_any |= monitor_gitlab_internal!(restart_hint: restart_hint)
         abort("CI configuration not detected (GitHub or GitLab). Ensure CI is configured and remotes point to the correct hosts.") unless checks_any
       end
@@ -269,9 +269,9 @@ module Kettle
 
       # -- internals (abort-on-failure legacy paths used elsewhere) --
 
-      def monitor_github_internal!(restart_hint:)
+      def monitor_github_internal!(restart_hint:, workflows: nil)
         root = Kettle::Dev::CIHelpers.project_root
-        workflows = Kettle::Dev::CIHelpers.workflows_list(root)
+        workflows = Array(workflows).empty? ? Kettle::Dev::CIHelpers.workflows_list(root) : Array(workflows)
         gh_remote = preferred_github_remote
         return false unless gh_remote && !workflows.empty?
 

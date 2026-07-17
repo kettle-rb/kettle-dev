@@ -104,6 +104,28 @@ RSpec.describe Kettle::Dev::CIMonitor do
       expect { described_class.monitor_all!(restart_hint: "hint") }.not_to raise_error
     end
 
+    it "monitors an explicit workflow subset when provided", :check_output do
+      allow(helpers).to receive_messages(
+        project_root: Dir.pwd,
+        current_branch: "main",
+        current_head_sha: "abc123"
+      )
+      expect(helpers).not_to receive(:workflows_list)
+      allow(described_class).to receive_messages(
+        preferred_github_remote: "origin",
+        remote_url: "https://github.com/me/repo.git"
+      )
+      allow(helpers).to receive(:latest_run).with(owner: "me", repo: "repo", workflow_file: "current.yml", branch: "main", require_head: true, head_sha: "abc123").and_return(
+        {"status" => "completed", "conclusion" => "success", "html_url" => "https://github.com/me/repo/actions/runs/2", "id" => 2, "head_sha" => "abc123"}
+      )
+      allow(helpers).to receive(:success?) { |run| run && run["conclusion"] == "success" }
+      allow(helpers).to receive(:failed?) { |run| run && run["conclusion"] == "failure" }
+      stub_env("K_RELEASE_CI_INITIAL_SLEEP" => "0")
+      allow(described_class).to receive(:sleep)
+
+      expect { described_class.monitor_all!(restart_hint: "hint", workflows: ["current.yml"]) }.not_to raise_error
+    end
+
     it "times out when GitHub never starts a run for local HEAD", :check_output do
       allow(helpers).to receive_messages(
         project_root: Dir.pwd,
