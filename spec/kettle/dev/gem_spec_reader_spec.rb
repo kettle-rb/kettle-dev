@@ -29,12 +29,12 @@ RSpec.describe Kettle::Dev::GemSpecReader do
 
     it "normalizes the warning path for user-facing output", :check_output do
       allow(Kernel).to receive(:warn)
-      allow(Dir).to receive(:glob).and_return(["/var/home/pboling/src/kettle-rb/demo/demo.gemspec"])
+      allow(Dir).to receive(:glob).and_return(["/var/home/pboling/src/kettle-dev/demo/demo.gemspec"])
       allow(Gem::Specification).to receive(:load).and_return(double("spec", name: nil, required_ruby_version: nil, homepage: nil))
 
       described_class.load(tmp_root)
 
-      expect(Kernel).to have_received(:warn).with(include("Path searched: /home/pboling/src/kettle-rb/demo/demo.gemspec"))
+      expect(Kernel).to have_received(:warn).with(include("Path searched: /home/pboling/src/kettle-dev/demo/demo.gemspec"))
     end
   end
 

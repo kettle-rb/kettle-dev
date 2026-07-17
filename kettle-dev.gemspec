@@ -23,8 +23,8 @@ Gem::Specification.new do |spec|
   spec.authors = ["Peter H. Boling"]
   spec.email = ["floss@galtzo.com"]
 
-  spec.summary = "🍲 A kettle-rb meta tool to streamline development and testing"
-  spec.description = "🍲 Kettle::Dev is a meta tool from kettle-rb to streamline development and testing. Acts as a shim dependency, pulling in many other dependencies, to give you OOTB productivity with a RubyGem, or Ruby app project. Configures a complete set of Rake tasks, for all the libraries is brings in, so they arrive ready to go. Fund overlooked open source projects - bottom of stack, dev/test dependencies: floss-funding.dev"
+  spec.summary = "🍲 A kettle-dev meta tool to streamline development and testing"
+  spec.description = "🍲 Kettle::Dev is a meta tool from kettle-dev to streamline development and testing. Acts as a shim dependency, pulling in many other dependencies, to give you OOTB productivity with a RubyGem, or Ruby app project. Configures a complete set of Rake tasks, for all the libraries is brings in, so they arrive ready to go. Fund overlooked open source projects - bottom of stack, dev/test dependencies: floss-funding.dev"
   spec.homepage = "https://github.com/kettle-dev/kettle-dev"
   spec.licenses = ["AGPL-3.0-only"]
   spec.required_ruby_version = ">= 2.4.0"
@@ -129,7 +129,7 @@ Gem::Specification.new do |spec|
 
   # Utilities
   spec.add_dependency("emoji_regex", ">= 15.0")                         # ruby 2.4
-  spec.add_dependency("kettle-rb", "~> 0.1", ">= 0.1.2")                  # ruby >= 1.8.7
+  spec.add_dependency("kettle-dev", "~> 0.1", ">= 0.1.2")                  # ruby >= 1.8.7
   spec.add_dependency("kettle-test", "~> 2.0", ">= 2.0.4")              # ruby >= 2.4
   spec.add_dependency("ruby-progressbar", "~> 1.13")                    # ruby >= 0
 

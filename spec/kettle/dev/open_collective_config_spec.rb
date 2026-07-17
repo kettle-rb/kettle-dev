@@ -52,7 +52,7 @@ RSpec.describe Kettle::Dev::OpenCollectiveConfig do
     end
 
     context "when variable is set to a truthy or non-falsey value" do
-      %w[true TRUE yes YES y Y 1 kettle-rb some-handle].each do |val|
+      %w[true TRUE yes YES y Y 1 kettle-dev some-handle].each do |val|
         it "returns false for #{val.inspect}" do
           stub_env("OPENCOLLECTIVE_HANDLE" => val)
 
@@ -77,13 +77,13 @@ RSpec.describe Kettle::Dev::OpenCollectiveConfig do
 
     context "when only one variable is falsey and the other is truthy" do
       it "returns true when OPENCOLLECTIVE_HANDLE is falsey and FUNDING_ORG is truthy" do
-        stub_env("OPENCOLLECTIVE_HANDLE" => "false", "FUNDING_ORG" => "kettle-rb")
+        stub_env("OPENCOLLECTIVE_HANDLE" => "false", "FUNDING_ORG" => "kettle-dev")
 
         expect(described_class.disabled?).to be(true)
       end
 
       it "returns true when FUNDING_ORG is falsey and OPENCOLLECTIVE_HANDLE is truthy" do
-        stub_env("OPENCOLLECTIVE_HANDLE" => "kettle-rb", "FUNDING_ORG" => "0")
+        stub_env("OPENCOLLECTIVE_HANDLE" => "kettle-dev", "FUNDING_ORG" => "0")
 
         expect(described_class.disabled?).to be(true)
       end
@@ -113,12 +113,12 @@ RSpec.describe Kettle::Dev::OpenCollectiveConfig do
 
     it "ignores OPENCOLLECTIVE_HANDLE when it contains an unresolved token placeholder" do
       stub_env("OPENCOLLECTIVE_HANDLE" => "{KJ|OPENCOLLECTIVE_ORG}")
-      File.write(".opencollective.yml", "collective: kettle-rb\n")
+      File.write(".opencollective.yml", "collective: kettle-dev\n")
 
       result = described_class.handle(root: @dir)
 
       # Should fall through to .opencollective.yml, not use the token placeholder
-      expect(result).to eq("kettle-rb")
+      expect(result).to eq("kettle-dev")
     end
 
     it "ignores token placeholder 'collective' value in YAML in non-strict mode" do

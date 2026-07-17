@@ -84,8 +84,8 @@ RSpec.describe Kettle::Dev do
 
   describe "::display_path" do
     it "normalizes /var/home to /home for user-facing output" do
-      expect(described_class.display_path("/var/home/pboling/src/kettle-rb")).to eq("/home/pboling/src/kettle-rb")
-      expect(described_class.display_path("/home/pboling/src/kettle-rb")).to eq("/home/pboling/src/kettle-rb")
+      expect(described_class.display_path("/var/home/pboling/src/kettle-dev")).to eq("/home/pboling/src/kettle-dev")
+      expect(described_class.display_path("/home/pboling/src/kettle-dev")).to eq("/home/pboling/src/kettle-dev")
     end
   end
 

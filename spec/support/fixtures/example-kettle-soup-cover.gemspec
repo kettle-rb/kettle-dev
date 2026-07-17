@@ -37,7 +37,7 @@ Gem::Specification.new do |spec|
     end
   end
 
-  spec.summary = "🍲 kettle-rb OOTB SimpleCov config supporting every CI platform & coverage tool"
+  spec.summary = "🍲 kettle-dev OOTB SimpleCov config supporting every CI platform & coverage tool"
   spec.description = <<~DESC
     🍲 A Covered Kettle of Test Coverage SOUP (Software of Unknown Provenance)
     Four-line SimpleCov config, w/ curated, opinionated, pre-configured, dependencies
@@ -45,7 +45,7 @@ Gem::Specification.new do |spec|
     Fund overlooked open source projects - bottom of stack, dev/test dependencies: floss-funding.dev
   DESC
   gh_mirror = "https://github.com/kettle-dev/#{spec.name}"
-  gl_homepage = "https://gitlab.com/kettle-rb/#{spec.name}"
+  gl_homepage = "https://gitlab.com/kettle-dev/#{spec.name}"
   spec.homepage = gl_homepage
   spec.license = "MIT"
   # rubocop:disable Gemspec/RequiredRubyVersion -- fixture preserves its own Ruby floor
