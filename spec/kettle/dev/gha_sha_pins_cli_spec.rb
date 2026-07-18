@@ -318,8 +318,12 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
 
       versions = client.versions_for_repo("foo/bar")
 
-      expect(versions.map { |entry| entry[:version] }).to eq(%w[2 1.0.1 1.0.0])
-      expect(versions.map { |entry| entry[:sha] }).to eq(["d" * 40, "b" * 40, "a" * 40])
+      expect(versions).to include(
+        include(tag: "v2", version: "2", sha: "d" * 40),
+        include(tag: "v1.0.1", version: "1.0.1", sha: "b" * 40),
+        include(tag: "v1.0.0", version: "1.0.0", sha: "a" * 40),
+        include(tag: "v1", version: "1", sha: "c" * 40)
+      )
     end
 
     it "canonicalizes equivalent release and major-line tags to the more explicit version spelling" do
@@ -336,6 +340,24 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
 
       expect(versions).to contain_exactly(
         include(tag: "v7.0.0", version: "7.0.0", sha: "a" * 40)
+      )
+    end
+
+    it "does not canonicalize equivalent version spellings when the tag SHA is unknown" do
+      client = described_class.new(token: nil, api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE, user_agent: "kettle-gha-sha-pins")
+      allow(client).to receive(:request_json).with("/repos/foo/bar/releases?per_page=100").and_return([
+        {"tag_name" => "v7.0.0", "prerelease" => false}
+      ])
+      allow(client).to receive(:request_json).with("/repos/foo/bar/git/matching-refs/tags/").and_return([
+        {"ref" => "refs/tags/v7", "object" => {"type" => "tag", "sha" => "a" * 40}},
+        {"ref" => "refs/tags/v7.0.0", "object" => {"type" => "commit", "sha" => "b" * 40}}
+      ])
+
+      versions = client.versions_for_repo("foo/bar")
+
+      expect(versions).to contain_exactly(
+        include(tag: "v7", version: "7", sha: nil),
+        include(tag: "v7.0.0", version: "7.0.0", sha: "b" * 40)
       )
     end
 

@@ -1222,7 +1222,7 @@ module Kettle
         def canonicalize_equivalent_release_versions(releases)
           groups = []
           releases.each do |release|
-            group = groups.find { |entries| entries.first[:version_obj] == release[:version_obj] }
+            group = groups.find { |entries| equivalent_release_tag?(entries.first, release) }
             if group
               group << release
             else
@@ -1231,6 +1231,13 @@ module Kettle
           end
 
           groups.map { |entries| entries.max_by { |entry| release_version_specificity(entry) } }
+        end
+
+        def equivalent_release_tag?(left, right)
+          left[:version_obj] == right[:version_obj] &&
+            left[:sha] &&
+            right[:sha] &&
+            left[:sha] == right[:sha]
         end
 
         def release_version_specificity(entry)
