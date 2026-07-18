@@ -5,7 +5,10 @@ require "fileutils"
 
 RSpec.describe "reek rake tasks" do # rubocop:disable RSpec/DescribeClass
   describe "rake reek:update" do
-    include_context "with rake", "reek"
+    include_context "with rake", "reek" do
+      let(:task_dir) { "lib/kettle/dev/rakelib" }
+      let(:rakelib) { File.expand_path("../../../../lib/kettle/dev/rakelib", __dir__) }
+    end
 
     def status(success, exitstatus)
       instance_double(Process::Status, success?: success, exitstatus: exitstatus)
@@ -71,7 +74,10 @@ RSpec.describe "reek rake tasks" do # rubocop:disable RSpec/DescribeClass
   end
 
   describe "rake reek when reek is unavailable" do
-    include_context "with rake", "reek"
+    include_context "with rake", "reek" do
+      let(:task_dir) { "lib/kettle/dev/rakelib" }
+      let(:rakelib) { File.expand_path("../../../../lib/kettle/dev/rakelib", __dir__) }
+    end
 
     let(:task_name) { "reek" }
     let(:fake_reek_load_path) { File.expand_path("../../../../tmp/fake_reek_unavailable_load_path", __dir__) }

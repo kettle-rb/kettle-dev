@@ -20,6 +20,7 @@ rescue LoadError => error
 end
 
 # External RSpec & related config
+require "rake"
 require "kettle/test/rspec"
 
 # Internal ENV config
@@ -84,7 +85,6 @@ RSpec.configure do |config|
 end
 
 # Internal RSpec & related config
-require_relative "support/shared_contexts/with_rake"
 # Include the global mocked git adapter context
 require_relative "support/shared_contexts/with_mocked_git_adapter"
 # Include the global mocked exit adapter context
