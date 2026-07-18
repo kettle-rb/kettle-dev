@@ -28,11 +28,20 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [2.3.7] - 2026-07-18
+
+- TAG: [v2.3.7][2.3.7t]
+- COVERAGE: 91.84% -- 4311/4694 lines in 36 files
+- BRANCH COVERAGE: 74.20% -- 1694/2283 branches in 36 files
+- 56.25% documented
+
+### Fixed
+
 - `kettle-gha-sha-pins` now canonicalizes duplicate equivalent action tags,
   preferring explicit release tags such as `v7.0.0` over major-line aliases
   such as `v7`, so adjacent version comments do not flip between spellings.
-
-### Security
 
 ## [2.3.6] - 2026-07-17
 
@@ -2527,7 +2536,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.6...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.7...HEAD
+[2.3.7]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.6...v2.3.7
+[2.3.7t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.3.7
 [2.3.6]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.5...v2.3.6
 [2.3.6t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.3.6
 [2.3.5]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.4...v2.3.5
