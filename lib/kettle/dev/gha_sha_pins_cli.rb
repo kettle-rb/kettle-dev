@@ -1212,10 +1212,38 @@ module Kettle
             }
           end
           releases.concat(tag_versions)
+          releases = canonicalize_equivalent_release_versions(releases)
 
           releases.sort_by! { |release| release[:version_obj] }
           releases.reverse!
           releases
+        end
+
+        def canonicalize_equivalent_release_versions(releases)
+          groups = []
+          releases.each do |release|
+            group = groups.find { |entries| entries.first[:version_obj] == release[:version_obj] }
+            if group
+              group << release
+            else
+              groups << [release]
+            end
+          end
+
+          groups.map { |entries| entries.max_by { |entry| release_version_specificity(entry) } }
+        end
+
+        def release_version_specificity(entry)
+          text = entry.fetch(:tag).to_s.sub(/\A[vV]/, "")
+          release_text, suffix = text.split(/[-.](?=[A-Za-z])/, 2)
+          numeric_segments = release_text.to_s.split(".").take_while { |part| part.match?(/\A\d+\z/) }
+
+          [
+            numeric_segments.length,
+            suffix ? 0 : 1,
+            text.length,
+            entry.fetch(:tag).to_s
+          ]
         end
 
         def parse_release_version_text(value)

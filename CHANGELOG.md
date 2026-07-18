@@ -28,6 +28,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-gha-sha-pins` now canonicalizes duplicate equivalent action tags,
+  preferring explicit release tags such as `v7.0.0` over major-line aliases
+  such as `v7`, so adjacent version comments do not flip between spellings.
+
 ### Security
 
 ## [2.3.6] - 2026-07-17
