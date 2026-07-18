@@ -312,13 +312,74 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       allow(client).to receive(:request_json).with("/repos/foo/bar/git/matching-refs/tags/").and_return([
         {"ref" => "refs/tags/v1.0.0", "object" => {"type" => "commit", "sha" => "a" * 40}},
         {"ref" => "refs/tags/v1.0.1", "object" => {"type" => "commit", "sha" => "b" * 40}},
-        {"ref" => "refs/tags/v1", "object" => {"type" => "commit", "sha" => "c" * 40}}
+        {"ref" => "refs/tags/v1", "object" => {"type" => "commit", "sha" => "c" * 40}},
+        {"ref" => "refs/tags/v2", "object" => {"type" => "commit", "sha" => "d" * 40}}
       ])
 
       versions = client.versions_for_repo("foo/bar")
 
-      expect(versions.map { |entry| entry[:version] }).to eq(%w[1.0.1 1 1.0.0])
-      expect(versions.map { |entry| entry[:sha] }).to eq(["b" * 40, "c" * 40, "a" * 40])
+      expect(versions).to match([
+        include(tag: "v2", version: "2", sha: "d" * 40),
+        include(tag: "v1.0.1", version: "1.0.1", sha: "b" * 40),
+        include(tag: "v1.0.0", version: "1.0.0", sha: "a" * 40),
+        include(tag: "v1", version: "1", sha: "c" * 40)
+      ])
+    end
+
+    it "canonicalizes equivalent release and major-line tags to the more explicit version spelling" do
+      client = described_class.new(token: nil, api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE, user_agent: "kettle-gha-sha-pins")
+      allow(client).to receive(:request_json).with("/repos/foo/bar/releases?per_page=100").and_return([
+        {"tag_name" => "v7.0.0", "prerelease" => false}
+      ])
+      allow(client).to receive(:request_json).with("/repos/foo/bar/git/matching-refs/tags/").and_return([
+        {"ref" => "refs/tags/v7", "object" => {"type" => "commit", "sha" => "a" * 40}},
+        {"ref" => "refs/tags/v7.0.0", "object" => {"type" => "commit", "sha" => "a" * 40}}
+      ])
+
+      versions = client.versions_for_repo("foo/bar")
+
+      expect(versions).to contain_exactly(
+        include(tag: "v7.0.0", version: "7.0.0", sha: "a" * 40)
+      )
+    end
+
+    it "prefers the concrete patch tag when a moving major-line tag points to the same SHA" do
+      client = described_class.new(token: nil, api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE, user_agent: "kettle-gha-sha-pins")
+      allow(client).to receive(:request_json).with("/repos/foo/bar/releases?per_page=100").and_return([
+        {"tag_name" => "v7.0.0", "prerelease" => false},
+        {"tag_name" => "v7.0.1", "prerelease" => false}
+      ])
+      allow(client).to receive(:request_json).with("/repos/foo/bar/git/matching-refs/tags/").and_return([
+        {"ref" => "refs/tags/v7.0.0", "object" => {"type" => "commit", "sha" => "a" * 40}},
+        {"ref" => "refs/tags/v7", "object" => {"type" => "commit", "sha" => "b" * 40}},
+        {"ref" => "refs/tags/v7.0.1", "object" => {"type" => "commit", "sha" => "b" * 40}}
+      ])
+
+      versions = client.versions_for_repo("foo/bar")
+
+      expect(versions).to match([
+        include(tag: "v7.0.1", version: "7.0.1", sha: "b" * 40),
+        include(tag: "v7.0.0", version: "7.0.0", sha: "a" * 40),
+        include(tag: "v7", version: "7", sha: "b" * 40)
+      ])
+    end
+
+    it "does not canonicalize equivalent version spellings when the tag SHA is unknown" do
+      client = described_class.new(token: nil, api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE, user_agent: "kettle-gha-sha-pins")
+      allow(client).to receive(:request_json).with("/repos/foo/bar/releases?per_page=100").and_return([
+        {"tag_name" => "v7.0.0", "prerelease" => false}
+      ])
+      allow(client).to receive(:request_json).with("/repos/foo/bar/git/matching-refs/tags/").and_return([
+        {"ref" => "refs/tags/v7", "object" => {"type" => "tag", "sha" => "a" * 40}},
+        {"ref" => "refs/tags/v7.0.0", "object" => {"type" => "commit", "sha" => "b" * 40}}
+      ])
+
+      versions = client.versions_for_repo("foo/bar")
+
+      expect(versions).to contain_exactly(
+        include(tag: "v7", version: "7", sha: nil),
+        include(tag: "v7.0.0", version: "7.0.0", sha: "b" * 40)
+      )
     end
 
     it "defers annotated tag commit resolution until a specific version is needed" do
@@ -722,7 +783,7 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       expect(File.read(workflow_path)).not_to include("# v1.2.0")
     end
 
-    it "updates major-line version comments once and stays clean on the next run" do
+    it "updates major-line version comments to the canonical explicit equivalent once and stays clean" do
       File.write(
         workflow_path,
         <<~YAML
@@ -738,7 +799,7 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       cli_client = instance_double(described_class::GitHubClient)
       allow(described_class::GitHubClient).to receive(:new).and_return(cli_client)
       allow(cli_client).to receive(:versions_for_repo).with("foo/bar").and_return([
-        {tag: "v7", version_obj: Gem::Version.new("7"), version: "7", sha: "bbb"}
+        {tag: "v7.0.0", version_obj: Gem::Version.new("7.0.0"), version: "7.0.0", sha: "bbb"}
       ])
       allow(cli_client).to receive(:commit_sha).with("foo/bar", "bbb").and_return("bbb")
 
@@ -746,8 +807,35 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       second_run = described_class.new(["--root", workflow_root, "--upgrade", "major", "--check"])
 
       expect(first_run.run!).to eq(0)
-      expect(File.read(workflow_path)).to include("uses: foo/bar@bbb # v7")
+      expect(File.read(workflow_path)).to include("uses: foo/bar@bbb # v7.0.0")
       expect(second_run.run!).to eq(0)
+    end
+
+    it "updates shorthand major-line version comments to the canonical explicit equivalent" do
+      File.write(
+        workflow_path,
+        <<~YAML
+          name: ci
+          on: [push]
+          jobs:
+            test:
+              runs-on: ubuntu-latest
+              steps:
+                - uses: foo/bar@bbb # v7
+        YAML
+      )
+      cli_client = instance_double(described_class::GitHubClient)
+      allow(described_class::GitHubClient).to receive(:new).and_return(cli_client)
+      allow(cli_client).to receive(:versions_for_repo).with("foo/bar").and_return([
+        {tag: "v7.0.0", version_obj: Gem::Version.new("7.0.0"), version: "7.0.0", sha: "bbb"}
+      ])
+      allow(cli_client).to receive(:commit_sha).with("foo/bar", "bbb").and_return("bbb")
+
+      cli = described_class.new(["--root", workflow_root, "--upgrade", "major", "--write"])
+
+      expect(cli.run!).to eq(0)
+      expect(File.read(workflow_path)).to include("uses: foo/bar@bbb # v7.0.0")
+      expect(File.read(workflow_path)).not_to include("# v7\n")
     end
 
     it "calls GitHub release-version lookup for each workflow action when evaluating pins" do

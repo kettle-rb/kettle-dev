@@ -35,6 +35,23 @@ module Kettle
       VERSION_COMMENT_SUFFIX_RE = /\A\s+#\s*v?(?<version>\d+(?:\.\d+\.\d+(?:[-.]?[0-9A-Za-z.-]+)?)?)/
       VERSION_COMMENT_REPLACEMENT_RE = /\A(?<prefix>\s+#\s*)v?\d+(?:\.\d+\.\d+(?:[-.]?[0-9A-Za-z.-]+)?)?/
 
+      def self.release_version_sort_key(entry)
+        [entry.fetch(:version_obj), *release_version_specificity(entry)]
+      end
+
+      def self.release_version_specificity(entry)
+        text = entry.fetch(:tag).to_s.sub(/\A[vV]/, "")
+        release_text, suffix = text.split(/[-.](?=[A-Za-z])/, 2)
+        numeric_segments = release_text.to_s.split(".").take_while { |part| part.match?(/\A\d+\z/) }
+
+        [
+          numeric_segments.length,
+          suffix ? 0 : 1,
+          text.length,
+          entry.fetch(:tag).to_s
+        ]
+      end
+
       def initialize(argv, err: $stderr)
         @argv = argv
         @err = err
@@ -521,7 +538,7 @@ module Kettle
           end
         end
 
-        candidates.max_by { |entry| entry[:version_obj] }
+        candidates.max_by { |entry| release_version_sort_key(entry) }
       end
 
       def major_line_version?(value)
@@ -538,7 +555,7 @@ module Kettle
               entry[:version_obj] > current &&
               (!entry[:version_obj].prerelease? || current.prerelease?)
           end
-          .max_by { |entry| entry[:version_obj] }
+          .max_by { |entry| release_version_sort_key(entry) }
       end
 
       def determine_upgrade_plan(old_ref:, repo_ref:, versions:, upgrade_level:, client:)
@@ -643,6 +660,10 @@ module Kettle
         sha = client.commit_sha(repo_ref, entry[:tag])
         entry[:sha] = sha
         sha
+      end
+
+      def release_version_sort_key(entry)
+        self.class.release_version_sort_key(entry)
       end
 
       def short_sha?(candidate)
@@ -1061,10 +1082,10 @@ module Kettle
           full_semver_entries = entries.reject { |entry| major_line_version?(entry[:version]) }
           {
             "patch" => full_semver_entries.group_by { |entry| entry[:version_obj].segments[0, 2].join(".") }
-              .transform_values { |group| serialize_target(group.max_by { |entry| entry[:version_obj] }) },
+              .transform_values { |group| serialize_target(group.max_by { |entry| GhaShaPinsCLI.release_version_sort_key(entry) }) },
             "minor" => full_semver_entries.group_by { |entry| entry[:version_obj].segments[0].to_s }
-              .transform_values { |group| serialize_target(group.max_by { |entry| entry[:version_obj] }) },
-            "major" => {"*" => serialize_target(entries.max_by { |entry| entry[:version_obj] })}
+              .transform_values { |group| serialize_target(group.max_by { |entry| GhaShaPinsCLI.release_version_sort_key(entry) }) },
+            "major" => {"*" => serialize_target(entries.max_by { |entry| GhaShaPinsCLI.release_version_sort_key(entry) })}
           }
         end
 
@@ -1212,10 +1233,32 @@ module Kettle
             }
           end
           releases.concat(tag_versions)
+          releases = canonicalize_equivalent_release_versions(releases)
 
-          releases.sort_by! { |release| release[:version_obj] }
+          releases.sort_by! { |release| GhaShaPinsCLI.release_version_sort_key(release) }
           releases.reverse!
           releases
+        end
+
+        def canonicalize_equivalent_release_versions(releases)
+          groups = []
+          releases.each do |release|
+            group = groups.find { |entries| equivalent_release_tag?(entries.first, release) }
+            if group
+              group << release
+            else
+              groups << [release]
+            end
+          end
+
+          groups.map { |entries| entries.max_by { |entry| GhaShaPinsCLI.release_version_sort_key(entry) } }
+        end
+
+        def equivalent_release_tag?(left, right)
+          left[:version_obj] == right[:version_obj] &&
+            left[:sha] &&
+            right[:sha] &&
+            left[:sha] == right[:sha]
         end
 
         def parse_release_version_text(value)
