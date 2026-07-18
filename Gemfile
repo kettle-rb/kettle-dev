@@ -24,7 +24,7 @@ gem "nomono", *nomono_requirements, require: false # ruby >= 2.2
 
 # Direct sibling dependencies (env-switched via KETTLE_DEV_DEV)
 direct_sibling_gems = %w[
-  kettle-dev
+  kettle-rb
   kettle-test
 ]
 direct_sibling_dev = ENV.fetch("KETTLE_DEV_DEV", "")
@@ -82,7 +82,7 @@ eval_gemfile "gemfiles/modular/templating.gemfile" if ENV.fetch("K_JEM_TEMPLATIN
 # Debugging
 eval_gemfile "gemfiles/modular/debug.gemfile"
 
-# Code Coverage (env-switched: KETTLE_DEV_DEV=true for local paths)
+# Code Coverage (env-switched: KETTLE_RB_DEV=true for local paths)
 eval_gemfile "gemfiles/modular/coverage.gemfile"
 
 # Test HTTP Interaction Recording

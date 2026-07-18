@@ -20,11 +20,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
-- `kettle-release` now accepts `--ci-workflows` and
-  `K_RELEASE_CI_WORKFLOWS` to monitor an explicit workflow subset at the CI
-  wait step while retaining the default behavior of waiting for all applicable
-  workflows.
-
 ### Changed
 
 ### Deprecated
@@ -33,11 +28,34 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [2.3.6] - 2026-07-17
+
+- TAG: [v2.3.6][2.3.6t]
+- COVERAGE: 91.76% -- 4288/4673 lines in 36 files
+- BRANCH COVERAGE: 74.20% -- 1691/2279 branches in 36 files
+- 56.67% documented
+
+### Added
+
+- `kettle-release` now accepts `--ci-workflows` and
+  `K_RELEASE_CI_WORKFLOWS` to monitor an explicit workflow subset at the CI
+  wait step while retaining the default behavior of waiting for all applicable
+  workflows.
+
+### Changed
+
+- kettle-jem-template-20260716-001 - Shim gemspec manifests now include
+  `LICENSE.md` instead of nonexistent `LICENSE.txt`.
+- kettle-jem-template-20260716-002 - Generated gemspec manifests now ship fewer
+  repository-only files by default to reduce downstream distro packaging churn.
+
+### Fixed
+
 - `kettle-release --ci-workflows` now rejects a missing value when the next
   token is another flag, and the release CI workflow subset APIs now have
   matching RBS signatures.
-
-### Security
 
 ## [2.3.5] - 2026-07-16
 
@@ -2505,7 +2523,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.5...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.6...HEAD
+[2.3.6]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.5...v2.3.6
+[2.3.6t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.3.6
 [2.3.5]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.4...v2.3.5
 [2.3.5t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.3.5
 [2.3.4]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.3...v2.3.4

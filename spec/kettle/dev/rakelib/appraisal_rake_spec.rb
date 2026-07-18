@@ -3,7 +3,10 @@
 require "spec_helper"
 
 RSpec.describe "appraisal rake tasks" do # rubocop:disable RSpec/DescribeClass
-  include_context "with rake", "appraisal"
+  include_context "with rake", "appraisal" do
+    let(:task_dir) { "lib/kettle/dev/rakelib" }
+    let(:rakelib) { File.expand_path("../../../../lib/kettle/dev/rakelib", __dir__) }
+  end
 
   let(:quiet_env) do
     {

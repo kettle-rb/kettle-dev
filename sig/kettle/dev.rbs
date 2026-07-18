@@ -1,11 +1,13 @@
+# TypeProf 0.21.11
+
 module Kettle
   module Dev
     module Version
+      VERSION: String
     end
 
     class Error < ::StandardError
     end
-
     DEBUGGING: bool
     IS_CI: bool
     REQUIRE_BENCH: bool
@@ -18,5 +20,585 @@ module Kettle
     def self.install_tasks: () -> void
     def self.defaults: () -> Array[String]
     def self.register_default: (String | Symbol task_name) -> Array[String]
+    VERSION: String
+    # AST-driven merger for Appraisals files using Prism
+    module AppraisalsAstMerger
+      TRACKED_METHODS: Array[Symbol]
+
+      # Merge template and destination Appraisals files preserving comments
+      def self.merge: (String template_content, String dest_content) -> String
+
+      # Extract blocks and preamble from parse result
+      def self.extract_blocks: (
+        Prism::ParseResult parse_result,
+        String source_content
+      ) -> [Array[Prism::Comment], Array[Hash[Symbol, untyped]]]
+
+      # Check if node is an appraise call
+      def self.appraise_call?: (Prism::Node node) -> bool
+
+      # Extract appraise block name from node
+      def self.extract_appraise_name: (Prism::Node? node) -> String?
+
+      # Merge preamble comments from template and destination
+      def self.merge_preambles: (
+        Array[Prism::Comment] tmpl_comments,
+        Array[Prism::Comment] dest_comments
+      ) -> Array[String]
+
+      # Extract block header comments
+      def self.extract_block_header: (
+        Prism::Node node,
+        Array[String] source_lines,
+        Array[Hash[Symbol, untyped]] previous_blocks
+      ) -> String
+
+      # Merge blocks from template and destination
+      def self.merge_blocks: (
+        Array[Hash[Symbol, untyped]] tmpl_blocks,
+        Array[Hash[Symbol, untyped]] dest_blocks,
+        Prism::ParseResult tmpl_result,
+        Prism::ParseResult dest_result
+      ) -> Array[Hash[Symbol, untyped]]
+
+      # Merge statements within a block
+      def self.merge_block_statements: (
+        Prism::Node? tmpl_body,
+        Prism::Node? dest_body,
+        Prism::ParseResult dest_result
+      ) -> Array[Hash[Symbol, untyped]]
+
+      # Generate statement key for deduplication
+      def self.statement_key: (Prism::Node node) -> [Symbol, String?]?
+
+      # Build output from preamble and blocks
+      def self.build_output: (
+        Array[String] preamble_lines,
+        Array[Hash[Symbol, untyped]] blocks
+      ) -> String
+
+      # Normalize statement to use parentheses
+      def self.normalize_statement: (Prism::Node node) -> String
+
+      # Normalize argument to canonical format
+      def self.normalize_argument: (Prism::Node arg) -> String
+
+      # Extract original statements from node
+      def self.extract_original_statements: (Prism::Node node) -> Array[Hash[Symbol, untyped]]
+    end
+
+    # CLI for updating CHANGELOG.md with new version sections
+    class ChangelogCLI
+      UNRELEASED_SECTION_HEADING: String
+
+      @root: String
+      @changelog_path: String
+      @coverage_path: String
+
+      def initialize: (?strict: bool, ?enforce_coverage_thresholds: bool, ?update_prep: bool, ?root: String) -> void
+
+      # Main entry point that updates CHANGELOG.md
+      def run: () -> void
+
+      def pending_release_status: () -> Hash[Symbol, untyped]
+
+      def release_state: () -> Hash[Symbol, untyped]
+
+      def release_state_table: (?Hash[Symbol, untyped] state) -> String
+
+      private
+
+      # Abort with error message
+      def abort: (String msg) -> void
+
+      # Detect version from lib/**/version.rb
+      def detect_version: () -> String
+
+      # Extract unreleased section from changelog
+      def extract_unreleased: (String content) -> [String?, String?, String?]
+
+      # Detect previous version from after text
+      def detect_previous_version: (String after_text) -> String?
+
+      # Filter unreleased sections keeping only those with content
+      def filter_unreleased_sections: (String unreleased_block) -> String
+
+      # Get coverage lines from coverage.json
+      def coverage_lines: () -> [String?, String?]
+
+      # Get YARD documentation percentage
+      def yard_percent_documented: () -> String?
+
+      # Convert legacy heading tag suffix to list format
+      def convert_heading_tag_suffix_to_list: (String text) -> String
+
+      # Update link references in changelog
+      def update_link_refs: (
+        String content,
+        String? owner,
+        String? repo,
+        String? prev_version,
+        String new_version
+      ) -> String
+
+      # Normalize spacing around headings
+      def normalize_heading_spacing: (String text) -> String
+
+      # Ensure proper footer spacing
+      def ensure_footer_spacing: (String text) -> String
+
+      # Detect initial compare base from changelog
+      def detect_initial_compare_base: (Array[String] lines) -> String
+    end
+
+    module CIHelpers
+      # singleton (module) methods
+      def self.project_root: () -> String
+      def self.repo_info: () -> [String, String]?
+      def self.current_branch: () -> String?
+      def self.current_head_sha: () -> String?
+      def self.workflows_list: (?String root) -> Array[String]
+      def self.exclusions: () -> Array[String]
+
+      def self.latest_run: (
+        owner: String,
+        repo: String,
+        workflow_file: String,
+        ?branch: String?,
+        ?token: String?,
+        ?require_head: bool,
+        ?head_sha: String?
+      ) -> { "status" => String, "conclusion" => String?, "html_url" => String, "id" => Integer, "head_sha" => String? }?
+
+      def self.success?: ({ "status" => String, "conclusion" => String? }?) -> bool
+      def self.failed?: ({ "status" => String, "conclusion" => String? }?) -> bool
+
+      def self.default_token: () -> String?
+
+      # GitLab
+      def self.origin_url: () -> String?
+      def self.repo_info_gitlab: () -> [String, String]?
+      def self.default_gitlab_token: () -> String?
+      def self.gitlab_latest_pipeline: (
+        owner: String,
+        repo: String,
+        ?branch: String?,
+        ?host: String,
+        ?token: String?
+      ) -> { "status" => String, "web_url" => String, "id" => Integer, "failure_reason" => String? }?
+      def self.gitlab_success?: ({ "status" => String }?) -> bool
+      def self.gitlab_failed?: ({ "status" => String }?) -> bool
+    end
+
+    module CIMonitor
+      def self.status_emoji: (String? status, String? conclusion) -> String
+      def self.monitor_all!: (?restart_hint: String, ?workflows: Array[String]?, **untyped) -> void
+      def self.monitor_gitlab!: (?restart_hint: String) -> bool
+      def self.collect_all: () -> { github: Array[untyped], gitlab: untyped? }
+      def self.summarize_results: ({ github: Array[untyped], gitlab: untyped? }) -> bool
+      def self.monitor_and_prompt_for_release!: (?restart_hint: String) -> void
+      def self.collect_github: () -> Array[untyped]?
+      def self.collect_gitlab: () -> { status: String, url: String? }?
+      def self.monotonic_time: () -> Float
+      def self.github_start_timeout: () -> Integer
+      def self.github_poll_interval: () -> Float
+    end
+
+    module CommitMsg
+      BRANCH_RULES: ::Hash[String, ::Regexp]
+      def self.enforce_branch_rule!: (String path) -> void
+    end
+
+    class DvcsCLI
+      def initialize: (Array[String] argv) -> void
+      def run!: () -> Integer
+    end
+
+    module ExitAdapter
+      def self.abort: (String msg) -> void
+      def self.exit: (?Integer status) -> void
+    end
+
+    class GemSpecReader
+      DEFAULT_MINIMUM_RUBY: Gem::Version
+
+      def self.load: (String root) -> {
+        gemspec_path: String?,
+        gem_name: String,
+        min_ruby: Gem::Version,
+        homepage: String,
+        gh_org: String,
+        forge_org: String,
+        funding_org: String?,
+        gh_repo: String?,
+        namespace: String,
+        namespace_shield: String,
+        entrypoint_require: String,
+        gem_shield: String,
+        authors: Array[String],
+        email: Array[String],
+        summary: String,
+        description: String,
+        licenses: Array[String],
+        required_ruby_version: Gem::Requirement?,
+        require_paths: Array[String],
+        bindir: String,
+        executables: Array[String],
+      }
+
+      def self.derive_forge_and_origin_repo: (String? homepage_val) -> { forge_org: String?, origin_repo: String? }
+    end
+
+    class GitAdapter
+      def initialize: () -> void
+      def capture: (Array[String] args) -> [String, bool]
+      def push: (String? remote, String branch, force: bool) -> bool
+      def current_branch: () -> String?
+      def remotes: () -> Array[String]
+      def remotes_with_urls: () -> Hash[String, String]
+      def remote_url: (String name) -> String?
+      def checkout: (String branch) -> bool
+      def pull: (String remote, String branch) -> bool
+      def fetch: (String remote, String? ref) -> bool
+      def clean?: () -> bool
+    end
+
+    module InputAdapter
+      def self.gets: (*untyped args) -> String?
+      def self.readline: (*untyped args) -> String
+    end
+
+    module ModularGemfiles
+      def self.sync!: (
+        helpers: untyped,
+        project_root: String,
+        gem_checkout_root: String,
+        min_ruby: untyped
+      ) -> void
+    end
+
+    module OpenCollectiveConfig
+      def self.yaml_path: (?String) -> String
+      def self.handle: (?required: bool, ?root: String, ?strict: bool) -> String?
+    end
+
+    class PreReleaseCLI
+      IMAGE_URL_CACHE_TTL_SECONDS: Integer
+      DEFAULT_IMAGE_URL_SKIP_PATTERNS: Array[String]
+      FAMILY_CONFIG_PATHS: Array[String]
+
+      module HTTP
+        def self.parse_http_uri: (String url_str) -> ::URI
+        def self.head_ok?: (String url_str, ?limit: Integer, ?timeout: Integer) -> bool
+      end
+
+      module Markdown
+        def self.extract_image_urls_from_text: (String text) -> Array[String]
+        def self.extract_image_urls_from_files: (?String glob_pattern) -> Array[String]
+      end
+
+      class ImageUrlCache
+        VERSION: Integer
+
+        def self.default_path: () -> String?
+        def initialize: (path: String?, ?ttl_seconds: Integer, ?clock: ^() -> Time) -> void
+        def fresh_success?: (String url) -> bool
+        def write_success: (String url) -> void
+        def to_h: () -> Hash[String, untyped]
+      end
+
+      def initialize: (?check_num: Integer) -> void
+      def run: () -> void
+      def check_markdown_uri_normalization!: () -> void
+      def check_markdown_images_http!: () -> void
+    end
+
+    # Shared utilities for working with Prism AST nodes
+    module PrismUtils
+      # Parse Ruby source code and return Prism parse result with comments
+      def self.parse_with_comments: (String source) -> Prism::ParseResult
+
+      # Extract statements from a Prism body node
+      def self.extract_statements: (Prism::Node? body_node) -> Array[Prism::Node]
+
+      # Generate a unique key for a statement node to identify equivalent statements
+      def self.statement_key: (
+        Prism::Node node,
+        ?tracked_methods: Array[Symbol]
+      ) -> [Symbol, String?]?
+
+      # Extract literal value from string or symbol nodes
+      def self.extract_literal_value: (Prism::Node? node) -> (String | Symbol)?
+
+      # Extract qualified constant name from a constant node
+      def self.extract_const_name: (Prism::Node? node) -> String?
+
+      # Find leading comments for a statement node
+      def self.find_leading_comments: (
+        Prism::ParseResult parse_result,
+        Prism::Node current_stmt,
+        Prism::Node? prev_stmt,
+        Prism::Node body_node
+      ) -> Array[Prism::Comment]
+
+      # Find inline comments for a statement node
+      def self.inline_comments_for_node: (
+        Prism::ParseResult parse_result,
+        Prism::Node stmt
+      ) -> Array[Prism::Comment]
+
+      # Convert a Prism AST node to Ruby source code
+      def self.node_to_source: (Prism::Node? node) -> String
+
+      # Normalize a call node to use parentheses format
+      def self.normalize_call_node: (Prism::Node node) -> String
+
+      # Normalize an argument node to canonical format
+      def self.normalize_argument: (Prism::Node arg) -> String
+
+      # Check if a node is a specific method call
+      def self.call_to?: (Prism::Node node, Symbol method_name) -> bool
+
+      # Check if a node is a block call to a specific method
+      def self.block_call_to?: (Prism::Node node, Symbol method_name) -> bool
+    end
+
+    class ReadmeBackers
+      def initialize: (
+        handle: String?,
+        readme_path: String?,
+        osc_api_base: String?,
+        osc_default_name: String?,
+        osc_empty_message: String?
+      ) -> void
+
+      def run!: () -> void
+      def validate: () -> void
+
+      # Selected public helpers (kept minimal)
+      def readme_osc_tag: () -> String
+      def tag_strings: () -> [String, String]
+      def resolve_handle: () -> String
+    end
+
+    class ReleaseCLI
+      def initialize: (?start_step: Integer, ?local_ci: bool, ?version: String?, ?appraisal_task: String?, ?skip_steps: untyped, ?skip_bundle_audit: bool?, ?ci_workflows: untyped, **untyped) -> void
+      def run: () -> void
+
+      private
+
+      def update_readme_kloc_badge!: () -> void
+      def update_badge_number_in_file: (String path, String kloc_str) -> void
+      def update_rakefile_example_header!: (String version) -> void
+      def validate_copyright_years!: () -> void
+      def extract_years_from_file: (String path) -> ::Set[Integer]
+      def collapse_years: (::_ToA[Integer] enum) -> String
+      def reformat_copyright_year_lines!: (String path) -> void
+      def inject_years_into_file!: (String path, ::Set[Integer] years_set) -> void
+      def extract_release_notes_footer: () -> String?
+    end
+
+    class SetupCLI
+      def initialize: (Array[String] argv) -> void
+      def run!: () -> void
+    end
+
+    # Prism-based AST merging for templated Ruby files.
+    # Handles strategy dispatch (skip/replace/append/merge).
+    #
+    # Uses prism-merge for AST-aware merging with support for:
+    # - Freeze blocks (kettle-dev:freeze / kettle-dev:unfreeze)
+    # - Comment preservation
+    # - Signature-based node matching
+    module SourceMerger
+      BUG_URL: String
+
+      # Apply a templating strategy to merge source and destination Ruby files
+      #
+      # @param strategy [Symbol] Merge strategy - :skip, :replace, :append, or :merge
+      # @param src [String] Template source content
+      # @param dest [String] Destination file content
+      # @param path [String] File path (for error messages)
+      # @return [String] Merged content with comments preserved
+      # @raise [Kettle::Dev::Error] If strategy is unknown or merge fails
+      def self.apply: (
+        strategy: Symbol,
+        src: String,
+        dest: String,
+        path: String
+      ) -> String
+
+      # Normalize strategy symbol
+      #
+      # @param strategy [Symbol, nil] Strategy to normalize
+      # @return [Symbol] Normalized strategy (:skip if nil)
+      def self.normalize_strategy: (Symbol? strategy) -> Symbol
+
+      # Warn about bugs and print error information
+      #
+      # @param path [String] File path that caused the error
+      # @param error [StandardError] The error that occurred
+      # @return [void]
+      def self.warn_bug: (String path, StandardError error) -> void
+
+      # Ensure text ends with newline
+      #
+      # @param text [String, nil] Text to process
+      # @return [String] Text with trailing newline
+      def self.ensure_trailing_newline: (String? text) -> String
+
+      # Apply append strategy using prism-merge
+      #
+      # @param src_content [String] Template source content
+      # @param dest_content [String] Destination content
+      # @return [String] Merged content with destination preference
+      def self.apply_append: (String src_content, String dest_content) -> String
+
+      # Apply merge strategy using prism-merge
+      #
+      # @param src_content [String] Template source content
+      # @param dest_content [String] Destination content
+      # @return [String] Merged content with template preference
+      def self.apply_merge: (String src_content, String dest_content) -> String
+
+      # Create a signature generator for prism-merge
+      # Handles various Ruby node types for proper matching during merge operations
+      #
+      # @return [Proc] Signature generator lambda
+      def self.create_signature_generator: () -> ^(Prism::Node) -> (Array[untyped] | Prism::Node)
+    end
+
+    module Tasks
+      # Namespace module for task-related classes and Rake task loaders.
+      # Namespace module for task-related classes and Rake task loaders.
+      # Namespace module for task-related classes and Rake task loaders.
+      # Namespace module for task-related classes and Rake task loaders.
+      module CITask
+        def self.act: (?String opt) -> void
+      end
+
+      module InstallTask
+        # Entrypoint to perform installation steps and project setup.
+        def self.run: () -> void
+      end
+
+      module TemplateTask
+        # Entrypoint to copy/update template files into a host project.
+        def self.run: () -> void
+      end
+    end
+
+    # Helpers shared by kettle:dev Rake tasks for templating and file ops.
+    module TemplateHelpers
+      # Symbol actions recorded by templating helpers
+      type template_action = :create | :replace | :skip | :dir_create | :dir_replace
+
+      # Root of the host project where Rake was invoked
+      def self.project_root: () -> String
+
+      # Root of this gem's checkout (repository root when working from source)
+      def self.gem_checkout_root: () -> String
+
+      # Simple yes/no prompt.
+      def self.ask: (String prompt, bool default) -> bool
+
+      # Write file content creating directories as needed
+      def self.write_file: (String dest_path, String content) -> void
+
+      # Record a template action for a destination path
+      def self.record_template_result: (String dest_path, template_action action) -> void
+
+      # Access all template results (read-only clone)
+      def self.template_results: () -> Hash[String, { action: template_action, timestamp: ::Time }]
+
+      # Returns true if the given path was created or replaced by the template task in this run
+      def self.modified_by_template?: (String dest_path) -> bool
+
+      # Ensure git working tree is clean before making changes in a task.
+      # If not a git repo, this is a no-op.
+      def self.ensure_clean_git!: (root: String, task_label: String) -> void
+
+      # Copy a single file with interactive prompts for create/replace.
+      def self.copy_file_with_prompt: (
+        String src_path,
+        String dest_path,
+        ?allow_create: bool,
+        ?allow_replace: bool
+      ) -> void
+
+      # Copy a directory tree, prompting before creating or overwriting.
+      def self.copy_dir_with_prompt: (String src_dir, String dest_dir) -> void
+
+      # Apply common token replacements used when templating text files
+      def self.apply_common_replacements: (
+        String content,
+        org: String?,
+        gem_name: String,
+        namespace: String,
+        namespace_shield: String,
+        gem_shield: String,
+        ?funding_org: String?,
+        ?min_ruby: String?
+      ) -> String
+
+      # Parse gemspec metadata and derive useful strings
+      # When no gemspec is present, gemspec_path may be nil; gh_org/gh_repo may be nil when not derivable.
+      def self.gemspec_metadata: (?String root) -> {
+        gemspec_path: String?,
+        gem_name: String,
+        min_ruby: String,
+        homepage: String,
+        gh_org: String?,
+        forge_org: String?,
+        funding_org: String?,
+        gh_repo: String?,
+        namespace: String,
+        namespace_shield: String,
+        entrypoint_require: String,
+        gem_shield: String,
+        authors: Array[String],
+        email: Array[String],
+        summary: String,
+        description: String,
+        license: String,
+        licenses: Array[String],
+        required_ruby_version: String,
+        require_paths: Array[String],
+        bindir: String,
+        executables: Array[String],
+      }
+    end
+
+    # Shared helpers for version detection and bump classification
+    module Versioning
+      # Detects a unique VERSION constant declared under lib/**/version.rb
+      def self.detect_version: (String root) -> String
+
+      # Classify the bump type from prev -> cur
+      def self.classify_bump: (String prev, String cur) -> Symbol
+
+      # Whether MAJOR is an EPIC version (strictly > 1000)
+      def self.epic_major?: (Integer major) -> bool
+
+      # Abort via ExitAdapter if available; otherwise Kernel.abort
+      def self.abort!: (String msg) -> void
+    end
   end
+end
+
+class GitCommitFooter
+  NAME_ASSIGNMENT_REGEX: ::Regexp
+  FOOTER_APPEND: bool
+  SENTINEL: String?
+
+  def self.git_toplevel: () -> String?
+  def self.local_hooks_dir: () -> String?
+  def self.global_hooks_dir: () -> String
+  def self.hooks_path_for: (String filename) -> String
+  def self.commit_goalie_path: () -> String
+  def self.goalie_allows_footer?: (String subject_line) -> bool
+  def self.render: (*Array[String]) -> void
+
+  def initialize: () -> void
+  def render: () -> String
 end
