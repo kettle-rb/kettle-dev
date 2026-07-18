@@ -7,26 +7,6 @@ PATH
       kettle-test (~> 2.0, >= 2.0.4)
       ruby-progressbar (~> 1.13)
 
-PATH
-  remote: /home/pboling/src/my/kettle-dev/kettle-rb
-  specs:
-    kettle-rb (0.1.4)
-
-PATH
-  remote: /home/pboling/src/my/kettle-dev/kettle-test
-  specs:
-    kettle-test (2.0.11)
-      appraisal2 (~> 3.0, >= 3.0.6)
-      backports (~> 3.0)
-      rspec (~> 3.0)
-      rspec-block_is_expected (~> 1.0, >= 1.0.6)
-      rspec-pending_for (~> 0.1, >= 0.1.20)
-      rspec-stubbed_env (~> 1.0, >= 1.0.6)
-      rspec_junit_formatter (~> 0.6)
-      silent_stream (~> 1.0, >= 1.0.12)
-      timecop-rspec (~> 1.0, >= 1.0.3)
-      turbo_tests2 (~> 3.1, >= 3.1.12)
-
 GEM
   remote: https://gem.coop/
   specs:
@@ -111,12 +91,24 @@ GEM
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
     json (2.21.1)
+    kettle-rb (0.1.4)
     kettle-soup-cover (3.0.0)
       simplecov (>= 1.0)
       simplecov-cobertura (>= 4.0)
       simplecov-console (~> 0.9, >= 0.9.5)
       simplecov-rcov (~> 0.3, >= 0.3.7)
       simplecov_lcov_formatter (~> 0.9, >= 0.9.0)
+    kettle-test (2.0.11)
+      appraisal2 (~> 3.0, >= 3.0.6)
+      backports (~> 3.0)
+      rspec (~> 3.0)
+      rspec-block_is_expected (~> 1.0, >= 1.0.6)
+      rspec-pending_for (~> 0.1, >= 0.1.20)
+      rspec-stubbed_env (~> 1.0, >= 1.0.6)
+      rspec_junit_formatter (~> 0.6)
+      silent_stream (~> 1.0, >= 1.0.12)
+      timecop-rspec (~> 1.0, >= 1.0.3)
+      turbo_tests2 (~> 3.1, >= 3.1.12)
     kramdown (2.5.2)
       rexml (>= 3.4.4)
     kramdown-parser-gfm (1.1.0)
@@ -399,9 +391,7 @@ DEPENDENCIES
   gitmoji-regex (~> 2.0, >= 2.0.4)
   irb (~> 1.17)
   kettle-dev!
-  kettle-rb!
   kettle-soup-cover (~> 3.0, >= 3.0.0)
-  kettle-test!
   kramdown (~> 2.5, >= 2.5.1)
   kramdown-parser-gfm (~> 1.1)
   mutex_m (~> 0.2)
@@ -471,9 +461,9 @@ CHECKSUMS
   irb (1.18.0) sha256=de9454a0703a54704b9811a5ef31a60c86949fbf4013fcf244fabc7c775248e3
   json (2.21.1) sha256=13a43df75d95641443f5702dff350f237164a9d811ff0f2c2800d4d980220583
   kettle-dev (2.3.6)
-  kettle-rb (0.1.4)
+  kettle-rb (0.1.4) sha256=9cef7ce4f7021666b7222292f29051e51eaf042e8a5db11f3f4dd72f74243fc1
   kettle-soup-cover (3.0.0) sha256=4d3ed6c714cb88cf148f65934c6a96c976b2281abb3ae443ad0ddf6ac0da875b
-  kettle-test (2.0.11)
+  kettle-test (2.0.11) sha256=c710c90f7ab79d51f9452f0c09f5f90657e7a893f63583855c164d0b1b107ab2
   kramdown (2.5.2) sha256=1ba542204c66b6f9111ff00dcc26075b95b220b07f2905d8261740c82f7f02fa
   kramdown-parser-gfm (1.1.0) sha256=fb39745516427d2988543bf01fc4cf0ab1149476382393e0e9c48592f6581729
   language_server-protocol (3.17.0.6) sha256=5ef2c0c138f8267e1bc631d3328347d354f96724b0af22f2c79516120443b7f0
