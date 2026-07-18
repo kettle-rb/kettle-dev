@@ -33,6 +33,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-release --ci-workflows` now rejects a missing value when the next
+  token is another flag, and the release CI workflow subset APIs now have
+  matching RBS signatures.
+
 ### Security
 
 ## [2.3.5] - 2026-07-16

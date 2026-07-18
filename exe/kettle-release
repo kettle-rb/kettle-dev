@@ -151,12 +151,15 @@ def extract_ci_workflows_arg!(argv)
   workflows = nil
   if (idx = argv.index("--ci-workflows"))
     workflows = argv[idx + 1]
-    Kettle::Dev::ExitAdapter.abort("--ci-workflows requires a comma-separated workflow list") if workflows.to_s.empty?
+    if workflows.to_s.empty? || workflows.to_s.start_with?("-")
+      Kettle::Dev::ExitAdapter.abort("--ci-workflows requires a comma-separated workflow list")
+    end
     argv.slice!(idx, 2)
   end
   argv.delete_if do |arg|
     if arg.start_with?("--ci-workflows=", "ci_workflows=")
       workflows = arg.split("=", 2)[1]
+      Kettle::Dev::ExitAdapter.abort("--ci-workflows requires a comma-separated workflow list") if workflows.to_s.empty?
       true
     else
       false
