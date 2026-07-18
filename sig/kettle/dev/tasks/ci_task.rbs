@@ -1,9 +1,0 @@
-module Kettle
-  module Dev
-    module Tasks
-      module CITask
-        def self.act: (?String opt) -> void
-      end
-    end
-  end
-end
