@@ -13,7 +13,7 @@ RSpec.describe "appraisal rake tasks" do # rubocop:disable RSpec/DescribeClass
       "KETTLE_JEM_QUIET" => "true",
       "KETTLE_JEM_DEBUG" => "false",
       "KETTLE_DEV_DEBUG" => "false",
-      "SMORG_RB_DEBUG" => "false",
+      "STRUCTUREDMERGE_DEBUG" => "false",
       "DEBUG" => nil,
       "BUNDLE_QUIET" => "true",
       "BUNDLE_DEBUG" => "false",
