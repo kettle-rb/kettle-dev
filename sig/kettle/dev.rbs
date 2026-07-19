@@ -21,7 +21,6 @@ module Kettle
     def self.defaults: () -> Array[String]
     def self.register_default: (String | Symbol task_name) -> Array[String]
     VERSION: String
-    # AST-driven merger for Appraisals files using Prism
     module AppraisalsAstMerger
       TRACKED_METHODS: Array[Symbol]
 
