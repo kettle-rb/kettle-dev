@@ -11,7 +11,7 @@ PATH
   remote: /var/home/pboling/src/my/kettle-dev/kettle-drift
   specs:
     kettle-drift (1.0.5)
-      version_gem (~> 1.1, >= 1.1.13)
+      version_gem (~> 1.1, >= 1.1.14)
 
 PATH
   remote: /var/home/pboling/src/my/kettle-dev/kettle-rb
