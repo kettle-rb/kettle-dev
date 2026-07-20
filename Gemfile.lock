@@ -21,7 +21,7 @@ PATH
 PATH
   remote: /var/home/pboling/src/my/kettle-dev/kettle-soup-cover
   specs:
-    kettle-soup-cover (3.0.2)
+    kettle-soup-cover (3.0.3)
       kettle-wash (~> 0.1, >= 0.1.0)
       simplecov (>= 1.0)
       simplecov-cobertura (>= 4.0)
@@ -475,7 +475,7 @@ CHECKSUMS
   kettle-dev (2.3.7)
   kettle-drift (1.0.5)
   kettle-rb (0.1.4)
-  kettle-soup-cover (3.0.2)
+  kettle-soup-cover (3.0.3)
   kettle-test (2.0.11)
   kettle-wash (0.1.0) sha256=5c04b3900d0957339e7c7d9997bbd804599b68bde002e6f47f4e28a0eea22ea7
   kramdown (2.5.2) sha256=1ba542204c66b6f9111ff00dcc26075b95b220b07f2905d8261740c82f7f02fa
