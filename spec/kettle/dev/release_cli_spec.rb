@@ -374,7 +374,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         })
 
         expect(cli.send(:github_remote_candidates)).to eq(["origin"])
-        expect(cli.send(:codeberg_remote_candidates)).to eq([])
+        expect(cli.send(:codeberg_remote_candidates)).to be_empty
       end
 
       it "parses github owner/repo from ssh and https and fails otherwise" do
