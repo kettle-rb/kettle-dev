@@ -37,6 +37,10 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
     RB
   end
 
+  def git!(root, *args)
+    system("git", *args, chdir: root, out: File::NULL, err: File::NULL) || raise("git #{args.join(" ")} failed")
+  end
+
   describe "#release_state" do
     it "reports latest release data even when the Unreleased section has entries" do
       mkproj do |root|
@@ -68,6 +72,44 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
           latest_released: "1.2.3",
           latest_changelog_version: "1.2.3"
         )
+      end
+    end
+
+    it "reports commits ahead of the latest release tag on the default branch" do
+      mkproj do |root|
+        write_version(root)
+        File.write(File.join(root, "CHANGELOG.md"), <<~MD)
+          # Changelog
+
+          ## [Unreleased]
+
+          ### Fixed
+
+          - Fixed a bug.
+
+          ## [1.2.3] - 2025-08-30
+        MD
+        git!(root, "init", "-q")
+        git!(root, "checkout", "-q", "-b", "main")
+        git!(root, "config", "user.email", "test@example.com")
+        git!(root, "config", "user.name", "Test User")
+        git!(root, "config", "tag.gpgSign", "false")
+        git!(root, "add", ".")
+        git!(root, "commit", "-q", "-m", "release")
+        git!(root, "tag", "v1.2.3")
+        File.write(File.join(root, "one.txt"), "one\n")
+        git!(root, "add", ".")
+        git!(root, "commit", "-q", "-m", "one")
+        File.write(File.join(root, "two.txt"), "two\n")
+        git!(root, "add", ".")
+        git!(root, "commit", "-q", "-m", "two")
+        allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
+
+        cli = described_class.new(strict: false)
+        allow(cli).to receive(:latest_released_versions).and_return(["1.2.3", "1.2.3"])
+        status = cli.release_state
+
+        expect(status).to include(ahead: 2)
       end
     end
 
@@ -260,13 +302,16 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
         latest_changelog_version: "1.2.4",
         unreleased_entries: false,
         prepared_release_pending: true,
-        pending_release: true
+        pending_release: true,
+        ahead: 4
       )
 
       expect(table).to include("gem")
+      expect(table).to include("ahead")
       expect(table).to include("latest released")
       expect(table).to include("demo")
       expect(table).to include("1.2.3")
+      expect(table).to include("4")
       expect(table).to include("yes")
     end
   end

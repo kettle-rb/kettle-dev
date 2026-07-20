@@ -150,6 +150,7 @@ module Kettle
         unless changelog_present
           latest_overall, latest_for_series, latest_for_major = latest_released_versions(gem_name, version)
           latest_target = latest_release_target(version, latest_overall, latest_for_series, latest_for_major)
+          ahead = commits_ahead_of_release(latest_target || latest_overall)
           return {
             root: @root,
             gem_name: gem_name,
@@ -164,7 +165,8 @@ module Kettle
             latest_released_overall: latest_overall,
             latest_released_for_current_major: latest_for_major,
             latest_released_for_current_series: latest_for_series,
-            latest_release_target: latest_target
+            latest_release_target: latest_target,
+            ahead: ahead
           }
         end
 
@@ -176,6 +178,7 @@ module Kettle
         latest_overall, latest_for_series, latest_for_major = latest_released_versions(gem_name, release_lookup_version)
         latest_target = latest_release_target(release_lookup_version, latest_overall, latest_for_series, latest_for_major)
         prepared_release_pending = !!latest_changelog_version && latest_target != latest_changelog_version
+        ahead = commits_ahead_of_release(latest_target || latest_overall)
 
         {
           root: @root,
@@ -191,18 +194,20 @@ module Kettle
           latest_released_overall: latest_overall,
           latest_released_for_current_major: latest_for_major,
           latest_released_for_current_series: latest_for_series,
-          latest_release_target: latest_target
+          latest_release_target: latest_target,
+          ahead: ahead
         }
       end
 
       def release_state_table(state = release_state)
         rows = [
-          ["gem", "version.rb", "latest released", "latest changelog", "unreleased", "prepared", "pending"],
+          ["gem", "version.rb", "latest released", "latest changelog", "ahead", "unreleased", "prepared", "pending"],
           [
             state.fetch(:gem_name),
             state.fetch(:version),
             state.fetch(:latest_released) || "unknown",
             state.fetch(:latest_changelog_version) || "none",
+            state.fetch(:ahead, nil).nil? ? "unknown" : state.fetch(:ahead).to_s,
             yes_no(state.fetch(:unreleased_entries)),
             yes_no(state.fetch(:prepared_release_pending)),
             yes_no(state.fetch(:pending_release))
@@ -237,6 +242,33 @@ module Kettle
 
       def yes_no(value)
         value ? "yes" : "no"
+      end
+
+      def commits_ahead_of_release(version)
+        tag = release_tag_for_version(version)
+        branch = default_branch_ref
+        return nil unless tag && branch
+
+        stdout, _stderr, status = Open3.capture3("git", "rev-list", "--count", "#{tag}..#{branch}", chdir: @root)
+        status.success? ? stdout.to_i : nil
+      end
+
+      def release_tag_for_version(version)
+        return nil if version.to_s.empty?
+
+        ["v#{version}", version.to_s].find { |tag| git_ref_exists?("refs/tags/#{tag}^{commit}") }
+      end
+
+      def default_branch_ref
+        stdout, _stderr, status = Open3.capture3("git", "symbolic-ref", "--quiet", "--short", "refs/remotes/origin/HEAD", chdir: @root)
+        return stdout.strip if status.success? && !stdout.strip.empty?
+
+        %w[main master HEAD].find { |ref| git_ref_exists?(ref) }
+      end
+
+      def git_ref_exists?(ref)
+        _stdout, _stderr, status = Open3.capture3("git", "rev-parse", "--verify", "--quiet", ref, chdir: @root)
+        status.success?
       end
 
       def detect_plan(changelog, version)
