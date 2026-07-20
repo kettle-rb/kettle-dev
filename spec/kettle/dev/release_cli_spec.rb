@@ -323,6 +323,22 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect(git).to receive(:push).with("gitlab", "feat").and_return(true)
         cli.send(:push!)
       end
+
+      it "does not push through the all aggregate when remotes are skipped" do
+        cli = described_class.new(skip_remotes: "cb")
+        allow(cli).to receive(:current_branch).and_return("feat")
+        allow(cli).to receive(:has_remote?).with("all").and_return(true)
+        allow(cli).to receive(:has_remote?).with("origin").and_return(true)
+        allow(cli).to receive(:github_remote_candidates).and_return(["origin", "gh"])
+        allow(cli).to receive(:gitlab_remote_candidates).and_return(["gl"])
+        allow(cli).to receive(:codeberg_remote_candidates).and_return([])
+        git = cli.instance_variable_get(:@git)
+        expect(git).not_to receive(:push).with("all", "feat")
+        expect(git).to receive(:push).with("origin", "feat").and_return(true)
+        expect(git).to receive(:push).with("gh", "feat").and_return(true)
+        expect(git).to receive(:push).with("gl", "feat").and_return(true)
+        cli.send(:push!)
+      end
     end
 
     describe "git and system helpers" do
@@ -346,6 +362,19 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect(cli.send(:gitlab_remote_candidates)).to include("gl")
         expect(cli.send(:codeberg_remote_candidates)).to include("cb")
         expect(cli.send(:preferred_github_remote)).to eq("github")
+      end
+
+      it "filters skipped remotes from candidates" do
+        cli = described_class.new(skip_remotes: "cb,github")
+        git = cli.instance_variable_get(:@git)
+        allow(git).to receive(:remotes_with_urls).and_return({
+          "origin" => "git@github.com:me/repo.git",
+          "github" => "https://github.com/me/repo.git",
+          "cb" => "git@codeberg.org:me/repo.git"
+        })
+
+        expect(cli.send(:github_remote_candidates)).to eq(["origin"])
+        expect(cli.send(:codeberg_remote_candidates)).to eq([])
       end
 
       it "parses github owner/repo from ssh and https and fails otherwise" do
@@ -449,8 +478,9 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     describe "#ensure_trunk_synced_before_push!" do
       it "enforces strict parity when remote 'all' is present and aborts if missing commits" do
         allow(cli).to receive(:has_remote?).with("all").and_return(true)
-        expect(cli).to receive(:run_cmd!).with("git fetch --all")
         allow(cli).to receive(:list_remotes).and_return(%w[all origin github])
+        expect(cli).to receive(:run_cmd!).with("git fetch origin")
+        expect(cli).to receive(:run_cmd!).with("git fetch github")
         allow(cli).to receive(:remote_branch_exists?).with("origin", "main").and_return(true)
         allow(cli).to receive(:ahead_behind_counts).with("main", "origin/main").and_return([0, 1])
         allow(cli).to receive(:remote_branch_exists?).with("github", "main").and_return(true)
@@ -460,10 +490,23 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
       it "reports parity when all remotes are synced" do
         allow(cli).to receive(:has_remote?).with("all").and_return(true)
-        expect(cli).to receive(:run_cmd!).with("git fetch --all")
         allow(cli).to receive(:list_remotes).and_return(%w[all origin])
+        expect(cli).to receive(:run_cmd!).with("git fetch origin")
         allow(cli).to receive(:remote_branch_exists?).with("origin", "main").and_return(true)
         allow(cli).to receive(:ahead_behind_counts).with("main", "origin/main").and_return([0, 0])
+        expect { cli.send(:ensure_trunk_synced_before_push!, "main", "feat") }.not_to raise_error
+      end
+
+      it "skips configured remotes while enforcing all-remote parity" do
+        cli = described_class.new(skip_remotes: "cb")
+        allow(cli).to receive(:has_remote?).with("all").and_return(true)
+        allow(cli).to receive(:list_remotes).and_return(%w[all origin cb])
+        expect(cli).to receive(:run_cmd!).with("git fetch origin")
+        expect(cli).not_to receive(:run_cmd!).with("git fetch cb")
+        allow(cli).to receive(:remote_branch_exists?).with("origin", "main").and_return(true)
+        allow(cli).to receive(:ahead_behind_counts).with("main", "origin/main").and_return([0, 0])
+        expect(cli).not_to receive(:remote_branch_exists?).with("cb", "main")
+
         expect { cli.send(:ensure_trunk_synced_before_push!, "main", "feat") }.not_to raise_error
       end
 

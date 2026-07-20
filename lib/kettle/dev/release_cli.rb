@@ -108,13 +108,14 @@ module Kettle
 
       public
 
-      def initialize(start_step: 0, local_ci: false, version: nil, appraisal_task: nil, skip_steps: nil, skip_bundle_audit: nil, ci_workflows: nil, **options)
+      def initialize(start_step: 0, local_ci: false, version: nil, appraisal_task: nil, skip_steps: nil, skip_bundle_audit: nil, ci_workflows: nil, skip_remotes: nil, **options)
         @root = Kettle::Dev::CIHelpers.project_root
         @git = Kettle::Dev::GitAdapter.new
         @start_step = (start_step || 0).to_i
         @start_step = 0 if @start_step < 0
         @skip_steps = normalize_skip_steps(skip_steps)
         @ci_workflows = normalize_ci_workflows(ci_workflows || ENV["K_RELEASE_CI_WORKFLOWS"])
+        @skip_remotes = normalize_skip_remotes(skip_remotes || ENV["K_RELEASE_SKIP_REMOTES"])
         @local_ci = !!local_ci
         @skip_bundle_audit = truthy_value?(skip_bundle_audit) || truthy_value?(ENV["KETTLE_DEV_SKIP_BUNDLE_AUDIT"])
         @version_override = Kettle::Dev::Versioning.normalize_explicit_version(version)
@@ -409,6 +410,14 @@ module Kettle
       def normalize_ci_workflows(value)
         workflows = Array(value).flat_map { |part| part.to_s.split(",") }.map(&:strip).reject(&:empty?)
         workflows.map { |workflow| workflow.match?(/\.ya?ml\z/) ? workflow : "#{workflow}.yml" }.uniq
+      end
+
+      def normalize_skip_remotes(value)
+        remotes = Array(value).flat_map { |part| part.to_s.split(",") }.map(&:strip).reject(&:empty?)
+        invalid = remotes.find { |remote| !remote.match?(/\A[A-Za-z0-9_.-]+\z/) }
+        abort("Invalid skip remotes value #{invalid.inspect}; use comma-separated git remote names.") if invalid
+
+        remotes.uniq
       end
 
       private
@@ -925,7 +934,7 @@ module Kettle
         branch = current_branch
         abort("Could not determine current branch to push.") unless branch
 
-        if has_remote?("all")
+        if use_all_remote?
           puts "$ git push all #{branch}"
           success = @git.push("all", branch)
           unless success
@@ -936,7 +945,7 @@ module Kettle
         end
 
         remotes = []
-        remotes << "origin" if has_remote?("origin")
+        remotes << "origin" if has_remote?("origin") && !skipped_remote?("origin")
         remotes |= github_remote_candidates
         remotes |= gitlab_remote_candidates
         remotes |= codeberg_remote_candidates
@@ -967,13 +976,13 @@ module Kettle
         # 1) If a remote named "all" exists, push tags only to it.
         # 2) Otherwise, if other remotes exist, push tags to each of them.
         # 3) If no remotes are configured, push tags using default remote.
-        if has_remote?("all")
+        if use_all_remote?
           ok = @git.push_tags("all")
           warn("Push tags to 'all' reported failure.") unless ok
           return
         end
 
-        remotes = list_remotes
+        remotes = active_remotes
         remotes -= ["all"] if remotes
         if remotes.nil? || remotes.empty?
           ok = @git.push_tags(nil)
@@ -1021,15 +1030,15 @@ module Kettle
       end
 
       def github_remote_candidates
-        remotes_with_urls.select { |n, u| u.include?("github.com") }.keys
+        active_remote_candidates(remotes_with_urls.select { |n, u| u.include?("github.com") }.keys)
       end
 
       def gitlab_remote_candidates
-        remotes_with_urls.select { |n, u| u.include?("gitlab.com") }.keys
+        active_remote_candidates(remotes_with_urls.select { |n, u| u.include?("gitlab.com") }.keys)
       end
 
       def codeberg_remote_candidates
-        remotes_with_urls.select { |n, u| u.include?("codeberg.org") }.keys
+        active_remote_candidates(remotes_with_urls.select { |n, u| u.include?("codeberg.org") }.keys)
       end
 
       def preferred_github_remote
@@ -1050,6 +1059,22 @@ module Kettle
 
       def has_remote?(name)
         list_remotes.include?(name)
+      end
+
+      def skipped_remote?(name)
+        @skip_remotes.include?(name)
+      end
+
+      def active_remotes
+        list_remotes.reject { |remote| skipped_remote?(remote) }
+      end
+
+      def active_remote_candidates(candidates)
+        candidates.reject { |remote| skipped_remote?(remote) }
+      end
+
+      def use_all_remote?
+        has_remote?("all") && @skip_remotes.empty?
       end
 
       def remote_branch_exists?(remote, branch)
@@ -1076,9 +1101,15 @@ module Kettle
 
       def ensure_trunk_synced_before_push!(trunk, feature)
         if has_remote?("all")
-          puts "Remote 'all' detected. Fetching from all remotes and enforcing strict trunk parity..."
-          run_cmd!("git fetch --all")
-          remotes = list_remotes
+          remotes = active_remotes
+          skipped = list_remotes.select { |remote| skipped_remote?(remote) }
+          puts "Remote 'all' detected. Fetching from active remotes and enforcing strict trunk parity..."
+          puts "Skipping configured remotes: #{skipped.join(", ")}" unless skipped.empty?
+          remotes.each do |remote|
+            next if remote == "all"
+
+            run_cmd!("git fetch #{Shellwords.escape(remote)}")
+          end
           missing_from = []
           remotes.each do |r|
             next if r == "all"

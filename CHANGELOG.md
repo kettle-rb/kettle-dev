@@ -20,6 +20,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- `kettle-release` now accepts `--skip-remotes` and
+  `K_RELEASE_SKIP_REMOTES` to exclude temporarily unavailable git remotes from
+  release fetch/push parity checks.
+
 ### Changed
 
 ### Deprecated

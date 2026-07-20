@@ -381,7 +381,7 @@ module Kettle
     end
 
     class ReleaseCLI
-      def initialize: (?start_step: Integer, ?local_ci: bool, ?version: String?, ?appraisal_task: String?, ?skip_steps: untyped, ?skip_bundle_audit: bool?, ?ci_workflows: untyped, **untyped) -> void
+      def initialize: (?start_step: Integer, ?local_ci: bool, ?version: String?, ?appraisal_task: String?, ?skip_steps: untyped, ?skip_bundle_audit: bool?, ?ci_workflows: untyped, ?skip_remotes: untyped, **untyped) -> void
       def run: () -> void
 
       private

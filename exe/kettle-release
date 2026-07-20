@@ -43,7 +43,7 @@ end
 # Do not guard with __FILE__ == $PROGRAM_NAME because binstubs use Kernel.load.
 if ARGV.include?("-h") || ARGV.include?("--help")
   puts <<~USAGE
-    Usage: kettle-release [--version VERSION] [--local-ci] [--appraisal-update] [--skip-bundle-audit] [--skip-steps STEPS] [--ci-workflows WORKFLOWS] [start_step=<0-19>]
+    Usage: kettle-release [--version VERSION] [--local-ci] [--appraisal-update] [--skip-bundle-audit] [--skip-steps STEPS] [--ci-workflows WORKFLOWS] [--skip-remotes REMOTES] [start_step=<0-19>]
 
     Automates the release flow for a Ruby gem in the host project.
 
@@ -82,6 +82,7 @@ if ARGV.include?("-h") || ARGV.include?("--help")
       --appraisal-update          # Use slower appraisal:update instead of default appraisal:generate
       --skip-bundle-audit         # Skip bundle:audit/update during release rake checks
       --ci-workflows WORKFLOWS    # Comma-separated workflow files or stems to monitor at CI step 10
+      --skip-remotes REMOTES      # Comma-separated git remote names to exclude from release fetch/push parity
       --local-ci                  # Sensitive release mode: run act locally, publish before any git push,
                                   # create the git tag locally, then push commits and tags after publish
 
@@ -91,6 +92,7 @@ if ARGV.include?("-h") || ARGV.include?("--help")
       K_RELEASE_LOCAL_CI=ask|1|0  # Use 'act' locally before push; 'ask' prompts, '1' forces, default off
       K_RELEASE_LOCAL_CI_WORKFLOW # Name of workflow (without .yml) for local CI; defaults to locked_deps or first
       K_RELEASE_CI_WORKFLOWS      # Comma-separated workflow files or stems to monitor at CI step 10
+      K_RELEASE_SKIP_REMOTES      # Comma-separated git remote names to exclude from release fetch/push parity
       KETTLE_RELEASE_APPRAISAL_TASK=appraisal:update
                                   # Use slower appraisal:update instead of default appraisal:generate
       KETTLE_DEV_SKIP_BUNDLE_AUDIT=true
@@ -168,6 +170,27 @@ def extract_ci_workflows_arg!(argv)
   workflows
 end
 
+def extract_skip_remotes_arg!(argv)
+  remotes = nil
+  if (idx = argv.index("--skip-remotes"))
+    remotes = argv[idx + 1]
+    if remotes.to_s.empty? || remotes.to_s.start_with?("-")
+      Kettle::Dev::ExitAdapter.abort("--skip-remotes requires a comma-separated remote list")
+    end
+    argv.slice!(idx, 2)
+  end
+  argv.delete_if do |arg|
+    if arg.start_with?("--skip-remotes=", "skip_remotes=")
+      remotes = arg.split("=", 2)[1]
+      Kettle::Dev::ExitAdapter.abort("--skip-remotes requires a comma-separated remote list") if remotes.to_s.empty?
+      true
+    else
+      false
+    end
+  end
+  remotes
+end
+
 local_ci = ARGV.include?("--local-ci")
 appraisal_task = ARGV.delete("--appraisal-update") ? "appraisal:update" : nil
 skip_bundle_audit = !!ARGV.delete("--skip-bundle-audit")
@@ -176,9 +199,10 @@ start_step = start_step_arg ? start_step_arg.split("=", 2)[1].to_i : 0
 version_override = extract_version_arg!(ARGV)
 skip_steps = extract_skip_steps_arg!(ARGV)
 ci_workflows = extract_ci_workflows_arg!(ARGV)
+skip_remotes = extract_skip_remotes_arg!(ARGV)
 
 begin
-  Kettle::Dev::ReleaseCLI.new(start_step: start_step, local_ci: local_ci, version: version_override, appraisal_task: appraisal_task, skip_steps: skip_steps, skip_bundle_audit: skip_bundle_audit, ci_workflows: ci_workflows).run
+  Kettle::Dev::ReleaseCLI.new(start_step: start_step, local_ci: local_ci, version: version_override, appraisal_task: appraisal_task, skip_steps: skip_steps, skip_bundle_audit: skip_bundle_audit, ci_workflows: ci_workflows, skip_remotes: skip_remotes).run
 rescue LoadError => e
   warn("#{script_basename}: could not load dependency: #{e.class}: #{e.message}")
   warn(Array(e.backtrace).join("\n")) if ENV["DEBUG"]
