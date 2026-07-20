@@ -469,9 +469,6 @@ module Kettle
 
     module Tasks
       # Namespace module for task-related classes and Rake task loaders.
-      # Namespace module for task-related classes and Rake task loaders.
-      # Namespace module for task-related classes and Rake task loaders.
-      # Namespace module for task-related classes and Rake task loaders.
       module CITask
         def self.act: (?String opt) -> void
       end
