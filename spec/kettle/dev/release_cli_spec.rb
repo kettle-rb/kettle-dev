@@ -1302,6 +1302,12 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
           local_cli.send(:release_gem_and_tag_locally!, "1.2.3")
         end
       end
+
+      it "preserves hyphenated gem names when deriving the published gem name" do
+        local_cli = described_class.new
+
+        expect(local_cli.send(:gem_name_from_gem_path, "pkg/my-gem-1.2.3.gem", "1.2.3")).to eq("my-gem")
+      end
     end
 
     describe "push_tags!" do
