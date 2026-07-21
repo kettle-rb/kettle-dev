@@ -397,6 +397,47 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect(cli.send(:trunk_behind_remote?, "main", "origin")).to be true
       end
 
+      it "skips GitHub pull request setup when releasing from trunk" do
+        allow(cli).to receive(:current_branch).and_return("main")
+        allow(cli).to receive(:detect_trunk_branch).and_return("main")
+        expect(cli).not_to receive(:github_pull_request_for_branch)
+
+        cli.send(:ensure_github_pull_request_for_ci!)
+      end
+
+      it "reuses an open GitHub pull request before CI monitoring", :check_output do
+        allow(cli).to receive(:current_branch).and_return("feature/release")
+        allow(cli).to receive(:detect_trunk_branch).and_return("main")
+        allow(cli).to receive(:preferred_github_remote).and_return("origin")
+        allow(cli).to receive(:remote_url).with("origin").and_return("git@github.com:me/repo.git")
+        allow(cli).to receive(:github_pull_request_for_branch).with(
+          owner: "me",
+          repo: "repo",
+          branch: "feature/release",
+          base: "main"
+        ).and_return({"number" => 42, "url" => "https://github.com/me/repo/pull/42"})
+        expect(cli).not_to receive(:create_github_pull_request!)
+
+        cli.send(:ensure_github_pull_request_for_ci!)
+      end
+
+      it "creates a GitHub pull request before CI monitoring when none is open" do
+        allow(cli).to receive(:current_branch).and_return("feature/release")
+        allow(cli).to receive(:detect_trunk_branch).and_return("main")
+        allow(cli).to receive(:preferred_github_remote).and_return("origin")
+        allow(cli).to receive(:remote_url).with("origin").and_return("git@github.com:me/repo.git")
+        allow(cli).to receive(:github_pull_request_for_branch).and_return(nil)
+
+        expect(cli).to receive(:create_github_pull_request!).with(
+          owner: "me",
+          repo: "repo",
+          branch: "feature/release",
+          base: "main"
+        )
+
+        cli.send(:ensure_github_pull_request_for_ci!)
+      end
+
       it "git_output trims and returns success flag" do
         # Ensure GitAdapter is used and its output is trimmed
         adapter = instance_double(Kettle::Dev::GitAdapter)
@@ -674,6 +715,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
     describe "#monitor_workflows_after_push!" do
       before do
+        allow(cli).to receive(:ensure_github_pull_request_for_ci!)
         allow(ci_helpers).to receive(:project_root).and_return(Dir.pwd)
         allow(ci_helpers).to receive(:current_branch).and_return("feat")
         allow(Kettle::Dev::CIMonitor).to receive(:preferred_github_remote).and_return("origin")
@@ -696,10 +738,12 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         allow(ci_helpers).to receive(:latest_run).with(owner: "me", repo: "repo", workflow_file: "lint.yml", branch: "feat", require_head: true, head_sha: "abc123").and_return(run2)
         allow(ci_helpers).to receive(:success?).and_return(true)
         expect { cli.send(:monitor_workflows_after_push!) }.not_to raise_error
+        expect(cli).to have_received(:ensure_github_pull_request_for_ci!)
       end
 
       it "passes an explicit normalized workflow subset to the CI monitor" do
         release_cli = described_class.new(ci_workflows: "current,style.yml")
+        allow(release_cli).to receive(:ensure_github_pull_request_for_ci!)
         allow(Kettle::Dev::CIMonitor).to receive(:monitor_all!)
 
         release_cli.send(:monitor_workflows_after_push!)
@@ -713,6 +757,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       it "uses K_RELEASE_CI_WORKFLOWS when no explicit workflow subset is passed" do
         stub_env("K_RELEASE_CI_WORKFLOWS" => "current,style.yml")
         release_cli = described_class.new
+        allow(release_cli).to receive(:ensure_github_pull_request_for_ci!)
         allow(Kettle::Dev::CIMonitor).to receive(:monitor_all!)
 
         release_cli.send(:monitor_workflows_after_push!)
@@ -1427,6 +1472,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         allow(ci_helpers).to receive(:gitlab_latest_pipeline).and_return(nil, {"web_url" => "http://gitlab/pipeline"})
         allow(ci_helpers).to receive(:gitlab_success?).and_return(true)
         allow(ci_helpers).to receive(:gitlab_failed?).and_return(false)
+        allow(cli).to receive(:ensure_github_pull_request_for_ci!)
         expect { cli.send(:monitor_workflows_after_push!) }.not_to raise_error
       end
     end

@@ -728,8 +728,83 @@ module Kettle
       end
 
       def monitor_workflows_after_push!
+        ensure_github_pull_request_for_ci!
         # Use abort-on-failure CI monitor to match historical behavior and specs
         Kettle::Dev::CIMonitor.monitor_all!(restart_hint: "bundle exec kettle-release start_step=10", workflows: @ci_workflows)
+      end
+
+      def ensure_github_pull_request_for_ci!
+        branch = current_branch
+        return if branch.to_s.empty?
+
+        trunk = detect_trunk_branch
+        return if branch == trunk
+
+        gh_remote = preferred_github_remote
+        return unless gh_remote
+
+        owner, repo = parse_github_owner_repo(remote_url(gh_remote))
+        return unless owner && repo
+
+        pull_request = github_pull_request_for_branch(owner: owner, repo: repo, branch: branch, base: trunk)
+        if pull_request
+          puts "GitHub pull request ##{pull_request.fetch("number")} already open for #{branch} -> #{trunk}: #{pull_request.fetch("url")}"
+          return
+        end
+
+        create_github_pull_request!(owner: owner, repo: repo, branch: branch, base: trunk)
+      end
+
+      def github_pull_request_for_branch(owner:, repo:, branch:, base:)
+        output = gh_output!(
+          "pr",
+          "list",
+          "--repo",
+          "#{owner}/#{repo}",
+          "--head",
+          branch,
+          "--base",
+          base,
+          "--state",
+          "open",
+          "--json",
+          "number,url",
+          "--limit",
+          "1"
+        )
+        Array(JSON.parse(output)).first
+      rescue JSON::ParserError => e
+        Kettle::Dev.debug_error(e, __method__)
+        abort("Could not parse GitHub pull request list from gh CLI.")
+      end
+
+      def create_github_pull_request!(owner:, repo:, branch:, base:)
+        output = gh_output!(
+          "pr",
+          "create",
+          "--repo",
+          "#{owner}/#{repo}",
+          "--head",
+          branch,
+          "--base",
+          base,
+          "--title",
+          "Release #{branch}",
+          "--body",
+          "Automated release validation PR for `#{branch}`.\n\nThis PR lets GitHub Actions run before kettle-release merges the branch into `#{base}`."
+        )
+        puts "Created GitHub pull request for #{branch} -> #{base}: #{output.strip}"
+      end
+
+      def gh_output!(*args)
+        stdout_str, stderr_str, status = Open3.capture3(self.class.send(:command_env), "gh", *args)
+        return stdout_str if status.success?
+
+        exit_code = status.respond_to?(:exitstatus) ? status.exitstatus : 1
+        diag = stderr_str.to_s.empty? ? "" : "\n--- STDERR ---\n#{stderr_str}".rstrip
+        abort("GitHub pull request setup failed: gh #{args.join(" ")} (exit #{exit_code})#{diag}")
+      rescue Errno::ENOENT
+        abort("GitHub pull request setup failed: gh CLI is required to create or find the release PR.")
       end
 
       def run_cmd!(cmd)

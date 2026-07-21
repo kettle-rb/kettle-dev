@@ -26,6 +26,9 @@ Please file a bug if you notice a violation of semantic versioning.
 - `kettle-release` now accepts `--skip-remotes` and
   `K_RELEASE_SKIP_REMOTES` to exclude temporarily unavailable git remotes from
   release fetch/push parity checks.
+- `kettle-release` now creates or reuses an open GitHub pull request for
+  non-trunk release branches before waiting for GitHub Actions, so
+  pull-request-only workflows start after release branch pushes.
 
 ### Changed
 
