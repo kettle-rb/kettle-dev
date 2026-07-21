@@ -20,6 +20,25 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [2.3.8] - 2026-07-21
+
+- TAG: [v2.3.8][2.3.8t]
+- COVERAGE: 91.98% -- 4379/4761 lines in 36 files
+- BRANCH COVERAGE: 73.91% -- 1711/2315 branches in 36 files
+- 56.04% documented
+
+### Added
+
 - `kettle-changelog --release-state` now reports an `ahead` value counting
   commits from the latest release tag to the local default branch when
   available.
@@ -42,14 +61,6 @@ Please file a bug if you notice a violation of semantic versioning.
   omit JRuby and TruffleRuby jobs when project config declares MRI-only engines.
 - kettle-jem-template-20260720-005 - Generated README Support & Community rows
   now include a RubyForum help badge.
-
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
 
 ## [2.3.7] - 2026-07-18
 
@@ -2557,7 +2568,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.7...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.8...HEAD
+[2.3.8]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.7...v2.3.8
+[2.3.8t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.3.8
 [2.3.7]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.6...v2.3.7
 [2.3.7t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.3.7
 [2.3.6]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.5...v2.3.6
