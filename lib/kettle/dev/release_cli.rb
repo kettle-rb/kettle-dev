@@ -1000,8 +1000,7 @@ module Kettle
 
       def gem_name_from_gem_path(gem_path, version)
         basename = File.basename(gem_path, ".gem")
-        suffix = "-#{version}"
-        basename.end_with?(suffix) ? basename[0...-suffix.length] : basename
+        basename.delete_suffix("-#{version}")
       end
 
       def commit_release_prep!(version)
