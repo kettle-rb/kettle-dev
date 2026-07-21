@@ -28,6 +28,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-release` now records a short-lived gem.coop release-state cache-bust
+  marker after publishing, and `kettle-changelog --release-state` uses it to
+  refresh just-published gem version lookups.
+
 ### Security
 
 ## [2.3.8] - 2026-07-21

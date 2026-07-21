@@ -293,6 +293,16 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       end
     end
 
+    it "passes refresh-cache through to gem.coop version lookup" do
+      allow(described_class).to receive(:new).and_call_original
+      cli = described_class.new(strict: false, refresh_cache: true)
+      allow(Kettle::Dev::GemCoopVersions).to receive(:fetch).with("demo", version_hint: "1.2.3", refresh: true).and_return([{"number" => "1.2.3"}])
+
+      latest_overall, latest_series, latest_major = cli.send(:latest_released_versions, "demo", "1.2.3")
+
+      expect([latest_overall, latest_series, latest_major]).to eq(["1.2.3", "1.2.3", "1.2.3"])
+    end
+
     it "formats release state as a single-gem table" do
       cli = described_class.new(strict: false)
       table = cli.release_state_table(
@@ -343,7 +353,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
   end
 
   describe "#run warnings and aborts" do
-    it "warns when owner/repo cannot be determined and Unreleased is empty" do
+    it "warns when owner/repo cannot be determined and Unreleased is empty", freeze: Time.new(2025, 8, 31) do
       mkproj do |root|
         # version.rb
         File.write(File.join(root, "lib", "my", "gem", "version.rb"), <<~RB)
@@ -366,9 +376,6 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
           ## [0.9.9] - 2020-01-01
         MD
         allow(Kettle::Dev::CIHelpers).to receive_messages(project_root: root, repo_info: [nil, nil])
-        t = Time.new(2025, 8, 31)
-        allow(Time).to receive(:now).and_return(t)
-
         cli = described_class.new(strict: false)
         expect { cli.run }.not_to raise_error
         updated = File.read(File.join(root, "CHANGELOG.md"))
@@ -439,7 +446,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       end
     end
 
-    it "aborts when the current released version has pending unreleased entries" do
+    it "aborts when the current released version has pending unreleased entries", freeze: Time.new(2025, 8, 31) do
       mkproj do |root|
         File.write(File.join(root, "lib", "my", "gem", "version.rb"), <<~RB)
           module My; module Gem; VERSION = "1.2.3"; end; end
@@ -472,8 +479,6 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
           [1.2.2t]: https://github.com/o/r/releases/tag/v1.2.2
         MD
         allow(Kettle::Dev::CIHelpers).to receive_messages(project_root: root, repo_info: ["o", "r"])
-        allow(Time).to receive(:now).and_return(Time.new(2025, 8, 31))
-
         cli = described_class.new(strict: false)
         allow(cli).to receive(:latest_released_versions).and_return(["1.2.3", "1.2.3"])
         expect { cli.run }.to raise_error(MockSystemExit, /matches the latest released version.*bump version\.rb/m)
@@ -486,7 +491,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       end
     end
 
-    it "reformats only when the current released version is missing generated metadata and Unreleased is empty" do
+    it "reformats only when the current released version is missing generated metadata and Unreleased is empty", freeze: Time.new(2025, 8, 31) do
       mkproj do |root|
         File.write(File.join(root, "lib", "my", "gem", "version.rb"), <<~RB)
           module My; module Gem; VERSION = "1.2.3"; end; end
@@ -522,8 +527,6 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
           [1.2.2t]: https://github.com/o/r/releases/tag/v1.2.2
         MD
         allow(Kettle::Dev::CIHelpers).to receive_messages(project_root: root, repo_info: ["o", "r"])
-        allow(Time).to receive(:now).and_return(Time.new(2025, 8, 31))
-
         cli = described_class.new(strict: false)
         allow(cli).to receive(:latest_released_versions).and_return(["1.2.3", "1.2.3"])
         expect { cli.run }.not_to raise_error
@@ -538,7 +541,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       end
     end
 
-    it "updates the most recent prepared release in place" do
+    it "updates the most recent prepared release in place", freeze: Time.new(2025, 8, 31) do
       mkproj do |root|
         File.write(File.join(root, "lib", "my", "gem", "version.rb"), <<~RB)
           module My; module Gem; VERSION = "1.2.4"; end; end
@@ -578,8 +581,6 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
           [1.2.3t]: https://github.com/o/r/releases/tag/v1.2.3
         MD
         allow(Kettle::Dev::CIHelpers).to receive_messages(project_root: root, repo_info: ["o", "r"])
-        allow(Time).to receive(:now).and_return(Time.new(2025, 8, 31))
-
         cli = described_class.new(strict: false, update_prep: true)
         allow(cli).to receive_messages(
           coverage_lines: [
@@ -603,7 +604,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       end
     end
 
-    it "updates a prerelease prepared release in place" do
+    it "updates a prerelease prepared release in place", freeze: Time.new(2026, 6, 21) do
       mkproj do |root|
         File.write(File.join(root, "lib", "my", "gem", "version.rb"), <<~RB)
           module My; module Gem; VERSION = "3.0.0.rc3"; end; end
@@ -643,8 +644,6 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
           [2.0.2t]: https://github.com/o/r/releases/tag/v2.0.2
         MD
         allow(Kettle::Dev::CIHelpers).to receive_messages(project_root: root, repo_info: ["o", "r"])
-        allow(Time).to receive(:now).and_return(Time.new(2026, 6, 21))
-
         cli = described_class.new(strict: false, update_prep: true)
         allow(cli).to receive_messages(
           coverage_lines: [
@@ -668,7 +667,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       end
     end
 
-    it "auto-selects update-prep when version.rb matches the most recent changelog release but is newer than live" do
+    it "auto-selects update-prep when version.rb matches the most recent changelog release but is newer than live", freeze: Time.new(2025, 8, 31) do
       mkproj do |root|
         File.write(File.join(root, "lib", "my", "gem", "version.rb"), <<~RB)
           module My; module Gem; VERSION = "1.2.4"; end; end
@@ -701,8 +700,6 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
           [1.2.3t]: https://github.com/o/r/releases/tag/v1.2.3
         MD
         allow(Kettle::Dev::CIHelpers).to receive_messages(project_root: root, repo_info: ["o", "r"])
-        allow(Time).to receive(:now).and_return(Time.new(2025, 8, 31))
-
         cli = described_class.new(strict: false)
         allow(cli).to receive(:latest_released_versions).and_return(["1.2.3", "1.2.3"])
         allow(cli).to receive_messages(
@@ -718,7 +715,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       end
     end
 
-    it "auto-selects a new release when version.rb is newer than live and not yet in changelog" do
+    it "auto-selects a new release when version.rb is newer than live and not yet in changelog", freeze: Time.new(2025, 8, 31) do
       mkproj do |root|
         File.write(File.join(root, "lib", "my", "gem", "version.rb"), <<~RB)
           module My; module Gem; VERSION = "1.2.4"; end; end
@@ -741,8 +738,6 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
           [1.2.3t]: https://github.com/o/r/releases/tag/v1.2.3
         MD
         allow(Kettle::Dev::CIHelpers).to receive_messages(project_root: root, repo_info: ["o", "r"])
-        allow(Time).to receive(:now).and_return(Time.new(2025, 8, 31))
-
         cli = described_class.new(strict: false)
         allow(cli).to receive(:latest_released_versions).and_return(["1.2.3", "1.2.3"])
 
@@ -1222,7 +1217,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
     end
   end
 
-  it "lists Unreleased first, then newest to oldest versions in footer" do
+  it "lists Unreleased first, then newest to oldest versions in footer", freeze: Time.new(2025, 8, 30) do
     Dir.mktmpdir do |root|
       FileUtils.mkdir_p(File.join(root, "lib", "my", "gem"))
       File.write(File.join(root, "lib", "my", "gem", "version.rb"), <<~RB)
@@ -1241,9 +1236,6 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
 
       ci_helpers = Kettle::Dev::CIHelpers
       allow(ci_helpers).to receive_messages(project_root: root, repo_info: ["acme", "my-gem"]) # owner, repo
-
-      t = Time.new(2025, 8, 30)
-      allow(Time).to receive(:now).and_return(t)
 
       cli = described_class.new(strict: false)
       expect { cli.run }.not_to raise_error
@@ -1269,7 +1261,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
     end
   end
 
-  it "preserves older release blocks and interspersed link refs when adding new version" do
+  it "preserves older release blocks and interspersed link refs when adding new version", freeze: Time.new(2025, 8, 30) do
     Dir.mktmpdir do |root|
       # Prepare minimal gem fixture
       FileUtils.mkdir_p(File.join(root, "lib", "my", "gem"))
@@ -1294,10 +1286,6 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       ci_helpers = Kettle::Dev::CIHelpers
       allow(ci_helpers).to receive_messages(project_root: root, repo_info: ["acme", "my-gem"])
 
-      # Freeze time for deterministic date
-      t = Time.new(2025, 8, 30)
-      allow(Time).to receive(:now).and_return(t)
-
       # Run the CLI
       cli = described_class.new(strict: false)
       expect { cli.run }.not_to raise_error
@@ -1321,7 +1309,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
     end
   end
 
-  it "works with a vanilla keep-a-changelog fixture" do
+  it "works with a vanilla keep-a-changelog fixture", freeze: Time.new(2025, 8, 30) do
     Dir.mktmpdir do |root|
       FileUtils.mkdir_p(File.join(root, "lib", "my", "gem"))
       File.write(File.join(root, "lib", "my", "gem", "version.rb"), <<~RB)
@@ -1342,10 +1330,6 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       # Stub project_root and repo_info for deterministic link updates
       ci_helpers = Kettle::Dev::CIHelpers
       allow(ci_helpers).to receive_messages(project_root: root, repo_info: ["acme", "my-gem"])
-
-      # Freeze time for deterministic date
-      t = Time.new(2025, 8, 30)
-      allow(Time).to receive(:now).and_return(t)
 
       cli = described_class.new(strict: false)
       expect { cli.run }.not_to raise_error
@@ -1369,7 +1353,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
     end
   end
 
-  it "works with a partial-unreleased changelog fixture" do
+  it "works with a partial-unreleased changelog fixture", freeze: Time.new(2025, 8, 30) do
     Dir.mktmpdir do |root|
       FileUtils.mkdir_p(File.join(root, "lib", "my", "gem"))
       File.write(File.join(root, "lib", "my", "gem", "version.rb"), <<~RB)
@@ -1389,10 +1373,6 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
 
       # Stub project_root and repo_info for deterministic link updates
       allow(Kettle::Dev::CIHelpers).to receive_messages(project_root: root, repo_info: ["acme", "x"]) # owner, repo
-
-      # Freeze time for deterministic date
-      t = Time.new(2025, 8, 30)
-      allow(Time).to receive(:now).and_return(t)
 
       cli = described_class.new(strict: false)
       expect { cli.run }.not_to raise_error
@@ -1418,7 +1398,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
   # real content when deciding whether an H3 section was non-empty.  A section
   # that contains ONLY link-ref defs (no list items / paragraphs) must be
   # dropped from the released block.
-  describe "bug: link-ref definitions must not count as section content" do
+  describe "bug: link-ref definitions must not count as section content", freeze: Time.new(2025, 8, 30) do
     def run_with_fixture(fixture_name, version: "9.9.9", owner: "acme", repo: "x")
       Dir.mktmpdir do |root|
         FileUtils.mkdir_p(File.join(root, "lib", "my", "gem"))
@@ -1432,8 +1412,6 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
         File.write(File.join(root, "CHANGELOG.md"), File.read(fixture_path))
 
         allow(Kettle::Dev::CIHelpers).to receive_messages(project_root: root, repo_info: [owner, repo])
-        allow(Time).to receive(:now).and_return(Time.new(2025, 8, 30))
-
         cli = described_class.new(strict: false)
         expect { cli.run }.not_to raise_error
         yield File.read(File.join(root, "CHANGELOG.md"))
@@ -1475,7 +1453,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
   # ### Security), making it appear non-empty and causing it to be retained with
   # the footer refs as its body.
   describe "bug: footer link-refs must not bleed into unreleased body on first release" do
-    it "drops ### Security and places footer link-refs only in the footer" do
+    it "drops ### Security and places footer link-refs only in the footer", freeze: Time.new(2025, 8, 30) do
       Dir.mktmpdir do |root|
         FileUtils.mkdir_p(File.join(root, "lib", "my", "gem"))
         File.write(File.join(root, "lib", "my", "gem", "version.rb"), <<~RB)
@@ -1488,8 +1466,6 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
         File.write(File.join(root, "CHANGELOG.md"), File.read(fixture_path))
 
         allow(Kettle::Dev::CIHelpers).to receive_messages(project_root: root, repo_info: ["acme", "new-gem"])
-        allow(Time).to receive(:now).and_return(Time.new(2025, 8, 30))
-
         cli = described_class.new(strict: false)
         expect { cli.run }.not_to raise_error
 
@@ -1528,7 +1504,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
   # appearing under an H3 section that does have real content elsewhere —
   # should not count as real content for a section that is otherwise empty.
   describe "bug: H4 subsection headings alone must not count as section content" do
-    it "drops H3 section whose body has only an H4 heading and no list items" do
+    it "drops H3 section whose body has only an H4 heading and no list items", freeze: Time.new(2025, 8, 30) do
       Dir.mktmpdir do |root|
         FileUtils.mkdir_p(File.join(root, "lib", "my", "gem"))
         File.write(File.join(root, "lib", "my", "gem", "version.rb"), <<~RB)
@@ -1541,8 +1517,6 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
         File.write(File.join(root, "CHANGELOG.md"), File.read(fixture_path))
 
         allow(Kettle::Dev::CIHelpers).to receive_messages(project_root: root, repo_info: ["acme", "x"])
-        allow(Time).to receive(:now).and_return(Time.new(2025, 8, 30))
-
         cli = described_class.new(strict: false)
         expect { cli.run }.not_to raise_error
 
@@ -1566,7 +1540,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
   # Full integration regression: the real turbo_tests2 CHANGELOG exercising all
   # three bugs simultaneously.
   describe "bug integration: turbo_tests2 CHANGELOG with H4 subsections, inline link-refs, and footer bleeding" do
-    it "produces a correct released section from the turbo_tests2 fixture" do
+    it "produces a correct released section from the turbo_tests2 fixture", freeze: Time.new(2026, 4, 7) do
       Dir.mktmpdir do |root|
         FileUtils.mkdir_p(File.join(root, "lib", "turbo_tests2"))
         File.write(File.join(root, "lib", "turbo_tests2", "version.rb"), <<~RB)
@@ -1582,8 +1556,6 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
           project_root: root,
           repo_info: ["galtzo-floss", "turbo_tests2"]
         )
-        allow(Time).to receive(:now).and_return(Time.new(2026, 4, 7))
-
         cli = described_class.new(strict: false)
         expect { cli.run }.not_to raise_error
 

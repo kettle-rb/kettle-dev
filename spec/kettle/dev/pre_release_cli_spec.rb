@@ -164,13 +164,10 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
       expect { cli.run }.to raise_error(MockSystemExit)
     end
 
-    it "uses fresh successful image URL cache entries instead of repeating HTTP checks" do
+    it "uses fresh successful image URL cache entries instead of repeating HTTP checks", freeze: Time.utc(2026, 6, 16, 12, 0, 0) do
       Dir.mktmpdir do |root|
         cache_path = File.join(root, "image-url-cache.json")
-        cache = Kettle::Dev::PreReleaseCLI::ImageUrlCache.new(
-          path: cache_path,
-          clock: -> { Time.now.utc }
-        )
+        cache = Kettle::Dev::PreReleaseCLI::ImageUrlCache.new(path: cache_path)
         cache.write_success("https://example.com/logo.svg")
 
         stub_env("KETTLE_IMAGE_URL_CACHE" => cache_path, "KETTLE_IMAGE_URL_CACHE_REFRESH" => "false")
@@ -237,14 +234,12 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
       end
     end
 
-    it "refreshes stale image URL cache entries and records successful revalidation" do
+    it "refreshes stale image URL cache entries and records successful revalidation", freeze: Time.utc(2026, 6, 16, 12, 0, 0) do
       Dir.mktmpdir do |root|
         cache_path = File.join(root, "image-url-cache.json")
-        old_cache = Kettle::Dev::PreReleaseCLI::ImageUrlCache.new(
-          path: cache_path,
-          clock: -> { Time.utc(2026, 6, 1, 12, 0, 0) }
-        )
-        old_cache.write_success("https://example.com/logo.svg")
+        Timecop.freeze(Time.utc(2026, 6, 1, 12, 0, 0)) do
+          Kettle::Dev::PreReleaseCLI::ImageUrlCache.new(path: cache_path).write_success("https://example.com/logo.svg")
+        end
 
         stub_env("KETTLE_IMAGE_URL_CACHE" => cache_path)
         allow(Kettle::Dev::PreReleaseCLI::Markdown).to receive(:extract_image_urls_from_files).and_return([
@@ -276,13 +271,10 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
       end
     end
 
-    it "bypasses fresh image URL cache entries when refresh is requested" do
+    it "bypasses fresh image URL cache entries when refresh is requested", freeze: Time.utc(2026, 6, 16, 12, 0, 0) do
       Dir.mktmpdir do |root|
         cache_path = File.join(root, "image-url-cache.json")
-        cache = Kettle::Dev::PreReleaseCLI::ImageUrlCache.new(
-          path: cache_path,
-          clock: -> { Time.utc(2026, 6, 16, 12, 0, 0) }
-        )
+        cache = Kettle::Dev::PreReleaseCLI::ImageUrlCache.new(path: cache_path)
         cache.write_success("https://example.com/logo.svg")
 
         stub_env(

@@ -27,7 +27,7 @@ module Kettle
       # @param enforce_coverage_thresholds [Boolean] when true, fail strict coverage generation below project thresholds
       # @param update_prep [Boolean] when true, update the most recent prepared release section in place
       # @param version [String, nil] explicit version override for gems without a literal VERSION constant
-      def initialize(strict: true, enforce_coverage_thresholds: true, update_prep: false, version: nil, root: Kettle::Dev::CIHelpers.project_root)
+      def initialize(strict: true, enforce_coverage_thresholds: true, update_prep: false, version: nil, root: Kettle::Dev::CIHelpers.project_root, refresh_cache: false)
         @root = root
         @changelog_path = File.join(@root, "CHANGELOG.md")
         @coverage_path = File.join(@root, "coverage", "coverage.json")
@@ -35,6 +35,7 @@ module Kettle
         @enforce_coverage_thresholds = enforce_coverage_thresholds
         @update_prep = update_prep
         @version_override = Kettle::Dev::Versioning.normalize_explicit_version(version)
+        @refresh_cache = refresh_cache
       end
 
       # Main entry point to update CHANGELOG.md
@@ -399,11 +400,9 @@ module Kettle
       end
 
       def latest_released_versions(gem_name, current_version)
-        uri = URI("https://gem.coop/api/v1/versions/#{gem_name}.json")
-        res = Net::HTTP.get_response(uri)
-        return [nil, nil] unless res.is_a?(Net::HTTPSuccess)
+        data = Kettle::Dev::GemCoopVersions.fetch(gem_name, version_hint: current_version, refresh: @refresh_cache)
+        return [nil, nil, nil] unless data.is_a?(Array)
 
-        data = JSON.parse(res.body)
         versions = data.map { |h| h["number"] }.compact
         versions.reject! { |v| v.to_s.include?("-pre") || v.to_s.include?(".pre") || v.to_s.match?(/[a-zA-Z]/) }
         gversions = versions.map { |s| Gem::Version.new(s) }.sort

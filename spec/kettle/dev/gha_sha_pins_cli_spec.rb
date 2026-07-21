@@ -254,20 +254,19 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       expect(client.send(:request_json, "/repos/old/action/releases")).to eq("ok" => true)
     end
 
-    it "bounds live GitHub refreshes and falls back to stale cache on timeout" do
+    it "bounds live GitHub refreshes and falls back to stale cache on timeout", freeze: Time.utc(2026, 6, 8, 12, 0, 1) do
       cache_path = File.join(workflow_root, "gha-cache.json")
-      Kettle::Dev::GhaShaPinsCLI::PersistentActionCache.new(
-        path: cache_path,
-        clock: -> { Time.utc(2026, 6, 7, 11, 59, 0) }
-      ).write_versions(
-        "foo/bar",
-        [{tag: "v1.2.0", version_obj: Gem::Version.new("1.2.0"), version: "1.2.0", sha: "a" * 40}]
-      )
+      Timecop.freeze(Time.utc(2026, 6, 7, 11, 59, 0)) do
+        Kettle::Dev::GhaShaPinsCLI::PersistentActionCache.new(path: cache_path).write_versions(
+          "foo/bar",
+          [{tag: "v1.2.0", version_obj: Gem::Version.new("1.2.0"), version: "1.2.0", sha: "a" * 40}]
+        )
+      end
       client = described_class.new(
         token: nil,
         api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE,
         user_agent: "kettle-gha-sha-pins",
-        persistent_cache: Kettle::Dev::GhaShaPinsCLI::PersistentActionCache.new(path: cache_path, clock: -> { Time.utc(2026, 6, 8, 12, 0, 1) }),
+        persistent_cache: Kettle::Dev::GhaShaPinsCLI::PersistentActionCache.new(path: cache_path),
         open_timeout: 1,
         read_timeout: 2
       )
@@ -436,10 +435,9 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       expect(versions.map { |entry| entry[:sha] }).to eq(["b" * 40, "a" * 40])
     end
 
-    it "uses fresh persistent cache entries without GitHub API calls" do
+    it "uses fresh persistent cache entries without GitHub API calls", freeze: Time.utc(2026, 6, 8, 12, 0, 0) do
       cache = Kettle::Dev::GhaShaPinsCLI::PersistentActionCache.new(
-        path: File.join(workflow_root, "gha-cache.json"),
-        clock: -> { Time.utc(2026, 6, 8, 12, 0, 0) }
+        path: File.join(workflow_root, "gha-cache.json")
       )
       cache.write_versions(
         "foo/bar",
@@ -462,9 +460,9 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       expect(versions.map { |entry| entry[:version] }).to eq(%w[2.0.0 1.3.0 1.2.3])
     end
 
-    it "bypasses fresh cache when refreshing and preserves unrelated cached actions" do
+    it "bypasses fresh cache when refreshing and preserves unrelated cached actions", freeze: Time.utc(2026, 6, 8, 12, 5, 0) do
       cache_path = File.join(workflow_root, "gha-cache.json")
-      cache = Kettle::Dev::GhaShaPinsCLI::PersistentActionCache.new(path: cache_path, clock: -> { Time.utc(2026, 6, 8, 12, 0, 0) })
+      cache = Kettle::Dev::GhaShaPinsCLI::PersistentActionCache.new(path: cache_path)
       cache.write_versions(
         "other/action",
         [{tag: "v9.0.0", version_obj: Gem::Version.new("9.0.0"), version: "9.0.0", sha: "9" * 40}]
@@ -477,7 +475,7 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
         token: nil,
         api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE,
         user_agent: "kettle-gha-sha-pins",
-        persistent_cache: Kettle::Dev::GhaShaPinsCLI::PersistentActionCache.new(path: cache_path, clock: -> { Time.utc(2026, 6, 8, 12, 5, 0) }),
+        persistent_cache: Kettle::Dev::GhaShaPinsCLI::PersistentActionCache.new(path: cache_path),
         refresh_cache: true
       )
       allow(client).to receive(:request_json).with("/repos/foo/bar/releases?per_page=100").and_return([
@@ -502,13 +500,13 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       expect(cached.dig("actions", "foo/bar", "targets", "major", "*", "version")).to eq("2.0.0")
     end
 
-    it "caches major-line tags as major-only targets" do
+    it "caches major-line tags as major-only targets", freeze: Time.utc(2026, 6, 8, 12, 5, 0) do
       cache_path = File.join(workflow_root, "gha-cache.json")
       client = described_class.new(
         token: nil,
         api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE,
         user_agent: "kettle-gha-sha-pins",
-        persistent_cache: Kettle::Dev::GhaShaPinsCLI::PersistentActionCache.new(path: cache_path, clock: -> { Time.utc(2026, 6, 8, 12, 5, 0) })
+        persistent_cache: Kettle::Dev::GhaShaPinsCLI::PersistentActionCache.new(path: cache_path)
       )
       allow(client).to receive(:request_json).with("/repos/foo/bar/releases?per_page=100").and_return([
         {"tag_name" => "v2", "prerelease" => false}
@@ -527,7 +525,7 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       expect(cached.dig("actions", "foo/bar", "targets", "major", "*", "version")).to eq("2")
     end
 
-    it "ignores persistent cache entries from older schemas" do
+    it "ignores persistent cache entries from older schemas", freeze: Time.utc(2026, 6, 8, 12, 5, 0) do
       cache_path = File.join(workflow_root, "gha-cache.json")
       File.write(
         cache_path,
@@ -551,7 +549,7 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
         token: nil,
         api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE,
         user_agent: "kettle-gha-sha-pins",
-        persistent_cache: Kettle::Dev::GhaShaPinsCLI::PersistentActionCache.new(path: cache_path, clock: -> { Time.utc(2026, 6, 8, 12, 5, 0) })
+        persistent_cache: Kettle::Dev::GhaShaPinsCLI::PersistentActionCache.new(path: cache_path)
       )
       allow(client).to receive(:request_json).with("/repos/foo/bar/releases?per_page=100").and_return([
         {"tag_name" => "v1.0.1", "prerelease" => false}
@@ -565,20 +563,19 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       expect(versions.map { |entry| entry[:version] }).to eq(["1.0.1"])
     end
 
-    it "refreshes stale persistent cache entries after the TTL" do
+    it "refreshes stale persistent cache entries after the TTL", freeze: Time.utc(2026, 6, 8, 12, 0, 1) do
       cache_path = File.join(workflow_root, "gha-cache.json")
-      Kettle::Dev::GhaShaPinsCLI::PersistentActionCache.new(
-        path: cache_path,
-        clock: -> { Time.utc(2026, 6, 7, 11, 59, 0) }
-      ).write_versions(
-        "foo/bar",
-        [{tag: "v1.2.0", version_obj: Gem::Version.new("1.2.0"), version: "1.2.0", sha: "a" * 40}]
-      )
+      Timecop.freeze(Time.utc(2026, 6, 7, 11, 59, 0)) do
+        Kettle::Dev::GhaShaPinsCLI::PersistentActionCache.new(path: cache_path).write_versions(
+          "foo/bar",
+          [{tag: "v1.2.0", version_obj: Gem::Version.new("1.2.0"), version: "1.2.0", sha: "a" * 40}]
+        )
+      end
       client = described_class.new(
         token: nil,
         api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE,
         user_agent: "kettle-gha-sha-pins",
-        persistent_cache: Kettle::Dev::GhaShaPinsCLI::PersistentActionCache.new(path: cache_path, clock: -> { Time.utc(2026, 6, 8, 12, 0, 1) })
+        persistent_cache: Kettle::Dev::GhaShaPinsCLI::PersistentActionCache.new(path: cache_path)
       )
       allow(client).to receive(:request_json).with("/repos/foo/bar/releases?per_page=100").and_return([
         {"tag_name" => "v1.2.1", "prerelease" => false}
@@ -592,9 +589,9 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       expect(versions.map { |entry| entry[:version] }).to eq(["1.2.1"])
     end
 
-    it "persists live commit SHA lookups for reuse by the next client run" do
+    it "persists live commit SHA lookups for reuse by the next client run", freeze: Time.utc(2026, 6, 8, 12, 0, 0) do
       cache_path = File.join(workflow_root, "gha-cache.json")
-      cache = Kettle::Dev::GhaShaPinsCLI::PersistentActionCache.new(path: cache_path, clock: -> { Time.utc(2026, 6, 8, 12, 0, 0) })
+      cache = Kettle::Dev::GhaShaPinsCLI::PersistentActionCache.new(path: cache_path)
       first_client = described_class.new(
         token: nil,
         api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE,
@@ -609,7 +606,7 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
         token: nil,
         api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE,
         user_agent: "kettle-gha-sha-pins",
-        persistent_cache: Kettle::Dev::GhaShaPinsCLI::PersistentActionCache.new(path: cache_path, clock: -> { Time.utc(2026, 6, 8, 12, 1, 0) })
+        persistent_cache: Kettle::Dev::GhaShaPinsCLI::PersistentActionCache.new(path: cache_path)
       )
       expect(second_client).not_to receive(:request_json)
 

@@ -344,6 +344,7 @@ module Kettle
           else
             puts "Running release (you may be prompted for signing key password and RubyGems MFA OTP)..."
             run_cmd!("bundle exec rake release")
+            mark_gem_coop_release_cache_bust(version || detect_version)
           end
         end
 
@@ -954,6 +955,7 @@ module Kettle
 
         puts "Publishing #{File.basename(gem_path)} to RubyGems without pushing git refs..."
         run_cmd!("gem push #{Shellwords.escape(gem_path)}")
+        mark_gem_coop_release_cache_bust(version, gem_name: gem_name_from_gem_path(gem_path, version))
       end
 
       def detect_version
@@ -971,11 +973,9 @@ module Kettle
       end
 
       def latest_released_versions(gem_name, current_version)
-        uri = URI("https://gem.coop/api/v1/versions/#{gem_name}.json")
-        res = Net::HTTP.get_response(uri)
-        return [nil, nil] unless res.is_a?(Net::HTTPSuccess)
+        data = Kettle::Dev::GemCoopVersions.fetch(gem_name, version_hint: current_version)
+        return [nil, nil] unless data.is_a?(Array)
 
-        data = JSON.parse(res.body)
         versions = data.map { |h| h["number"] }.compact
         versions.reject! { |v| v.to_s.include?("-pre") || v.to_s.include?(".pre") || /[a-zA-Z]/.match?(v.to_s) }
         gversions = versions.map { |s| Gem::Version.new(s) }.sort
@@ -989,6 +989,18 @@ module Kettle
       rescue => e
         Kettle::Dev.debug_error(e, __method__)
         [nil, nil]
+      end
+
+      def mark_gem_coop_release_cache_bust(version, gem_name: nil)
+        gem_name ||= detect_gem_name
+        Kettle::Dev::GemCoopVersions.mark_released(gem_name, version)
+      rescue => error
+        warn("[kettle-release] could not mark gem.coop cache-bust for release-state: #{error.class}: #{error.message}") if Kettle::Dev::DEBUGGING
+      end
+
+      def gem_name_from_gem_path(gem_path, version)
+        basename = File.basename(gem_path, ".gem")
+        basename.delete_suffix("-#{version}")
       end
 
       def commit_release_prep!(version)

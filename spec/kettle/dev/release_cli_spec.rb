@@ -204,23 +204,22 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       end
 
       it "parses versions and filters prereleases and letters; computes series" do
-        body = [
+        versions = [
           {"number" => "1.2.3"},
           {"number" => "1.2.4.pre"},
           {"number" => "1.3.0"},
           {"number" => "2.0.0"},
           {"number" => "1.2.10"},
           {"number" => "1.2.9-alpha"}
-        ].to_json
-        resp = response_class.new(body)
-        allow(Net::HTTP).to receive(:get_response).and_return(resp)
+        ]
+        allow(Kettle::Dev::GemCoopVersions).to receive(:fetch).with("gemx", version_hint: "1.2.0").and_return(versions)
         overall, series = cli.send(:latest_released_versions, "gemx", "1.2.0")
         expect(overall).to eq("2.0.0")
         expect(series).to eq("1.2.10")
       end
 
       it "returns [nil, nil] on errors" do
-        allow(Net::HTTP).to receive(:get_response).and_raise(StandardError)
+        allow(Kettle::Dev::GemCoopVersions).to receive(:fetch).and_raise(StandardError)
         overall, series = cli.send(:latest_released_versions, "gemx", "1.2.3")
         expect(overall).to be_nil
         expect(series).to be_nil
@@ -1281,6 +1280,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
           allow(local_cli).to receive(:git_output).with(["rev-parse", "-q", "--verify", "refs/tags/v1.2.3"]).and_return(["", false])
           expect(local_cli).to receive(:run_cmd!).with("git tag -a v1.2.3 -m v1.2.3").ordered
           expect(local_cli).to receive(:run_cmd!).with("gem push #{gem_path}").ordered
+          expect(Kettle::Dev::GemCoopVersions).to receive(:mark_released).with("mygem", "1.2.3")
 
           local_cli.send(:release_gem_and_tag_locally!, "1.2.3")
         end
@@ -1647,7 +1647,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     end
 
     describe "#update_rakefile_example_header!" do
-      it "updates header line to current version and date when file exists" do
+      it "updates header line to current version and date when file exists", freeze: Time.local(2025, 8, 29) do
         Dir.mktmpdir do |root|
           # Arrange Rakefile.example with an older header and some content
           body = <<~RB
@@ -1659,10 +1659,6 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
           File.write(File.join(root, "Rakefile.example"), body)
           allow(ci_helpers).to receive(:project_root).and_return(root)
           local_cli = described_class.new
-
-          # Freeze time for deterministic date
-          t = Time.local(2025, 8, 29)
-          allow(Time).to receive(:now).and_return(t)
 
           local_cli.send(:update_rakefile_example_header!, "1.2.3")
 
@@ -2083,20 +2079,19 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         end
       end
 
-      it "rewrites consecutive years into a range in both files", :aggregate_failures do
+      it "rewrites consecutive years into a range in both files", :aggregate_failures, freeze: Time.local(2026, 7, 21) do
         Dir.mktmpdir do |root|
-          current_year = Time.now.year
-          # Build a list of consecutive years ending at the current year
+          # Build a list of consecutive years ending at the frozen current year
           # so validate_copyright_years! only reformats (no injection needed).
-          start_year = current_year - 2
-          years_list = (start_year..current_year).to_a.join(", ")
+          start_year = 2024
+          years_list = (start_year..2026).to_a.join(", ")
           File.write(File.join(root, "README.md"), "Copyright (c) #{years_list} Example")
           File.write(File.join(root, "LICENSE.txt"), "The MIT License (MIT)\nCopyright (c) #{years_list} Example")
           allow(ci_helpers).to receive(:project_root).and_return(root)
           cli = described_class.new
           expect { cli.send(:validate_copyright_years!) }.not_to raise_error
-          expect(File.read(File.join(root, "README.md"))).to include("#{start_year}-#{current_year}")
-          expect(File.read(File.join(root, "LICENSE.txt"))).to include("#{start_year}-#{current_year}")
+          expect(File.read(File.join(root, "README.md"))).to include("#{start_year}-2026")
+          expect(File.read(File.join(root, "LICENSE.txt"))).to include("#{start_year}-2026")
         end
       end
 
@@ -2119,17 +2114,16 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         end
       end
 
-      it "injects current year into both files when missing and sets match", :aggregate_failures do
+      it "injects current year into both files when missing and sets match", :aggregate_failures, freeze: Time.local(2026, 7, 21) do
         Dir.mktmpdir do |root|
-          current_year = Time.now.year
-          last_year = current_year - 1
+          last_year = 2025
           File.write(File.join(root, "README.md"), "Copyright (c) #{last_year} Example")
           File.write(File.join(root, "LICENSE.txt"), "The MIT License (MIT)\nCopyright (c) #{last_year} Example")
           allow(ci_helpers).to receive(:project_root).and_return(root)
           cli = described_class.new
           expect { cli.send(:validate_copyright_years!) }.not_to raise_error
-          expect(File.read(File.join(root, "README.md"))).to include("#{last_year}-#{current_year}")
-          expect(File.read(File.join(root, "LICENSE.txt"))).to include("#{last_year}-#{current_year}")
+          expect(File.read(File.join(root, "README.md"))).to include("#{last_year}-2026")
+          expect(File.read(File.join(root, "LICENSE.txt"))).to include("#{last_year}-2026")
         end
       end
     end

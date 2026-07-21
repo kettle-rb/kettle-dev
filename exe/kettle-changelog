@@ -55,7 +55,7 @@ end
 
 if ARGV.include?("-h") || ARGV.include?("--help")
   puts <<~USAGE
-    Usage: kettle-changelog [--version VERSION] [--update-prep] [--pending-release] [--release-state] [--add-unreleased-entry --section SECTION --entry TEXT] [--json] [--no-strict] [--no-coverage-threshold]
+    Usage: kettle-changelog [--version VERSION] [--update-prep] [--pending-release] [--release-state] [--refresh-cache] [--add-unreleased-entry --section SECTION --entry TEXT] [--json] [--no-strict] [--no-coverage-threshold]
 
     Detects the current version from lib/**/version.rb, the latest live release, and
     the most recent CHANGELOG.md release section, then prompts to confirm the selected plan:
@@ -70,6 +70,7 @@ if ARGV.include?("-h") || ARGV.include?("--help")
       --pending-release         Query whether the changelog has release work pending; exits 0 for yes, 1 for no
       --release-state,
       --release-status          Print changelog release state, including latest published release and pending sources
+      --refresh-cache           Bypass cached gem.coop version data for this invocation
       --add-unreleased-entry    Add one entry to an existing section under ## [Unreleased]
       --section SECTION         Unreleased section to receive the entry (Added, Changed, Deprecated, Removed, Fixed, Security)
       --entry TEXT              Changelog entry text; "- " is added when omitted
@@ -82,6 +83,7 @@ if ARGV.include?("-h") || ARGV.include?("--help")
       K_CHANGELOG_COVERAGE_HARD=false       Disable coverage threshold hard-failure
       K_CHANGELOG_VERSION_FILE=path         Read VERSION from this file instead of lib/**/version.rb
       K_CHANGELOG_GEM_NAME=name             Read live release data as this gem instead of root .gemspec
+      KETTLE_GEM_COOP_REFRESH=true          Bypass cached gem.coop version data
 
     Data generation:
       Strict mode is the default. Release plans remove stale coverage output,
@@ -131,6 +133,7 @@ begin
   update_prep = ARGV.delete("--update-prep")
   pending_release_query = ARGV.delete("--pending-release")
   release_state_query = ARGV.delete("--release-state") || ARGV.delete("--release-status")
+  refresh_cache = ARGV.delete("--refresh-cache")
   add_unreleased_entry = ARGV.delete("--add-unreleased-entry") || ARGV.delete("--add-changelog-entry")
   json_output = ARGV.delete("--json")
   coverage_threshold_disabled = ARGV.include?("--no-coverage-threshold") || ARGV.include?("--no-coverage-thresholds")
@@ -167,7 +170,7 @@ begin
     exit(0)
   end
 
-  cli = Kettle::Dev::ChangelogCLI.new(strict: strict_mode, enforce_coverage_thresholds: coverage_hard, update_prep: update_prep, version: version_override)
+  cli = Kettle::Dev::ChangelogCLI.new(strict: strict_mode, enforce_coverage_thresholds: coverage_hard, update_prep: update_prep, version: version_override, refresh_cache: refresh_cache)
   if release_state_query
     state = cli.release_state
     puts(json_output ? JSON.pretty_generate(state) : cli.release_state_table(state))
