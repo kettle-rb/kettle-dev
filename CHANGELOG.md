@@ -28,11 +28,20 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [2.3.9] - 2026-07-21
+
+- TAG: [v2.3.9][2.3.9t]
+- COVERAGE: 92.23% -- 4450/4825 lines in 37 files
+- BRANCH COVERAGE: 74.09% -- 1733/2339 branches in 37 files
+- 54.64% documented
+
+### Fixed
+
 - `kettle-release` now records a short-lived gem.coop release-state cache-bust
   marker after publishing, and `kettle-changelog --release-state` uses it to
   refresh just-published gem version lookups.
-
-### Security
 
 ## [2.3.8] - 2026-07-21
 
@@ -2572,7 +2581,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.8...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.9...HEAD
+[2.3.9]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.8...v2.3.9
+[2.3.9t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.3.9
 [2.3.8]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.7...v2.3.8
 [2.3.8t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.3.8
 [2.3.7]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.6...v2.3.7
