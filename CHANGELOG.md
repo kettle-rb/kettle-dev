@@ -28,18 +28,13 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- `dep-heads.yml` now runs each engine directly from
-  `gemfiles/dep_heads.gemfile`, avoiding `Appraisal.root.gemfile` bootstrap
-  failures with RubyGems/Bundler and gem.coop before the dep-heads appraisal is
-  selected.
-
 ### Security
 
 ## [2.3.9] - 2026-07-21
 
 - TAG: [v2.3.9][2.3.9t]
-- COVERAGE: 91.86% -- 4433/4826 lines in 37 files
-- BRANCH COVERAGE: 73.79% -- 1726/2339 branches in 37 files
+- COVERAGE: 92.06% -- 4443/4826 lines in 37 files
+- BRANCH COVERAGE: 74.09% -- 1733/2339 branches in 37 files
 - 54.64% documented
 
 ### Fixed
@@ -47,6 +42,11 @@ Please file a bug if you notice a violation of semantic versioning.
 - `kettle-release` now records a short-lived gem.coop release-state cache-bust
   marker after publishing, and `kettle-changelog --release-state` uses it to
   refresh just-published gem version lookups.
+
+- `dep-heads.yml` now runs each engine directly from
+  `gemfiles/dep_heads.gemfile`, avoiding `Appraisal.root.gemfile` bootstrap
+  failures with RubyGems/Bundler and gem.coop before the dep-heads appraisal is
+  selected.
 
 ## [2.3.8] - 2026-07-21
 

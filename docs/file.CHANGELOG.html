@@ -90,8 +90,8 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 <ul>
   <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v2.3.9">v2.3.9</a>
 </li>
-  <li>COVERAGE: 91.86% – 4433/4826 lines in 37 files</li>
-  <li>BRANCH COVERAGE: 73.79% – 1726/2339 branches in 37 files</li>
+  <li>COVERAGE: 92.06% – 4443/4826 lines in 37 files</li>
+  <li>BRANCH COVERAGE: 74.09% – 1733/2339 branches in 37 files</li>
   <li>54.64% documented</li>
 </ul>
 
@@ -99,9 +99,16 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 
 <ul>
   <li>
-<code>kettle-release</code> now records a short-lived gem.coop release-state cache-bust<br>
+    <p><code>kettle-release</code> now records a short-lived gem.coop release-state cache-bust<br>
 marker after publishing, and <code>kettle-changelog --release-state</code> uses it to<br>
-refresh just-published gem version lookups.</li>
+refresh just-published gem version lookups.</p>
+  </li>
+  <li>
+    <p><code>dep-heads.yml</code> now runs each engine directly from<br>
+<code>gemfiles/dep_heads.gemfile</code>, avoiding <code>Appraisal.root.gemfile</code> bootstrap<br>
+failures with RubyGems/Bundler and gem.coop before the dep-heads appraisal is<br>
+selected.</p>
+  </li>
 </ul>
 
 <h2 id="238---2026-07-21">
