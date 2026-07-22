@@ -28,6 +28,11 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `dep-heads.yml` now runs each engine directly from
+  `gemfiles/dep_heads.gemfile`, avoiding `Appraisal.root.gemfile` bootstrap
+  failures with RubyGems/Bundler and gem.coop before the dep-heads appraisal is
+  selected.
+
 ### Security
 
 ## [2.3.9] - 2026-07-21
