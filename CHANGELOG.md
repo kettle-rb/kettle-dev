@@ -28,6 +28,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Restored `kettle-gha-pins` as a normal runtime dependency now that 0.2.1
+  supports the full `kettle-dev` Ruby floor.
+
 ### Security
 
 ## [2.3.10] - 2026-07-22
