@@ -22,6 +22,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- Markdown image URL cache/live/skipped progress now uses the same multi-line
+  `tty-progressbar` output as GitHub Actions pin checks.
+
 ### Deprecated
 
 ### Removed

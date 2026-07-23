@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "stringio"
+
 RSpec.describe Kettle::Dev::PreReleaseCLI do
   let(:gha_sha_pins_cli) { instance_double(Kettle::Dev::GhaShaPinsCLI, run!: 0) }
 
@@ -179,6 +181,30 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
         expect { described_class.new(check_num: 3).run }
           .to output(/Image URL checks: 1 cached, 0 live\./).to_stdout
       end
+    end
+
+    it "renders image cache, live, and skipped progress on separate TTY lines" do
+      output = StringIO.new
+      allow(output).to receive(:tty?).and_return(true)
+      progress = Kettle::Dev::CacheProgress.new(
+        total: 3,
+        cached_title: "Images cached",
+        live_title: "Images live",
+        skipped_title: "Images skipped",
+        output: output
+      )
+
+      progress.cached
+      progress.live
+      progress.skipped
+      progress.stop
+
+      expect(progress.cached_count).to eq(1)
+      expect(progress.live_count).to eq(1)
+      expect(progress.skipped_count).to eq(1)
+      expect(output.string).to include("Images cached")
+      expect(output.string).to include("Images live")
+      expect(output.string).to include("Images skipped")
     end
 
     it "skips built-in volatile star-history image URLs by default" do

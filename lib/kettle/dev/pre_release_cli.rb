@@ -375,25 +375,29 @@ module Kettle
           output: $stdout
         )
         failures = []
-        urls.each do |url|
-          if image_url_skipped?(url)
-            skipped << url
-            progress.skipped
-            next
-          end
+        begin
+          urls.each do |url|
+            if image_url_skipped?(url)
+              skipped << url
+              progress.skipped
+              next
+            end
 
-          if cache && !@refresh_image_url_cache && cache.fresh_success?(url)
-            progress.cached
-            next
-          end
+            if cache && !@refresh_image_url_cache && cache.fresh_success?(url)
+              progress.cached
+              next
+            end
 
-          ok = HTTP.head_ok?(url)
-          progress.live
-          if ok
-            cache&.write_success(url)
-          else
-            failures << url
+            ok = HTTP.head_ok?(url)
+            progress.live
+            if ok
+              cache&.write_success(url)
+            else
+              failures << url
+            end
           end
+        ensure
+          progress.stop
         end
         puts "[kettle-pre-release] Image URL checks: #{progress.cached_count} cached, #{progress.live_count} live."
         puts "[kettle-pre-release] Skipped #{progress.skipped_count} image URL check(s)." if skipped.any?
