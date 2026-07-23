@@ -28,6 +28,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Appraisal rake task specs now rely on kettle-test's `silent_stream`
+  integration instead of stubbing `Object#warn`, which is not supported under
+  JRuby 9.4.
+
 ### Security
 
 ## [2.3.10] - 2026-07-22

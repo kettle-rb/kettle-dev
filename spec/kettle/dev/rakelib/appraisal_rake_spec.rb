@@ -63,7 +63,6 @@ RSpec.describe "appraisal rake tasks" do # rubocop:disable RSpec/DescribeClass
 
     before do
       allow(Bundler).to receive(:with_unbundled_env).and_yield
-      allow_any_instance_of(Object).to receive(:warn) # rubocop:disable RSpec/AnyInstance
       allow_any_instance_of(Object).to receive(:system) do |_receiver, *args| # rubocop:disable RSpec/AnyInstance
         system_calls << args
         !failed_calls.include?(args)
@@ -103,7 +102,6 @@ RSpec.describe "appraisal rake tasks" do # rubocop:disable RSpec/DescribeClass
 
     before do
       allow(Bundler).to receive(:with_unbundled_env).and_yield
-      allow_any_instance_of(Object).to receive(:warn) # rubocop:disable RSpec/AnyInstance
       allow_any_instance_of(Object).to receive(:system) do |_receiver, *args| # rubocop:disable RSpec/AnyInstance
         system_calls << args
         !failed_calls.include?(args)
