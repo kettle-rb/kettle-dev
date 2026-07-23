@@ -28,17 +28,14 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Restored `kettle-gha-pins` as a normal runtime dependency now that 0.2.1
-  supports the full `kettle-dev` Ruby floor.
-
 ### Security
 
 ## [2.3.10] - 2026-07-22
 
 - TAG: [v2.3.10][2.3.10t]
-- COVERAGE: 92.53% -- 3793/4099 lines in 37 files
-- BRANCH COVERAGE: 75.95% -- 1500/1975 branches in 37 files
-- 59.76% documented
+- COVERAGE: 92.47% -- 3795/4104 lines in 37 files
+- BRANCH COVERAGE: 75.90% -- 1499/1975 branches in 37 files
+- 60.00% documented
 
 ### Changed
 
@@ -50,6 +47,11 @@ Please file a bug if you notice a violation of semantic versioning.
   `kettle-gha-pins` gem.
 - `kettle-gha-sha-pins` is now a compatibility wrapper around the
   `kettle-gha-pins` executable.
+
+### Fixed
+
+- Restored `kettle-gha-pins` as a normal runtime dependency now that 0.2.1
+  supports the full `kettle-dev` Ruby floor.
 
 ## [2.3.9] - 2026-07-21
 
