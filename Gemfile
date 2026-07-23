@@ -18,6 +18,8 @@ git_source(:gitlab) { |repo_name| "https://gitlab.com/#{repo_name}" }
 # Include dependencies from kettle-dev.gemspec
 gemspec
 
+gem "kettle-gha-pins", "~> 0.2", ">= 0.2.0", require: false if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("3.2")
+
 # Local workspace dependency wiring for *_local.gemfile overrides
 nomono_requirements = ["~> 1.0", ">= 1.0.8"]
 gem "nomono", *nomono_requirements, require: false # ruby >= 2.2

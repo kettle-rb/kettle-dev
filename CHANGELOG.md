@@ -39,7 +39,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
-- Runtime dependency metadata now requires `kettle-gha-pins` 0.2.0 or newer.
+- Local development tooling now uses `kettle-gha-pins` 0.2.0 or newer on
+  Ruby 3.2+, while keeping older supported Ruby bundles solvable.
 - `kettle-gha-sha-pins` now delegates GitHub Actions release-tag parsing,
   canonicalization, cache persistence, GitHub release/tag/commit resolution,
   and upgrade-target selection to the shared

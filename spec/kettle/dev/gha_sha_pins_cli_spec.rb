@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "json"
+require "open3"
 require "stringio"
 
 # rubocop:disable RSpec/VerifiedDoubles, RSpec/MessageSpies, ThreadSafety/ClassInstanceVariable
@@ -37,6 +38,28 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       commit_shas[ref]
     end
     client
+  end
+
+  it "falls back to a clear runtime failure when kettle-gha-pins is unavailable" do
+    code = <<~RUBY
+      module Kernel
+        alias original_require require
+
+        def require(path)
+          raise LoadError, path if path == "kettle/gha/pins/cli"
+
+          original_require(path)
+        end
+      end
+
+      require "kettle/dev/gha_sha_pins_cli"
+      exit Kettle::Dev::GhaShaPinsCLI.new([]).run!
+    RUBY
+
+    _stdout, stderr, status = Open3.capture3(RbConfig.ruby, "-Ilib", "-e", code, chdir: Kettle::Dev::GEM_ROOT)
+
+    expect(status.exitstatus).to eq(1)
+    expect(stderr).to include("kettle-gha-pins is not available")
   end
 
   describe "CLI options" do
