@@ -26,6 +26,8 @@ Please file a bug if you notice a violation of semantic versioning.
   canonicalization, cache persistence, GitHub release/tag/commit resolution,
   and upgrade-target selection to the shared
   `kettle-gha-pins` gem.
+- `kettle-gha-sha-pins` is now a compatibility wrapper around the
+  `kettle-gha-pins` executable.
 
 ### Deprecated
 

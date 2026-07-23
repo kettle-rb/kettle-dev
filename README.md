@@ -470,6 +470,8 @@ What it does:
 ### Pre-release checks
 
 - Script: `exe/kettle-gha-sha-pins` (run as `kettle-gha-sha-pins`)
+- New projects should install `kettle-gha-pins` and run `kettle-gha-pins`
+  directly; this `kettle-dev` command remains as a compatibility wrapper.
 - Purpose: Validate and optionally update GitHub Actions `uses:` refs to pinned
   SHAs and current allowed release versions.
 - Usage:

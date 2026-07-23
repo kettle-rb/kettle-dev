@@ -3,38 +3,12 @@
 
 # vim: set syntax=ruby
 
-$stdout.sync = true
-$stderr.sync = true
-
-# Do not rely on Bundler; allow running in repos that do not depend on kettle-dev
-begin
-  require "rubygems"
-rescue LoadError
-  # Older Rubies always have rubygems; continue anyway
-end
-
 script_basename = File.basename(__FILE__)
 
 begin
-  require "kettle/dev"
-rescue LoadError
-  repo_lib = File.expand_path("../lib", __dir__)
-  $LOAD_PATH.unshift(repo_lib) unless $LOAD_PATH.include?(repo_lib)
-  begin
-    require "kettle/dev"
-  rescue LoadError => e
-    warn("#{script_basename}: could not load dependency: #{e.class}: #{e.message}")
-    warn("Hint: Install the kettle-dev gem (`gem install kettle-dev`) or add it to your Gemfile. Bundler is not required for this script.")
-    exit(1)
-  end
-end
-
-begin
-  cli = Kettle::Dev::GhaShaPinsCLI.new(ARGV)
-  status = cli.run!
-  Kettle::Dev::ExitAdapter.exit(status)
-rescue => e
-  warn("#{script_basename}: unexpected error: #{e.class}: #{e.message}")
-  warn(e.backtrace.join("\n"))
-  Kettle::Dev::ExitAdapter.exit(1)
+  Kernel.exec(Gem.ruby, Gem.bin_path("kettle-gha-pins", "kettle-gha-pins"), *ARGV)
+rescue Gem::Exception, LoadError => e
+  warn("#{script_basename}: could not load kettle-gha-pins executable: #{e.class}: #{e.message}")
+  warn("Hint: Install the kettle-gha-pins gem (`gem install kettle-gha-pins`) or add it to your Gemfile.")
+  exit(1)
 end

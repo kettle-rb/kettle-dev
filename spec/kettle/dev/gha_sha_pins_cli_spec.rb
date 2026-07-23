@@ -135,7 +135,7 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       ]
     end
 
-    let(:client) { described_class::GitHubClient.new(token: nil, api_base: described_class::API_BASE, user_agent: "kettle-gha-sha-pins") }
+    let(:client) { described_class::GitHubClient.new(token: nil, api_base: described_class::API_BASE, user_agent: "kettle-gha-pins") }
     let(:dummy_cli) { described_class.new(["--root", workflow_root]) }
 
     before do
@@ -240,7 +240,7 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
 
   describe described_class::GitHubClient do
     it "follows GitHub API redirects for transferred action repositories" do
-      client = described_class.new(token: nil, api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE, user_agent: "kettle-gha-sha-pins")
+      client = described_class.new(token: nil, api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE, user_agent: "kettle-gha-pins")
       redirect = instance_double(Net::HTTPMovedPermanently, code: "301")
       success = instance_double(Net::HTTPOK, code: "200", body: JSON.generate("ok" => true))
       first_http = instance_double(Net::HTTP)
@@ -273,7 +273,7 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       client = described_class.new(
         token: nil,
         api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE,
-        user_agent: "kettle-gha-sha-pins",
+        user_agent: "kettle-gha-pins",
         persistent_cache: Kettle::Dev::GhaShaPinsCLI::PersistentActionCache.new(path: cache_path),
         open_timeout: 1,
         read_timeout: 2
@@ -293,7 +293,7 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
     end
 
     it "loads release tag SHAs through matching refs instead of resolving every release commit" do
-      client = described_class.new(token: nil, api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE, user_agent: "kettle-gha-sha-pins")
+      client = described_class.new(token: nil, api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE, user_agent: "kettle-gha-pins")
       releases = [
         {"tag_name" => "v1.2.0", "prerelease" => false},
         {"tag_name" => "v1.3.0", "prerelease" => false}
@@ -312,7 +312,7 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
     end
 
     it "includes version-like and major-line tags that do not have GitHub releases" do
-      client = described_class.new(token: nil, api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE, user_agent: "kettle-gha-sha-pins")
+      client = described_class.new(token: nil, api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE, user_agent: "kettle-gha-pins")
       allow(client).to receive(:request_json).with("/repos/foo/bar/releases?per_page=100").and_return([
         {"tag_name" => "v1.0.0", "prerelease" => false}
       ])
@@ -334,7 +334,7 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
     end
 
     it "canonicalizes equivalent release and major-line tags to the more explicit version spelling" do
-      client = described_class.new(token: nil, api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE, user_agent: "kettle-gha-sha-pins")
+      client = described_class.new(token: nil, api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE, user_agent: "kettle-gha-pins")
       allow(client).to receive(:request_json).with("/repos/foo/bar/releases?per_page=100").and_return([
         {"tag_name" => "v7.0.0", "prerelease" => false}
       ])
@@ -351,7 +351,7 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
     end
 
     it "prefers the concrete patch tag when a moving major-line tag points to the same SHA" do
-      client = described_class.new(token: nil, api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE, user_agent: "kettle-gha-sha-pins")
+      client = described_class.new(token: nil, api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE, user_agent: "kettle-gha-pins")
       allow(client).to receive(:request_json).with("/repos/foo/bar/releases?per_page=100").and_return([
         {"tag_name" => "v7.0.0", "prerelease" => false},
         {"tag_name" => "v7.0.1", "prerelease" => false}
@@ -372,7 +372,7 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
     end
 
     it "does not canonicalize equivalent version spellings when the tag SHA is unknown" do
-      client = described_class.new(token: nil, api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE, user_agent: "kettle-gha-sha-pins")
+      client = described_class.new(token: nil, api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE, user_agent: "kettle-gha-pins")
       allow(client).to receive(:request_json).with("/repos/foo/bar/releases?per_page=100").and_return([
         {"tag_name" => "v7.0.0", "prerelease" => false}
       ])
@@ -390,7 +390,7 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
     end
 
     it "defers annotated tag commit resolution until a specific version is needed" do
-      client = described_class.new(token: nil, api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE, user_agent: "kettle-gha-sha-pins")
+      client = described_class.new(token: nil, api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE, user_agent: "kettle-gha-pins")
       allow(client).to receive(:request_json).with("/repos/foo/bar/releases?per_page=100").and_return([
         {"tag_name" => "v1.0.0", "prerelease" => false}
       ])
@@ -410,7 +410,7 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
     end
 
     it "does not dereference annotated tags that cannot be action release versions" do
-      client = described_class.new(token: nil, api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE, user_agent: "kettle-gha-sha-pins")
+      client = described_class.new(token: nil, api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE, user_agent: "kettle-gha-pins")
       allow(client).to receive(:request_json).with("/repos/foo/bar/releases?per_page=100").and_return([
         {"tag_name" => "v1.0.0", "prerelease" => false}
       ])
@@ -427,7 +427,7 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
     end
 
     it "includes prerelease tags so existing prerelease pins are not downgraded" do
-      client = described_class.new(token: nil, api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE, user_agent: "kettle-gha-sha-pins")
+      client = described_class.new(token: nil, api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE, user_agent: "kettle-gha-pins")
       allow(client).to receive(:request_json).with("/repos/foo/bar/releases?per_page=100").and_return([
         {"tag_name" => "v2.3.7", "prerelease" => true},
         {"tag_name" => "v2.3.6", "prerelease" => false}
@@ -458,7 +458,7 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       client = described_class.new(
         token: nil,
         api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE,
-        user_agent: "kettle-gha-sha-pins",
+        user_agent: "kettle-gha-pins",
         persistent_cache: cache
       )
       expect(client).not_to receive(:request_json)
@@ -482,7 +482,7 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       client = described_class.new(
         token: nil,
         api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE,
-        user_agent: "kettle-gha-sha-pins",
+        user_agent: "kettle-gha-pins",
         persistent_cache: Kettle::Dev::GhaShaPinsCLI::PersistentActionCache.new(path: cache_path),
         refresh_cache: true
       )
@@ -513,7 +513,7 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       client = described_class.new(
         token: nil,
         api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE,
-        user_agent: "kettle-gha-sha-pins",
+        user_agent: "kettle-gha-pins",
         persistent_cache: Kettle::Dev::GhaShaPinsCLI::PersistentActionCache.new(path: cache_path)
       )
       allow(client).to receive(:request_json).with("/repos/foo/bar/releases?per_page=100").and_return([
@@ -556,7 +556,7 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       client = described_class.new(
         token: nil,
         api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE,
-        user_agent: "kettle-gha-sha-pins",
+        user_agent: "kettle-gha-pins",
         persistent_cache: Kettle::Dev::GhaShaPinsCLI::PersistentActionCache.new(path: cache_path)
       )
       allow(client).to receive(:request_json).with("/repos/foo/bar/releases?per_page=100").and_return([
@@ -582,7 +582,7 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       client = described_class.new(
         token: nil,
         api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE,
-        user_agent: "kettle-gha-sha-pins",
+        user_agent: "kettle-gha-pins",
         persistent_cache: Kettle::Dev::GhaShaPinsCLI::PersistentActionCache.new(path: cache_path)
       )
       allow(client).to receive(:request_json).with("/repos/foo/bar/releases?per_page=100").and_return([
@@ -603,7 +603,7 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       first_client = described_class.new(
         token: nil,
         api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE,
-        user_agent: "kettle-gha-sha-pins",
+        user_agent: "kettle-gha-pins",
         persistent_cache: cache
       )
       allow(first_client).to receive(:request_json).with("/repos/foo/bar/commits/v1.2.3").and_return({"sha" => "a" * 40})
@@ -613,7 +613,7 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       second_client = described_class.new(
         token: nil,
         api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE,
-        user_agent: "kettle-gha-sha-pins",
+        user_agent: "kettle-gha-pins",
         persistent_cache: Kettle::Dev::GhaShaPinsCLI::PersistentActionCache.new(path: cache_path)
       )
       expect(second_client).not_to receive(:request_json)
@@ -700,7 +700,7 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
 
       expect do
         expect(cli.run!).to eq(3)
-      end.to output(/Outdated actions \(1\):.*Recommended fix: kettle-gha-sha-pins --write --upgrade minor/m).to_stdout
+      end.to output(/Outdated actions \(1\):.*Recommended fix: kettle-gha-pins --write --upgrade minor/m).to_stdout
     end
 
     it "does not fail check mode for broader outdated pins outside the selected upgrade level" do
