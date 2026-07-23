@@ -58,6 +58,12 @@ RSpec.describe Kettle::Dev::CIMonitor do
   end
 
   describe "github helper branches" do
+    it "defaults GitHub workflow start timeout to five minutes" do
+      stub_env("K_RELEASE_CI_START_TIMEOUT" => nil)
+
+      expect(described_class.github_start_timeout).to eq(300)
+    end
+
     it "waits initial seconds before polling GitHub (configurable via K_RELEASE_CI_INITIAL_SLEEP)", :check_output do
       # Arrange a minimal GitHub setup
       allow(helpers).to receive_messages(

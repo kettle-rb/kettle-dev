@@ -498,6 +498,34 @@ RSpec.describe Kettle::Dev::CIHelpers do
       run = described_class.latest_run(owner: "me", repo: "repo", workflow_file: "ci.yml", branch: "main", token: nil, require_head: true)
       expect(run).to be_nil
     end
+
+    it "falls back to repository runs when the workflow endpoint lags for the exact HEAD" do
+      allow(described_class).to receive(:current_branch).and_return("main")
+      allow(Open3).to receive(:capture2).with("git", "rev-parse", "HEAD").and_return(["abc123\n", instance_double(Process::Status, success?: true)])
+
+      workflow_body = {
+        "workflow_runs" => [
+          {"id" => 100, "status" => "completed", "conclusion" => "success", "html_url" => "https://x/older", "head_sha" => "zzz999", "path" => ".github/workflows/ci.yml"}
+        ]
+      }.to_json
+      repository_body = {
+        "workflow_runs" => [
+          {"id" => 200, "status" => "completed", "conclusion" => "success", "html_url" => "https://x/newer", "head_sha" => "abc123", "path" => ".github/workflows/ci.yml"},
+          {"id" => 300, "status" => "completed", "conclusion" => "success", "html_url" => "https://x/other", "head_sha" => "abc123", "path" => ".github/workflows/other.yml"}
+        ]
+      }.to_json
+      workflow_response = instance_double(Net::HTTPSuccess, body: workflow_body)
+      repository_response = instance_double(Net::HTTPSuccess, body: repository_body)
+      allow(workflow_response).to receive(:is_a?).with(Net::HTTPSuccess).and_return(true)
+      allow(repository_response).to receive(:is_a?).with(Net::HTTPSuccess).and_return(true)
+
+      http = instance_double(Net::HTTP)
+      allow(http).to receive(:request).and_return(workflow_response, repository_response)
+      allow(Net::HTTP).to receive(:start).with("api.github.com", 443, use_ssl: true).and_yield(http)
+
+      run = described_class.latest_run(owner: "me", repo: "repo", workflow_file: "ci.yml", branch: "main", token: nil, require_head: true)
+      expect(run).to include("id" => 200, "html_url" => "https://x/newer")
+    end
   end
 
   # Consolidated from ci_helpers_extra_spec.rb: enrich details from GitLab

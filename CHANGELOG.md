@@ -28,6 +28,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- GitHub Actions release monitoring now falls back to repository-level workflow
+  runs when a per-workflow endpoint lags for the pushed HEAD, and waits up to
+  five minutes by default for workflows to appear.
+
 ### Security
 
 ## [2.3.10] - 2026-07-23

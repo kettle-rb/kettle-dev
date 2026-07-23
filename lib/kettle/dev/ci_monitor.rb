@@ -352,7 +352,7 @@ module Kettle
         rescue
           nil
         end
-        (seconds && seconds >= 0) ? seconds : 120
+        (seconds && seconds >= 0) ? seconds : 300
       end
       module_function :github_start_timeout
 

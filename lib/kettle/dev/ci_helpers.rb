@@ -97,19 +97,17 @@ module Kettle
 
         # Scope to the exact commit SHA when available to avoid picking up a previous run on the same branch.
         sha = head_sha || current_head_sha
-        base_url = "https://api.github.com/repos/#{owner}/#{repo}/actions/workflows/#{workflow_file}/runs?branch=#{URI.encode_www_form_component(b)}&per_page=5"
-        uri = URI(base_url)
-        req = Net::HTTP::Get.new(uri)
-        req["User-Agent"] = "kettle-dev/ci-helpers"
-        req["Authorization"] = "token #{token}" if token && !token.empty?
-        res = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) { |http| http.request(req) }
-        return unless res.is_a?(Net::HTTPSuccess)
+        data = github_get_json(
+          "https://api.github.com/repos/#{owner}/#{repo}/actions/workflows/#{workflow_file}/runs?branch=#{URI.encode_www_form_component(b)}&per_page=5",
+          token: token
+        )
+        return unless data
 
-        data = JSON.parse(res.body)
         runs = Array(data["workflow_runs"]) || []
         # Try to match by head_sha first; fall back to first run (branch-scoped) if none matches yet.
         run = if sha
           match = runs.find { |r| r["head_sha"] == sha }
+          match ||= latest_repository_workflow_run(owner: owner, repo: repo, workflow_file: workflow_file, branch: b, head_sha: sha, token: token)
           require_head ? match : (match || runs.first)
         else
           runs.first unless require_head
@@ -126,6 +124,30 @@ module Kettle
       rescue => e
         Kettle::Dev.debug_error(e, __method__)
         nil
+      end
+
+      def latest_repository_workflow_run(owner:, repo:, workflow_file:, branch:, head_sha:, token:)
+        data = github_get_json(
+          "https://api.github.com/repos/#{owner}/#{repo}/actions/runs?branch=#{URI.encode_www_form_component(branch)}&per_page=100",
+          token: token
+        )
+        return unless data
+
+        workflow_path = ".github/workflows/#{workflow_file}"
+        Array(data["workflow_runs"]).find do |run|
+          run["head_sha"] == head_sha && run["path"] == workflow_path
+        end
+      end
+
+      def github_get_json(url, token:)
+        uri = URI(url)
+        req = Net::HTTP::Get.new(uri)
+        req["User-Agent"] = "kettle-dev/ci-helpers"
+        req["Authorization"] = "token #{token}" if token && !token.empty?
+        res = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) { |http| http.request(req) }
+        return unless res.is_a?(Net::HTTPSuccess)
+
+        JSON.parse(res.body)
       end
 
       # Whether a run has completed successfully.
