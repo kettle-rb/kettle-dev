@@ -36,7 +36,7 @@ begin
   require "kettle/dev"
   require "kettle/dev/executable_version"
   Kettle::Dev::ExecutableVersion.print_and_exit!(script_basename, ARGV, value_option: true)
-  puts "== #{script_basename} v#{Kettle::Dev::Version::VERSION} =="
+  Kettle::Dev::ExecutableVersion.print_header(script_basename)
 rescue LoadError => e
   warn("#{script_basename}: could not load dependency: #{e.class}: #{e.message}")
   warn("Hint: Ensure the host project has kettle-dev as a dependency and run bundle install.")

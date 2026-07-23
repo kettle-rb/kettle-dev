@@ -19,12 +19,6 @@
 
 set -euo pipefail
 
-if [[ "${1:-}" == "-v" || "${1:-}" == "--version" ]]; then
-    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-    RUBYLIB="${SCRIPT_DIR}/../lib${RUBYLIB:+:${RUBYLIB}}" ruby -e 'require "kettle/dev/version"; puts "kettle-check-eof.sh #{Kettle::Dev::Version::VERSION}"'
-    exit 0
-fi
-
 FIX_MODE=false
 if [[ "${1:-}" == "-f" ]]; then
     FIX_MODE=true

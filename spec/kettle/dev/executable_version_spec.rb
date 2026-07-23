@@ -16,4 +16,10 @@ RSpec.describe Kettle::Dev::ExecutableVersion do
       expect(described_class.requested?(["--version", "--json"], value_option: true)).to be(true)
     end
   end
+
+  describe ".header" do
+    it "formats executable headers consistently" do
+      expect(described_class.header("kettle-example")).to eq("== kettle-example v#{Kettle::Dev::Version::VERSION} ==")
+    end
+  end
 end

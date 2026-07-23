@@ -13,6 +13,7 @@ require "kettle/dev/executable_version"
 
 script_basename = File.basename(__FILE__)
 Kettle::Dev::ExecutableVersion.print_and_exit!(script_basename, ARGV)
+Kettle::Dev::ExecutableVersion.print_header(script_basename)
 
 warn <<~MSG
   kettle-dev-setup has been removed.

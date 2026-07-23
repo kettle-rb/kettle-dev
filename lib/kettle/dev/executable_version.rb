@@ -14,6 +14,14 @@ module Kettle
         exit(0)
       end
 
+      def print_header(script_basename)
+        puts header(script_basename)
+      end
+
+      def header(script_basename)
+        "== #{script_basename} v#{Kettle::Dev::Version::VERSION} =="
+      end
+
       def requested?(argv, value_option: false)
         argv.each_with_index.any? do |arg, index|
           arg == "-v" || bare_long_version?(argv, arg, index, value_option: value_option)

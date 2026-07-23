@@ -32,7 +32,7 @@ begin
   end
   require "kettle/dev/executable_version"
   Kettle::Dev::ExecutableVersion.print_and_exit!(script_basename, ARGV)
-  puts "== #{script_basename} v#{Kettle::Dev::Version::VERSION} =="
+  Kettle::Dev::ExecutableVersion.print_header(script_basename)
 rescue LoadError => e
   warn("#{script_basename}: could not load dependency: #{e.class}: #{e.message}")
   warn("Hint: Install the kettle-dev gem (`gem install kettle-dev`) or add it to your Gemfile. Bundler is not required for this script.")
