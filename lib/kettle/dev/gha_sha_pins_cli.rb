@@ -1,13 +1,9 @@
 # frozen_string_literal: true
 
 require "json"
-require "fileutils"
-require "net/http"
 require "open3"
 require "optparse"
 require "pathname"
-require "time"
-require "uri"
 
 require "psych"
 require "kettle/gha/pins"
@@ -18,21 +14,23 @@ module Kettle
   module Dev
     # CLI to scan GitHub Action workflow files and pin mutable references in `uses:` to commit SHAs.
     class GhaShaPinsCLI
-      API_BASE = "https://api.github.com"
-      RELEASE_PATH = "releases/latest"
-      SHA_RE = /\A[0-9a-f]{40}\z/i
-      WEAK_SHA_RE = /\A[0-9a-f]{7,39}\z/i
+      API_BASE = Kettle::Gha::Pins::API_BASE
+      RELEASE_PATH = Kettle::Gha::Pins::RELEASE_PATH
+      SHA_RE = Kettle::Gha::Pins::SHA_RE
+      WEAK_SHA_RE = Kettle::Gha::Pins::WEAK_SHA_RE
 
-      NON_SHA_REASON = "convert_to_sha"
-      STALE_SHA_REASON = "upgrade_to_latest_release_sha"
-      UPGRADE_REASON = "upgrade_to_allowed_release"
+      NON_SHA_REASON = Kettle::Gha::Pins::NON_SHA_REASON
+      STALE_SHA_REASON = Kettle::Gha::Pins::STALE_SHA_REASON
+      UPGRADE_REASON = Kettle::Gha::Pins::UPGRADE_REASON
       COMMENT_REASON = "update_version_comment"
-      DEFAULT_UPGRADE_LEVEL = "patch"
-      DEFAULT_CACHE_TTL_SECONDS = 24 * 60 * 60
-      DEFAULT_HTTP_OPEN_TIMEOUT_SECONDS = 5
-      DEFAULT_HTTP_READ_TIMEOUT_SECONDS = 10
-      DEFAULT_HTTP_REFRESH_TIMEOUT_SECONDS = 20
-      VALID_UPGRADE_LEVELS = %w[major minor patch].freeze
+      DEFAULT_UPGRADE_LEVEL = Kettle::Gha::Pins::DEFAULT_UPGRADE_LEVEL
+      DEFAULT_CACHE_TTL_SECONDS = Kettle::Gha::Pins::DEFAULT_CACHE_TTL_SECONDS
+      DEFAULT_HTTP_OPEN_TIMEOUT_SECONDS = Kettle::Gha::Pins::DEFAULT_HTTP_OPEN_TIMEOUT_SECONDS
+      DEFAULT_HTTP_READ_TIMEOUT_SECONDS = Kettle::Gha::Pins::DEFAULT_HTTP_READ_TIMEOUT_SECONDS
+      DEFAULT_HTTP_REFRESH_TIMEOUT_SECONDS = Kettle::Gha::Pins::DEFAULT_HTTP_REFRESH_TIMEOUT_SECONDS
+      VALID_UPGRADE_LEVELS = Kettle::Gha::Pins::VALID_UPGRADE_LEVELS
+      PersistentActionCache = Kettle::Gha::Pins::PersistentActionCache
+      GitHubClient = Kettle::Gha::Pins::GitHubClient
       VERSION_COMMENT_SUFFIX_RE = /\A\s+#\s*v?(?<version>\d+(?:\.\d+\.\d+(?:[-.]?[0-9A-Za-z.-]+)?)?)/
       VERSION_COMMENT_REPLACEMENT_RE = /\A(?<prefix>\s+#\s*)v?\d+(?:\.\d+\.\d+(?:[-.]?[0-9A-Za-z.-]+)?)?/
 
@@ -320,28 +318,19 @@ module Kettle
       end
 
       def resolve_action_plan(cache:, client:, progress:, repo_ref:, old_ref:)
-        if cache.key?(repo_ref)
-          versions = cache.fetch(repo_ref)
-          progress.cached
-          return determine_upgrade_plan(
-            old_ref: old_ref,
-            repo_ref: repo_ref,
-            versions: versions,
-            upgrade_level: @options[:upgrade],
-            client: client
-          )
-        end
-
-        versions = client.versions_for_repo(repo_ref)
-        cache[repo_ref] = versions
-        plan = determine_upgrade_plan(
-          old_ref: old_ref,
+        cached = cache.key?(repo_ref)
+        plan = Kettle::Gha::Pins.resolve_action_plan(
+          cache: cache,
+          client: client,
           repo_ref: repo_ref,
-          versions: versions,
-          upgrade_level: @options[:upgrade],
-          client: client
+          old_ref: old_ref,
+          upgrade_level: @options[:upgrade]
         )
-        progress.live
+        if cached
+          progress.cached
+        else
+          progress.live
+        end
         plan
       end
 
@@ -489,19 +478,7 @@ module Kettle
       end
 
       def matching_version_entry(versions, current_ref, current_sha, client, repo_ref)
-        parsed = parse_release_version(current_ref)
-        if parsed
-          direct = versions.find { |entry| entry[:tag] == current_ref }
-          return direct if direct
-        end
-
-        return nil unless current_sha
-
-        prefix = current_sha[0, 40]
-        versions.find do |entry|
-          sha = version_entry_sha(entry, client, repo_ref)
-          sha.to_s.start_with?(prefix)
-        end
+        Kettle::Gha::Pins.matching_version_entry(versions, current_ref, current_sha, client, repo_ref)
       end
 
       def choose_upgrade_target(current_version, versions, level)
@@ -517,107 +494,17 @@ module Kettle
       end
 
       def determine_upgrade_plan(old_ref:, repo_ref:, versions:, upgrade_level:, client:)
-        level = upgrade_level.to_s.downcase
-        level = DEFAULT_UPGRADE_LEVEL unless VALID_UPGRADE_LEVELS.include?(level)
-
-        current_ref = old_ref.to_s.strip
-        return {is_outdated: false, updates: nil, reason: nil, current_version: nil} if current_ref.empty?
-
-        available_versions = versions || []
-        latest = available_versions.first
-
-        current_sha = if SHA_RE.match?(current_ref) || WEAK_SHA_RE.match?(current_ref)
-          current_ref
-        else
-          client.commit_sha(repo_ref, current_ref)
-        end
-        parsed_current_ref = parse_release_version(current_ref)
-        version_equivalent_entry = if parsed_current_ref
-          available_versions.find { |entry| entry[:version_obj] == parsed_current_ref }
-        end
-        matched_entry = matching_version_entry(available_versions, current_ref, current_sha, client, repo_ref)
-        unresolved_version_ref = false
-        if matched_entry.nil? && current_sha.to_s.empty? && version_equivalent_entry && non_sha?(current_ref)
-          matched_entry = version_equivalent_entry
-          unresolved_version_ref = true
-        end
-        current_version = matched_entry ? matched_entry[:version] : nil
-
-        updates = nil
-        reason = nil
-        is_outdated = false
-        latest_outdated = nil
-
-        if current_version
-          latest_outdated = latest_outdated_target(current_version, available_versions)
-          target = choose_upgrade_target(current_version, available_versions, level)
-          target_sha = target ? version_entry_sha(target, client, repo_ref) : nil
-          latest_outdated_sha = latest_outdated ? version_entry_sha(latest_outdated, client, repo_ref) : nil
-          if latest_outdated && stale_sha?(current_ref, latest_outdated_sha)
-            latest_outdated = latest_outdated.merge(sha: latest_outdated_sha)
-            is_outdated = true
-            reason = UPGRADE_REASON
-          end
-          if target && stale_sha?(current_ref, target_sha)
-            updates = {
-              sha: target_sha,
-              version: target[:version],
-              reason: UPGRADE_REASON
-            }
-            reason ||= UPGRADE_REASON
-          end
-          if updates.nil? && unresolved_version_ref
-            matched_sha = version_entry_sha(matched_entry, client, repo_ref)
-            if stale_sha?(current_ref, matched_sha)
-              updates = {
-                sha: matched_sha,
-                version: nil,
-                reason: NON_SHA_REASON
-              }
-              latest_outdated ||= matched_entry.merge(sha: matched_sha)
-              is_outdated = true
-              reason ||= NON_SHA_REASON
-            end
-          end
-        elsif current_sha && non_sha?(current_ref)
-          if stale_sha?(current_ref, current_sha)
-            updates = {
-              sha: current_sha,
-              version: nil,
-              reason: NON_SHA_REASON
-            }
-            reason = NON_SHA_REASON
-          end
-        elsif current_sha
-          latest_sha = latest ? version_entry_sha(latest, client, repo_ref) : nil
-          if latest && stale_sha?(current_ref, latest_sha)
-            latest_outdated = latest.merge(sha: latest_sha)
-            updates = {
-              sha: latest_sha,
-              version: latest[:version],
-              reason: STALE_SHA_REASON
-            }
-            reason = STALE_SHA_REASON
-            is_outdated = true
-          end
-        end
-
-        {
-          is_outdated: is_outdated,
-          updates: updates,
-          reason: reason,
-          current_version: current_version,
-          latest_outdated: latest_outdated
-        }
+        Kettle::Gha::Pins.determine_upgrade_plan(
+          old_ref: old_ref,
+          repo_ref: repo_ref,
+          versions: versions,
+          upgrade_level: upgrade_level,
+          client: client
+        )
       end
 
       def version_entry_sha(entry, client, repo_ref)
-        return nil unless entry
-        return entry[:sha] unless entry[:sha].to_s.empty?
-
-        sha = client.commit_sha(repo_ref, entry[:tag])
-        entry[:sha] = sha
-        sha
+        Kettle::Gha::Pins.version_entry_sha(entry, client, repo_ref)
       end
 
       def release_version_sort_key(entry)
@@ -625,25 +512,15 @@ module Kettle
       end
 
       def short_sha?(candidate)
-        return false unless candidate
-        WEAK_SHA_RE.match?(candidate)
+        Kettle::Gha::Pins.short_sha?(candidate)
       end
 
       def non_sha?(candidate)
-        !SHA_RE.match?(candidate) && !WEAK_SHA_RE.match?(candidate)
+        Kettle::Gha::Pins.non_sha?(candidate)
       end
 
       def stale_sha?(current, latest)
-        return false if current.nil? || latest.nil?
-        current_down = current.downcase
-        latest_down = latest.downcase
-
-        # If `current` is shorter than full SHA, treat prefixes as equal when they match the head
-        if current_down.length < latest_down.length
-          !latest_down.start_with?(current_down)
-        else
-          current_down != latest_down
-        end
+        Kettle::Gha::Pins.stale_sha?(current, latest)
       end
 
       def compute_updates(old_ref, replacement, reason, action)
@@ -887,376 +764,6 @@ module Kettle
 
         puts lines.join("
 ")
-      end
-
-      # Persistent cache of GitHub Action release versions and target SHAs.
-      class PersistentActionCache
-        VERSION = 2
-
-        def self.default_path
-          state_home = ENV["XDG_STATE_HOME"]
-          state_home = File.join(Dir.home, ".local", "state") if state_home.to_s.empty?
-          File.join(state_home, "kettle-dev", "gha-sha-pins-cache.json")
-        rescue ArgumentError
-          nil
-        end
-
-        def initialize(path:, ttl_seconds: DEFAULT_CACHE_TTL_SECONDS, clock: -> { Time.now })
-          @path = path
-          @ttl_seconds = ttl_seconds
-          @clock = clock
-          @data = nil
-        end
-
-        def versions_for_repo(repo_ref, fresh: true)
-          action = action_data(repo_ref)
-          return nil unless action
-
-          versions = action.fetch("versions", {}).values
-          return nil if versions.empty?
-
-          entries = if fresh
-            versions.select { |entry| fresh_entry?(entry) }
-          else
-            versions
-          end
-          return nil if entries.empty?
-          return nil if fresh && entries.length != versions.length
-
-          entries.filter_map { |entry| deserialize_version_entry(entry) }
-            .sort_by { |entry| entry[:version_obj] }
-            .reverse
-        end
-
-        def write_versions(repo_ref, versions)
-          return if @path.to_s.empty?
-          return if repo_ref.to_s.empty?
-
-          action = data.fetch("actions")[repo_ref] ||= {}
-          stored_versions = action["versions"] ||= {}
-          timestamp = @clock.call.utc.iso8601
-
-          versions.each do |entry|
-            version = entry[:version].to_s
-            next if version.empty?
-
-            stored_versions[version] = {
-              "tag" => entry[:tag].to_s,
-              "version" => version,
-              "sha" => entry[:sha].to_s,
-              "cached_at" => timestamp
-            }
-          end
-
-          action["targets"] = target_cache(stored_versions.values)
-          save!
-        end
-
-        def ref_sha(repo_ref, ref, fresh: true)
-          action = action_data(repo_ref)
-          return nil unless action
-
-          refs = action.fetch("refs", {})
-          entry = refs[ref.to_s]
-          return nil unless entry
-          return nil if fresh && !fresh_entry?(entry)
-
-          sha = entry["sha"].to_s
-          sha.empty? ? nil : sha
-        end
-
-        def write_ref_sha(repo_ref, ref, sha)
-          return if @path.to_s.empty?
-          return if repo_ref.to_s.empty? || ref.to_s.empty? || sha.to_s.empty?
-
-          action = data.fetch("actions")[repo_ref] ||= {}
-          refs = action["refs"] ||= {}
-          refs[ref.to_s] = {
-            "sha" => sha.to_s[0, 40],
-            "cached_at" => @clock.call.utc.iso8601
-          }
-          save!
-        end
-
-        def to_h
-          data
-        end
-
-        private
-
-        def data
-          @data ||= load_data
-        end
-
-        def action_data(repo_ref)
-          data.fetch("actions")[repo_ref]
-        end
-
-        def load_data
-          parsed = if @path && File.file?(@path)
-            JSON.parse(File.read(@path))
-          end
-          return empty_data unless parsed.is_a?(Hash)
-          return empty_data unless parsed["version"].to_i == VERSION
-
-          parsed["version"] ||= VERSION
-          parsed["actions"] = {} unless parsed["actions"].is_a?(Hash)
-          parsed
-        rescue JSON::ParserError, Errno::EACCES
-          empty_data
-        end
-
-        def empty_data
-          {"version" => VERSION, "actions" => {}}
-        end
-
-        def save!
-          FileUtils.mkdir_p(File.dirname(@path))
-          File.write(@path, JSON.pretty_generate(data) + "\n")
-        end
-
-        def deserialize_version_entry(entry)
-          version = entry["version"].to_s
-          parsed = Kettle::Gha::Pins::VersionRubric.parse(version)
-          return nil unless parsed
-
-          {
-            tag: entry["tag"].to_s,
-            version_obj: parsed,
-            version: version,
-            sha: entry["sha"].to_s
-          }
-        end
-
-        def target_cache(version_entries)
-          entries = version_entries.filter_map do |entry|
-            deserialized = deserialize_version_entry(entry)
-            next unless deserialized
-
-            deserialized.merge(cached_at: entry["cached_at"].to_s)
-          end
-          return {} if entries.empty?
-
-          full_semver_entries = entries.reject { |entry| Kettle::Gha::Pins::VersionRubric.major_line?(entry[:version]) }
-          {
-            "patch" => full_semver_entries.group_by { |entry| entry[:version_obj].segments[0, 2].join(".") }
-              .transform_values { |group| serialize_target(group.max_by { |entry| GhaShaPinsCLI.release_version_sort_key(entry) }) },
-            "minor" => full_semver_entries.group_by { |entry| entry[:version_obj].segments[0].to_s }
-              .transform_values { |group| serialize_target(group.max_by { |entry| GhaShaPinsCLI.release_version_sort_key(entry) }) },
-            "major" => {"*" => serialize_target(entries.max_by { |entry| GhaShaPinsCLI.release_version_sort_key(entry) })}
-          }
-        end
-
-        def serialize_target(entry)
-          {
-            "tag" => entry[:tag],
-            "version" => entry[:version],
-            "sha" => entry[:sha],
-            "cached_at" => entry[:cached_at]
-          }
-        end
-
-        def fresh_entry?(entry)
-          cached_at = Time.iso8601(entry["cached_at"].to_s)
-          cached_at >= @clock.call - @ttl_seconds
-        rescue ArgumentError
-          false
-        end
-      end
-
-      # Lightweight GitHub API client for commit and release SHA resolution.
-      class GitHubClient
-        def initialize(token:, api_base:, user_agent:, persistent_cache: nil, refresh_cache: false, open_timeout: DEFAULT_HTTP_OPEN_TIMEOUT_SECONDS, read_timeout: DEFAULT_HTTP_READ_TIMEOUT_SECONDS, refresh_timeout: DEFAULT_HTTP_REFRESH_TIMEOUT_SECONDS)
-          @token = token
-          @api_base = api_base
-          @user_agent = user_agent
-          @persistent_cache = persistent_cache
-          @refresh_cache = refresh_cache
-          @open_timeout = open_timeout
-          @read_timeout = read_timeout
-          @refresh_timeout = refresh_timeout
-          @commit_cache = {}
-          @release_cache = {}
-        end
-
-        def versions_for_repo(repo_ref)
-          return [] if repo_ref.to_s.empty?
-          return @release_cache[repo_ref] if @release_cache.key?(repo_ref)
-
-          stale = nil
-          unless @refresh_cache
-            cached = @persistent_cache&.versions_for_repo(repo_ref, fresh: true)
-            if cached
-              @release_cache[repo_ref] = cached
-              return cached
-            end
-            stale = @persistent_cache&.versions_for_repo(repo_ref, fresh: false)
-          end
-
-          releases = nil
-          Timeout.timeout(@refresh_timeout) do
-            data = request_json("/repos/#{repo_ref}/releases?per_page=100")
-            return cached_versions(repo_ref, stale) unless data.is_a?(Array)
-
-            tag_shas = tag_ref_shas(repo_ref)
-            return cached_versions(repo_ref, stale) unless tag_shas
-
-            releases = build_release_versions(data, tag_shas)
-          end
-          @persistent_cache&.write_versions(repo_ref, releases)
-          @release_cache[repo_ref] = releases
-          releases
-        rescue Timeout::Error
-          cached_versions(repo_ref, stale)
-        end
-
-        def commit_sha(repo_ref, ref)
-          return nil if repo_ref.to_s.empty? || ref.to_s.empty?
-
-          cache_key = "commit:#{repo_ref}:#{ref}"
-          return @commit_cache[cache_key] if @commit_cache.key?(cache_key)
-
-          unless @refresh_cache
-            cached = @persistent_cache&.ref_sha(repo_ref, ref, fresh: true)
-            if cached
-              @commit_cache[cache_key] = cached
-              return cached
-            end
-          end
-
-          data = request_json("/repos/#{repo_ref}/commits/#{uri_encode(ref)}")
-          sha = if data.is_a?(Hash)
-            data.fetch("sha", "")[0, 40]
-          end
-          if sha.to_s.empty?
-            sha = @persistent_cache&.ref_sha(repo_ref, ref, fresh: false)
-          else
-            @persistent_cache&.write_ref_sha(repo_ref, ref, sha)
-          end
-          @commit_cache[cache_key] = sha
-          sha
-        end
-
-        def release_latest_sha(repo_ref)
-          versions = versions_for_repo(repo_ref)
-          latest = versions.first
-          latest ? version_entry_sha(repo_ref, latest) : nil
-        end
-
-        private
-
-        def cached_versions(repo_ref, stale)
-          versions = stale || []
-          @release_cache[repo_ref] = versions
-          versions
-        end
-
-        def build_release_versions(data, tag_shas)
-          release_tags = data.filter_map do |release|
-            next unless release.is_a?(Hash)
-
-            tag = release["tag_name"].to_s
-            next unless Kettle::Gha::Pins::VersionRubric.parse(tag)
-
-            tag
-          end
-
-          Kettle::Gha::Pins::VersionRubric.build_release_versions(
-            release_tags: release_tags,
-            tag_shas: tag_shas
-          )
-        end
-
-        def tag_ref_shas(repo_ref)
-          data = request_json("/repos/#{repo_ref}/git/matching-refs/tags/")
-          return nil unless data.is_a?(Array)
-
-          data.each_with_object({}) do |entry, memo|
-            ref = entry["ref"].to_s
-            next unless ref.start_with?("refs/tags/")
-
-            tag = ref.sub(%r{\Arefs/tags/}, "")
-            next unless Kettle::Gha::Pins::VersionRubric.parse(tag)
-
-            object = entry["object"]
-            next unless object.is_a?(Hash)
-
-            sha = object["sha"].to_s[0, 40]
-            case object["type"]
-            when "commit"
-              memo[tag] = sha
-            when "tag"
-              memo[tag] = nil
-            end
-          end
-        end
-
-        def annotated_tag_commit_sha(repo_ref, tag_sha)
-          return nil if tag_sha.to_s.empty?
-
-          data = request_json("/repos/#{repo_ref}/git/tags/#{tag_sha}")
-          return nil unless data.is_a?(Hash)
-
-          object = data["object"]
-          return nil unless object.is_a?(Hash)
-          return nil unless object["type"] == "commit"
-
-          object["sha"].to_s[0, 40]
-        end
-
-        def request_json(path, redirects: 3)
-          uri = URI.join(@api_base + "/", path)
-
-          response = nil
-          loop do
-            request = Net::HTTP::Get.new(uri)
-            request["Accept"] = "application/vnd.github+json"
-            request["User-Agent"] = @user_agent
-            request["X-GitHub-Api-Version"] = "2022-11-28"
-            request["Authorization"] = "Bearer #{@token}" if @token && !@token.empty?
-
-            response = http_request(uri, request)
-
-            break unless response.code.to_i.between?(300, 399)
-            redirects -= 1
-            return nil if redirects.negative?
-
-            location = response["location"].to_s
-            return nil if location.empty?
-
-            uri = URI.join(uri.to_s, location)
-          end
-
-          return nil unless response.code.to_i == 200
-
-          begin
-            JSON.parse(response.body)
-          rescue JSON::ParserError
-            nil
-          end
-        rescue IOError, SystemCallError, Net::OpenTimeout, Net::ReadTimeout
-          nil
-        end
-
-        def http_request(uri, request)
-          http = Net::HTTP.new(uri.host, uri.port)
-          http.use_ssl = uri.scheme == "https"
-          http.open_timeout = @open_timeout
-          http.read_timeout = @read_timeout
-          http.ssl_timeout = @open_timeout if http.respond_to?(:ssl_timeout=)
-          http.start { |connection| connection.request(request) }
-        end
-
-        def uri_encode(value)
-          URI.encode_www_form_component(value)
-        end
-
-        def version_entry_sha(repo_ref, entry)
-          return nil unless entry
-          return entry[:sha] unless entry[:sha].to_s.empty?
-
-          entry[:sha] = commit_sha(repo_ref, entry[:tag])
-        end
       end
     end
   end
