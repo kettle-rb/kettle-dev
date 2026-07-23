@@ -5,7 +5,7 @@ PATH
       emoji_regex (>= 15.0)
       kettle-gha-pins (~> 0.2, >= 0.2.1)
       kettle-rb (~> 0.1, >= 0.1.2)
-      kettle-test (~> 2.0, >= 2.0.4)
+      kettle-test (~> 2.0, >= 2.0.12)
       ruby-progressbar (~> 1.13)
 
 GEM
@@ -96,7 +96,7 @@ GEM
       ruby-progressbar (~> 1.13)
       version_gem (~> 1.1, >= 1.1.14)
     kettle-rb (0.1.5)
-    kettle-soup-cover (3.0.3)
+    kettle-soup-cover (3.0.4)
       kettle-wash (~> 0.1, >= 0.1.0)
       simplecov (>= 1.0)
       simplecov-cobertura (>= 4.0)
@@ -126,7 +126,7 @@ GEM
     mutex_m (0.3.0)
     nokogiri (1.19.4-x86_64-linux-gnu)
       racc (~> 1.4)
-    nomono (1.0.8)
+    nomono (1.1.0)
     openssl (4.0.2)
     ostruct (0.6.3)
     parallel (1.28.0)
@@ -291,7 +291,7 @@ GEM
       simplecov (>= 0.4.1)
     simplecov_lcov_formatter (0.9.0)
       simplecov (>= 0.18)
-    sorbet-runtime (0.6.13347)
+    sorbet-runtime (0.6.13354)
     standard (1.56.0)
       language_server-protocol (~> 3.17.0.2)
       lint_roller (~> 1.0)
@@ -458,7 +458,7 @@ CHECKSUMS
   kettle-dev (2.3.10)
   kettle-gha-pins (0.2.1) sha256=ad092eb374ce59d21e6c4cc56445ece81d24fff4d12f46a032bbdc255cc8b4db
   kettle-rb (0.1.5) sha256=0322a569860c86e70f90d5ebe72353b8720b7054c7efa9f9044857f5c972d29f
-  kettle-soup-cover (3.0.3) sha256=5919649be35690e4580299a41ac7c44a9548a7ca38561ffdd3c683c9d63e6f9b
+  kettle-soup-cover (3.0.4) sha256=36d4df472362d2020d16411d7ce26ba2fe2a41fb8be64577ff9b5280acf99d86
   kettle-test (2.0.12) sha256=3a8e5c5f38db03a6f0a8896da6f3576d24e36f53796578c19aafaa2ba5a8ea52
   kettle-wash (0.1.1) sha256=ae2e08b64c72c46ceed5ffa197ed859e85352f38ed0412fca2e18ce29b2dc4f9
   kramdown (2.5.2) sha256=1ba542204c66b6f9111ff00dcc26075b95b220b07f2905d8261740c82f7f02fa
@@ -468,7 +468,7 @@ CHECKSUMS
   logger (1.7.0) sha256=196edec7cc44b66cfb40f9755ce11b392f21f7967696af15d274dde7edff0203
   mutex_m (0.3.0) sha256=cfcb04ac16b69c4813777022fdceda24e9f798e48092a2b817eb4c0a782b0751
   nokogiri (1.19.4-x86_64-linux-gnu) sha256=379fae440b28915e3f19d752ce2dcf8465ed2b2fbefd2a7ca0dd497bc981a06a
-  nomono (1.0.8) sha256=bf4b9b426cbf216ab17b70db474f691b8ae1f1e29de8db4b0ecd405e6e7e1c80
+  nomono (1.1.0) sha256=463dd4c79da02a855739a1b5483190d527b7868688be905e84abdb3449b32c88
   openssl (4.0.2) sha256=1037ad2868ae58df9ad917891c0c0f9815a1172f6846d4bcdd508e4c2ee747c2
   ostruct (0.6.3) sha256=95a2ed4a4bd1d190784e666b47b2d3f078e4a9efda2fccf18f84ddc6538ed912
   parallel (1.28.0) sha256=33e6de1484baf2524792d178b0913fc8eb94c628d6cfe45599ad4458c638c970
@@ -526,7 +526,7 @@ CHECKSUMS
   simplecov-console (0.9.5) sha256=b1108bcfff5f210143e2b8301698c367b01586f20d25a73e95475a5df6fc6ff6
   simplecov-rcov (0.3.7) sha256=372f50bf6df6b6350b7d0c840f2f8bdabe021861a43c26877b747c9ac96139fc
   simplecov_lcov_formatter (0.9.0) sha256=4c1839bb31dcf7a8f7a6474c94ed228aa03b994e9dd5e1965e58b4121b049bed
-  sorbet-runtime (0.6.13347) sha256=54e7221d9f4b63f58aec79f3043752a9ba7810347c6ae0d903531591cc2d5f01
+  sorbet-runtime (0.6.13354) sha256=1e9de4e2c445ed8de4157fb4ce96443e345952f740c74393e9d9839c7fb01be8
   standard (1.56.0) sha256=ae2af4d9669589162ac69ed5ef59dcf9f346d4afc81f7e62b84339310dfcb787
   standard-custom (1.0.2) sha256=424adc84179a074f1a2a309bb9cf7cd6bfdb2b6541f20c6bf9436c0ba22a652b
   standard-performance (1.9.0) sha256=49483d31be448292951d80e5e67cdcb576c2502103c7b40aec6f1b6e9c88e3f2

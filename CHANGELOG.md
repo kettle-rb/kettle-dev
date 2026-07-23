@@ -28,17 +28,13 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Appraisal rake task specs now rely on kettle-test's `silent_stream`
-  integration instead of stubbing `Object#warn`, which is not supported under
-  JRuby 9.4.
-
 ### Security
 
-## [2.3.10] - 2026-07-22
+## [2.3.10] - 2026-07-23
 
 - TAG: [v2.3.10][2.3.10t]
-- COVERAGE: 92.47% -- 3795/4104 lines in 37 files
-- BRANCH COVERAGE: 75.90% -- 1499/1975 branches in 37 files
+- COVERAGE: 92.35% -- 3790/4104 lines in 37 files
+- BRANCH COVERAGE: 75.95% -- 1500/1975 branches in 37 files
 - 60.00% documented
 
 ### Changed
@@ -56,6 +52,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - Restored `kettle-gha-pins` as a normal runtime dependency now that 0.2.1
   supports the full `kettle-dev` Ruby floor.
+
+- Appraisal rake task specs now rely on kettle-test's `silent_stream`
+  integration instead of stubbing `Object#warn`, which is not supported under
+  JRuby 9.4.
 
 ## [2.3.9] - 2026-07-21
 
