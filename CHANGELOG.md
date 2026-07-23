@@ -22,14 +22,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
-- Runtime dependency metadata now requires `kettle-gha-pins` 0.2.0 or newer.
-- `kettle-gha-sha-pins` now delegates GitHub Actions release-tag parsing,
-  canonicalization, cache persistence, GitHub release/tag/commit resolution,
-  and upgrade-target selection to the shared
-  `kettle-gha-pins` gem.
-- `kettle-gha-sha-pins` is now a compatibility wrapper around the
-  `kettle-gha-pins` executable.
-
 ### Deprecated
 
 ### Removed
@@ -37,6 +29,23 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Fixed
 
 ### Security
+
+## [2.3.10] - 2026-07-22
+
+- TAG: [v2.3.10][2.3.10t]
+- COVERAGE: 92.53% -- 3793/4099 lines in 37 files
+- BRANCH COVERAGE: 75.95% -- 1500/1975 branches in 37 files
+- 59.76% documented
+
+### Changed
+
+- Runtime dependency metadata now requires `kettle-gha-pins` 0.2.0 or newer.
+- `kettle-gha-sha-pins` now delegates GitHub Actions release-tag parsing,
+  canonicalization, cache persistence, GitHub release/tag/commit resolution,
+  and upgrade-target selection to the shared
+  `kettle-gha-pins` gem.
+- `kettle-gha-sha-pins` is now a compatibility wrapper around the
+  `kettle-gha-pins` executable.
 
 ## [2.3.9] - 2026-07-21
 
@@ -2594,7 +2603,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.9...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.10...HEAD
+[2.3.10]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.9...v2.3.10
+[2.3.10t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.3.10
 [2.3.9]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.8...v2.3.9
 [2.3.9t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.3.9
 [2.3.8]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.7...v2.3.8
