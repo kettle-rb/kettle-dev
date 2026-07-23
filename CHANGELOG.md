@@ -22,6 +22,7 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- Runtime dependency metadata now requires `kettle-gha-pins` 0.2.0 or newer.
 - `kettle-gha-sha-pins` now delegates GitHub Actions release-tag parsing,
   canonicalization, cache persistence, GitHub release/tag/commit resolution,
   and upgrade-target selection to the shared
