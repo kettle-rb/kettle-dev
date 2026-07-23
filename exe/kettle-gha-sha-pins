@@ -4,8 +4,13 @@
 # vim: set syntax=ruby
 
 script_basename = File.basename(__FILE__)
+repo_lib = File.expand_path("../lib", __dir__)
+$LOAD_PATH.unshift(repo_lib) if File.directory?(repo_lib) && !$LOAD_PATH.include?(repo_lib)
 
 begin
+  require "kettle/dev/executable_version"
+  Kettle::Dev::ExecutableVersion.print_and_exit!(script_basename, ARGV)
+
   Kernel.exec(Gem.ruby, Gem.bin_path("kettle-gha-pins", "kettle-gha-pins"), *ARGV)
 rescue Gem::Exception, LoadError => e
   warn("#{script_basename}: could not load kettle-gha-pins executable: #{e.class}: #{e.message}")

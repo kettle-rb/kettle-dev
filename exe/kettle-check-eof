@@ -1,6 +1,14 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+repo_lib = File.expand_path("../lib", __dir__)
+$LOAD_PATH.unshift(repo_lib) if File.directory?(repo_lib) && !$LOAD_PATH.include?(repo_lib)
+
+require "kettle/dev/executable_version"
+
+script_basename = File.basename(__FILE__)
+Kettle::Dev::ExecutableVersion.print_and_exit!(script_basename, ARGV)
+
 bin_dir = File.expand_path(__dir__)
 bash_script = File.join(bin_dir, "kettle-check-eof.sh")
 
