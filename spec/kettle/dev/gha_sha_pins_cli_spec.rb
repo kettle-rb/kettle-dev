@@ -187,6 +187,14 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       expect(dummy_cli.send(:parse_release_version, "bad-tag")).to be_nil
     end
 
+    it "delegates release version parsing to kettle-gha-pins" do
+      allow(Kettle::Gha::Pins::VersionRubric).to receive(:parse).and_call_original
+
+      expect(dummy_cli.send(:parse_release_version, "v1.2.3")).to eq(Gem::Version.new("1.2.3"))
+
+      expect(Kettle::Gha::Pins::VersionRubric).to have_received(:parse).with("v1.2.3")
+    end
+
     it "falls back to source scanning for Psych nodes without location APIs" do
       text = <<~YAML
         jobs:

@@ -10,6 +10,7 @@ require "time"
 require "uri"
 
 require "psych"
+require "kettle/gha/pins"
 require "ruby-progressbar"
 require_relative "cache_progress"
 
@@ -36,20 +37,11 @@ module Kettle
       VERSION_COMMENT_REPLACEMENT_RE = /\A(?<prefix>\s+#\s*)v?\d+(?:\.\d+\.\d+(?:[-.]?[0-9A-Za-z.-]+)?)?/
 
       def self.release_version_sort_key(entry)
-        [entry.fetch(:version_obj), *release_version_specificity(entry)]
+        Kettle::Gha::Pins::VersionRubric.sort_key(entry)
       end
 
       def self.release_version_specificity(entry)
-        text = entry.fetch(:tag).to_s.sub(/\A[vV]/, "")
-        release_text, suffix = text.split(/[-.](?=[A-Za-z])/, 2)
-        numeric_segments = release_text.to_s.split(".").take_while { |part| part.match?(/\A\d+\z/) }
-
-        [
-          numeric_segments.length,
-          suffix ? 0 : 1,
-          text.length,
-          entry.fetch(:tag).to_s
-        ]
+        Kettle::Gha::Pins::VersionRubric.specificity(entry)
       end
 
       def initialize(argv, err: $stderr)
@@ -493,12 +485,7 @@ module Kettle
       end
 
       def parse_release_version(value)
-        normalized = value.to_s.sub(/\A[vV]/, "")
-        return nil unless normalized.match?(/\A(?:\d+|\d+\.\d+\.\d+(?:[-.]?[0-9A-Za-z.-]+)?)\z/)
-
-        Gem::Version.new(normalized)
-      rescue ArgumentError
-        nil
+        Kettle::Gha::Pins::VersionRubric.parse(value)
       end
 
       def matching_version_entry(versions, current_ref, current_sha, client, repo_ref)
@@ -518,44 +505,15 @@ module Kettle
       end
 
       def choose_upgrade_target(current_version, versions, level)
-        current = parse_release_version(current_version)
-        return nil if current.nil?
-        return nil if level != "major" && major_line_version?(current_version)
-
-        candidates = versions.select do |entry|
-          next false unless entry[:version_obj].is_a?(Gem::Version)
-          next false unless entry[:version_obj] > current
-          next false if entry[:version_obj].prerelease? && !current.prerelease?
-          next false if level != "major" && major_line_version?(entry[:version])
-
-          case level
-          when "patch"
-            entry[:version_obj].segments[0, 2] == current.segments[0, 2]
-          when "minor"
-            entry[:version_obj].segments[0] == current.segments[0]
-          else
-            true
-          end
-        end
-
-        candidates.max_by { |entry| release_version_sort_key(entry) }
+        Kettle::Gha::Pins::VersionRubric.choose_upgrade_target(current_version, versions, level)
       end
 
       def major_line_version?(value)
-        value.to_s.match?(/\A\d+\z/)
+        Kettle::Gha::Pins::VersionRubric.major_line?(value)
       end
 
       def latest_outdated_target(current_version, versions)
-        current = parse_release_version(current_version)
-        return nil if current.nil?
-
-        versions
-          .select do |entry|
-            entry[:version_obj].is_a?(Gem::Version) &&
-              entry[:version_obj] > current &&
-              (!entry[:version_obj].prerelease? || current.prerelease?)
-          end
-          .max_by { |entry| release_version_sort_key(entry) }
+        Kettle::Gha::Pins::VersionRubric.latest_outdated_target(current_version, versions)
       end
 
       def determine_upgrade_plan(old_ref:, repo_ref:, versions:, upgrade_level:, client:)
@@ -1059,7 +1017,7 @@ module Kettle
 
         def deserialize_version_entry(entry)
           version = entry["version"].to_s
-          parsed = parse_version(version)
+          parsed = Kettle::Gha::Pins::VersionRubric.parse(version)
           return nil unless parsed
 
           {
@@ -1079,7 +1037,7 @@ module Kettle
           end
           return {} if entries.empty?
 
-          full_semver_entries = entries.reject { |entry| major_line_version?(entry[:version]) }
+          full_semver_entries = entries.reject { |entry| Kettle::Gha::Pins::VersionRubric.major_line?(entry[:version]) }
           {
             "patch" => full_semver_entries.group_by { |entry| entry[:version_obj].segments[0, 2].join(".") }
               .transform_values { |group| serialize_target(group.max_by { |entry| GhaShaPinsCLI.release_version_sort_key(entry) }) },
@@ -1096,16 +1054,6 @@ module Kettle
             "sha" => entry[:sha],
             "cached_at" => entry[:cached_at]
           }
-        end
-
-        def parse_version(value)
-          Gem::Version.new(value)
-        rescue ArgumentError
-          nil
-        end
-
-        def major_line_version?(value)
-          value.to_s.match?(/\A\d+\z/)
         end
 
         def fresh_entry?(entry)
@@ -1204,70 +1152,19 @@ module Kettle
         end
 
         def build_release_versions(data, tag_shas)
-          releases = data.filter_map do |release|
+          release_tags = data.filter_map do |release|
             next unless release.is_a?(Hash)
 
             tag = release["tag_name"].to_s
-            parsed = parse_release_version_text(tag)
-            next unless parsed
+            next unless Kettle::Gha::Pins::VersionRubric.parse(tag)
 
-            {
-              tag: tag,
-              version_obj: parsed,
-              version: parsed.to_s,
-              sha: tag_shas[tag]
-            }
-          end
-          released_tags = releases.each_with_object({}) { |release, memo| memo[release[:tag]] = true }
-          tag_versions = tag_shas.filter_map do |tag, sha|
-            next if released_tags[tag]
-
-            parsed = parse_release_version_text(tag)
-            next unless parsed
-
-            {
-              tag: tag,
-              version_obj: parsed,
-              version: parsed.to_s,
-              sha: sha
-            }
-          end
-          releases.concat(tag_versions)
-          releases = canonicalize_equivalent_release_versions(releases)
-
-          releases.sort_by! { |release| GhaShaPinsCLI.release_version_sort_key(release) }
-          releases.reverse!
-          releases
-        end
-
-        def canonicalize_equivalent_release_versions(releases)
-          groups = []
-          releases.each do |release|
-            group = groups.find { |entries| equivalent_release_tag?(entries.first, release) }
-            if group
-              group << release
-            else
-              groups << [release]
-            end
+            tag
           end
 
-          groups.map { |entries| entries.max_by { |entry| GhaShaPinsCLI.release_version_sort_key(entry) } }
-        end
-
-        def equivalent_release_tag?(left, right)
-          left[:version_obj] == right[:version_obj] &&
-            left[:sha] &&
-            right[:sha] &&
-            left[:sha] == right[:sha]
-        end
-
-        def parse_release_version_text(value)
-          normalized = value.to_s.sub(/\A[vV]/, "")
-          return nil unless normalized.match?(/\A(?:\d+|\d+\.\d+\.\d+(?:[-.]?[0-9A-Za-z.-]+)?)\z/)
-
-          Gem::Version.new(normalized)
-        rescue ArgumentError
-          nil
+          Kettle::Gha::Pins::VersionRubric.build_release_versions(
+            release_tags: release_tags,
+            tag_shas: tag_shas
+          )
         end
 
         def tag_ref_shas(repo_ref)
@@ -1279,7 +1176,7 @@ module Kettle
             next unless ref.start_with?("refs/tags/")
 
             tag = ref.sub(%r{\Arefs/tags/}, "")
-            next unless parse_release_version_text(tag)
+            next unless Kettle::Gha::Pins::VersionRubric.parse(tag)
 
             object = entry["object"]
             next unless object.is_a?(Hash)
