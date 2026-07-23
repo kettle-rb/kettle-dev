@@ -28,11 +28,20 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [2.3.11] - 2026-07-23
+
+- TAG: [v2.3.11][2.3.11t]
+- COVERAGE: 92.22% -- 3793/4113 lines in 37 files
+- BRANCH COVERAGE: 75.64% -- 1497/1979 branches in 37 files
+- 59.51% documented
+
+### Fixed
+
 - GitHub Actions release monitoring now falls back to repository-level workflow
   runs when a per-workflow endpoint lags for the pushed HEAD, and waits up to
   five minutes by default for workflows to appear.
-
-### Security
 
 ## [2.3.10] - 2026-07-23
 
@@ -2617,7 +2626,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.10...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.11...HEAD
+[2.3.11]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.10...v2.3.11
+[2.3.11t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.3.11
 [2.3.10]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.9...v2.3.10
 [2.3.10t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.3.10
 [2.3.9]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.8...v2.3.9
