@@ -33,8 +33,8 @@ Please file a bug if you notice a violation of semantic versioning.
 ## [2.3.11] - 2026-07-23
 
 - TAG: [v2.3.11][2.3.11t]
-- COVERAGE: 92.22% -- 3793/4113 lines in 37 files
-- BRANCH COVERAGE: 75.64% -- 1497/1979 branches in 37 files
+- COVERAGE: 92.17% -- 3791/4113 lines in 37 files
+- BRANCH COVERAGE: 75.80% -- 1500/1979 branches in 37 files
 - 59.51% documented
 
 ### Fixed
