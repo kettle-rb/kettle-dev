@@ -74,7 +74,20 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 
 <h3 id="added">Added</h3>
 
+<ul>
+  <li>Packaged executables now answer <code>-v</code> and bare <code>--version</code> with the<br>
+<code>kettle-dev</code> gem version they shipped with.</li>
+</ul>
+
 <h3 id="changed">Changed</h3>
+
+<ul>
+  <li>Raised the runtime dependency floor for <code>kettle-gha-pins</code> to <code>0.3.1</code>.</li>
+  <li>Packaged executables now share a consistent startup header on normal<br>
+execution paths.</li>
+  <li>Markdown image URL cache/live/skipped progress now uses the same multi-line<br>
+<code>tty-progressbar</code> output as GitHub Actions pin checks.</li>
+</ul>
 
 <h3 id="deprecated">Deprecated</h3>
 

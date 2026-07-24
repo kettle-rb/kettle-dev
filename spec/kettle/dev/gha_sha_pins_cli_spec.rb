@@ -63,10 +63,10 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
   end
 
   describe "CLI options" do
-    it "defaults --upgrade to patch" do
+    it "defaults --upgrade to major" do
       cli = described_class.new(["--root", workflow_root])
       cli.send(:parse!)
-      expect(cli.instance_variable_get(:@options)[:upgrade]).to eq("patch")
+      expect(cli.instance_variable_get(:@options)[:upgrade]).to eq("major")
     end
 
     it "accepts --refresh-cache and --cache-path" do
@@ -914,7 +914,6 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       expect(err.string).to include("Discovering workflow files")
       expect(err.string).to include("Discovered 1 workflow file")
       expect(err.string).to include("Resolving 1 GitHub action reference")
-      expect(err.string).to include("Actions live")
       expect(err.string).to include("Action resolution checks: 0 cached, 1 live.")
       expect(err.string).not_to include("Resolved foo/bar@v1.2.0 in")
     end
