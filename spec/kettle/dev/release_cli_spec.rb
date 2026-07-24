@@ -815,6 +815,134 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       end
     end
 
+    describe "release lockfile validation" do
+      def with_release_root
+        Dir.mktmpdir do |root|
+          allow(ci_helpers).to receive(:project_root).and_return(root)
+          yield(root, described_class.new)
+        end
+      end
+
+      it "flags local path remotes and registry checksums without sha256 while allowing path source gems" do
+        with_release_root do |root, local_cli|
+          File.write(File.join(root, "Gemfile.lock"), <<~LOCK)
+            PATH
+              remote: .
+              specs:
+                demo (0.1.0)
+
+            GEM
+              remote: /home/pboling/src/my/kettle-dev/kettle-soup-cover
+              specs:
+                addressable (2.9.0)
+                kettle-soup-cover (3.0.5)
+
+            CHECKSUMS
+              addressable (2.9.0) sha256=abc123
+              demo (0.1.0)
+              kettle-soup-cover (3.0.5)
+
+            BUNDLED WITH
+               4.0.17
+          LOCK
+
+          diagnostics = local_cli.send(:release_lockfile_diagnostics, File.join(root, "Gemfile.lock"))
+
+          expect(diagnostics.join("\n")).to include("has local path remote")
+          expect(diagnostics.join("\n")).to include("CHECKSUMS has no sha256 for kettle-soup-cover 3.0.5")
+          expect(diagnostics.join("\n")).not_to include("CHECKSUMS has no sha256 for demo 0.1.0")
+        end
+      end
+
+      it "normalizes dirty release lockfiles before validating the release prep commit" do
+        with_release_root do |root, local_cli|
+          File.write(File.join(root, "Gemfile"), "source \"https://gem.coop\"\n")
+          File.write(File.join(root, "Gemfile.lock"), <<~LOCK)
+            GEM
+              remote: https://gem.coop/
+              specs:
+                addressable (2.9.0)
+                kettle-soup-cover (3.0.5)
+
+            CHECKSUMS
+              addressable (2.9.0) sha256=abc123
+              kettle-soup-cover (3.0.5)
+
+            BUNDLED WITH
+               4.0.17
+          LOCK
+
+          expect(local_cli).to receive(:run_cmd!).with(
+            a_string_matching(/KETTLE_DEV_DEV=false.*BUNDLE_GEMFILE=.*Gemfile.*bundle lock --update kettle-soup-cover/)
+          ) do
+            File.write(File.join(root, "Gemfile.lock"), <<~LOCK)
+              GEM
+                remote: https://gem.coop/
+                specs:
+                  kettle-soup-cover (3.0.4)
+
+              CHECKSUMS
+                kettle-soup-cover (3.0.4) sha256=abc123
+
+              BUNDLED WITH
+                 4.0.17
+            LOCK
+          end
+
+          expect { local_cli.send(:prepare_release_lockfiles_for_commit!) }.not_to raise_error
+        end
+      end
+
+      it "aborts before release prep commit when normalization cannot repair registry checksums" do
+        with_release_root do |root, local_cli|
+          File.write(File.join(root, "Gemfile"), "source \"https://gem.coop\"\n")
+          File.write(File.join(root, "Gemfile.lock"), <<~LOCK)
+            GEM
+              remote: https://gem.coop/
+              specs:
+                addressable (2.9.0)
+                kettle-soup-cover (3.0.5)
+
+            CHECKSUMS
+              addressable (2.9.0) sha256=abc123
+              kettle-soup-cover (3.0.5)
+
+            BUNDLED WITH
+               4.0.17
+          LOCK
+
+          allow(local_cli).to receive(:run_cmd!)
+
+          expect do
+            local_cli.send(:prepare_release_lockfiles_for_commit!)
+          end.to raise_error(MockSystemExit, /Release lockfile validation failed before release prep commit/)
+        end
+      end
+
+      it "runs the release lockfile guard before committing release prep" do
+        local_cli = described_class.new(start_step: 6, skip_steps: "7,8,9,10,11,12,13,14,15,16,17,18,19")
+        allow(local_cli).to receive(:detect_version).and_return("9.9.9")
+        allow(local_cli).to receive(:detect_gem_name).and_return("mygem")
+
+        expect(local_cli).to receive(:prepare_release_lockfiles_for_commit!).ordered
+        expect(local_cli).to receive(:ensure_git_user!).ordered
+        expect(local_cli).to receive(:commit_release_prep!).with("9.9.9").ordered.and_return(false)
+
+        expect { local_cli.run }.not_to raise_error
+      end
+
+      it "validates lockfiles before monitoring CI on a step 10 resume" do
+        local_cli = described_class.new(start_step: 10, skip_steps: "11,12,13,14,15,16,17,18,19")
+        allow(local_cli).to receive(:detect_version).and_return("9.9.9")
+        allow(local_cli).to receive(:detect_gem_name).and_return("mygem")
+
+        expect(local_cli).to receive(:validate_release_lockfiles!).with(stage: "before CI monitoring").ordered
+        expect(local_cli).to receive(:monitor_workflows_after_push!).ordered
+
+        expect { local_cli.run }.not_to raise_error
+      end
+    end
+
     describe "#run" do
       around do |ex|
         orig_stdin = $stdin

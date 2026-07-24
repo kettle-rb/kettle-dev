@@ -10,6 +10,7 @@ require "net/http"
 require "json"
 require "uri"
 require "yaml"
+require "set"
 
 # External gems
 require "kettle/rb/compat_matrix"
@@ -256,6 +257,7 @@ module Kettle
 
         # 6. git user + commit release prep
         if run_step?(6)
+          prepare_release_lockfiles_for_commit!
           ensure_git_user!
           version ||= detect_version
           committed = commit_release_prep!(version)
@@ -279,10 +281,16 @@ module Kettle
         end
 
         # 9. push branches
-        push! if run_step?(9) && !local_ci?
+        if run_step?(9) && !local_ci?
+          validate_release_lockfiles!(stage: "before push")
+          push!
+        end
 
         # 10. monitor CI after push
-        monitor_workflows_after_push! if run_step?(10) && !local_ci?
+        if run_step?(10) && !local_ci?
+          validate_release_lockfiles!(stage: "before CI monitoring")
+          monitor_workflows_after_push!
+        end
 
         # 11. merge feature into trunk and push
         if run_step?(11) && !local_ci?
@@ -503,6 +511,188 @@ module Kettle
         puts "Running pre-release checks via kettle-pre-release..."
         Kettle::Dev::PreReleaseCLI.new(check_num: 1).run
         run_changelog!
+      end
+
+      def prepare_release_lockfiles_for_commit!
+        dirty_lockfiles = release_lockfile_paths.select { |path| release_lockfile_normalization_needed?(path) }
+        unless dirty_lockfiles.empty?
+          puts "Normalizing release lockfiles with local path dependencies disabled..."
+          dirty_lockfiles.each { |path| normalize_release_lockfile!(path) }
+        end
+
+        validate_release_lockfiles!(stage: "before release prep commit")
+      end
+
+      def validate_release_lockfiles!(stage:)
+        diagnostics = release_lockfile_paths.flat_map { |path| release_lockfile_diagnostics(path) }
+        return if diagnostics.empty?
+
+        abort(<<~MSG)
+          Release lockfile validation failed #{stage}:
+          #{diagnostics.map { |diagnostic| "  - #{diagnostic}" }.join("\n")}
+          Re-run bundle lock/update with local path development env disabled before releasing.
+        MSG
+      end
+
+      def release_lockfile_paths
+        candidates = [
+          File.join(@root, "Gemfile.lock"),
+          File.join(@root, "Appraisal.root.gemfile.lock")
+        ]
+        candidates.concat(Dir[File.join(@root, "gemfiles", "*.gemfile.lock")])
+        candidates.select { |path| File.file?(path) }.sort
+      end
+
+      def release_lockfile_normalization_needed?(path)
+        release_lockfile_has_local_path_remote?(path) || !release_lockfile_empty_registry_checksums(path).empty?
+      end
+
+      def normalize_release_lockfile!(path)
+        gemfile = release_gemfile_for_lockfile(path)
+        unless gemfile && File.file?(gemfile)
+          warn("Cannot normalize #{Kettle::Dev.display_path(path)} because its Gemfile was not found.")
+          return
+        end
+
+        update_gems = release_lockfile_empty_registry_checksums(path).map(&:first).uniq.sort
+        env = release_lockfile_normalization_env.merge("BUNDLE_GEMFILE" => gemfile)
+        command = +"env"
+        env.each do |key, value|
+          command << " #{key}=#{Shellwords.escape(value)}"
+        end
+        command << " bundle lock"
+        command << " --update #{update_gems.map { |gem_name| Shellwords.escape(gem_name) }.join(" ")}" unless update_gems.empty?
+        run_cmd!(command)
+      end
+
+      def release_gemfile_for_lockfile(path)
+        basename = File.basename(path)
+        return File.join(@root, "Gemfile") if basename == "Gemfile.lock"
+
+        path.delete_suffix(".lock")
+      end
+
+      def release_lockfile_normalization_env
+        {
+          "KETTLE_DEV_DEV" => "false",
+          "K_JEM_TEMPLATING" => "false",
+          "STRUCTUREDMERGE_DEV" => "false",
+          "TREE_SITTER_LANGUAGE_PACK_DEV" => "false",
+          "RUBOCOP_LTS_LOCAL" => "false",
+          "GALTZO_FLOSS_DEV" => "false",
+          "UR_BRAIN_DEV" => "false"
+        }
+      end
+
+      def release_lockfile_diagnostics(path)
+        diagnostics = []
+        release_lockfile_local_path_remote_lines(path).each do |line_number|
+          diagnostics << "#{release_lockfile_label(path)} has local path remote at line #{line_number}"
+        end
+        release_lockfile_empty_registry_checksums(path).each do |name, version, line_number|
+          diagnostics << "#{release_lockfile_label(path)} CHECKSUMS has no sha256 for #{name} #{version} at line #{line_number}"
+        end
+        diagnostics
+      end
+
+      def release_lockfile_has_local_path_remote?(path)
+        !release_lockfile_local_path_remote_lines(path).empty?
+      end
+
+      def release_lockfile_local_path_remote_lines(path)
+        File.readlines(path).filter_map.with_index(1) do |line, index|
+          next unless line.start_with?("  remote: /", "  remote: ./", "  remote: ../")
+
+          index
+        end
+      end
+
+      def release_lockfile_empty_registry_checksums(path)
+        path_gems = release_lockfile_path_source_gems(path) | release_lockfile_path_dependency_gems(path)
+        in_checksums = false
+        entries = File.readlines(path).filter_map.with_index(1) do |line, index|
+          stripped = line.strip
+          if stripped == "CHECKSUMS"
+            in_checksums = true
+            next
+          end
+          next unless in_checksums
+          next if stripped.empty?
+          next if stripped == "BUNDLED WITH"
+
+          match = stripped.match(/\A([A-Za-z0-9_.-]+) \(([^)]+)\)(?:\s+(sha256=.*))?\z/)
+          next unless match
+
+          name = match[1]
+          checksum = match[3].to_s
+          next if !checksum.empty?
+          next if path_gems.include?(name)
+
+          [name, match[2], index]
+        end
+        return [] unless release_lockfile_has_any_sha_checksum?(path)
+
+        entries
+      end
+
+      def release_lockfile_has_any_sha_checksum?(path)
+        in_checksums = false
+        File.readlines(path).any? do |line|
+          stripped = line.strip
+          if stripped == "CHECKSUMS"
+            in_checksums = true
+            next false
+          end
+          next false unless in_checksums
+
+          stripped.include?("sha256=")
+        end
+      end
+
+      def release_lockfile_path_source_gems(path)
+        gems = Set.new
+        in_path = false
+        in_specs = false
+        File.readlines(path).each do |line|
+          header = line.strip
+          if header.match?(/\A[A-Z][A-Z ]*\z/)
+            in_path = header == "PATH"
+            in_specs = false
+            next
+          end
+          next unless in_path
+
+          if header == "specs:"
+            in_specs = true
+            next
+          end
+          next unless in_specs
+
+          match = line.match(/\A    ([A-Za-z0-9_.-]+) \([^)]+\)/)
+          gems << match[1] if match
+        end
+        gems
+      end
+
+      def release_lockfile_path_dependency_gems(path)
+        gems = Set.new
+        in_dependencies = false
+        File.readlines(path).each do |line|
+          header = line.strip
+          if header.match?(/\A[A-Z][A-Z ]*\z/)
+            in_dependencies = header == "DEPENDENCIES"
+            next
+          end
+          next unless in_dependencies
+
+          match = line.match(/\A  ([A-Za-z0-9_.-]+)!\z/)
+          gems << match[1] if match
+        end
+        gems
+      end
+
+      def release_lockfile_label(path)
+        Kettle::Dev.display_path(path)
       end
 
       def run_changelog!

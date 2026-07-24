@@ -28,6 +28,11 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-release` now normalizes and revalidates release lockfiles after
+  mutating setup/appraisal/doc steps, before committing or pushing, so local
+  path remotes and locally installed registry gems with empty lockfile
+  checksums cannot leak into CI.
+
 ### Security
 
 ## [2.4.0] - 2026-07-23
