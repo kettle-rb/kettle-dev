@@ -28,12 +28,21 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [2.4.1] - 2026-07-24
+
+- TAG: [v2.4.1][2.4.1t]
+- COVERAGE: 92.62% -- 3943/4257 lines in 38 files
+- BRANCH COVERAGE: 76.58% -- 1560/2037 branches in 38 files
+- 58.66% documented
+
+### Fixed
+
 - `kettle-release` now normalizes and revalidates release lockfiles after
   mutating setup/appraisal/doc steps, before committing or pushing, so local
   path remotes and locally installed registry gems with empty lockfile
   checksums cannot leak into CI.
-
-### Security
 
 ## [2.4.0] - 2026-07-23
 
@@ -2651,7 +2660,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.4.0...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.4.1...HEAD
+[2.4.1]: https://github.com/kettle-dev/kettle-dev/compare/v2.4.0...v2.4.1
+[2.4.1t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.4.1
 [2.4.0]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.11...v2.4.0
 [2.4.0t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.4.0
 [2.3.11]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.10...v2.3.11
