@@ -20,6 +20,25 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [2.4.0] - 2026-07-23
+
+- TAG: [v2.4.0][2.4.0t]
+- COVERAGE: 92.37% -- 3825/4141 lines in 38 files
+- BRANCH COVERAGE: 76.12% -- 1514/1989 branches in 38 files
+- 58.66% documented
+
+### Added
+
 - Packaged executables now answer `-v` and bare `--version` with the
   `kettle-dev` gem version they shipped with.
 
@@ -30,14 +49,6 @@ Please file a bug if you notice a violation of semantic versioning.
   execution paths.
 - Markdown image URL cache/live/skipped progress now uses the same multi-line
   `tty-progressbar` output as GitHub Actions pin checks.
-
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
 
 ## [2.3.11] - 2026-07-23
 
@@ -2635,7 +2646,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.11...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.4.0...HEAD
+[2.4.0]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.11...v2.4.0
+[2.4.0t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.4.0
 [2.3.11]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.10...v2.3.11
 [2.3.11t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.3.11
 [2.3.10]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.9...v2.3.10
