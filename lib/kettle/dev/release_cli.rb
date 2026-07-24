@@ -539,7 +539,6 @@ module Kettle
           File.join(@root, "Gemfile.lock"),
           File.join(@root, "Appraisal.root.gemfile.lock")
         ]
-        candidates.concat(Dir[File.join(@root, "gemfiles", "*.gemfile.lock")])
         candidates.select { |path| File.file?(path) }.sort
       end
 

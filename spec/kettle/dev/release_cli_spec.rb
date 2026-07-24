@@ -893,6 +893,42 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         end
       end
 
+      it "ignores generated appraisal lockfiles outside the release lockfile set" do
+        with_release_root do |root, local_cli|
+          gemfiles_dir = File.join(root, "gemfiles")
+          FileUtils.mkdir_p(gemfiles_dir)
+          File.write(File.join(root, "Gemfile.lock"), <<~LOCK)
+            GEM
+              remote: https://gem.coop/
+              specs:
+                rake (13.4.2)
+
+            CHECKSUMS
+              rake (13.4.2) sha256=abc123
+
+            BUNDLED WITH
+               4.0.17
+          LOCK
+          File.write(File.join(gemfiles_dir, "dep_heads.gemfile.lock"), <<~LOCK)
+            GEM
+              remote: https://rubygems.org/
+              specs:
+                benchmark (0.5.0)
+                rake (13.4.2)
+
+            CHECKSUMS
+              benchmark (0.5.0)
+              rake (13.4.2) sha256=abc123
+
+            BUNDLED WITH
+               4.0.17
+          LOCK
+
+          expect(local_cli.send(:release_lockfile_paths)).to eq([File.join(root, "Gemfile.lock")])
+          expect { local_cli.send(:validate_release_lockfiles!, stage: "before push") }.not_to raise_error
+        end
+      end
+
       it "aborts before release prep commit when normalization cannot repair registry checksums" do
         with_release_root do |root, local_cli|
           File.write(File.join(root, "Gemfile"), "source \"https://gem.coop\"\n")
