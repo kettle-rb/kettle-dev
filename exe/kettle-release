@@ -35,8 +35,10 @@ $LOAD_PATH.unshift(repo_lib) if File.directory?(repo_lib) && !$LOAD_PATH.include
 begin
   require "kettle/dev"
   require "kettle/dev/executable_version"
+  require "kettle/dev/release_cli"
   Kettle::Dev::ExecutableVersion.print_and_exit!(script_basename, ARGV, value_option: true)
-  Kettle::Dev::ExecutableVersion.print_header(script_basename)
+  machine_output = ARGV.any? { |arg| arg == "--json" || arg.start_with?("--events") }
+  Kettle::Dev::ExecutableVersion.print_header(script_basename) unless machine_output
 rescue LoadError => e
   warn("#{script_basename}: could not load dependency: #{e.class}: #{e.message}")
   warn("Hint: Ensure the host project has kettle-dev as a dependency and run bundle install.")
@@ -47,7 +49,7 @@ end
 # Do not guard with __FILE__ == $PROGRAM_NAME because binstubs use Kernel.load.
 if ARGV.include?("-h") || ARGV.include?("--help")
   puts <<~USAGE
-    Usage: kettle-release [--version VERSION] [--local-ci] [--appraisal-update] [--skip-bundle-audit] [--skip-steps STEPS] [--ci-workflows WORKFLOWS] [--skip-remotes REMOTES] [start_step=<0-19>]
+    Usage: kettle-release [--version VERSION] [--local-ci] [--appraisal-update] [--skip-bundle-audit] [--skip-steps STEPS] [--ci-workflows WORKFLOWS] [--skip-remotes REMOTES] [--json|--events[=TYPES]] [--report PATH] [start_step=<0-19>]
 
     Automates the release flow for a Ruby gem in the host project.
 
@@ -87,6 +89,9 @@ if ARGV.include?("-h") || ARGV.include?("--help")
       --skip-bundle-audit         # Skip bundle:audit/update during release rake checks
       --ci-workflows WORKFLOWS    # Comma-separated workflow files or stems to monitor at CI step 10
       --skip-remotes REMOTES      # Comma-separated git remote names to exclude from release fetch/push parity
+      --json                      # Print final machine-readable release report as JSON
+      --events[=TYPES]            # Print newline-delimited JSON release events, optionally filtered by type
+      --report PATH               # Write final machine-readable release report as JSON
       --local-ci                  # Sensitive release mode: run act locally, publish before any git push,
                                   # create the git tag locally, then push commits and tags after publish
 
@@ -195,18 +200,60 @@ def extract_skip_remotes_arg!(argv)
   remotes
 end
 
+def extract_report_arg!(argv)
+  report_path = nil
+  if (idx = argv.index("--report"))
+    report_path = argv[idx + 1]
+    if report_path.to_s.empty? || report_path.to_s.start_with?("-")
+      Kettle::Dev::ExitAdapter.abort("--report requires a path")
+    end
+    argv.slice!(idx, 2)
+  end
+  argv.delete_if do |arg|
+    if arg.start_with?("--report=", "report=")
+      report_path = arg.split("=", 2)[1]
+      Kettle::Dev::ExitAdapter.abort("--report requires a path") if report_path.to_s.empty?
+      true
+    else
+      false
+    end
+  end
+  report_path
+end
+
+def extract_events_arg!(argv)
+  events = false
+  event_types = nil
+  argv.delete_if do |arg|
+    if arg == "--events"
+      events = true
+    elsif arg.start_with?("--events=")
+      events = true
+      event_types = arg.split("=", 2)[1]
+    else
+      false
+    end
+  end
+  [events, event_types]
+end
+
 local_ci = ARGV.include?("--local-ci")
 appraisal_task = ARGV.delete("--appraisal-update") ? "appraisal:update" : nil
 skip_bundle_audit = !!ARGV.delete("--skip-bundle-audit")
+json_output = !!ARGV.delete("--json")
+events_output, event_types = extract_events_arg!(ARGV)
+Kettle::Dev::ExitAdapter.abort("--events cannot be combined with --json") if events_output && json_output
 start_step_arg = ARGV.find { |a| a.start_with?("start_step=") }
 start_step = start_step_arg ? start_step_arg.split("=", 2)[1].to_i : 0
 version_override = extract_version_arg!(ARGV)
 skip_steps = extract_skip_steps_arg!(ARGV)
 ci_workflows = extract_ci_workflows_arg!(ARGV)
 skip_remotes = extract_skip_remotes_arg!(ARGV)
+report_path = extract_report_arg!(ARGV)
 
 begin
-  Kettle::Dev::ReleaseCLI.new(start_step: start_step, local_ci: local_ci, version: version_override, appraisal_task: appraisal_task, skip_steps: skip_steps, skip_bundle_audit: skip_bundle_audit, ci_workflows: ci_workflows, skip_remotes: skip_remotes).run
+  event_stream = events_output ? Kettle::Ndjson.event_stream($stdout, types: event_types) : nil
+  Kettle::Dev::ReleaseCLI.new(start_step: start_step, local_ci: local_ci, version: version_override, appraisal_task: appraisal_task, skip_steps: skip_steps, skip_bundle_audit: skip_bundle_audit, ci_workflows: ci_workflows, skip_remotes: skip_remotes, event_stream: event_stream, json_output: json_output, json_io: $stdout, report_path: report_path).run
 rescue LoadError => e
   warn("#{script_basename}: could not load dependency: #{e.class}: #{e.message}")
   warn(Array(e.backtrace).join("\n")) if ENV["DEBUG"]

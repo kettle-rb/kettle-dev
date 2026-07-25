@@ -20,6 +20,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- `kettle-release` now supports `--events[=TYPES]`, `--json`, and
+  `--report PATH` machine-readable release reporting backed by the shared
+  `kettle-ndjson` event toolkit.
+
 ### Changed
 
 ### Deprecated

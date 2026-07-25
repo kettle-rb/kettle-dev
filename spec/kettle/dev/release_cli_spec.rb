@@ -61,6 +61,22 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     end
 
     describe "#run_cmd! (signing env injection)", :real_release_rake do
+      it "emits command step events around child commands" do
+        io = StringIO.new
+        event_stream = Kettle::Ndjson.event_stream(io, types: "command_step")
+        local_cli = described_class.new(event_stream: event_stream)
+        status = instance_double(Process::Status, success?: true, exitstatus: 0)
+        allow(Open3).to receive(:capture3).and_return(["", "", status])
+
+        local_cli.send(:run_cmd!, "bin/setup")
+
+        events = io.string.lines.map { |line| JSON.parse(line) }
+        expect(events).to contain_exactly(
+          include("type" => "command_step", "status" => "started", "command" => "bin/setup", "mark" => ">"),
+          include("type" => "command_step", "status" => "ok", "command" => "bin/setup", "mark" => ".")
+        )
+      end
+
       it "prefixes SKIP_GEM_SIGNING for 'bundle exec rake build' when env set" do
         stub_env("SKIP_GEM_SIGNING" => "true")
         status = instance_double(Process::Status, success?: true, exitstatus: 0)
@@ -166,6 +182,37 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect(Open3).not_to receive(:capture3)
 
         cli.send(:run_cmd!, "bundle exec kettle-changelog")
+      end
+    end
+
+    describe "machine-readable release reports" do
+      it "emits run start and summary events and writes the final JSON report" do
+        Dir.mktmpdir do |root|
+          allow(ci_helpers).to receive(:project_root).and_return(root)
+          FileUtils.mkdir_p(File.join(root, "lib", "mygem"))
+          File.write(File.join(root, "lib", "mygem", "version.rb"), "module Mygem; VERSION = \"1.2.3\"; end\n")
+          File.write(File.join(root, "mygem.gemspec"), "Gem::Specification.new { |spec| spec.name = \"mygem\" }\n")
+          event_io = StringIO.new
+          json_io = StringIO.new
+          report_path = File.join(root, "tmp", "release-report.json")
+          local_cli = described_class.new(
+            skip_steps: "0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19",
+            event_stream: Kettle::Ndjson.event_stream(event_io, types: "run_start,summary"),
+            json_output: true,
+            json_io: json_io,
+            report_path: report_path
+          )
+
+          local_cli.run
+
+          events = event_io.string.lines.map { |line| JSON.parse(line) }
+          expect(events).to contain_exactly(
+            include("type" => "run_start", "command" => "release", "root" => root),
+            include("type" => "summary", "command" => "release", "status" => "ok", "version" => "1.2.3", "gem_name" => "mygem")
+          )
+          expect(JSON.parse(json_io.string)).to include("status" => "ok", "version" => "1.2.3", "gem_name" => "mygem")
+          expect(JSON.parse(File.read(report_path))).to include("status" => "ok", "version" => "1.2.3", "gem_name" => "mygem")
+        end
       end
     end
 

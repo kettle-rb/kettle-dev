@@ -13,6 +13,7 @@ require "yaml"
 require "set"
 
 # External gems
+require "kettle/ndjson"
 require "kettle/rb/compat_matrix"
 require "ruby-progressbar"
 
@@ -124,13 +125,42 @@ module Kettle
         @version_override = Kettle::Dev::Versioning.normalize_explicit_version(version)
         @appraisal_task = normalize_appraisal_task(appraisal_task || ENV["KETTLE_RELEASE_APPRAISAL_TASK"])
         @release_candidate = nil
+        @event_stream = options[:event_stream]
+        @event_recorder = Kettle::Ndjson.event_recorder(@event_stream, phase_timings: [])
+        @report_path = options[:report_path]
+        @json_output = !!options[:json_output]
+        @json_io = options[:json_io] || $stdout
+        @command_events = []
+        @diagnostics = []
+        @started_at = nil
+        @finished_report = nil
       end
 
       def run
+        @started_at = monotonic_time
+        emit_run_start
+        status = "ok"
+        error = nil
         with_bundle_audit_skip_env do
-          run_with_release_environment
+          with_machine_stdout_redirect do
+            run_with_release_environment
+          end
         end
+      rescue SystemExit => e
+        status = e.status.to_i.zero? ? "ok" : "failed"
+        error = e
+        record_diagnostic("release_exit", e.message, severity: (status == "ok") ? "info" : "error", blocking: status != "ok")
+        raise
+      rescue => e
+        status = "failed"
+        error = e
+        record_diagnostic("release_error", "#{e.class}: #{e.message}", severity: "error", blocking: true)
+        raise
+      ensure
+        finish_release_report(status: status, error: error)
       end
+
+      attr_reader :finished_report
 
       def run_with_release_environment
         run_pre_release_checks! if run_step?(0)
@@ -395,11 +425,11 @@ module Kettle
         begin
           version ||= detect_version
           gem_name = detect_gem_name
-          puts "\n🚀 Release #{gem_name} v#{version} Complete 🚀"
+          human_output.puts "\n🚀 Release #{gem_name} v#{version} Complete 🚀"
         rescue => e
           Kettle::Dev.debug_error(e, __method__)
           # Fallback if detection fails for any reason
-          puts "\n🚀 Release v#{version || "unknown"} Complete 🚀"
+          human_output.puts "\n🚀 Release v#{version || "unknown"} Complete 🚀"
         end
       end
 
@@ -1007,9 +1037,19 @@ module Kettle
 
       def run_cmd!(cmd)
         cmd = bundle_audit_skip_command(cmd)
+        emit_command_event(cmd, "started")
         with_bundle_audit_skip_env do
-          self.class.run_cmd!(cmd)
+          with_machine_stdout_redirect do
+            self.class.run_cmd!(cmd)
+          end
         end
+        emit_command_event(cmd, "ok")
+      rescue SystemExit => e
+        emit_command_event(cmd, "failed", reason: e.message)
+        raise
+      rescue => e
+        emit_command_event(cmd, "failed", reason: "#{e.class}: #{e.message}")
+        raise
       end
 
       def bundle_audit_skip_command(cmd)
@@ -1391,6 +1431,118 @@ module Kettle
             @git.push(remote, branch, force: true)
           end
         end
+      end
+
+      def emit_run_start
+        Kettle::Ndjson.emit_event(
+          @event_recorder,
+          "run_start",
+          command: "release",
+          root: @root,
+          start_step: @start_step,
+          skipped_steps: @skip_steps,
+          local_ci: @local_ci,
+          ci_workflows: @ci_workflows,
+          skipped_remotes: @skip_remotes
+        )
+      end
+
+      def emit_command_event(command, status, reason: nil)
+        event = {
+          phase: "release",
+          index: @command_events.length + 1,
+          name: command_event_name(command),
+          status: status,
+          reason: reason,
+          command: command,
+          changed_files: []
+        }
+        @command_events << event unless status == "started"
+        Kettle::Ndjson.emit_step_event(@event_recorder, "command_step", event, phase: "release", index: event[:index])
+      end
+
+      def command_event_name(command)
+        command.to_s.split(/\s+/, 3).first(2).join("_").gsub(/[^A-Za-z0-9_]+/, "_").sub(/_+\z/, "")
+      end
+
+      def record_diagnostic(kind, message, severity:, blocking:)
+        diagnostic = {
+          kind: kind,
+          severity: severity,
+          message: message.to_s,
+          blocking: blocking
+        }
+        @diagnostics << diagnostic
+        Kettle::Ndjson.emit_diagnostic_event(@event_recorder, diagnostic, index: @diagnostics.length)
+      end
+
+      def finish_release_report(status:, error:)
+        return if @finished_report
+
+        duration_ms = @started_at ? duration_ms_since(@started_at) : nil
+        @finished_report = {
+          command: "release",
+          root: @root,
+          version: safe_detect_version,
+          gem_name: safe_detect_gem_name,
+          start_step: @start_step,
+          skipped_steps: @skip_steps,
+          local_ci: @local_ci,
+          ci_workflows: @ci_workflows,
+          skipped_remotes: @skip_remotes,
+          status: status,
+          error_class: error&.class&.name,
+          error_message: error&.message,
+          duration_ms: duration_ms,
+          command_events: @command_events,
+          diagnostics: @diagnostics,
+          diagnostics_count: @diagnostics.length,
+          phase_timings: @event_recorder.phase_timings
+        }.compact
+        Kettle::Ndjson.emit_summary_event(@event_recorder, @finished_report)
+        write_release_report(@finished_report)
+        @json_io.puts(JSON.pretty_generate(@finished_report)) if @json_output
+      end
+
+      def write_release_report(report)
+        return unless @report_path
+
+        FileUtils.mkdir_p(File.dirname(@report_path))
+        File.write(@report_path, "#{JSON.pretty_generate(report)}\n")
+      end
+
+      def with_machine_stdout_redirect
+        return yield unless @json_output || @event_stream
+
+        previous_stdout = $stdout
+        $stdout = $stderr
+        yield
+      ensure
+        $stdout = previous_stdout if previous_stdout
+      end
+
+      def human_output
+        (@json_output || @event_stream) ? $stderr : $stdout
+      end
+
+      def safe_detect_version
+        detect_version
+      rescue
+        nil
+      end
+
+      def safe_detect_gem_name
+        detect_gem_name
+      rescue
+        nil
+      end
+
+      def monotonic_time
+        Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      end
+
+      def duration_ms_since(started_at)
+        ((monotonic_time - started_at) * 1000).round(3)
       end
 
       def push_tags!
