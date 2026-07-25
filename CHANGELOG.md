@@ -28,6 +28,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Legacy-engine GitHub Actions workflows now configure Bundler to mirror
+  gem.coop to RubyGems.org during explicit CI installs, avoiding unsupported
+  gem.coop full-index requests from old Bundler/RubyGems combinations.
+
 ### Security
 
 ## [2.4.4] - 2026-07-25
