@@ -28,16 +28,13 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Raised the `kettle-ndjson` runtime dependency floor to v0.1.1 so the
-  dependency remains installable on kettle-dev's Ruby 2.4+ support floor.
-
 ### Security
 
 ## [2.4.3] - 2026-07-25
 
 - TAG: [v2.4.3][2.4.3t]
-- COVERAGE: 92.26% -- 4086/4429 lines in 38 files
-- BRANCH COVERAGE: 76.14% -- 1589/2087 branches in 38 files
+- COVERAGE: 92.17% -- 4082/4429 lines in 38 files
+- BRANCH COVERAGE: 76.38% -- 1594/2087 branches in 38 files
 - 59.16% documented
 
 ### Added
@@ -61,6 +58,9 @@ Please file a bug if you notice a violation of semantic versioning.
 - `kettle-release` now waits briefly and retries post-publish gem.coop
   availability validation before failing, so normal registry mirror lag does
   not abort immediately after a successful RubyGems push.
+
+- Raised the `kettle-ndjson` runtime dependency floor to v0.1.1 so the
+  dependency remains installable on kettle-dev's Ruby 2.4+ support floor.
 
 ## [2.4.2] - 2026-07-24
 
