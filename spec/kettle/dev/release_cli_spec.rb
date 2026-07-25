@@ -1529,7 +1529,10 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
           allow(local_cli).to receive(:git_output).with(["rev-parse", "-q", "--verify", "refs/tags/v1.2.3"]).and_return(["", false])
           expect(local_cli).to receive(:run_cmd!).with("git tag -a v1.2.3 -m v1.2.3").ordered
           expect(local_cli).to receive(:run_cmd!).with("gem push #{gem_path}").ordered
-          expect(local_cli).to receive(:run_release_availability_probe).ordered.and_return(true)
+          expect(local_cli).to receive(:run_release_availability_probe).ordered do |candidate|
+            expect(candidate.published).to be(true)
+            true
+          end
           expect(Kettle::Dev::GemCoopVersions).to receive(:mark_released).with("mygem", "1.2.3")
 
           local_cli.send(:release_gem_and_tag_locally!, "1.2.3")
@@ -1548,7 +1551,10 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
           allow(local_cli).to receive(:git_output).with(["rev-parse", "-q", "--verify", "refs/tags/v1.2.3"]).and_return(["abc", true])
           expect(local_cli).not_to receive(:run_cmd!).with(/git tag/)
           expect(local_cli).to receive(:run_cmd!).with("gem push #{gem_path}")
-          expect(local_cli).to receive(:run_release_availability_probe).and_return(true)
+          expect(local_cli).to receive(:run_release_availability_probe) do |candidate|
+            expect(candidate.published).to be(true)
+            true
+          end
 
           local_cli.send(:release_gem_and_tag_locally!, "1.2.3")
         end
@@ -1587,7 +1593,9 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
         expect(script).to include("require \"bundler/inline\"")
         expect(script).to include("source \"https://gem.coop\"")
-        expect(script).to include("gem gem_name, \"= \#{version}\"")
+        expect(script).to include("gem gem_name, \"= \#{version}\", require: false")
+        expect(script).to include("Bundler.load.specs.find")
+        expect(script).not_to include("Gem.loaded_specs.fetch")
       end
 
       it "retries the gem.coop availability probe until the release resolves" do
@@ -1662,6 +1670,23 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect do
           local_cli.send(:with_unpublished_candidate_cleanup) { raise(MockSystemExit, "publish failed") }
         end.to raise_error(MockSystemExit, /publish failed/)
+      end
+
+      it "does not uninstall a candidate after the gem push succeeds" do
+        local_cli = described_class.new
+        candidate = Kettle::Dev::ReleaseCLI::ReleaseCandidate.new(
+          gem_name: "mygem",
+          version: "1.2.3",
+          installed_before: false,
+          published: true
+        )
+        local_cli.instance_variable_set(:@release_candidate, candidate)
+
+        expect(local_cli).not_to receive(:run_cmd!).with(/gem uninstall/)
+
+        expect do
+          local_cli.send(:with_unpublished_candidate_cleanup) { raise(MockSystemExit, "probe failed") }
+        end.to raise_error(MockSystemExit, /probe failed/)
       end
 
       it "does not uninstall a candidate that was already installed before the release attempt" do

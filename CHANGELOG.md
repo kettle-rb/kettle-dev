@@ -28,6 +28,13 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-release` availability validation now resolves the exact published gem
+  from gem.coop without requiring it, so framework-dependent gems are not
+  mistaken for unavailable releases after RubyGems accepts the push.
+- `kettle-release` now records a candidate as published immediately after the
+  push command succeeds, preventing post-publish validation failures from
+  triggering unpublished-gem local cleanup.
+
 ### Security
 
 ## [2.4.3] - 2026-07-25

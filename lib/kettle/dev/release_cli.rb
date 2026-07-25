@@ -388,6 +388,7 @@ module Kettle
             puts "Running release (you may be prompted for signing key password and RubyGems MFA OTP)..."
             with_unpublished_candidate_cleanup do
               run_cmd!("bundle exec rake release")
+              @release_candidate.published = true
               confirm_release_candidate_available!(@release_candidate)
             end
             mark_gem_coop_release_cache_bust(version)
@@ -1192,8 +1193,11 @@ module Kettle
 
         puts "Publishing #{File.basename(gem_path)} to RubyGems without pushing git refs..."
         run_cmd!("gem push #{Shellwords.escape(gem_path)}")
-        confirm_release_candidate_available!(@release_candidate || build_release_candidate(gem_name_from_gem_path(gem_path, version), version))
-        mark_gem_coop_release_cache_bust(version, gem_name: gem_name_from_gem_path(gem_path, version))
+        gem_name = gem_name_from_gem_path(gem_path, version)
+        @release_candidate ||= build_release_candidate(gem_name, version)
+        @release_candidate.published = true
+        confirm_release_candidate_available!(@release_candidate)
+        mark_gem_coop_release_cache_bust(version, gem_name: gem_name)
       end
 
       def build_release_candidate(gem_name, version)
@@ -1324,11 +1328,12 @@ module Kettle
 
           gemfile(true) do
             source #{RELEASE_VALIDATION_SOURCE.dump}
-            gem gem_name, "= \#{version}"
+            gem gem_name, "= \#{version}", require: false
           end
 
-          spec = Gem.loaded_specs.fetch(gem_name)
-          abort("loaded \#{gem_name} \#{spec.version}, expected \#{version}") unless spec.version.to_s == version
+          spec = Bundler.load.specs.find { |candidate| candidate.name == gem_name }
+          abort("resolved no \#{gem_name} spec") unless spec
+          abort("resolved \#{gem_name} \#{spec.version}, expected \#{version}") unless spec.version.to_s == version
           puts "Validated \#{gem_name} \#{version} from #{RELEASE_VALIDATION_SOURCE}"
         RUBY
       end
