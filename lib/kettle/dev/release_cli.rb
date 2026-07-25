@@ -1522,19 +1522,6 @@ module Kettle
       end
 
       def ensure_trunk_synced_before_push!(trunk, feature)
-        if use_all_remote?
-          puts "Remote 'all' detected. Fetching aggregate remote and enforcing trunk parity against all/#{trunk}..."
-          run_cmd!("git fetch all")
-          if remote_branch_exists?("all", trunk)
-            _ahead, behind = ahead_behind_counts(trunk, "all/#{trunk}")
-            if behind.positive?
-              abort("Local #{trunk} is missing commits present on: all/#{trunk}. Please sync trunk first.")
-            end
-          end
-          puts "Local #{trunk} has all commits from all/#{trunk}"
-          return
-        end
-
         if has_remote?("all")
           remotes = active_remotes
           skipped = list_remotes.select { |remote| skipped_remote?(remote) }
@@ -1543,7 +1530,7 @@ module Kettle
           remotes.each do |remote|
             next if remote == "all"
 
-            run_cmd!("git fetch #{Shellwords.escape(remote)}")
+            fetch_remote_for_parity!(remote)
           end
           missing_from = []
           remotes.each do |r|
@@ -1617,6 +1604,50 @@ module Kettle
             puts "origin/#{trunk} is ahead of #{gh_remote}/#{trunk}; no action required before push."
           end
         end
+      end
+
+      def fetch_remote_for_parity!(remote)
+        command = "git fetch #{Shellwords.escape(remote)}"
+        attempts = remote_fetch_parity_attempts
+        last_error = nil
+        attempts.times do |index|
+          attempt = index + 1
+          puts "Fetching remote '#{remote}' for release parity (attempt #{attempt}/#{attempts})"
+          begin
+            run_cmd!(command)
+            return true
+          rescue SystemExit => error
+            last_error = error
+          rescue => error
+            last_error = error
+          end
+          sleep(remote_fetch_parity_interval) if attempt < attempts
+        end
+
+        abort(remote_fetch_failure_message(remote, last_error&.message.to_s))
+      end
+
+      def remote_fetch_parity_attempts
+        3
+      end
+
+      def remote_fetch_parity_interval
+        5
+      end
+
+      def remote_fetch_failure_message(remote, detail)
+        <<~MSG
+          Unable to fetch git remote '#{remote}' during release parity checks.
+          kettle-release enforces trunk parity across active remotes before publishing.
+
+          If this remote is temporarily unavailable or intentionally not part of this release,
+          rerun with one of:
+            kettle-release --skip-remotes #{remote}
+            K_RELEASE_SKIP_REMOTES=#{remote} kettle-release
+
+          Original failure:
+          #{detail}
+        MSG
       end
 
       def merge_feature_into_trunk_and_push!(trunk, feature)

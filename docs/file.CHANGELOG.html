@@ -84,9 +84,9 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 
 <ul>
   <li>
-<code>kettle-release</code> now honors the <code>kettle-dvcs</code> aggregate <code>all</code> remote contract<br>
-during pre-push trunk parity checks by fetching <code>all</code> instead of hard-blocking<br>
-on each auxiliary forge remote.</li>
+<code>kettle-release</code> now retries transient git remote fetch failures during<br>
+strict pre-push trunk parity checks, and failures now include an explicit<br>
+<code>--skip-remotes</code> recovery hint for intentionally unavailable remotes.</li>
   <li>
 <code>kettle-release</code> now waits briefly and retries post-publish gem.coop<br>
 availability validation before failing, so normal registry mirror lag does<br>

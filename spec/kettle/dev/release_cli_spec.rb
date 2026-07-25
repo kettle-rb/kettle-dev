@@ -516,20 +516,57 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     end
 
     describe "#ensure_trunk_synced_before_push!" do
-      it "checks aggregate remote parity when remote 'all' is present and aborts if missing commits" do
+      it "enforces strict parity when remote 'all' is present and aborts if missing commits" do
         allow(cli).to receive(:has_remote?).with("all").and_return(true)
-        expect(cli).to receive(:run_cmd!).with("git fetch all")
-        allow(cli).to receive(:remote_branch_exists?).with("all", "main").and_return(true)
-        allow(cli).to receive(:ahead_behind_counts).with("main", "all/main").and_return([0, 1])
-        expect { cli.send(:ensure_trunk_synced_before_push!, "main", "feat") }.to raise_error(MockSystemExit, /missing commits present on: all\/main/)
+        allow(cli).to receive(:list_remotes).and_return(%w[all origin github])
+        expect(cli).to receive(:run_cmd!).with("git fetch origin")
+        expect(cli).to receive(:run_cmd!).with("git fetch github")
+        allow(cli).to receive(:remote_branch_exists?).with("origin", "main").and_return(true)
+        allow(cli).to receive(:ahead_behind_counts).with("main", "origin/main").and_return([0, 1])
+        allow(cli).to receive(:remote_branch_exists?).with("github", "main").and_return(true)
+        allow(cli).to receive(:ahead_behind_counts).with("main", "github/main").and_return([0, 0])
+        expect { cli.send(:ensure_trunk_synced_before_push!, "main", "feat") }.to raise_error(MockSystemExit, /missing commits present on: origin/)
       end
 
-      it "reports parity when aggregate remote is synced" do
+      it "reports parity when all remotes are synced" do
         allow(cli).to receive(:has_remote?).with("all").and_return(true)
-        expect(cli).to receive(:run_cmd!).with("git fetch all")
-        allow(cli).to receive(:remote_branch_exists?).with("all", "main").and_return(true)
-        allow(cli).to receive(:ahead_behind_counts).with("main", "all/main").and_return([0, 0])
-        expect(cli).not_to receive(:run_cmd!).with("git fetch origin")
+        allow(cli).to receive(:list_remotes).and_return(%w[all origin])
+        expect(cli).to receive(:run_cmd!).with("git fetch origin")
+        allow(cli).to receive(:remote_branch_exists?).with("origin", "main").and_return(true)
+        allow(cli).to receive(:ahead_behind_counts).with("main", "origin/main").and_return([0, 0])
+        expect { cli.send(:ensure_trunk_synced_before_push!, "main", "feat") }.not_to raise_error
+      end
+
+      it "adds a skip-remotes hint when an active remote cannot be fetched" do
+        allow(cli).to receive(:has_remote?).with("all").and_return(true)
+        allow(cli).to receive(:list_remotes).and_return(%w[all origin cb])
+        allow(cli).to receive(:remote_fetch_parity_attempts).and_return(2)
+        allow(cli).to receive(:remote_fetch_parity_interval).and_return(0)
+        expect(cli).to receive(:run_cmd!).with("git fetch origin")
+        expect(cli).to receive(:run_cmd!).with("git fetch cb").twice.and_raise(MockSystemExit, "Command failed: git fetch cb (exit 128)")
+        expect(cli).to receive(:sleep).with(0).once
+
+        expect do
+          cli.send(:ensure_trunk_synced_before_push!, "main", "feat")
+        end.to raise_error(MockSystemExit) { |error|
+          expect(error.message).to include("Unable to fetch git remote 'cb'")
+          expect(error.message).to include("kettle-release --skip-remotes cb")
+          expect(error.message).to include("K_RELEASE_SKIP_REMOTES=cb kettle-release")
+          expect(error.message).to include("Command failed: git fetch cb")
+        }
+      end
+
+      it "retries transient remote fetch failures before checking parity" do
+        allow(cli).to receive(:has_remote?).with("all").and_return(true)
+        allow(cli).to receive(:list_remotes).and_return(%w[all cb])
+        allow(cli).to receive(:remote_fetch_parity_attempts).and_return(3)
+        allow(cli).to receive(:remote_fetch_parity_interval).and_return(0)
+        expect(cli).to receive(:run_cmd!).with("git fetch cb").ordered.and_raise(MockSystemExit, "transient")
+        expect(cli).to receive(:sleep).with(0).ordered
+        expect(cli).to receive(:run_cmd!).with("git fetch cb").ordered
+        allow(cli).to receive(:remote_branch_exists?).with("cb", "main").and_return(true)
+        allow(cli).to receive(:ahead_behind_counts).with("main", "cb/main").and_return([0, 0])
+
         expect { cli.send(:ensure_trunk_synced_before_push!, "main", "feat") }.not_to raise_error
       end
 
