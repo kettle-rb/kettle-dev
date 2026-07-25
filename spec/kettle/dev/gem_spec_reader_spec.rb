@@ -6,6 +6,7 @@ RSpec.describe Kettle::Dev::GemSpecReader do
 
   before do
     described_class.clear_cache!
+    stub_env("FORGE_ORG" => nil)
     FileUtils.mkdir_p(tmp_root)
   end
 
