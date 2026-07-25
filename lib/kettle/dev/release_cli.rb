@@ -1324,14 +1324,29 @@ module Kettle
           gem_name = #{candidate.gem_name.dump}
           version = #{candidate.version.dump}
 
-          require "bundler/inline"
+          require "bundler"
+          require "pathname"
 
-          gemfile(true) do
-            source #{RELEASE_VALIDATION_SOURCE.dump}
-            gem gem_name, "= \#{version}", require: false
+          Bundler.reset!
+          Bundler.unbundle_env!
+          Bundler.instance_variable_set(:@bundle_path, Pathname.new(Gem.dir))
+          Bundler::SharedHelpers.set_env("BUNDLE_GEMFILE", "Gemfile")
+          Bundler::SharedHelpers.set_env("BUNDLE_LOCKFILE", "Gemfile.lock")
+
+          builder = Bundler::Dsl.new
+          builder.source(#{RELEASE_VALIDATION_SOURCE.dump})
+          builder.gem(gem_name, "= \#{version}", require: false)
+          definition = builder.to_definition(nil, true)
+          definition.validate_runtime!
+
+          Bundler.settings.temporary(deployment: false, frozen: false, inline: true, no_install: false) do
+            installer = Bundler::Installer.install(Bundler.root, definition, system: true)
+            installer.post_install_messages.each do |name, message|
+              warn("Post-install message from \#{name}:\\n\#{message}")
+            end
           end
 
-          spec = Bundler.load.specs.find { |candidate| candidate.name == gem_name }
+          spec = definition.specs.find { |candidate| candidate.name == gem_name }
           abort("resolved no \#{gem_name} spec") unless spec
           abort("resolved \#{gem_name} \#{spec.version}, expected \#{version}") unless spec.version.to_s == version
           puts "Validated \#{gem_name} \#{version} from #{RELEASE_VALIDATION_SOURCE}"

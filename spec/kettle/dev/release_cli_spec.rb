@@ -1580,7 +1580,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect(candidate.published).to be(true)
       end
 
-      it "validates availability with a bundler inline probe sourced only from gem.coop" do
+      it "validates availability with a non-activating Bundler probe sourced only from gem.coop" do
         local_cli = described_class.new
         candidate = Kettle::Dev::ReleaseCLI::ReleaseCandidate.new(
           gem_name: "mygem",
@@ -1591,11 +1591,14 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
         script = local_cli.send(:release_availability_probe_script, candidate)
 
-        expect(script).to include("require \"bundler/inline\"")
-        expect(script).to include("source \"https://gem.coop\"")
-        expect(script).to include("gem gem_name, \"= \#{version}\", require: false")
-        expect(script).to include("Bundler.load.specs.find")
-        expect(script).not_to include("Gem.loaded_specs.fetch")
+        expect(script).to include("require \"bundler\"")
+        expect(script).to include("builder.source(\"https://gem.coop\")")
+        expect(script).to include("builder.gem(gem_name, \"= \#{version}\", require: false)")
+        expect(script).to include("Bundler::Installer.install")
+        expect(script).to include("definition.specs.find")
+        expect(script).not_to include("bundler/inline")
+        expect(script).not_to include("Bundler.load")
+        expect(script).not_to include("Gem.loaded_specs")
       end
 
       it "retries the gem.coop availability probe until the release resolves" do

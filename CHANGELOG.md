@@ -28,6 +28,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-release` availability validation now uses Bundler's resolver and
+  installer without activating the just-published gem or re-entering the
+  caller's repository bundle.
+
 ### Security
 
 ## [2.4.4] - 2026-07-25
