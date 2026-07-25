@@ -28,17 +28,13 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Legacy-engine GitHub Actions workflows now configure Bundler to mirror
-  gem.coop to RubyGems.org during explicit CI installs, avoiding unsupported
-  gem.coop full-index requests from old Bundler/RubyGems combinations.
-
 ### Security
 
 ## [2.4.4] - 2026-07-25
 
 - TAG: [v2.4.4][2.4.4t]
-- COVERAGE: 92.22% -- 4088/4433 lines in 38 files
-- BRANCH COVERAGE: 76.19% -- 1590/2087 branches in 38 files
+- COVERAGE: 92.01% -- 4079/4433 lines in 38 files
+- BRANCH COVERAGE: 76.04% -- 1587/2087 branches in 38 files
 - 59.16% documented
 
 ### Fixed
@@ -49,6 +45,10 @@ Please file a bug if you notice a violation of semantic versioning.
 - `kettle-release` now records a candidate as published immediately after the
   push command succeeds, preventing post-publish validation failures from
   triggering unpublished-gem local cleanup.
+
+- Legacy-engine GitHub Actions workflows now configure Bundler to mirror
+  gem.coop to RubyGems.org during explicit CI installs, avoiding unsupported
+  gem.coop full-index requests from old Bundler/RubyGems combinations.
 
 ## [2.4.3] - 2026-07-25
 

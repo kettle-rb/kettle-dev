@@ -90,8 +90,8 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 <ul>
   <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v2.4.4">v2.4.4</a>
 </li>
-  <li>COVERAGE: 92.22% – 4088/4433 lines in 38 files</li>
-  <li>BRANCH COVERAGE: 76.19% – 1590/2087 branches in 38 files</li>
+  <li>COVERAGE: 92.01% – 4079/4433 lines in 38 files</li>
+  <li>BRANCH COVERAGE: 76.04% – 1587/2087 branches in 38 files</li>
   <li>59.16% documented</li>
 </ul>
 
@@ -103,9 +103,13 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 from gem.coop without requiring it, so framework-dependent gems are not<br>
 mistaken for unavailable releases after RubyGems accepts the push.</li>
   <li>
-<code>kettle-release</code> now records a candidate as published immediately after the<br>
+    <p><code>kettle-release</code> now records a candidate as published immediately after the<br>
 push command succeeds, preventing post-publish validation failures from<br>
-triggering unpublished-gem local cleanup.</li>
+triggering unpublished-gem local cleanup.</p>
+  </li>
+  <li>Legacy-engine GitHub Actions workflows now configure Bundler to mirror<br>
+gem.coop to RubyGems.org during explicit CI installs, avoiding unsupported<br>
+gem.coop full-index requests from old Bundler/RubyGems combinations.</li>
 </ul>
 
 <h2 id="243---2026-07-25">
