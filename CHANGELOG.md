@@ -28,6 +28,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Raised the `kettle-ndjson` runtime dependency floor to v0.1.1 so the
+  dependency remains installable on kettle-dev's Ruby 2.4+ support floor.
+
 ### Security
 
 ## [2.4.3] - 2026-07-25
