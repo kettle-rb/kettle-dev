@@ -82,6 +82,13 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 
 <h3 id="fixed">Fixed</h3>
 
+<ul>
+  <li>
+<code>kettle-release</code> now waits briefly and retries post-publish gem.coop<br>
+availability validation before failing, so normal registry mirror lag does<br>
+not abort immediately after a successful RubyGems push.</li>
+</ul>
+
 <h3 id="security">Security</h3>
 
 <h2 id="242---2026-07-24">

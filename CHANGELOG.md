@@ -28,9 +28,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- `kettle-release` now retries post-publish gem.coop availability validation
-  before failing, so normal registry mirror lag does not abort immediately after
-  a successful RubyGems push.
+- `kettle-release` now waits briefly and retries post-publish gem.coop
+  availability validation before failing, so normal registry mirror lag does
+  not abort immediately after a successful RubyGems push.
 
 ### Security
 

@@ -1526,9 +1526,11 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
           allow(local_cli).to receive(:write_release_availability_probe).with(candidate).and_return(script_path)
           allow(local_cli).to receive(:release_availability_probe_attempts).and_return(3)
+          allow(local_cli).to receive(:release_availability_probe_initial_delay).and_return(5)
           allow(local_cli).to receive(:release_availability_probe_interval).and_return(0)
-          expect(local_cli).to receive(:sleep).with(0).once
+          expect(local_cli).to receive(:sleep).with(5).ordered
           expect(Open3).to receive(:capture3).ordered.and_return(["", "missing", failed])
+          expect(local_cli).to receive(:sleep).with(0).ordered
           expect(Open3).to receive(:capture3).ordered.and_return(["validated\n", "", passed])
 
           expect { expect(local_cli.send(:run_release_availability_probe, candidate)).to be(true) }
@@ -1551,9 +1553,12 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
           allow(local_cli).to receive(:write_release_availability_probe).with(candidate).and_return(script_path)
           allow(local_cli).to receive(:release_availability_probe_attempts).and_return(2)
+          allow(local_cli).to receive(:release_availability_probe_initial_delay).and_return(5)
           allow(local_cli).to receive(:release_availability_probe_interval).and_return(0)
-          expect(local_cli).to receive(:sleep).with(0).once
-          expect(Open3).to receive(:capture3).twice.and_return(["", "still missing", failed])
+          expect(local_cli).to receive(:sleep).with(5).ordered
+          expect(Open3).to receive(:capture3).ordered.and_return(["", "still missing", failed])
+          expect(local_cli).to receive(:sleep).with(0).ordered
+          expect(Open3).to receive(:capture3).ordered.and_return(["", "still missing", failed])
 
           expect do
             local_cli.send(:run_release_availability_probe, candidate)

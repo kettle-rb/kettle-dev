@@ -1221,6 +1221,7 @@ module Kettle
         attempts = release_availability_probe_attempts
         last_stderr = nil
         last_status = nil
+        sleep(release_availability_probe_initial_delay)
         attempts.times do |index|
           attempt = index + 1
           puts("Validating #{candidate.gem_name} #{candidate.version} from #{RELEASE_VALIDATION_SOURCE} (attempt #{attempt}/#{attempts})")
@@ -1246,6 +1247,10 @@ module Kettle
 
       def release_availability_probe_attempts
         15
+      end
+
+      def release_availability_probe_initial_delay
+        5
       end
 
       def release_availability_probe_interval
