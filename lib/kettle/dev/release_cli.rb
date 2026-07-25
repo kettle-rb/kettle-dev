@@ -1522,6 +1522,19 @@ module Kettle
       end
 
       def ensure_trunk_synced_before_push!(trunk, feature)
+        if use_all_remote?
+          puts "Remote 'all' detected. Fetching aggregate remote and enforcing trunk parity against all/#{trunk}..."
+          run_cmd!("git fetch all")
+          if remote_branch_exists?("all", trunk)
+            _ahead, behind = ahead_behind_counts(trunk, "all/#{trunk}")
+            if behind.positive?
+              abort("Local #{trunk} is missing commits present on: all/#{trunk}. Please sync trunk first.")
+            end
+          end
+          puts "Local #{trunk} has all commits from all/#{trunk}"
+          return
+        end
+
         if has_remote?("all")
           remotes = active_remotes
           skipped = list_remotes.select { |remote| skipped_remote?(remote) }

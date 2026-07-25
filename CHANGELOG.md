@@ -28,6 +28,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-release` now honors the `kettle-dvcs` aggregate `all` remote contract
+  during pre-push trunk parity checks by fetching `all` instead of hard-blocking
+  on each auxiliary forge remote.
 - `kettle-release` now waits briefly and retries post-publish gem.coop
   availability validation before failing, so normal registry mirror lag does
   not abort immediately after a successful RubyGems push.

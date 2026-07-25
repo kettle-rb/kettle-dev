@@ -516,24 +516,20 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     end
 
     describe "#ensure_trunk_synced_before_push!" do
-      it "enforces strict parity when remote 'all' is present and aborts if missing commits" do
+      it "checks aggregate remote parity when remote 'all' is present and aborts if missing commits" do
         allow(cli).to receive(:has_remote?).with("all").and_return(true)
-        allow(cli).to receive(:list_remotes).and_return(%w[all origin github])
-        expect(cli).to receive(:run_cmd!).with("git fetch origin")
-        expect(cli).to receive(:run_cmd!).with("git fetch github")
-        allow(cli).to receive(:remote_branch_exists?).with("origin", "main").and_return(true)
-        allow(cli).to receive(:ahead_behind_counts).with("main", "origin/main").and_return([0, 1])
-        allow(cli).to receive(:remote_branch_exists?).with("github", "main").and_return(true)
-        allow(cli).to receive(:ahead_behind_counts).with("main", "github/main").and_return([0, 0])
-        expect { cli.send(:ensure_trunk_synced_before_push!, "main", "feat") }.to raise_error(MockSystemExit, /missing commits present on: origin/)
+        expect(cli).to receive(:run_cmd!).with("git fetch all")
+        allow(cli).to receive(:remote_branch_exists?).with("all", "main").and_return(true)
+        allow(cli).to receive(:ahead_behind_counts).with("main", "all/main").and_return([0, 1])
+        expect { cli.send(:ensure_trunk_synced_before_push!, "main", "feat") }.to raise_error(MockSystemExit, /missing commits present on: all\/main/)
       end
 
-      it "reports parity when all remotes are synced" do
+      it "reports parity when aggregate remote is synced" do
         allow(cli).to receive(:has_remote?).with("all").and_return(true)
-        allow(cli).to receive(:list_remotes).and_return(%w[all origin])
-        expect(cli).to receive(:run_cmd!).with("git fetch origin")
-        allow(cli).to receive(:remote_branch_exists?).with("origin", "main").and_return(true)
-        allow(cli).to receive(:ahead_behind_counts).with("main", "origin/main").and_return([0, 0])
+        expect(cli).to receive(:run_cmd!).with("git fetch all")
+        allow(cli).to receive(:remote_branch_exists?).with("all", "main").and_return(true)
+        allow(cli).to receive(:ahead_behind_counts).with("main", "all/main").and_return([0, 0])
+        expect(cli).not_to receive(:run_cmd!).with("git fetch origin")
         expect { cli.send(:ensure_trunk_synced_before_push!, "main", "feat") }.not_to raise_error
       end
 
