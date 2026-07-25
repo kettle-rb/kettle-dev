@@ -20,6 +20,25 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [2.4.3] - 2026-07-25
+
+- TAG: [v2.4.3][2.4.3t]
+- COVERAGE: 92.26% -- 4086/4429 lines in 38 files
+- BRANCH COVERAGE: 76.14% -- 1589/2087 branches in 38 files
+- 59.16% documented
+
+### Added
+
 - `kettle-release` now supports `--events[=TYPES]`, `--json`, and
   `--report PATH` machine-readable release reporting backed by the shared
   `kettle-ndjson` event toolkit.
@@ -31,10 +50,6 @@ Please file a bug if you notice a violation of semantic versioning.
   so release CI monitoring does not report intentionally skipped engine
   workflows as failures.
 
-### Deprecated
-
-### Removed
-
 ### Fixed
 
 - `kettle-release` now retries transient git remote fetch failures during
@@ -43,8 +58,6 @@ Please file a bug if you notice a violation of semantic versioning.
 - `kettle-release` now waits briefly and retries post-publish gem.coop
   availability validation before failing, so normal registry mirror lag does
   not abort immediately after a successful RubyGems push.
-
-### Security
 
 ## [2.4.2] - 2026-07-24
 
@@ -2690,7 +2703,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.4.2...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.4.3...HEAD
+[2.4.3]: https://github.com/kettle-dev/kettle-dev/compare/v2.4.2...v2.4.3
+[2.4.3t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.4.3
 [2.4.2]: https://github.com/kettle-dev/kettle-dev/compare/v2.4.1...v2.4.2
 [2.4.2t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.4.2
 [2.4.1]: https://github.com/kettle-dev/kettle-dev/compare/v2.4.0...v2.4.1
