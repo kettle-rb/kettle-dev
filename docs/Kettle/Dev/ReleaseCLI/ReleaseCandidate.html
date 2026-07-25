@@ -71,12 +71,10 @@
   <dl>
     <dt>Inherits:</dt>
     <dd>
-      <span class="inheritName">Struct</span>
+      <span class="inheritName">Object</span>
       
         <ul class="fullTree">
           <li>Object</li>
-          
-            <li class="next">Struct</li>
           
             <li class="next">Kettle::Dev::ReleaseCLI::ReleaseCandidate</li>
           
@@ -220,8 +218,94 @@
 
 
 
+  
+    <h2>
+      Instance Method Summary
+      <small><a href="#" class="summary_toggle">collapse</a></small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#initialize-instance_method" title="#initialize (instance method)">#<strong>initialize</strong>(gem_name:, version:, installed_before:, published:)  &#x21d2; ReleaseCandidate </a>
+    
+
+    
+  </span>
+  
+  
+    <span class="note title constructor">constructor</span>
+  
+  
+  
+  
+  
+  
 
   
+    <span class="summary_desc"><div class='inline'><p>A new instance of ReleaseCandidate.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+    
+  
+
+<div id="constructor_details" class="method_details_list">
+  <h2>Constructor Details</h2>
+  
+    <div class="method_details first">
+  <h3 class="signature first" id="initialize-instance_method">
+  
+    #<strong>initialize</strong>(gem_name:, version:, installed_before:, published:)  &#x21d2; <tt><span class='object_link'><a href="" title="Kettle::Dev::ReleaseCLI::ReleaseCandidate (class)">ReleaseCandidate</a></span></tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Returns a new instance of ReleaseCandidate.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+1838
+1839
+1840
+1841
+1842
+1843</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 1838</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='label'>gem_name:</span><span class='comma'>,</span> <span class='label'>version:</span><span class='comma'>,</span> <span class='label'>installed_before:</span><span class='comma'>,</span> <span class='label'>published:</span><span class='rparen'>)</span>
+  <span class='ivar'>@gem_name</span> <span class='op'>=</span> <span class='id identifier rubyid_gem_name'>gem_name</span>
+  <span class='ivar'>@version</span> <span class='op'>=</span> <span class='id identifier rubyid_version'>version</span>
+  <span class='ivar'>@installed_before</span> <span class='op'>=</span> <span class='id identifier rubyid_installed_before'>installed_before</span>
+  <span class='ivar'>@published</span> <span class='op'>=</span> <span class='id identifier rubyid_published'>published</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+  
+</div>
+
   <div id="instance_attr_details" class="attr_details">
     <h2>Instance Attribute Details</h2>
     
@@ -238,30 +322,13 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Returns the value of attribute gem_name</p>
+    <p>Returns the value of attribute gem_name.</p>
 
 
   </div>
 </div>
 <div class="tags">
   
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Object</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>the current value of gem_name</p>
-</div>
-      
-    </li>
-  
-</ul>
 
 </div><table class="source_code">
   <tr>
@@ -269,12 +336,12 @@
       <pre class="lines">
 
 
-44
-45
-46</pre>
+1836
+1837
+1838</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 44</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 1836</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_gem_name'>gem_name</span>
   <span class='ivar'>@gem_name</span>
@@ -297,30 +364,13 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Returns the value of attribute installed_before</p>
+    <p>Returns the value of attribute installed_before.</p>
 
 
   </div>
 </div>
 <div class="tags">
   
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Object</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>the current value of installed_before</p>
-</div>
-      
-    </li>
-  
-</ul>
 
 </div><table class="source_code">
   <tr>
@@ -328,12 +378,12 @@
       <pre class="lines">
 
 
-44
-45
-46</pre>
+1836
+1837
+1838</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 44</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 1836</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_installed_before'>installed_before</span>
   <span class='ivar'>@installed_before</span>
@@ -356,30 +406,13 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Returns the value of attribute published</p>
+    <p>Returns the value of attribute published.</p>
 
 
   </div>
 </div>
 <div class="tags">
   
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Object</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>the current value of published</p>
-</div>
-      
-    </li>
-  
-</ul>
 
 </div><table class="source_code">
   <tr>
@@ -387,12 +420,12 @@
       <pre class="lines">
 
 
-44
-45
-46</pre>
+1836
+1837
+1838</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 44</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 1836</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_published'>published</span>
   <span class='ivar'>@published</span>
@@ -415,30 +448,13 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Returns the value of attribute version</p>
+    <p>Returns the value of attribute version.</p>
 
 
   </div>
 </div>
 <div class="tags">
   
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Object</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>the current value of version</p>
-</div>
-      
-    </li>
-  
-</ul>
 
 </div><table class="source_code">
   <tr>
@@ -446,12 +462,12 @@
       <pre class="lines">
 
 
-44
-45
-46</pre>
+1836
+1837
+1838</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 44</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 1836</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_version'>version</span>
   <span class='ivar'>@version</span>

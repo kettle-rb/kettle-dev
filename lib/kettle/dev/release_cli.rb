@@ -41,7 +41,7 @@ module Kettle
       }.freeze
       DEBUG_TRUE_VALUES = %w[1 true yes on].freeze
       RELEASE_VALIDATION_SOURCE = "https://gem.coop"
-      ReleaseCandidate = Struct.new(:gem_name, :version, :installed_before, :published, keyword_init: true)
+
       class << self
         def run_cmd!(cmd)
           # For Bundler-invoked build/release, explicitly prefix SKIP_GEM_SIGNING so
@@ -1829,5 +1829,16 @@ module Kettle
         [false, "#{e.class}: #{e.message}"]
       end
     end
+  end
+end
+
+class Kettle::Dev::ReleaseCLI::ReleaseCandidate
+  attr_accessor :gem_name, :version, :installed_before, :published
+
+  def initialize(gem_name:, version:, installed_before:, published:)
+    @gem_name = gem_name
+    @version = version
+    @installed_before = installed_before
+    @published = published
   end
 end
