@@ -1510,6 +1510,57 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect(script).to include("gem gem_name, \"= \#{version}\"")
       end
 
+      it "retries the gem.coop availability probe until the release resolves" do
+        Dir.mktmpdir do |root|
+          local_cli = described_class.new
+          candidate = Kettle::Dev::ReleaseCLI::ReleaseCandidate.new(
+            gem_name: "mygem",
+            version: "1.2.3",
+            installed_before: false,
+            published: false
+          )
+          script_path = File.join(root, "probe.rb")
+          File.write(script_path, "probe")
+          failed = instance_double(Process::Status, success?: false, exitstatus: 1)
+          passed = instance_double(Process::Status, success?: true, exitstatus: 0)
+
+          allow(local_cli).to receive(:write_release_availability_probe).with(candidate).and_return(script_path)
+          allow(local_cli).to receive(:release_availability_probe_attempts).and_return(3)
+          allow(local_cli).to receive(:release_availability_probe_interval).and_return(0)
+          expect(local_cli).to receive(:sleep).with(0).once
+          expect(Open3).to receive(:capture3).ordered.and_return(["", "missing", failed])
+          expect(Open3).to receive(:capture3).ordered.and_return(["validated\n", "", passed])
+
+          expect { expect(local_cli.send(:run_release_availability_probe, candidate)).to be(true) }
+            .to output(/attempt 1\/3.*attempt 2\/3.*validated/m).to_stdout
+        end
+      end
+
+      it "fails the gem.coop availability probe only after retry exhaustion" do
+        Dir.mktmpdir do |root|
+          local_cli = described_class.new
+          candidate = Kettle::Dev::ReleaseCLI::ReleaseCandidate.new(
+            gem_name: "mygem",
+            version: "1.2.3",
+            installed_before: false,
+            published: false
+          )
+          script_path = File.join(root, "probe.rb")
+          File.write(script_path, "probe")
+          failed = instance_double(Process::Status, success?: false, exitstatus: 1)
+
+          allow(local_cli).to receive(:write_release_availability_probe).with(candidate).and_return(script_path)
+          allow(local_cli).to receive(:release_availability_probe_attempts).and_return(2)
+          allow(local_cli).to receive(:release_availability_probe_interval).and_return(0)
+          expect(local_cli).to receive(:sleep).with(0).once
+          expect(Open3).to receive(:capture3).twice.and_return(["", "still missing", failed])
+
+          expect do
+            local_cli.send(:run_release_availability_probe, candidate)
+          end.to raise_error(MockSystemExit, /after 2 attempt\(s\).*still missing/m)
+        end
+      end
+
       it "uninstalls a newly installed local candidate when registry availability cannot be validated" do
         local_cli = described_class.new
         candidate = Kettle::Dev::ReleaseCLI::ReleaseCandidate.new(

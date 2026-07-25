@@ -1218,19 +1218,38 @@ module Kettle
 
       def run_release_availability_probe(candidate)
         script_path = write_release_availability_probe(candidate)
-        stdout_str = nil
-        stderr_str = nil
-        status = nil
-        with_unbundled_release_probe_env do
-          stdout_str, stderr_str, status = Open3.capture3(self.class.send(:command_env), Gem.ruby, script_path)
-        end
-        $stdout.print(stdout_str) unless stdout_str.to_s.empty?
-        return true if status.success?
+        attempts = release_availability_probe_attempts
+        last_stderr = nil
+        last_status = nil
+        attempts.times do |index|
+          attempt = index + 1
+          puts("Validating #{candidate.gem_name} #{candidate.version} from #{RELEASE_VALIDATION_SOURCE} (attempt #{attempt}/#{attempts})")
+          stdout_str = nil
+          stderr_str = nil
+          status = nil
+          with_unbundled_release_probe_env do
+            stdout_str, stderr_str, status = Open3.capture3(self.class.send(:command_env), Gem.ruby, script_path)
+          end
+          $stdout.print(stdout_str) unless stdout_str.to_s.empty?
+          return true if status.success?
 
-        diag = stderr_str.to_s.empty? ? "" : "\n--- STDERR ---\n#{stderr_str}".rstrip
-        abort("Published gem availability probe failed for #{candidate.gem_name} #{candidate.version} (exit #{status.exitstatus})#{diag}")
+          last_stderr = stderr_str
+          last_status = status
+          sleep(release_availability_probe_interval) if attempt < attempts
+        end
+
+        diag = last_stderr.to_s.empty? ? "" : "\n--- STDERR ---\n#{last_stderr}".rstrip
+        abort("Published gem availability probe failed for #{candidate.gem_name} #{candidate.version} after #{attempts} attempt(s) (exit #{last_status.exitstatus})#{diag}")
       ensure
         FileUtils.rm_f(script_path) if script_path
+      end
+
+      def release_availability_probe_attempts
+        15
+      end
+
+      def release_availability_probe_interval
+        10
       end
 
       def with_unbundled_release_probe_env(&block)
