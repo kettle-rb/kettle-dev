@@ -28,12 +28,21 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [2.4.2] - 2026-07-24
+
+- TAG: [v2.4.2][2.4.2t]
+- COVERAGE: 91.96% -- 3968/4315 lines in 38 files
+- BRANCH COVERAGE: 75.91% -- 1560/2055 branches in 38 files
+- 58.85% documented
+
+### Fixed
+
 - `kettle-release` now validates published gem availability with an isolated
   Bundler probe against gem.coop before continuing past the publish step, and
   uninstalls newly introduced local candidate gems when the release did not
   happen or cannot be validated.
-
-### Security
 
 ## [2.4.1] - 2026-07-24
 
@@ -2665,7 +2674,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.4.1...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.4.2...HEAD
+[2.4.2]: https://github.com/kettle-dev/kettle-dev/compare/v2.4.1...v2.4.2
+[2.4.2t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.4.2
 [2.4.1]: https://github.com/kettle-dev/kettle-dev/compare/v2.4.0...v2.4.1
 [2.4.1t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.4.1
 [2.4.0]: https://github.com/kettle-dev/kettle-dev/compare/v2.3.11...v2.4.0
