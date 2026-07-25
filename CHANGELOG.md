@@ -28,14 +28,23 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [2.4.4] - 2026-07-25
+
+- TAG: [v2.4.4][2.4.4t]
+- COVERAGE: 92.22% -- 4088/4433 lines in 38 files
+- BRANCH COVERAGE: 76.19% -- 1590/2087 branches in 38 files
+- 59.16% documented
+
+### Fixed
+
 - `kettle-release` availability validation now resolves the exact published gem
   from gem.coop without requiring it, so framework-dependent gems are not
   mistaken for unavailable releases after RubyGems accepts the push.
 - `kettle-release` now records a candidate as published immediately after the
   push command succeeds, preventing post-publish validation failures from
   triggering unpublished-gem local cleanup.
-
-### Security
 
 ## [2.4.3] - 2026-07-25
 
@@ -2713,7 +2722,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.4.3...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.4.4...HEAD
+[2.4.4]: https://github.com/kettle-dev/kettle-dev/compare/v2.4.3...v2.4.4
+[2.4.4t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.4.4
 [2.4.3]: https://github.com/kettle-dev/kettle-dev/compare/v2.4.2...v2.4.3
 [2.4.3t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.4.3
 [2.4.2]: https://github.com/kettle-dev/kettle-dev/compare/v2.4.1...v2.4.2
