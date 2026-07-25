@@ -82,6 +82,14 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 
 <h3 id="fixed">Fixed</h3>
 
+<ul>
+  <li>
+<code>kettle-release</code> now validates published gem availability with an isolated<br>
+Bundler probe against gem.coop before continuing past the publish step, and<br>
+uninstalls newly introduced local candidate gems when the release did not<br>
+happen or cannot be validated.</li>
+</ul>
+
 <h3 id="security">Security</h3>
 
 <h2 id="241---2026-07-24">

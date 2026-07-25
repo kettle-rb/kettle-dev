@@ -28,6 +28,11 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-release` now validates published gem availability with an isolated
+  Bundler probe against gem.coop before continuing past the publish step, and
+  uninstalls newly introduced local candidate gems when the release did not
+  happen or cannot be validated.
+
 ### Security
 
 ## [2.4.1] - 2026-07-24

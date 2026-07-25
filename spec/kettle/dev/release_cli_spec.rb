@@ -1030,6 +1030,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         allow(cli).to receive(:pull!)
         allow(cli).to receive(:ensure_signing_setup_or_skip!)
         allow(cli).to receive(:push_tags!)
+        allow(cli).to receive(:confirm_release_candidate_available!)
         expect(cli).to receive(:validate_checksums!).with("9.9.9", stage: "after release")
 
         # Appraisals exists at repo root; ensure truthy branch executes
@@ -1112,6 +1113,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         allow(update_cli).to receive(:ensure_signing_setup_or_skip!)
         allow(update_cli).to receive(:push_tags!)
         allow(update_cli).to receive(:validate_checksums!)
+        allow(update_cli).to receive(:confirm_release_candidate_available!)
 
         expect { update_cli.run }.not_to raise_error
 
@@ -1148,6 +1150,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         allow(cli).to receive(:ensure_signing_setup_or_skip!)
         allow(cli).to receive(:push_tags!)
         allow(cli).to receive(:validate_checksums!)
+        allow(cli).to receive(:confirm_release_candidate_available!)
 
         # Force File.file?(Appraisals) false just for that path
         appraisals_path = File.join(Kettle::Dev::CIHelpers.project_root, "Appraisals")
@@ -1267,6 +1270,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         stub_env("SKIP_GEM_SIGNING" => "true")
         allow(cli).to receive(:ensure_signing_setup_or_skip!)
         allow(cli).to receive(:validate_checksums!)
+        allow(cli).to receive(:confirm_release_candidate_available!)
         expect { cli.run }.not_to raise_error
       end
 
@@ -1321,6 +1325,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         allow(cli).to receive(:validate_checksums!)
         allow(cli).to receive(:maybe_create_github_release!)
         allow(cli).to receive(:push_tags!)
+        allow(cli).to receive(:confirm_release_candidate_available!)
         # Make final detection trivial
         allow(cli).to receive(:detect_gem_name).and_return("kettle-dev")
 
@@ -1444,6 +1449,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
           allow(local_cli).to receive(:git_output).with(["rev-parse", "-q", "--verify", "refs/tags/v1.2.3"]).and_return(["", false])
           expect(local_cli).to receive(:run_cmd!).with("git tag -a v1.2.3 -m v1.2.3").ordered
           expect(local_cli).to receive(:run_cmd!).with("gem push #{gem_path}").ordered
+          expect(local_cli).to receive(:run_release_availability_probe).ordered.and_return(true)
           expect(Kettle::Dev::GemCoopVersions).to receive(:mark_released).with("mygem", "1.2.3")
 
           local_cli.send(:release_gem_and_tag_locally!, "1.2.3")
@@ -1462,6 +1468,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
           allow(local_cli).to receive(:git_output).with(["rev-parse", "-q", "--verify", "refs/tags/v1.2.3"]).and_return(["abc", true])
           expect(local_cli).not_to receive(:run_cmd!).with(/git tag/)
           expect(local_cli).to receive(:run_cmd!).with("gem push #{gem_path}")
+          expect(local_cli).to receive(:run_release_availability_probe).and_return(true)
 
           local_cli.send(:release_gem_and_tag_locally!, "1.2.3")
         end
@@ -1471,6 +1478,71 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         local_cli = described_class.new
 
         expect(local_cli.send(:gem_name_from_gem_path, "pkg/my-gem-1.2.3.gem", "1.2.3")).to eq("my-gem")
+      end
+
+      it "does not clean up a candidate once registry availability has been validated" do
+        local_cli = described_class.new
+        candidate = Kettle::Dev::ReleaseCLI::ReleaseCandidate.new(
+          gem_name: "mygem",
+          version: "1.2.3",
+          installed_before: false,
+          published: false
+        )
+
+        expect(local_cli).to receive(:run_release_availability_probe).with(candidate).and_return(true)
+        expect(local_cli.send(:confirm_release_candidate_available!, candidate)).to be(true)
+        expect(candidate.published).to be(true)
+      end
+
+      it "validates availability with a bundler inline probe sourced only from gem.coop" do
+        local_cli = described_class.new
+        candidate = Kettle::Dev::ReleaseCLI::ReleaseCandidate.new(
+          gem_name: "mygem",
+          version: "1.2.3",
+          installed_before: false,
+          published: false
+        )
+
+        script = local_cli.send(:release_availability_probe_script, candidate)
+
+        expect(script).to include("require \"bundler/inline\"")
+        expect(script).to include("source \"https://gem.coop\"")
+        expect(script).to include("gem gem_name, \"= \#{version}\"")
+      end
+
+      it "uninstalls a newly installed local candidate when registry availability cannot be validated" do
+        local_cli = described_class.new
+        candidate = Kettle::Dev::ReleaseCLI::ReleaseCandidate.new(
+          gem_name: "mygem",
+          version: "1.2.3",
+          installed_before: false,
+          published: false
+        )
+        local_cli.instance_variable_set(:@release_candidate, candidate)
+
+        allow(local_cli).to receive(:gem_version_installed?).with("mygem", "1.2.3").and_return(true)
+        expect(local_cli).to receive(:run_cmd!).with("gem uninstall mygem -v 1.2.3 -x -I --ignore-dependencies")
+
+        expect do
+          local_cli.send(:with_unpublished_candidate_cleanup) { raise(MockSystemExit, "publish failed") }
+        end.to raise_error(MockSystemExit, /publish failed/)
+      end
+
+      it "does not uninstall a candidate that was already installed before the release attempt" do
+        local_cli = described_class.new
+        candidate = Kettle::Dev::ReleaseCLI::ReleaseCandidate.new(
+          gem_name: "mygem",
+          version: "1.2.3",
+          installed_before: true,
+          published: false
+        )
+        local_cli.instance_variable_set(:@release_candidate, candidate)
+
+        expect(local_cli).not_to receive(:run_cmd!).with(/gem uninstall/)
+
+        expect do
+          local_cli.send(:with_unpublished_candidate_cleanup) { raise(MockSystemExit, "publish failed") }
+        end.to raise_error(MockSystemExit, /publish failed/)
       end
     end
 
@@ -1668,6 +1740,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         allow(local_cli).to receive(:push_tags!)
         allow(local_cli).to receive(:detect_trunk_branch).and_return("main")
         allow(local_cli).to receive(:current_branch).and_return("feat")
+        allow(local_cli).to receive(:confirm_release_candidate_available!)
 
         expect { local_cli.run }.not_to raise_error
 
@@ -1694,6 +1767,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         allow(local_cli).to receive(:run_cmd!)
         allow(local_cli).to receive(:validate_checksums!)
         allow(local_cli).to receive(:push_tags!)
+        allow(local_cli).to receive(:confirm_release_candidate_available!)
 
         expect { local_cli.run }.not_to raise_error
 
@@ -1886,6 +1960,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
           allow(cli).to receive(:push_tags!)
           allow(cli).to receive(:detect_trunk_branch).and_return("main")
           allow(cli).to receive(:current_branch).and_return("feat")
+          allow(cli).to receive(:confirm_release_candidate_available!)
 
           # Execute run starting at step 2 to cover header update path
           expect { cli.run }.not_to raise_error

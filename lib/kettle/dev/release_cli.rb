@@ -40,6 +40,8 @@ module Kettle
         "BUNDLE_SUPPRESS_INSTALL_USING_MESSAGES" => "true"
       }.freeze
       DEBUG_TRUE_VALUES = %w[1 true yes on].freeze
+      RELEASE_VALIDATION_SOURCE = "https://gem.coop"
+      ReleaseCandidate = Struct.new(:gem_name, :version, :installed_before, :published, keyword_init: true)
       class << self
         def run_cmd!(cmd)
           # For Bundler-invoked build/release, explicitly prefix SKIP_GEM_SIGNING so
@@ -121,6 +123,7 @@ module Kettle
         @skip_bundle_audit = truthy_value?(skip_bundle_audit) || truthy_value?(ENV["KETTLE_DEV_SKIP_BUNDLE_AUDIT"])
         @version_override = Kettle::Dev::Versioning.normalize_explicit_version(version)
         @appraisal_task = normalize_appraisal_task(appraisal_task || ENV["KETTLE_RELEASE_APPRAISAL_TASK"])
+        @release_candidate = nil
       end
 
       def run
@@ -346,13 +349,18 @@ module Kettle
 
         # 15. release and tag
         if run_step?(15)
+          version ||= detect_version
+          gem_name = detect_gem_name
+          @release_candidate = build_release_candidate(gem_name, version)
           if local_ci?
-            version ||= detect_version
-            release_gem_and_tag_locally!(version)
+            with_unpublished_candidate_cleanup { release_gem_and_tag_locally!(version) }
           else
             puts "Running release (you may be prompted for signing key password and RubyGems MFA OTP)..."
-            run_cmd!("bundle exec rake release")
-            mark_gem_coop_release_cache_bust(version || detect_version)
+            with_unpublished_candidate_cleanup do
+              run_cmd!("bundle exec rake release")
+              confirm_release_candidate_available!(@release_candidate)
+            end
+            mark_gem_coop_release_cache_bust(version)
           end
         end
 
@@ -1144,7 +1152,121 @@ module Kettle
 
         puts "Publishing #{File.basename(gem_path)} to RubyGems without pushing git refs..."
         run_cmd!("gem push #{Shellwords.escape(gem_path)}")
+        confirm_release_candidate_available!(@release_candidate || build_release_candidate(gem_name_from_gem_path(gem_path, version), version))
         mark_gem_coop_release_cache_bust(version, gem_name: gem_name_from_gem_path(gem_path, version))
+      end
+
+      def build_release_candidate(gem_name, version)
+        ReleaseCandidate.new(
+          gem_name: gem_name.to_s,
+          version: version.to_s,
+          installed_before: gem_version_installed?(gem_name, version),
+          published: false
+        )
+      end
+
+      def with_unpublished_candidate_cleanup
+        yield
+      rescue SystemExit, StandardError
+        cleanup_unpublished_release_candidate(@release_candidate)
+        raise
+      end
+
+      def cleanup_unpublished_release_candidate(candidate)
+        return unless candidate
+        return if candidate.published
+        return if candidate.installed_before
+        return unless gem_version_installed?(candidate.gem_name, candidate.version)
+
+        warn(
+          "Release of #{candidate.gem_name} #{candidate.version} was not validated; " \
+          "uninstalling the local candidate gem so future bundle updates cannot resolve an unreleased version."
+        )
+        uninstall_release_candidate(candidate)
+      end
+
+      def uninstall_release_candidate(candidate)
+        run_cmd!(
+          "gem uninstall #{Shellwords.escape(candidate.gem_name)} " \
+          "-v #{Shellwords.escape(candidate.version)} -x -I --ignore-dependencies"
+        )
+      rescue SystemExit, StandardError => error
+        warn("Could not uninstall local candidate #{candidate.gem_name} #{candidate.version}: #{error.message}")
+        warn("Manual cleanup: gem uninstall #{candidate.gem_name} -v #{candidate.version} -x -I --ignore-dependencies")
+      end
+
+      def gem_version_installed?(gem_name, version)
+        Gem::Specification.reset
+        Gem::Specification.find_all_by_name(gem_name.to_s, "= #{version}").any?
+      rescue Gem::LoadError
+        false
+      end
+
+      def confirm_release_candidate_available!(candidate)
+        run_release_availability_probe(candidate)
+        candidate.published = true
+        true
+      rescue SystemExit
+        raise
+      rescue => error
+        abort(<<~MSG)
+          Published gem availability could not be validated for #{candidate.gem_name} #{candidate.version}: #{error.class}: #{error.message}
+          kettle-release will clean up any local candidate install that was introduced by this failed release attempt.
+          If the push actually succeeded, resolve the registry/checksum state manually before resuming.
+        MSG
+      end
+
+      def run_release_availability_probe(candidate)
+        script_path = write_release_availability_probe(candidate)
+        stdout_str = nil
+        stderr_str = nil
+        status = nil
+        with_unbundled_release_probe_env do
+          stdout_str, stderr_str, status = Open3.capture3(self.class.send(:command_env), Gem.ruby, script_path)
+        end
+        $stdout.print(stdout_str) unless stdout_str.to_s.empty?
+        return true if status.success?
+
+        diag = stderr_str.to_s.empty? ? "" : "\n--- STDERR ---\n#{stderr_str}".rstrip
+        abort("Published gem availability probe failed for #{candidate.gem_name} #{candidate.version} (exit #{status.exitstatus})#{diag}")
+      ensure
+        FileUtils.rm_f(script_path) if script_path
+      end
+
+      def with_unbundled_release_probe_env(&block)
+        if defined?(Bundler)
+          Bundler.with_unbundled_env(&block)
+        else
+          yield
+        end
+      end
+
+      def write_release_availability_probe(candidate)
+        dir = File.join(@root, "tmp", "kettle-release")
+        FileUtils.mkdir_p(dir)
+        path = File.join(dir, "validate-#{candidate.gem_name}-#{candidate.version}-#{$$}.rb")
+        File.write(path, release_availability_probe_script(candidate))
+        path
+      end
+
+      def release_availability_probe_script(candidate)
+        <<~RUBY
+          # frozen_string_literal: true
+
+          gem_name = #{candidate.gem_name.dump}
+          version = #{candidate.version.dump}
+
+          require "bundler/inline"
+
+          gemfile(true) do
+            source #{RELEASE_VALIDATION_SOURCE.dump}
+            gem gem_name, "= \#{version}"
+          end
+
+          spec = Gem.loaded_specs.fetch(gem_name)
+          abort("loaded \#{gem_name} \#{spec.version}, expected \#{version}") unless spec.version.to_s == version
+          puts "Validated \#{gem_name} \#{version} from #{RELEASE_VALIDATION_SOURCE}"
+        RUBY
       end
 
       def detect_version
