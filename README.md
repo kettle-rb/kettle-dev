@@ -461,9 +461,8 @@ What it does:
       updating path-sourced and checksum-gap gems back to released registry
       versions.
     - During `kettle-release`, release lockfiles are reset before the release
-      prep commit. If a lockfile becomes invalid again before the first push,
-      `kettle-release` resets it, amends the release prep commit, and continues
-      unless validation still fails.
+      prep commit. Before pushing, `kettle-release` validates those committed
+      lockfiles again and aborts if local paths or checksum gaps reappear.
 - Tips:
     - The commit message helper `exe/kettle-commit-msg` prefers project-local `.git-hooks` (then falls back to `~/.git-hooks`).
     - The goalie file `commit-subjects-goalie.txt` controls when a footer is appended; customize `footer-template.erb.txt` as you like.

@@ -3,7 +3,6 @@
 require "set"
 require "shellwords"
 require "fileutils"
-require "cgi"
 require "json"
 require "net/http"
 require "uri"
@@ -414,7 +413,7 @@ module Kettle
       def ruby_gems_versions(name)
         @ruby_gems_versions ||= {}
         @ruby_gems_versions.fetch(name) do
-          uri = URI("https://rubygems.org/api/v1/versions/#{CGI.escape(name)}.json")
+          uri = URI("https://rubygems.org/api/v1/versions/#{URI.encode_www_form_component(name)}.json")
           response = Net::HTTP.get_response(uri)
           unless response.is_a?(Net::HTTPSuccess)
             raise Error, "Could not verify released versions for #{name} from RubyGems.org (HTTP #{response.code})"

@@ -28,6 +28,13 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-release` no longer loads the extracted `cgi` gem while booting, so
+  Ruby 2.4 appraisals can run release executable smoke tests without hitting
+  newer `cgi` code that requires `String#delete_prefix`.
+- `kettle-release` now treats pre-push lockfile validation as a guard only.
+  Release lockfile repair happens before the release prep commit, avoiding a
+  distracting reset after the commit point with no committed result.
+
 ### Security
 
 ## [2.5.0] - 2026-07-26

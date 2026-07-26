@@ -587,10 +587,6 @@ module Kettle
       def validate_release_lockfiles!(stage:)
         diagnostics = release_lockfile_paths.flat_map { |path| release_lockfile_diagnostics(path) }
         return if diagnostics.empty?
-        if stage == "before push" && reset_release_lockfiles_for_push
-          diagnostics = release_lockfile_paths.flat_map { |path| release_lockfile_diagnostics(path) }
-          return if diagnostics.empty?
-        end
 
         abort(<<~MSG)
           Release lockfile validation failed #{stage}:
@@ -649,30 +645,6 @@ module Kettle
 
       def release_lockfile_label(path)
         Kettle::Dev.display_path(path)
-      end
-
-      def reset_release_lockfiles_for_push
-        dirty_lockfiles = release_lockfile_paths.select { |path| release_lockfile_normalization_needed?(path) }
-        return false if dirty_lockfiles.empty?
-
-        puts "Resetting release lockfiles with local path dependencies disabled before push..."
-        lockfile_reset.reset(Kettle::Dev::LockfileReset::RELEASE_LOCKFILES_TARGET)
-        return false unless release_lockfile_paths.flat_map { |path| release_lockfile_diagnostics(path) }.empty?
-
-        amend_release_lockfile_reset_commit
-        true
-      end
-
-      def amend_release_lockfile_reset_commit
-        paths = release_lockfile_paths.select { |path| git_path_changed?(path) }
-        return if paths.empty?
-
-        abort("Failed to stage reset release lockfiles.") unless @git.add_paths(paths)
-        abort("Failed to amend release prep commit with reset lockfiles.") unless @git.commit_amend_no_edit
-      end
-
-      def git_path_changed?(path)
-        !@git.diff_quiet?(path)
       end
 
       def lockfile_reset
