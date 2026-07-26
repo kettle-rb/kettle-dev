@@ -3,6 +3,10 @@
 require "set"
 require "shellwords"
 require "fileutils"
+require "cgi"
+require "json"
+require "net/http"
+require "uri"
 
 module Kettle
   module Dev
@@ -32,8 +36,15 @@ module Kettle
 
       def reset(target)
         paths = lockfile_paths_for(target)
+        force_full_update = release_lockfiles_target?(target)
+        uninstall_unreleased_local_gems(paths) if force_full_update
         paths.each do |path|
-          reset_lockfile!(path) if normalization_needed?(path)
+          reset_lockfile!(path, full_update: force_full_update) if force_full_update || normalization_needed?(path)
+        end
+        if force_full_update && uninstall_unreleased_local_gems(paths)
+          paths.each do |path|
+            reset_lockfile!(path, full_update: true)
+          end
         end
         diagnostics = paths.flat_map { |path| diagnostics(path) }
         raise Error, validation_message(target, diagnostics) unless diagnostics.empty?
@@ -41,23 +52,23 @@ module Kettle
         paths
       end
 
-      def reset_lockfile!(path)
+      def reset_lockfile!(path, full_update: false)
         gemfile = gemfile_for_lockfile(path)
         unless gemfile && File.file?(gemfile)
           warn("Cannot reset #{display_path(path)} because its Gemfile was not found.")
           return
         end
 
-        command = reset_command(path: path, gemfile: gemfile)
-        if has_local_path_remote?(path)
+        command = reset_command(path: path, gemfile: gemfile, full_update: full_update)
+        if full_update || has_local_path_remote?(path)
           rebuild_lockfile(path) { command_runner.call(command) }
         else
           command_runner.call(command)
         end
       end
 
-      def reset_command(path:, gemfile:)
-        update_gems = reset_update_gems(path)
+      def reset_command(path:, gemfile:, full_update: false)
+        update_gems = (full_update || has_local_path_remote?(path)) ? [] : reset_update_gems(path)
         env = normalization_env.merge(
           "BUNDLE_GEMFILE" => gemfile,
           "BUNDLE_LOCKFILE" => path
@@ -117,7 +128,7 @@ module Kettle
       def lockfile_paths_for(target)
         normalized = target.to_s.strip
         raise Error, "reset requires TARGET" if normalized.empty?
-        if normalized.casecmp(RELEASE_LOCKFILES_TARGET).zero?
+        if release_lockfiles_target?(normalized)
           paths = lockfile_paths
           raise Error, "no release lockfiles found" if paths.empty?
 
@@ -130,6 +141,10 @@ module Kettle
         end
 
         [File.join(root, match)]
+      end
+
+      def release_lockfiles_target?(target)
+        target.to_s.strip.casecmp(RELEASE_LOCKFILES_TARGET).zero?
       end
 
       def gemfile_for_lockfile(path)
@@ -310,6 +325,7 @@ module Kettle
         FileUtils.cp(path, backup)
         FileUtils.rm_f(path)
         yield
+        FileUtils.mv(backup, path, force: true) unless File.file?(path)
         FileUtils.rm_f(backup)
       rescue
         FileUtils.mv(backup, path, force: true) if File.file?(backup)
@@ -319,6 +335,120 @@ module Kettle
       def backup_path_for(path)
         backup_dir = File.join(root, "tmp", "kettle-reset")
         "#{File.join(backup_dir, File.basename(path))}.#{Process.pid}.bak"
+      end
+
+      def uninstall_unreleased_local_gems(paths)
+        local_names = local_workspace_gem_names
+        return false if local_names.empty?
+
+        uninstalled = false
+        locked_registry_specs(paths).each do |name, version|
+          next unless local_names.include?(name)
+          next unless locally_installed?(name, version)
+          next if ruby_gems_version_available?(name, version)
+
+          uninstall_unreleased_local_gem(name, version)
+          uninstalled = true
+        end
+        uninstalled
+      end
+
+      def uninstall_unreleased_local_gem(name, version)
+        command_runner.call(uninstall_command(name, version))
+      rescue => error
+        # Family release waves can ask several member processes to remove the same
+        # unreleased sibling version. If another process won that race, the reset
+        # goal is already satisfied; otherwise keep the original uninstall failure.
+        raise error if locally_installed?(name, version)
+      end
+
+      def locked_registry_specs(paths)
+        paths.flat_map { |path| registry_specs(path) }.uniq.sort
+      end
+
+      def registry_specs(path)
+        specs = []
+        in_gem = false
+        in_specs = false
+        File.readlines(path).each do |line|
+          stripped = line.chomp
+          if stripped == "GEM"
+            in_gem = true
+            in_specs = false
+            next
+          end
+          next unless in_gem
+          break if !stripped.empty? && stripped == stripped.upcase && !stripped.start_with?(" ")
+
+          if stripped == "  specs:"
+            in_specs = true
+            next
+          end
+          next unless in_specs
+
+          match = stripped.match(/\A    ([A-Za-z0-9_.-]+) \(([^)]+)\)/)
+          specs << [match[1], match[2]] if match
+        end
+        specs
+      end
+
+      def locally_installed?(name, version)
+        Gem::Specification.find_all_by_name(name, "= #{version}").any?
+      rescue
+        false
+      end
+
+      def ruby_gems_version_available?(name, version)
+        version_text = version.to_s
+        platform = "ruby"
+        if version_text =~ /\A(.+)-([^-]+-[^-]+(?:-[^-]+)?)\z/
+          version_text = Regexp.last_match(1)
+          platform = Regexp.last_match(2)
+        end
+        ruby_gems_versions(name).any? do |entry|
+          entry.fetch("number", entry["version"]) == version_text &&
+            %W[ruby #{platform}].include?(entry.fetch("platform", "ruby").to_s)
+        end
+      end
+
+      def ruby_gems_versions(name)
+        @ruby_gems_versions ||= {}
+        @ruby_gems_versions.fetch(name) do
+          uri = URI("https://rubygems.org/api/v1/versions/#{CGI.escape(name)}.json")
+          response = Net::HTTP.get_response(uri)
+          unless response.is_a?(Net::HTTPSuccess)
+            raise Error, "Could not verify released versions for #{name} from RubyGems.org (HTTP #{response.code})"
+          end
+
+          versions = JSON.parse(response.body)
+          @ruby_gems_versions[name] = versions
+        end
+      rescue JSON::ParserError => error
+        raise Error, "Could not parse released versions for #{name} from RubyGems.org: #{error.message}"
+      end
+
+      def uninstall_command(name, version)
+        command = +"env"
+        UNBUNDLED_ENV_KEYS.each do |key|
+          command << " -u #{key}"
+        end
+        command << " gem uninstall #{Shellwords.escape(name)} -v #{Shellwords.escape(version)} -x -I"
+        command
+      end
+
+      def local_workspace_gem_names
+        paths = dynamic_local_path_env.keys.filter_map do |key|
+          value = ENV[key].to_s.strip
+          value unless value.empty?
+        end
+        paths << File.expand_path("..", root)
+        paths.each_with_object(Set.new) do |path, names|
+          next unless File.directory?(path)
+
+          Dir[File.join(path, "*", "*.gemspec")].each do |gemspec|
+            names << File.basename(gemspec, ".gemspec")
+          end
+        end
       end
 
       def validation_message(target, diagnostics)

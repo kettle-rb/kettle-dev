@@ -322,14 +322,14 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
           {"number" => "1.2.10"},
           {"number" => "1.2.9-alpha"}
         ]
-        allow(Kettle::Dev::GemCoopVersions).to receive(:fetch).with("gemx", version_hint: "1.2.0").and_return(versions)
+        allow(Kettle::Dev::RubyGemsVersions).to receive(:fetch).with("gemx", version_hint: "1.2.0").and_return(versions)
         overall, series = cli.send(:latest_released_versions, "gemx", "1.2.0")
         expect(overall).to eq("2.0.0")
         expect(series).to eq("1.2.10")
       end
 
       it "returns [nil, nil] on errors" do
-        allow(Kettle::Dev::GemCoopVersions).to receive(:fetch).and_raise(StandardError)
+        allow(Kettle::Dev::RubyGemsVersions).to receive(:fetch).and_raise(StandardError)
         overall, series = cli.send(:latest_released_versions, "gemx", "1.2.3")
         expect(overall).to be_nil
         expect(series).to be_nil
@@ -364,11 +364,11 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       end
     end
 
-    describe "latest_released_versions (integration with gem.coop via VCR)" do
+    describe "latest_released_versions (integration with RubyGems.org via VCR)" do
       it "fetches real versions for kettle-dev and does not report a 1.2.x series", :check_output do
         # Use VCR to record once then replay. We avoid making any strong assertion on the exact
         # version numbers to keep the test resilient, but we do assert no 1.2.x appears for this gem.
-        cassette = "gem_coop_versions_kettle_dev"
+        cassette = "ruby_gems_versions_kettle_dev"
         overall, series = nil, nil
         # Ensure any previous stubs on Net::HTTP from unit tests do not apply here; we want a real HTTP call (recorded by VCR)
         allow(Net::HTTP).to receive(:get_response).and_call_original
@@ -1010,10 +1010,10 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
       it "normalizes dirty release lockfiles before validating the release prep commit" do
         with_release_root do |root, local_cli|
-          File.write(File.join(root, "Gemfile"), "source \"https://gem.coop\"\n")
+          File.write(File.join(root, "Gemfile"), "source \"https://rubygems.org\"\n")
           File.write(File.join(root, "Gemfile.lock"), <<~LOCK)
             GEM
-              remote: https://gem.coop/
+              remote: https://rubygems.org/
               specs:
                 addressable (2.9.0)
                 kettle-soup-cover (3.0.5)
@@ -1027,11 +1027,11 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
           LOCK
 
           expect(local_cli).to receive(:run_cmd!).with(
-            a_string_matching(/KETTLE_DEV_DEV=false.*BUNDLE_GEMFILE=.*Gemfile.*bundle lock --update kettle-soup-cover --add-checksums/)
+            a_string_matching(/KETTLE_DEV_DEV=false.*BUNDLE_GEMFILE=.*Gemfile.*bundle lock --update --add-checksums/)
           ) do
             File.write(File.join(root, "Gemfile.lock"), <<~LOCK)
               GEM
-                remote: https://gem.coop/
+                remote: https://rubygems.org/
                 specs:
                   kettle-soup-cover (3.0.4)
 
@@ -1042,6 +1042,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
                  4.0.17
             LOCK
           end
+          expect(local_cli).not_to receive(:run_cmd!).with(a_string_matching(/bundle lock --update kettle-soup-cover/))
 
           expect { local_cli.send(:prepare_release_lockfiles_for_commit!) }.not_to raise_error
         end
@@ -1049,10 +1050,10 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
       it "normalizes the appraisal root lockfile instead of writing the default Gemfile.lock" do
         with_release_root do |root, local_cli|
-          File.write(File.join(root, "Gemfile"), "source \"https://gem.coop\"\n")
+          File.write(File.join(root, "Gemfile"), "source \"https://rubygems.org\"\n")
           File.write(File.join(root, "Gemfile.lock"), <<~LOCK)
             GEM
-              remote: https://gem.coop/
+              remote: https://rubygems.org/
               specs:
                 rake (13.4.2)
 
@@ -1062,7 +1063,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
             BUNDLED WITH
                4.0.17
           LOCK
-          File.write(File.join(root, "Appraisal.root.gemfile"), "source \"https://gem.coop\"\n")
+          File.write(File.join(root, "Appraisal.root.gemfile"), "source \"https://rubygems.org\"\n")
           File.write(File.join(root, "Appraisal.root.gemfile.lock"), <<~LOCK)
             PATH
               remote: .
@@ -1070,7 +1071,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
                 demo (0.1.0)
 
             GEM
-              remote: https://gem.coop/
+              remote: https://rubygems.org/
               specs:
                 kettle-test (2.0.16)
 
@@ -1085,12 +1086,12 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
           expect(local_cli).to receive(:run_cmd!).with(
             a_string_matching(
-              /BUNDLE_GEMFILE=.*Appraisal\.root\.gemfile.*BUNDLE_LOCKFILE=.*Appraisal\.root\.gemfile\.lock.*bundle lock --update kettle-test --add-checksums/
+              /BUNDLE_GEMFILE=.*Appraisal\.root\.gemfile.*BUNDLE_LOCKFILE=.*Appraisal\.root\.gemfile\.lock.*bundle lock --update --add-checksums/
             )
-          ) do
+          ).ordered do
             File.write(File.join(root, "Appraisal.root.gemfile.lock"), <<~LOCK)
               GEM
-                remote: https://gem.coop/
+                remote: https://rubygems.org/
                 specs:
                   kettle-test (2.0.16)
 
@@ -1101,6 +1102,23 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
                  4.0.17
             LOCK
           end
+          expect(local_cli).to receive(:run_cmd!).with(
+            a_string_matching(/BUNDLE_GEMFILE=.*Gemfile.*BUNDLE_LOCKFILE=.*Gemfile\.lock.*bundle lock --update --add-checksums/)
+          ).ordered do
+            File.write(File.join(root, "Gemfile.lock"), <<~LOCK)
+              GEM
+                remote: https://rubygems.org/
+                specs:
+                  rake (13.4.2)
+
+              CHECKSUMS
+                rake (13.4.2) sha256=abc123
+
+              BUNDLED WITH
+                 4.0.17
+            LOCK
+          end
+          expect(local_cli).not_to receive(:run_cmd!).with(a_string_matching(/bundle lock --update kettle-test/))
 
           expect { local_cli.send(:prepare_release_lockfiles_for_commit!) }.not_to raise_error
         end
@@ -1112,7 +1130,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
           FileUtils.mkdir_p(gemfiles_dir)
           File.write(File.join(root, "Gemfile.lock"), <<~LOCK)
             GEM
-              remote: https://gem.coop/
+              remote: https://rubygems.org/
               specs:
                 rake (13.4.2)
 
@@ -1144,10 +1162,10 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
       it "aborts before release prep commit when normalization cannot repair registry checksums" do
         with_release_root do |root, local_cli|
-          File.write(File.join(root, "Gemfile"), "source \"https://gem.coop\"\n")
+          File.write(File.join(root, "Gemfile"), "source \"https://rubygems.org\"\n")
           File.write(File.join(root, "Gemfile.lock"), <<~LOCK)
             GEM
-              remote: https://gem.coop/
+              remote: https://rubygems.org/
               specs:
                 addressable (2.9.0)
                 kettle-soup-cover (3.0.5)
@@ -1170,7 +1188,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
       it "resets and amends release lockfiles that become invalid before push" do
         with_release_root do |root, local_cli|
-          File.write(File.join(root, "Gemfile"), "source \"https://gem.coop\"\n")
+          File.write(File.join(root, "Gemfile"), "source \"https://rubygems.org\"\n")
           File.write(File.join(root, "Gemfile.lock"), <<~LOCK)
             PATH
               remote: ../demo
@@ -1178,7 +1196,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
                 demo (0.1.0)
 
             GEM
-              remote: https://gem.coop/
+              remote: https://rubygems.org/
               specs:
                 kettle-soup-cover (3.0.5)
 
@@ -1191,11 +1209,11 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
           LOCK
 
           expect(local_cli).to receive(:run_cmd!).with(
-            a_string_matching(/bundle lock --update demo kettle-soup-cover --add-checksums/)
+            a_string_matching(/bundle lock --update --add-checksums/)
           ) do
             File.write(File.join(root, "Gemfile.lock"), <<~LOCK)
               GEM
-                remote: https://gem.coop/
+                remote: https://rubygems.org/
                 specs:
                   demo (0.1.0)
                   kettle-soup-cover (3.0.5)
@@ -1261,7 +1279,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect { cli.run }.to raise_error(MockSystemExit, /version bump required/)
       end
 
-      it "runs happy path when gem.coop is offline and Appraisals exist and SKIP_GEM_SIGNING is set", :jruby_head_release_flow do
+      it "runs happy path when RubyGems.org is offline and Appraisals exist and SKIP_GEM_SIGNING is set", :jruby_head_release_flow do
         # Make prompts auto-accept via input adapter
         allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("y\n")
 
@@ -1572,7 +1590,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect { cli.run }.not_to raise_error
       end
 
-      it "rescues failures from gem.coop release check and proceeds to user prompt" do
+      it "rescues failures from RubyGems.org release check and proceeds to user prompt" do
         allow(Kettle::Dev::InputAdapter).to receive(:gets).and_return("n\n")
         allow(cli).to receive(:run_pre_release_checks!)
         allow(cli).to receive(:ensure_bundler_2_7_plus!)
@@ -1628,7 +1646,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         allow(cli).to receive(:detect_gem_name).and_return("kettle-dev")
 
         # Ensure the offline message was printed during run
-        expect { cli.run }.to output(/Could not determine latest released version from gem.coop/).to_stdout
+        expect { cli.run }.to output(/Could not determine latest released version from RubyGems.org/).to_stdout
       end
 
       it "prints fallback final message when gem name detection fails", :check_output do
@@ -1753,7 +1771,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
             expect(candidate.published).to be(true)
             true
           end
-          expect(Kettle::Dev::GemCoopVersions).to receive(:mark_released).with("mygem", "1.2.3")
+          expect(Kettle::Dev::RubyGemsVersions).to receive(:mark_released).with("mygem", "1.2.3")
 
           local_cli.send(:release_gem_and_tag_locally!, "1.2.3")
         end
@@ -1801,7 +1819,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect(candidate.published).to be(true)
       end
 
-      it "validates availability with a non-activating Bundler probe sourced only from gem.coop" do
+      it "validates availability with a non-activating Bundler probe sourced only from RubyGems.org" do
         local_cli = described_class.new
         candidate = Kettle::Dev::ReleaseCLI::ReleaseCandidate.new(
           gem_name: "mygem",
@@ -1813,7 +1831,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         script = local_cli.send(:release_availability_probe_script, candidate)
 
         expect(script).to include("require \"bundler\"")
-        expect(script).to include("builder.source(\"https://gem.coop\")")
+        expect(script).to include("builder.source(\"https://rubygems.org\")")
         expect(script).to include("builder.gem(gem_name, \"= \#{version}\", require: false)")
         expect(script).to include("Bundler::Installer.install")
         expect(script).to include("definition.specs.find")
@@ -1822,7 +1840,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect(script).not_to include("Gem.loaded_specs")
       end
 
-      it "retries the gem.coop availability probe until the release resolves" do
+      it "retries the RubyGems.org availability probe until the release resolves" do
         Dir.mktmpdir do |root|
           local_cli = described_class.new
           candidate = Kettle::Dev::ReleaseCLI::ReleaseCandidate.new(
@@ -1850,7 +1868,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         end
       end
 
-      it "fails the gem.coop availability probe only after retry exhaustion" do
+      it "fails the RubyGems.org availability probe only after retry exhaustion" do
         Dir.mktmpdir do |root|
           local_cli = described_class.new
           candidate = Kettle::Dev::ReleaseCLI::ReleaseCandidate.new(
@@ -2307,8 +2325,8 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       end
     end
 
-    describe "regression: Rakefile.example header uses version.rb even if gem.coop has higher overall" do
-      it "injects the version from version.rb (e.g., 1.0.15) and not a higher 1.2.x from gem.coop", freeze: Time.new(2015, 12, 28, 13, 14, 15) do
+    describe "regression: Rakefile.example header uses version.rb even if RubyGems.org has higher overall" do
+      it "injects the version from version.rb (e.g., 1.0.15) and not a higher 1.2.x from RubyGems.org", freeze: Time.new(2015, 12, 28, 13, 14, 15) do
         Dir.mktmpdir do |root|
           # Prepare a Rakefile.example with an outdated header
           File.write(File.join(root, "Rakefile.example"), <<~RB)
@@ -2321,7 +2339,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
           allow(ci_helpers).to receive(:project_root).and_return(root)
           cli = described_class.new(start_step: 2)
 
-          # Force detect_version to desired next version and make gem.coop suggest a higher overall
+          # Force detect_version to desired next version and make RubyGems.org suggest a higher overall
           allow(cli).to receive(:detect_version).and_return("1.0.15")
           allow(cli).to receive(:detect_gem_name).and_return("kettle-dev")
           stub_checksum_artifact(cli, "1.0.15", "kettle-dev")

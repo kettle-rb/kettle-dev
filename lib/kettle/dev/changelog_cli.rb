@@ -282,7 +282,7 @@ module Kettle
           gem_name = detect_gem_name
           latest_overall, latest_for_series = latest_released_versions(gem_name, version)
         rescue => e
-          warn("[kettle-changelog] gem.coop release check failed: #{e.class}: #{e.message}")
+          warn("[kettle-changelog] RubyGems.org release check failed: #{e.class}: #{e.message}")
           warn("Proceeding without live release info.")
         end
 
@@ -407,7 +407,7 @@ module Kettle
       end
 
       def latest_released_versions(gem_name, current_version)
-        data = Kettle::Dev::GemCoopVersions.fetch(gem_name, version_hint: current_version, refresh: @refresh_cache)
+        data = Kettle::Dev::RubyGemsVersions.fetch(gem_name, version_hint: current_version, refresh: @refresh_cache)
         return [nil, nil, nil] unless data.is_a?(Array)
 
         versions = data.map { |h| h["number"] }.compact

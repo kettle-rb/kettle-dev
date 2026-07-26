@@ -45,7 +45,7 @@ module Kettle
         "BUNDLE_SUPPRESS_INSTALL_USING_MESSAGES" => "true"
       }.freeze
       DEBUG_TRUE_VALUES = %w[1 true yes on].freeze
-      RELEASE_VALIDATION_SOURCE = "https://gem.coop"
+      RELEASE_VALIDATION_SOURCE = "https://rubygems.org"
 
       class << self
         def run_cmd!(cmd)
@@ -192,9 +192,9 @@ module Kettle
             gem_name = detect_gem_name
             latest_overall, latest_for_series = latest_released_versions(gem_name, version)
           rescue => e
-            warn("[kettle-release] gem.coop release check failed: #{e.class}: #{e.message}")
+            warn("[kettle-release] RubyGems.org release check failed: #{e.class}: #{e.message}")
             warn(e.backtrace.first(3).map { |l| "  " + l }.join("\n")) if ENV["KETTLE_DEV_DEBUG"]
-            warn("Proceeding without gem.coop latest version info.")
+            warn("Proceeding without RubyGems.org latest version info.")
           end
 
           if latest_overall
@@ -216,7 +216,7 @@ module Kettle
               latest_for_series = nil unless lfs_series == cur_series
             end
             # Determine the sanity-check target correctly for the current series.
-            # If gem.coop has a newer overall series than our current series, only compare
+            # If RubyGems.org has a newer overall series than our current series, only compare
             # against the latest published in our current series. If that cannot be determined
             # (e.g., offline), skip the sanity check rather than treating the overall as target.
             target = if (cur_series <=> overall_series) == -1
@@ -225,10 +225,10 @@ module Kettle
               latest_overall
             end
             # IMPORTANT: Never treat a higher different-series "latest_overall" as a downgrade target.
-            # If our current series is behind overall and gem.coop does not report a latest_for_series,
+            # If our current series is behind overall and RubyGems.org does not report a latest_for_series,
             # then we cannot determine the correct target for this series and should skip the check.
             if (cur_series <=> overall_series) == -1 && target.nil?
-              puts "Could not determine latest released version from gem.coop (offline?). Proceeding without sanity check."
+              puts "Could not determine latest released version from RubyGems.org (offline?). Proceeding without sanity check."
             elsif target
               bump = Kettle::Dev::Versioning.classify_bump(target, version)
               case bump
@@ -245,10 +245,10 @@ module Kettle
                 puts "Proposed bump type: #{label} (from #{target} -> #{version})"
               end
             else
-              puts "Could not determine latest released version from gem.coop (offline?). Proceeding without sanity check."
+              puts "Could not determine latest released version from RubyGems.org (offline?). Proceeding without sanity check."
             end
           else
-            puts "Could not determine latest released version from gem.coop (offline?). Proceeding without sanity check."
+            puts "Could not determine latest released version from RubyGems.org (offline?). Proceeding without sanity check."
           end
 
           confirm_yes!("Have you updated lib/**/version.rb and CHANGELOG.md for v#{version}? [y/N]", "> ", "Aborted: please update version.rb and CHANGELOG.md, then re-run.")
@@ -408,7 +408,7 @@ module Kettle
               @release_candidate.published = true
               confirm_release_candidate_available!(@release_candidate)
             end
-            mark_gem_coop_release_cache_bust(version)
+            mark_rubygems_release_cache_bust(version)
           end
         end
 
@@ -570,10 +570,15 @@ module Kettle
       end
 
       def prepare_release_lockfiles_for_commit!
-        dirty_lockfiles = release_lockfile_paths.select { |path| release_lockfile_normalization_needed?(path) }
-        unless dirty_lockfiles.empty?
-          puts "Normalizing release lockfiles with local path dependencies disabled..."
-          dirty_lockfiles.each { |path| normalize_release_lockfile!(path) }
+        puts "Resetting release lockfiles with local path dependencies disabled..."
+        begin
+          lockfile_reset.reset(Kettle::Dev::LockfileReset::RELEASE_LOCKFILES_TARGET)
+        rescue Kettle::Dev::Error => error
+          raise unless error.message.start_with?("Reset #{Kettle::Dev::LockfileReset::RELEASE_LOCKFILES_TARGET} failed validation:")
+
+          # Keep release-facing failures shaped like the lockfile validation
+          # guard, even when the shared reset helper is the component that
+          # detects the unrepaired lockfile.
         end
 
         validate_release_lockfiles!(stage: "before release prep commit")
@@ -651,7 +656,7 @@ module Kettle
         return false if dirty_lockfiles.empty?
 
         puts "Resetting release lockfiles with local path dependencies disabled before push..."
-        dirty_lockfiles.each { |path| normalize_release_lockfile!(path) }
+        lockfile_reset.reset(Kettle::Dev::LockfileReset::RELEASE_LOCKFILES_TARGET)
         return false unless release_lockfile_paths.flat_map { |path| release_lockfile_diagnostics(path) }.empty?
 
         amend_release_lockfile_reset_commit
@@ -1216,7 +1221,7 @@ module Kettle
         @release_candidate ||= build_release_candidate(gem_name, version)
         @release_candidate.published = true
         confirm_release_candidate_available!(@release_candidate)
-        mark_gem_coop_release_cache_bust(version, gem_name: gem_name)
+        mark_rubygems_release_cache_bust(version, gem_name: gem_name)
       end
 
       def build_release_candidate(gem_name, version)
@@ -1387,7 +1392,7 @@ module Kettle
       end
 
       def latest_released_versions(gem_name, current_version)
-        data = Kettle::Dev::GemCoopVersions.fetch(gem_name, version_hint: current_version)
+        data = Kettle::Dev::RubyGemsVersions.fetch(gem_name, version_hint: current_version)
         return [nil, nil] unless data.is_a?(Array)
 
         versions = data.map { |h| h["number"] }.compact
@@ -1405,11 +1410,11 @@ module Kettle
         [nil, nil]
       end
 
-      def mark_gem_coop_release_cache_bust(version, gem_name: nil)
+      def mark_rubygems_release_cache_bust(version, gem_name: nil)
         gem_name ||= detect_gem_name
-        Kettle::Dev::GemCoopVersions.mark_released(gem_name, version)
+        Kettle::Dev::RubyGemsVersions.mark_released(gem_name, version)
       rescue => error
-        warn("[kettle-release] could not mark gem.coop cache-bust for release-state: #{error.class}: #{error.message}") if Kettle::Dev::DEBUGGING
+        warn("[kettle-release] could not mark RubyGems.org cache-bust for release-state: #{error.class}: #{error.message}") if Kettle::Dev::DEBUGGING
       end
 
       def gem_name_from_gem_path(gem_path, version)

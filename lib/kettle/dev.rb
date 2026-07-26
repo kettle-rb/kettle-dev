@@ -34,7 +34,7 @@ module Kettle
     autoload :CommitMsg, "kettle/dev/commit_msg"
     autoload :DvcsCLI, "kettle/dev/dvcs_cli"
     autoload :ExitAdapter, "kettle/dev/exit_adapter"
-    autoload :GemCoopVersions, "kettle/dev/gem_coop_versions"
+    autoload :RubyGemsVersions, "kettle/dev/ruby_gems_versions"
     autoload :GemSpecReader, "kettle/dev/gem_spec_reader"
     autoload :GitAdapter, "kettle/dev/git_adapter"
     autoload :GitCommitFooter, "kettle/dev/git_commit_footer"

@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 require "tmpdir"
-require "kettle/dev/gem_coop_versions"
+require "kettle/dev/ruby_gems_versions"
 
-RSpec.describe Kettle::Dev::GemCoopVersions do
+RSpec.describe Kettle::Dev::RubyGemsVersions do
   def ok_response(body)
     response = Net::HTTPOK.new("1.1", "200", "OK")
     response.instance_variable_set(:@read, true)
@@ -13,13 +13,13 @@ RSpec.describe Kettle::Dev::GemCoopVersions do
 
   around do |example|
     Dir.mktmpdir do |dir|
-      @cache_bust_path = File.join(dir, "gem-coop-cache-bust.json")
+      @cache_bust_path = File.join(dir, "rubygems-cache-bust.json")
       example.run
     end
   end
 
   before do
-    stub_env("KETTLE_GEM_COOP_CACHE_BUST_PATH" => @cache_bust_path, "KETTLE_GEM_COOP_REFRESH" => nil)
+    stub_env("KETTLE_RUBYGEMS_CACHE_BUST_PATH" => @cache_bust_path, "KETTLE_RUBYGEMS_REFRESH" => nil)
   end
 
   it "records recently published gem versions in a best-effort marker file", freeze: Time.utc(2026, 7, 21, 12, 0, 0) do

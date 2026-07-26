@@ -21,7 +21,7 @@ module Kettle
           validate(target)
         else
           paths = resetter.lockfile_paths_for(target)
-          unless paths.any? { |path| resetter.normalization_needed?(path) }
+          unless resetter.release_lockfiles_target?(target) || paths.any? { |path| resetter.normalization_needed?(path) }
             puts "#{target} is already reset."
             return 0
           end

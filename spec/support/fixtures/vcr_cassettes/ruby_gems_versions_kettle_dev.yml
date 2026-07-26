@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: get
-    uri: https://gem.coop/api/v1/versions/kettle-dev.json
+    uri: https://rubygems.org/api/v1/versions/kettle-dev.json
     body:
       encoding: US-ASCII
       string: ''
@@ -14,7 +14,7 @@ http_interactions:
       User-Agent:
       - Ruby
       Host:
-      - gem.coop
+      - rubygems.org
   response:
     status:
       code: 200
@@ -71,7 +71,7 @@ http_interactions:
       Etag:
       - '"ded80406e5cb1287d0165237f9fe6ed4"'
       Server:
-      - gem.coop
+      - rubygems.org
     body:
       encoding: ASCII-8BIT
       string: !binary |-

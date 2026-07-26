@@ -8,10 +8,10 @@ require "uri"
 
 module Kettle
   module Dev
-    module GemCoopVersions
+    module RubyGemsVersions
       CACHE_BUST_TTL_SECONDS = 15 * 60
-      ENV_REFRESH = "KETTLE_GEM_COOP_REFRESH"
-      ENV_MARKER_PATH = "KETTLE_GEM_COOP_CACHE_BUST_PATH"
+      ENV_REFRESH = "KETTLE_RUBYGEMS_REFRESH"
+      ENV_MARKER_PATH = "KETTLE_RUBYGEMS_CACHE_BUST_PATH"
 
       class << self
         def fetch(gem_name, version_hint: nil, refresh: false)
@@ -43,7 +43,7 @@ module Kettle
           FileUtils.mkdir_p(File.dirname(path))
           File.write(path, JSON.pretty_generate(data) << "\n")
         rescue => error
-          warn("[kettle-dev] could not update gem.coop cache-bust marker: #{error.class}: #{error.message}") if Kettle::Dev::DEBUGGING
+          warn("[kettle-dev] could not update RubyGems.org cache-bust marker: #{error.class}: #{error.message}") if Kettle::Dev::DEBUGGING
         end
 
         def marker_path
@@ -52,13 +52,13 @@ module Kettle
 
           state_home = ENV["XDG_STATE_HOME"]
           state_home = File.join(Dir.home, ".local", "state") if state_home.to_s.empty?
-          File.join(state_home, "kettle-dev", "gem-coop-cache-bust.json")
+          File.join(state_home, "kettle-dev", "rubygems-cache-bust.json")
         end
 
         private
 
         def versions_uri(gem_name, cache_bust:)
-          uri = URI("https://gem.coop/api/v1/versions/#{gem_name}.json")
+          uri = URI("https://rubygems.org/api/v1/versions/#{gem_name}.json")
           uri.query = "_kettle_cache_bust=#{Time.now.to_i}" if cache_bust
           uri
         end

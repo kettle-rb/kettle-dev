@@ -91,6 +91,12 @@ Please file a bug if you notice a violation of semantic versioning.
   local paths reappear mid-release.
 - Release lockfile validation now allows the current gem's own `gemspec` path
   source while still rejecting local sibling path sources.
+- Release version checks and post-publish availability probes now use
+  RubyGems.org directly instead of the gem.coop proxy.
+- Release lockfile reset now uninstalls unreleased locally installed workspace
+  gem versions before regenerating `Gemfile.lock` and
+  `Appraisal.root.gemfile.lock`, preventing local-only versions from being
+  written as registry gems with checksums.
 
 - Release and changelog specs now route git commit, amend, tag, reset, and
   release-state queries through `GitAdapter`, so test runs do not invoke the

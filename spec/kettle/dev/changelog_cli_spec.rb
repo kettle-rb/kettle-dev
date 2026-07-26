@@ -294,10 +294,10 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       end
     end
 
-    it "passes refresh-cache through to gem.coop version lookup" do
+    it "passes refresh-cache through to RubyGems.org version lookup" do
       allow(described_class).to receive(:new).and_call_original
       cli = described_class.new(strict: false, refresh_cache: true)
-      allow(Kettle::Dev::GemCoopVersions).to receive(:fetch).with("demo", version_hint: "1.2.3", refresh: true).and_return([{"number" => "1.2.3"}])
+      allow(Kettle::Dev::RubyGemsVersions).to receive(:fetch).with("demo", version_hint: "1.2.3", refresh: true).and_return([{"number" => "1.2.3"}])
 
       latest_overall, latest_series, latest_major = cli.send(:latest_released_versions, "demo", "1.2.3")
 
