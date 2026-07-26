@@ -28,17 +28,13 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- `kettle-release --secrets-provider 1password` now recognizes the real
-  1Password provider as configured instead of misclassifying it as the
-  interactive fallback provider.
-
 ### Security
 
 ## [2.5.0] - 2026-07-26
 
 - TAG: [v2.5.0][2.5.0t]
-- COVERAGE: 91.96% -- 4301/4677 lines in 40 files
-- BRANCH COVERAGE: 75.82% -- 1656/2184 branches in 40 files
+- COVERAGE: 92.26% -- 4317/4679 lines in 40 files
+- BRANCH COVERAGE: 76.26% -- 1667/2186 branches in 40 files
 - 57.24% documented
 
 ### Added
@@ -71,6 +67,10 @@ Please file a bug if you notice a violation of semantic versioning.
 - Direct `kettle-release --secrets-provider 1password` runs now use the same
   PTY-backed prompt bridge as family releases, so PEM passphrase prompts receive
   the configured provider value instead of leaking through interactively.
+
+- `kettle-release --secrets-provider 1password` now recognizes the real
+  1Password provider as configured instead of misclassifying it as the
+  interactive fallback provider.
 
 ## [2.4.6] - 2026-07-26
 

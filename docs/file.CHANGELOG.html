@@ -90,8 +90,8 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 <ul>
   <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.0">v2.5.0</a>
 </li>
-  <li>COVERAGE: 91.96% – 4301/4677 lines in 40 files</li>
-  <li>BRANCH COVERAGE: 75.82% – 1656/2184 branches in 40 files</li>
+  <li>COVERAGE: 92.26% – 4317/4679 lines in 40 files</li>
+  <li>BRANCH COVERAGE: 76.26% – 1667/2186 branches in 40 files</li>
   <li>57.24% documented</li>
 </ul>
 
@@ -137,6 +137,11 @@ secrets are unavailable.</p>
     <p>Direct <code>kettle-release --secrets-provider 1password</code> runs now use the same<br>
 PTY-backed prompt bridge as family releases, so PEM passphrase prompts receive<br>
 the configured provider value instead of leaking through interactively.</p>
+  </li>
+  <li>
+    <p><code>kettle-release --secrets-provider 1password</code> now recognizes the real<br>
+1Password provider as configured instead of misclassifying it as the<br>
+interactive fallback provider.</p>
   </li>
 </ul>
 
