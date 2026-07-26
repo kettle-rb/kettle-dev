@@ -33,7 +33,7 @@ RSpec.describe Kettle::Dev::ExecutableVersion do
 
       expect { described_class.print_header("kettle-example", argv) }
         .to output("== kettle-example v#{Kettle::Dev::Version::VERSION} ==\n").to_stdout
-      expect(argv).to eq([])
+      expect(argv).to be_empty
     end
   end
 end
