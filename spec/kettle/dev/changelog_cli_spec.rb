@@ -1100,7 +1100,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
         # Don't actually execute file; just stub capture2 to return our text
         allow(File).to receive(:executable?).and_call_original
         allow(File).to receive(:executable?).with(cmd).and_return(true)
-        allow(Open3).to receive(:capture2).and_return(["nothing documented line\n", double("ps")])
+        allow(Open3).to receive(:capture2e).and_return(["nothing documented line\n", double("ps")])
         cli = described_class.new(strict: false)
         expect(cli.send(:yard_percent_documented)).to be_nil
       end
@@ -1114,7 +1114,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
         File.write(cmd, "#!/usr/bin/env ruby\nputs 'hi'\n")
         FileUtils.chmod(0o755, cmd)
         allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
-        allow(Open3).to receive(:capture2).and_raise(StandardError.new("boom"))
+        allow(Open3).to receive(:capture2e).and_raise(StandardError.new("boom"))
         cli = described_class.new(strict: false)
         expect(cli.send(:yard_percent_documented)).to be_nil
       end
@@ -1131,11 +1131,29 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
         File.write(yard, "#!/usr/bin/env ruby\n")
         FileUtils.chmod(0o755, rake)
         FileUtils.chmod(0o755, yard)
-        allow(Open3).to receive(:capture2).with(rake, "yard", {chdir: root}).and_return(["no task here\n", double("rake status")])
-        allow(Open3).to receive(:capture2).with(yard, {chdir: root}).and_return(["95.35% documented\n", double("yard status")])
+        allow(Open3).to receive(:capture2e).with(rake, "yard", {chdir: root}).and_return(["no task here\n", double("rake status")])
+        allow(Open3).to receive(:capture2e).with(yard, {chdir: root}).and_return(["95.35% documented\n", double("yard status")])
 
         cli = described_class.new(strict: true)
         expect(cli.send(:yard_percent_documented)).to eq("95.35% documented")
+      end
+    end
+
+    it "raises the rake yard failure output when yard lint fails" do
+      mkproj do |root|
+        allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
+        path = File.join(root, "bin")
+        FileUtils.mkdir_p(path)
+        rake = File.join(path, "rake")
+        File.write(rake, "#!/usr/bin/env ruby\n")
+        FileUtils.chmod(0o755, rake)
+        status = instance_double(Process::Status, success?: false, exitstatus: 1)
+        output = "bundle exec yard-lint lib\nrake aborted!\nCommand failed with status (1): [bundle exec yard-lint lib]\n"
+        allow(Open3).to receive(:capture2e).with(rake, "yard", {chdir: root}).and_return([output, status])
+
+        cli = described_class.new(strict: true)
+
+        expect { cli.send(:yard_percent_documented) }.to raise_error(RuntimeError, include("Failed to run bin/rake yard (exit 1): bundle exec yard-lint lib"))
       end
     end
   end
@@ -1609,7 +1627,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
         FileUtils.chmod(0o755, cmd)
         allow(File).to receive(:executable?).and_call_original
         allow(File).to receive(:executable?).with(cmd).and_return(true)
-        allow(Open3).to receive(:capture2).and_return(["Some header\n95.5% documented\nMore lines\n", double("ps")])
+        allow(Open3).to receive(:capture2e).and_return(["Some header\n95.5% documented\nMore lines\n", double("ps")])
         cli = described_class.new(strict: false)
         expect(cli.send(:yard_percent_documented)).to eq("95.5% documented")
       end

@@ -41,6 +41,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-changelog` now reports `bin/rake yard` failures directly, including
+  `yard:lint` output, instead of misreporting them as missing documentation
+  percentages.
+
 ### Security
 
 ## [2.4.5] - 2026-07-25

@@ -766,30 +766,59 @@ module Kettle
           end
         end
 
-        begin
-          # Run the canonical docs task to get the documentation percentage.
-          out = +""
-          commands.each do |command|
-            prepare_yard_fence_tmp_files if command == [File.join(@root, "bin", "yard")]
-            output, _status = Open3.capture2(*command, {chdir: @root})
-            out << output
-            line = documented_percent_line(output)
-            return line if line
+        # Run the canonical docs task to get the documentation percentage.
+        commands.each do |command|
+          prepare_yard_fence_tmp_files if command == [File.join(@root, "bin", "yard")]
+          output, status = capture_yard_command(command)
+          unless command_successful?(status)
+            return handle_yard_documentation_failure(yard_command_failure_message(command, output, status))
           end
+          line = documented_percent_line(output)
+          return line if line
+        end
 
-          if @strict
-            raise "Could not find documented percentage in bin/rake yard output"
-          else
-            warn("Could not find documented percentage in bin/rake yard output.")
-            nil
-          end
-        rescue => e
-          if @strict
-            raise "Failed to run bin/rake yard: #{e.class}: #{e.message}"
-          else
-            warn("Failed to run bin/rake yard: #{e.class}: #{e.message}")
-            nil
-          end
+        handle_yard_documentation_failure("Could not find documented percentage in YARD output")
+      end
+
+      def capture_yard_command(command)
+        Open3.capture2e(*command, {chdir: @root})
+      rescue => e
+        ["#{e.class}: #{e.message}", false]
+      end
+
+      def handle_yard_documentation_failure(message)
+        if @strict
+          raise message
+        else
+          warn(message)
+          nil
+        end
+      end
+
+      def command_successful?(status)
+        return status if status == true || status == false
+
+        !status.respond_to?(:success?) || status.success?
+      end
+
+      def yard_command_failure_message(command, output, status)
+        exit_status = status.respond_to?(:exitstatus) ? status.exitstatus : nil
+        message = "Failed to run #{yard_command_label(command)}"
+        message = "#{message} (exit #{exit_status})" if exit_status
+        output = output.to_s.strip
+        message = "#{message}: #{output}" unless output.empty?
+        message
+      end
+
+      def yard_command_label(command)
+        command = Array(command)
+        bin = command.first.to_s
+        if bin == File.join(@root, "bin", "rake")
+          "bin/rake #{command.drop(1).join(" ")}".strip
+        elsif bin == File.join(@root, "bin", "yard")
+          "bin/yard"
+        else
+          command.join(" ")
         end
       end
 
