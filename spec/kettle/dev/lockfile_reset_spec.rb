@@ -3,6 +3,30 @@
 require "tmpdir"
 
 RSpec.describe Kettle::Dev::LockfileReset do
+  def released_registry_gem
+    "rake"
+  end
+
+  def released_registry_version
+    "13.4.2"
+  end
+
+  def never_released_registry_version
+    "0.0.1"
+  end
+
+  def never_released_workspace_gem
+    "kettle-starfish"
+  end
+
+  def released_workspace_version
+    "1.0.0"
+  end
+
+  def unreleased_workspace_version
+    "9.9.9"
+  end
+
   around do |example|
     Dir.mktmpdir("kettle-dev-lockfile-reset-spec") do |dir|
       @root = dir
@@ -56,10 +80,10 @@ RSpec.describe Kettle::Dev::LockfileReset do
         GEM
           remote: https://rubygems.org/
           specs:
-            kettle-test (2.0.15)
+            #{never_released_workspace_gem} (#{released_workspace_version})
 
         CHECKSUMS
-          kettle-test (2.0.15) sha256=abc123
+          #{never_released_workspace_gem} (#{released_workspace_version}) sha256=abc123
       LOCK
     })
     File.write(File.join(@root, "Gemfile"), "source \"https://rubygems.org\"\n")
@@ -67,10 +91,10 @@ RSpec.describe Kettle::Dev::LockfileReset do
       GEM
         remote: https://rubygems.org/
         specs:
-          kettle-test (2.0.16)
+          #{never_released_workspace_gem} (#{unreleased_workspace_version})
 
       CHECKSUMS
-        kettle-test (2.0.16) sha256=localonly
+        #{never_released_workspace_gem} (#{unreleased_workspace_version}) sha256=localonly
     LOCK
     allow(reset).to receive(:locally_installed?).and_return(false)
 
@@ -88,38 +112,38 @@ RSpec.describe Kettle::Dev::LockfileReset do
         GEM
           remote: https://rubygems.org/
           specs:
-            kettle-test (2.0.15)
+            #{never_released_workspace_gem} (#{released_workspace_version})
 
         CHECKSUMS
-          kettle-test (2.0.15) sha256=abc123
+          #{never_released_workspace_gem} (#{released_workspace_version}) sha256=abc123
       LOCK
     })
-    FileUtils.mkdir_p(File.join(@root, "kettle-test"))
-    File.write(File.join(@root, "kettle-test", "kettle-test.gemspec"), "Gem::Specification.new { |s| s.name = 'kettle-test' }\n")
+    FileUtils.mkdir_p(File.join(@root, never_released_workspace_gem))
+    File.write(File.join(@root, never_released_workspace_gem, "#{never_released_workspace_gem}.gemspec"), "Gem::Specification.new { |s| s.name = '#{never_released_workspace_gem}' }\n")
     File.write(File.join(@root, "kettle-dev.gemspec"), "Gem::Specification.new { |s| s.name = 'kettle-dev' }\n")
     File.write(File.join(@root, "Gemfile"), "source \"https://rubygems.org\"\n")
     File.write(File.join(@root, "Gemfile.lock"), <<~LOCK)
       GEM
         remote: https://rubygems.org/
         specs:
-          kettle-test (2.0.16)
+          #{never_released_workspace_gem} (#{unreleased_workspace_version})
 
       CHECKSUMS
-        kettle-test (2.0.16) sha256=localonly
+        #{never_released_workspace_gem} (#{unreleased_workspace_version}) sha256=localonly
     LOCK
     allow(reset).to receive_messages(
-      local_workspace_gem_names: Set["kettle-test"],
+      local_workspace_gem_names: Set[never_released_workspace_gem],
       locally_installed?: false,
       ruby_gems_version_available?: false
     )
-    allow(reset).to receive(:locally_installed?).with("kettle-test", "2.0.15").and_return(true)
-    allow(reset).to receive(:ruby_gems_version_available?).with("kettle-test", "2.0.15").and_return(true)
-    allow(reset).to receive(:locally_installed?).with("kettle-test", "2.0.16").and_return(true)
-    allow(reset).to receive(:ruby_gems_version_available?).with("kettle-test", "2.0.16").and_return(false)
+    allow(reset).to receive(:locally_installed?).with(never_released_workspace_gem, released_workspace_version).and_return(true)
+    allow(reset).to receive(:ruby_gems_version_available?).with(never_released_workspace_gem, released_workspace_version).and_return(true)
+    allow(reset).to receive(:locally_installed?).with(never_released_workspace_gem, unreleased_workspace_version).and_return(true)
+    allow(reset).to receive(:ruby_gems_version_available?).with(never_released_workspace_gem, unreleased_workspace_version).and_return(false)
 
     reset.reset("release-lockfiles")
 
-    expect(commands.first).to include("gem uninstall kettle-test -v 2.0.16 -x -I")
+    expect(commands.first).to include("gem uninstall #{never_released_workspace_gem} -v #{unreleased_workspace_version} -x -I")
     expect(commands.last).to include("bundle lock --update --add-checksums")
   end
 
@@ -131,16 +155,16 @@ RSpec.describe Kettle::Dev::LockfileReset do
       next unless command.include?("bundle lock")
 
       bundle_resets += 1
-      version = (bundle_resets == 1) ? "2.0.16" : "2.0.15"
+      version = (bundle_resets == 1) ? unreleased_workspace_version : released_workspace_version
       checksum = (bundle_resets == 1) ? "localonly" : "released"
       File.write(File.join(@root, "Gemfile.lock"), <<~LOCK)
         GEM
           remote: https://rubygems.org/
           specs:
-            kettle-test (#{version})
+            #{never_released_workspace_gem} (#{version})
 
         CHECKSUMS
-          kettle-test (#{version}) sha256=#{checksum}
+          #{never_released_workspace_gem} (#{version}) sha256=#{checksum}
       LOCK
     })
     File.write(File.join(@root, "Gemfile"), "source \"https://rubygems.org\"\n")
@@ -148,36 +172,36 @@ RSpec.describe Kettle::Dev::LockfileReset do
       GEM
         remote: https://rubygems.org/
         specs:
-          kettle-test (2.0.15)
+          #{never_released_workspace_gem} (#{released_workspace_version})
 
       CHECKSUMS
-        kettle-test (2.0.15) sha256=released
+        #{never_released_workspace_gem} (#{released_workspace_version}) sha256=released
     LOCK
-    allow(reset).to receive(:local_workspace_gem_names).and_return(Set["kettle-test"])
-    allow(reset).to receive(:locally_installed?).with("kettle-test", "2.0.15").and_return(true)
-    allow(reset).to receive(:locally_installed?).with("kettle-test", "2.0.16").and_return(true)
-    allow(reset).to receive(:ruby_gems_version_available?).with("kettle-test", "2.0.15").and_return(true)
-    allow(reset).to receive(:ruby_gems_version_available?).with("kettle-test", "2.0.16").and_return(false)
+    allow(reset).to receive(:local_workspace_gem_names).and_return(Set[never_released_workspace_gem])
+    allow(reset).to receive(:locally_installed?).with(never_released_workspace_gem, released_workspace_version).and_return(true)
+    allow(reset).to receive(:locally_installed?).with(never_released_workspace_gem, unreleased_workspace_version).and_return(true)
+    allow(reset).to receive(:ruby_gems_version_available?).with(never_released_workspace_gem, released_workspace_version).and_return(true)
+    allow(reset).to receive(:ruby_gems_version_available?).with(never_released_workspace_gem, unreleased_workspace_version).and_return(false)
 
     reset.reset("release-lockfiles")
 
     expect(commands.map { |command| command.include?("bundle lock") }).to eq([true, false, true])
-    expect(commands[1]).to include("gem uninstall kettle-test -v 2.0.16 -x -I")
-    expect(File.read(File.join(@root, "Gemfile.lock"))).to include("kettle-test (2.0.15)")
+    expect(commands[1]).to include("gem uninstall #{never_released_workspace_gem} -v #{unreleased_workspace_version} -x -I")
+    expect(File.read(File.join(@root, "Gemfile.lock"))).to include("#{never_released_workspace_gem} (#{released_workspace_version})")
   end
 
   it "continues when another release worker already removed the same local gem version" do
     reset = described_class.new(root: @root, command_runner: ->(_command) { raise "already removed" })
-    allow(reset).to receive(:locally_installed?).with("kettle-test", "2.0.16").and_return(false)
+    allow(reset).to receive(:locally_installed?).with(never_released_workspace_gem, unreleased_workspace_version).and_return(false)
 
-    expect { reset.send(:uninstall_unreleased_local_gem, "kettle-test", "2.0.16") }.not_to raise_error
+    expect { reset.send(:uninstall_unreleased_local_gem, never_released_workspace_gem, unreleased_workspace_version) }.not_to raise_error
   end
 
   it "fails when uninstall fails and the local gem version is still installed" do
     reset = described_class.new(root: @root, command_runner: ->(_command) { raise "permission denied" })
-    allow(reset).to receive(:locally_installed?).with("kettle-test", "2.0.16").and_return(true)
+    allow(reset).to receive(:locally_installed?).with(never_released_workspace_gem, unreleased_workspace_version).and_return(true)
 
-    expect { reset.send(:uninstall_unreleased_local_gem, "kettle-test", "2.0.16") }
+    expect { reset.send(:uninstall_unreleased_local_gem, never_released_workspace_gem, unreleased_workspace_version) }
       .to raise_error(RuntimeError, "permission denied")
   end
 
@@ -189,14 +213,14 @@ RSpec.describe Kettle::Dev::LockfileReset do
       GEM
         remote: https://rubygems.org/
         specs:
-          kettle-test (2.0.16)
+          #{never_released_workspace_gem} (#{unreleased_workspace_version})
 
       CHECKSUMS
-        kettle-test (2.0.16) sha256=localonly
+        #{never_released_workspace_gem} (#{unreleased_workspace_version}) sha256=localonly
     LOCK
-    allow(reset).to receive(:local_workspace_gem_names).and_return(Set["kettle-test"])
-    allow(reset).to receive(:locally_installed?).with("kettle-test", "2.0.16").and_return(true)
-    allow(reset).to receive(:ruby_gems_versions).with("kettle-test").and_raise(Kettle::Dev::Error, "RubyGems.org unavailable")
+    allow(reset).to receive(:local_workspace_gem_names).and_return(Set[never_released_workspace_gem])
+    allow(reset).to receive(:locally_installed?).with(never_released_workspace_gem, unreleased_workspace_version).and_return(true)
+    allow(reset).to receive(:ruby_gems_versions).with(never_released_workspace_gem).and_raise(Kettle::Dev::Error, "RubyGems.org unavailable")
 
     expect { reset.reset("release-lockfiles") }.to raise_error(Kettle::Dev::Error, /RubyGems.org unavailable/)
     expect(commands).to be_empty
@@ -319,9 +343,9 @@ RSpec.describe Kettle::Dev::LockfileReset do
           kettle-dev (2.5.0)
 
       PATH
-        remote: ../kettle-test
+        remote: ../#{never_released_workspace_gem}
         specs:
-          kettle-test (2.0.16)
+          #{never_released_workspace_gem} (#{unreleased_workspace_version})
 
       GEM
         remote: https://rubygems.org/
@@ -330,18 +354,18 @@ RSpec.describe Kettle::Dev::LockfileReset do
 
       CHECKSUMS
         kettle-dev (2.5.0)
-        kettle-test (2.0.16)
+        #{never_released_workspace_gem} (#{unreleased_workspace_version})
         rake (13.4.2) sha256=abc123
 
       DEPENDENCIES
         kettle-dev!
-        kettle-test!
+        #{never_released_workspace_gem}!
     LOCK
 
     path = File.join(@root, "Gemfile.lock")
 
     expect(reset.local_path_remote_lines(path)).to eq([7])
-    expect(reset.reset_update_gems(path)).to eq(["kettle-test"])
+    expect(reset.reset_update_gems(path)).to eq([never_released_workspace_gem])
     expect(reset.diagnostics(path)).to eq(["#{path} has local path remote at line 7"])
   end
 
@@ -418,6 +442,19 @@ RSpec.describe Kettle::Dev::LockfileReset do
   end
 
   it "matches RubyGems.org platform releases before uninstalling local gems" do
+    reset = described_class.new(root: @root, command_runner: ->(_command) {})
+    allow(reset).to receive(:ruby_gems_versions).with(released_registry_gem).and_return(
+      [
+        {"number" => released_registry_version, "platform" => "ruby"},
+        {"number" => "0.4.8", "platform" => "ruby"}
+      ]
+    )
+
+    expect(reset.send(:ruby_gems_version_available?, released_registry_gem, released_registry_version)).to be(true)
+    expect(reset.send(:ruby_gems_version_available?, released_registry_gem, never_released_registry_version)).to be(false)
+  end
+
+  it "matches RubyGems.org native platform releases before uninstalling local gems" do
     reset = described_class.new(root: @root, command_runner: ->(_command) {})
     allow(reset).to receive(:ruby_gems_versions).with("native-demo").and_return(
       [{"number" => "1.2.3", "platform" => "x86_64-linux"}]
