@@ -14,6 +14,39 @@ module Kettle
       end
 
       def call(env, cmd)
+        return call_with_pty(env, cmd) if pty_available?
+
+        call_with_open3(env, cmd)
+      end
+
+      private
+
+      attr_reader :secrets_provider
+
+      def call_with_pty(env, cmd)
+        stdout_str = +""
+        status = nil
+        PTY.spawn(env, cmd) do |output, input, pid|
+          begin
+            loop do
+              chunk = output.readpartial(1024)
+              stdout_str << chunk
+              @output.print(chunk)
+              handle_prompt(input, chunk)
+            end
+          rescue Errno::EIO
+            # PTY raises EIO when the child process exits after closing the slave.
+          rescue Kettle::Dev::Error
+            Process.kill("TERM", pid)
+            raise
+          ensure
+            _, status = Process.wait2(pid)
+          end
+        end
+        [stdout_str, "", status]
+      end
+
+      def call_with_open3(env, cmd)
         stdout_str = +""
         stderr_str = +""
         status = nil
@@ -41,10 +74,6 @@ module Kettle
         end
         [stdout_str, stderr_str, status]
       end
-
-      private
-
-      attr_reader :secrets_provider
 
       def handle_prompt(input, chunk)
         if otp_prompt?(chunk)
@@ -81,6 +110,15 @@ module Kettle
       def signing_password_prompt?(chunk)
         chunk.match?(/(?:enter\s+)?(?:PEM\s+)?pass(?:\s|-)?phrase\s*(?:for\s+[^:]+)?[:?]\s*\z/i) ||
           chunk.match?(/(?:PEM|private key) password\s*[:?]\s*\z/i)
+      end
+
+      def pty_available?
+        return false unless RUBY_ENGINE == "ruby"
+
+        require "pty"
+        true
+      rescue LoadError
+        false
       end
     end
   end

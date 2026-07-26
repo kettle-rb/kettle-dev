@@ -28,6 +28,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Direct `kettle-release --secrets-provider 1password` runs now use the same
+  PTY-backed prompt bridge as family releases, so PEM passphrase prompts receive
+  the configured provider value instead of leaking through interactively.
+
 ### Security
 
 ## [2.5.0] - 2026-07-26

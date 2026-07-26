@@ -1,6 +1,35 @@
 # frozen_string_literal: true
 
+require "shellwords"
+
 RSpec.describe Kettle::Dev::InteractiveReleaseCommand do
+  it "uses a PTY to write the configured passphrase to prompt-bearing commands" do
+    provider = instance_double(Kettle::Dev::ReleaseSecrets::OnePassword, gem_signing_passphrase: "secret")
+    output = StringIO.new
+    command = described_class.new(secrets_provider: provider, output: output)
+    skip "PTY is unavailable on this Ruby engine" unless command.send(:pty_available?)
+
+    script = "print 'Enter PEM pass phrase:'; $stdout.flush; exit(STDIN.gets&.chomp == 'secret' ? 0 : 1)"
+    _stdout, _stderr, status = command.call({}, [RbConfig.ruby, "-e", script].shelljoin)
+
+    expect(status).to be_success
+    expect(output.string).to include("Enter PEM pass phrase:")
+    expect(output.string).to include("gem signing passphrase loaded from configured secrets provider.")
+  end
+
+  it "falls back to Open3 when PTY is unavailable" do
+    provider = instance_double(Kettle::Dev::ReleaseSecrets::OnePassword, gem_signing_passphrase: "secret")
+    output = StringIO.new
+    command = described_class.new(secrets_provider: provider, output: output)
+    allow(command).to receive(:pty_available?).and_return(false)
+    script = "print 'Enter PEM pass phrase:'; $stdout.flush; exit(STDIN.gets&.chomp == 'secret' ? 0 : 1)"
+
+    _stdout, _stderr, status = command.call({}, [RbConfig.ruby, "-e", script].shelljoin)
+
+    expect(status).to be_success
+    expect(output.string).to include("gem signing passphrase loaded from configured secrets provider.")
+  end
+
   it "waits for the MFA response prompt before writing an OTP" do
     provider = instance_double(Kettle::Dev::ReleaseSecrets::OnePassword, rubygems_otp: "123456")
     output = StringIO.new
