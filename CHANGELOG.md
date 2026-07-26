@@ -24,6 +24,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - Executable startup headers are now shown only when `--verbose` is passed;
   `-v` and `--version` still print just the executable version and exit.
+- `yard:lint` now runs before `yard` and before the default task reaches YARD
+  documentation generation, so documentation lint failures fail earlier in CI.
 
 - kettle-jem-template-20260725-002 - Version specs now use `anonymous_loader` to
   cover `version.rb` without redefining constants, or are removed when version

@@ -25,6 +25,15 @@ begin
     # yard-timekeeper not available - that's fine
   end
 
+  namespace :yard do
+    desc "Lint YARD Documentation"
+    task :lint do
+      sh("bundle", "exec", "yard-lint", "lib")
+    end
+  end
+
+  task yard: "yard:lint"
+  Kettle::Dev.register_default("yard:lint")
   Kettle::Dev.register_default("yard")
 rescue LoadError
   warn("[kettle-dev][yard.rake] failed to load yard") if Kettle::Dev::DEBUGGING

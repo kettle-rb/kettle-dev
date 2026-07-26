@@ -27,4 +27,13 @@ RSpec.describe "rake yard" do # rubocop:disable RSpec/DescribeClass
     expect(Kettle::Dev.defaults).to include("yard")
     expect(Rake::Task[:default].prerequisites).to include("yard")
   end
+
+  it "runs YARD lint before the default yard task" do
+    default_prerequisites = Rake::Task[:default].prerequisites
+
+    expect(Kettle::Dev.defaults).to include("yard:lint", "yard")
+    expect(default_prerequisites).to include("yard:lint", "yard")
+    expect(default_prerequisites.index("yard:lint")).to be < default_prerequisites.index("yard")
+    expect(Rake::Task[:yard].prerequisites).to include("yard:lint")
+  end
 end
