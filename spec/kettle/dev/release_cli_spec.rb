@@ -6,6 +6,13 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     let(:ci_helpers) { Kettle::Dev::CIHelpers }
     let(:cli) { described_class.new }
 
+    before do |example|
+      next if example.metadata[:real_release_lockfiles]
+
+      allow_any_instance_of(described_class).to receive(:prepare_release_lockfiles_for_commit!)
+      allow_any_instance_of(described_class).to receive(:validate_release_lockfiles!)
+    end
+
     def write_style_local(root, ruby_gem)
       gemfile_dir = File.join(root, "gemfiles", "modular")
       FileUtils.mkdir_p(gemfile_dir)
@@ -895,7 +902,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       end
     end
 
-    describe "release lockfile validation" do
+    describe "release lockfile validation", :real_release_lockfiles do
       def with_release_root
         Dir.mktmpdir do |root|
           allow(ci_helpers).to receive(:project_root).and_return(root)
