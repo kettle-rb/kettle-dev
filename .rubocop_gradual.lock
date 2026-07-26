@@ -1,0 +1,6 @@
+{
+  "lib/kettle/dev/rakelib/yard.rake:4282409253": [
+    [35, 3, 22, "Rake/Desc: Describe the task with `desc` method.", 1722165527],
+    [41, 3, 11, "Rake/DuplicateTask: Task `yard` is defined at both lib/kettle/dev/rakelib/yard.rake:35 and lib/kettle/dev/rakelib/yard.rake:41.", 2689727229]
+  ]
+}
