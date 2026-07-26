@@ -221,7 +221,7 @@
     <li>
       
       
-        <span class='type'>(<tt><span class='object_link'><a href="../Error.html" title="Kettle::Dev::Error (class)">Error</a></span></tt>)</span>
+        <span class='type'>(<tt><span class='object_link'><a href="../Error.html" title="Kettle::Dev::Error (class)">Kettle::Dev::Error</a></span></tt>)</span>
       
       
       
@@ -235,23 +235,33 @@
       <pre class="lines">
 
 
-129
-130
 131
 132
 133
 134
-135</pre>
+135
+136
+137
+138
+139
+140
+141
+142</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_secrets.rb', line 129</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_secrets.rb', line 131</span>
 
 <span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_build'>build</span><span class='lparen'>(</span><span class='label'>provider_name:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>config:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_name'>name</span> <span class='op'>=</span> <span class='id identifier rubyid_provider_name'>provider_name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span> <span class='op'>?</span> <span class='const'>ENV</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>KETTLE_RELEASE_SECRETS_PROVIDER</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>:</span> <span class='id identifier rubyid_provider_name'>provider_name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
+  <span class='id identifier rubyid_configured'>configured</span> <span class='op'>=</span> <span class='id identifier rubyid_config'>config</span> <span class='op'>||</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
+  <span class='id identifier rubyid_name'>name</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='id identifier rubyid_provider_name'>provider_name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+    <span class='id identifier rubyid_configured'>configured</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>provider</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='const'>ENV</span><span class='period'>.</span><span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>KETTLE_RELEASE_SECRETS_PROVIDER</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='rparen'>)</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_provider_name'>provider_name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
+  <span class='kw'>end</span>
   <span class='kw'>return</span> <span class='const'><span class='object_link'><a href="Provider.html" title="Kettle::Dev::ReleaseSecrets::Provider (class)">Provider</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span> <span class='kw'>if</span> <span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span> <span class='op'>||</span> <span class='id identifier rubyid_name'>name</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>interactive</span><span class='tstring_end'>&quot;</span></span>
-  <span class='kw'>return</span> <span class='const'><span class='object_link'><a href="OnePassword.html" title="Kettle::Dev::ReleaseSecrets::OnePassword (class)">OnePassword</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="OnePassword.html#initialize-instance_method" title="Kettle::Dev::ReleaseSecrets::OnePassword#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_env_config'>env_config</span><span class='period'>.</span><span class='id identifier rubyid_merge'>merge</span><span class='lparen'>(</span><span class='id identifier rubyid_config'>config</span> <span class='op'>||</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='const'><span class='object_link'><a href="OnePassword.html" title="Kettle::Dev::ReleaseSecrets::OnePassword (class)">OnePassword</a></span></span><span class='period'>.</span><span class='id identifier rubyid_configured?'><span class='object_link'><a href="OnePassword.html#configured%3F-class_method" title="Kettle::Dev::ReleaseSecrets::OnePassword.configured? (method)">configured?</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='const'><span class='object_link'><a href="OnePassword.html" title="Kettle::Dev::ReleaseSecrets::OnePassword (class)">OnePassword</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="OnePassword.html#initialize-instance_method" title="Kettle::Dev::ReleaseSecrets::OnePassword#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_env_config'>env_config</span><span class='period'>.</span><span class='id identifier rubyid_merge'>merge</span><span class='lparen'>(</span><span class='id identifier rubyid_configured'>configured</span><span class='rparen'>)</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='const'><span class='object_link'><a href="OnePassword.html" title="Kettle::Dev::ReleaseSecrets::OnePassword (class)">OnePassword</a></span></span><span class='period'>.</span><span class='id identifier rubyid_configured?'><span class='object_link'><a href="OnePassword.html#configured%3F-class_method" title="Kettle::Dev::ReleaseSecrets::OnePassword.configured? (method)">configured?</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
 
-  <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../Error.html" title="Kettle::Dev::Error (class)">Error</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>unsupported release secrets provider </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_inspect'>inspect</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+  <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Error.html" title="Kettle::Dev::Error (class)">Error</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>unsupported release secrets provider </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_inspect'>inspect</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -273,15 +283,15 @@
       <pre class="lines">
 
 
-137
-138
-139
-140
-141
-142</pre>
+144
+145
+146
+147
+148
+149</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_secrets.rb', line 137</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_secrets.rb', line 144</span>
 
 <span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_env_config'>env_config</span>
   <span class='const'><span class='object_link'><a href="#ENV_KEYS-constant" title="Kettle::Dev::ReleaseSecrets::Factory::ENV_KEYS (constant)">ENV_KEYS</a></span></span><span class='period'>.</span><span class='id identifier rubyid_each_with_object'>each_with_object</span><span class='lparen'>(</span><span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='lparen'>(</span><span class='id identifier rubyid_key'>key</span><span class='comma'>,</span> <span class='id identifier rubyid_env_key'>env_key</span><span class='rparen'>)</span><span class='comma'>,</span> <span class='id identifier rubyid_memo'>memo</span><span class='op'>|</span>

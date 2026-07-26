@@ -90,8 +90,8 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 <ul>
   <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.0">v2.5.0</a>
 </li>
-  <li>COVERAGE: 92.26% – 4317/4679 lines in 40 files</li>
-  <li>BRANCH COVERAGE: 76.26% – 1667/2186 branches in 40 files</li>
+  <li>COVERAGE: 91.97% – 4307/4683 lines in 40 files</li>
+  <li>BRANCH COVERAGE: 75.96% – 1662/2188 branches in 40 files</li>
   <li>57.24% documented</li>
 </ul>
 
@@ -142,6 +142,15 @@ the configured provider value instead of leaking through interactively.</p>
     <p><code>kettle-release --secrets-provider 1password</code> now recognizes the real<br>
 1Password provider as configured instead of misclassifying it as the<br>
 interactive fallback provider.</p>
+  </li>
+  <li>
+    <p>Release secrets provider lookup now honors <code>provider</code> from explicit config,<br>
+and direct provider lookup failures raise <code>Kettle::Dev::Error</code>.</p>
+  </li>
+  <li>
+    <p>kettle-jem-template-20260726-003 - Coverage upload steps now treat Coveralls,<br>
+QLTY, and Codecov as optional, so provider outages do not fail CI when local<br>
+coverage thresholds still pass.</p>
   </li>
 </ul>
 

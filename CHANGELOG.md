@@ -28,20 +28,13 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Release secrets provider lookup now honors `provider` from explicit config,
-  and direct provider lookup failures raise `Kettle::Dev::Error`.
-
-- kettle-jem-template-20260726-003 - Coverage upload steps now treat Coveralls,
-  QLTY, and Codecov as optional, so provider outages do not fail CI when local
-  coverage thresholds still pass.
-
 ### Security
 
 ## [2.5.0] - 2026-07-26
 
 - TAG: [v2.5.0][2.5.0t]
-- COVERAGE: 92.26% -- 4317/4679 lines in 40 files
-- BRANCH COVERAGE: 76.26% -- 1667/2186 branches in 40 files
+- COVERAGE: 91.97% -- 4307/4683 lines in 40 files
+- BRANCH COVERAGE: 75.96% -- 1662/2188 branches in 40 files
 - 57.24% documented
 
 ### Added
@@ -78,6 +71,13 @@ Please file a bug if you notice a violation of semantic versioning.
 - `kettle-release --secrets-provider 1password` now recognizes the real
   1Password provider as configured instead of misclassifying it as the
   interactive fallback provider.
+
+- Release secrets provider lookup now honors `provider` from explicit config,
+  and direct provider lookup failures raise `Kettle::Dev::Error`.
+
+- kettle-jem-template-20260726-003 - Coverage upload steps now treat Coveralls,
+  QLTY, and Codecov as optional, so provider outages do not fail CI when local
+  coverage thresholds still pass.
 
 ## [2.4.6] - 2026-07-26
 
