@@ -118,7 +118,7 @@ module Kettle
 
       def initialize(start_step: 0, local_ci: false, version: nil, appraisal_task: nil, skip_steps: nil, skip_bundle_audit: nil, ci_workflows: nil, skip_remotes: nil, secrets_provider_name: nil, yes: false, **options)
         @root = Kettle::Dev::CIHelpers.project_root
-        @git = Kettle::Dev::GitAdapter.new
+        @git = Kettle::Dev::GitAdapter.new(@root)
         @start_step = (start_step || 0).to_i
         @start_step = 0 if @start_step < 0
         @skip_steps = normalize_skip_steps(skip_steps)
@@ -662,12 +662,12 @@ module Kettle
         paths = release_lockfile_paths.select { |path| git_path_changed?(path) }
         return if paths.empty?
 
-        run_cmd!("git add -- #{paths.map { |path| Shellwords.escape(path) }.join(" ")} && git commit --amend --no-edit")
+        abort("Failed to stage reset release lockfiles.") unless @git.add_paths(paths)
+        abort("Failed to amend release prep commit with reset lockfiles.") unless @git.commit_amend_no_edit
       end
 
       def git_path_changed?(path)
-        _stdout, _stderr, status = Open3.capture3("git", "diff", "--quiet", "--", path, chdir: @root)
-        !status.success?
+        !@git.diff_quiet?(path)
       end
 
       def lockfile_reset
@@ -1189,7 +1189,7 @@ module Kettle
           puts "Local CI failed for #{chosen}."
           if committed
             puts "Rolling back release prep commit (soft reset)..."
-            system("git", "reset", "--soft", "HEAD^")
+            @git.reset_soft("HEAD^")
           end
           abort("Aborting due to local CI failure.")
         end
@@ -1207,7 +1207,7 @@ module Kettle
           puts "Local tag #{tag} already exists."
         else
           puts "Creating local git tag #{tag} without pushing it."
-          run_cmd!("git tag -a #{Shellwords.escape(tag)} -m #{Shellwords.escape(tag)}")
+          abort("Failed to create local tag #{tag}.") unless @git.tag_annotated(tag, tag)
         end
 
         puts "Publishing #{File.basename(gem_path)} to RubyGems without pushing git refs..."
@@ -1420,13 +1420,13 @@ module Kettle
       def commit_release_prep!(version)
         msg = "🔖 Prepare release v#{version}"
         # Stage all changes (including new/untracked files) prior to committing
-        run_cmd!("git add -A")
+        abort("Failed to stage release prep changes.") unless @git.add_all
         out, _ = git_output(["status", "--porcelain"])
         if out.empty?
           puts "No changes to commit for release prep (continuing)."
           false
         else
-          run_cmd!(%(git commit -am #{Shellwords.escape(msg)}))
+          abort("Failed to commit release prep changes.") unless @git.commit_all(msg)
           true
         end
       end

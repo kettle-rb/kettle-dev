@@ -75,7 +75,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       end
     end
 
-    it "reports commits ahead of the latest release tag on the default branch" do
+    it "reports commits ahead of the latest release tag on the default branch", :real_git_adapter do
       mkproj do |root|
         write_version(root)
         File.write(File.join(root, "CHANGELOG.md"), <<~MD)
@@ -93,6 +93,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
         git!(root, "checkout", "-q", "-b", "main")
         git!(root, "config", "user.email", "test@example.com")
         git!(root, "config", "user.name", "Test User")
+        git!(root, "config", "commit.gpgSign", "false")
         git!(root, "config", "tag.gpgSign", "false")
         git!(root, "add", ".")
         git!(root, "commit", "-q", "-m", "release")

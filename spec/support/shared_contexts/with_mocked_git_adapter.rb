@@ -26,7 +26,14 @@ RSpec.shared_context "with mocked git adapter" do
       remotes_with_urls: {"origin" => "git@github.com:me/repo.git"},
       checkout: true,
       pull: true,
-      fetch: true
+      fetch: true,
+      add_all: true,
+      add_paths: true,
+      commit_all: true,
+      commit_amend_no_edit: true,
+      diff_quiet?: true,
+      tag_annotated: true,
+      reset_soft: true
     )
     allow(adapter_double).to receive(:remote_url) { |name| (name == "origin") ? "git@github.com:me/repo.git" : nil }
 

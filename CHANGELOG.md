@@ -28,6 +28,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Release and changelog specs now route git commit, amend, tag, reset, and
+  release-state queries through `GitAdapter`, so test runs do not invoke the
+  caller's real git signing configuration.
+
 ### Security
 
 ## [2.5.0] - 2026-07-26

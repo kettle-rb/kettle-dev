@@ -28,7 +28,7 @@ module Kettle
             false
           end
         else
-          out, st = Open3.capture2("git", "status", "--porcelain")
+          out, st = git_capture2("status", "--porcelain")
           st.success? && out.strip.empty?
         end
       rescue => e
@@ -43,16 +43,94 @@ module Kettle
       # @param args [Array<String>]
       # @return [Array<(String, Boolean)>] [output, success]
       def capture(args)
-        out, status = Open3.capture2("git", *args)
+        out, status = git_capture2(*args)
         [out.strip, status.success?]
       rescue => e
         Kettle::Dev.debug_error(e, __method__)
         ["", false]
       end
 
+      # Stage all changes in the repository.
+      #
+      # @return [Boolean]
+      def add_all
+        git_system("add", "-A")
+      rescue => e
+        Kettle::Dev.debug_error(e, __method__)
+        false
+      end
+
+      # Stage selected paths.
+      #
+      # @param paths [Array<String>]
+      # @return [Boolean]
+      def add_paths(paths)
+        git_system("add", "--", *Array(paths).map(&:to_s))
+      rescue => e
+        Kettle::Dev.debug_error(e, __method__)
+        false
+      end
+
+      # Commit all staged/tracked changes with a message.
+      #
+      # @param message [String]
+      # @return [Boolean]
+      def commit_all(message)
+        git_system("commit", "-am", message.to_s)
+      rescue => e
+        Kettle::Dev.debug_error(e, __method__)
+        false
+      end
+
+      # Amend the current commit without changing its message.
+      #
+      # @return [Boolean]
+      def commit_amend_no_edit
+        git_system("commit", "--amend", "--no-edit")
+      rescue => e
+        Kettle::Dev.debug_error(e, __method__)
+        false
+      end
+
+      # Return whether a tracked path has no unstaged changes.
+      #
+      # @param path [String]
+      # @return [Boolean]
+      def diff_quiet?(path)
+        _out, status = git_capture2("diff", "--quiet", "--", path.to_s)
+        status.success?
+      rescue => e
+        Kettle::Dev.debug_error(e, __method__)
+        false
+      end
+
+      # Create an annotated tag.
+      #
+      # @param tag [String]
+      # @param message [String]
+      # @return [Boolean]
+      def tag_annotated(tag, message)
+        git_system("tag", "-a", tag.to_s, "-m", message.to_s)
+      rescue => e
+        Kettle::Dev.debug_error(e, __method__)
+        false
+      end
+
+      # Soft reset to a ref.
+      #
+      # @param ref [String]
+      # @return [Boolean]
+      def reset_soft(ref)
+        git_system("reset", "--soft", ref.to_s)
+      rescue => e
+        Kettle::Dev.debug_error(e, __method__)
+        false
+      end
+
       # Create a new adapter rooted at the current working directory.
       # @return [void]
-      def initialize
+      def initialize(root = Dir.pwd)
+        @root = File.expand_path(root.to_s)
         # Allow users/CI to opt out of using the 'git' gem even when available.
         # Set KETTLE_DEV_DISABLE_GIT_GEM to a truthy value ("1", "true", "yes") to force CLI backend.
         env_val = ENV["KETTLE_DEV_DISABLE_GIT_GEM"]
@@ -63,7 +141,7 @@ module Kettle
         else
           Kernel.require "git"
           @backend = :gem
-          @git = ::Git.open(Dir.pwd)
+          @git = ::Git.open(@root)
         end
       rescue LoadError => e
         Kettle::Dev.debug_error(e, __method__, backtrace: false)
@@ -118,14 +196,14 @@ module Kettle
           # The ruby-git gem does not expose a dedicated API for "--tags" consistently across versions.
           # Use a shell fallback even when the gem backend is active. Tests should stub this method.
           if remote && !remote.to_s.empty?
-            system("git", "push", remote.to_s, "--tags")
+            git_system("push", remote.to_s, "--tags")
           else
-            system("git", "push", "--tags")
+            git_system("push", "--tags")
           end
         elsif remote && !remote.to_s.empty?
-          system("git", "push", remote.to_s, "--tags")
+          git_system("push", remote.to_s, "--tags")
         else
-          system("git", "push", "--tags")
+          git_system("push", "--tags")
         end
       rescue => e
         Kettle::Dev.debug_error(e, __method__)
@@ -137,7 +215,7 @@ module Kettle
         if @backend == :gem
           @git.current_branch
         else
-          out, status = Open3.capture2("git", "rev-parse", "--abbrev-ref", "HEAD")
+          out, status = git_capture2("rev-parse", "--abbrev-ref", "HEAD")
           status.success? ? out.strip : nil
         end
       rescue => e
@@ -157,7 +235,7 @@ module Kettle
             []
           end
         else
-          out, status = Open3.capture2("git", "ls-files")
+          out, status = git_capture2("ls-files")
           status.success? ? out.split(/\r?\n/).reject(&:empty?) : []
         end
       rescue => e
@@ -174,7 +252,7 @@ module Kettle
       # @param path [String] path to the file, relative to the repository root
       # @return [String] raw porcelain blame output, or "" on error / untracked file
       def blame_porcelain(path)
-        out, status = Open3.capture2("git", "blame", "--porcelain", path.to_s)
+        out, status = git_capture2("blame", "--porcelain", path.to_s)
         status.success? ? out : ""
       rescue => e
         Kettle::Dev.debug_error(e, __method__)
@@ -186,7 +264,7 @@ module Kettle
         if @backend == :gem
           @git.remotes.map(&:name)
         else
-          out, status = Open3.capture2("git", "remote")
+          out, status = git_capture2("remote")
           status.success? ? out.split(/\r?\n/).map(&:strip).reject(&:empty?) : []
         end
       rescue => e
@@ -206,7 +284,7 @@ module Kettle
             end
           end
         else
-          out, status = Open3.capture2("git", "remote", "-v")
+          out, status = git_capture2("remote", "-v")
           return {} unless status.success?
 
           urls = {}
@@ -230,7 +308,7 @@ module Kettle
           r = @git.remotes.find { |x| x.name == name }
           r&.url
         else
-          out, status = Open3.capture2("git", "config", "--get", "remote.#{name}.url")
+          out, status = git_capture2("config", "--get", "remote.#{name}.url")
           status.success? ? out.strip : nil
         end
       rescue => e
@@ -246,7 +324,7 @@ module Kettle
           @git.checkout(branch)
           true
         else
-          system("git", "checkout", branch.to_s)
+          git_system("checkout", branch.to_s)
         end
       rescue => e
         Kettle::Dev.debug_error(e, __method__)
@@ -262,7 +340,7 @@ module Kettle
           @git.pull(remote, branch)
           true
         else
-          system("git", "pull", remote.to_s, branch.to_s)
+          git_system("pull", remote.to_s, branch.to_s)
         end
       rescue => e
         Kettle::Dev.debug_error(e, __method__)
@@ -282,13 +360,31 @@ module Kettle
           end
           true
         elsif ref
-          system("git", "fetch", remote.to_s, ref.to_s)
+          git_system("fetch", remote.to_s, ref.to_s)
         else
-          system("git", "fetch", remote.to_s)
+          git_system("fetch", remote.to_s)
         end
       rescue => e
         Kettle::Dev.debug_error(e, __method__)
         false
+      end
+
+      private
+
+      def git_capture2(*args)
+        if @root == Dir.pwd
+          Open3.capture2("git", *args)
+        else
+          Open3.capture2("git", *args, chdir: @root)
+        end
+      end
+
+      def git_system(*args)
+        if @root == Dir.pwd
+          system("git", *args)
+        else
+          system("git", *args, chdir: @root)
+        end
       end
     end
   end

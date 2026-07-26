@@ -386,15 +386,17 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
     describe "#commit_release_prep!" do
       it "returns false when no changes" do
-        allow(cli).to receive(:run_cmd!).with("git add -A")
+        git = cli.instance_variable_get(:@git)
+        expect(git).to receive(:add_all).and_return(true)
         allow(cli).to receive(:git_output).with(%w[status --porcelain]).and_return(["", true])
         expect(cli.send(:commit_release_prep!, "1.0.0")).to be false
       end
 
       it "commits and returns true when there are changes" do
+        git = cli.instance_variable_get(:@git)
         allow(cli).to receive(:git_output).with(%w[status --porcelain]).and_return([" M file", true])
-        allow(cli).to receive(:run_cmd!).with("git add -A")
-        expect(cli).to receive(:run_cmd!).with(/git commit -am/)
+        expect(git).to receive(:add_all).and_return(true)
+        expect(git).to receive(:commit_all).with("🔖 Prepare release v1.0.0").and_return(true)
         expect(cli.send(:commit_release_prep!, "1.0.0")).to be true
       end
     end
@@ -1206,10 +1208,10 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
                  4.0.17
             LOCK
           end
-          allow(Open3).to receive(:capture3)
-            .with("git", "diff", "--quiet", "--", File.join(root, "Gemfile.lock"), chdir: root)
-            .and_return(["", "", instance_double(Process::Status, success?: false)])
-          expect(local_cli).to receive(:run_cmd!).with(a_string_matching(/git add -- .*Gemfile\.lock.*git commit --amend --no-edit/))
+          git = local_cli.instance_variable_get(:@git)
+          allow(git).to receive(:diff_quiet?).with(File.join(root, "Gemfile.lock")).and_return(false)
+          expect(git).to receive(:add_paths).with([File.join(root, "Gemfile.lock")]).and_return(true)
+          expect(git).to receive(:commit_amend_no_edit).and_return(true)
 
           expect { local_cli.send(:validate_release_lockfiles!, stage: "before push") }.not_to raise_error
         end
@@ -1714,7 +1716,8 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
           File.write(file_path, "name: ci")
           allow(ci_helpers).to receive(:workflows_list).and_return(["ci.yml"])
           expect(cli).to receive(:system).with("act", "-W", file_path).and_return(false)
-          expect(cli).to receive(:system).with("git", "reset", "--soft", "HEAD^")
+          git = cli.instance_variable_get(:@git)
+          expect(git).to receive(:reset_soft).with("HEAD^").and_return(true)
           expect { cli.send(:maybe_run_local_ci_before_push!, true) }.to raise_error(MockSystemExit, /local CI failure/)
         end
       end
@@ -1743,7 +1746,8 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
           local_cli = described_class.new
 
           allow(local_cli).to receive(:git_output).with(["rev-parse", "-q", "--verify", "refs/tags/v1.2.3"]).and_return(["", false])
-          expect(local_cli).to receive(:run_cmd!).with("git tag -a v1.2.3 -m v1.2.3").ordered
+          git = local_cli.instance_variable_get(:@git)
+          expect(git).to receive(:tag_annotated).with("v1.2.3", "v1.2.3").ordered.and_return(true)
           expect(local_cli).to receive(:run_cmd!).with("gem push #{gem_path}").ordered
           expect(local_cli).to receive(:run_release_availability_probe).ordered do |candidate|
             expect(candidate.published).to be(true)
@@ -1765,7 +1769,8 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
           local_cli = described_class.new
 
           allow(local_cli).to receive(:git_output).with(["rev-parse", "-q", "--verify", "refs/tags/v1.2.3"]).and_return(["abc", true])
-          expect(local_cli).not_to receive(:run_cmd!).with(/git tag/)
+          git = local_cli.instance_variable_get(:@git)
+          expect(git).not_to receive(:tag_annotated)
           expect(local_cli).to receive(:run_cmd!).with("gem push #{gem_path}")
           expect(local_cli).to receive(:run_release_availability_probe) do |candidate|
             expect(candidate.published).to be(true)

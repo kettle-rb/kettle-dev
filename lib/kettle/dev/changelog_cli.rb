@@ -252,8 +252,8 @@ module Kettle
         branch = default_branch_ref
         return nil unless tag && branch
 
-        stdout, _stderr, status = Open3.capture3("git", "rev-list", "--count", "#{tag}..#{branch}", chdir: @root)
-        status.success? ? stdout.to_i : nil
+        stdout, ok = git_capture(["rev-list", "--count", "#{tag}..#{branch}"])
+        ok ? stdout.to_i : nil
       end
 
       def release_tag_for_version(version)
@@ -263,15 +263,15 @@ module Kettle
       end
 
       def default_branch_ref
-        stdout, _stderr, status = Open3.capture3("git", "symbolic-ref", "--quiet", "--short", "refs/remotes/origin/HEAD", chdir: @root)
-        return stdout.strip if status.success? && !stdout.strip.empty?
+        stdout, ok = git_capture(["symbolic-ref", "--quiet", "--short", "refs/remotes/origin/HEAD"])
+        return stdout.strip if ok && !stdout.strip.empty?
 
         %w[main master HEAD].find { |ref| git_ref_exists?(ref) }
       end
 
       def git_ref_exists?(ref)
-        _stdout, _stderr, status = Open3.capture3("git", "rev-parse", "--verify", "--quiet", ref, chdir: @root)
-        status.success?
+        _stdout, ok = git_capture(["rev-parse", "--verify", "--quiet", ref])
+        ok
       end
 
       def detect_plan(changelog, version)
@@ -1147,12 +1147,15 @@ module Kettle
       # Return the root commit SHA of the current repository, or nil on failure.
       # Uses the generic GitAdapter#capture escape hatch so tests can stub it.
       def git_root_commit
-        adapter = Kettle::Dev::GitAdapter.new
-        out, ok = adapter.capture(["rev-list", "--max-parents=0", "HEAD"])
+        out, ok = git_capture(["rev-list", "--max-parents=0", "HEAD"])
         sha = out.to_s.lines.last&.strip   # take last line in case of multiple root commits
         (ok && sha && !sha.empty?) ? sha : nil
       rescue
         nil
+      end
+
+      def git_capture(args)
+        Kettle::Dev::GitAdapter.new(@root).capture(args)
       end
     end
   end
