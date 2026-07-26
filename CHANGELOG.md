@@ -22,6 +22,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- Documented family release credential automation with 1Password and the
+  unreleased-family-gem cleanup workflow.
+
 ### Deprecated
 
 ### Removed

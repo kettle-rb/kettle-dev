@@ -72,6 +72,10 @@ bin/kettle-changelog
 bin/kettle-release
 ```
 
+Family-wide releases are coordinated by the separate
+[kettle-family](https://github.com/kettle-dev/kettle-family) gem, which shells
+out to `kettle-release` for each member that needs publishing.
+
 ### What kettle-dev provides
 
 - Rake task loading from `require "kettle/dev"`.
@@ -292,6 +296,10 @@ Releasing and signing
 - `GEM_CERT_USER`: Username for selecting your public cert in `certs/<USER>.pem` (defaults to $USER)
 - `SOURCE_DATE_EPOCH`: Reproducible build timestamp. `kettle-release` will set this automatically for the session.
 
+Family releases can load signing and RubyGems MFA secrets from 1Password via
+`kettle-family` configuration instead of environment variables. See the
+maintainer release section below.
+
 Git hooks and commit message helpers (exe/kettle-commit-msg)
 
 - `GIT_HOOK_BRANCH_VALIDATE`: Branch name validation mode (e.g., `jira`) or `false` to disable
@@ -428,6 +436,65 @@ What it does:
 - Tips:
     - The commit message helper `exe/kettle-commit-msg` prefers project-local `.git-hooks` (then falls back to `~/.git-hooks`).
     - The goalie file `commit-subjects-goalie.txt` controls when a footer is appended; customize `footer-template.erb.txt` as you like.
+
+#### Family releases and 1Password
+
+`kettle-release` owns the single-gem release flow. Family-wide release
+orchestration depends on the separate
+[kettle-family](https://github.com/kettle-dev/kettle-family) gem:
+`kettle-family release` selects sibling or monorepo members and delegates each
+publish step to `kettle-release`. For family releases, the usual publish
+command is:
+
+```console
+kettle-family release --publish --execute
+```
+
+By default, `kettle-family` prompts once for the gem signing key password and
+leaves RubyGems MFA prompts interactive. To run a family release with the local
+1Password CLI, configure `release.secrets` in `.kettle-family.yml` and pass
+`--secrets-provider 1password`:
+
+```yaml
+release:
+  secrets:
+    provider: 1password
+    item: Rubygems
+    gem_signing_passphrase_field: GEM-SIGN-PASSPHRASE
+    rubygems_otp_field: one-time password
+```
+
+```console
+kettle-family release --publish --execute --secrets-provider 1password
+```
+
+The gem signing passphrase is loaded once and cached only in memory for the
+current `kettle-family` process. RubyGems OTP values are fetched when each MFA
+prompt appears, so long releases do not reuse a stale TOTP. Secret values are
+not written to the text report, NDJSON events, or temporary release files.
+
+For vault-specific or field-specific lookups, use explicit 1Password
+references. `rubygems_otp_reference` is read with `op read`; otherwise the OTP
+path uses `op item get ITEM --otp`.
+
+```yaml
+release:
+  secrets:
+    provider: 1password
+    account: my.1password.com
+    gem_signing_passphrase_reference: op://Private/Rubygems/GEM-SIGN-PASSPHRASE
+    rubygems_otp_reference: op://Private/Rubygems/one-time password?attribute=otp
+```
+
+If an old failed family release left unpublished sibling versions installed
+locally and Bundler keeps selecting them, clean them before retrying:
+
+```console
+kettle-family clean-unreleased --execute
+```
+
+The cleanup command is scoped to selected family members and removes local gem
+versions that are newer than the latest released version.
 
 ### Changelog generator
 

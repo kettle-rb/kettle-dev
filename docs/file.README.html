@@ -128,6 +128,10 @@ bin/kettle-changelog
 bin/kettle-release
 </code></pre>
 
+<p>Family-wide releases are coordinated by the separate<br>
+<a href="https://github.com/kettle-dev/kettle-family">kettle-family</a> gem, which shells<br>
+out to <code>kettle-release</code> for each member that needs publishing.</p>
+
 <h3 id="what-kettle-dev-provides">What kettle-dev provides</h3>
 
 <ul>
@@ -553,6 +557,10 @@ message explaining that setup and templating moved to kettle-jem.</p>
 <code>SOURCE_DATE_EPOCH</code>: Reproducible build timestamp. <code>kettle-release</code> will set this automatically for the session.</li>
 </ul>
 
+<p>Family releases can load signing and RubyGems MFA secrets from 1Password via<br>
+<code>kettle-family</code> configuration instead of environment variables. See the<br>
+maintainer release section below.</p>
+
 <p>Git hooks and commit message helpers (exe/kettle-commit-msg)</p>
 
 <ul>
@@ -758,6 +766,60 @@ Examples:</li>
     </ul>
   </li>
 </ul>
+
+<h4 id="family-releases-and-1password">Family releases and 1Password</h4>
+
+<p><code>kettle-release</code> owns the single-gem release flow. Family-wide release<br>
+orchestration depends on the separate<br>
+<a href="https://github.com/kettle-dev/kettle-family">kettle-family</a> gem:<br>
+<code>kettle-family release</code> selects sibling or monorepo members and delegates each<br>
+publish step to <code>kettle-release</code>. For family releases, the usual publish<br>
+command is:</p>
+
+<pre class="code language-console"><code class="language-console">kettle-family release --publish --execute
+</code></pre>
+
+<p>By default, <code>kettle-family</code> prompts once for the gem signing key password and<br>
+leaves RubyGems MFA prompts interactive. To run a family release with the local<br>
+1Password CLI, configure <code>release.secrets</code> in <code>.kettle-family.yml</code> and pass<br>
+<code>--secrets-provider 1password</code>:</p>
+
+<pre class="code language-yaml"><code class="language-yaml">release:
+  secrets:
+    provider: 1password
+    item: Rubygems
+    gem_signing_passphrase_field: GEM-SIGN-PASSPHRASE
+    rubygems_otp_field: one-time password
+</code></pre>
+
+<pre class="code language-console"><code class="language-console">kettle-family release --publish --execute --secrets-provider 1password
+</code></pre>
+
+<p>The gem signing passphrase is loaded once and cached only in memory for the<br>
+current <code>kettle-family</code> process. RubyGems OTP values are fetched when each MFA<br>
+prompt appears, so long releases do not reuse a stale TOTP. Secret values are<br>
+not written to the text report, NDJSON events, or temporary release files.</p>
+
+<p>For vault-specific or field-specific lookups, use explicit 1Password<br>
+references. <code>rubygems_otp_reference</code> is read with <code>op read</code>; otherwise the OTP<br>
+path uses <code>op item get ITEM --otp</code>.</p>
+
+<pre class="code language-yaml"><code class="language-yaml">release:
+  secrets:
+    provider: 1password
+    account: my.1password.com
+    gem_signing_passphrase_reference: op://Private/Rubygems/GEM-SIGN-PASSPHRASE
+    rubygems_otp_reference: op://Private/Rubygems/one-time password?attribute=otp
+</code></pre>
+
+<p>If an old failed family release left unpublished sibling versions installed<br>
+locally and Bundler keeps selecting them, clean them before retrying:</p>
+
+<pre class="code language-console"><code class="language-console">kettle-family clean-unreleased --execute
+</code></pre>
+
+<p>The cleanup command is scoped to selected family members and removes local gem<br>
+versions that are newer than the latest released version.</p>
 
 <h3 id="changelog-generator">Changelog generator</h3>
 
