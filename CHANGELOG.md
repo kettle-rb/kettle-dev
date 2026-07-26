@@ -28,17 +28,13 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Direct `kettle-release --secrets-provider 1password` runs now use the same
-  PTY-backed prompt bridge as family releases, so PEM passphrase prompts receive
-  the configured provider value instead of leaking through interactively.
-
 ### Security
 
 ## [2.5.0] - 2026-07-26
 
 - TAG: [v2.5.0][2.5.0t]
-- COVERAGE: 92.05% -- 4286/4656 lines in 40 files
-- BRANCH COVERAGE: 76.10% -- 1659/2180 branches in 40 files
+- COVERAGE: 91.96% -- 4301/4677 lines in 40 files
+- BRANCH COVERAGE: 75.82% -- 1656/2184 branches in 40 files
 - 57.24% documented
 
 ### Added
@@ -67,6 +63,10 @@ Please file a bug if you notice a violation of semantic versioning.
 - `kettle-release --secrets-provider 1password` now validates the gem signing
   passphrase before build/release and aborts instead of prompting if configured
   secrets are unavailable.
+
+- Direct `kettle-release --secrets-provider 1password` runs now use the same
+  PTY-backed prompt bridge as family releases, so PEM passphrase prompts receive
+  the configured provider value instead of leaking through interactively.
 
 ## [2.4.6] - 2026-07-26
 

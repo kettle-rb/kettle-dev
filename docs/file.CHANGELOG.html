@@ -90,8 +90,8 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 <ul>
   <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.0">v2.5.0</a>
 </li>
-  <li>COVERAGE: 92.05% – 4286/4656 lines in 40 files</li>
-  <li>BRANCH COVERAGE: 76.10% – 1659/2180 branches in 40 files</li>
+  <li>COVERAGE: 91.96% – 4301/4677 lines in 40 files</li>
+  <li>BRANCH COVERAGE: 75.82% – 1656/2184 branches in 40 files</li>
   <li>57.24% documented</li>
 </ul>
 
@@ -129,9 +129,15 @@ generation, reducing formatter noise during release preparation.</li>
 
 <ul>
   <li>
-<code>kettle-release --secrets-provider 1password</code> now validates the gem signing<br>
+    <p><code>kettle-release --secrets-provider 1password</code> now validates the gem signing<br>
 passphrase before build/release and aborts instead of prompting if configured<br>
-secrets are unavailable.</li>
+secrets are unavailable.</p>
+  </li>
+  <li>
+    <p>Direct <code>kettle-release --secrets-provider 1password</code> runs now use the same<br>
+PTY-backed prompt bridge as family releases, so PEM passphrase prompts receive<br>
+the configured provider value instead of leaking through interactively.</p>
+  </li>
 </ul>
 
 <h2 id="246---2026-07-26">
