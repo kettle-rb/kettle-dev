@@ -20,6 +20,25 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [2.4.6] - 2026-07-26
+
+- TAG: [v2.4.6][2.4.6t]
+- COVERAGE: 92.46% -- 4130/4467 lines in 38 files
+- BRANCH COVERAGE: 76.63% -- 1613/2105 branches in 38 files
+- 59.47% documented
+
+### Added
+
 - kettle-jem-template-20260726-001 - Projects now include YARD lint
   configuration and documentation dependencies so documentation issues fail
   before generated docs are refreshed.
@@ -38,10 +57,6 @@ Please file a bug if you notice a violation of semantic versioning.
   cover `version.rb` without redefining constants, or are removed when version
   specs are not managed for the project.
 
-### Deprecated
-
-### Removed
-
 ### Fixed
 
 - `kettle-release` lockfile normalization now passes `--add-checksums` when it
@@ -58,8 +73,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - kettle-jem-template-20260726-002 - Generated version files now document their
   version namespace and constants, reducing warning-only YARD lint output.
-
-### Security
 
 ## [2.4.5] - 2026-07-25
 
@@ -2770,7 +2783,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.4.5...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.4.6...HEAD
+[2.4.6]: https://github.com/kettle-dev/kettle-dev/compare/v2.4.5...v2.4.6
+[2.4.6t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.4.6
 [2.4.5]: https://github.com/kettle-dev/kettle-dev/compare/v2.4.4...v2.4.5
 [2.4.5t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.4.5
 [2.4.4]: https://github.com/kettle-dev/kettle-dev/compare/v2.4.3...v2.4.4
