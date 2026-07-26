@@ -125,6 +125,12 @@ specs are not managed for the project.</li>
 
 <ul>
   <li>
+<code>yard.rake</code> specs now account for appraisal bundles without documentation<br>
+dependencies, so current-appraisal CI does not expect <code>yard:lint</code> when YARD<br>
+is unavailable.</li>
+  <li>Executable version specs now ignore RubyGems platform redefinition warnings<br>
+from appraisal bundles while still failing on real executable stderr.</li>
+  <li>
 <code>kettle-release</code> lockfile normalization now passes <code>--add-checksums</code> when it<br>
 repairs release lockfiles, so empty CHECKSUMS entries are not left behind for<br>
 the pre-commit validation pass.</li>

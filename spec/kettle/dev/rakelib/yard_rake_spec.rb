@@ -4,6 +4,15 @@ require "spec_helper"
 require "rake"
 
 RSpec.describe "rake yard" do # rubocop:disable RSpec/DescribeClass
+  def bundled_gem?(name)
+    # Appraisal slices intentionally omit unrelated modular dependencies. In
+    # those bundles Bundler is the source of truth for whether yard.rake should
+    # exercise the real YARD task wiring or the missing-YARD stub path.
+    Bundler.locked_gems.specs.any? { |spec| spec.name == name }
+  rescue
+    false
+  end
+
   around do |example|
     previous = Rake.application
     defaults = Kettle::Dev.defaults
@@ -31,9 +40,16 @@ RSpec.describe "rake yard" do # rubocop:disable RSpec/DescribeClass
   it "runs YARD lint before the default yard task" do
     default_prerequisites = Rake::Task[:default].prerequisites
 
-    expect(Kettle::Dev.defaults).to include("yard:lint", "yard")
-    expect(default_prerequisites).to include("yard:lint", "yard")
-    expect(default_prerequisites.index("yard:lint")).to be < default_prerequisites.index("yard")
-    expect(Rake::Task[:yard].prerequisites).to include("yard:lint")
+    if bundled_gem?("yard")
+      expect(Kettle::Dev.defaults).to include("yard:lint", "yard")
+      expect(default_prerequisites).to include("yard:lint", "yard")
+      expect(default_prerequisites.index("yard:lint")).to be < default_prerequisites.index("yard")
+      expect(Rake::Task[:yard].prerequisites).to include("yard:lint")
+    else
+      expect(Kettle::Dev.defaults).to contain_exactly("yard")
+      expect(default_prerequisites).to contain_exactly("yard")
+      expect(Rake::Task.task_defined?("yard")).to be(true)
+      expect(Rake::Task.task_defined?("yard:lint")).to be(false)
+    end
   end
 end

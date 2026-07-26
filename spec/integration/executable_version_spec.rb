@@ -17,7 +17,7 @@ RSpec.describe "kettle-dev executables" do
 
       expect(status).to be_success, "#{executable} #{flag} failed with stderr: #{stderr}"
       expect(stdout).to eq("#{executable} #{version}\n")
-      expect(stderr).to eq("")
+      expect(relevant_stderr(stderr)).to eq("")
     end
   end
 
@@ -86,5 +86,14 @@ RSpec.describe "kettle-dev executables" do
       [RbConfig.ruby, "-I#{lib_path}", path, *args]
     end
     Open3.capture3(env, *command, chdir: chdir)
+  end
+
+  def relevant_stderr(stderr)
+    stderr.lines.reject { |line| rubygems_platform_warning?(line) }.join
+  end
+
+  def rubygems_platform_warning?(line)
+    line.include?("warning: already initialized constant Gem::Platform::") ||
+      line.include?("warning: previous definition of ")
   end
 end

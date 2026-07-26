@@ -59,6 +59,11 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `yard.rake` specs now account for appraisal bundles without documentation
+  dependencies, so current-appraisal CI does not expect `yard:lint` when YARD
+  is unavailable.
+- Executable version specs now ignore RubyGems platform redefinition warnings
+  from appraisal bundles while still failing on real executable stderr.
 - `kettle-release` lockfile normalization now passes `--add-checksums` when it
   repairs release lockfiles, so empty CHECKSUMS entries are not left behind for
   the pre-commit validation pass.
