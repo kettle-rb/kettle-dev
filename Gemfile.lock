@@ -421,7 +421,7 @@ DEPENDENCIES
   debug (>= 1.1)
   erb (~> 6.0, >= 6.0.6)
   gem_bench (~> 2.0, >= 2.0.5)
-  gitmoji-regex (~> 2.0, >= 2.0.5)
+  gitmoji-regex (~> 2.0, >= 2.0.6)
   irb (~> 1.17)
   kettle-dev!
   kettle-drift!
@@ -447,9 +447,9 @@ DEPENDENCIES
   rubocop-packaging (~> 0.6, >= 0.6.0)
   rubocop-ruby2_4 (~> 3.0, >= 3.0.5)
   standard (~> 1.56, >= 1.56.0)
-  stone_checksums (~> 1.0, >= 1.0.6)
+  stone_checksums (~> 1.0, >= 1.0.7)
   stringio (>= 3.0)
-  turbo_tests2 (~> 3.2, >= 3.2.1)
+  turbo_tests2 (~> 3.2, >= 3.2.2)
   vcr (>= 6)
   webmock (>= 3)
   webrick (~> 1.9)
