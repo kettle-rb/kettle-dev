@@ -980,6 +980,65 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         end
       end
 
+      it "normalizes the appraisal root lockfile instead of writing the default Gemfile.lock" do
+        with_release_root do |root, local_cli|
+          File.write(File.join(root, "Gemfile"), "source \"https://gem.coop\"\n")
+          File.write(File.join(root, "Gemfile.lock"), <<~LOCK)
+            GEM
+              remote: https://gem.coop/
+              specs:
+                rake (13.4.2)
+
+            CHECKSUMS
+              rake (13.4.2) sha256=abc123
+
+            BUNDLED WITH
+               4.0.17
+          LOCK
+          File.write(File.join(root, "Appraisal.root.gemfile"), "source \"https://gem.coop\"\n")
+          File.write(File.join(root, "Appraisal.root.gemfile.lock"), <<~LOCK)
+            PATH
+              remote: .
+              specs:
+                demo (0.1.0)
+
+            GEM
+              remote: https://gem.coop/
+              specs:
+                kettle-test (2.0.16)
+
+            CHECKSUMS
+              demo (0.1.0)
+              rake (13.4.2) sha256=abc123
+              kettle-test (2.0.16)
+
+            BUNDLED WITH
+               4.0.17
+          LOCK
+
+          expect(local_cli).to receive(:run_cmd!).with(
+            a_string_matching(
+              /BUNDLE_GEMFILE=.*Appraisal\.root\.gemfile.*BUNDLE_LOCKFILE=.*Appraisal\.root\.gemfile\.lock.*bundle lock --update kettle-test --add-checksums/
+            )
+          ) do
+            File.write(File.join(root, "Appraisal.root.gemfile.lock"), <<~LOCK)
+              GEM
+                remote: https://gem.coop/
+                specs:
+                  kettle-test (2.0.16)
+
+              CHECKSUMS
+                kettle-test (2.0.16) sha256=abc123
+
+              BUNDLED WITH
+                 4.0.17
+            LOCK
+          end
+
+          expect { local_cli.send(:prepare_release_lockfiles_for_commit!) }.not_to raise_error
+        end
+      end
+
       it "ignores generated appraisal lockfiles outside the release lockfile set" do
         with_release_root do |root, local_cli|
           gemfiles_dir = File.join(root, "gemfiles")

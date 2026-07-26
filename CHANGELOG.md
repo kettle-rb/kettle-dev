@@ -47,6 +47,9 @@ Please file a bug if you notice a violation of semantic versioning.
 - `kettle-release` lockfile normalization now passes `--add-checksums` when it
   repairs release lockfiles, so empty CHECKSUMS entries are not left behind for
   the pre-commit validation pass.
+- `kettle-release` lockfile normalization now passes `BUNDLE_LOCKFILE`, so
+  appraisal root lockfiles are repaired in place instead of accidentally
+  rewriting `Gemfile.lock`.
 - `kettle-dvcs` documentation examples no longer use Ruby-only YARD example
   tags for shell commands, so `yard:lint` can pass before docs are regenerated.
 - `kettle-changelog` now reports `bin/rake yard` failures directly, including

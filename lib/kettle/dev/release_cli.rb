@@ -593,7 +593,10 @@ module Kettle
         end
 
         update_gems = release_lockfile_empty_registry_checksums(path).map(&:first).uniq.sort
-        env = release_lockfile_normalization_env.merge("BUNDLE_GEMFILE" => gemfile)
+        env = release_lockfile_normalization_env.merge(
+          "BUNDLE_GEMFILE" => gemfile,
+          "BUNDLE_LOCKFILE" => path
+        )
         command = +"env"
         env.each do |key, value|
           command << " #{key}=#{Shellwords.escape(value)}"
