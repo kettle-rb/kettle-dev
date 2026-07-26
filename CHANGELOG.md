@@ -20,6 +20,25 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [2.5.0] - 2026-07-26
+
+- TAG: [v2.5.0][2.5.0t]
+- COVERAGE: 91.71% -- 4238/4621 lines in 40 files
+- BRANCH COVERAGE: 75.93% -- 1640/2160 branches in 40 files
+- 57.09% documented
+
+### Added
+
 - `kettle-release` can now use `--secrets-provider 1password` to load the gem
   signing passphrase and RubyGems MFA OTP from the local 1Password CLI during
   direct release runs.
@@ -33,14 +52,6 @@ Please file a bug if you notice a violation of semantic versioning.
 - Shared release secret provider code now lives in `kettle-dev`, allowing
   `kettle-family` to cache the signing passphrase once while child
   `kettle-release` processes fetch RubyGems OTP values at prompt time.
-
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
 
 ## [2.4.6] - 2026-07-26
 
@@ -2800,7 +2811,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.4.6...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.0...HEAD
+[2.5.0]: https://github.com/kettle-dev/kettle-dev/compare/v2.4.6...v2.5.0
+[2.5.0t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.0
 [2.4.6]: https://github.com/kettle-dev/kettle-dev/compare/v2.4.5...v2.4.6
 [2.4.6t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.4.6
 [2.4.5]: https://github.com/kettle-dev/kettle-dev/compare/v2.4.4...v2.4.5
