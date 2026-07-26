@@ -29,7 +29,7 @@ RSpec.describe "kettle-dev executables" do
     end
   end
 
-  it "prints the executable header before safe normal output paths" do
+  it "does not print the executable header before safe normal output paths by default" do
     safe_commands = {
       "kettle-bump" => ["--help"],
       "kettle-changelog" => ["--help"],
@@ -46,7 +46,29 @@ RSpec.describe "kettle-dev executables" do
       safe_commands.each do |executable, args|
         stdout, stderr, _status = run_executable(executable, args, chdir: empty_root)
 
-        expect(stdout).to start_with("== #{executable} v#{version} ==\n"), "#{executable} did not print header; stderr: #{stderr}"
+        expect(stdout).not_to include("== #{executable} v#{version} =="), "#{executable} printed header; stderr: #{stderr}"
+      end
+    end
+  end
+
+  it "prints the executable header when verbose output is requested" do
+    safe_commands = {
+      "kettle-bump" => ["--verbose", "--help"],
+      "kettle-changelog" => ["--verbose", "--help"],
+      "kettle-check-eof" => ["--verbose"],
+      "kettle-dev-setup" => ["--verbose"],
+      "kettle-dvcs" => ["--verbose", "--help"],
+      "kettle-gh-release" => ["--verbose", "--help"],
+      "kettle-gha-sha-pins" => ["--verbose", "--help"],
+      "kettle-pre-release" => ["--verbose", "--help"],
+      "kettle-release" => ["--verbose", "--help"]
+    }
+
+    Dir.mktmpdir do |empty_root|
+      safe_commands.each do |executable, args|
+        stdout, stderr, _status = run_executable(executable, args, chdir: empty_root)
+
+        expect(stdout).to include("== #{executable} v#{version} =="), "#{executable} did not print header; stderr: #{stderr}"
       end
     end
   end

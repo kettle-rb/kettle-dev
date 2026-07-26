@@ -14,12 +14,26 @@ module Kettle
         exit(0)
       end
 
-      def print_header(script_basename)
+      def print_header(script_basename, argv = ARGV)
+        return unless consume_verbose!(argv)
+
         puts header(script_basename)
       end
 
       def header(script_basename)
         "== #{script_basename} v#{Kettle::Dev::Version::VERSION} =="
+      end
+
+      def verbose?(argv)
+        argv.any? { |arg| arg == "--verbose" }
+      end
+
+      def consume_verbose!(argv)
+        index = argv.index("--verbose")
+        return false unless index
+
+        argv.delete_at(index)
+        true
       end
 
       def requested?(argv, value_option: false)

@@ -31,8 +31,8 @@ RSpec.describe "exe/kettle-commit-msg" do
       stdout, stderr, status = Open3.capture3(env, *cmd)
 
       expect(status.exitstatus).to eq(0), "Expected exit 0, got #{status.exitstatus}. stderr: #{stderr}\nstdout: #{stdout}"
-      # Should print banner with version loaded from kettle/dev
-      expect(stdout).to include("kettle-commit-msg v")
+      # The executable should load from kettle/dev without printing the opt-in verbose header.
+      expect(stdout).to eq("")
     end
   end
 end
