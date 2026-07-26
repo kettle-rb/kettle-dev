@@ -312,6 +312,15 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
         versioned_cli.send(:run_pre_release_checks!)
       end
+
+      it "passes --yes to kettle-changelog when release auto-approval is enabled" do
+        yes_cli = described_class.new(yes: true)
+        pre_release = instance_double(Kettle::Dev::PreReleaseCLI, run: nil)
+        expect(Kettle::Dev::PreReleaseCLI).to receive(:new).with(check_num: 1).and_return(pre_release)
+        expect(yes_cli).to receive(:run_cmd!).with("bundle exec kettle-changelog --yes")
+
+        yes_cli.send(:run_pre_release_checks!)
+      end
     end
 
     describe "latest_released_versions (integration with gem.coop via VCR)" do
@@ -1361,6 +1370,42 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         allow(cli).to receive(:pull!)
 
         expect { cli.run }.to raise_error(MockSystemExit, /SKIP_GEM_SIGNING=true/)
+      end
+
+      it "auto-approves release confirmation prompts when yes mode is enabled", :jruby_head_release_flow do
+        yes_cli = described_class.new(yes: true)
+        allow(Kettle::Dev::InputAdapter).to receive(:tty?).and_return(true)
+        expect(Kettle::Dev::InputAdapter).not_to receive(:gets)
+
+        stub_env("SKIP_GEM_SIGNING" => nil, "CI" => "true")
+
+        allow(yes_cli).to receive(:run_pre_release_checks!)
+        allow(yes_cli).to receive(:ensure_bundler_2_7_plus!)
+        allow(yes_cli).to receive(:detect_version).and_return("9.9.9")
+        allow(yes_cli).to receive(:detect_gem_name).and_return("mygem")
+        stub_checksum_artifact(yes_cli, "9.9.9")
+        allow(yes_cli).to receive(:latest_released_versions).and_return([nil, nil])
+        allow(yes_cli).to receive(:validate_copyright_years!)
+        allow(yes_cli).to receive(:update_readme_kloc_badge!)
+        allow(yes_cli).to receive(:update_rakefile_example_header!)
+        allow(yes_cli).to receive(:run_cmd!).and_return(true)
+        allow(yes_cli).to receive(:ensure_git_user!)
+        allow(yes_cli).to receive(:commit_release_prep!).and_return(true)
+        allow(yes_cli).to receive(:maybe_run_local_ci_before_push!)
+        allow(yes_cli).to receive(:detect_trunk_branch).and_return("main")
+        allow(yes_cli).to receive(:current_branch).and_return("feat")
+        allow(yes_cli).to receive(:ensure_trunk_synced_before_push!)
+        allow(yes_cli).to receive(:push!)
+        allow(yes_cli).to receive(:monitor_workflows_after_push!)
+        allow(yes_cli).to receive(:merge_feature_into_trunk_and_push!)
+        allow(yes_cli).to receive(:checkout!)
+        allow(yes_cli).to receive(:pull!)
+        allow(yes_cli).to receive(:ensure_signing_setup_or_skip!)
+        allow(yes_cli).to receive(:push_tags!)
+        allow(yes_cli).to receive(:validate_checksums!)
+        allow(yes_cli).to receive(:confirm_release_candidate_available!)
+
+        expect { yes_cli.run }.not_to raise_error
       end
 
       it "aborts before release setup when pre-release checks fail" do

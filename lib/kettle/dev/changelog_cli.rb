@@ -27,7 +27,8 @@ module Kettle
       # @param enforce_coverage_thresholds [Boolean] when true, fail strict coverage generation below project thresholds
       # @param update_prep [Boolean] when true, update the most recent prepared release section in place
       # @param version [String, nil] explicit version override for gems without a literal VERSION constant
-      def initialize(strict: true, enforce_coverage_thresholds: true, update_prep: false, version: nil, root: Kettle::Dev::CIHelpers.project_root, refresh_cache: false)
+      # @param yes [Boolean] when true, approve the selected release plan without prompting
+      def initialize(strict: true, enforce_coverage_thresholds: true, update_prep: false, version: nil, root: Kettle::Dev::CIHelpers.project_root, refresh_cache: false, yes: false)
         @root = root
         @changelog_path = File.join(@root, "CHANGELOG.md")
         @coverage_path = File.join(@root, "coverage", "coverage.json")
@@ -36,6 +37,7 @@ module Kettle
         @update_prep = update_prep
         @version_override = Kettle::Dev::Versioning.normalize_explicit_version(version)
         @refresh_cache = refresh_cache
+        @yes = !!yes
       end
 
       # Main entry point to update CHANGELOG.md
@@ -345,6 +347,11 @@ module Kettle
         puts "  latest released for current series: #{plan.fetch(:latest_for_series) || "unknown"}"
         puts "  latest CHANGELOG.md release: #{plan.fetch(:latest_changelog_version) || "none"}"
         puts "  gem: #{plan.fetch(:gem_name) || "unknown"}"
+        if @yes
+          puts("Continue with this plan? [y/N]: y")
+          return
+        end
+
         print("Continue with this plan? [y/N]: ")
         ans = Kettle::Dev::InputAdapter.gets&.strip&.downcase
         return if ans == "y" || ans == "yes"

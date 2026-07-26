@@ -23,6 +23,8 @@ Please file a bug if you notice a violation of semantic versioning.
 - `kettle-release` can now use `--secrets-provider 1password` to load the gem
   signing passphrase and RubyGems MFA OTP from the local 1Password CLI during
   direct release runs.
+- `kettle-release` and `kettle-changelog` now accept `--yes` to approve their
+  release confirmation prompts without interactive input.
 
 ### Changed
 

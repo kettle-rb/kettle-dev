@@ -115,7 +115,7 @@ module Kettle
 
       public
 
-      def initialize(start_step: 0, local_ci: false, version: nil, appraisal_task: nil, skip_steps: nil, skip_bundle_audit: nil, ci_workflows: nil, skip_remotes: nil, secrets_provider_name: nil, **options)
+      def initialize(start_step: 0, local_ci: false, version: nil, appraisal_task: nil, skip_steps: nil, skip_bundle_audit: nil, ci_workflows: nil, skip_remotes: nil, secrets_provider_name: nil, yes: false, **options)
         @root = Kettle::Dev::CIHelpers.project_root
         @git = Kettle::Dev::GitAdapter.new
         @start_step = (start_step || 0).to_i
@@ -125,6 +125,7 @@ module Kettle
         @skip_remotes = normalize_skip_remotes(skip_remotes || ENV["K_RELEASE_SKIP_REMOTES"])
         @local_ci = !!local_ci
         @skip_bundle_audit = truthy_value?(skip_bundle_audit) || truthy_value?(ENV["KETTLE_DEV_SKIP_BUNDLE_AUDIT"])
+        @yes = !!yes
         @version_override = Kettle::Dev::Versioning.normalize_explicit_version(version)
         @appraisal_task = normalize_appraisal_task(appraisal_task || ENV["KETTLE_RELEASE_APPRAISAL_TASK"])
         @release_candidate = nil
@@ -248,10 +249,7 @@ module Kettle
             puts "Could not determine latest released version from gem.coop (offline?). Proceeding without sanity check."
           end
 
-          puts "Have you updated lib/**/version.rb and CHANGELOG.md for v#{version}? [y/N]"
-          print("> ")
-          ans = Kettle::Dev::InputAdapter.gets&.strip
-          abort("Aborted: please update version.rb and CHANGELOG.md, then re-run.") unless ans&.downcase&.start_with?("y")
+          confirm_yes!("Have you updated lib/**/version.rb and CHANGELOG.md for v#{version}? [y/N]", "> ", "Aborted: please update version.rb and CHANGELOG.md, then re-run.")
 
           # Initial validation: Ensure README.md and LICENSE.txt have identical sets of copyright years; also ensure current year present when matched
           validate_copyright_years!
@@ -358,7 +356,9 @@ module Kettle
         if run_step?(13)
           if ENV.fetch("SKIP_GEM_SIGNING", "false").casecmp("false").zero?
             puts "TIP: For local dry-runs or testing the release workflow, set SKIP_GEM_SIGNING=true to avoid PEM password prompts."
-            if Kettle::Dev::InputAdapter.tty?
+            if @yes
+              puts "Proceeding with signing enabled because --yes was provided."
+            elsif Kettle::Dev::InputAdapter.tty?
               # In CI, avoid interactive prompts when no TTY is present (e.g., act or GitHub Actions "CI validation").
               # Non-interactive CI runs should not abort here; later signing checks are either stubbed in tests
               # or will be handled explicitly by ensure_signing_setup_or_skip!.
@@ -744,7 +744,20 @@ module Kettle
       def run_changelog!
         cmd = "bundle exec kettle-changelog"
         cmd = "#{cmd} --version #{Shellwords.escape(@version_override)}" if @version_override
+        cmd = "#{cmd} --yes" if @yes
         run_cmd!(cmd)
+      end
+
+      def confirm_yes!(message, prompt, abort_message)
+        puts(message)
+        if @yes
+          puts("#{prompt}y")
+          return
+        end
+
+        print(prompt)
+        ans = Kettle::Dev::InputAdapter.gets&.strip
+        abort(abort_message) unless ans&.downcase&.start_with?("y")
       end
 
       def changelog_strict?

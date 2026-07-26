@@ -405,6 +405,28 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       end
     end
 
+    it "auto-approves the selected plan when yes mode is enabled" do
+      mkproj do |root|
+        File.write(File.join(root, "lib", "my", "gem", "version.rb"), <<~RB)
+          module My; module Gem; VERSION = "1.2.3"; end; end
+        RB
+        FileUtils.mkdir_p(File.join(root, "coverage"))
+        File.write(File.join(root, "coverage", "coverage.json"), {"coverage" => {}}.to_json)
+        File.write(File.join(root, "CHANGELOG.md"), <<~MD)
+          # Changelog
+          ## [Unreleased]
+
+          ## [1.2.3] - 2025-08-30
+        MD
+        allow(Kettle::Dev::CIHelpers).to receive_messages(project_root: root, repo_info: ["o", "r"])
+        expect(Kettle::Dev::InputAdapter).not_to receive(:gets)
+        cli = described_class.new(strict: false, yes: true)
+        allow(cli).to receive(:latest_released_versions).and_return(["1.2.3", "1.2.3"])
+
+        expect { cli.run }.not_to raise_error
+      end
+    end
+
     it "reformats only when duplicate version exists and user agrees" do
       mkproj do |root|
         File.write(File.join(root, "lib", "my", "gem", "version.rb"), <<~RB)

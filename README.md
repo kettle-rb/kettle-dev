@@ -445,6 +445,7 @@ What it does:
     - After intermittent CI failure, restart from monitoring: `bundle exec kettle-release start_step=10`
     - After fixing a failed pre-release gate, rerun from step 0: `bundle exec kettle-release`
     - After intentionally handling a failed pre-release gate, skip it and start numbered release steps: `bundle exec kettle-release start_step=1`
+    - Auto-approve release confirmation prompts: `bundle exec kettle-release --yes`
     - Run direct release with 1Password secrets: `bundle exec kettle-release --secrets-provider 1password`
 - Tips:
     - The commit message helper `exe/kettle-commit-msg` prefers project-local `.git-hooks` (then falls back to `~/.git-hooks`).

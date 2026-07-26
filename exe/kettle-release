@@ -49,7 +49,7 @@ end
 # Do not guard with __FILE__ == $PROGRAM_NAME because binstubs use Kernel.load.
 if ARGV.include?("-h") || ARGV.include?("--help")
   puts <<~USAGE
-    Usage: kettle-release [--version VERSION] [--local-ci] [--appraisal-update] [--skip-bundle-audit] [--skip-steps STEPS] [--ci-workflows WORKFLOWS] [--skip-remotes REMOTES] [--secrets-provider NAME] [--json|--events[=TYPES]] [--report PATH] [start_step=<0-19>]
+    Usage: kettle-release [--version VERSION] [--local-ci] [--yes] [--appraisal-update] [--skip-bundle-audit] [--skip-steps STEPS] [--ci-workflows WORKFLOWS] [--skip-remotes REMOTES] [--secrets-provider NAME] [--json|--events[=TYPES]] [--report PATH] [start_step=<0-19>]
 
     Automates the release flow for a Ruby gem in the host project.
 
@@ -85,6 +85,7 @@ if ARGV.include?("-h") || ARGV.include?("--help")
       skip_steps=<numbers>        # Comma-separated numbered steps to skip while running the rest
       --skip-steps NUMBERS        # Alias for skip_steps=NUMBERS (e.g., --skip-steps 10 or --skip-steps 10,18)
       --version VERSION           # Use this version instead of detecting VERSION from lib/**/version.rb
+      --yes                       # Auto-approve release confirmation prompts
       --appraisal-update          # Use slower appraisal:update instead of default appraisal:generate
       --skip-bundle-audit         # Skip bundle:audit/update during release rake checks
       --ci-workflows WORKFLOWS    # Comma-separated workflow files or stems to monitor at CI step 10
@@ -273,6 +274,7 @@ def extract_events_arg!(argv)
 end
 
 local_ci = ARGV.include?("--local-ci")
+yes = !!ARGV.delete("--yes")
 appraisal_task = ARGV.delete("--appraisal-update") ? "appraisal:update" : nil
 skip_bundle_audit = !!ARGV.delete("--skip-bundle-audit")
 json_output = !!ARGV.delete("--json")
@@ -289,7 +291,7 @@ secrets_provider = extract_secrets_provider_arg!(ARGV)
 
 begin
   event_stream = events_output ? Kettle::Ndjson.event_stream($stdout, types: event_types) : nil
-  Kettle::Dev::ReleaseCLI.new(start_step: start_step, local_ci: local_ci, version: version_override, appraisal_task: appraisal_task, skip_steps: skip_steps, skip_bundle_audit: skip_bundle_audit, ci_workflows: ci_workflows, skip_remotes: skip_remotes, secrets_provider_name: secrets_provider, event_stream: event_stream, json_output: json_output, json_io: $stdout, report_path: report_path).run
+  Kettle::Dev::ReleaseCLI.new(start_step: start_step, local_ci: local_ci, version: version_override, appraisal_task: appraisal_task, skip_steps: skip_steps, skip_bundle_audit: skip_bundle_audit, ci_workflows: ci_workflows, skip_remotes: skip_remotes, secrets_provider_name: secrets_provider, yes: yes, event_stream: event_stream, json_output: json_output, json_io: $stdout, report_path: report_path).run
 rescue LoadError => e
   warn("#{script_basename}: could not load dependency: #{e.class}: #{e.message}")
   warn(Array(e.backtrace).join("\n")) if ENV["DEBUG"]
