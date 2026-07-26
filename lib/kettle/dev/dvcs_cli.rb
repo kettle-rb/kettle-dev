@@ -22,10 +22,11 @@ module Kettle
     # - Creates an "all" remote that fetches from origin only and pushes to all three forges
     # - Attempts to fetch from each forge to determine availability and updates README federation summary
     #
-    # @example Non-interactive run with defaults (origin: github, protocol: ssh)
+    # Examples:
+    #   Non-interactive run with defaults (origin: github, protocol: ssh)
     #   kettle-dvcs --force my-org my-repo
     #
-    # @example Use GitLab as origin and HTTPS URLs
+    #   Use GitLab as origin and HTTPS URLs
     #   kettle-dvcs --origin gitlab --protocol https my-org my-repo
     class DvcsCLI
       DEFAULTS = {

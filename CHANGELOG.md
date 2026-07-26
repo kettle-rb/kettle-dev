@@ -41,6 +41,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-dvcs` documentation examples no longer use Ruby-only YARD example
+  tags for shell commands, so `yard:lint` can pass before docs are regenerated.
 - `kettle-changelog` now reports `bin/rake yard` failures directly, including
   `yard:lint` output, instead of misreporting them as missing documentation
   percentages.

@@ -128,28 +128,18 @@
   <li>Attempts to fetch from each forge to determine availability and updates README federation summary</li>
 </ul>
 
+<p>Examples:<br />
+  Non-interactive run with defaults (origin: github, protocol: ssh)<br />
+  kettle-dvcs –force my-org my-repo</p>
+
+<p>Use GitLab as origin and HTTPS URLs<br />
+  kettle-dvcs –origin gitlab –protocol https my-org my-repo</p>
+
 
   </div>
 </div>
 <div class="tags">
   
-  <div class="examples">
-    <h4 class="tag_title">Examples:</h4>
-    
-      
-        <h5 class="example_title"><div class='inline'><p>Non-interactive run with defaults (origin: github, protocol: ssh)</p>
-</div></h5>
-      
-      <pre class="example code"><code>kettle-dvcs --force my-org my-repo</code></pre>
-    
-      
-        <h5 class="example_title"><div class='inline'><p>Use GitLab as origin and HTTPS URLs</p>
-</div></h5>
-      
-      <pre class="example code"><code>kettle-dvcs --origin gitlab --protocol https my-org my-repo</code></pre>
-    
-  </div>
-
 
 </div>
   
@@ -298,13 +288,13 @@
       <pre class="lines">
 
 
-48
 49
 50
-51</pre>
+51
+52</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/dvcs_cli.rb', line 48</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/dvcs_cli.rb', line 49</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_argv'>argv</span><span class='rparen'>)</span>
   <span class='ivar'>@argv</span> <span class='op'>=</span> <span class='id identifier rubyid_argv'>argv</span>
@@ -366,7 +356,6 @@ and updates README federation status accordingly.</p>
       <pre class="lines">
 
 
-57
 58
 59
 60
@@ -410,10 +399,11 @@ and updates README federation status accordingly.</p>
 98
 99
 100
-101</pre>
+101
+102</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/dvcs_cli.rb', line 57</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/dvcs_cli.rb', line 58</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_run!'>run!</span>
   <span class='id identifier rubyid_parse!'>parse!</span>

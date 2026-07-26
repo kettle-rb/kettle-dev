@@ -74,13 +74,41 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 
 <h3 id="added">Added</h3>
 
+<ul>
+  <li>kettle-jem-template-20260726-001 - Projects now include YARD lint<br>
+configuration and documentation dependencies so documentation issues fail<br>
+before generated docs are refreshed.</li>
+</ul>
+
 <h3 id="changed">Changed</h3>
+
+<ul>
+  <li>Executable startup headers are now shown only when <code>--verbose</code> is passed;<br>
+<code>-v</code> and <code>--version</code> still print just the executable version and exit.</li>
+  <li>
+    <p><code>yard:lint</code> now runs before <code>yard</code> and before the default task reaches YARD<br>
+documentation generation, so documentation lint failures fail earlier in CI.</p>
+  </li>
+  <li>kettle-jem-template-20260725-002 - Version specs now use <code>anonymous_loader</code> to<br>
+cover <code>version.rb</code> without redefining constants, or are removed when version<br>
+specs are not managed for the project.</li>
+</ul>
 
 <h3 id="deprecated">Deprecated</h3>
 
 <h3 id="removed">Removed</h3>
 
 <h3 id="fixed">Fixed</h3>
+
+<ul>
+  <li>
+<code>kettle-dvcs</code> documentation examples no longer use Ruby-only YARD example<br>
+tags for shell commands, so <code>yard:lint</code> can pass before docs are regenerated.</li>
+  <li>
+<code>kettle-changelog</code> now reports <code>bin/rake yard</code> failures directly, including<br>
+<code>yard:lint</code> output, instead of misreporting them as missing documentation<br>
+percentages.</li>
+</ul>
 
 <h3 id="security">Security</h3>
 
