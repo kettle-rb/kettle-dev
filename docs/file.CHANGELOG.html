@@ -90,9 +90,9 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 <ul>
   <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.0">v2.5.0</a>
 </li>
-  <li>COVERAGE: 91.70% – 4420/4820 lines in 42 files</li>
-  <li>BRANCH COVERAGE: 75.72% – 1684/2224 branches in 42 files</li>
-  <li>55.52% documented</li>
+  <li>COVERAGE: 92.20% – 4503/4884 lines in 42 files</li>
+  <li>BRANCH COVERAGE: 76.20% – 1716/2252 branches in 42 files</li>
+  <li>54.95% documented</li>
 </ul>
 
 <h3 id="added-1">Added</h3>
@@ -110,6 +110,10 @@ release confirmation prompts without interactive input.</p>
 <code>kettle-reset Gemfile.lock</code> now resets CI-facing lockfiles by disabling local<br>
 sibling path environments and updating path-sourced or checksum-gap gems back<br>
 to released registry versions with checksums.</li>
+  <li>
+<code>kettle-reset Appraisal.root.gemfile.lock</code> and<br>
+<code>kettle-reset release-lockfiles</code> now cover the appraisal root lockfile used by<br>
+release and appraisal generation.</li>
 </ul>
 
 <h3 id="changed-1">Changed</h3>
@@ -158,10 +162,11 @@ QLTY, and Codecov as optional, so provider outages do not fail CI when local<br>
 coverage thresholds still pass.</p>
   </li>
   <li>
-    <p><code>kettle-release</code> now uses the same lockfile reset logic before release prep<br>
+<code>kettle-release</code> now uses the same lockfile reset logic before release prep<br>
 commits, and can reset and amend release lockfiles before the first push if<br>
-local paths reappear mid-release.</p>
-  </li>
+local paths reappear mid-release.</li>
+  <li>Release lockfile validation now allows the current gem’s own <code>gemspec</code> path<br>
+source while still rejecting local sibling path sources.</li>
 </ul>
 
 <h2 id="246---2026-07-26">
