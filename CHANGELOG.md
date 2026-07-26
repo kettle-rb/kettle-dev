@@ -28,6 +28,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Release secrets provider lookup now honors `provider` from explicit config,
+  and direct provider lookup failures raise `Kettle::Dev::Error`.
+
 ### Security
 
 ## [2.5.0] - 2026-07-26

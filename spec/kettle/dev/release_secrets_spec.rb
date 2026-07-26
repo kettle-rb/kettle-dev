@@ -18,6 +18,16 @@ RSpec.describe Kettle::Dev::ReleaseSecrets do
     expect(provider.gem_signing_passphrase).to eq("secret")
   end
 
+  it "loads the provider name from explicit config" do
+    allow(Open3).to receive(:capture3)
+      .with("op", "item", "get", "Rubygems", "--fields", "label=GEM-SIGN-PASSPHRASE", "--reveal")
+      .and_return(["secret\n", "", status(success: true)])
+
+    provider = described_class::Factory.build(config: {"provider" => "1password"})
+
+    expect(provider.gem_signing_passphrase).to eq("secret")
+  end
+
   it "memoizes the gem signing passphrase after the first 1Password lookup" do
     allow(Open3).to receive(:capture3)
       .with("op", "item", "get", "Rubygems", "--fields", "label=GEM-SIGN-PASSPHRASE", "--reveal")
@@ -73,6 +83,16 @@ RSpec.describe Kettle::Dev::ReleaseSecrets do
       .and_return(["", "item not found\n", status(success: false, exitstatus: 1)])
 
     provider = described_class::Factory.build(provider_name: "1password")
+
+    expect { provider.gem_signing_passphrase }
+      .to raise_error(Kettle::Dev::Error, /1Password gem signing passphrase field lookup failed: item not found/)
+  end
+
+  it "raises Kettle::Dev::Error for direct provider lookup failures" do
+    allow(Open3).to receive(:capture3)
+      .and_return(["", "item not found\n", status(success: false, exitstatus: 1)])
+
+    provider = described_class::OnePassword.new("item" => "Rubygems")
 
     expect { provider.gem_signing_passphrase }
       .to raise_error(Kettle::Dev::Error, /1Password gem signing passphrase field lookup failed: item not found/)

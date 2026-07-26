@@ -4,6 +4,8 @@ require "open3"
 
 module Kettle
   module Dev
+    class Error < StandardError; end unless const_defined?(:Error, false)
+
     module ReleaseSecrets
       class Provider
         def gem_signing_passphrase
@@ -71,7 +73,7 @@ module Kettle
 
         def cached_gem_signing_passphrase
           value = ENV.fetch("KETTLE_RELEASE_GEM_SIGNING_PASSPHRASE", "").to_s
-          raise Error, "cached gem signing passphrase was requested but KETTLE_RELEASE_GEM_SIGNING_PASSPHRASE is empty" if value.empty?
+          raise Kettle::Dev::Error, "cached gem signing passphrase was requested but KETTLE_RELEASE_GEM_SIGNING_PASSPHRASE is empty" if value.empty?
 
           value
         end
@@ -98,14 +100,14 @@ module Kettle
 
           details = stderr.to_s.strip
           details = "op exited #{status.exitstatus}" if details.empty?
-          raise Error, "1Password #{purpose} lookup failed: #{details}"
+          raise Kettle::Dev::Error, "1Password #{purpose} lookup failed: #{details}"
         rescue Errno::ENOENT
-          raise Error, "1Password CLI executable `op` was not found"
+          raise Kettle::Dev::Error, "1Password CLI executable `op` was not found"
         end
 
         def required_config(key)
           value = string_config(key)
-          raise Error, "1Password release secrets require #{key}" if value.empty?
+          raise Kettle::Dev::Error, "1Password release secrets require #{key}" if value.empty?
 
           value
         end
@@ -127,11 +129,16 @@ module Kettle
         }.freeze
 
         def self.build(provider_name: nil, config: nil)
-          name = provider_name.to_s.empty? ? ENV.fetch("KETTLE_RELEASE_SECRETS_PROVIDER", "") : provider_name.to_s
+          configured = config || {}
+          name = if provider_name.to_s.empty?
+            configured.fetch("provider", ENV.fetch("KETTLE_RELEASE_SECRETS_PROVIDER", ""))
+          else
+            provider_name.to_s
+          end
           return Provider.new if name.empty? || name == "interactive"
-          return OnePassword.new(env_config.merge(config || {})) if OnePassword.configured?(name)
+          return OnePassword.new(env_config.merge(configured)) if OnePassword.configured?(name)
 
-          raise Error, "unsupported release secrets provider #{name.inspect}"
+          raise Kettle::Dev::Error, "unsupported release secrets provider #{name.inspect}"
         end
 
         def self.env_config
