@@ -45,7 +45,7 @@ module Kettle
         "BUNDLE_SUPPRESS_INSTALL_USING_MESSAGES" => "true"
       }.freeze
       DEBUG_TRUE_VALUES = %w[1 true yes on].freeze
-      RELEASE_VALIDATION_SOURCE = "https://rubygems.org"
+      RELEASE_VALIDATION_SOURCE = "https://gem.coop"
 
       class << self
         def run_cmd!(cmd)

@@ -1819,7 +1819,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect(candidate.published).to be(true)
       end
 
-      it "validates availability with a non-activating Bundler probe sourced only from RubyGems.org" do
+      it "validates availability with a non-activating Bundler probe sourced from gem.coop" do
         local_cli = described_class.new
         candidate = Kettle::Dev::ReleaseCLI::ReleaseCandidate.new(
           gem_name: "mygem",
@@ -1831,7 +1831,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         script = local_cli.send(:release_availability_probe_script, candidate)
 
         expect(script).to include("require \"bundler\"")
-        expect(script).to include("builder.source(\"https://rubygems.org\")")
+        expect(script).to include("builder.source(\"https://gem.coop\")")
         expect(script).to include("builder.gem(gem_name, \"= \#{version}\", require: false)")
         expect(script).to include("Bundler::Installer.install")
         expect(script).to include("definition.specs.find")
@@ -1840,7 +1840,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect(script).not_to include("Gem.loaded_specs")
       end
 
-      it "retries the RubyGems.org availability probe until the release resolves" do
+      it "retries the gem.coop availability probe until the release resolves" do
         Dir.mktmpdir do |root|
           local_cli = described_class.new
           candidate = Kettle::Dev::ReleaseCLI::ReleaseCandidate.new(
@@ -1868,7 +1868,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         end
       end
 
-      it "fails the RubyGems.org availability probe only after retry exhaustion" do
+      it "fails the gem.coop availability probe only after retry exhaustion" do
         Dir.mktmpdir do |root|
           local_cli = described_class.new
           candidate = Kettle::Dev::ReleaseCLI::ReleaseCandidate.new(
