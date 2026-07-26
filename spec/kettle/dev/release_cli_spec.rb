@@ -206,6 +206,23 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         local_cli.send(:run_cmd!, "bundle exec rake release")
       end
 
+      it "treats the real 1Password provider as configured" do
+        provider = Kettle::Dev::ReleaseSecrets::OnePassword.new(
+          "gem_signing_passphrase_source" => "cached"
+        )
+        local_cli = described_class.new(secrets_provider: provider)
+
+        expect(local_cli.send(:release_secrets_configured?)).to be(true)
+        expect(local_cli.send(:release_secrets_provider_label)).to eq("OnePassword")
+      end
+
+      it "treats the base release secrets provider as interactive" do
+        local_cli = described_class.new(secrets_provider: Kettle::Dev::ReleaseSecrets::Provider.new)
+
+        expect(local_cli.send(:release_secrets_configured?)).to be(false)
+        expect(local_cli.send(:release_secrets_provider_label)).to eq("interactive")
+      end
+
       it "skips duplicate test and coverage work in the default task after changelog coverage runs" do
         local_cli = described_class.new
         allow(local_cli).to receive(:run_cmd!)

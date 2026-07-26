@@ -381,7 +381,7 @@ module Kettle
         if run_step?(14)
           ensure_release_secrets_ready_for_signing! if signing_enabled? && release_secrets_configured?
           if signing_enabled? && release_secrets_configured?
-            puts "Running build with gem signing passphrase from configured secrets provider..."
+            puts "Running build with gem signing passphrase from configured secrets provider (#{release_secrets_provider_label})..."
           else
             puts "Running build (you may be prompted for the signing key password)..."
           end
@@ -398,7 +398,7 @@ module Kettle
           else
             ensure_release_secrets_ready_for_signing! if signing_enabled? && release_secrets_configured?
             if release_secrets_configured?
-              puts "Running release with configured secrets provider for signing and RubyGems MFA prompts..."
+              puts "Running release with configured secrets provider (#{release_secrets_provider_label}) for signing and RubyGems MFA prompts..."
             else
               puts "Running release (you may be prompted for signing key password and RubyGems MFA OTP)..."
             end
@@ -1124,7 +1124,11 @@ module Kettle
       end
 
       def release_secrets_configured?
-        !@secrets_provider.is_a?(Kettle::Dev::ReleaseSecrets::Provider)
+        !@secrets_provider.instance_of?(Kettle::Dev::ReleaseSecrets::Provider)
+      end
+
+      def release_secrets_provider_label
+        release_secrets_configured? ? @secrets_provider.class.name.to_s.split("::").last : "interactive"
       end
 
       def signing_enabled?

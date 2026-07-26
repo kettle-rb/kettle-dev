@@ -28,6 +28,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-release --secrets-provider 1password` now recognizes the real
+  1Password provider as configured instead of misclassifying it as the
+  interactive fallback provider.
+
 ### Security
 
 ## [2.5.0] - 2026-07-26
