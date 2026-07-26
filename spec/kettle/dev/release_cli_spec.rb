@@ -1073,12 +1073,11 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
             GEM
               remote: https://rubygems.org/
               specs:
-                kettle-test (2.0.16)
+                rake (13.4.2)
 
             CHECKSUMS
               demo (0.1.0)
-              rake (13.4.2) sha256=abc123
-              kettle-test (2.0.16)
+              rake (13.4.2)
 
             BUNDLED WITH
                4.0.17
@@ -1093,10 +1092,10 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
               GEM
                 remote: https://rubygems.org/
                 specs:
-                  kettle-test (2.0.16)
+                  rake (13.4.2)
 
               CHECKSUMS
-                kettle-test (2.0.16) sha256=abc123
+                rake (13.4.2) sha256=abc123
 
               BUNDLED WITH
                  4.0.17
@@ -1118,7 +1117,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
                  4.0.17
             LOCK
           end
-          expect(local_cli).not_to receive(:run_cmd!).with(a_string_matching(/bundle lock --update kettle-test/))
+          expect(local_cli).not_to receive(:run_cmd!).with(a_string_matching(/bundle lock --update rake/))
 
           expect { local_cli.send(:prepare_release_lockfiles_for_commit!) }.not_to raise_error
         end

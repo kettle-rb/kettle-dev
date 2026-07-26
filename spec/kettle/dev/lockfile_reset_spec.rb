@@ -72,6 +72,7 @@ RSpec.describe Kettle::Dev::LockfileReset do
       CHECKSUMS
         kettle-test (2.0.16) sha256=localonly
     LOCK
+    allow(reset).to receive(:locally_installed?).and_return(false)
 
     reset.reset("release-lockfiles")
 
