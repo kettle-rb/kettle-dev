@@ -32,7 +32,7 @@ RSpec.describe Kettle::Dev::ResetCLI do
     resetter = instance_double(Kettle::Dev::LockfileReset)
     path = File.join(@root, "Gemfile.lock")
     allow(Kettle::Dev::LockfileReset).to receive(:new).and_return(resetter)
-    allow(resetter).to receive(:lockfile_path_for).with("Gemfile.lock").and_return(path)
+    allow(resetter).to receive(:lockfile_paths_for).with("Gemfile.lock").and_return([path])
     allow(resetter).to receive(:normalization_needed?).with(path).and_return(true)
     allow(resetter).to receive(:reset).with("Gemfile.lock").and_return(path)
 
@@ -44,7 +44,7 @@ RSpec.describe Kettle::Dev::ResetCLI do
     resetter = instance_double(Kettle::Dev::LockfileReset)
     path = File.join(@root, "Gemfile.lock")
     allow(Kettle::Dev::LockfileReset).to receive(:new).and_return(resetter)
-    allow(resetter).to receive(:lockfile_path_for).with("Gemfile.lock").and_return(path)
+    allow(resetter).to receive(:lockfile_paths_for).with("Gemfile.lock").and_return([path])
     allow(resetter).to receive(:normalization_needed?).with(path).and_return(false)
 
     expect(resetter).not_to receive(:reset)

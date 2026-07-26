@@ -20,10 +20,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
-- `kettle-reset Gemfile.lock` now resets CI-facing lockfiles by disabling local
-  sibling path environments and updating path-sourced or checksum-gap gems back
-  to released registry versions with checksums.
-
 ### Changed
 
 ### Deprecated
@@ -32,18 +28,14 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- `kettle-release` now uses the same lockfile reset logic before release prep
-  commits, and can reset and amend release lockfiles before the first push if
-  local paths reappear mid-release.
-
 ### Security
 
 ## [2.5.0] - 2026-07-26
 
 - TAG: [v2.5.0][2.5.0t]
-- COVERAGE: 91.97% -- 4307/4683 lines in 40 files
-- BRANCH COVERAGE: 75.96% -- 1662/2188 branches in 40 files
-- 57.24% documented
+- COVERAGE: 91.70% -- 4420/4820 lines in 42 files
+- BRANCH COVERAGE: 75.72% -- 1684/2224 branches in 42 files
+- 55.52% documented
 
 ### Added
 
@@ -52,6 +44,13 @@ Please file a bug if you notice a violation of semantic versioning.
   direct release runs.
 - `kettle-release` and `kettle-changelog` now accept `--yes` to approve their
   release confirmation prompts without interactive input.
+
+- `kettle-reset Gemfile.lock` now resets CI-facing lockfiles by disabling local
+  sibling path environments and updating path-sourced or checksum-gap gems back
+  to released registry versions with checksums.
+- `kettle-reset Appraisal.root.gemfile.lock` and
+  `kettle-reset release-lockfiles` now cover the appraisal root lockfile used by
+  release and appraisal generation.
 
 ### Changed
 
@@ -86,6 +85,12 @@ Please file a bug if you notice a violation of semantic versioning.
 - kettle-jem-template-20260726-003 - Coverage upload steps now treat Coveralls,
   QLTY, and Codecov as optional, so provider outages do not fail CI when local
   coverage thresholds still pass.
+
+- `kettle-release` now uses the same lockfile reset logic before release prep
+  commits, and can reset and amend release lockfiles before the first push if
+  local paths reappear mid-release.
+- Release lockfile validation now allows the current gem's own `gemspec` path
+  source while still rejecting local sibling path sources.
 
 ## [2.4.6] - 2026-07-26
 

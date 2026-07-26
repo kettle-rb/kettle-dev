@@ -1083,7 +1083,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
           expect(local_cli).to receive(:run_cmd!).with(
             a_string_matching(
-              /BUNDLE_GEMFILE=.*Appraisal\.root\.gemfile.*BUNDLE_LOCKFILE=.*Appraisal\.root\.gemfile\.lock.*bundle lock --update demo kettle-test --add-checksums/
+              /BUNDLE_GEMFILE=.*Appraisal\.root\.gemfile.*BUNDLE_LOCKFILE=.*Appraisal\.root\.gemfile\.lock.*bundle lock --update kettle-test --add-checksums/
             )
           ) do
             File.write(File.join(root, "Appraisal.root.gemfile.lock"), <<~LOCK)
@@ -1171,7 +1171,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
           File.write(File.join(root, "Gemfile"), "source \"https://gem.coop\"\n")
           File.write(File.join(root, "Gemfile.lock"), <<~LOCK)
             PATH
-              remote: .
+              remote: ../demo
               specs:
                 demo (0.1.0)
 

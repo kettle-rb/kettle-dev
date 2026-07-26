@@ -37,6 +37,8 @@ RSpec.describe Kettle::Dev::LockfileReset do
 
     command = reset.reset_command(path: File.join(@root, "Gemfile.lock"), gemfile: File.join(@root, "Gemfile"))
 
+    expect(command).to include("env -u BUNDLE_BIN_PATH")
+    expect(command).to include("-u RUBYOPT")
     expect(command).to include("KETTLE_DEV_DEV=false")
     expect(command).to include("K_JEM_TEMPLATING=false")
     expect(command).to include("BUNDLE_GEMFILE=#{File.join(@root, "Gemfile")}")
@@ -49,7 +51,7 @@ RSpec.describe Kettle::Dev::LockfileReset do
     reset = described_class.new(root: @root, command_runner: ->(_command) {})
     File.write(File.join(@root, "Gemfile.lock"), <<~LOCK)
       PATH
-        remote: .
+        remote: ../demo
         specs:
           demo (0.1.0)
 
@@ -67,5 +69,96 @@ RSpec.describe Kettle::Dev::LockfileReset do
 
     expect(diagnostics.join("\n")).to include("has local path remote")
     expect(diagnostics.join("\n")).to include("CHECKSUMS has no sha256 for rake 13.4.2")
+  end
+
+  it "allows the current gemspec path while targeting sibling paths" do
+    reset = described_class.new(root: @root, command_runner: ->(_command) {})
+    File.write(File.join(@root, "Gemfile.lock"), <<~LOCK)
+      PATH
+        remote: .
+        specs:
+          kettle-dev (2.5.0)
+
+      PATH
+        remote: ../kettle-test
+        specs:
+          kettle-test (2.0.16)
+
+      GEM
+        remote: https://gem.coop/
+        specs:
+          rake (13.4.2)
+
+      CHECKSUMS
+        kettle-dev (2.5.0)
+        kettle-test (2.0.16)
+        rake (13.4.2) sha256=abc123
+
+      DEPENDENCIES
+        kettle-dev!
+        kettle-test!
+    LOCK
+
+    path = File.join(@root, "Gemfile.lock")
+
+    expect(reset.local_path_remote_lines(path)).to eq([7])
+    expect(reset.reset_update_gems(path)).to eq(["kettle-test"])
+    expect(reset.diagnostics(path)).to eq(["#{path} has local path remote at line 7"])
+  end
+
+  it "resets both release lockfiles" do
+    commands = []
+    reset = described_class.new(root: @root, command_runner: lambda { |command|
+      commands << command
+      if command.include?("Appraisal.root.gemfile.lock")
+        File.write(File.join(@root, "Appraisal.root.gemfile.lock"), <<~LOCK)
+          GEM
+            remote: https://gem.coop/
+            specs:
+              thor (1.4.0)
+
+          CHECKSUMS
+            thor (1.4.0) sha256=abc123
+        LOCK
+      else
+        File.write(File.join(@root, "Gemfile.lock"), <<~LOCK)
+          GEM
+            remote: https://gem.coop/
+            specs:
+              rake (13.4.2)
+
+          CHECKSUMS
+            rake (13.4.2) sha256=abc123
+        LOCK
+      end
+    })
+    File.write(File.join(@root, "Gemfile"), "source \"https://gem.coop\"\n")
+    File.write(File.join(@root, "Appraisal.root.gemfile"), "source \"https://gem.coop\"\n")
+    File.write(File.join(@root, "Gemfile.lock"), <<~LOCK)
+      GEM
+        remote: https://gem.coop/
+        specs:
+          rake (13.4.2)
+
+      CHECKSUMS
+        rake (13.4.2)
+        thor (1.4.0) sha256=abc123
+    LOCK
+    File.write(File.join(@root, "Appraisal.root.gemfile.lock"), <<~LOCK)
+      GEM
+        remote: https://gem.coop/
+        specs:
+          thor (1.4.0)
+
+      CHECKSUMS
+        rake (13.4.2) sha256=abc123
+        thor (1.4.0)
+    LOCK
+
+    reset.reset("release-lockfiles")
+
+    expect(commands.length).to eq(2)
+    expect(commands.first).to include("BUNDLE_LOCKFILE=#{File.join(@root, "Appraisal.root.gemfile.lock")}")
+    expect(commands.last).to include("BUNDLE_LOCKFILE=#{File.join(@root, "Gemfile.lock")}")
   end
 end

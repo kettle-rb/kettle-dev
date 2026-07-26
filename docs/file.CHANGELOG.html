@@ -90,9 +90,9 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 <ul>
   <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.0">v2.5.0</a>
 </li>
-  <li>COVERAGE: 91.97% – 4307/4683 lines in 40 files</li>
-  <li>BRANCH COVERAGE: 75.96% – 1662/2188 branches in 40 files</li>
-  <li>57.24% documented</li>
+  <li>COVERAGE: 91.70% – 4420/4820 lines in 42 files</li>
+  <li>BRANCH COVERAGE: 75.72% – 1684/2224 branches in 42 files</li>
+  <li>55.52% documented</li>
 </ul>
 
 <h3 id="added-1">Added</h3>
@@ -103,8 +103,13 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 signing passphrase and RubyGems MFA OTP from the local 1Password CLI during<br>
 direct release runs.</li>
   <li>
-<code>kettle-release</code> and <code>kettle-changelog</code> now accept <code>--yes</code> to approve their<br>
-release confirmation prompts without interactive input.</li>
+    <p><code>kettle-release</code> and <code>kettle-changelog</code> now accept <code>--yes</code> to approve their<br>
+release confirmation prompts without interactive input.</p>
+  </li>
+  <li>
+<code>kettle-reset Gemfile.lock</code> now resets CI-facing lockfiles by disabling local<br>
+sibling path environments and updating path-sourced or checksum-gap gems back<br>
+to released registry versions with checksums.</li>
 </ul>
 
 <h3 id="changed-1">Changed</h3>
@@ -151,6 +156,11 @@ and direct provider lookup failures raise <code>Kettle::Dev::Error</code>.</p>
     <p>kettle-jem-template-20260726-003 - Coverage upload steps now treat Coveralls,<br>
 QLTY, and Codecov as optional, so provider outages do not fail CI when local<br>
 coverage thresholds still pass.</p>
+  </li>
+  <li>
+    <p><code>kettle-release</code> now uses the same lockfile reset logic before release prep<br>
+commits, and can reset and amend release lockfiles before the first push if<br>
+local paths reappear mid-release.</p>
   </li>
 </ul>
 

@@ -20,8 +20,8 @@ module Kettle
         if check
           validate(target)
         else
-          path = resetter.lockfile_path_for(target)
-          unless resetter.normalization_needed?(path)
+          paths = resetter.lockfile_paths_for(target)
+          unless paths.any? { |path| resetter.normalization_needed?(path) }
             puts "#{target} is already reset."
             return 0
           end
@@ -44,6 +44,7 @@ module Kettle
       def parser
         OptionParser.new do |opts|
           opts.banner = "Usage: kettle-reset [--check] TARGET"
+          opts.separator "Targets: Gemfile.lock, Appraisal.root.gemfile.lock, release-lockfiles"
           opts.on("--check", "Validate TARGET without changing it") { @check = true }
           opts.on("-h", "--help", "Show this help") do
             puts opts
@@ -53,8 +54,8 @@ module Kettle
       end
 
       def validate(target)
-        path = resetter.lockfile_path_for(target)
-        diagnostics = resetter.diagnostics(path)
+        paths = resetter.lockfile_paths_for(target)
+        diagnostics = paths.flat_map { |path| resetter.diagnostics(path) }
         raise Error, validation_message(target, diagnostics) unless diagnostics.empty?
 
         puts "#{target} is already reset."

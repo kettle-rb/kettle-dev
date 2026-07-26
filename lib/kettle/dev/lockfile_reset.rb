@@ -2,6 +2,7 @@
 
 require "set"
 require "shellwords"
+require "fileutils"
 
 module Kettle
   module Dev
@@ -15,6 +16,14 @@ module Kettle
         "GALTZO_FLOSS_DEV" => "false",
         "UR_BRAIN_DEV" => "false"
       }.freeze
+      RELEASE_LOCKFILES_TARGET = "release-lockfiles"
+      SUPPORTED_TARGETS = ["Gemfile.lock", "Appraisal.root.gemfile.lock", RELEASE_LOCKFILES_TARGET].freeze
+      UNBUNDLED_ENV_KEYS = %w[
+        BUNDLE_BIN_PATH
+        BUNDLE_FROZEN
+        BUNDLER_VERSION
+        RUBYOPT
+      ].freeze
 
       def initialize(root:, command_runner:)
         @root = root
@@ -22,14 +31,14 @@ module Kettle
       end
 
       def reset(target)
-        path = lockfile_path_for(target)
-        return path unless normalization_needed?(path)
-
-        reset_lockfile!(path)
-        diagnostics = diagnostics(path)
+        paths = lockfile_paths_for(target)
+        paths.each do |path|
+          reset_lockfile!(path) if normalization_needed?(path)
+        end
+        diagnostics = paths.flat_map { |path| diagnostics(path) }
         raise Error, validation_message(target, diagnostics) unless diagnostics.empty?
 
-        path
+        paths
       end
 
       def reset_lockfile!(path)
@@ -39,7 +48,12 @@ module Kettle
           return
         end
 
-        command_runner.call(reset_command(path: path, gemfile: gemfile))
+        command = reset_command(path: path, gemfile: gemfile)
+        if has_local_path_remote?(path)
+          rebuild_lockfile(path) { command_runner.call(command) }
+        else
+          command_runner.call(command)
+        end
       end
 
       def reset_command(path:, gemfile:)
@@ -49,6 +63,9 @@ module Kettle
           "BUNDLE_LOCKFILE" => path
         )
         command = +"env"
+        UNBUNDLED_ENV_KEYS.each do |key|
+          command << " -u #{key}"
+        end
         env.each do |key, value|
           command << " #{key}=#{Shellwords.escape(value)}"
         end
@@ -91,11 +108,28 @@ module Kettle
       end
 
       def lockfile_path_for(target)
+        paths = lockfile_paths_for(target)
+        raise Error, "reset target #{target.inspect} resolves to multiple lockfiles; use lockfile_paths_for" if paths.length != 1
+
+        paths.first
+      end
+
+      def lockfile_paths_for(target)
         normalized = target.to_s.strip
         raise Error, "reset requires TARGET" if normalized.empty?
-        raise Error, "reset target #{normalized.inspect} is not supported; supported targets: Gemfile.lock" unless normalized.casecmp("Gemfile.lock").zero?
+        if normalized.casecmp(RELEASE_LOCKFILES_TARGET).zero?
+          paths = lockfile_paths
+          raise Error, "no release lockfiles found" if paths.empty?
 
-        File.join(root, "Gemfile.lock")
+          return paths
+        end
+        supported = SUPPORTED_TARGETS.reject { |candidate| candidate == RELEASE_LOCKFILES_TARGET }
+        match = supported.find { |candidate| candidate.casecmp(normalized).zero? }
+        unless match
+          raise Error, "reset target #{normalized.inspect} is not supported; supported targets: #{SUPPORTED_TARGETS.join(", ")}"
+        end
+
+        [File.join(root, match)]
       end
 
       def gemfile_for_lockfile(path)
@@ -132,6 +166,7 @@ module Kettle
 
       def local_path_remote_lines(path)
         File.readlines(path).filter_map.with_index(1) do |line, index|
+          next if line == "  remote: .\n"
           next unless line.start_with?("  remote: /", "  remote: .", "  remote: ./", "  remote: ../")
 
           index
@@ -139,7 +174,7 @@ module Kettle
       end
 
       def empty_registry_checksums(path)
-        path_gems = path_source_gems(path) | path_dependency_gems(path)
+        path_gems = path_source_gems(path) | path_dependency_gems(path) | self_path_source_gems(path)
         in_checksums = false
         entries = File.readlines(path).filter_map.with_index(1) do |line, index|
           stripped = line.strip
@@ -184,20 +219,27 @@ module Kettle
         gems = Set.new
         in_path = false
         in_specs = false
+        current_path_is_self = false
         File.readlines(path).each do |line|
           header = line.strip
           if header.match?(/\A[A-Z][A-Z ]*\z/)
             in_path = header == "PATH"
             in_specs = false
+            current_path_is_self = false
             next
           end
           next unless in_path
 
+          if header.start_with?("remote:")
+            current_path_is_self = header == "remote: ."
+            next
+          end
           if header == "specs:"
             in_specs = true
             next
           end
           next unless in_specs
+          next if current_path_is_self
 
           match = line.match(/\A    ([A-Za-z0-9_.-]+) \([^)]+\)/)
           gems << match[1] if match
@@ -206,6 +248,7 @@ module Kettle
       end
 
       def path_dependency_gems(path)
+        self_gems = self_path_source_gems(path)
         gems = Set.new
         in_dependencies = false
         File.readlines(path).each do |line|
@@ -217,6 +260,37 @@ module Kettle
           next unless in_dependencies
 
           match = line.match(/\A  ([A-Za-z0-9_.-]+)!\z/)
+          gems << match[1] if match && !self_gems.include?(match[1])
+        end
+        gems
+      end
+
+      def self_path_source_gems(path)
+        gems = Set.new
+        in_path = false
+        in_specs = false
+        current_path_is_self = false
+        File.readlines(path).each do |line|
+          header = line.strip
+          if header.match?(/\A[A-Z][A-Z ]*\z/)
+            in_path = header == "PATH"
+            in_specs = false
+            current_path_is_self = false
+            next
+          end
+          next unless in_path
+
+          if header.start_with?("remote:")
+            current_path_is_self = header == "remote: ."
+            next
+          end
+          if header == "specs:"
+            in_specs = true
+            next
+          end
+          next unless in_specs && current_path_is_self
+
+          match = line.match(/\A    ([A-Za-z0-9_.-]+) \([^)]+\)/)
           gems << match[1] if match
         end
         gems
@@ -229,6 +303,23 @@ module Kettle
       private
 
       attr_reader :root, :command_runner
+
+      def rebuild_lockfile(path)
+        backup = backup_path_for(path)
+        FileUtils.mkdir_p(File.dirname(backup))
+        FileUtils.cp(path, backup)
+        FileUtils.rm_f(path)
+        yield
+        FileUtils.rm_f(backup)
+      rescue
+        FileUtils.mv(backup, path, force: true) if File.file?(backup)
+        raise
+      end
+
+      def backup_path_for(path)
+        backup_dir = File.join(root, "tmp", "kettle-reset")
+        "#{File.join(backup_dir, File.basename(path))}.#{Process.pid}.bak"
+      end
 
       def validation_message(target, diagnostics)
         <<~MSG
