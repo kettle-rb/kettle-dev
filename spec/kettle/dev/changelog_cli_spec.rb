@@ -1001,7 +1001,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
             "K_SOUP_COV_DO" => "true",
             "K_SOUP_COV_FORMATTERS" => "json",
             "K_SOUP_COV_MIN_HARD" => "true",
-            "K_SOUP_COV_MULTI_FORMATTERS" => "true",
+            "K_SOUP_COV_MULTI_FORMATTERS" => "false",
             "K_SOUP_COV_OPEN_BIN" => ""
           ),
           "bundle",
@@ -1081,7 +1081,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
             "K_SOUP_COV_DO" => "true",
             "K_SOUP_COV_FORMATTERS" => "json",
             "K_SOUP_COV_MIN_HARD" => "false",
-            "K_SOUP_COV_MULTI_FORMATTERS" => "true",
+            "K_SOUP_COV_MULTI_FORMATTERS" => "false",
             "K_SOUP_COV_OPEN_BIN" => ""
           ),
           "bundle",

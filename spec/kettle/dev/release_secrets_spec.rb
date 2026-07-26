@@ -18,6 +18,18 @@ RSpec.describe Kettle::Dev::ReleaseSecrets do
     expect(provider.gem_signing_passphrase).to eq("secret")
   end
 
+  it "memoizes the gem signing passphrase after the first 1Password lookup" do
+    allow(Open3).to receive(:capture3)
+      .with("op", "item", "get", "Rubygems", "--fields", "label=GEM-SIGN-PASSPHRASE", "--reveal")
+      .once
+      .and_return(["secret\n", "", status(success: true)])
+
+    provider = described_class::Factory.build(provider_name: "1password")
+
+    expect(provider.gem_signing_passphrase).to eq("secret")
+    expect(provider.gem_signing_passphrase).to eq("secret")
+  end
+
   it "loads RubyGems OTP values close to prompt time" do
     allow(Open3).to receive(:capture3)
       .with("op", "item", "get", "Rubygems", "--otp")

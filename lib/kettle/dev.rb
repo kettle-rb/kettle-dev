@@ -183,6 +183,10 @@ module Kettle
         defaults.include?(task_name.to_s)
       end
 
+      def skip_test_tasks?
+        ENV_TRUE_RE.match?(ENV.fetch("KETTLE_DEV_SKIP_TESTS", ""))
+      end
+
       private
 
       ### LINTING TASKS
@@ -206,6 +210,8 @@ module Kettle
       # Set up kettle-soup-cover
       # @return [void]
       def coverage_tasks
+        return if skip_test_tasks?
+
         # Lazy loaded because it won't be installed for Ruby < 2.7
         require "kettle-soup-cover"
 

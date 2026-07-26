@@ -7,12 +7,13 @@ minitest_files = FileList["test/*test*.rb", "test/**/*test*.rb"].to_a.uniq
 rspec_files = FileList["spec/*_spec.rb", "spec/**/*_spec.rb"].to_a.uniq
 minitest_project = !minitest_files.empty?
 rspec_project = !rspec_files.empty?
+skip_test_tasks = Kettle::Dev.skip_test_tasks?
 
 # Set up MiniTest
 begin
   require "rake/testtask"
 
-  if minitest_project && !Rake::Task.task_defined?(:test)
+  if minitest_project && !Rake::Task.task_defined?(:test) && !skip_test_tasks
     Rake::TestTask.new(:test) do |t|
       t.libs << "test"
       t.test_files = minitest_files
@@ -36,6 +37,11 @@ setup_spec_task = ->(default:) {
   unless Rake::Task.task_defined?(:spec)
     desc("Run RSpec code examples")
     task(:spec) do
+      if Kettle::Dev.skip_test_tasks?
+        puts "Skipping specs because KETTLE_DEV_SKIP_TESTS=true."
+        next
+      end
+
       begin
         skip_bundle_audit = ENV.delete("KETTLE_DEV_SKIP_BUNDLE_AUDIT")
         sh("bundle", "exec", "kettle-test")
@@ -56,7 +62,7 @@ setup_spec_task = ->(default:) {
 
 # Setup RSpec only when this project has specs, or when no MiniTest suite exists
 # and the historical kettle-test/RSpec default remains the best available task.
-if rspec_project || !minitest_project
+if !skip_test_tasks && (rspec_project || !minitest_project)
   if defined?(Kettle::Dev::IS_CI)
     if Kettle::Dev::IS_CI
       # then we should not have a coverage task, but do want a spec test.

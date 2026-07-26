@@ -205,6 +205,30 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
         local_cli.send(:run_cmd!, "bundle exec rake release")
       end
+
+      it "skips duplicate test and coverage work in the default task after changelog coverage runs" do
+        local_cli = described_class.new
+        allow(local_cli).to receive(:run_cmd!)
+
+        local_cli.send(:run_changelog!)
+
+        expect(local_cli.send(:release_default_task_command)).to eq("KETTLE_DEV_SKIP_TESTS=true bin/rake")
+      end
+
+      it "keeps the full default task for resumed releases that did not run changelog coverage" do
+        local_cli = described_class.new(start_step: 4)
+
+        expect(local_cli.send(:release_default_task_command)).to eq("bin/rake")
+      end
+
+      it "fails early when configured release secrets cannot provide the signing passphrase" do
+        provider = instance_double(Kettle::Dev::ReleaseSecrets::OnePassword, gem_signing_passphrase: nil)
+        local_cli = described_class.new(secrets_provider: provider, yes: true)
+
+        expect {
+          local_cli.send(:ensure_release_secrets_ready_for_signing!)
+        }.to raise_error(MockSystemExit, /Secret prompts are not allowed when --secrets-provider is set/)
+      end
     end
 
     describe "machine-readable release reports" do

@@ -26,4 +26,13 @@ RSpec.describe Kettle::Dev::InteractiveReleaseCommand do
     expect(input.string).to eq("secret\nsecret\n")
     expect(provider).to have_received(:gem_signing_passphrase).once
   end
+
+  it "fails closed when a configured provider returns no secret for a prompt" do
+    provider = instance_double(Kettle::Dev::ReleaseSecrets::OnePassword, gem_signing_passphrase: nil)
+    command = described_class.new(secrets_provider: provider, output: StringIO.new)
+
+    expect {
+      command.send(:handle_prompt, StringIO.new, "Enter PEM pass phrase: ")
+    }.to raise_error(Kettle::Dev::Error, /configured release secrets provider returned no value/)
+  end
 end

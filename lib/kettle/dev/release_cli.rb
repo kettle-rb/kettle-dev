@@ -139,6 +139,7 @@ module Kettle
         @diagnostics = []
         @started_at = nil
         @finished_report = nil
+        @changelog_generated_coverage = false
       end
 
       def run
@@ -274,7 +275,7 @@ module Kettle
         # 3. bin/setup
         run_cmd!("bin/setup") if run_step?(3)
         # 4. bin/rake
-        run_cmd!("bin/rake") if run_step?(4)
+        run_cmd!(release_default_task_command) if run_step?(4)
 
         # 5. appraisal:generate (optional) + canonical docs build
         if run_step?(5)
@@ -354,7 +355,7 @@ module Kettle
 
         # 13. signing guidance and checks
         if run_step?(13)
-          if ENV.fetch("SKIP_GEM_SIGNING", "false").casecmp("false").zero?
+          if signing_enabled?
             puts "TIP: For local dry-runs or testing the release workflow, set SKIP_GEM_SIGNING=true to avoid PEM password prompts."
             if @yes
               puts "Proceeding with signing enabled because --yes was provided."
@@ -373,11 +374,17 @@ module Kettle
           end
 
           ensure_signing_setup_or_skip!
+          ensure_release_secrets_ready_for_signing! if signing_enabled? && release_secrets_configured?
         end
 
         # 14. build
         if run_step?(14)
-          puts "Running build (you may be prompted for the signing key password)..."
+          ensure_release_secrets_ready_for_signing! if signing_enabled? && release_secrets_configured?
+          if signing_enabled? && release_secrets_configured?
+            puts "Running build with gem signing passphrase from configured secrets provider..."
+          else
+            puts "Running build (you may be prompted for the signing key password)..."
+          end
           run_cmd!("bundle exec rake build")
         end
 
@@ -389,7 +396,12 @@ module Kettle
           if local_ci?
             with_unpublished_candidate_cleanup { release_gem_and_tag_locally!(version) }
           else
-            puts "Running release (you may be prompted for signing key password and RubyGems MFA OTP)..."
+            ensure_release_secrets_ready_for_signing! if signing_enabled? && release_secrets_configured?
+            if release_secrets_configured?
+              puts "Running release with configured secrets provider for signing and RubyGems MFA prompts..."
+            else
+              puts "Running release (you may be prompted for signing key password and RubyGems MFA OTP)..."
+            end
             with_unpublished_candidate_cleanup do
               run_cmd!("bundle exec rake release")
               @release_candidate.published = true
@@ -746,6 +758,18 @@ module Kettle
         cmd = "#{cmd} --version #{Shellwords.escape(@version_override)}" if @version_override
         cmd = "#{cmd} --yes" if @yes
         run_cmd!(cmd)
+        @changelog_generated_coverage = true
+      end
+
+      def release_default_task_command
+        # `kettle-changelog` generates strict coverage by running `bundle exec kettle-test`.
+        # When that happened during this same release invocation, the default task can skip
+        # its test/coverage prerequisites and still run lint, audit, documentation, and any
+        # other non-test release checks. Resumed releases do not set this flag, so they keep
+        # the full default task behavior.
+        return "KETTLE_DEV_SKIP_TESTS=true bin/rake" if @changelog_generated_coverage
+
+        "bin/rake"
       end
 
       def confirm_yes!(message, prompt, abort_message)
@@ -1076,7 +1100,7 @@ module Kettle
 
       def bundle_audit_skip_command(cmd)
         return cmd unless skip_bundle_audit?
-        return cmd unless cmd.start_with?("bin/rake")
+        return cmd unless /(?:\A|\s)bin\/rake\b/.match?(cmd)
         return cmd if cmd.start_with?("KETTLE_DEV_SKIP_BUNDLE_AUDIT=")
 
         "KETTLE_DEV_SKIP_BUNDLE_AUDIT=true #{cmd}"
@@ -1101,6 +1125,29 @@ module Kettle
 
       def release_secrets_configured?
         !@secrets_provider.is_a?(Kettle::Dev::ReleaseSecrets::Provider)
+      end
+
+      def signing_enabled?
+        ENV.fetch("SKIP_GEM_SIGNING", "false").casecmp("false").zero?
+      end
+
+      def ensure_release_secrets_ready_for_signing!
+        value = @secrets_provider.gem_signing_passphrase.to_s
+        abort(release_secrets_configuration_message("gem signing passphrase was empty")) if value.empty?
+      rescue Kettle::Dev::Error => error
+        abort(release_secrets_configuration_message(error.message))
+      end
+
+      def release_secrets_configuration_message(reason)
+        <<~MSG.strip
+          Release secrets provider was requested, but #{reason}.
+          Configure the 1Password CLI before release:
+            KETTLE_RELEASE_1PASSWORD_ITEM=Rubygems
+            KETTLE_RELEASE_1PASSWORD_GEM_SIGNING_PASSPHRASE_FIELD=GEM-SIGN-PASSPHRASE
+          Or provide an explicit reference:
+            KETTLE_RELEASE_1PASSWORD_GEM_SIGNING_PASSPHRASE_REFERENCE=op://<vault>/<item>/<field>
+          Ensure `op` is installed and signed in. Secret prompts are not allowed when --secrets-provider is set.
+        MSG
       end
 
       def release_secret_command?(cmd)

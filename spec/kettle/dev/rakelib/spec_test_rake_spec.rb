@@ -78,4 +78,15 @@ RSpec.describe "spec and test rake tasks" do # rubocop:disable RSpec/DescribeCla
     expect(Kettle::Dev.defaults).to include("coverage")
     expect(Kettle::Dev.defaults).not_to include("spec")
   end
+
+  it "does not register test tasks when KETTLE_DEV_SKIP_TESTS is enabled" do
+    stub_env("KETTLE_DEV_SKIP_TESTS" => "true")
+    FileUtils.mkdir_p("spec")
+    File.write("spec/example_spec.rb", "# frozen_string_literal: true\n")
+
+    load_spec_test_tasks
+
+    expect(Kettle::Dev.defaults).not_to include("spec")
+    expect(Kettle::Dev.defaults).not_to include("test")
+  end
 end

@@ -22,11 +22,20 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- `kettle-release` now skips the default task's duplicate test and coverage run
+  when `kettle-changelog` already generated strict coverage in the same release.
+- `kettle-changelog` now requests JSON-only coverage output for release metadata
+  generation, reducing formatter noise during release preparation.
+
 ### Deprecated
 
 ### Removed
 
 ### Fixed
+
+- `kettle-release --secrets-provider 1password` now validates the gem signing
+  passphrase before build/release and aborts instead of prompting if configured
+  secrets are unavailable.
 
 ### Security
 

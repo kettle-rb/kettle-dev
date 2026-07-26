@@ -61,7 +61,9 @@ module Kettle
 
       def write_secret(input, value, label:)
         secret = value.to_s
-        return if secret.empty?
+        if secret.empty?
+          raise Kettle::Dev::Error, "#{label} prompt reached, but the configured release secrets provider returned no value. Aborting because secret prompts are not allowed when a secrets provider is configured."
+        end
 
         @output.puts("#{label} loaded from configured secrets provider.")
         input.write("#{secret}\n")

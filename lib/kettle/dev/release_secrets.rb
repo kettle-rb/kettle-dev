@@ -29,15 +29,25 @@ module Kettle
 
         def initialize(config)
           @config = DEFAULTS.merge(config || {})
+          @gem_signing_passphrase = nil
+          @gem_signing_passphrase_loaded = false
         end
 
         def gem_signing_passphrase
+          return @gem_signing_passphrase if @gem_signing_passphrase_loaded
+
           return cached_gem_signing_passphrase if cached_gem_signing_passphrase?
 
           reference = string_config("gem_signing_passphrase_reference")
-          return read_reference(reference) unless reference.empty?
+          value = if reference.empty?
+            item_field("gem_signing_passphrase_field")
+          else
+            read_reference(reference)
+          end
 
-          item_field("gem_signing_passphrase_field")
+          @gem_signing_passphrase = value
+          @gem_signing_passphrase_loaded = true
+          value
         end
 
         def rubygems_otp

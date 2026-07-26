@@ -743,7 +743,7 @@ module Kettle
           "K_SOUP_COV_DO" => "true",
           "K_SOUP_COV_FORMATTERS" => "json",
           "K_SOUP_COV_MIN_HARD" => @enforce_coverage_thresholds ? "true" : "false",
-          "K_SOUP_COV_MULTI_FORMATTERS" => "true",
+          "K_SOUP_COV_MULTI_FORMATTERS" => "false",
           "K_SOUP_COV_OPEN_BIN" => ""
         }
       end
