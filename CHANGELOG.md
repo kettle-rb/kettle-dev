@@ -28,6 +28,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - Executable startup headers are now shown only when `--verbose` is passed;
   `-v` and `--version` still print just the executable version and exit.
+- `yard:lint` now runs `yard-lint --quiet` first and only reruns with full
+  output when lint fails, keeping warning-only default and release output
+  compact while preserving failure diagnostics.
 - `yard:lint` now runs before `yard` and before the default task reaches YARD
   documentation generation, so documentation lint failures fail earlier in CI.
 
@@ -41,6 +44,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-release` lockfile normalization now passes `--add-checksums` when it
+  repairs release lockfiles, so empty CHECKSUMS entries are not left behind for
+  the pre-commit validation pass.
 - `kettle-dvcs` documentation examples no longer use Ruby-only YARD example
   tags for shell commands, so `yard:lint` can pass before docs are regenerated.
 - `kettle-changelog` now reports `bin/rake yard` failures directly, including

@@ -600,6 +600,7 @@ module Kettle
         end
         command << " bundle lock"
         command << " --update #{update_gems.map { |gem_name| Shellwords.escape(gem_name) }.join(" ")}" unless update_gems.empty?
+        command << " --add-checksums"
         run_cmd!(command)
       end
 

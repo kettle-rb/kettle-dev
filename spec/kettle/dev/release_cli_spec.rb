@@ -960,7 +960,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
           LOCK
 
           expect(local_cli).to receive(:run_cmd!).with(
-            a_string_matching(/KETTLE_DEV_DEV=false.*BUNDLE_GEMFILE=.*Gemfile.*bundle lock --update kettle-soup-cover/)
+            a_string_matching(/KETTLE_DEV_DEV=false.*BUNDLE_GEMFILE=.*Gemfile.*bundle lock --update kettle-soup-cover --add-checksums/)
           ) do
             File.write(File.join(root, "Gemfile.lock"), <<~LOCK)
               GEM

@@ -28,7 +28,9 @@ begin
   namespace :yard do
     desc "Lint YARD Documentation"
     task :lint do
-      sh("bundle", "exec", "yard-lint", "lib")
+      # Keep warning-only lint runs compact in default/release flows, but rerun
+      # with full output when lint fails so the blocking diagnostics are visible.
+      sh("bundle", "exec", "yard-lint", "lib") unless system("bundle", "exec", "yard-lint", "--quiet", "lib")
     end
   end
 

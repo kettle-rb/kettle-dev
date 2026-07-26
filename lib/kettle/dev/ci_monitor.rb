@@ -267,8 +267,6 @@ module Kettle
       end
       module_function :collect_gitlab
 
-      # -- internals (abort-on-failure legacy paths used elsewhere) --
-
       def monitor_github_internal!(restart_hint:, workflows: nil)
         root = Kettle::Dev::CIHelpers.project_root
         workflows = Array(workflows).empty? ? Kettle::Dev::CIHelpers.workflows_list(root) : Array(workflows)
