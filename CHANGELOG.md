@@ -28,18 +28,14 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Release and changelog specs now route git commit, amend, tag, reset, and
-  release-state queries through `GitAdapter`, so test runs do not invoke the
-  caller's real git signing configuration.
-
 ### Security
 
 ## [2.5.0] - 2026-07-26
 
 - TAG: [v2.5.0][2.5.0t]
-- COVERAGE: 92.20% -- 4503/4884 lines in 42 files
-- BRANCH COVERAGE: 76.20% -- 1716/2252 branches in 42 files
-- 54.95% documented
+- COVERAGE: 91.53% -- 4507/4924 lines in 42 files
+- BRANCH COVERAGE: 75.86% -- 1719/2266 branches in 42 files
+- 55.94% documented
 
 ### Added
 
@@ -95,6 +91,10 @@ Please file a bug if you notice a violation of semantic versioning.
   local paths reappear mid-release.
 - Release lockfile validation now allows the current gem's own `gemspec` path
   source while still rejecting local sibling path sources.
+
+- Release and changelog specs now route git commit, amend, tag, reset, and
+  release-state queries through `GitAdapter`, so test runs do not invoke the
+  caller's real git signing configuration.
 
 ## [2.4.6] - 2026-07-26
 
