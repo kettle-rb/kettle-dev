@@ -190,6 +190,21 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
         cli.send(:run_cmd!, "bundle exec kettle-changelog")
       end
+
+      it "uses the configured release secrets provider for prompt-bearing release commands" do
+        provider = instance_double(Kettle::Dev::ReleaseSecrets::OnePassword)
+        local_cli = described_class.new(secrets_provider: provider)
+        runner = instance_double(Kettle::Dev::InteractiveReleaseCommand)
+        status = instance_double(Process::Status, success?: true, exitstatus: 0)
+        expect(Kettle::Dev::InteractiveReleaseCommand)
+          .to receive(:new)
+          .with(secrets_provider: provider)
+          .and_return(runner)
+        expect(runner).to receive(:call).with(kind_of(Hash), "bundle exec rake release").and_return(["", "", status])
+        expect(Open3).not_to receive(:capture3)
+
+        local_cli.send(:run_cmd!, "bundle exec rake release")
+      end
     end
 
     describe "machine-readable release reports" do

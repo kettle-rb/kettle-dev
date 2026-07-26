@@ -74,11 +74,21 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 
 <h3 id="added">Added</h3>
 
+<ul>
+  <li>
+<code>kettle-release</code> can now use <code>--secrets-provider 1password</code> to load the gem<br>
+signing passphrase and RubyGems MFA OTP from the local 1Password CLI during<br>
+direct release runs.</li>
+</ul>
+
 <h3 id="changed">Changed</h3>
 
 <ul>
   <li>Documented family release credential automation with 1Password and the<br>
 unreleased-family-gem cleanup workflow.</li>
+  <li>Shared release secret provider code now lives in <code>kettle-dev</code>, allowing<br>
+<code>kettle-family</code> to cache the signing passphrase once while child<br>
+<code>kettle-release</code> processes fetch RubyGems OTP values at prompt time.</li>
 </ul>
 
 <h3 id="deprecated">Deprecated</h3>

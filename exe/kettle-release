@@ -49,7 +49,7 @@ end
 # Do not guard with __FILE__ == $PROGRAM_NAME because binstubs use Kernel.load.
 if ARGV.include?("-h") || ARGV.include?("--help")
   puts <<~USAGE
-    Usage: kettle-release [--version VERSION] [--local-ci] [--appraisal-update] [--skip-bundle-audit] [--skip-steps STEPS] [--ci-workflows WORKFLOWS] [--skip-remotes REMOTES] [--json|--events[=TYPES]] [--report PATH] [start_step=<0-19>]
+    Usage: kettle-release [--version VERSION] [--local-ci] [--appraisal-update] [--skip-bundle-audit] [--skip-steps STEPS] [--ci-workflows WORKFLOWS] [--skip-remotes REMOTES] [--secrets-provider NAME] [--json|--events[=TYPES]] [--report PATH] [start_step=<0-19>]
 
     Automates the release flow for a Ruby gem in the host project.
 
@@ -89,6 +89,7 @@ if ARGV.include?("-h") || ARGV.include?("--help")
       --skip-bundle-audit         # Skip bundle:audit/update during release rake checks
       --ci-workflows WORKFLOWS    # Comma-separated workflow files or stems to monitor at CI step 10
       --skip-remotes REMOTES      # Comma-separated git remote names to exclude from release fetch/push parity
+      --secrets-provider NAME     # Release secrets provider: interactive, 1password
       --json                      # Print final machine-readable release report as JSON
       --events[=TYPES]            # Print newline-delimited JSON release events, optionally filtered by type
       --report PATH               # Write final machine-readable release report as JSON
@@ -102,6 +103,19 @@ if ARGV.include?("-h") || ARGV.include?("--help")
       K_RELEASE_LOCAL_CI_WORKFLOW # Name of workflow (without .yml) for local CI; defaults to locked_deps or first
       K_RELEASE_CI_WORKFLOWS      # Comma-separated workflow files or stems to monitor at CI step 10
       K_RELEASE_SKIP_REMOTES      # Comma-separated git remote names to exclude from release fetch/push parity
+      KETTLE_RELEASE_SECRETS_PROVIDER=1password
+                                  # Load release secrets through the configured provider
+      KETTLE_RELEASE_1PASSWORD_ITEM=Rubygems
+      KETTLE_RELEASE_1PASSWORD_GEM_SIGNING_PASSPHRASE_FIELD=GEM-SIGN-PASSPHRASE
+      KETTLE_RELEASE_1PASSWORD_RUBYGEMS_OTP_FIELD='one-time password'
+                                  # Defaults used by the 1Password provider
+      KETTLE_RELEASE_1PASSWORD_ACCOUNT
+      KETTLE_RELEASE_1PASSWORD_GEM_SIGNING_PASSPHRASE_REFERENCE
+      KETTLE_RELEASE_1PASSWORD_RUBYGEMS_OTP_REFERENCE
+                                  # Optional explicit 1Password account or op:// references
+      KETTLE_RELEASE_GEM_SIGNING_PASSPHRASE_SOURCE=cached
+      KETTLE_RELEASE_GEM_SIGNING_PASSPHRASE
+                                  # Internal family integration: reuse a cached passphrase
       KETTLE_RELEASE_APPRAISAL_TASK=appraisal:update
                                   # Use slower appraisal:update instead of default appraisal:generate
       KETTLE_DEV_SKIP_BUNDLE_AUDIT=true
@@ -221,6 +235,27 @@ def extract_report_arg!(argv)
   report_path
 end
 
+def extract_secrets_provider_arg!(argv)
+  provider = nil
+  if (idx = argv.index("--secrets-provider"))
+    provider = argv[idx + 1]
+    if provider.to_s.empty? || provider.to_s.start_with?("-")
+      Kettle::Dev::ExitAdapter.abort("--secrets-provider requires a provider name")
+    end
+    argv.slice!(idx, 2)
+  end
+  argv.delete_if do |arg|
+    if arg.start_with?("--secrets-provider=", "secrets_provider=")
+      provider = arg.split("=", 2)[1]
+      Kettle::Dev::ExitAdapter.abort("--secrets-provider requires a provider name") if provider.to_s.empty?
+      true
+    else
+      false
+    end
+  end
+  provider
+end
+
 def extract_events_arg!(argv)
   events = false
   event_types = nil
@@ -250,10 +285,11 @@ skip_steps = extract_skip_steps_arg!(ARGV)
 ci_workflows = extract_ci_workflows_arg!(ARGV)
 skip_remotes = extract_skip_remotes_arg!(ARGV)
 report_path = extract_report_arg!(ARGV)
+secrets_provider = extract_secrets_provider_arg!(ARGV)
 
 begin
   event_stream = events_output ? Kettle::Ndjson.event_stream($stdout, types: event_types) : nil
-  Kettle::Dev::ReleaseCLI.new(start_step: start_step, local_ci: local_ci, version: version_override, appraisal_task: appraisal_task, skip_steps: skip_steps, skip_bundle_audit: skip_bundle_audit, ci_workflows: ci_workflows, skip_remotes: skip_remotes, event_stream: event_stream, json_output: json_output, json_io: $stdout, report_path: report_path).run
+  Kettle::Dev::ReleaseCLI.new(start_step: start_step, local_ci: local_ci, version: version_override, appraisal_task: appraisal_task, skip_steps: skip_steps, skip_bundle_audit: skip_bundle_audit, ci_workflows: ci_workflows, skip_remotes: skip_remotes, secrets_provider_name: secrets_provider, event_stream: event_stream, json_output: json_output, json_io: $stdout, report_path: report_path).run
 rescue LoadError => e
   warn("#{script_basename}: could not load dependency: #{e.class}: #{e.message}")
   warn(Array(e.backtrace).join("\n")) if ENV["DEBUG"]

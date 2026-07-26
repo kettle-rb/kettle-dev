@@ -3,7 +3,7 @@
     [37, 3, 22, "Rake/Desc: Describe the task with `desc` method.", 1722165527],
     [43, 3, 11, "Rake/DuplicateTask: Task `yard` is defined at both lib/kettle/dev/rakelib/yard.rake:37 and lib/kettle/dev/rakelib/yard.rake:43.", 2689727229]
   ],
-  "spec/kettle/dev/release_cli_spec.rb:2689722154": [
+  "spec/kettle/dev/release_cli_spec.rb:3557381060": [
     [12, 7, 38, "RSpec/AnyInstance: Avoid stubbing using `allow_any_instance_of`.", 3627954156],
     [13, 7, 38, "RSpec/AnyInstance: Avoid stubbing using `allow_any_instance_of`.", 3627954156]
   ]

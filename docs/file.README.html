@@ -555,6 +555,24 @@ message explaining that setup and templating moved to kettle-jem.</p>
 <code>GEM_CERT_USER</code>: Username for selecting your public cert in <code>certs/&lt;USER&gt;.pem</code> (defaults to $USER)</li>
   <li>
 <code>SOURCE_DATE_EPOCH</code>: Reproducible build timestamp. <code>kettle-release</code> will set this automatically for the session.</li>
+  <li>
+<code>KETTLE_RELEASE_SECRETS_PROVIDER</code>: Release secrets provider for direct<br>
+<code>kettle-release</code> runs. Supported values are <code>interactive</code> and <code>1password</code>.</li>
+  <li>
+<code>KETTLE_RELEASE_1PASSWORD_ITEM</code>: 1Password item for release secrets<br>
+(default: <code>Rubygems</code>).</li>
+  <li>
+<code>KETTLE_RELEASE_1PASSWORD_GEM_SIGNING_PASSPHRASE_FIELD</code>: 1Password field for<br>
+the gem signing passphrase (default: <code>GEM-SIGN-PASSPHRASE</code>).</li>
+  <li>
+<code>KETTLE_RELEASE_1PASSWORD_RUBYGEMS_OTP_FIELD</code>: 1Password OTP field for<br>
+RubyGems MFA (default: <code>one-time password</code>).</li>
+  <li>
+<code>KETTLE_RELEASE_1PASSWORD_ACCOUNT</code>: Optional 1Password account selector.</li>
+  <li>
+<code>KETTLE_RELEASE_1PASSWORD_GEM_SIGNING_PASSPHRASE_REFERENCE</code> and<br>
+<code>KETTLE_RELEASE_1PASSWORD_RUBYGEMS_OTP_REFERENCE</code>: Optional explicit<br>
+<code>op://</code> references.</li>
 </ul>
 
 <p>Family releases can load signing and RubyGems MFA secrets from 1Password via<br>
@@ -757,6 +775,8 @@ Examples:</li>
 </li>
       <li>After intentionally handling a failed pre-release gate, skip it and start numbered release steps: <code>bundle exec kettle-release start_step=1</code>
 </li>
+      <li>Run direct release with 1Password secrets: <code>bundle exec kettle-release --secrets-provider 1password</code>
+</li>
     </ul>
   </li>
   <li>Tips:
@@ -766,6 +786,18 @@ Examples:</li>
     </ul>
   </li>
 </ul>
+
+<p>Direct <code>kettle-release</code> runs can opt in to 1Password for the gem signing<br>
+passphrase and RubyGems MFA OTP:</p>
+
+<pre class="code language-console"><code class="language-console">bundle exec kettle-release --secrets-provider 1password
+</code></pre>
+
+<p>The default 1Password lookup uses item <code>Rubygems</code>, field<br>
+<code>GEM-SIGN-PASSPHRASE</code> for the signing key passphrase, and the item’s OTP for<br>
+RubyGems MFA. Override those values with the <code>KETTLE_RELEASE_1PASSWORD_*</code><br>
+environment variables above. <code>kettle-release</code> fetches the OTP at prompt time so<br>
+long releases do not reuse a stale TOTP.</p>
 
 <h4 id="family-releases-and-1password">Family releases and 1Password</h4>
 
@@ -795,10 +827,12 @@ leaves RubyGems MFA prompts interactive. To run a family release with the local<
 <pre class="code language-console"><code class="language-console">kettle-family release --publish --execute --secrets-provider 1password
 </code></pre>
 
-<p>The gem signing passphrase is loaded once and cached only in memory for the<br>
-current <code>kettle-family</code> process. RubyGems OTP values are fetched when each MFA<br>
-prompt appears, so long releases do not reuse a stale TOTP. Secret values are<br>
-not written to the text report, NDJSON events, or temporary release files.</p>
+<p>The gem signing passphrase is loaded once by <code>kettle-family</code> and handed to<br>
+child <code>kettle-release</code> processes through an internal environment integration so<br>
+1Password is not queried repeatedly for the same value. RubyGems OTP values are<br>
+fetched by <code>kettle-release</code> when each MFA prompt appears, so direct and family<br>
+releases share the same OTP behavior. Secret values are not written to the text<br>
+report, NDJSON events, or temporary release files.</p>
 
 <p>For vault-specific or field-specific lookups, use explicit 1Password<br>
 references. <code>rubygems_otp_reference</code> is read with <code>op read</code>; otherwise the OTP<br>

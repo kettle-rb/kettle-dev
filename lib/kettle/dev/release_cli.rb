@@ -17,6 +17,9 @@ require "kettle/ndjson"
 require "kettle/rb/compat_matrix"
 require "ruby-progressbar"
 
+require_relative "interactive_release_command"
+require_relative "release_secrets"
+
 module Kettle
   module Dev
     class ReleaseCLI
@@ -112,7 +115,7 @@ module Kettle
 
       public
 
-      def initialize(start_step: 0, local_ci: false, version: nil, appraisal_task: nil, skip_steps: nil, skip_bundle_audit: nil, ci_workflows: nil, skip_remotes: nil, **options)
+      def initialize(start_step: 0, local_ci: false, version: nil, appraisal_task: nil, skip_steps: nil, skip_bundle_audit: nil, ci_workflows: nil, skip_remotes: nil, secrets_provider_name: nil, **options)
         @root = Kettle::Dev::CIHelpers.project_root
         @git = Kettle::Dev::GitAdapter.new
         @start_step = (start_step || 0).to_i
@@ -127,6 +130,7 @@ module Kettle
         @release_candidate = nil
         @event_stream = options[:event_stream]
         @event_recorder = Kettle::Ndjson.event_recorder(@event_stream, phase_timings: [])
+        @secrets_provider = options[:secrets_provider] || Kettle::Dev::ReleaseSecrets::Factory.build(provider_name: secrets_provider_name)
         @report_path = options[:report_path]
         @json_output = !!options[:json_output]
         @json_io = options[:json_io] || $stdout
@@ -1045,7 +1049,7 @@ module Kettle
         emit_command_event(cmd, "started")
         with_bundle_audit_skip_env do
           with_machine_stdout_redirect do
-            self.class.run_cmd!(cmd)
+            run_command_with_release_secrets!(cmd)
           end
         end
         emit_command_event(cmd, "ok")
@@ -1063,6 +1067,32 @@ module Kettle
         return cmd if cmd.start_with?("KETTLE_DEV_SKIP_BUNDLE_AUDIT=")
 
         "KETTLE_DEV_SKIP_BUNDLE_AUDIT=true #{cmd}"
+      end
+
+      def run_command_with_release_secrets!(cmd)
+        return self.class.run_cmd!(cmd) unless release_secret_command?(cmd) && release_secrets_configured?
+
+        puts "$ #{cmd}"
+        _stdout_str, stderr_str, status = Kettle::Dev::InteractiveReleaseCommand.new(secrets_provider: @secrets_provider).call(
+          self.class.send(:command_env),
+          cmd
+        )
+        return if status.success?
+
+        exit_code = status.respond_to?(:exitstatus) ? status.exitstatus : 1
+        diag = stderr_str.to_s.empty? ? "" : "\n--- STDERR (last 20 lines) ---\n#{stderr_str.lines.last(20).join}".rstrip
+        abort("Command failed: #{cmd} (exit #{exit_code})#{diag}")
+      rescue Kettle::Dev::Error => error
+        abort(error.message)
+      end
+
+      def release_secrets_configured?
+        !@secrets_provider.is_a?(Kettle::Dev::ReleaseSecrets::Provider)
+      end
+
+      def release_secret_command?(cmd)
+        /\Abundle(\s+exec)?\s+rake\s+(build|release)\b/.match?(cmd) ||
+          /\Agem\s+push\b/.match?(cmd)
       end
 
       def with_bundle_audit_skip_env
