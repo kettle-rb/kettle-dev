@@ -90,9 +90,9 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 <ul>
   <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.0">v2.5.0</a>
 </li>
-  <li>COVERAGE: 91.53% – 4507/4924 lines in 42 files</li>
-  <li>BRANCH COVERAGE: 75.86% – 1719/2266 branches in 42 files</li>
-  <li>55.94% documented</li>
+  <li>COVERAGE: 91.79% – 4595/5006 lines in 42 files</li>
+  <li>BRANCH COVERAGE: 76.39% – 1760/2304 branches in 42 files</li>
+  <li>56.07% documented</li>
 </ul>
 
 <h3 id="added-1">Added</h3>
@@ -165,9 +165,15 @@ coverage thresholds still pass.</p>
 <code>kettle-release</code> now uses the same lockfile reset logic before release prep<br>
 commits, and can reset and amend release lockfiles before the first push if<br>
 local paths reappear mid-release.</li>
+  <li>Release lockfile validation now allows the current gem’s own <code>gemspec</code> path<br>
+source while still rejecting local sibling path sources.</li>
+  <li>Release version checks now use RubyGems.org directly, while post-publish<br>
+availability probes continue to verify the gem.coop Bundler source.</li>
   <li>
-    <p>Release lockfile validation now allows the current gem’s own <code>gemspec</code> path<br>
-source while still rejecting local sibling path sources.</p>
+    <p>Release lockfile reset now uninstalls unreleased locally installed workspace<br>
+gem versions before regenerating <code>Gemfile.lock</code> and<br>
+<code>Appraisal.root.gemfile.lock</code>, preventing local-only versions from being<br>
+written as registry gems with checksums.</p>
   </li>
   <li>Release and changelog specs now route git commit, amend, tag, reset, and<br>
 release-state queries through <code>GitAdapter</code>, so test runs do not invoke the<br>

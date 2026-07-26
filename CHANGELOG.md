@@ -33,9 +33,9 @@ Please file a bug if you notice a violation of semantic versioning.
 ## [2.5.0] - 2026-07-26
 
 - TAG: [v2.5.0][2.5.0t]
-- COVERAGE: 91.53% -- 4507/4924 lines in 42 files
-- BRANCH COVERAGE: 75.86% -- 1719/2266 branches in 42 files
-- 55.94% documented
+- COVERAGE: 91.79% -- 4595/5006 lines in 42 files
+- BRANCH COVERAGE: 76.39% -- 1760/2304 branches in 42 files
+- 56.07% documented
 
 ### Added
 
