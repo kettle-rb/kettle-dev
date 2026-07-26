@@ -1083,7 +1083,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
           expect(local_cli).to receive(:run_cmd!).with(
             a_string_matching(
-              /BUNDLE_GEMFILE=.*Appraisal\.root\.gemfile.*BUNDLE_LOCKFILE=.*Appraisal\.root\.gemfile\.lock.*bundle lock --update kettle-test --add-checksums/
+              /BUNDLE_GEMFILE=.*Appraisal\.root\.gemfile.*BUNDLE_LOCKFILE=.*Appraisal\.root\.gemfile\.lock.*bundle lock --update demo kettle-test --add-checksums/
             )
           ) do
             File.write(File.join(root, "Appraisal.root.gemfile.lock"), <<~LOCK)
@@ -1163,6 +1163,55 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
           expect do
             local_cli.send(:prepare_release_lockfiles_for_commit!)
           end.to raise_error(MockSystemExit, /Release lockfile validation failed before release prep commit/)
+        end
+      end
+
+      it "resets and amends release lockfiles that become invalid before push" do
+        with_release_root do |root, local_cli|
+          File.write(File.join(root, "Gemfile"), "source \"https://gem.coop\"\n")
+          File.write(File.join(root, "Gemfile.lock"), <<~LOCK)
+            PATH
+              remote: .
+              specs:
+                demo (0.1.0)
+
+            GEM
+              remote: https://gem.coop/
+              specs:
+                kettle-soup-cover (3.0.5)
+
+            CHECKSUMS
+              kettle-soup-cover (3.0.5)
+              rake (13.4.2) sha256=abc123
+
+            BUNDLED WITH
+               4.0.17
+          LOCK
+
+          expect(local_cli).to receive(:run_cmd!).with(
+            a_string_matching(/bundle lock --update demo kettle-soup-cover --add-checksums/)
+          ) do
+            File.write(File.join(root, "Gemfile.lock"), <<~LOCK)
+              GEM
+                remote: https://gem.coop/
+                specs:
+                  demo (0.1.0)
+                  kettle-soup-cover (3.0.5)
+
+              CHECKSUMS
+                demo (0.1.0) sha256=abc123
+                kettle-soup-cover (3.0.5) sha256=def456
+
+              BUNDLED WITH
+                 4.0.17
+            LOCK
+          end
+          allow(Open3).to receive(:capture3)
+            .with("git", "diff", "--quiet", "--", File.join(root, "Gemfile.lock"), chdir: root)
+            .and_return(["", "", instance_double(Process::Status, success?: false)])
+          expect(local_cli).to receive(:run_cmd!).with(a_string_matching(/git add -- .*Gemfile\.lock.*git commit --amend --no-edit/))
+
+          expect { local_cli.send(:validate_release_lockfiles!, stage: "before push") }.not_to raise_error
         end
       end
 

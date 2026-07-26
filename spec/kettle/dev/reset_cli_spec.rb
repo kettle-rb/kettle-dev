@@ -1,0 +1,53 @@
+# frozen_string_literal: true
+
+require "tmpdir"
+
+RSpec.describe Kettle::Dev::ResetCLI do
+  around do |example|
+    Dir.mktmpdir("kettle-dev-reset-cli-spec") do |dir|
+      @root = dir
+      example.run
+    end
+  end
+
+  it "checks Gemfile.lock without changing it" do
+    File.write(File.join(@root, "Gemfile.lock"), <<~LOCK)
+      GEM
+        remote: https://gem.coop/
+        specs:
+          rake (13.4.2)
+
+      CHECKSUMS
+        rake (13.4.2)
+        thor (1.4.0) sha256=abc123
+    LOCK
+
+    cli = described_class.new(%w[--check Gemfile.lock], root: @root)
+
+    expect { cli.run! }.to raise_error(Kettle::Dev::Error, /Gemfile.lock is not reset/)
+  end
+
+  it "resets Gemfile.lock" do
+    cli = described_class.new(%w[Gemfile.lock], root: @root)
+    resetter = instance_double(Kettle::Dev::LockfileReset)
+    path = File.join(@root, "Gemfile.lock")
+    allow(Kettle::Dev::LockfileReset).to receive(:new).and_return(resetter)
+    allow(resetter).to receive(:lockfile_path_for).with("Gemfile.lock").and_return(path)
+    allow(resetter).to receive(:normalization_needed?).with(path).and_return(true)
+    allow(resetter).to receive(:reset).with("Gemfile.lock").and_return(path)
+
+    expect(cli.run!).to eq(0)
+  end
+
+  it "does not rewrite an already reset Gemfile.lock" do
+    cli = described_class.new(%w[Gemfile.lock], root: @root)
+    resetter = instance_double(Kettle::Dev::LockfileReset)
+    path = File.join(@root, "Gemfile.lock")
+    allow(Kettle::Dev::LockfileReset).to receive(:new).and_return(resetter)
+    allow(resetter).to receive(:lockfile_path_for).with("Gemfile.lock").and_return(path)
+    allow(resetter).to receive(:normalization_needed?).with(path).and_return(false)
+
+    expect(resetter).not_to receive(:reset)
+    expect(cli.run!).to eq(0)
+  end
+end

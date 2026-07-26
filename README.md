@@ -447,6 +447,19 @@ What it does:
     - After intentionally handling a failed pre-release gate, skip it and start numbered release steps: `bundle exec kettle-release start_step=1`
     - Auto-approve release confirmation prompts: `bundle exec kettle-release --yes`
     - Run direct release with 1Password secrets: `bundle exec kettle-release --secrets-provider 1password`
+- Lockfile recovery:
+    - Script: `exe/kettle-reset` (run as `kettle-reset`)
+    - Reset a CI-facing lockfile after local development has written sibling
+      paths or checksum-less local gem versions: `bundle exec kettle-reset Gemfile.lock`
+    - Validate without changing the lockfile: `bundle exec kettle-reset --check Gemfile.lock`
+    - `kettle-reset` disables path-like `*_DEV` and `*_LOCAL` environment
+      variables, known local-template toggles, and writes checksums while
+      updating path-sourced and checksum-gap gems back to released registry
+      versions.
+    - During `kettle-release`, release lockfiles are reset before the release
+      prep commit. If a lockfile becomes invalid again before the first push,
+      `kettle-release` resets it, amends the release prep commit, and continues
+      unless validation still fails.
 - Tips:
     - The commit message helper `exe/kettle-commit-msg` prefers project-local `.git-hooks` (then falls back to `~/.git-hooks`).
     - The goalie file `commit-subjects-goalie.txt` controls when a footer is appended; customize `footer-template.erb.txt` as you like.

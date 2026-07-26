@@ -20,6 +20,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- `kettle-reset Gemfile.lock` now resets CI-facing lockfiles by disabling local
+  sibling path environments and updating path-sourced or checksum-gap gems back
+  to released registry versions with checksums.
+
 ### Changed
 
 ### Deprecated
@@ -27,6 +31,10 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Removed
 
 ### Fixed
+
+- `kettle-release` now uses the same lockfile reset logic before release prep
+  commits, and can reset and amend release lockfiles before the first push if
+  local paths reappear mid-release.
 
 ### Security
 
