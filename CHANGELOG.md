@@ -22,29 +22,20 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
-- `kettle-release` now skips the default task's duplicate test and coverage run
-  when `kettle-changelog` already generated strict coverage in the same release.
-- `kettle-changelog` now requests JSON-only coverage output for release metadata
-  generation, reducing formatter noise during release preparation.
-
 ### Deprecated
 
 ### Removed
 
 ### Fixed
 
-- `kettle-release --secrets-provider 1password` now validates the gem signing
-  passphrase before build/release and aborts instead of prompting if configured
-  secrets are unavailable.
-
 ### Security
 
 ## [2.5.0] - 2026-07-26
 
 - TAG: [v2.5.0][2.5.0t]
-- COVERAGE: 91.71% -- 4238/4621 lines in 40 files
-- BRANCH COVERAGE: 75.93% -- 1640/2160 branches in 40 files
-- 57.09% documented
+- COVERAGE: 92.05% -- 4286/4656 lines in 40 files
+- BRANCH COVERAGE: 76.10% -- 1659/2180 branches in 40 files
+- 57.24% documented
 
 ### Added
 
@@ -61,6 +52,17 @@ Please file a bug if you notice a violation of semantic versioning.
 - Shared release secret provider code now lives in `kettle-dev`, allowing
   `kettle-family` to cache the signing passphrase once while child
   `kettle-release` processes fetch RubyGems OTP values at prompt time.
+
+- `kettle-release` now skips the default task's duplicate test and coverage run
+  when `kettle-changelog` already generated strict coverage in the same release.
+- `kettle-changelog` now requests JSON-only coverage output for release metadata
+  generation, reducing formatter noise during release preparation.
+
+### Fixed
+
+- `kettle-release --secrets-provider 1password` now validates the gem signing
+  passphrase before build/release and aborts instead of prompting if configured
+  secrets are unavailable.
 
 ## [2.4.6] - 2026-07-26
 
