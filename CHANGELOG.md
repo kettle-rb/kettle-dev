@@ -33,8 +33,8 @@ Please file a bug if you notice a violation of semantic versioning.
 ## [2.5.0] - 2026-07-26
 
 - TAG: [v2.5.0][2.5.0t]
-- COVERAGE: 91.79% -- 4593/5004 lines in 42 files
-- BRANCH COVERAGE: 76.50% -- 1755/2294 branches in 42 files
+- COVERAGE: 91.71% -- 4589/5004 lines in 42 files
+- BRANCH COVERAGE: 75.98% -- 1743/2294 branches in 42 files
 - 56.21% documented
 
 ### Added
@@ -51,6 +51,9 @@ Please file a bug if you notice a violation of semantic versioning.
 - `kettle-reset Appraisal.root.gemfile.lock` and
   `kettle-reset release-lockfiles` now cover the appraisal root lockfile used by
   release and appraisal generation.
+
+- kettle-jem-template-20260727-001 - Spec harness documentation now lists the
+  RSpec helpers provided by `kettle-test`.
 
 ### Changed
 
