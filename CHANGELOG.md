@@ -28,6 +28,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-release --secrets-provider 1password` now supports
+  `KETTLE_RELEASE_1PASSWORD_CLI` for systems where the `op` executable is not
+  available on PATH.
+
 ### Security
 
 ## [2.5.0] - 2026-07-26

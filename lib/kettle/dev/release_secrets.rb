@@ -20,6 +20,7 @@ module Kettle
       class OnePassword < Provider
         PROVIDER_NAMES = %w[1password onepassword op].freeze
         DEFAULTS = {
+          "cli" => "op",
           "item" => "Rubygems",
           "gem_signing_passphrase_field" => "GEM-SIGN-PASSPHRASE",
           "rubygems_otp_field" => "one-time password"
@@ -57,7 +58,7 @@ module Kettle
           return read_reference(reference) unless reference.empty?
 
           item = required_config("item")
-          argv = ["op", "item", "get", item, "--otp"]
+          argv = [op_cli, "item", "get", item, "--otp"]
           account = string_config("account")
           argv.concat(["--account", account]) unless account.empty?
           run_op(argv, purpose: "RubyGems OTP")
@@ -81,17 +82,21 @@ module Kettle
         def item_field(field_key)
           item = required_config("item")
           field = required_config(field_key)
-          argv = ["op", "item", "get", item, "--fields", "label=#{field}", "--reveal"]
+          argv = [op_cli, "item", "get", item, "--fields", "label=#{field}", "--reveal"]
           account = string_config("account")
           argv.concat(["--account", account]) unless account.empty?
           run_op(argv, purpose: field_key.tr("_", " "))
         end
 
         def read_reference(reference)
-          argv = ["op", "read", reference]
+          argv = [op_cli, "read", reference]
           account = string_config("account")
           argv.concat(["--account", account]) unless account.empty?
           run_op(argv, purpose: "secret reference")
+        end
+
+        def op_cli
+          required_config("cli")
         end
 
         def run_op(argv, purpose:)
@@ -102,7 +107,7 @@ module Kettle
           details = "op exited #{status.exitstatus}" if details.empty?
           raise Kettle::Dev::Error, "1Password #{purpose} lookup failed: #{details}"
         rescue Errno::ENOENT
-          raise Kettle::Dev::Error, "1Password CLI executable `op` was not found"
+          raise Kettle::Dev::Error, "1Password CLI executable #{argv.first.inspect} was not found"
         end
 
         def required_config(key)
@@ -120,6 +125,7 @@ module Kettle
       class Factory
         ENV_KEYS = {
           "account" => "KETTLE_RELEASE_1PASSWORD_ACCOUNT",
+          "cli" => "KETTLE_RELEASE_1PASSWORD_CLI",
           "item" => "KETTLE_RELEASE_1PASSWORD_ITEM",
           "gem_signing_passphrase_field" => "KETTLE_RELEASE_1PASSWORD_GEM_SIGNING_PASSPHRASE_FIELD",
           "rubygems_otp_field" => "KETTLE_RELEASE_1PASSWORD_RUBYGEMS_OTP_FIELD",

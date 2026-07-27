@@ -1106,6 +1106,8 @@ module Kettle
             KETTLE_RELEASE_1PASSWORD_GEM_SIGNING_PASSPHRASE_FIELD=GEM-SIGN-PASSPHRASE
           Or provide an explicit reference:
             KETTLE_RELEASE_1PASSWORD_GEM_SIGNING_PASSPHRASE_REFERENCE=op://<vault>/<item>/<field>
+          If `op` is installed outside PATH:
+            KETTLE_RELEASE_1PASSWORD_CLI=/absolute/path/to/op
           Ensure `op` is installed and signed in. Secret prompts are not allowed when --secrets-provider is set.
         MSG
       end

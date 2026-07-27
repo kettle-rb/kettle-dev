@@ -66,6 +66,30 @@ RSpec.describe Kettle::Dev::ReleaseSecrets do
     expect(provider.gem_signing_passphrase).to eq("secret")
   end
 
+  it "supports an explicit 1Password CLI path" do
+    allow(Open3).to receive(:capture3)
+      .with("/opt/1Password/op", "item", "get", "Rubygems", "--fields", "label=GEM-SIGN-PASSPHRASE", "--reveal")
+      .and_return(["secret\n", "", status(success: true)])
+
+    provider = described_class::Factory.build(
+      provider_name: "1password",
+      config: {"cli" => "/opt/1Password/op"}
+    )
+
+    expect(provider.gem_signing_passphrase).to eq("secret")
+  end
+
+  it "loads the explicit 1Password CLI path from the environment" do
+    stub_env("KETTLE_RELEASE_1PASSWORD_CLI" => "/opt/1Password/op")
+    allow(Open3).to receive(:capture3)
+      .with("/opt/1Password/op", "item", "get", "Rubygems", "--fields", "label=GEM-SIGN-PASSPHRASE", "--reveal")
+      .and_return(["secret\n", "", status(success: true)])
+
+    provider = described_class::Factory.build(provider_name: "1password")
+
+    expect(provider.gem_signing_passphrase).to eq("secret")
+  end
+
   it "uses a cached family passphrase without querying 1Password for it" do
     stub_env(
       "KETTLE_RELEASE_GEM_SIGNING_PASSPHRASE_SOURCE" => "cached",
