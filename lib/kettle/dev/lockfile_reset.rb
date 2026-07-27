@@ -91,12 +91,13 @@ module Kettle
         (
           path_source_gems(path).to_a |
           path_dependency_gems(path).to_a |
-          empty_registry_checksums(path).map(&:first)
+          empty_registry_checksums(path).map(&:first) |
+          unreleased_workspace_registry_specs(path).map(&:first)
         ).uniq.sort
       end
 
       def normalization_needed?(path)
-        has_local_path_remote?(path) || !empty_registry_checksums(path).empty?
+        has_local_path_remote?(path) || !empty_registry_checksums(path).empty? || !unreleased_workspace_registry_specs(path).empty?
       end
 
       def diagnostics(path)
@@ -106,6 +107,9 @@ module Kettle
         end
         empty_registry_checksums(path).each do |name, version, line_number|
           diagnostics << "#{display_path(path)} CHECKSUMS has no sha256 for #{name} #{version} at line #{line_number}"
+        end
+        unreleased_workspace_registry_specs(path).each do |name, version, line_number|
+          diagnostics << "#{display_path(path)} locks local workspace gem #{name} #{version} as a registry gem, but that version is not released on RubyGems.org at line #{line_number}"
         end
         diagnostics
       end
@@ -222,6 +226,18 @@ module Kettle
         return [] unless has_any_sha_checksum?(path)
 
         entries
+      end
+
+      def unreleased_workspace_registry_specs(path)
+        local_names = local_workspace_gem_names
+        return [] if local_names.empty?
+
+        registry_specs_with_lines(path).filter_map do |name, version, line_number|
+          next unless local_names.include?(name)
+          next if ruby_gems_version_available?(name, version)
+
+          [name, version, line_number]
+        end
       end
 
       def has_any_sha_checksum?(path)
@@ -347,10 +363,14 @@ module Kettle
       end
 
       def registry_specs(path)
+        registry_specs_with_lines(path).map { |name, version, _line_number| [name, version] }
+      end
+
+      def registry_specs_with_lines(path)
         specs = []
         in_gem = false
         in_specs = false
-        File.readlines(path).each do |line|
+        File.readlines(path).each.with_index(1) do |line, line_number|
           stripped = line.chomp
           if stripped == "GEM"
             in_gem = true
@@ -367,7 +387,7 @@ module Kettle
           next unless in_specs
 
           match = stripped.match(/\A    ([A-Za-z0-9_.-]+) \(([^)]+)\)/)
-          specs << [match[1], match[2]] if match
+          specs << [match[1], match[2], line_number] if match
         end
         specs
       end
@@ -425,10 +445,26 @@ module Kettle
         paths.each_with_object(Set.new) do |path, names|
           next unless File.directory?(path)
 
-          Dir[File.join(path, "*", "*.gemspec")].each do |gemspec|
-            names << File.basename(gemspec, ".gemspec")
+          workspace_children(path).each do |child|
+            next unless directory?(child)
+
+            Dir[File.join(child, "*.gemspec")].each do |gemspec|
+              names << File.basename(gemspec, ".gemspec")
+            end
           end
         end
+      end
+
+      def workspace_children(path)
+        Dir.children(path).map { |child| File.join(path, child) }
+      rescue SystemCallError
+        []
+      end
+
+      def directory?(path)
+        File.stat(path).directory?
+      rescue SystemCallError
+        false
       end
 
       def validation_message(target, diagnostics)

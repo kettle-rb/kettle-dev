@@ -28,7 +28,9 @@ RSpec.describe Kettle::Dev::LockfileReset do
   end
 
   around do |example|
-    Dir.mktmpdir("kettle-dev-lockfile-reset-spec") do |dir|
+    tmp_root = File.expand_path("../../../tmp/lockfile-reset-spec", __dir__)
+    FileUtils.mkdir_p(tmp_root)
+    Dir.mktmpdir("kettle-dev-lockfile-reset-spec", tmp_root) do |dir|
       @root = dir
       example.run
     end
@@ -190,6 +192,45 @@ RSpec.describe Kettle::Dev::LockfileReset do
     expect(File.read(File.join(@root, "Gemfile.lock"))).to include("#{never_released_workspace_gem} (#{released_workspace_version})")
   end
 
+  it "diagnoses fully checksummed workspace gem versions that are not released" do
+    reset = described_class.new(root: @root, command_runner: ->(_command) {})
+    File.write(File.join(@root, "Gemfile.lock"), <<~LOCK)
+      GEM
+        remote: https://rubygems.org/
+        specs:
+          #{never_released_workspace_gem} (#{unreleased_workspace_version})
+
+      CHECKSUMS
+        #{never_released_workspace_gem} (#{unreleased_workspace_version}) sha256=localonly
+    LOCK
+    allow(reset).to receive(:local_workspace_gem_names).and_return(Set[never_released_workspace_gem])
+    allow(reset).to receive(:ruby_gems_version_available?).with(never_released_workspace_gem, unreleased_workspace_version).and_return(false)
+
+    diagnostics = reset.diagnostics(File.join(@root, "Gemfile.lock"))
+
+    expect(diagnostics.join("\n")).to include("locks local workspace gem #{never_released_workspace_gem} #{unreleased_workspace_version} as a registry gem")
+  end
+
+  it "targets unreleased workspace registry gems even when checksums are present" do
+    reset = described_class.new(root: @root, command_runner: ->(_command) {})
+    File.write(File.join(@root, "Gemfile"), "source \"https://rubygems.org\"\n")
+    File.write(File.join(@root, "Gemfile.lock"), <<~LOCK)
+      GEM
+        remote: https://rubygems.org/
+        specs:
+          #{never_released_workspace_gem} (#{unreleased_workspace_version})
+
+      CHECKSUMS
+        #{never_released_workspace_gem} (#{unreleased_workspace_version}) sha256=localonly
+    LOCK
+    allow(reset).to receive(:local_workspace_gem_names).and_return(Set[never_released_workspace_gem])
+    allow(reset).to receive(:ruby_gems_version_available?).with(never_released_workspace_gem, unreleased_workspace_version).and_return(false)
+
+    command = reset.reset_command(path: File.join(@root, "Gemfile.lock"), gemfile: File.join(@root, "Gemfile"))
+
+    expect(command).to include("bundle lock --update #{never_released_workspace_gem} --add-checksums")
+  end
+
   it "continues when another release worker already removed the same local gem version" do
     reset = described_class.new(root: @root, command_runner: ->(_command) { raise "already removed" })
     allow(reset).to receive(:locally_installed?).with(never_released_workspace_gem, unreleased_workspace_version).and_return(false)
@@ -295,22 +336,24 @@ RSpec.describe Kettle::Dev::LockfileReset do
   end
 
   it "detects path-valued local development env vars" do
-    stub_env(
+    env_pairs = {
       "ALPHA_DEV" => "/workspace/alpha",
       "BETA_LOCAL" => "~/workspace/beta",
       "GAMMA_DEV" => "relative/workspace",
       "DELTA_LOCAL" => "false",
       "EPSILON_DEV" => "true"
-    ) do
-      reset = described_class.new(root: @root, command_runner: ->(_command) {})
-
-      expect(reset.normalization_env).to include(
-        "ALPHA_DEV" => "false",
-        "BETA_LOCAL" => "false",
-        "GAMMA_DEV" => "false"
-      )
-      expect(reset.normalization_env).not_to include("DELTA_LOCAL", "EPSILON_DEV")
+    }
+    allow(ENV).to receive(:each) do |&block|
+      env_pairs.each(&block)
     end
+    reset = described_class.new(root: @root, command_runner: ->(_command) {})
+
+    expect(reset.normalization_env).to include(
+      "ALPHA_DEV" => "false",
+      "BETA_LOCAL" => "false",
+      "GAMMA_DEV" => "false"
+    )
+    expect(reset.normalization_env).not_to include("DELTA_LOCAL", "EPSILON_DEV")
   end
 
   it "detects invalid lockfiles after reset" do
@@ -369,7 +412,7 @@ RSpec.describe Kettle::Dev::LockfileReset do
 
     expect(reset.local_path_remote_lines(path)).to eq([7])
     expect(reset.reset_update_gems(path)).to eq([never_released_workspace_gem])
-    expect(reset.diagnostics(path)).to eq(["#{path} has local path remote at line 7"])
+    expect(reset.diagnostics(path)).to eq(["#{Kettle::Dev.display_path(path)} has local path remote at line 7"])
   end
 
   it "allows the current gemspec path with CRLF line endings" do

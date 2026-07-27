@@ -28,6 +28,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-reset release-lockfiles` now detects local workspace gem versions
+  that Bundler locked as registry gems even when checksum entries are present,
+  so unreleased sibling versions are not committed into release lockfiles.
+
 ### Security
 
 ## [2.5.1] - 2026-07-27
