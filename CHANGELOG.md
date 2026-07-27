@@ -28,16 +28,13 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Release lockfile fallback output now distinguishes between amending the release
-  prep commit and restoring uncommitted lockfile drift back to that commit.
-
 ### Security
 
 ## [2.5.0] - 2026-07-26
 
 - TAG: [v2.5.0][2.5.0t]
-- COVERAGE: 91.81% -- 4586/4995 lines in 42 files
-- BRANCH COVERAGE: 76.46% -- 1751/2290 branches in 42 files
+- COVERAGE: 91.73% -- 4590/5004 lines in 42 files
+- BRANCH COVERAGE: 76.46% -- 1754/2294 branches in 42 files
 - 56.21% documented
 
 ### Added
@@ -118,6 +115,9 @@ Please file a bug if you notice a violation of semantic versioning.
 - Release lockfile validation now uses `Bundler::LockfileParser` for source
   classification, so registry remotes such as `https://gem.coop/` are not
   mistaken for local path sources.
+
+- Release lockfile fallback output now distinguishes between amending the release
+  prep commit and restoring uncommitted lockfile drift back to that commit.
 
 ## [2.4.6] - 2026-07-26
 
