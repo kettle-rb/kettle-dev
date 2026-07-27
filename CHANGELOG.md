@@ -28,11 +28,20 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [2.5.1] - 2026-07-27
+
+- TAG: [v2.5.1][2.5.1t]
+- COVERAGE: 91.69% -- 4590/5006 lines in 42 files
+- BRANCH COVERAGE: 76.20% -- 1748/2294 branches in 42 files
+- 56.21% documented
+
+### Fixed
+
 - `kettle-release --secrets-provider 1password` now supports
   `KETTLE_RELEASE_1PASSWORD_CLI` for systems where the `op` executable is not
   available on PATH.
-
-### Security
 
 ## [2.5.0] - 2026-07-26
 
@@ -2884,7 +2893,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.0...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.1...HEAD
+[2.5.1]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.0...v2.5.1
+[2.5.1t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.1
 [2.5.0]: https://github.com/kettle-dev/kettle-dev/compare/v2.4.6...v2.5.0
 [2.5.0t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.0
 [2.4.6]: https://github.com/kettle-dev/kettle-dev/compare/v2.4.5...v2.4.6
