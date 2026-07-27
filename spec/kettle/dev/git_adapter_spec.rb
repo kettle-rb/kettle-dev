@@ -361,6 +361,29 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
     end
   end
 
+  describe "#diff_head_quiet?" do
+    let(:ok) { instance_double(Process::Status, success?: true) }
+    let(:fail_status) { instance_double(Process::Status, success?: false) }
+
+    before { allow(Kernel).to receive(:require).with("git").and_raise(LoadError) }
+
+    it "checks whether a path differs from HEAD" do
+      allow(Open3).to receive(:capture2).with("git", "diff", "--quiet", "HEAD", "--", "Gemfile.lock")
+        .and_return(["", ok])
+      adapter = described_class.new
+
+      expect(adapter.diff_head_quiet?("Gemfile.lock")).to be(true)
+    end
+
+    it "returns false when a path differs from HEAD" do
+      allow(Open3).to receive(:capture2).with("git", "diff", "--quiet", "HEAD", "--", "Gemfile.lock")
+        .and_return(["", fail_status])
+      adapter = described_class.new
+
+      expect(adapter.diff_head_quiet?("Gemfile.lock")).to be(false)
+    end
+  end
+
   describe "#ls_files" do
     let(:ok) { instance_double(Process::Status, success?: true) }
     let(:fail_status) { instance_double(Process::Status, success?: false) }

@@ -6,6 +6,7 @@ require "fileutils"
 require "json"
 require "net/http"
 require "uri"
+require "bundler"
 
 module Kettle
   module Dev
@@ -179,8 +180,15 @@ module Kettle
       end
 
       def local_path_remote_lines(path)
+        in_path = false
         File.readlines(path).filter_map.with_index(1) do |line, index|
           stripped = line.strip
+          if stripped.match?(/\A[A-Z][A-Z ]*\z/)
+            in_path = stripped == "PATH"
+            next
+          end
+          next unless in_path
+          next unless stripped.start_with?("remote:")
           next if stripped == "remote: ."
           next unless stripped.start_with?("remote: /", "remote: ./", "remote: ../")
 
@@ -231,84 +239,23 @@ module Kettle
       end
 
       def path_source_gems(path)
-        gems = Set.new
-        in_path = false
-        in_specs = false
-        current_path_is_self = false
-        File.readlines(path).each do |line|
-          header = line.strip
-          if header.match?(/\A[A-Z][A-Z ]*\z/)
-            in_path = header == "PATH"
-            in_specs = false
-            current_path_is_self = false
-            next
-          end
-          next unless in_path
-
-          if header.start_with?("remote:")
-            current_path_is_self = header == "remote: ."
-            next
-          end
-          if header == "specs:"
-            in_specs = true
-            next
-          end
-          next unless in_specs
-          next if current_path_is_self
-
-          match = line.match(/\A    ([A-Za-z0-9_.-]+) \([^)]+\)/)
-          gems << match[1] if match
+        lockfile_parser(path).specs.each_with_object(Set.new) do |spec, gems|
+          source = spec.source
+          gems << spec.name if path_source?(source) && !self_path_source?(source)
         end
-        gems
       end
 
       def path_dependency_gems(path)
-        self_gems = self_path_source_gems(path)
-        gems = Set.new
-        in_dependencies = false
-        File.readlines(path).each do |line|
-          header = line.strip
-          if header.match?(/\A[A-Z][A-Z ]*\z/)
-            in_dependencies = header == "DEPENDENCIES"
-            next
-          end
-          next unless in_dependencies
-
-          match = line.match(/\A  ([A-Za-z0-9_.-]+)!\z/)
-          gems << match[1] if match && !self_gems.include?(match[1])
+        lockfile_parser(path).dependencies.each_value.each_with_object(Set.new) do |dependency, gems|
+          source = dependency.source
+          gems << dependency.name if path_source?(source) && !self_path_source?(source)
         end
-        gems
       end
 
       def self_path_source_gems(path)
-        gems = Set.new
-        in_path = false
-        in_specs = false
-        current_path_is_self = false
-        File.readlines(path).each do |line|
-          header = line.strip
-          if header.match?(/\A[A-Z][A-Z ]*\z/)
-            in_path = header == "PATH"
-            in_specs = false
-            current_path_is_self = false
-            next
-          end
-          next unless in_path
-
-          if header.start_with?("remote:")
-            current_path_is_self = header == "remote: ."
-            next
-          end
-          if header == "specs:"
-            in_specs = true
-            next
-          end
-          next unless in_specs && current_path_is_self
-
-          match = line.match(/\A    ([A-Za-z0-9_.-]+) \([^)]+\)/)
-          gems << match[1] if match
+        lockfile_parser(path).specs.each_with_object(Set.new) do |spec, gems|
+          gems << spec.name if self_path_source?(spec.source)
         end
-        gems
       end
 
       def display_path(path)
@@ -318,6 +265,39 @@ module Kettle
       private
 
       attr_reader :root, :command_runner
+
+      def lockfile_parser(path)
+        # Bundler validates checksum digest syntax while parsing, but this class
+        # only needs Bundler's source model here. Keep checksum diagnostics in
+        # the line scanner below so malformed or empty checksum entries can be
+        # reported without breaking source classification.
+        Bundler::LockfileParser.new(lockfile_source_content(path))
+      end
+
+      def lockfile_source_content(path)
+        in_checksums = false
+        File.readlines(path).filter_map do |line|
+          stripped = line.strip
+          if stripped == "CHECKSUMS"
+            in_checksums = true
+            next
+          end
+          if in_checksums && stripped.match?(/\A[A-Z][A-Z ]*\z/)
+            in_checksums = false
+          end
+          next if in_checksums
+
+          line
+        end.join
+      end
+
+      def path_source?(source)
+        source.instance_of?(::Bundler::Source::Path)
+      end
+
+      def self_path_source?(source)
+        path_source?(source) && source.path.to_s == "."
+      end
 
       def rebuild_lockfile(path)
         backup = backup_path_for(path)

@@ -28,6 +28,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Release lockfile validation now uses `Bundler::LockfileParser` for source
+  classification, so registry remotes such as `https://gem.coop/` are not
+  mistaken for local path sources.
+
 ### Security
 
 ## [2.5.0] - 2026-07-26

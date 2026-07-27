@@ -675,7 +675,7 @@ module Kettle
       def amend_release_lockfile_reset_commit
         paths = release_lockfile_paths.select { |path| git_path_changed?(path) }
         if paths.empty?
-          puts "Release lockfile reset left no tracked lockfile changes to amend."
+          puts "Release lockfile reset cleared diagnostics without changing committed lockfiles."
           return
         end
 
@@ -684,7 +684,11 @@ module Kettle
       end
 
       def git_path_changed?(path)
-        !@git.diff_quiet?(path)
+        if @git.respond_to?(:diff_head_quiet?)
+          !@git.diff_head_quiet?(path)
+        else
+          !@git.diff_quiet?(path)
+        end
       end
 
       def lockfile_reset

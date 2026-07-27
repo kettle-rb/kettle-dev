@@ -104,6 +104,18 @@ module Kettle
         false
       end
 
+      # Return whether a tracked path has no changes compared with HEAD.
+      #
+      # @param path [String]
+      # @return [Boolean]
+      def diff_head_quiet?(path)
+        _out, status = git_capture2("diff", "--quiet", "HEAD", "--", path.to_s)
+        status.success?
+      rescue => e
+        Kettle::Dev.debug_error(e, __method__)
+        false
+      end
+
       # Create an annotated tag.
       #
       # @param tag [String]

@@ -392,6 +392,29 @@ RSpec.describe Kettle::Dev::LockfileReset do
     expect(reset.diagnostics(path)).to be_empty
   end
 
+  it "does not treat registry remotes as local path remotes" do
+    reset = described_class.new(root: @root, command_runner: ->(_command) {})
+    path = File.join(@root, "Gemfile.lock")
+    File.write(path, <<~LOCK)
+      PATH
+        remote: .
+        specs:
+          kettle-dev (2.5.0)
+
+      GEM
+        remote: https://gem.coop/
+        specs:
+          rake (13.4.2)
+
+      CHECKSUMS
+        kettle-dev (2.5.0)
+        rake (13.4.2) sha256=abc123
+    LOCK
+
+    expect(reset.local_path_remote_lines(path)).to be_empty
+    expect(reset.diagnostics(path)).to be_empty
+  end
+
   it "resets both release lockfiles" do
     commands = []
     reset = described_class.new(root: @root, command_runner: lambda { |command|

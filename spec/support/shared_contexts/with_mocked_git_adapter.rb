@@ -32,6 +32,7 @@ RSpec.shared_context "with mocked git adapter" do
       commit_all: true,
       commit_amend_no_edit: true,
       diff_quiet?: true,
+      diff_head_quiet?: true,
       tag_annotated: true,
       reset_soft: true
     )

@@ -985,16 +985,22 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
               specs:
                 demo (0.1.0)
 
-            GEM
+            PATH
               remote: /home/pboling/src/my/kettle-dev/kettle-soup-cover
               specs:
-                addressable (2.9.0)
                 kettle-soup-cover (3.0.5)
+
+            GEM
+              remote: https://gem.coop/
+              specs:
+                addressable (2.9.0)
+                rack (3.2.1)
 
             CHECKSUMS
               addressable (2.9.0) sha256=abc123
               demo (0.1.0)
               kettle-soup-cover (3.0.5)
+              rack (3.2.1)
 
             BUNDLED WITH
                4.0.17
@@ -1003,7 +1009,8 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
           diagnostics = local_cli.send(:release_lockfile_diagnostics, File.join(root, "Gemfile.lock"))
 
           expect(diagnostics.join("\n")).to include("has local path remote")
-          expect(diagnostics.join("\n")).to include("CHECKSUMS has no sha256 for kettle-soup-cover 3.0.5")
+          expect(diagnostics.join("\n")).to include("CHECKSUMS has no sha256 for rack 3.2.1")
+          expect(diagnostics.join("\n")).not_to include("CHECKSUMS has no sha256 for kettle-soup-cover 3.0.5")
           expect(diagnostics.join("\n")).not_to include("CHECKSUMS has no sha256 for demo 0.1.0")
         end
       end
@@ -1226,7 +1233,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
             LOCK
           end
           git = local_cli.instance_variable_get(:@git)
-          allow(git).to receive(:diff_quiet?).with(File.join(root, "Gemfile.lock")).and_return(false)
+          allow(git).to receive(:diff_head_quiet?).with(File.join(root, "Gemfile.lock")).and_return(false)
           expect(git).to receive(:add_paths).with([File.join(root, "Gemfile.lock")]).and_return(true)
           expect(git).to receive(:commit_amend_no_edit).and_return(true)
 
