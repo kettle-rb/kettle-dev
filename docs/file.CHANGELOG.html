@@ -90,8 +90,8 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 <ul>
   <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.0">v2.5.0</a>
 </li>
-  <li>COVERAGE: 91.79% – 4595/5006 lines in 42 files</li>
-  <li>BRANCH COVERAGE: 76.39% – 1760/2304 branches in 42 files</li>
+  <li>COVERAGE: 91.98% – 4611/5013 lines in 42 files</li>
+  <li>BRANCH COVERAGE: 76.50% – 1761/2302 branches in 42 files</li>
   <li>56.07% documented</li>
 </ul>
 
@@ -175,9 +175,22 @@ gem versions before regenerating <code>Gemfile.lock</code> and<br>
 <code>Appraisal.root.gemfile.lock</code>, preventing local-only versions from being<br>
 written as registry gems with checksums.</p>
   </li>
-  <li>Release and changelog specs now route git commit, amend, tag, reset, and<br>
+  <li>
+    <p>Release and changelog specs now route git commit, amend, tag, reset, and<br>
 release-state queries through <code>GitAdapter</code>, so test runs do not invoke the<br>
-caller’s real git signing configuration.</li>
+caller’s real git signing configuration.</p>
+  </li>
+  <li>
+<code>kettle-release</code> no longer loads the extracted <code>cgi</code> gem while booting, so<br>
+Ruby 2.4 appraisals can run release executable smoke tests without hitting<br>
+newer <code>cgi</code> code that requires <code>String#delete_prefix</code>.</li>
+  <li>
+<code>kettle-release</code> now reports the exact lockfile diagnostics that trigger its<br>
+pre-push reset attempt, amends the release prep commit only when tracked<br>
+lockfiles changed, and reports unrepaired diagnostics before aborting.</li>
+  <li>Release lockfile validation no longer treats the current gem’s own<br>
+<code>remote: .</code> lockfile source as a local sibling path when line endings or<br>
+whitespace differ.</li>
 </ul>
 
 <h2 id="246---2026-07-26">
