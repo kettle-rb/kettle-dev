@@ -295,19 +295,22 @@ RSpec.describe Kettle::Dev::LockfileReset do
   end
 
   it "detects path-valued local development env vars" do
-    allow(ENV).to receive(:each).and_yield("ALPHA_DEV", "/workspace/alpha")
-      .and_yield("BETA_LOCAL", "~/workspace/beta")
-      .and_yield("GAMMA_DEV", "relative/workspace")
-      .and_yield("DELTA_LOCAL", "false")
-      .and_yield("EPSILON_DEV", "true")
-    reset = described_class.new(root: @root, command_runner: ->(_command) {})
+    stub_env(
+      "ALPHA_DEV" => "/workspace/alpha",
+      "BETA_LOCAL" => "~/workspace/beta",
+      "GAMMA_DEV" => "relative/workspace",
+      "DELTA_LOCAL" => "false",
+      "EPSILON_DEV" => "true"
+    ) do
+      reset = described_class.new(root: @root, command_runner: ->(_command) {})
 
-    expect(reset.normalization_env).to include(
-      "ALPHA_DEV" => "false",
-      "BETA_LOCAL" => "false",
-      "GAMMA_DEV" => "false"
-    )
-    expect(reset.normalization_env).not_to include("DELTA_LOCAL", "EPSILON_DEV")
+      expect(reset.normalization_env).to include(
+        "ALPHA_DEV" => "false",
+        "BETA_LOCAL" => "false",
+        "GAMMA_DEV" => "false"
+      )
+      expect(reset.normalization_env).not_to include("DELTA_LOCAL", "EPSILON_DEV")
+    end
   end
 
   it "detects invalid lockfiles after reset" do
