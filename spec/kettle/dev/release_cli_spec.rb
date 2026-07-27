@@ -1239,7 +1239,58 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
           expect do
             local_cli.send(:validate_release_lockfiles!, stage: "before push")
-          end.to output(/Release lockfile validation found issues before push:.*has local path remote.*Attempting one release lockfile reset before push/m).to_stdout
+          end.to output(/Release lockfile validation found 2 issue\(s\) before push:.*has local path remote.*Running one fallback release lockfile reset before push.*diagnostics cleared; amending release prep commit with 1 lockfile\(s\)/m).to_stdout
+        end
+      end
+
+      it "reports when the fallback reset restores dirty lockfiles to the release prep commit" do
+        with_release_root do |root, local_cli|
+          File.write(File.join(root, "Gemfile"), "source \"https://rubygems.org\"\n")
+          File.write(File.join(root, "Gemfile.lock"), <<~LOCK)
+            PATH
+              remote: ../demo
+              specs:
+                demo (0.1.0)
+
+            GEM
+              remote: https://rubygems.org/
+              specs:
+                kettle-soup-cover (3.0.5)
+
+            CHECKSUMS
+              kettle-soup-cover (3.0.5)
+              rake (13.4.2) sha256=abc123
+
+            BUNDLED WITH
+               4.0.17
+          LOCK
+
+          expect(local_cli).to receive(:run_cmd!).with(
+            a_string_matching(/bundle lock --update --add-checksums/)
+          ) do
+            File.write(File.join(root, "Gemfile.lock"), <<~LOCK)
+              GEM
+                remote: https://rubygems.org/
+                specs:
+                  demo (0.1.0)
+                  kettle-soup-cover (3.0.5)
+
+              CHECKSUMS
+                demo (0.1.0) sha256=abc123
+                kettle-soup-cover (3.0.5) sha256=def456
+
+              BUNDLED WITH
+                 4.0.17
+            LOCK
+          end
+          git = local_cli.instance_variable_get(:@git)
+          allow(git).to receive(:diff_head_quiet?).with(File.join(root, "Gemfile.lock")).and_return(false, true)
+          expect(git).not_to receive(:add_paths)
+          expect(git).not_to receive(:commit_amend_no_edit)
+
+          expect do
+            local_cli.send(:validate_release_lockfiles!, stage: "before push")
+          end.to output(/Release lockfile validation found 2 issue\(s\) before push:.*diagnostics cleared by restoring tracked lockfiles to the release prep commit; no amend is needed/m).to_stdout
         end
       end
 
@@ -1271,7 +1322,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
             expect do
               local_cli.send(:validate_release_lockfiles!, stage: "before push")
             end.to raise_error(MockSystemExit, /Release lockfile validation failed before push/)
-          end.to output(/Release lockfile validation found issues before push:.*Release lockfile reset did not repair all before-push issues:.*has local path remote/m).to_stdout
+          end.to output(/Release lockfile validation found 2 issue\(s\) before push:.*Release lockfile reset did not repair all before-push issues:.*has local path remote/m).to_stdout
         end
       end
 

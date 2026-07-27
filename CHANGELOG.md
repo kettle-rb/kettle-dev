@@ -28,6 +28,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Release lockfile fallback output now distinguishes between amending the release
+  prep commit and restoring uncommitted lockfile drift back to that commit.
+
 ### Security
 
 ## [2.5.0] - 2026-07-26

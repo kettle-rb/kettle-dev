@@ -581,6 +581,10 @@ module Kettle
           # detects the unrepaired lockfile.
         end
 
+        diagnostics = release_lockfile_paths.flat_map { |path| release_lockfile_diagnostics(path) }
+        if diagnostics.empty?
+          puts "Release lockfile reset complete: #{release_lockfile_paths.length} lockfile(s) checked, no diagnostics remain."
+        end
         validate_release_lockfiles!(stage: "before release prep commit")
       end
 
@@ -652,9 +656,10 @@ module Kettle
       end
 
       def reset_release_lockfiles_before_push(diagnostics)
-        puts "Release lockfile validation found issues before push:"
+        puts "Release lockfile validation found #{diagnostics.length} issue(s) before push:"
         diagnostics.each { |diagnostic| puts "  - #{diagnostic}" }
-        puts "Attempting one release lockfile reset before push; changes will amend the release prep commit."
+        puts "Running one fallback release lockfile reset before push; tracked lockfile changes will amend the release prep commit."
+        changed_before_reset = changed_release_lockfile_paths
         begin
           lockfile_reset.reset(Kettle::Dev::LockfileReset::RELEASE_LOCKFILES_TARGET)
         rescue Kettle::Dev::Error => error
@@ -663,7 +668,7 @@ module Kettle
 
         remaining = release_lockfile_paths.flat_map { |path| release_lockfile_diagnostics(path) }
         if remaining.empty?
-          amend_release_lockfile_reset_commit
+          amend_release_lockfile_reset_commit(changed_before_reset)
           return []
         end
 
@@ -672,15 +677,24 @@ module Kettle
         remaining
       end
 
-      def amend_release_lockfile_reset_commit
-        paths = release_lockfile_paths.select { |path| git_path_changed?(path) }
+      def amend_release_lockfile_reset_commit(changed_before_reset = [])
+        paths = changed_release_lockfile_paths
         if paths.empty?
-          puts "Release lockfile reset cleared diagnostics without changing committed lockfiles."
+          if changed_before_reset.empty?
+            puts "Fallback release lockfile reset result: diagnostics cleared, but tracked lockfiles matched the release prep commit before and after reset; no amend is possible."
+          else
+            puts "Fallback release lockfile reset result: diagnostics cleared by restoring tracked lockfiles to the release prep commit; no amend is needed."
+          end
           return
         end
 
+        puts "Fallback release lockfile reset result: diagnostics cleared; amending release prep commit with #{paths.length} lockfile(s)."
         abort("Failed to stage reset release lockfiles.") unless @git.add_paths(paths)
         abort("Failed to amend release prep commit with reset lockfiles.") unless @git.commit_amend_no_edit
+      end
+
+      def changed_release_lockfile_paths
+        release_lockfile_paths.select { |path| git_path_changed?(path) }
       end
 
       def git_path_changed?(path)
