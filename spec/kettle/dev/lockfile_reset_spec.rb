@@ -369,6 +369,29 @@ RSpec.describe Kettle::Dev::LockfileReset do
     expect(reset.diagnostics(path)).to eq(["#{path} has local path remote at line 7"])
   end
 
+  it "allows the current gemspec path with CRLF line endings" do
+    reset = described_class.new(root: @root, command_runner: ->(_command) {})
+    path = File.join(@root, "Gemfile.lock")
+    File.binwrite(path, <<~LOCK.gsub("\n", "\r\n"))
+      PATH
+        remote: .
+        specs:
+          kettle-dev (2.5.0)
+
+      GEM
+        remote: https://rubygems.org/
+        specs:
+          rake (13.4.2)
+
+      CHECKSUMS
+        kettle-dev (2.5.0)
+        rake (13.4.2) sha256=abc123
+    LOCK
+
+    expect(reset.local_path_remote_lines(path)).to be_empty
+    expect(reset.diagnostics(path)).to be_empty
+  end
+
   it "resets both release lockfiles" do
     commands = []
     reset = described_class.new(root: @root, command_runner: lambda { |command|

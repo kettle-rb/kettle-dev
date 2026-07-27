@@ -180,8 +180,9 @@ module Kettle
 
       def local_path_remote_lines(path)
         File.readlines(path).filter_map.with_index(1) do |line, index|
-          next if line == "  remote: .\n"
-          next unless line.start_with?("  remote: /", "  remote: .", "  remote: ./", "  remote: ../")
+          stripped = line.strip
+          next if stripped == "remote: ."
+          next unless stripped.start_with?("remote: /", "remote: ./", "remote: ../")
 
           index
         end

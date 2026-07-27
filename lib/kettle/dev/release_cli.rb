@@ -587,6 +587,10 @@ module Kettle
       def validate_release_lockfiles!(stage:)
         diagnostics = release_lockfile_paths.flat_map { |path| release_lockfile_diagnostics(path) }
         return if diagnostics.empty?
+        if stage == "before push"
+          diagnostics = reset_release_lockfiles_before_push(diagnostics)
+          return if diagnostics.empty?
+        end
 
         abort(<<~MSG)
           Release lockfile validation failed #{stage}:
@@ -645,6 +649,42 @@ module Kettle
 
       def release_lockfile_label(path)
         Kettle::Dev.display_path(path)
+      end
+
+      def reset_release_lockfiles_before_push(diagnostics)
+        puts "Release lockfile validation found issues before push:"
+        diagnostics.each { |diagnostic| puts "  - #{diagnostic}" }
+        puts "Attempting one release lockfile reset before push; changes will amend the release prep commit."
+        begin
+          lockfile_reset.reset(Kettle::Dev::LockfileReset::RELEASE_LOCKFILES_TARGET)
+        rescue Kettle::Dev::Error => error
+          puts error.message
+        end
+
+        remaining = release_lockfile_paths.flat_map { |path| release_lockfile_diagnostics(path) }
+        if remaining.empty?
+          amend_release_lockfile_reset_commit
+          return []
+        end
+
+        puts "Release lockfile reset did not repair all before-push issues:"
+        remaining.each { |diagnostic| puts "  - #{diagnostic}" }
+        remaining
+      end
+
+      def amend_release_lockfile_reset_commit
+        paths = release_lockfile_paths.select { |path| git_path_changed?(path) }
+        if paths.empty?
+          puts "Release lockfile reset left no tracked lockfile changes to amend."
+          return
+        end
+
+        abort("Failed to stage reset release lockfiles.") unless @git.add_paths(paths)
+        abort("Failed to amend release prep commit with reset lockfiles.") unless @git.commit_amend_no_edit
+      end
+
+      def git_path_changed?(path)
+        !@git.diff_quiet?(path)
       end
 
       def lockfile_reset

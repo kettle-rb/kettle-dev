@@ -462,7 +462,9 @@ What it does:
       versions.
     - During `kettle-release`, release lockfiles are reset before the release
       prep commit. Before pushing, `kettle-release` validates those committed
-      lockfiles again and aborts if local paths or checksum gaps reappear.
+      lockfiles again; if local paths or checksum gaps reappear, it prints the
+      diagnostics, attempts one reset, amends the release prep commit if the
+      reset changed tracked lockfiles, and aborts if diagnostics remain.
 - Tips:
     - The commit message helper `exe/kettle-commit-msg` prefers project-local `.git-hooks` (then falls back to `~/.git-hooks`).
     - The goalie file `commit-subjects-goalie.txt` controls when a footer is appended; customize `footer-template.erb.txt` as you like.
