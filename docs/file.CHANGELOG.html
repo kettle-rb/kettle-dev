@@ -90,9 +90,9 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 <ul>
   <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.0">v2.5.0</a>
 </li>
-  <li>COVERAGE: 91.98% – 4611/5013 lines in 42 files</li>
-  <li>BRANCH COVERAGE: 76.50% – 1761/2302 branches in 42 files</li>
-  <li>56.07% documented</li>
+  <li>COVERAGE: 91.81% – 4586/4995 lines in 42 files</li>
+  <li>BRANCH COVERAGE: 76.46% – 1751/2290 branches in 42 files</li>
+  <li>56.21% documented</li>
 </ul>
 
 <h3 id="added-1">Added</h3>
@@ -188,9 +188,14 @@ newer <code>cgi</code> code that requires <code>String#delete_prefix</code>.</li
 <code>kettle-release</code> now reports the exact lockfile diagnostics that trigger its<br>
 pre-push reset attempt, amends the release prep commit only when tracked<br>
 lockfiles changed, and reports unrepaired diagnostics before aborting.</li>
-  <li>Release lockfile validation no longer treats the current gem’s own<br>
+  <li>
+    <p>Release lockfile validation no longer treats the current gem’s own<br>
 <code>remote: .</code> lockfile source as a local sibling path when line endings or<br>
-whitespace differ.</li>
+whitespace differ.</p>
+  </li>
+  <li>Release lockfile validation now uses <code>Bundler::LockfileParser</code> for source<br>
+classification, so registry remotes such as <code>https://gem.coop/</code> are not<br>
+mistaken for local path sources.</li>
 </ul>
 
 <h2 id="246---2026-07-26">

@@ -28,18 +28,14 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Release lockfile validation now uses `Bundler::LockfileParser` for source
-  classification, so registry remotes such as `https://gem.coop/` are not
-  mistaken for local path sources.
-
 ### Security
 
 ## [2.5.0] - 2026-07-26
 
 - TAG: [v2.5.0][2.5.0t]
-- COVERAGE: 91.98% -- 4611/5013 lines in 42 files
-- BRANCH COVERAGE: 76.50% -- 1761/2302 branches in 42 files
-- 56.07% documented
+- COVERAGE: 91.81% -- 4586/4995 lines in 42 files
+- BRANCH COVERAGE: 76.46% -- 1751/2290 branches in 42 files
+- 56.21% documented
 
 ### Added
 
@@ -115,6 +111,10 @@ Please file a bug if you notice a violation of semantic versioning.
 - Release lockfile validation no longer treats the current gem's own
   `remote: .` lockfile source as a local sibling path when line endings or
   whitespace differ.
+
+- Release lockfile validation now uses `Bundler::LockfileParser` for source
+  classification, so registry remotes such as `https://gem.coop/` are not
+  mistaken for local path sources.
 
 ## [2.4.6] - 2026-07-26
 
