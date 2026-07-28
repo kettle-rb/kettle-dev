@@ -9,8 +9,10 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     before do |example|
       next if example.metadata[:real_release_lockfiles]
 
+      # rubocop:disable RSpec/AnyInstance
       allow_any_instance_of(described_class).to receive(:prepare_release_lockfiles_for_commit!)
       allow_any_instance_of(described_class).to receive(:validate_release_lockfiles!)
+      # rubocop:enable RSpec/AnyInstance
     end
 
     def write_style_local(root, ruby_gem)
