@@ -2,5 +2,9 @@
   "lib/kettle/dev/rakelib/yard.rake:3141658033": [
     [37, 3, 22, "Rake/Desc: Describe the task with `desc` method.", 1722165527],
     [43, 3, 11, "Rake/DuplicateTask: Task `yard` is defined at both lib/kettle/dev/rakelib/yard.rake:37 and lib/kettle/dev/rakelib/yard.rake:43.", 2689727229]
+  ],
+  "spec/kettle/dev/lockfile_reset_spec.rb:3999132849": [
+    [273, 5, 97, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [275].", 4094087430],
+    [275, 5, 77, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [273].", 1472231021]
   ]
 }

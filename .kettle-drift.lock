@@ -56,23 +56,5 @@
         163
       ]
     }
-  ],
-  "if: ${{ !env.ACT }}\nuses: appraisal-rb/setup-ruby-flash@b22cb587431e9611d9e0a624a43872e2bbfbcd66 # setup-ruby-flash main b22cb58": [
-    {
-      "file": ".github/workflows/dep-heads.yml",
-      "lines": [
-        63,
-        117,
-        172
-      ]
-    },
-    {
-      "file": ".github/workflows/heads.yml",
-      "lines": [
-        56,
-        117,
-        175
-      ]
-    }
   ]
 }

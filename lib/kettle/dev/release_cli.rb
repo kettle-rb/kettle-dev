@@ -616,7 +616,7 @@ module Kettle
       end
 
       def release_lockfile_reset_attempts(stage)
-        stage == "before release task bundle installs" ? release_availability_probe_attempts : 1
+        (stage == "before release task bundle installs") ? release_availability_probe_attempts : 1
       end
 
       def retryable_release_lockfile_reset_error?(error)

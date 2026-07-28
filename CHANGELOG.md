@@ -33,6 +33,13 @@ Please file a bug if you notice a violation of semantic versioning.
   configured gem source instead of RubyGems.org version APIs, and release task
   lockfile resets retry transient source propagation failures.
 
+- kettle-jem-template-20260728-002 - Generated RuboCop configs now ignore the
+  same `gemfiles/vendor/bundle` tree as `.gitignore`, so vendored dependency
+  installs are not reported as project lint debt.
+- kettle-jem-template-20260728-003 - Generated dep-heads workflows now run
+  TruffleRuby jobs with current RubyGems and Bundler, avoiding setup failures
+  before the test suite starts.
+
 ### Security
 
 ## [2.5.4] - 2026-07-28
