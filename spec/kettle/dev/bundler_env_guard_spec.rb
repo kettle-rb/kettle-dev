@@ -9,6 +9,8 @@ RSpec.describe Kettle::Dev::BundlerEnvGuard do
 
   it "reports Bundler environment variables that are neither reset nor known inert" do
     stub_env_hash_accessors
+    existing_bundler_env = ENV.to_hash.keys.grep(/\ABUNDLE(?:R)?_/)
+    stub_env(existing_bundler_env.each_with_object({}) { |key, hash| hash[key] = nil })
     stub_env(
       "BUNDLE_GEMFILE" => "Gemfile",
       "BUNDLER_ORIG_BUNDLE_GEMFILE" => "Gemfile",
