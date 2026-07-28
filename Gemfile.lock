@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    kettle-dev (2.5.4)
+    kettle-dev (2.5.5)
       emoji_regex (>= 15.0)
       kettle-gha-pins (~> 0.3, >= 0.3.3)
       kettle-ndjson (~> 0.1, >= 0.1.1)
@@ -9,57 +9,6 @@ PATH
       kettle-test (~> 2.0, >= 2.0.12)
       ruby-progressbar (~> 1.13)
       tty-progressbar (~> 0.18)
-
-PATH
-  remote: /var/home/pboling/src/my/kettle-dev/kettle-drift
-  specs:
-    kettle-drift (1.0.8)
-      version_gem (~> 1.1, >= 1.1.14)
-
-PATH
-  remote: /var/home/pboling/src/my/kettle-dev/kettle-gha-pins
-  specs:
-    kettle-gha-pins (0.3.3)
-      ruby-progressbar (~> 1.13)
-      tty-progressbar (~> 0.18)
-      version_gem (~> 1.1, >= 1.1.14)
-
-PATH
-  remote: /var/home/pboling/src/my/kettle-dev/kettle-ndjson
-  specs:
-    kettle-ndjson (0.1.2)
-      version_gem (~> 1.1, >= 1.1.14)
-
-PATH
-  remote: /var/home/pboling/src/my/kettle-dev/kettle-rb
-  specs:
-    kettle-rb (0.1.6)
-
-PATH
-  remote: /var/home/pboling/src/my/kettle-dev/kettle-soup-cover
-  specs:
-    kettle-soup-cover (3.0.6)
-      kettle-wash (~> 0.1, >= 0.1.0)
-      simplecov (>= 1.0)
-      simplecov-cobertura (>= 4.0)
-      simplecov-console (~> 0.9, >= 0.9.5)
-      simplecov-rcov (~> 0.3, >= 0.3.7)
-      simplecov_lcov_formatter (~> 0.9, >= 0.9.0)
-
-PATH
-  remote: /var/home/pboling/src/my/kettle-dev/kettle-test
-  specs:
-    kettle-test (2.0.16)
-      appraisal2 (~> 3.0, >= 3.0.6)
-      backports (~> 3.0)
-      rspec (~> 3.0)
-      rspec-block_is_expected (~> 1.0, >= 1.0.6)
-      rspec-pending_for (~> 0.1, >= 0.1.20)
-      rspec-stubbed_env (~> 1.0, >= 1.0.6)
-      rspec_junit_formatter (~> 0.6)
-      silent_stream (~> 1.0, >= 1.0.12)
-      timecop-rspec (~> 1.0, >= 1.0.3)
-      turbo_tests2 (~> 3.1, >= 3.1.12)
 
 GEM
   remote: https://gem.coop/
@@ -164,6 +113,31 @@ GEM
       kettle-test (~> 2.0, >= 2.0.14)
       tsort (~> 0.2)
       tty-progressbar (~> 0.18)
+    kettle-gha-pins (0.3.3)
+      ruby-progressbar (~> 1.13)
+      tty-progressbar (~> 0.18)
+      version_gem (~> 1.1, >= 1.1.14)
+    kettle-ndjson (0.1.2)
+      version_gem (~> 1.1, >= 1.1.14)
+    kettle-rb (0.1.6)
+    kettle-soup-cover (3.0.6)
+      kettle-wash (~> 0.1, >= 0.1.0)
+      simplecov (>= 1.0)
+      simplecov-cobertura (>= 4.0)
+      simplecov-console (~> 0.9, >= 0.9.5)
+      simplecov-rcov (~> 0.3, >= 0.3.7)
+      simplecov_lcov_formatter (~> 0.9, >= 0.9.0)
+    kettle-test (2.0.16)
+      appraisal2 (~> 3.0, >= 3.0.6)
+      backports (~> 3.0)
+      rspec (~> 3.0)
+      rspec-block_is_expected (~> 1.0, >= 1.0.6)
+      rspec-pending_for (~> 0.1, >= 0.1.20)
+      rspec-stubbed_env (~> 1.0, >= 1.0.6)
+      rspec_junit_formatter (~> 0.6)
+      silent_stream (~> 1.0, >= 1.0.12)
+      timecop-rspec (~> 1.0, >= 1.0.3)
+      turbo_tests2 (~> 3.1, >= 3.1.12)
     kettle-wash (0.1.2)
       version_gem (~> 1.1, >= 1.1.14)
     kramdown (2.5.2)
@@ -458,13 +432,8 @@ DEPENDENCIES
   gitmoji-regex (~> 2.0, >= 2.0.7)
   irb (~> 1.17)
   kettle-dev!
-  kettle-drift!
   kettle-family (~> 1.2, >= 1.2.0)
-  kettle-gha-pins!
-  kettle-ndjson!
-  kettle-rb!
-  kettle-soup-cover!
-  kettle-test!
+  kettle-soup-cover (~> 3.0, >= 3.0.6)
   kramdown (~> 2.5, >= 2.5.2)
   kramdown-parser-gfm (~> 1.1)
   mutex_m (~> 0.2)
@@ -540,14 +509,13 @@ CHECKSUMS
   io-console (0.8.2) sha256=d6e3ae7a7cc7574f4b8893b4fca2162e57a825b223a177b7afa236c5ef9814cc
   irb (1.18.0) sha256=de9454a0703a54704b9811a5ef31a60c86949fbf4013fcf244fabc7c775248e3
   json (2.21.1) sha256=13a43df75d95641443f5702dff350f237164a9d811ff0f2c2800d4d980220583
-  kettle-dev (2.5.4)
-  kettle-drift (1.0.8)
+  kettle-dev (2.5.5)
   kettle-family (1.2.1) sha256=bbee04639694b6eaf7f8141f9edcb529b3c7bfc565dc3672b4593eda2612747f
-  kettle-gha-pins (0.3.3)
-  kettle-ndjson (0.1.2)
-  kettle-rb (0.1.6)
-  kettle-soup-cover (3.0.6)
-  kettle-test (2.0.16)
+  kettle-gha-pins (0.3.3) sha256=da9337376dd957dca65164f669045a71252f0b5c0234aaa1cde384c5f5c8ad87
+  kettle-ndjson (0.1.2) sha256=1c2c4e8246a718f4f78b2f4141184acf5c239087319e5abc8d6d289635587650
+  kettle-rb (0.1.6) sha256=9cb0778e220a3808258f652fb582879a99680ecb8ef7e360b196f51866980a9b
+  kettle-soup-cover (3.0.6) sha256=bbcef0b5387e33967a2b82643ce02537ca0fc2dd89503efcda22230ef95837cd
+  kettle-test (2.0.16) sha256=9712e23e5eb4a644f9b40c7374e98bd0e56e458a23690a51ac2d79201a7861e0
   kettle-wash (0.1.2) sha256=f4a049071d408b9a2faca2ef197fd62e30c32b63f8c2379045cc9347313bce47
   kramdown (2.5.2) sha256=1ba542204c66b6f9111ff00dcc26075b95b220b07f2905d8261740c82f7f02fa
   kramdown-parser-gfm (1.1.0) sha256=fb39745516427d2988543bf01fc4cf0ab1149476382393e0e9c48592f6581729
