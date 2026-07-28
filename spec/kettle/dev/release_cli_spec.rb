@@ -1287,6 +1287,9 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
             LOCK
           end
           git = local_cli.instance_variable_get(:@git)
+          resetter = Kettle::Dev::LockfileReset.new(root: root, command_runner: local_cli.method(:run_cmd!))
+          allow(resetter).to receive(:local_workspace_gem_names).and_return(Set.new)
+          local_cli.instance_variable_set(:@lockfile_reset, resetter)
           allow(git).to receive(:diff_head_quiet?).with(File.join(root, "Gemfile.lock")).and_return(false, true)
           expect(git).not_to receive(:add_paths)
           expect(git).not_to receive(:commit_amend_no_edit)
