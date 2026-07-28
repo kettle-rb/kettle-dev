@@ -22,10 +22,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
-- kettle-jem-template-20260728-001 - Generated Ruby workflows now use clearer
-  setup-ruby-flash planning and can prepare appraisal-only jobs without
-  installing the main Gemfile bundle.
-
 ### Deprecated
 
 ### Removed
@@ -37,7 +33,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ## [2.5.2] - 2026-07-27
 
 - TAG: [v2.5.2][2.5.2t]
-- COVERAGE: 91.82% -- 4614/5025 lines in 42 files
+- COVERAGE: 91.76% -- 4611/5025 lines in 42 files
 - BRANCH COVERAGE: 76.46% -- 1760/2302 branches in 42 files
 - 56.04% documented
 
@@ -46,6 +42,12 @@ Please file a bug if you notice a violation of semantic versioning.
 - `kettle-reset release-lockfiles` now detects local workspace gem versions
   that Bundler locked as registry gems even when checksum entries are present,
   so unreleased sibling versions are not committed into release lockfiles.
+
+### Changed
+
+- kettle-jem-template-20260728-001 - Generated Ruby workflows now use clearer
+  setup-ruby-flash planning and can prepare appraisal-only jobs without
+  installing the main Gemfile bundle.
 
 ## [2.5.1] - 2026-07-27
 

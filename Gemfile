@@ -18,7 +18,7 @@ git_source(:gitlab) { |repo_name| "https://gitlab.com/#{repo_name}" }
 # Include dependencies from kettle-dev.gemspec
 gemspec
 
-gem "kettle-family", "~> 1.2", ">= 1.2.0"
+gem "kettle-family", "~> 1.1", ">= 1.1.9"
 
 # Local workspace dependency wiring for *_local.gemfile overrides
 gem "nomono", "~> 1.1", ">= 1.1.0", require: false # ruby >= 3.2.0
