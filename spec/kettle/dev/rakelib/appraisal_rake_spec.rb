@@ -40,12 +40,13 @@ RSpec.describe "appraisal rake tasks" do # rubocop:disable RSpec/DescribeClass
     }
   end
   let(:appraisal_env) do
-    quiet_env.merge(
-      Kettle::Dev::LockfileReset::DEFAULT_DISABLED_ENV,
-      unbundled_env,
-      "BUNDLE_GEMFILE" => "Appraisal.root.gemfile",
-      "BUNDLE_LOCKFILE" => "Appraisal.root.gemfile.lock"
-    )
+    quiet_env
+      .merge(Kettle::Dev::LockfileReset::DEFAULT_DISABLED_ENV)
+      .merge(unbundled_env)
+      .merge(
+        "BUNDLE_GEMFILE" => "Appraisal.root.gemfile",
+        "BUNDLE_LOCKFILE" => "Appraisal.root.gemfile.lock"
+      )
   end
   let(:bundle_install_call) { [appraisal_env, "bundle", "install", "--quiet"] }
 
