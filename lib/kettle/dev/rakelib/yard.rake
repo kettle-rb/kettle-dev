@@ -34,13 +34,14 @@ begin
     end
   end
 
+  desc "Generate YARD documentation and run YARD lint"
   task yard: "yard:lint"
   Kettle::Dev.register_default("yard:lint")
   Kettle::Dev.register_default("yard")
 rescue LoadError
   warn("[kettle-dev][yard.rake] failed to load yard") if Kettle::Dev::DEBUGGING
   desc("(stub) yard is unavailable")
-  task(:yard) do
+  task(:yard) do # rubocop:disable Rake/DuplicateTask -- fallback when the real YARD task cannot load
     warn("NOTE: yard isn't installed, or is disabled for #{RUBY_VERSION} in the current environment")
   end
   Kettle::Dev.register_default("yard")

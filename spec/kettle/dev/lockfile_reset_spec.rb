@@ -278,9 +278,11 @@ RSpec.describe Kettle::Dev::LockfileReset do
       CHECKSUMS
         #{never_released_workspace_gem} (#{unreleased_workspace_version}) sha256=localonly
     LOCK
-    allow(reset).to receive(:local_workspace_gem_names).and_return(Set[never_released_workspace_gem])
+    allow(reset).to receive_messages(
+      local_workspace_gem_names: Set[never_released_workspace_gem],
+      bundler_inline_version_available?: false
+    )
     allow(reset).to receive(:locally_installed?).with(never_released_workspace_gem, unreleased_workspace_version).and_return(true)
-    allow(reset).to receive(:bundler_inline_version_available?).and_return(false)
 
     expect { reset.reset("release-lockfiles") }.to raise_error(Kettle::Dev::Error, /not resolvable from the configured gem source/)
     expect(commands.grep(/gem uninstall/)).not_to be_empty
