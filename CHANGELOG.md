@@ -22,6 +22,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- Raised the runtime dependency floor for `kettle-gha-pins` to `0.3.3`.
+
 ### Deprecated
 
 ### Removed
