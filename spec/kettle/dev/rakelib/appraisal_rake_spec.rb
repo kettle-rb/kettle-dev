@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "spec_helper"
+require "ripper"
 
 RSpec.describe "appraisal rake tasks" do # rubocop:disable RSpec/DescribeClass
   include_context "with rake", "appraisal" do
@@ -78,6 +79,25 @@ RSpec.describe "appraisal rake tasks" do # rubocop:disable RSpec/DescribeClass
         [appraisal_env, "bundle", "exec", "appraisal", "generate"]
       )
     end
+  end
+
+  it "keeps appraisal task env construction compatible with Ruby 2.4" do
+    source = File.read(File.expand_path("../../../../lib/kettle/dev/rakelib/appraisal.rake", __dir__))
+    sexp = Ripper.sexp(source)
+    multi_argument_merges = []
+
+    walker = lambda do |node|
+      next unless node.is_a?(Array)
+
+      if node.first == :method_add_arg && node[1].is_a?(Array) && node[1].first == :call && node[1][3].is_a?(Array) && node[1][3][1] == "merge"
+        args = node.dig(2, 1)
+        multi_argument_merges << node if args.is_a?(Array) && args.count { |arg| arg.is_a?(Array) && arg.first != :@comma } > 1
+      end
+      node.each { |child| walker.call(child) }
+    end
+    walker.call(sexp)
+
+    expect(multi_argument_merges).to be_empty
   end
 
   describe "rake appraisal:install" do

@@ -32,7 +32,8 @@ begin
   appraisal_env = quiet_env.merge(
     Kettle::Dev::LockfileReset.new(root: Dir.pwd, command_runner: ->(_command) {}).normalization_env
   ).merge(
-    unbundled_env,
+    unbundled_env
+  ).merge(
     "BUNDLE_GEMFILE" => "Appraisal.root.gemfile",
     "BUNDLE_LOCKFILE" => "Appraisal.root.gemfile.lock"
   )
