@@ -28,16 +28,13 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- `kettle-reset` now scans workspace sibling directories with Ruby 2.4
-  compatible APIs, fixing Ruby 2.4 CI failures in lockfile reset specs.
-
 ### Security
 
 ## [2.5.2] - 2026-07-27
 
 - TAG: [v2.5.2][2.5.2t]
-- COVERAGE: 91.76% -- 4611/5025 lines in 42 files
-- BRANCH COVERAGE: 76.46% -- 1760/2302 branches in 42 files
+- COVERAGE: 91.86% -- 4616/5025 lines in 42 files
+- BRANCH COVERAGE: 76.37% -- 1758/2302 branches in 42 files
 - 56.04% documented
 
 ### Fixed
@@ -45,6 +42,9 @@ Please file a bug if you notice a violation of semantic versioning.
 - `kettle-reset release-lockfiles` now detects local workspace gem versions
   that Bundler locked as registry gems even when checksum entries are present,
   so unreleased sibling versions are not committed into release lockfiles.
+
+- `kettle-reset` now scans workspace sibling directories with Ruby 2.4
+  compatible APIs, fixing Ruby 2.4 CI failures in lockfile reset specs.
 
 ### Changed
 
