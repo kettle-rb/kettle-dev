@@ -548,24 +548,27 @@ RSpec.describe Kettle::Dev::LockfileReset do
     expect(File.read(path)).to eq(original)
   end
 
-  it "uses Bundler inline against the configured gem source before treating a version as released" do
+  it "uses an isolated exact artifact install probe before treating a version as released" do
     reset = described_class.new(root: @root, command_runner: ->(_command) {})
     success = instance_double(Process::Status, success?: true)
 
-    expect(Open3).to receive(:capture3) do |env, ruby, flag, script|
-      expect(env).to include("BUNDLE_GEMFILE" => nil, "BUNDLE_LOCKFILE" => nil)
-      expect(ruby).to eq(Gem.ruby)
-      expect(flag).to eq("-e")
-      expect(script).to include("require \"bundler/inline\"")
-      expect(script).to include("source \"https://gem.coop\"")
-      expect(script).to include("gem gem_name, \"= \#{version}\", require: false")
+    expect(Open3).to receive(:capture3) do |env, *argv|
+      expect(env).to include(
+        "BUNDLE_GEMFILE" => nil,
+        "BUNDLE_LOCKFILE" => nil,
+        "GEM_HOME" => a_string_matching(%r{/tmp/kettle-gem-source-probe-}),
+        "GEM_PATH" => a_string_matching(%r{/tmp/kettle-gem-source-probe-})
+      )
+      expect(argv).to include("gem", "install", released_registry_gem, "-v", "= #{released_registry_version}")
+      expect(argv).to include("--source", "https://gem.coop")
+      expect(argv).to include("--clear-sources", "--ignore-dependencies", "--no-document")
       ["", "", success]
     end
 
     expect(reset.send(:gem_source_version_available?, released_registry_gem, released_registry_version, ["https://gem.coop"])).to be(true)
   end
 
-  it "returns false when Bundler cannot resolve a version from the configured source" do
+  it "returns false when the exact artifact cannot be installed from the configured source" do
     reset = described_class.new(root: @root, command_runner: ->(_command) {})
     failure = instance_double(Process::Status, success?: false)
 

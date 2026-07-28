@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
+require "fileutils"
 require "open3"
+require "tmpdir"
 
 module Kettle
   module Dev
@@ -11,6 +13,7 @@ module Kettle
         BUNDLE_GEMFILE
         BUNDLE_LOCKFILE
         BUNDLER_VERSION
+        RUBYGEMS_GEMDEPS
         RUBYOPT
       ].freeze
 
@@ -20,8 +23,25 @@ module Kettle
       end
 
       def available?(name, version)
-        _stdout, stderr, status = Open3.capture3(unbundled_env, ruby, "-e", self.class.bundler_inline_script(name: name, version: version, source_url: source_url))
-        status.success?
+        stderr = nil
+        with_probe_gem_home do |gem_home|
+          _stdout, stderr, status = Open3.capture3(
+            probe_env(gem_home),
+            "gem",
+            "install",
+            name,
+            "-v",
+            "= #{version}",
+            "--source",
+            source_url,
+            "--clear-sources",
+            "--ignore-dependencies",
+            "--no-document",
+            "--install-dir",
+            gem_home
+          )
+          status.success?
+        end
       rescue SystemCallError => error
         raise Error, "Could not verify #{name} #{version} from #{source_url}: #{error.message}"
       ensure
@@ -51,6 +71,21 @@ module Kettle
       private
 
       attr_reader :source_url, :ruby
+
+      def with_probe_gem_home
+        base = File.join(Dir.pwd, "tmp")
+        FileUtils.mkdir_p(base)
+        Dir.mktmpdir("kettle-gem-source-probe-", base) do |gem_home|
+          yield(gem_home)
+        end
+      end
+
+      def probe_env(gem_home)
+        unbundled_env.merge(
+          "GEM_HOME" => gem_home,
+          "GEM_PATH" => gem_home
+        )
+      end
 
       def unbundled_env
         UNBUNDLED_ENV_KEYS.each_with_object({}) do |key, env|
