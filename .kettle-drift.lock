@@ -1,4 +1,22 @@
 {
+  "# Dog food autoload setup and ensure ExitAdapter constant is available for potential stubbing\n# Dog food autoload setup and ensure InputAdapter constant is available for stubbing": [
+    {
+      "file": "spec/spec_helper.rb",
+      "lines": [
+        34,
+        38
+      ]
+    }
+  ],
+  "# Dog food autoload setup and ensure GitAdapter constant is available for global stubbing\n# Dog food autoload setup and ensure ExitAdapter constant is available for potential stubbing": [
+    {
+      "file": "spec/spec_helper.rb",
+      "lines": [
+        33,
+        37
+      ]
+    }
+  ],
   "appraisal: \"dep-heads\"\nexec_cmd: \"kettle-test\"": [
     {
       "file": ".github/workflows/dep-heads.yml",
@@ -36,6 +54,24 @@
         44,
         105,
         163
+      ]
+    }
+  ],
+  "if: ${{ !env.ACT }}\nuses: appraisal-rb/setup-ruby-flash@b22cb587431e9611d9e0a624a43872e2bbfbcd66 # setup-ruby-flash main b22cb58": [
+    {
+      "file": ".github/workflows/dep-heads.yml",
+      "lines": [
+        63,
+        117,
+        172
+      ]
+    },
+    {
+      "file": ".github/workflows/heads.yml",
+      "lines": [
+        56,
+        117,
+        175
       ]
     }
   ]

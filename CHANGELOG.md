@@ -22,6 +22,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- kettle-jem-template-20260728-001 - Generated Ruby workflows now use clearer
+  setup-ruby-flash planning and can prepare appraisal-only jobs without
+  installing the main Gemfile bundle.
+
 ### Deprecated
 
 ### Removed
