@@ -28,11 +28,20 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [2.5.3] - 2026-07-27
+
+- TAG: [v2.5.3][2.5.3t]
+- COVERAGE: 91.74% -- 4621/5037 lines in 42 files
+- BRANCH COVERAGE: 76.45% -- 1766/2310 branches in 42 files
+- 56.04% documented
+
+### Fixed
+
 - `kettle-release` now resets release lockfiles before release task bundle
   installs, preventing stale `Appraisal.root.gemfile.lock` entries for
   unreleased sibling gems from aborting appraisal generation.
-
-### Security
 
 ## [2.5.2] - 2026-07-27
 
@@ -2919,7 +2928,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.2...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.3...HEAD
+[2.5.3]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.2...v2.5.3
+[2.5.3t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.3
 [2.5.2]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.1...v2.5.2
 [2.5.2t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.2
 [2.5.1]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.0...v2.5.1
