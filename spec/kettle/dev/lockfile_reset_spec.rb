@@ -64,6 +64,8 @@ RSpec.describe Kettle::Dev::LockfileReset do
     command = reset.reset_command(path: File.join(@root, "Gemfile.lock"), gemfile: File.join(@root, "Gemfile"))
 
     expect(command).to include("env -u BUNDLE_BIN_PATH")
+    expect(command).to include("-u BUNDLE_GEMFILE")
+    expect(command).to include("-u BUNDLE_LOCKFILE")
     expect(command).to include("-u RUBYOPT")
     expect(command).to include("KETTLE_DEV_DEV=false")
     expect(command).to include("K_JEM_TEMPLATING=false")
@@ -145,6 +147,8 @@ RSpec.describe Kettle::Dev::LockfileReset do
 
     reset.reset("release-lockfiles")
 
+    expect(commands.first).to include("-u BUNDLE_GEMFILE")
+    expect(commands.first).to include("-u BUNDLE_LOCKFILE")
     expect(commands.first).to include("gem uninstall #{never_released_workspace_gem} -v #{unreleased_workspace_version} -x -I")
     expect(commands.last).to include("bundle lock --update --add-checksums")
   end

@@ -22,6 +22,8 @@ module Kettle
       UNBUNDLED_ENV_KEYS = %w[
         BUNDLE_BIN_PATH
         BUNDLE_FROZEN
+        BUNDLE_GEMFILE
+        BUNDLE_LOCKFILE
         BUNDLER_VERSION
         RUBYOPT
       ].freeze
