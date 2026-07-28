@@ -28,11 +28,20 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [2.5.2] - 2026-07-27
+
+- TAG: [v2.5.2][2.5.2t]
+- COVERAGE: 91.82% -- 4614/5025 lines in 42 files
+- BRANCH COVERAGE: 76.46% -- 1760/2302 branches in 42 files
+- 56.04% documented
+
+### Fixed
+
 - `kettle-reset release-lockfiles` now detects local workspace gem versions
   that Bundler locked as registry gems even when checksum entries are present,
   so unreleased sibling versions are not committed into release lockfiles.
-
-### Security
 
 ## [2.5.1] - 2026-07-27
 
@@ -2897,7 +2906,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.1...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.2...HEAD
+[2.5.2]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.1...v2.5.2
+[2.5.2t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.2
 [2.5.1]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.0...v2.5.1
 [2.5.1t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.1
 [2.5.0]: https://github.com/kettle-dev/kettle-dev/compare/v2.4.6...v2.5.0
