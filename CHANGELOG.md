@@ -22,8 +22,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
-- Raised the runtime dependency floor for `kettle-gha-pins` to `0.3.3`.
-
 ### Deprecated
 
 ### Removed
@@ -31,6 +29,17 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Fixed
 
 ### Security
+
+## [2.5.4] - 2026-07-28
+
+- TAG: [v2.5.4][2.5.4t]
+- COVERAGE: 91.68% -- 4618/5037 lines in 42 files
+- BRANCH COVERAGE: 76.54% -- 1768/2310 branches in 42 files
+- 56.04% documented
+
+### Changed
+
+- Raised the runtime dependency floor for `kettle-gha-pins` to `0.3.3`.
 
 ## [2.5.3] - 2026-07-27
 
@@ -2930,7 +2939,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.3...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.4...HEAD
+[2.5.4]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.3...v2.5.4
+[2.5.4t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.4
 [2.5.3]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.2...v2.5.3
 [2.5.3t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.3
 [2.5.2]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.1...v2.5.2

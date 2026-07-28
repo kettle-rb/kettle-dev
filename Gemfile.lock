@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    kettle-dev (2.5.3)
+    kettle-dev (2.5.4)
       emoji_regex (>= 15.0)
       kettle-gha-pins (~> 0.3, >= 0.3.3)
       kettle-ndjson (~> 0.1, >= 0.1.1)
@@ -106,7 +106,7 @@ GEM
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
     json (2.21.1)
-    kettle-family (1.1.9)
+    kettle-family (1.2.0)
       command_kit (~> 0.6)
       command_kit-completion (~> 0.1)
       kettle-dev (~> 2.3, >= 2.3.10)
@@ -168,7 +168,7 @@ GEM
       racc (~> 1.4)
     nokogiri (1.19.4-x86_64-linux-musl)
       racc (~> 1.4)
-    nomono (1.1.0)
+    nomono (1.1.1)
     openssl (4.0.2)
     ostruct (0.6.3)
     parallel (1.28.0)
@@ -517,8 +517,8 @@ CHECKSUMS
   io-console (0.8.2) sha256=d6e3ae7a7cc7574f4b8893b4fca2162e57a825b223a177b7afa236c5ef9814cc
   irb (1.18.0) sha256=de9454a0703a54704b9811a5ef31a60c86949fbf4013fcf244fabc7c775248e3
   json (2.21.1) sha256=13a43df75d95641443f5702dff350f237164a9d811ff0f2c2800d4d980220583
-  kettle-dev (2.5.3)
-  kettle-family (1.1.9) sha256=672df4a5b6b8e722ace533ecb546660011852e3a858a5ebc2d482db769cb7bc7
+  kettle-dev (2.5.4)
+  kettle-family (1.2.0) sha256=a6dd7f25d0008efaba19c82227363beff5eb457052187a4e082d3126358d68b7
   kettle-gha-pins (0.3.3) sha256=da9337376dd957dca65164f669045a71252f0b5c0234aaa1cde384c5f5c8ad87
   kettle-ndjson (0.1.1) sha256=2d84314e8c911d6f560f2736e8f72019df6d811829674788ff33b3bbf518ed66
   kettle-rb (0.1.5) sha256=0322a569860c86e70f90d5ebe72353b8720b7054c7efa9f9044857f5c972d29f
@@ -540,7 +540,7 @@ CHECKSUMS
   nokogiri (1.19.4-x86_64-darwin) sha256=7fd17057d3e1f00e9954a74b3cd76595d3d4a5ef233b7ed9599047c204f70551
   nokogiri (1.19.4-x86_64-linux-gnu) sha256=379fae440b28915e3f19d752ce2dcf8465ed2b2fbefd2a7ca0dd497bc981a06a
   nokogiri (1.19.4-x86_64-linux-musl) sha256=17dfb7c1fa194ae02fbf7c51a7afc8d278045ab3fdacfd86f91d02d7b274470b
-  nomono (1.1.0) sha256=463dd4c79da02a855739a1b5483190d527b7868688be905e84abdb3449b32c88
+  nomono (1.1.1) sha256=7d1332b7d737f23cb37bb802aa2ae5b8e70e191cc9de480c7c7d8296057d06c2
   openssl (4.0.2) sha256=1037ad2868ae58df9ad917891c0c0f9815a1172f6846d4bcdd508e4c2ee747c2
   ostruct (0.6.3) sha256=95a2ed4a4bd1d190784e666b47b2d3f078e4a9efda2fccf18f84ddc6538ed912
   parallel (1.28.0) sha256=33e6de1484baf2524792d178b0913fc8eb94c628d6cfe45599ad4458c638c970
