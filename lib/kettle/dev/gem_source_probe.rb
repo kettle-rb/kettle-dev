@@ -12,8 +12,10 @@ module Kettle
         BUNDLE_FROZEN
         BUNDLE_GEMFILE
         BUNDLE_LOCKFILE
+        BUNDLER_SETUP
         BUNDLER_VERSION
         RUBYGEMS_GEMDEPS
+        RUBYLIB
         RUBYOPT
       ].freeze
 

@@ -32,12 +32,9 @@ RSpec.describe "appraisal rake tasks" do # rubocop:disable RSpec/DescribeClass
     }
   end
   let(:unbundled_env) do
-    {
-      "BUNDLE_BIN_PATH" => nil,
-      "BUNDLE_FROZEN" => nil,
-      "BUNDLER_VERSION" => nil,
-      "RUBYOPT" => nil
-    }
+    Kettle::Dev::LockfileReset::UNBUNDLED_ENV_KEYS.each_with_object({}) do |key, env|
+      env[key] = nil
+    end
   end
   let(:appraisal_env) do
     quiet_env

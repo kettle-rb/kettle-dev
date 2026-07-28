@@ -66,6 +66,8 @@ RSpec.describe Kettle::Dev::LockfileReset do
     expect(command).to include("env -u BUNDLE_BIN_PATH")
     expect(command).to include("-u BUNDLE_GEMFILE")
     expect(command).to include("-u BUNDLE_LOCKFILE")
+    expect(command).to include("-u BUNDLER_SETUP")
+    expect(command).to include("-u RUBYLIB")
     expect(command).to include("-u RUBYOPT")
     expect(command).to include("KETTLE_DEV_DEV=false")
     expect(command).to include("K_JEM_TEMPLATING=false")
@@ -149,6 +151,8 @@ RSpec.describe Kettle::Dev::LockfileReset do
 
     expect(commands.first).to include("-u BUNDLE_GEMFILE")
     expect(commands.first).to include("-u BUNDLE_LOCKFILE")
+    expect(commands.first).to include("-u BUNDLER_SETUP")
+    expect(commands.first).to include("-u RUBYLIB")
     expect(commands.first).to include("gem uninstall #{never_released_workspace_gem} -v #{unreleased_workspace_version} -x -I")
     expect(commands.last).to include("bundle lock --update --add-checksums")
   end
@@ -556,6 +560,8 @@ RSpec.describe Kettle::Dev::LockfileReset do
       expect(env).to include(
         "BUNDLE_GEMFILE" => nil,
         "BUNDLE_LOCKFILE" => nil,
+        "BUNDLER_SETUP" => nil,
+        "RUBYLIB" => nil,
         "GEM_HOME" => a_string_matching(%r{/tmp/kettle-gem-source-probe-}),
         "GEM_PATH" => a_string_matching(%r{/tmp/kettle-gem-source-probe-})
       )

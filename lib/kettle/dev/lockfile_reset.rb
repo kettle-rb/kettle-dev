@@ -24,7 +24,9 @@ module Kettle
         BUNDLE_FROZEN
         BUNDLE_GEMFILE
         BUNDLE_LOCKFILE
+        BUNDLER_SETUP
         BUNDLER_VERSION
+        RUBYLIB
         RUBYOPT
       ].freeze
 
