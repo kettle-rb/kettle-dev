@@ -1133,6 +1133,29 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         end
       end
 
+      it "retries release task lockfile resets when the configured source has not caught up yet" do
+        with_release_root do |_root, local_cli|
+          resetter = instance_double(Kettle::Dev::LockfileReset)
+          attempts = 0
+          allow(resetter).to receive(:reset) do
+            attempts += 1
+            raise "Bundler::GemNotFound: Could not find gem 'gitmoji-regex (~> 2.0, >= 2.0.7)' in locally installed gems." if attempts == 1
+
+            []
+          end
+          allow(local_cli).to receive(:lockfile_reset).and_return(resetter)
+          allow(local_cli).to receive(:release_lockfile_paths).and_return([])
+          allow(local_cli).to receive(:release_availability_probe_attempts).and_return(2)
+          allow(local_cli).to receive(:release_availability_probe_interval).and_return(0)
+          expect(local_cli).to receive(:sleep).with(0).once
+
+          expect do
+            local_cli.send(:reset_release_lockfiles!, stage: "before release task bundle installs")
+          end.to output(/attempt 1\/2.*could not resolve a gem.*attempt 2\/2.*reset complete/m).to_stdout
+          expect(attempts).to eq(2)
+        end
+      end
+
       it "ignores generated appraisal lockfiles outside the release lockfile set" do
         with_release_root do |root, local_cli|
           gemfiles_dir = File.join(root, "gemfiles")
@@ -1985,7 +2008,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect(candidate.published).to be(true)
       end
 
-      it "validates availability with a non-activating Bundler probe sourced from gem.coop" do
+      it "validates availability with the shared Bundler inline source probe sourced from gem.coop" do
         local_cli = described_class.new
         candidate = Kettle::Dev::ReleaseCLI::ReleaseCandidate.new(
           gem_name: "mygem",
@@ -1996,12 +2019,10 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
         script = local_cli.send(:release_availability_probe_script, candidate)
 
-        expect(script).to include("require \"bundler\"")
-        expect(script).to include("builder.source(\"https://gem.coop\")")
-        expect(script).to include("builder.gem(gem_name, \"= \#{version}\", require: false)")
-        expect(script).to include("Bundler::Installer.install")
-        expect(script).to include("definition.specs.find")
-        expect(script).not_to include("bundler/inline")
+        expect(script).to include("require \"bundler/inline\"")
+        expect(script).to include("source \"https://gem.coop\"")
+        expect(script).to include("gem gem_name, \"= \#{version}\", require: false")
+        expect(script).to include("Gem::Specification.find_all_by_name")
         expect(script).not_to include("Bundler.load")
         expect(script).not_to include("Gem.loaded_specs")
       end

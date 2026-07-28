@@ -136,12 +136,12 @@ RSpec.describe Kettle::Dev::LockfileReset do
     allow(reset).to receive_messages(
       local_workspace_gem_names: Set[never_released_workspace_gem],
       locally_installed?: false,
-      ruby_gems_version_available?: false
+      gem_source_version_available?: false
     )
     allow(reset).to receive(:locally_installed?).with(never_released_workspace_gem, released_workspace_version).and_return(true)
-    allow(reset).to receive(:ruby_gems_version_available?).with(never_released_workspace_gem, released_workspace_version).and_return(true)
+    allow(reset).to receive(:gem_source_version_available?).with(never_released_workspace_gem, released_workspace_version, ["https://rubygems.org/"]).and_return(true)
     allow(reset).to receive(:locally_installed?).with(never_released_workspace_gem, unreleased_workspace_version).and_return(true)
-    allow(reset).to receive(:ruby_gems_version_available?).with(never_released_workspace_gem, unreleased_workspace_version).and_return(false)
+    allow(reset).to receive(:gem_source_version_available?).with(never_released_workspace_gem, unreleased_workspace_version, ["https://rubygems.org/"]).and_return(false)
 
     reset.reset("release-lockfiles")
 
@@ -182,8 +182,8 @@ RSpec.describe Kettle::Dev::LockfileReset do
     allow(reset).to receive(:local_workspace_gem_names).and_return(Set[never_released_workspace_gem])
     allow(reset).to receive(:locally_installed?).with(never_released_workspace_gem, released_workspace_version).and_return(true)
     allow(reset).to receive(:locally_installed?).with(never_released_workspace_gem, unreleased_workspace_version).and_return(true)
-    allow(reset).to receive(:ruby_gems_version_available?).with(never_released_workspace_gem, released_workspace_version).and_return(true)
-    allow(reset).to receive(:ruby_gems_version_available?).with(never_released_workspace_gem, unreleased_workspace_version).and_return(false)
+    allow(reset).to receive(:gem_source_version_available?).with(never_released_workspace_gem, released_workspace_version, ["https://rubygems.org/"]).and_return(true)
+    allow(reset).to receive(:gem_source_version_available?).with(never_released_workspace_gem, unreleased_workspace_version, ["https://rubygems.org/"]).and_return(false)
 
     reset.reset("release-lockfiles")
 
@@ -204,7 +204,7 @@ RSpec.describe Kettle::Dev::LockfileReset do
         #{never_released_workspace_gem} (#{unreleased_workspace_version}) sha256=localonly
     LOCK
     allow(reset).to receive(:local_workspace_gem_names).and_return(Set[never_released_workspace_gem])
-    allow(reset).to receive(:ruby_gems_version_available?).with(never_released_workspace_gem, unreleased_workspace_version).and_return(false)
+    allow(reset).to receive(:gem_source_version_available?).with(never_released_workspace_gem, unreleased_workspace_version, ["https://rubygems.org/"]).and_return(false)
 
     diagnostics = reset.diagnostics(File.join(@root, "Gemfile.lock"))
 
@@ -224,7 +224,7 @@ RSpec.describe Kettle::Dev::LockfileReset do
         #{never_released_workspace_gem} (#{unreleased_workspace_version}) sha256=localonly
     LOCK
     allow(reset).to receive(:local_workspace_gem_names).and_return(Set[never_released_workspace_gem])
-    allow(reset).to receive(:ruby_gems_version_available?).with(never_released_workspace_gem, unreleased_workspace_version).and_return(false)
+    allow(reset).to receive(:gem_source_version_available?).with(never_released_workspace_gem, unreleased_workspace_version, ["https://rubygems.org/"]).and_return(false)
 
     command = reset.reset_command(path: File.join(@root, "Gemfile.lock"), gemfile: File.join(@root, "Gemfile"))
 
@@ -246,9 +246,20 @@ RSpec.describe Kettle::Dev::LockfileReset do
       .to raise_error(RuntimeError, "permission denied")
   end
 
-  it "does not uninstall local workspace gems when RubyGems.org availability cannot be verified" do
+  it "uninstalls local workspace gems that do not resolve from the configured source" do
     commands = []
-    reset = described_class.new(root: @root, command_runner: ->(command) { commands << command })
+    reset = described_class.new(root: @root, command_runner: lambda { |command|
+      commands << command
+      File.write(File.join(@root, "Gemfile.lock"), <<~LOCK) if command.include?("bundle lock")
+        GEM
+          remote: https://rubygems.org/
+          specs:
+            #{never_released_workspace_gem} (#{unreleased_workspace_version})
+
+        CHECKSUMS
+          #{never_released_workspace_gem} (#{unreleased_workspace_version}) sha256=localonly
+      LOCK
+    })
     File.write(File.join(@root, "Gemfile"), "source \"https://rubygems.org\"\n")
     File.write(File.join(@root, "Gemfile.lock"), <<~LOCK)
       GEM
@@ -261,10 +272,10 @@ RSpec.describe Kettle::Dev::LockfileReset do
     LOCK
     allow(reset).to receive(:local_workspace_gem_names).and_return(Set[never_released_workspace_gem])
     allow(reset).to receive(:locally_installed?).with(never_released_workspace_gem, unreleased_workspace_version).and_return(true)
-    allow(reset).to receive(:ruby_gems_versions).with(never_released_workspace_gem).and_raise(Kettle::Dev::Error, "RubyGems.org unavailable")
+    allow(reset).to receive(:bundler_inline_version_available?).and_return(false)
 
-    expect { reset.reset("release-lockfiles") }.to raise_error(Kettle::Dev::Error, /RubyGems.org unavailable/)
-    expect(commands).to be_empty
+    expect { reset.reset("release-lockfiles") }.to raise_error(Kettle::Dev::Error, /not resolvable from the configured gem source/)
+    expect(commands.grep(/gem uninstall/)).not_to be_empty
   end
 
   it "targets checksum-gap registry gems when no path remotes are present" do
@@ -533,45 +544,29 @@ RSpec.describe Kettle::Dev::LockfileReset do
     expect(File.read(path)).to eq(original)
   end
 
-  it "matches RubyGems.org platform releases before uninstalling local gems" do
+  it "uses Bundler inline against the configured gem source before treating a version as released" do
     reset = described_class.new(root: @root, command_runner: ->(_command) {})
-    allow(reset).to receive(:ruby_gems_versions).with(released_registry_gem).and_return(
-      [
-        {"number" => released_registry_version, "platform" => "ruby"},
-        {"number" => "0.4.8", "platform" => "ruby"}
-      ]
-    )
+    success = instance_double(Process::Status, success?: true)
 
-    expect(reset.send(:ruby_gems_version_available?, released_registry_gem, released_registry_version)).to be(true)
-    expect(reset.send(:ruby_gems_version_available?, released_registry_gem, never_released_registry_version)).to be(false)
+    expect(Open3).to receive(:capture3) do |env, ruby, flag, script|
+      expect(env).to include("BUNDLE_GEMFILE" => nil, "BUNDLE_LOCKFILE" => nil)
+      expect(ruby).to eq(Gem.ruby)
+      expect(flag).to eq("-e")
+      expect(script).to include("require \"bundler/inline\"")
+      expect(script).to include("source \"https://gem.coop\"")
+      expect(script).to include("gem gem_name, \"= \#{version}\", require: false")
+      ["", "", success]
+    end
+
+    expect(reset.send(:gem_source_version_available?, released_registry_gem, released_registry_version, ["https://gem.coop"])).to be(true)
   end
 
-  it "matches RubyGems.org native platform releases before uninstalling local gems" do
+  it "returns false when Bundler cannot resolve a version from the configured source" do
     reset = described_class.new(root: @root, command_runner: ->(_command) {})
-    allow(reset).to receive(:ruby_gems_versions).with("native-demo").and_return(
-      [{"number" => "1.2.3", "platform" => "x86_64-linux"}]
-    )
+    failure = instance_double(Process::Status, success?: false)
 
-    expect(reset.send(:ruby_gems_version_available?, "native-demo", "1.2.3-x86_64-linux")).to be(true)
-  end
+    allow(Open3).to receive(:capture3).and_return(["", "not found", failure])
 
-  it "raises when RubyGems.org version lookup fails" do
-    response = Net::HTTPServiceUnavailable.new("1.1", "503", "Service Unavailable")
-    reset = described_class.new(root: @root, command_runner: ->(_command) {})
-    allow(Net::HTTP).to receive(:get_response).and_return(response)
-
-    expect { reset.send(:ruby_gems_versions, "demo") }
-      .to raise_error(Kettle::Dev::Error, /RubyGems\.org \(HTTP 503\)/)
-  end
-
-  it "raises when RubyGems.org version lookup returns invalid JSON" do
-    response = Net::HTTPOK.new("1.1", "200", "OK")
-    response.instance_variable_set(:@read, true)
-    response.body = "{"
-    reset = described_class.new(root: @root, command_runner: ->(_command) {})
-    allow(Net::HTTP).to receive(:get_response).and_return(response)
-
-    expect { reset.send(:ruby_gems_versions, "demo") }
-      .to raise_error(Kettle::Dev::Error, /Could not parse released versions/)
+    expect(reset.send(:gem_source_version_available?, released_registry_gem, never_released_registry_version, ["https://gem.coop"])).to be(false)
   end
 end

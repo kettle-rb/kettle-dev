@@ -36,6 +36,7 @@ module Kettle
     autoload :ExitAdapter, "kettle/dev/exit_adapter"
     autoload :RubyGemsVersions, "kettle/dev/ruby_gems_versions"
     autoload :GemSpecReader, "kettle/dev/gem_spec_reader"
+    autoload :GemSourceProbe, "kettle/dev/gem_source_probe"
     autoload :GitAdapter, "kettle/dev/git_adapter"
     autoload :GitCommitFooter, "kettle/dev/git_commit_footer"
     autoload :GhaShaPinsCLI, "kettle/dev/gha_sha_pins_cli"

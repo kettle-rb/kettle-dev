@@ -3,9 +3,6 @@
 require "set"
 require "shellwords"
 require "fileutils"
-require "json"
-require "net/http"
-require "uri"
 require "bundler"
 
 module Kettle
@@ -109,7 +106,7 @@ module Kettle
           diagnostics << "#{display_path(path)} CHECKSUMS has no sha256 for #{name} #{version} at line #{line_number}"
         end
         unreleased_workspace_registry_specs(path).each do |name, version, line_number|
-          diagnostics << "#{display_path(path)} locks local workspace gem #{name} #{version} as a registry gem, but that version is not released on RubyGems.org at line #{line_number}"
+          diagnostics << "#{display_path(path)} locks local workspace gem #{name} #{version} as a registry gem, but that version is not resolvable from the configured gem source at line #{line_number}"
         end
         diagnostics
       end
@@ -232,9 +229,10 @@ module Kettle
         local_names = local_workspace_gem_names
         return [] if local_names.empty?
 
+        source_urls = registry_source_urls(path)
         registry_specs_with_lines(path).filter_map do |name, version, line_number|
           next unless local_names.include?(name)
-          next if ruby_gems_version_available?(name, version)
+          next if gem_source_version_available?(name, version, source_urls)
 
           [name, version, line_number]
         end
@@ -341,7 +339,7 @@ module Kettle
         locked_registry_specs(paths).each do |name, version|
           next unless local_names.include?(name)
           next unless locally_installed?(name, version)
-          next if ruby_gems_version_available?(name, version)
+          next if gem_source_version_available?(name, version, source_urls_for_lockfiles(paths))
 
           uninstall_unreleased_local_gem(name, version)
           uninstalled = true
@@ -398,33 +396,43 @@ module Kettle
         false
       end
 
-      def ruby_gems_version_available?(name, version)
-        version_text = version.to_s
-        platform = "ruby"
-        if version_text =~ /\A(.+)-([^-]+-[^-]+(?:-[^-]+)?)\z/
-          version_text = Regexp.last_match(1)
-          platform = Regexp.last_match(2)
-        end
-        ruby_gems_versions(name).any? do |entry|
-          entry.fetch("number", entry["version"]) == version_text &&
-            %W[ruby #{platform}].include?(entry.fetch("platform", "ruby").to_s)
-        end
+      def gem_source_version_available?(name, version, source_urls)
+        urls = Array(source_urls).compact.uniq
+        return false if urls.empty?
+
+        urls.any? { |source_url| bundler_inline_version_available?(name, version, source_url) }
       end
 
-      def ruby_gems_versions(name)
-        @ruby_gems_versions ||= {}
-        @ruby_gems_versions.fetch(name) do
-          uri = URI("https://rubygems.org/api/v1/versions/#{URI.encode_www_form_component(name)}.json")
-          response = Net::HTTP.get_response(uri)
-          unless response.is_a?(Net::HTTPSuccess)
-            raise Error, "Could not verify released versions for #{name} from RubyGems.org (HTTP #{response.code})"
-          end
+      def bundler_inline_version_available?(name, version, source_url)
+        @gem_source_version_available ||= {}
+        cache_key = [source_url, name, version]
+        return @gem_source_version_available[cache_key] if @gem_source_version_available.key?(cache_key)
 
-          versions = JSON.parse(response.body)
-          @ruby_gems_versions[name] = versions
+        @gem_source_version_available[cache_key] = GemSourceProbe.new(source_url: source_url).available?(name, version)
+      end
+
+      def source_urls_for_lockfiles(paths)
+        paths.flat_map { |path| registry_source_urls(path) }.uniq
+      end
+
+      def registry_source_urls(path)
+        urls = []
+        in_gem = false
+        File.readlines(path).each do |line|
+          stripped = line.strip
+          if stripped == "GEM"
+            in_gem = true
+            next
+          end
+          if stripped.match?(/\A[A-Z][A-Z ]*\z/)
+            in_gem = stripped == "GEM"
+            next
+          end
+          next unless in_gem && stripped.start_with?("remote:")
+
+          urls << stripped.delete_prefix("remote:").strip
         end
-      rescue JSON::ParserError => error
-        raise Error, "Could not parse released versions for #{name} from RubyGems.org: #{error.message}"
+        urls
       end
 
       def uninstall_command(name, version)

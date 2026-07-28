@@ -28,6 +28,11 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-release` and `kettle-reset release-lockfiles` now validate local
+  workspace gem versions with an isolated Bundler inline probe against the
+  configured gem source instead of RubyGems.org version APIs, and release task
+  lockfile resets retry transient source propagation failures.
+
 ### Security
 
 ## [2.5.4] - 2026-07-28

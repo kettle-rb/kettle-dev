@@ -586,15 +586,26 @@ module Kettle
       def reset_release_lockfiles!(stage:)
         return if @release_lockfiles_reset_for_release_tasks && stage == "before release task bundle installs"
 
-        puts "Resetting release lockfiles with local path dependencies disabled #{stage}..."
-        begin
-          lockfile_reset.reset(Kettle::Dev::LockfileReset::RELEASE_LOCKFILES_TARGET)
-        rescue Kettle::Dev::Error => error
-          raise unless error.message.start_with?("Reset #{Kettle::Dev::LockfileReset::RELEASE_LOCKFILES_TARGET} failed validation:")
+        attempts = release_lockfile_reset_attempts(stage)
+        attempts.times do |index|
+          attempt = index + 1
+          puts "Resetting release lockfiles with local path dependencies disabled #{stage} (attempt #{attempt}/#{attempts})..."
+          begin
+            lockfile_reset.reset(Kettle::Dev::LockfileReset::RELEASE_LOCKFILES_TARGET)
+            break
+          rescue Kettle::Dev::Error => error
+            raise unless error.message.start_with?("Reset #{Kettle::Dev::LockfileReset::RELEASE_LOCKFILES_TARGET} failed validation:")
 
-          # Keep release-facing failures shaped like the lockfile validation
-          # guard, even when the shared reset helper is the component that
-          # detects the unrepaired lockfile.
+            # Keep release-facing failures shaped like the lockfile validation
+            # guard, even when the shared reset helper is the component that
+            # detects the unrepaired lockfile.
+            break
+          rescue => error
+            raise unless retryable_release_lockfile_reset_error?(error) && attempt < attempts
+
+            puts "Release lockfile reset could not resolve a gem from #{RELEASE_VALIDATION_SOURCE}; waiting before retry #{attempt + 1}/#{attempts}."
+            sleep(release_availability_probe_interval)
+          end
         end
 
         diagnostics = release_lockfile_paths.flat_map { |path| release_lockfile_diagnostics(path) }
@@ -602,6 +613,17 @@ module Kettle
           puts "Release lockfile reset complete: #{release_lockfile_paths.length} lockfile(s) checked, no diagnostics remain."
         end
         @release_lockfiles_reset_for_release_tasks = true if stage == "before release task bundle installs"
+      end
+
+      def release_lockfile_reset_attempts(stage)
+        stage == "before release task bundle installs" ? release_availability_probe_attempts : 1
+      end
+
+      def retryable_release_lockfile_reset_error?(error)
+        message = error.message.to_s
+        message.include?("Bundler::GemNotFound") ||
+          message.include?("Could not find gem") ||
+          message.include?("can no longer be found in that source")
       end
 
       def validate_release_lockfiles!(stage:)
@@ -1390,39 +1412,11 @@ module Kettle
       end
 
       def release_availability_probe_script(candidate)
-        <<~RUBY
-          # frozen_string_literal: true
-
-          gem_name = #{candidate.gem_name.dump}
-          version = #{candidate.version.dump}
-
-          require "bundler"
-          require "pathname"
-
-          Bundler.reset!
-          Bundler.unbundle_env!
-          Bundler.instance_variable_set(:@bundle_path, Pathname.new(Gem.dir))
-          Bundler::SharedHelpers.set_env("BUNDLE_GEMFILE", "Gemfile")
-          Bundler::SharedHelpers.set_env("BUNDLE_LOCKFILE", "Gemfile.lock")
-
-          builder = Bundler::Dsl.new
-          builder.source(#{RELEASE_VALIDATION_SOURCE.dump})
-          builder.gem(gem_name, "= \#{version}", require: false)
-          definition = builder.to_definition(nil, true)
-          definition.validate_runtime!
-
-          Bundler.settings.temporary(deployment: false, frozen: false, inline: true, no_install: false) do
-            installer = Bundler::Installer.install(Bundler.root, definition, system: true)
-            installer.post_install_messages.each do |name, message|
-              warn("Post-install message from \#{name}:\\n\#{message}")
-            end
-          end
-
-          spec = definition.specs.find { |candidate| candidate.name == gem_name }
-          abort("resolved no \#{gem_name} spec") unless spec
-          abort("resolved \#{gem_name} \#{spec.version}, expected \#{version}") unless spec.version.to_s == version
-          puts "Validated \#{gem_name} \#{version} from #{RELEASE_VALIDATION_SOURCE}"
-        RUBY
+        GemSourceProbe.bundler_inline_script(
+          name: candidate.gem_name,
+          version: candidate.version,
+          source_url: RELEASE_VALIDATION_SOURCE
+        )
       end
 
       def detect_version
