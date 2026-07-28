@@ -28,9 +28,16 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- `kettle-release` and `kettle-reset` now warn when unexpected `BUNDLE_*` or
-  `BUNDLER_*` environment variables are present while preparing unbundled
-  subprocesses.
+### Security
+
+## [2.5.5] - 2026-07-28
+
+- TAG: [v2.5.5][2.5.5t]
+- COVERAGE: 91.66% -- 4694/5121 lines in 44 files
+- BRANCH COVERAGE: 76.18% -- 1772/2326 branches in 44 files
+- 54.44% documented
+
+### Fixed
 
 - `kettle-release` and `kettle-reset release-lockfiles` now validate local
   workspace gem versions with an isolated Bundler inline probe against the
@@ -44,7 +51,9 @@ Please file a bug if you notice a violation of semantic versioning.
   TruffleRuby jobs with current RubyGems and Bundler, avoiding setup failures
   before the test suite starts.
 
-### Security
+- `kettle-release` and `kettle-reset` now warn when unexpected `BUNDLE_*` or
+  `BUNDLER_*` environment variables are present while preparing unbundled
+  subprocesses.
 
 ## [2.5.4] - 2026-07-28
 
@@ -2955,7 +2964,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.4...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.5...HEAD
+[2.5.5]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.4...v2.5.5
+[2.5.5t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.5
 [2.5.4]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.3...v2.5.4
 [2.5.4t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.4
 [2.5.3]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.2...v2.5.3

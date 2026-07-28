@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  Class: Kettle::Dev::GemSourceProbe
+  
+    &mdash; Documentation by YARD 0.9.45
+  
+</title>
+
+  <link rel="stylesheet" href="../../css/style.css" type="text/css">
+
+  <link rel="stylesheet" href="../../css/common.css" type="text/css">
+
+<script type="text/javascript">
+  pathId = "Kettle::Dev::GemSourceProbe";
+  relpath = '../../';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div id="main_progress" aria-hidden="true"></div>
+
+    <div class="nav_wrap">
+      <iframe id="nav" src="../../class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="../../_index.html">Index (G)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span> &raquo; <span class='title'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span>
+     &raquo; 
+    <span class="title">GemSourceProbe</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../../class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><h1>Class: Kettle::Dev::GemSourceProbe
+  
+  
+  
+</h1>
+<div class="box_info">
+  
+  <dl>
+    <dt>Inherits:</dt>
+    <dd>
+      <span class="inheritName">Object</span>
+      
+        <ul class="fullTree">
+          <li>Object</li>
+          
+            <li class="next">Kettle::Dev::GemSourceProbe</li>
+          
+        </ul>
+        <a href="#" class="inheritanceTree">show all</a>
+      
+    </dd>
+  </dl>
+  
+
+  
+  
+  
+  
+  
+
+  
+
+  
+  <dl>
+    <dt>Defined in:</dt>
+    <dd>lib/kettle/dev/gem_source_probe.rb
+</dd>
+  </dl>
+  
+</div>
+
+
+  
+    <h2>
+      Constant Summary
+      <small><a href="#" class="constants_summary_toggle">collapse</a></small>
+    </h2>
+
+    <dl class="constants">
+      
+        <dt id="UNBUNDLED_ENV_KEYS-constant" class="">UNBUNDLED_ENV_KEYS =
+          
+        </dt>
+        <dd><pre class="code"><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="BundlerEnvGuard.html" title="Kettle::Dev::BundlerEnvGuard (module)">BundlerEnvGuard</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="BundlerEnvGuard.html#RESET_ENV_KEYS-constant" title="Kettle::Dev::BundlerEnvGuard::RESET_ENV_KEYS (constant)">RESET_ENV_KEYS</a></span></span> <span class='op'>+</span> <span class='qwords_beg'>%w[</span><span class='words_sep'>
+</span><span class='words_sep'>  </span><span class='tstring_content'>RUBYGEMS_GEMDEPS</span><span class='words_sep'>
+</span><span class='words_sep'>  </span><span class='tstring_content'>RUBYLIB</span><span class='words_sep'>
+</span><span class='words_sep'>  </span><span class='tstring_content'>RUBYOPT</span><span class='words_sep'>
+</span><span class='tstring_end'>]</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_freeze'>freeze</span></pre></dd>
+      
+    </dl>
+  
+
+
+
+
+
+
+
+  
+    <h2>
+      Class Method Summary
+      <small><a href="#" class="summary_toggle">collapse</a></small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#bundler_inline_script-class_method" title="bundler_inline_script (class method)">.<strong>bundler_inline_script</strong>(name:, version:, source_url:)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+    
+  
+    <h2>
+      Instance Method Summary
+      <small><a href="#" class="summary_toggle">collapse</a></small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#available%3F-instance_method" title="#available? (instance method)">#<strong>available?</strong>(name, version)  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#initialize-instance_method" title="#initialize (instance method)">#<strong>initialize</strong>(source_url:, ruby: Gem.ruby)  &#x21d2; GemSourceProbe </a>
+    
+
+    
+  </span>
+  
+  
+    <span class="note title constructor">constructor</span>
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>A new instance of GemSourceProbe.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+    
+  
+
+<div id="constructor_details" class="method_details_list">
+  <h2>Constructor Details</h2>
+  
+    <div class="method_details first">
+  <h3 class="signature first" id="initialize-instance_method">
+  
+    #<strong>initialize</strong>(source_url:, ruby: Gem.ruby)  &#x21d2; <tt><span class='object_link'><a href="" title="Kettle::Dev::GemSourceProbe (class)">GemSourceProbe</a></span></tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Returns a new instance of GemSourceProbe.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+18
+19
+20
+21</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gem_source_probe.rb', line 18</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='label'>source_url:</span><span class='comma'>,</span> <span class='label'>ruby:</span> <span class='const'>Gem</span><span class='period'>.</span><span class='id identifier rubyid_ruby'>ruby</span><span class='rparen'>)</span>
+  <span class='ivar'>@source_url</span> <span class='op'>=</span> <span class='id identifier rubyid_source_url'>source_url</span>
+  <span class='ivar'>@ruby</span> <span class='op'>=</span> <span class='id identifier rubyid_ruby'>ruby</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+  
+</div>
+
+
+  <div id="class_method_details" class="method_details_list">
+    <h2>Class Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="bundler_inline_script-class_method">
+  
+    .<strong>bundler_inline_script</strong>(name:, version:, source_url:)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gem_source_probe.rb', line 50</span>
+
+<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_bundler_inline_script'>bundler_inline_script</span><span class='lparen'>(</span><span class='label'>name:</span><span class='comma'>,</span> <span class='label'>version:</span><span class='comma'>,</span> <span class='label'>source_url:</span><span class='rparen'>)</span>
+  <span class='heredoc_beg'>&lt;&lt;~RUBY</span>
+<span class='tstring_content'>    # frozen_string_literal: true
+</span><span class='tstring_content'>
+</span><span class='tstring_content'>    require &quot;bundler/inline&quot;
+</span><span class='tstring_content'>
+</span><span class='tstring_content'>    gem_name = </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_dump'>dump</span><span class='embexpr_end'>}</span><span class='tstring_content'>
+</span><span class='tstring_content'>    version = </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_version'>version</span><span class='period'>.</span><span class='id identifier rubyid_dump'>dump</span><span class='embexpr_end'>}</span><span class='tstring_content'>
+</span><span class='tstring_content'>
+</span><span class='tstring_content'>    gemfile(true) do
+</span><span class='tstring_content'>      source </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_source_url'>source_url</span><span class='period'>.</span><span class='id identifier rubyid_dump'>dump</span><span class='embexpr_end'>}</span><span class='tstring_content'>
+</span><span class='tstring_content'>      gem gem_name, &quot;= \#{version}&quot;, require: false
+</span><span class='tstring_content'>    end
+</span><span class='tstring_content'>
+</span><span class='tstring_content'>    spec = Gem::Specification.find_all_by_name(gem_name, &quot;= \#{version}&quot;).first
+</span><span class='tstring_content'>    abort(&quot;resolved no \#{gem_name} \#{version} spec from </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_source_url'>source_url</span><span class='embexpr_end'>}</span><span class='tstring_content'>&quot;) unless spec
+</span><span class='tstring_content'>    puts &quot;Validated \#{gem_name} \#{version} from </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_source_url'>source_url</span><span class='embexpr_end'>}</span><span class='tstring_content'>&quot;
+</span><span class='heredoc_end'>  RUBY
+</span><span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="available?-instance_method">
+  
+    #<strong>available?</strong>(name, version)  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/gem_source_probe.rb', line 23</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_available?'>available?</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_version'>version</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_stderr'>stderr</span> <span class='op'>=</span> <span class='kw'>nil</span>
+  <span class='const'><span class='object_link'><a href="BundlerEnvGuard.html" title="Kettle::Dev::BundlerEnvGuard (module)">BundlerEnvGuard</a></span></span><span class='period'>.</span><span class='id identifier rubyid_warn_unexpected_env!'><span class='object_link'><a href="BundlerEnvGuard.html#warn_unexpected_env!-class_method" title="Kettle::Dev::BundlerEnvGuard.warn_unexpected_env! (method)">warn_unexpected_env!</a></span></span>
+  <span class='id identifier rubyid_with_probe_gem_home'>with_probe_gem_home</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_gem_home'>gem_home</span><span class='op'>|</span>
+    <span class='id identifier rubyid__stdout'>_stdout</span><span class='comma'>,</span> <span class='id identifier rubyid_stderr'>stderr</span><span class='comma'>,</span> <span class='id identifier rubyid_status'>status</span> <span class='op'>=</span> <span class='const'>Open3</span><span class='period'>.</span><span class='id identifier rubyid_capture3'>capture3</span><span class='lparen'>(</span>
+      <span class='id identifier rubyid_probe_env'>probe_env</span><span class='lparen'>(</span><span class='id identifier rubyid_gem_home'>gem_home</span><span class='rparen'>)</span><span class='comma'>,</span>
+      <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>gem</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+      <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>install</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+      <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span>
+      <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>-v</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+      <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>= </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_version'>version</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+      <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>--source</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+      <span class='id identifier rubyid_source_url'>source_url</span><span class='comma'>,</span>
+      <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>--clear-sources</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+      <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>--ignore-dependencies</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+      <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>--no-document</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+      <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>--install-dir</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+      <span class='id identifier rubyid_gem_home'>gem_home</span>
+    <span class='rparen'>)</span>
+    <span class='id identifier rubyid_status'>status</span><span class='period'>.</span><span class='id identifier rubyid_success?'>success?</span>
+  <span class='kw'>end</span>
+<span class='kw'>rescue</span> <span class='const'>SystemCallError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_error'>error</span>
+  <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="Error.html" title="Kettle::Dev::Error (class)">Error</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Could not verify </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'> </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_version'>version</span><span class='embexpr_end'>}</span><span class='tstring_content'> from </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_source_url'>source_url</span><span class='embexpr_end'>}</span><span class='tstring_content'>: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_error'>error</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+<span class='kw'>ensure</span>
+  <span class='id identifier rubyid_warn'>warn</span><span class='lparen'>(</span><span class='id identifier rubyid_stderr'>stderr</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>KETTLE_DEV_DEBUG</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>true</span><span class='tstring_end'>&quot;</span></span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_stderr'>stderr</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_stderr'>stderr</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+      <div id="footer">
+  Generated on Tue Jul 28 15:59:48 2026 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.45 (ruby-4.0.6).
+</div>
+
+    </div>
+  </body>
+</html>

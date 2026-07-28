@@ -105,7 +105,17 @@ the process or to assert on arguments without coupling to Kernel.</p>
 <div class="tags">
   
 
-</div>
+</div><h2>Defined Under Namespace</h2>
+<p class="children">
+  
+    
+  
+    
+      <strong class="classes">Classes:</strong> <span class='object_link'><a href="ExitAdapter/AbortError.html" title="Kettle::Dev::ExitAdapter::AbortError (class)">AbortError</a></span>
+    
+  
+</p>
+
 
 
 
@@ -138,6 +148,29 @@ the process or to assert on arguments without coupling to Kernel.</p>
 
   
     <span class="summary_desc"><div class='inline'><p>Abort the current execution with a message.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#abort_as_error-class_method" title="abort_as_error (class method)">.<strong>abort_as_error</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
 </div></span>
   
 </li>
@@ -217,15 +250,49 @@ which raises SystemExit after printing the message to STDERR.</p>
       <pre class="lines">
 
 
-23
-24
-25</pre>
+27
+28
+29</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/exit_adapter.rb', line 23</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/exit_adapter.rb', line 27</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_abort'>abort</span><span class='lparen'>(</span><span class='id identifier rubyid_msg'>msg</span><span class='rparen'>)</span>
   <span class='const'>Kernel</span><span class='period'>.</span><span class='id identifier rubyid_abort'>abort</span><span class='lparen'>(</span><span class='id identifier rubyid_msg'>msg</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="abort_as_error-class_method">
+  
+    .<strong>abort_as_error</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+39
+40
+41
+42
+43</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/exit_adapter.rb', line 39</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_abort_as_error'>abort_as_error</span>
+  <span class='kw'>yield</span>
+<span class='kw'>rescue</span> <span class='const'>SystemExit</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_error'>error</span>
+  <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="ExitAdapter/AbortError.html" title="Kettle::Dev::ExitAdapter::AbortError (class)">AbortError</a></span></span><span class='comma'>,</span> <span class='id identifier rubyid_error'>error</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -274,12 +341,12 @@ which raises SystemExit after printing the message to STDERR.</p>
       <pre class="lines">
 
 
-31
-32
-33</pre>
+35
+36
+37</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/exit_adapter.rb', line 31</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/exit_adapter.rb', line 35</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_exit'>exit</span><span class='lparen'>(</span><span class='id identifier rubyid_status'>status</span> <span class='op'>=</span> <span class='int'>0</span><span class='rparen'>)</span>
   <span class='const'>Kernel</span><span class='period'>.</span><span class='id identifier rubyid_exit'>exit</span><span class='lparen'>(</span><span class='id identifier rubyid_status'>status</span><span class='rparen'>)</span>
