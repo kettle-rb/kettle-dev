@@ -84,6 +84,19 @@ RSpec.configure do |config|
   end
 
   config.before do
+    stub_env(
+      "KETTLE_RELEASE_SECRETS_PROVIDER" => nil,
+      "KETTLE_RELEASE_GEM_SIGNING_PASSPHRASE" => nil,
+      "KETTLE_RELEASE_GEM_SIGNING_PASSPHRASE_SOURCE" => nil,
+      "KETTLE_RELEASE_1PASSWORD_ACCOUNT" => nil,
+      "KETTLE_RELEASE_1PASSWORD_CLI" => nil,
+      "KETTLE_RELEASE_1PASSWORD_ITEM" => nil,
+      "KETTLE_RELEASE_1PASSWORD_GEM_SIGNING_PASSPHRASE_FIELD" => nil,
+      "KETTLE_RELEASE_1PASSWORD_RUBYGEMS_OTP_FIELD" => nil,
+      "KETTLE_RELEASE_1PASSWORD_GEM_SIGNING_PASSPHRASE_REFERENCE" => nil,
+      "KETTLE_RELEASE_1PASSWORD_RUBYGEMS_OTP_REFERENCE" => nil
+    )
+
     # Speed up polling loops
     allow(described_class).to receive(:sleep) unless described_class.nil?
   end
