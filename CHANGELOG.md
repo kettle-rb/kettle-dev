@@ -28,6 +28,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-reset` now scans workspace sibling directories with Ruby 2.4
+  compatible APIs, fixing Ruby 2.4 CI failures in lockfile reset specs.
+
 ### Security
 
 ## [2.5.2] - 2026-07-27

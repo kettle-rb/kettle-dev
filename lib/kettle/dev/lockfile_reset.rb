@@ -456,7 +456,7 @@ module Kettle
       end
 
       def workspace_children(path)
-        Dir.children(path).map { |child| File.join(path, child) }
+        Dir.entries(path).reject { |child| child == "." || child == ".." }.map { |child| File.join(path, child) }
       rescue SystemCallError
         []
       end
