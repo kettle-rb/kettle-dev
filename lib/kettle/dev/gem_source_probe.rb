@@ -8,6 +8,8 @@ module Kettle
       UNBUNDLED_ENV_KEYS = %w[
         BUNDLE_BIN_PATH
         BUNDLE_FROZEN
+        BUNDLE_GEMFILE
+        BUNDLE_LOCKFILE
         BUNDLER_VERSION
         RUBYOPT
       ].freeze
@@ -53,10 +55,7 @@ module Kettle
       def unbundled_env
         UNBUNDLED_ENV_KEYS.each_with_object({}) do |key, env|
           env[key] = nil
-        end.merge(
-          "BUNDLE_GEMFILE" => nil,
-          "BUNDLE_LOCKFILE" => nil
-        )
+        end
       end
     end
   end

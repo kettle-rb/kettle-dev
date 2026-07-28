@@ -2,6 +2,8 @@
 
 module Kettle
   module Dev
+    class Error < StandardError; end unless const_defined?(:Error, false)
+
     # Exit/abort indirection layer to allow controllable behavior in tests.
     #
     # Production/default behavior delegates to Kernel.abort / Kernel.exit,
@@ -13,6 +15,8 @@ module Kettle
     #
     # This adapter mirrors the "mockable adapter" approach used for GitAdapter.
     module ExitAdapter
+      class AbortError < Kettle::Dev::Error; end
+
       module_function
 
       # Abort the current execution with a message. By default this calls Kernel.abort,
@@ -30,6 +34,12 @@ module Kettle
       # @return [void]
       def exit(status = 0)
         Kernel.exit(status)
+      end
+
+      def abort_as_error
+        yield
+      rescue SystemExit => error
+        raise AbortError, error.message
       end
     end
   end

@@ -1192,6 +1192,19 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         end
       end
 
+      it "converts lockfile reset command aborts into retryable adapter errors", :real_exit_adapter do
+        with_release_root do |_root, local_cli|
+          expect(local_cli).to receive(:run_cmd!).with("bundle lock --update --add-checksums").and_raise(
+            SystemExit,
+            "Command failed: bundle lock --update --add-checksums (exit 1)\nBundler::GemNotFound: Could not find gem 'kettle-family (= 1.2.1)' in locally installed gems."
+          )
+
+          expect do
+            local_cli.send(:run_lockfile_reset_command!, "bundle lock --update --add-checksums")
+          end.to raise_error(Kettle::Dev::ExitAdapter::AbortError, /Bundler::GemNotFound/)
+        end
+      end
+
       it "aborts before release prep commit when normalization cannot repair registry checksums" do
         with_release_root do |root, local_cli|
           File.write(File.join(root, "Gemfile"), "source \"https://rubygems.org\"\n")

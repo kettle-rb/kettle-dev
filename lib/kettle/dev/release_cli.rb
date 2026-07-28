@@ -18,6 +18,7 @@ require "kettle/rb/compat_matrix"
 require "ruby-progressbar"
 
 require_relative "interactive_release_command"
+require_relative "exit_adapter"
 require_relative "lockfile_reset"
 require_relative "release_secrets"
 
@@ -69,7 +70,7 @@ module Kettle
             ok = system(env_hash, cmd)
             unless ok
               exit_code = $?.respond_to?(:exitstatus) ? $?.exitstatus : 1
-              abort("Command failed: #{cmd} (exit #{exit_code})")
+              Kettle::Dev::ExitAdapter.abort("Command failed: #{cmd} (exit #{exit_code})")
             end
             return
           end
@@ -90,7 +91,7 @@ module Kettle
               tail = stderr_str.lines.last(20).join
               diag = "\n--- STDERR (last 20 lines) ---\n#{tail}".rstrip
             end
-            abort("Command failed: #{cmd} (exit #{exit_code})#{diag}")
+            Kettle::Dev::ExitAdapter.abort("Command failed: #{cmd} (exit #{exit_code})#{diag}")
           end
         end
 
@@ -744,7 +745,13 @@ module Kettle
       end
 
       def lockfile_reset
-        @lockfile_reset ||= Kettle::Dev::LockfileReset.new(root: @root, command_runner: method(:run_cmd!))
+        @lockfile_reset ||= Kettle::Dev::LockfileReset.new(root: @root, command_runner: method(:run_lockfile_reset_command!))
+      end
+
+      def run_lockfile_reset_command!(command)
+        Kettle::Dev::ExitAdapter.abort_as_error do
+          run_cmd!(command)
+        end
       end
 
       def run_changelog!
