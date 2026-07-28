@@ -5,6 +5,8 @@ require "shellwords"
 require "fileutils"
 require "bundler"
 
+require_relative "bundler_env_guard"
+
 module Kettle
   module Dev
     class LockfileReset
@@ -19,16 +21,10 @@ module Kettle
       }.freeze
       RELEASE_LOCKFILES_TARGET = "release-lockfiles"
       SUPPORTED_TARGETS = ["Gemfile.lock", "Appraisal.root.gemfile.lock", RELEASE_LOCKFILES_TARGET].freeze
-      UNBUNDLED_ENV_KEYS = %w[
-        BUNDLE_BIN_PATH
-        BUNDLE_FROZEN
-        BUNDLE_GEMFILE
-        BUNDLE_LOCKFILE
-        BUNDLER_SETUP
-        BUNDLER_VERSION
+      UNBUNDLED_ENV_KEYS = (BundlerEnvGuard::RESET_ENV_KEYS + %w[
         RUBYLIB
         RUBYOPT
-      ].freeze
+      ]).freeze
 
       def initialize(root:, command_runner:)
         @root = root
@@ -36,6 +32,7 @@ module Kettle
       end
 
       def reset(target)
+        BundlerEnvGuard.warn_unexpected_env!
         paths = lockfile_paths_for(target)
         force_full_update = release_lockfiles_target?(target)
         uninstall_unreleased_local_gems(paths) if force_full_update

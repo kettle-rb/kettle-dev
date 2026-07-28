@@ -28,6 +28,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-release` and `kettle-reset` now warn when unexpected `BUNDLE_*` or
+  `BUNDLER_*` environment variables are present while preparing unbundled
+  subprocesses.
+
 - `kettle-release` and `kettle-reset release-lockfiles` now validate local
   workspace gem versions with an isolated Bundler inline probe against the
   configured gem source instead of RubyGems.org version APIs, and release task

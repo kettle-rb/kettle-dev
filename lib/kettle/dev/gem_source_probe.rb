@@ -4,20 +4,16 @@ require "fileutils"
 require "open3"
 require "tmpdir"
 
+require_relative "bundler_env_guard"
+
 module Kettle
   module Dev
     class GemSourceProbe
-      UNBUNDLED_ENV_KEYS = %w[
-        BUNDLE_BIN_PATH
-        BUNDLE_FROZEN
-        BUNDLE_GEMFILE
-        BUNDLE_LOCKFILE
-        BUNDLER_SETUP
-        BUNDLER_VERSION
+      UNBUNDLED_ENV_KEYS = (BundlerEnvGuard::RESET_ENV_KEYS + %w[
         RUBYGEMS_GEMDEPS
         RUBYLIB
         RUBYOPT
-      ].freeze
+      ]).freeze
 
       def initialize(source_url:, ruby: Gem.ruby)
         @source_url = source_url
@@ -26,6 +22,7 @@ module Kettle
 
       def available?(name, version)
         stderr = nil
+        BundlerEnvGuard.warn_unexpected_env!
         with_probe_gem_home do |gem_home|
           _stdout, stderr, status = Open3.capture3(
             probe_env(gem_home),
