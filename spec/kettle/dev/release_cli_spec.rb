@@ -11,6 +11,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
       # rubocop:disable RSpec/AnyInstance
       allow_any_instance_of(described_class).to receive(:prepare_release_lockfiles_for_commit!)
+      allow_any_instance_of(described_class).to receive(:prepare_release_lockfiles_for_release_tasks!)
       allow_any_instance_of(described_class).to receive(:validate_release_lockfiles!)
       # rubocop:enable RSpec/AnyInstance
     end
@@ -1234,7 +1235,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
                  4.0.17
             LOCK
           end
-          resetter = Kettle::Dev::LockfileReset.new(root: root, command_runner: local_cli.method(:run_cmd!))
+          resetter = Kettle::Dev::LockfileReset.new(root: root, command_runner: ->(command) { local_cli.send(:run_cmd!, command) })
           allow(resetter).to receive(:local_workspace_gem_names).and_return(Set.new)
           local_cli.instance_variable_set(:@lockfile_reset, resetter)
           git = local_cli.instance_variable_get(:@git)
@@ -1344,6 +1345,72 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect(local_cli).to receive(:commit_release_prep!).with("9.9.9").ordered.and_return(false)
 
         expect { local_cli.run }.not_to raise_error
+      end
+
+      it "repairs a stale appraisal root lock before appraisal generation can install it" do
+        Dir.mktmpdir do |root|
+          allow(ci_helpers).to receive(:project_root).and_return(root)
+          local_cli = described_class.new(start_step: 5, skip_steps: "6,7,8,9,10,11,12,13,14,15,16,17,18,19")
+          File.write(File.join(root, "Appraisals"), "# appraisals\n")
+          File.write(File.join(root, "Gemfile"), "source \"https://rubygems.org\"\n")
+          File.write(File.join(root, "Gemfile.lock"), <<~LOCK)
+            GEM
+              remote: https://rubygems.org/
+              specs:
+                rake (13.4.2)
+
+            CHECKSUMS
+              rake (13.4.2) sha256=abc123
+          LOCK
+          File.write(File.join(root, "Appraisal.root.gemfile"), "source \"https://rubygems.org\"\n")
+          File.write(File.join(root, "Appraisal.root.gemfile.lock"), <<~LOCK)
+            GEM
+              remote: https://rubygems.org/
+              specs:
+                kettle-starfish (9.9.9)
+
+            CHECKSUMS
+              kettle-starfish (9.9.9) sha256=localonly
+          LOCK
+          commands = []
+          command_runner = lambda do |command|
+            commands << command
+            if command.include?("BUNDLE_LOCKFILE=#{File.join(root, "Appraisal.root.gemfile.lock")}")
+              File.write(File.join(root, "Appraisal.root.gemfile.lock"), <<~LOCK)
+                GEM
+                  remote: https://rubygems.org/
+                  specs:
+                    rake (13.4.2)
+
+                CHECKSUMS
+                  rake (13.4.2) sha256=abc123
+              LOCK
+            elsif command.include?("BUNDLE_LOCKFILE=#{File.join(root, "Gemfile.lock")}")
+              File.write(File.join(root, "Gemfile.lock"), <<~LOCK)
+                GEM
+                  remote: https://rubygems.org/
+                  specs:
+                    rake (13.4.2)
+
+                CHECKSUMS
+                rake (13.4.2) sha256=abc123
+              LOCK
+            end
+          end
+          resetter = Kettle::Dev::LockfileReset.new(root: root, command_runner: command_runner)
+          allow(resetter).to receive(:local_workspace_gem_names).and_return(Set["kettle-starfish"])
+          local_cli.instance_variable_set(:@lockfile_reset, resetter)
+          allow(local_cli).to receive(:run_cmd!) do |command|
+            commands << command
+          end
+
+          expect { local_cli.run }.not_to raise_error
+          appraisal_reset_index = commands.index { |command| command.include?("BUNDLE_LOCKFILE=#{File.join(root, "Appraisal.root.gemfile.lock")}") }
+          appraisal_generate_index = commands.index("bin/rake appraisal:generate")
+          expect(appraisal_reset_index).not_to be_nil
+          expect(appraisal_generate_index).not_to be_nil
+          expect(appraisal_reset_index).to be < appraisal_generate_index
+        end
       end
 
       it "validates lockfiles before monitoring CI on a step 10 resume" do

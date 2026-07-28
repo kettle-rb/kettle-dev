@@ -82,6 +82,13 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 
 <h3 id="fixed">Fixed</h3>
 
+<ul>
+  <li>
+<code>kettle-release</code> now resets release lockfiles before release task bundle<br>
+installs, preventing stale <code>Appraisal.root.gemfile.lock</code> entries for<br>
+unreleased sibling gems from aborting appraisal generation.</li>
+</ul>
+
 <h3 id="security">Security</h3>
 
 <h2 id="252---2026-07-27">

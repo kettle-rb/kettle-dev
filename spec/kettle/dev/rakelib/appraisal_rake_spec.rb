@@ -30,8 +30,33 @@ RSpec.describe "appraisal rake tasks" do # rubocop:disable RSpec/DescribeClass
       "BUNDLE_SUPPRESS_INSTALL_USING_MESSAGES" => "true"
     }
   end
-  let(:appraisal_env) { quiet_env.merge("BUNDLE_GEMFILE" => "Appraisal.root.gemfile") }
+  let(:unbundled_env) do
+    {
+      "BUNDLE_BIN_PATH" => nil,
+      "BUNDLE_FROZEN" => nil,
+      "BUNDLER_VERSION" => nil,
+      "RUBYOPT" => nil
+    }
+  end
+  let(:appraisal_env) do
+    quiet_env.merge(
+      Kettle::Dev::LockfileReset::DEFAULT_DISABLED_ENV,
+      unbundled_env,
+      "BUNDLE_GEMFILE" => "Appraisal.root.gemfile",
+      "BUNDLE_LOCKFILE" => "Appraisal.root.gemfile.lock"
+    )
+  end
   let(:bundle_install_call) { [appraisal_env, "bundle", "install", "--quiet"] }
+
+  def expect_system_calls(*expected_commands)
+    expect(system_calls.length).to eq(expected_commands.length)
+    system_calls.zip(expected_commands).each do |actual, expected|
+      actual_env, *actual_command = actual
+      expected_env, *expected_command = expected
+      expect(actual_env).to include(expected_env)
+      expect(actual_command).to eq(expected_command)
+    end
+  end
 
   describe "rake appraisal:generate" do
     let(:task_name) { "appraisal:generate" }
@@ -48,10 +73,10 @@ RSpec.describe "appraisal rake tasks" do # rubocop:disable RSpec/DescribeClass
     it "generates appraisal gemfiles in the Appraisal root bundle context" do
       invoke
 
-      expect(system_calls).to eq([
+      expect_system_calls(
         bundle_install_call,
         [appraisal_env, "bundle", "exec", "appraisal", "generate"]
-      ])
+      )
     end
   end
 
@@ -72,10 +97,10 @@ RSpec.describe "appraisal rake tasks" do # rubocop:disable RSpec/DescribeClass
     it "generates and installs appraisal gemfiles" do
       invoke
 
-      expect(system_calls).to eq([
+      expect_system_calls(
         bundle_install_call,
         appraisal_install_call
-      ])
+      )
     end
 
     context "when appraisal install fails" do
@@ -84,12 +109,12 @@ RSpec.describe "appraisal rake tasks" do # rubocop:disable RSpec/DescribeClass
       it "falls back to generating appraisal gemfiles" do
         invoke
 
-        expect(system_calls).to eq([
+        expect_system_calls(
           bundle_install_call,
           appraisal_install_call,
           bundle_install_call,
           [appraisal_env, "bundle", "exec", "appraisal", "generate"]
-        ])
+        )
       end
     end
   end
@@ -111,12 +136,12 @@ RSpec.describe "appraisal rake tasks" do # rubocop:disable RSpec/DescribeClass
     it "installs the Appraisal root bundle before updating Bundler" do
       invoke
 
-      expect(system_calls).to eq([
+      expect_system_calls(
         bundle_install_call,
         [appraisal_env, "bundle", "update", "--bundler"],
         bundle_install_call,
         appraisal_update_call
-      ])
+      )
     end
 
     context "when appraisal update fails" do
@@ -125,14 +150,14 @@ RSpec.describe "appraisal rake tasks" do # rubocop:disable RSpec/DescribeClass
       it "falls back to generating appraisal gemfiles" do
         invoke
 
-        expect(system_calls).to eq([
+        expect_system_calls(
           bundle_install_call,
           [appraisal_env, "bundle", "update", "--bundler"],
           bundle_install_call,
           appraisal_update_call,
           bundle_install_call,
           [appraisal_env, "bundle", "exec", "appraisal", "generate"]
-        ])
+        )
       end
     end
   end

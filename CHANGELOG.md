@@ -28,6 +28,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-release` now resets release lockfiles before release task bundle
+  installs, preventing stale `Appraisal.root.gemfile.lock` entries for
+  unreleased sibling gems from aborting appraisal generation.
+
 ### Security
 
 ## [2.5.2] - 2026-07-27

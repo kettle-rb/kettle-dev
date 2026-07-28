@@ -272,6 +272,7 @@ module Kettle
         end
 
         prepare_rubocop_lts_local_branch! if rubocop_lts_release_preflight_needed?
+        prepare_release_lockfiles_for_release_tasks! if release_lockfile_preflight_needed?
 
         # 3. bin/setup
         run_cmd!("bin/setup") if run_step?(3)
@@ -509,6 +510,10 @@ module Kettle
         (3..5).any? { |step| run_step?(step) }
       end
 
+      def release_lockfile_preflight_needed?
+        (3..5).any? { |step| run_step?(step) }
+      end
+
       def prepare_rubocop_lts_local_branch!
         local_root = rubocop_lts_local_root
         return unless local_root
@@ -570,7 +575,18 @@ module Kettle
       end
 
       def prepare_release_lockfiles_for_commit!
-        puts "Resetting release lockfiles with local path dependencies disabled..."
+        reset_release_lockfiles!(stage: "before release prep commit") unless @release_lockfiles_reset_for_release_tasks
+        validate_release_lockfiles!(stage: "before release prep commit")
+      end
+
+      def prepare_release_lockfiles_for_release_tasks!
+        reset_release_lockfiles!(stage: "before release task bundle installs")
+      end
+
+      def reset_release_lockfiles!(stage:)
+        return if @release_lockfiles_reset_for_release_tasks && stage == "before release task bundle installs"
+
+        puts "Resetting release lockfiles with local path dependencies disabled #{stage}..."
         begin
           lockfile_reset.reset(Kettle::Dev::LockfileReset::RELEASE_LOCKFILES_TARGET)
         rescue Kettle::Dev::Error => error
@@ -585,7 +601,7 @@ module Kettle
         if diagnostics.empty?
           puts "Release lockfile reset complete: #{release_lockfile_paths.length} lockfile(s) checked, no diagnostics remain."
         end
-        validate_release_lockfiles!(stage: "before release prep commit")
+        @release_lockfiles_reset_for_release_tasks = true if stage == "before release task bundle installs"
       end
 
       def validate_release_lockfiles!(stage:)

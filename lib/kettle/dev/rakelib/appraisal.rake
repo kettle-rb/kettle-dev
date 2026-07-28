@@ -3,8 +3,12 @@
 # --- Appraisals (dev-only) ---
 begin
   require "appraisal/task"
+  require "kettle/dev/lockfile_reset"
 
   bundle = "bundle"
+  unbundled_env = Kettle::Dev::LockfileReset::UNBUNDLED_ENV_KEYS.each_with_object({}) do |key, env|
+    env[key] = nil
+  end
   quiet_env = {
     "KETTLE_JEM_QUIET" => "true",
     "KETTLE_JEM_DEBUG" => "false",
@@ -25,7 +29,13 @@ begin
     "BUNDLE_SILENCE_ROOT_WARNING" => "true",
     "BUNDLE_SUPPRESS_INSTALL_USING_MESSAGES" => "true"
   }
-  appraisal_env = quiet_env.merge("BUNDLE_GEMFILE" => "Appraisal.root.gemfile")
+  appraisal_env = quiet_env.merge(
+    Kettle::Dev::LockfileReset.new(root: Dir.pwd, command_runner: ->(_command) {}).normalization_env
+  ).merge(
+    unbundled_env,
+    "BUNDLE_GEMFILE" => "Appraisal.root.gemfile",
+    "BUNDLE_LOCKFILE" => "Appraisal.root.gemfile.lock"
+  )
 
   run_command = lambda do |failure_message, *args|
     ok = system(*args)
