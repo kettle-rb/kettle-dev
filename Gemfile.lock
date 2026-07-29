@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    kettle-dev (2.5.5)
+    kettle-dev (2.5.6)
       emoji_regex (>= 15.0)
       kettle-gha-pins (~> 0.3, >= 0.3.3)
       kettle-ndjson (~> 0.1, >= 0.1.1)
@@ -91,7 +91,7 @@ GEM
       bundler (>= 1.14)
       version_gem (~> 1.1, >= 1.1.4)
     geom2d (0.4.1)
-    gitmoji-regex (2.0.7)
+    gitmoji-regex (2.0.8)
       version_gem (~> 1.1, >= 1.1.14)
     hashdiff (1.2.1)
     hexapdf (1.9.1)
@@ -221,11 +221,11 @@ GEM
     rspec-mocks (3.13.8)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
-    rspec-pending_for (0.1.22)
+    rspec-pending_for (0.1.23)
       rspec-core (~> 3.0)
       ruby_engine (~> 2.0)
       ruby_version (~> 1.0)
-    rspec-stubbed_env (1.0.8)
+    rspec-stubbed_env (1.0.10)
     rspec-support (3.13.7)
     rspec_junit_formatter (0.6.0)
       rspec-core (>= 2, < 4, != 2.12.0)
@@ -511,13 +511,13 @@ CHECKSUMS
   erb (6.0.6) sha256=a9b24986700f5bf127c4f297c5403c3ca41b83b0a316c0cd09a096b56e644ae5
   gem_bench (2.0.5) sha256=0dc0fb44a5a5eb7b2f5c1c68a5b0164d72007132822c012bac3abe976b199ead
   geom2d (0.4.1) sha256=ea0998ea90c4f2752e24fe13d85a4f89bee689d151316140ebcc6369bf634ed9
-  gitmoji-regex (2.0.7) sha256=7124a3c95818514d8ccbfa15c094fe528bc92ee42485642781a8bbf4ea40dd97
+  gitmoji-regex (2.0.8) sha256=a916aa7c7de06db9f1758dbf0db7b579d416ec123e1c947ae7c63bb93ec83cd7
   hashdiff (1.2.1) sha256=9c079dbc513dfc8833ab59c0c2d8f230fa28499cc5efb4b8dd276cf931457cd1
   hexapdf (1.9.1) sha256=2d1f6a3622e6bc2a70a707d4c3f3fa44f5552ecd9d899f6283abb07398a84884
   io-console (0.8.2) sha256=d6e3ae7a7cc7574f4b8893b4fca2162e57a825b223a177b7afa236c5ef9814cc
   irb (1.18.0) sha256=de9454a0703a54704b9811a5ef31a60c86949fbf4013fcf244fabc7c775248e3
   json (2.21.1) sha256=13a43df75d95641443f5702dff350f237164a9d811ff0f2c2800d4d980220583
-  kettle-dev (2.5.5)
+  kettle-dev (2.5.6)
   kettle-family (1.2.1) sha256=bbee04639694b6eaf7f8141f9edcb529b3c7bfc565dc3672b4593eda2612747f
   kettle-gha-pins (0.3.3) sha256=da9337376dd957dca65164f669045a71252f0b5c0234aaa1cde384c5f5c8ad87
   kettle-ndjson (0.1.2) sha256=1c2c4e8246a718f4f78b2f4141184acf5c239087319e5abc8d6d289635587650
@@ -566,8 +566,8 @@ CHECKSUMS
   rspec-core (3.13.6) sha256=a8823c6411667b60a8bca135364351dda34cd55e44ff94c4be4633b37d828b2d
   rspec-expectations (3.13.5) sha256=33a4d3a1d95060aea4c94e9f237030a8f9eae5615e9bd85718fe3a09e4b58836
   rspec-mocks (3.13.8) sha256=086ad3d3d17533f4237643de0b5c42f04b66348c28bf6b9c2d3f4a3b01af1d47
-  rspec-pending_for (0.1.22) sha256=49dc647473f8c8ea4ccc1a33813537dd94b913ef7ec5a8689896101eaacb71cf
-  rspec-stubbed_env (1.0.8) sha256=b23c4dd5e5d6a0cf0c5b4f6ed3f3678d78e4be9ec247ea9abf0669d20b490535
+  rspec-pending_for (0.1.23) sha256=e95fcb52e841a3e5be687c7bd0324d3dc6ded2473d2f84eac4106a332bdb508d
+  rspec-stubbed_env (1.0.10) sha256=147b59fa7187e5e085fa176f79adc1a0bbd319ca86a3c2cd32b513777c16b808
   rspec-support (3.13.7) sha256=0640e5570872aafefd79867901deeeeb40b0c9875a36b983d85f54fb7381c47c
   rspec_junit_formatter (0.6.0) sha256=40dde674e6ae4e6cc0ff560da25497677e34fefd2338cc467a8972f602b62b15
   rubocop (1.88.2) sha256=8def251c90cd955feb4daa3edc0ab56893250c4ce90ef81e6c80c03f9a939bbf

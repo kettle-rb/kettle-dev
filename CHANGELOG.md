@@ -28,10 +28,19 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [2.5.6] - 2026-07-28
+
+- TAG: [v2.5.6][2.5.6t]
+- COVERAGE: 91.93% -- 4716/5130 lines in 44 files
+- BRANCH COVERAGE: 76.39% -- 1780/2330 branches in 44 files
+- 54.41% documented
+
+### Fixed
+
 - Unexpected Bundler environment warnings emitted by unbundled release/reset
   subprocess setup are now de-duplicated per process.
-
-### Security
 
 ## [2.5.5] - 2026-07-28
 
@@ -2967,7 +2976,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.5...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.6...HEAD
+[2.5.6]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.5...v2.5.6
+[2.5.6t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.6
 [2.5.5]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.4...v2.5.5
 [2.5.5t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.5
 [2.5.4]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.3...v2.5.4
