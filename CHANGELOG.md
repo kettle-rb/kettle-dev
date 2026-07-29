@@ -28,6 +28,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Unexpected Bundler environment warnings emitted by unbundled release/reset
+  subprocess setup are now de-duplicated per process.
+
 ### Security
 
 ## [2.5.5] - 2026-07-28

@@ -36,11 +36,16 @@ module Kettle
       def warn_unexpected_env!(stream: $stderr)
         unexpected = unexpected_env_keys
         return if unexpected.empty?
+        return if warned_unexpected_env?(unexpected)
 
         stream.puts(
           "[kettle-dev] Unexpected Bundler environment variable(s) present while preparing an unbundled subprocess: #{unexpected.join(", ")}. " \
             "If this variable is safe, add it to BundlerEnvGuard::INERT_ENV_KEYS; otherwise add it to RESET_ENV_KEYS."
         )
+      end
+
+      def reset_warning_cache!
+        @warned_unexpected_env_keys = {}
       end
 
       def unexpected_env_keys
@@ -51,6 +56,15 @@ module Kettle
         RESET_ENV_KEYS.include?(key) ||
           INERT_ENV_KEYS.include?(key) ||
           INERT_ENV_PREFIXES.any? { |prefix| key.start_with?(prefix) }
+      end
+
+      def warned_unexpected_env?(keys)
+        @warned_unexpected_env_keys ||= {}
+        signature = keys.join("\0")
+        return true if @warned_unexpected_env_keys[signature]
+
+        @warned_unexpected_env_keys[signature] = true
+        false
       end
     end
   end
