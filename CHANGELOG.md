@@ -28,14 +28,23 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [2.5.10] - 2026-07-30
+
+- TAG: [v2.5.10][2.5.10t]
+- COVERAGE: 92.40% -- 4751/5142 lines in 44 files
+- BRANCH COVERAGE: 76.67% -- 1791/2336 branches in 44 files
+- 54.41% documented
+
+### Fixed
+
 - `kettle-changelog` coverage generation now clears inherited Bundler
   environment before running the coverage-root bundle, avoiding member bundle
   leakage in shared monorepo release changelogs.
 - `kettle-changelog` coverage generation now carries `PATH` into its cleaned
   subprocess environment so the selected coverage-root bundle executable can be
   resolved without inheriting Bundler state.
-
-### Security
 
 ## [2.5.9] - 2026-07-30
 
@@ -3051,7 +3060,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.9...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.10...HEAD
+[2.5.10]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.9...v2.5.10
+[2.5.10t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.10
 [2.5.9]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.8...v2.5.9
 [2.5.9t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.9
 [2.5.8]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.7...v2.5.8
