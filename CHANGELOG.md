@@ -20,6 +20,25 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [2.5.7] - 2026-07-30
+
+- TAG: [v2.5.7][2.5.7t]
+- COVERAGE: 91.74% -- 4710/5134 lines in 44 files
+- BRANCH COVERAGE: 76.37% -- 1781/2332 branches in 44 files
+- 54.41% documented
+
+### Added
+
 - kettle-jem-template-20260729-005 - Gemspec metadata now publishes this
   project's RubyForum tag as `mailing_list_uri`, and support docs link to the
   tagged RubyForum community alongside Discord.
@@ -30,10 +49,6 @@ Please file a bug if you notice a violation of semantic versioning.
   `kettle-rb` to `0.1.7`.
 - `kettle-changelog` now accepts `K_CHANGELOG_PATH` so monorepo release flows
   can run inside a gem while updating a shared root changelog.
-
-### Deprecated
-
-### Removed
 
 ### Fixed
 
@@ -56,8 +71,6 @@ Please file a bug if you notice a violation of semantic versioning.
 - kettle-jem-template-20260730-001 - Gemspec package file enumeration now runs
   relative to the gemspec directory, so packaged template assets are included
   even when the gemspec is loaded from another working directory.
-
-### Security
 
 ## [2.5.6] - 2026-07-28
 
@@ -3005,7 +3018,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.6...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.7...HEAD
+[2.5.7]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.6...v2.5.7
+[2.5.7t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.7
 [2.5.6]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.5...v2.5.6
 [2.5.6t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.6
 [2.5.5]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.4...v2.5.5
