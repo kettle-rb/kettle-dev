@@ -22,6 +22,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- `kettle-changelog` now accepts `K_CHANGELOG_COVERAGE_ROOT` so monorepo release
+  flows can collect aggregate coverage from a family bundle without running the
+  changelog command from the family root.
+
 ### Deprecated
 
 ### Removed
@@ -49,9 +53,6 @@ Please file a bug if you notice a violation of semantic versioning.
   `kettle-rb` to `0.1.7`.
 - `kettle-changelog` now accepts `K_CHANGELOG_PATH` so monorepo release flows
   can run inside a gem while updating a shared root changelog.
-- `kettle-changelog` now accepts `K_CHANGELOG_COVERAGE_ROOT` so monorepo release
-  flows can collect aggregate coverage from a family bundle without running the
-  changelog command from the family root.
 
 ### Fixed
 
