@@ -31,7 +31,8 @@ module Kettle
       def initialize(strict: true, enforce_coverage_thresholds: true, update_prep: false, version: nil, root: Kettle::Dev::CIHelpers.project_root, refresh_cache: false, yes: false)
         @root = root
         @changelog_path = resolved_changelog_path
-        @coverage_path = File.join(@root, "coverage", "coverage.json")
+        @coverage_root = resolved_coverage_root
+        @coverage_path = File.join(@coverage_root, "coverage", "coverage.json")
         @strict = strict
         @enforce_coverage_thresholds = enforce_coverage_thresholds
         @update_prep = update_prep
@@ -671,7 +672,7 @@ module Kettle
 
           puts "Generating fresh coverage data by running: bundle exec kettle-test"
 
-          success = system(changelog_coverage_env, "bundle", "exec", "kettle-test", chdir: @root)
+          success = system(changelog_coverage_env, "bundle", "exec", "kettle-test", chdir: @coverage_root)
 
           unless success
             raise "bundle exec kettle-test failed with exit status #{$?.exitstatus || "unknown"}"
@@ -841,6 +842,13 @@ module Kettle
       def resolved_changelog_path
         path = ENV.fetch("K_CHANGELOG_PATH", "").to_s.strip
         path = "CHANGELOG.md" if path.empty?
+        File.expand_path(path, @root)
+      end
+
+      def resolved_coverage_root
+        path = ENV.fetch("K_CHANGELOG_COVERAGE_ROOT", "").to_s.strip
+        return @root if path.empty?
+
         File.expand_path(path, @root)
       end
 

@@ -6,6 +6,7 @@
 # kettle-changelog: Generate a CHANGELOG.md entry for the current VERSION.
 # - Reads VERSION from lib/**/version.rb (must be unique across files)
 # - Set K_CHANGELOG_PATH to read/write a changelog outside the current gem root
+# - Set K_CHANGELOG_COVERAGE_ROOT to collect coverage from another bundle root
 # - Set K_CHANGELOG_VERSION_FILE to use a specific version.rb for monorepo roots
 # - Set K_CHANGELOG_GEM_NAME to use a specific gem name for root changelogs
 # - Moves entries from the "Unreleased" section into a new versioned section
@@ -88,6 +89,7 @@ if ARGV.include?("-h") || ARGV.include?("--help")
       K_CHANGELOG_STRICT=false              Disable strict mode (equivalent to --no-strict flag)
       K_CHANGELOG_COVERAGE_HARD=false       Disable coverage threshold hard-failure
       K_CHANGELOG_PATH=path                 Read and write this changelog instead of ./CHANGELOG.md
+      K_CHANGELOG_COVERAGE_ROOT=path        Run/read coverage from this root instead of the gem root
       K_CHANGELOG_VERSION_FILE=path         Read VERSION from this file instead of lib/**/version.rb
       K_CHANGELOG_GEM_NAME=name             Read live release data as this gem instead of root .gemspec
       KETTLE_GEM_COOP_REFRESH=true          Bypass cached gem.coop version data

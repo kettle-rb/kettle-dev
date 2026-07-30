@@ -1077,6 +1077,43 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       end
     end
 
+    it "runs strict coverage from K_CHANGELOG_COVERAGE_ROOT when configured" do
+      mkproj do |root|
+        coverage_root = File.join(root, "family")
+        FileUtils.mkdir_p(coverage_root)
+        allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
+        stub_env("K_CHANGELOG_COVERAGE_ROOT" => coverage_root)
+        coverage_payload = JSON.generate(
+          "coverage" => {
+            "gems/alpha/lib/alpha.rb" => {
+              "lines" => [1, 1],
+              "branches" => [{"coverage" => 1}]
+            }
+          }
+        )
+
+        expect(cli = described_class.new(strict: true)).to receive(:system).with(
+          hash_including(
+            "K_SOUP_COV_DO" => "true",
+            "K_SOUP_COV_FORMATTERS" => "json",
+            "K_SOUP_COV_MIN_HARD" => "true"
+          ),
+          "bundle",
+          "exec",
+          "kettle-test",
+          chdir: coverage_root
+        ) do
+          FileUtils.mkdir_p(File.join(coverage_root, "coverage"))
+          File.write(File.join(coverage_root, "coverage", "coverage.json"), coverage_payload)
+          true
+        end
+
+        line_cov, branch_cov = cli.send(:coverage_lines)
+        expect(line_cov).to eq("COVERAGE: 100.00% -- 2/2 lines in 1 files")
+        expect(branch_cov).to eq("BRANCH COVERAGE: 100.00% -- 1/1 branches in 1 files")
+      end
+    end
+
     it "fails closed when kettle-test does not collate parallel coverage JSON" do
       mkproj do |root|
         allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
