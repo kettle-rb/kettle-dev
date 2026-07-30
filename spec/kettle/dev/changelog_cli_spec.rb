@@ -1116,6 +1116,81 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       end
     end
 
+    it "runs strict coverage in a subprocess using the coverage root bundle instead of inherited member bundler state" do
+      mkproj do |member_root|
+        coverage_root = File.join(member_root, "family")
+        fake_bin = File.join(member_root, "fake-bin")
+        snapshot_path = File.join(member_root, "coverage-subprocess-env.json")
+        FileUtils.mkdir_p(fake_bin)
+        FileUtils.mkdir_p(coverage_root)
+        File.write(File.join(member_root, "Gemfile"), "source \"https://rubygems.org\"\n")
+        File.write(File.join(coverage_root, "Gemfile"), "source \"https://rubygems.org\"\n")
+        File.write(File.join(fake_bin, "bundle"), <<~RUBY)
+          #!/usr/bin/env ruby
+          require "fileutils"
+          require "json"
+
+          snapshot = {
+            "argv" => ARGV,
+            "cwd" => Dir.pwd,
+            "bundle_gemfile" => ENV["BUNDLE_GEMFILE"],
+            "bundle_bin_path" => ENV["BUNDLE_BIN_PATH"],
+            "bundler_setup" => ENV["BUNDLER_SETUP"],
+            "rubyopt" => ENV["RUBYOPT"]
+          }
+          File.write(ENV.fetch("KETTLE_CHANGELOG_COVERAGE_FIXTURE"), JSON.generate(snapshot))
+          exit(12) unless ARGV == ["exec", "kettle-test"]
+
+          FileUtils.mkdir_p(File.join(Dir.pwd, "coverage"))
+          File.write(
+            File.join(Dir.pwd, "coverage", "coverage.json"),
+            JSON.generate(
+              "coverage" => {
+                "gems/alpha/lib/alpha.rb" => {
+                  "lines" => [1, 0],
+                  "branches" => [{"coverage" => 1}, {"coverage" => 0}]
+                }
+              }
+            )
+          )
+        RUBY
+        FileUtils.chmod(0o755, File.join(fake_bin, "bundle"))
+
+        allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(member_root)
+        env_updates = {
+          "BUNDLE_BIN_PATH" => File.join(member_root, "member-bundle-bin"),
+          "BUNDLE_GEMFILE" => File.join(member_root, "Gemfile"),
+          "BUNDLER_SETUP" => File.join(member_root, "member-setup"),
+          "K_CHANGELOG_COVERAGE_ROOT" => coverage_root,
+          "KETTLE_CHANGELOG_COVERAGE_FIXTURE" => snapshot_path,
+          "PATH" => "#{fake_bin}#{File::PATH_SEPARATOR}#{ENV.fetch("PATH", "")}",
+          "RUBYOPT" => "-rbundler/setup"
+        }
+        old_env = env_updates.to_h { |key, _value| [key, ENV.key?(key) ? ENV[key] : nil] }
+        env_updates.each { |key, value| ENV[key] = value }
+
+        begin
+          line_cov, branch_cov = described_class.new(strict: true).send(:coverage_lines)
+        ensure
+          old_env.each do |key, value|
+            value.nil? ? ENV.delete(key) : ENV[key] = value
+          end
+        end
+        snapshot = JSON.parse(File.read(snapshot_path))
+
+        expect(snapshot).to include(
+          "argv" => %w[exec kettle-test],
+          "cwd" => coverage_root,
+          "bundle_gemfile" => File.join(coverage_root, "Gemfile"),
+          "bundle_bin_path" => nil,
+          "bundler_setup" => nil,
+          "rubyopt" => nil
+        )
+        expect(line_cov).to eq("COVERAGE: 50.00% -- 1/2 lines in 1 files")
+        expect(branch_cov).to eq("BRANCH COVERAGE: 50.00% -- 1/2 branches in 1 files")
+      end
+    end
+
     it "fails closed when kettle-test does not collate parallel coverage JSON" do
       mkproj do |root|
         allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)

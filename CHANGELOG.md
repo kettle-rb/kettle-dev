@@ -28,6 +28,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-changelog` coverage generation now clears inherited Bundler
+  environment before running the coverage-root bundle, avoiding member bundle
+  leakage in shared monorepo release changelogs.
+
 ### Security
 
 ## [2.5.9] - 2026-07-30
