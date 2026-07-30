@@ -28,11 +28,20 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [2.5.9] - 2026-07-30
+
+- TAG: [v2.5.9][2.5.9t]
+- COVERAGE: 91.91% -- 4726/5142 lines in 44 files
+- BRANCH COVERAGE: 76.37% -- 1784/2336 branches in 44 files
+- 54.41% documented
+
+### Fixed
+
 - `kettle-changelog` coverage generation now pins `BUNDLE_GEMFILE` to
   `K_CHANGELOG_COVERAGE_ROOT/Gemfile`, so shared monorepo release changelogs
   collect aggregate family coverage instead of reusing the member bundle.
-
-### Security
 
 ## [2.5.8] - 2026-07-30
 
@@ -3035,7 +3044,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.8...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.9...HEAD
+[2.5.9]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.8...v2.5.9
+[2.5.9t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.9
 [2.5.8]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.7...v2.5.8
 [2.5.8t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.8
 [2.5.7]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.6...v2.5.7
