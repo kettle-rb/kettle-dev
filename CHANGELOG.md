@@ -28,6 +28,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-changelog` coverage generation now pins `BUNDLE_GEMFILE` to
+  `K_CHANGELOG_COVERAGE_ROOT/Gemfile`, so shared monorepo release changelogs
+  collect aggregate family coverage instead of reusing the member bundle.
+
 ### Security
 
 ## [2.5.8] - 2026-07-30

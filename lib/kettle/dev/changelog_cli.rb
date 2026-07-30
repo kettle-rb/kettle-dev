@@ -740,13 +740,16 @@ module Kettle
       end
 
       def changelog_coverage_env
-        {
+        env = {
           "K_SOUP_COV_DO" => "true",
           "K_SOUP_COV_FORMATTERS" => "json",
           "K_SOUP_COV_MIN_HARD" => @enforce_coverage_thresholds ? "true" : "false",
           "K_SOUP_COV_MULTI_FORMATTERS" => "false",
           "K_SOUP_COV_OPEN_BIN" => ""
         }
+        gemfile = File.join(@coverage_root, "Gemfile")
+        env["BUNDLE_GEMFILE"] = gemfile if File.file?(gemfile)
+        env
       end
 
       def ensure_changelog_coverage_json!

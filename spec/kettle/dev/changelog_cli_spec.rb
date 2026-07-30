@@ -1081,6 +1081,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       mkproj do |root|
         coverage_root = File.join(root, "family")
         FileUtils.mkdir_p(coverage_root)
+        File.write(File.join(coverage_root, "Gemfile"), "source \"https://rubygems.org\"\n")
         allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
         stub_env("K_CHANGELOG_COVERAGE_ROOT" => coverage_root)
         coverage_payload = JSON.generate(
@@ -1094,6 +1095,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
 
         expect(cli = described_class.new(strict: true)).to receive(:system).with(
           hash_including(
+            "BUNDLE_GEMFILE" => File.join(coverage_root, "Gemfile"),
             "K_SOUP_COV_DO" => "true",
             "K_SOUP_COV_FORMATTERS" => "json",
             "K_SOUP_COV_MIN_HARD" => "true"
