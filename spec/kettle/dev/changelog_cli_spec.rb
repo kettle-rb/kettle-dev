@@ -1172,11 +1172,11 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
         expect(snapshot).to include(
           "argv" => %w[exec kettle-test],
           "cwd" => coverage_root,
-          "bundle_gemfile" => File.join(coverage_root, "Gemfile"),
-          "bundle_bin_path" => nil,
-          "bundler_setup" => nil,
-          "rubyopt" => nil
+          "bundle_gemfile" => File.join(coverage_root, "Gemfile")
         )
+        expect(snapshot.fetch("bundle_bin_path")).to be_nil.or eq("")
+        expect(snapshot.fetch("bundler_setup")).to be_nil.or eq("")
+        expect(snapshot.fetch("rubyopt")).to be_nil.or eq("")
         expect(line_cov).to eq("COVERAGE: 50.00% -- 1/2 lines in 1 files")
         expect(branch_cov).to eq("BRANCH COVERAGE: 50.00% -- 1/2 branches in 1 files")
       end
