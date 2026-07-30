@@ -741,6 +741,7 @@ module Kettle
 
       def changelog_coverage_env
         env = BundlerEnvGuard.unbundled_env.merge(
+          "PATH" => ENV.fetch("PATH", ""),
           "RUBYOPT" => nil,
           "K_SOUP_COV_DO" => "true",
           "K_SOUP_COV_FORMATTERS" => "json",

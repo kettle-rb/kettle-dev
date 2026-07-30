@@ -31,6 +31,9 @@ Please file a bug if you notice a violation of semantic versioning.
 - `kettle-changelog` coverage generation now clears inherited Bundler
   environment before running the coverage-root bundle, avoiding member bundle
   leakage in shared monorepo release changelogs.
+- `kettle-changelog` coverage generation now carries `PATH` into its cleaned
+  subprocess environment so the selected coverage-root bundle executable can be
+  resolved without inheriting Bundler state.
 
 ### Security
 

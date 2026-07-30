@@ -1138,7 +1138,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
             "bundler_setup" => ENV["BUNDLER_SETUP"],
             "rubyopt" => ENV["RUBYOPT"]
           }
-          File.write(ENV.fetch("KETTLE_CHANGELOG_COVERAGE_FIXTURE"), JSON.generate(snapshot))
+          File.write(#{snapshot_path.dump}, JSON.generate(snapshot))
           exit(12) unless ARGV == ["exec", "kettle-test"]
 
           FileUtils.mkdir_p(File.join(Dir.pwd, "coverage"))
@@ -1157,25 +1157,16 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
         FileUtils.chmod(0o755, File.join(fake_bin, "bundle"))
 
         allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(member_root)
-        env_updates = {
+        stub_env(
           "BUNDLE_BIN_PATH" => File.join(member_root, "member-bundle-bin"),
           "BUNDLE_GEMFILE" => File.join(member_root, "Gemfile"),
           "BUNDLER_SETUP" => File.join(member_root, "member-setup"),
           "K_CHANGELOG_COVERAGE_ROOT" => coverage_root,
-          "KETTLE_CHANGELOG_COVERAGE_FIXTURE" => snapshot_path,
           "PATH" => "#{fake_bin}#{File::PATH_SEPARATOR}#{ENV.fetch("PATH", "")}",
           "RUBYOPT" => "-rbundler/setup"
-        }
-        old_env = env_updates.to_h { |key, _value| [key, ENV.key?(key) ? ENV[key] : nil] }
-        env_updates.each { |key, value| ENV[key] = value }
+        )
 
-        begin
-          line_cov, branch_cov = described_class.new(strict: true).send(:coverage_lines)
-        ensure
-          old_env.each do |key, value|
-            value.nil? ? ENV.delete(key) : ENV[key] = value
-          end
-        end
+        line_cov, branch_cov = described_class.new(strict: true).send(:coverage_lines)
         snapshot = JSON.parse(File.read(snapshot_path))
 
         expect(snapshot).to include(
