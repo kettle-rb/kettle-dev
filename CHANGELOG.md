@@ -28,6 +28,17 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [2.5.11] - 2026-07-30
+
+- TAG: [v2.5.11][2.5.11t]
+- COVERAGE: 91.66% -- 4756/5189 lines in 44 files
+- BRANCH COVERAGE: 76.03% -- 1802/2370 branches in 44 files
+- 53.78% documented
+
+### Fixed
+
 - RubyGems version lookups now share the 30-day local version-response cache
   used by dependency floor checks, so release-state and changelog generation can
   survive transient RubyGems API failures for untouched gems while still
@@ -35,8 +46,6 @@ Please file a bug if you notice a violation of semantic versioning.
 - RubyGems release-state cache-bust markers now stay fresh for 30 days after
   `kettle-release` publishes a gem, so downstream tooling can selectively
   refresh recently released gems without refreshing untouched gems.
-
-### Security
 
 ## [2.5.10] - 2026-07-30
 
@@ -3068,7 +3077,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.10...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.11...HEAD
+[2.5.11]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.10...v2.5.11
+[2.5.11t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.11
 [2.5.10]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.9...v2.5.10
 [2.5.10t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.10
 [2.5.9]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.8...v2.5.9
