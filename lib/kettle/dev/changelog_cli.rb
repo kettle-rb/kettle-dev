@@ -30,7 +30,7 @@ module Kettle
       # @param yes [Boolean] when true, approve the selected release plan without prompting
       def initialize(strict: true, enforce_coverage_thresholds: true, update_prep: false, version: nil, root: Kettle::Dev::CIHelpers.project_root, refresh_cache: false, yes: false)
         @root = root
-        @changelog_path = File.join(@root, "CHANGELOG.md")
+        @changelog_path = resolved_changelog_path
         @coverage_path = File.join(@root, "coverage", "coverage.json")
         @strict = strict
         @enforce_coverage_thresholds = enforce_coverage_thresholds
@@ -836,6 +836,12 @@ module Kettle
         yard = File.join(@root, "bin", "yard")
         commands << [yard] if File.executable?(yard)
         commands
+      end
+
+      def resolved_changelog_path
+        path = ENV.fetch("K_CHANGELOG_PATH", "").to_s.strip
+        path = "CHANGELOG.md" if path.empty?
+        File.expand_path(path, @root)
       end
 
       def prepare_yard_fence_tmp_files

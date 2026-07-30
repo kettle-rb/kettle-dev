@@ -338,6 +338,62 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
     end
   end
 
+  describe "K_CHANGELOG_PATH" do
+    it "reads changelog state from an explicit shared changelog path" do
+      mkproj do |root|
+        write_version(root)
+        shared_root = File.join(root, "family")
+        FileUtils.mkdir_p(shared_root)
+        shared_changelog = File.join(shared_root, "CHANGELOG.md")
+        File.write(shared_changelog, <<~MD)
+          # Changelog
+
+          ## [Unreleased]
+
+          ### Fixed
+
+          - Fixed a shared release bug.
+
+          ## [1.2.3] - 2025-08-30
+        MD
+        FileUtils.mkdir_p(File.join(root, "coverage"))
+        File.write(File.join(root, "coverage", "coverage.json"), {"coverage" => {}}.to_json)
+        allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
+        stub_env("K_CHANGELOG_PATH" => shared_changelog)
+
+        cli = described_class.new(strict: false)
+        allow(cli).to receive(:latest_released_versions).and_return(["1.2.3", "1.2.3"])
+
+        expect(cli.release_state).to include(
+          pending_release: true,
+          latest_changelog_version: "1.2.3"
+        )
+      end
+    end
+
+    it "resolves relative shared changelog paths from the execution root" do
+      mkproj do |root|
+        write_version(root)
+        shared_changelog = File.join(root, "family", "CHANGELOG.md")
+        FileUtils.mkdir_p(File.dirname(shared_changelog))
+        File.write(shared_changelog, <<~MD)
+          # Changelog
+
+          ## [Unreleased]
+
+          ## [1.2.3] - 2025-08-30
+        MD
+        allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
+        stub_env("K_CHANGELOG_PATH" => "family/CHANGELOG.md")
+
+        cli = described_class.new(strict: false)
+        allow(cli).to receive(:latest_released_versions).and_return(["1.2.3", "1.2.3"])
+
+        expect(cli.release_state).to include(latest_changelog_version: "1.2.3")
+      end
+    end
+  end
+
   describe "#detect_gem_name" do
     it "uses K_CHANGELOG_GEM_NAME before root gemspec discovery" do
       mkproj do |root|

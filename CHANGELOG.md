@@ -24,6 +24,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - Raised the runtime dependency floors for `kettle-ndjson` to `0.1.3` and
   `kettle-rb` to `0.1.7`.
+- `kettle-changelog` now accepts `K_CHANGELOG_PATH` so monorepo release flows
+  can run inside a gem while updating a shared root changelog.
 
 ### Deprecated
 
