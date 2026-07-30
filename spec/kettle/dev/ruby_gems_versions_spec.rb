@@ -53,7 +53,7 @@ RSpec.describe Kettle::Dev::RubyGemsVersions do
     expect(request_headers.fetch("pragma")).to eq(["no-cache"])
   end
 
-  it "uses normal version lookup URLs outside the marker freshness window", freeze: Time.utc(2026, 7, 21, 12, 16, 0) do
+  it "uses normal version lookup URLs outside the thirty-day marker freshness window", freeze: Time.utc(2026, 8, 21, 12, 0, 1) do
     write_marker("demo", "1.2.3", "2026-07-21T12:00:00Z")
     response = ok_response(JSON.generate([]))
     request_uri = nil

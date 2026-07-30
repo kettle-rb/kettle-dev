@@ -9,7 +9,7 @@ require "uri"
 module Kettle
   module Dev
     module RubyGemsVersions
-      CACHE_BUST_TTL_SECONDS = 15 * 60
+      CACHE_BUST_TTL_SECONDS = 30 * 24 * 60 * 60
       ENV_REFRESH = "KETTLE_RUBYGEMS_REFRESH"
       ENV_MARKER_PATH = "KETTLE_RUBYGEMS_CACHE_BUST_PATH"
 

@@ -28,6 +28,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- RubyGems release-state cache-bust markers now stay fresh for 30 days after
+  `kettle-release` publishes a gem, so downstream tooling can selectively
+  refresh recently released gems without refreshing untouched gems.
+
 ### Security
 
 ## [2.5.10] - 2026-07-30
