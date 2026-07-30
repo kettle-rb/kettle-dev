@@ -22,6 +22,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- Raised the runtime dependency floors for `kettle-ndjson` to `0.1.3` and
+  `kettle-rb` to `0.1.7`.
+
 ### Deprecated
 
 ### Removed
