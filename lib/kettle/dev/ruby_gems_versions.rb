@@ -8,14 +8,24 @@ require "uri"
 
 module Kettle
   module Dev
+    class Error < StandardError; end unless const_defined?(:Error, false)
+    ENV_TRUE_RE = /\A(1|true|y|yes)\z/i unless const_defined?(:ENV_TRUE_RE, false)
+
     module RubyGemsVersions
       CACHE_BUST_TTL_SECONDS = 30 * 24 * 60 * 60
+      VERSION_CACHE_TTL_SECONDS = 30 * 24 * 60 * 60
       ENV_REFRESH = "KETTLE_RUBYGEMS_REFRESH"
       ENV_MARKER_PATH = "KETTLE_RUBYGEMS_CACHE_BUST_PATH"
+      ENV_VERSION_CACHE_PATH = "KETTLE_RUBYGEMS_VERSION_CACHE_PATH"
+      ENV_LEGACY_VERSION_CACHE_PATH = "KETTLE_JEM_DEPS_FLOOR_CACHE"
 
       class << self
         def fetch(gem_name, version_hint: nil, refresh: false)
-          cache_bust = refresh || env_refresh? || fresh_release_marker?(gem_name, version_hint)
+          name = gem_name.to_s
+          cached = cached_versions(name)
+          cache_bust = refresh || env_refresh? || fresh_release_marker?(name, version_hint)
+          return cached if cached && !cache_bust
+
           uri = versions_uri(gem_name, cache_bust: cache_bust)
           request = Net::HTTP::Get.new(uri)
           if cache_bust
@@ -25,9 +35,15 @@ module Kettle
           response = Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == "https") do |http|
             http.request(request)
           end
-          return nil unless response.is_a?(Net::HTTPSuccess)
+          return cached unless response.is_a?(Net::HTTPSuccess)
 
-          JSON.parse(response.body)
+          data = JSON.parse(response.body)
+          write_versions(name, data) if data.is_a?(Array)
+          data
+        rescue => error
+          return cached if cached
+
+          raise error
         end
 
         def mark_released(gem_name, version)
@@ -53,6 +69,20 @@ module Kettle
           state_home = ENV["XDG_STATE_HOME"]
           state_home = File.join(Dir.home, ".local", "state") if state_home.to_s.empty?
           File.join(state_home, "kettle-dev", "rubygems-cache-bust.json")
+        end
+
+        def version_cache_path
+          configured = ENV.fetch(ENV_VERSION_CACHE_PATH, "").to_s
+          return "" if configured.match?(/\A(?:false|0|no|off|disabled)\z/i)
+          return configured unless configured.empty?
+
+          legacy_configured = ENV.fetch(ENV_LEGACY_VERSION_CACHE_PATH, "").to_s
+          return "" if legacy_configured.match?(/\A(?:false|0|no|off|disabled)\z/i)
+          return legacy_configured unless legacy_configured.empty?
+
+          cache_home = ENV["XDG_CACHE_HOME"]
+          cache_home = File.join(Dir.home, ".cache") if cache_home.to_s.empty?
+          File.join(cache_home, "kettle-jem", "deps-floor-rubygems-versions.json")
         end
 
         private
@@ -85,6 +115,49 @@ module Kettle
 
         def env_refresh?
           ENV.fetch(ENV_REFRESH, "").match?(Kettle::Dev::ENV_TRUE_RE)
+        end
+
+        def cached_versions(gem_name)
+          path = version_cache_path
+          return nil if path.empty?
+
+          entry = read_version_cache(path).fetch("versions", {})[gem_name]
+          return nil unless entry.is_a?(Hash)
+          return nil unless fresh_version_cache_entry?(entry)
+
+          Array(entry["entries"])
+        end
+
+        def write_versions(gem_name, entries)
+          path = version_cache_path
+          return if path.empty?
+
+          data = read_version_cache(path)
+          data["versions"] ||= {}
+          data["versions"][gem_name] = {
+            "cached_at" => Time.now.utc.iso8601,
+            "entries" => entries
+          }
+          FileUtils.mkdir_p(File.dirname(path))
+          File.write(path, JSON.pretty_generate(data) << "\n")
+        rescue => error
+          warn("[kettle-dev] could not update RubyGems.org version cache: #{error.class}: #{error.message}") if Kettle::Dev::DEBUGGING
+        end
+
+        def read_version_cache(path)
+          return {} unless File.file?(path)
+
+          parsed = JSON.parse(File.read(path))
+          parsed.is_a?(Hash) ? parsed : {}
+        rescue JSON::ParserError
+          {}
+        end
+
+        def fresh_version_cache_entry?(entry)
+          cached_at = Time.iso8601(entry["cached_at"].to_s)
+          cached_at >= Time.now.utc - VERSION_CACHE_TTL_SECONDS
+        rescue ArgumentError
+          false
         end
       end
     end

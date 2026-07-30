@@ -14,12 +14,18 @@ RSpec.describe Kettle::Dev::RubyGemsVersions do
   around do |example|
     Dir.mktmpdir do |dir|
       @cache_bust_path = File.join(dir, "rubygems-cache-bust.json")
+      @version_cache_path = File.join(dir, "rubygems-version-cache.json")
       example.run
     end
   end
 
   before do
-    stub_env("KETTLE_RUBYGEMS_CACHE_BUST_PATH" => @cache_bust_path, "KETTLE_RUBYGEMS_REFRESH" => nil)
+    stub_env(
+      "KETTLE_RUBYGEMS_CACHE_BUST_PATH" => @cache_bust_path,
+      "KETTLE_RUBYGEMS_REFRESH" => nil,
+      "KETTLE_RUBYGEMS_VERSION_CACHE_PATH" => @version_cache_path,
+      "KETTLE_JEM_DEPS_FLOOR_CACHE" => nil
+    )
   end
 
   it "records recently published gem versions in a best-effort marker file", freeze: Time.utc(2026, 7, 21, 12, 0, 0) do
@@ -69,10 +75,50 @@ RSpec.describe Kettle::Dev::RubyGemsVersions do
     expect(request_uri.query).to be_nil
   end
 
+  it "uses fresh cached versions without a live RubyGems request", freeze: Time.utc(2026, 7, 30, 12, 0, 0) do
+    write_version_cache("demo", "2026-07-01T12:00:00Z", [{"number" => "1.2.3"}])
+    allow(Net::HTTP).to receive(:start)
+
+    versions = described_class.fetch("demo", version_hint: "1.2.3")
+
+    expect(versions).to eq([{"number" => "1.2.3"}])
+    expect(Net::HTTP).not_to have_received(:start)
+  end
+
+  it "refreshes cached versions when a fresh release marker exists", freeze: Time.utc(2026, 7, 30, 12, 0, 0) do
+    write_version_cache("demo", "2026-07-01T12:00:00Z", [{"number" => "1.2.2"}])
+    write_marker("demo", "1.2.3", "2026-07-30T11:59:00Z")
+    response = ok_response(JSON.generate([{"number" => "1.2.3"}]))
+    allow(Net::HTTP).to receive(:start).and_yield(instance_double(Net::HTTP, request: response))
+
+    versions = described_class.fetch("demo", version_hint: "1.2.3")
+
+    expect(versions).to eq([{"number" => "1.2.3"}])
+    expect(JSON.parse(File.read(@version_cache_path)).dig("versions", "demo", "entries")).to eq([{"number" => "1.2.3"}])
+  end
+
+  it "falls back to fresh cached versions when the live RubyGems request fails", freeze: Time.utc(2026, 7, 30, 12, 0, 0) do
+    write_version_cache("demo", "2026-07-01T12:00:00Z", [{"number" => "1.2.2"}])
+    write_marker("demo", "1.2.3", "2026-07-30T11:59:00Z")
+    response = Net::HTTPInternalServerError.new("1.1", "500", "Internal Server Error")
+    allow(Net::HTTP).to receive(:start).and_yield(instance_double(Net::HTTP, request: response))
+
+    versions = described_class.fetch("demo", version_hint: "1.2.3")
+
+    expect(versions).to eq([{"number" => "1.2.2"}])
+  end
+
   def write_marker(gem_name, version, released_at)
     File.write(
       @cache_bust_path,
       JSON.generate("releases" => {gem_name => {"version" => version, "released_at" => released_at}})
+    )
+  end
+
+  def write_version_cache(gem_name, cached_at, entries)
+    File.write(
+      @version_cache_path,
+      JSON.generate("versions" => {gem_name => {"cached_at" => cached_at, "entries" => entries}})
     )
   end
 end

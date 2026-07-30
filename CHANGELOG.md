@@ -28,6 +28,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- RubyGems version lookups now share the 30-day local version-response cache
+  used by dependency floor checks, so release-state and changelog generation can
+  survive transient RubyGems API failures for untouched gems while still
+  refreshing recently released gems.
 - RubyGems release-state cache-bust markers now stay fresh for 30 days after
   `kettle-release` publishes a gem, so downstream tooling can selectively
   refresh recently released gems without refreshing untouched gems.
