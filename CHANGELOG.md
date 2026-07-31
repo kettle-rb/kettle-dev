@@ -20,6 +20,13 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- `kettle-release --events` now emits `remote_parity` events for remote parity
+  fetch attempts, skipped optional remotes, required failures, and parity
+  completion.
+- `kettle-dev` now requires `kettle-ndjson` 0.1.5 or newer so
+  `kettle-release --events=remote_parity` resolves against the event protocol
+  that includes remote parity events.
+
 ### Changed
 
 ### Deprecated

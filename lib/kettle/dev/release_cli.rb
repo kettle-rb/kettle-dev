@@ -1641,6 +1641,34 @@ module Kettle
         )
       end
 
+      def emit_remote_parity_event(action:, remote: nil, status: nil, trunk: nil, attempt: nil, attempts: nil, required: nil, reason: nil, remotes: nil)
+        mark = case status.to_s
+        when "started"
+          ">"
+        when "ok", "skipped"
+          "."
+        when "failed"
+          "!"
+        else
+          ">"
+        end
+        Kettle::Ndjson.emit_event(
+          @event_recorder,
+          "remote_parity",
+          action: action,
+          phase: "release",
+          remote: remote,
+          status: status,
+          trunk: trunk,
+          attempt: attempt,
+          attempts: attempts,
+          required: required,
+          reason: reason,
+          remotes: remotes,
+          mark: mark
+        )
+      end
+
       def finish_release_report(status:, error:)
         return if @finished_report
 
@@ -1851,6 +1879,7 @@ module Kettle
           puts "Skipping configured remotes: #{skipped.join(", ")}" unless skipped.empty?
           puts "Required release parity remotes: #{required.join(", ")}" unless required.empty?
           fetched_remotes = []
+          emit_remote_parity_event(action: "start", status: "started", trunk: trunk, remotes: remotes - ["all"])
           remotes.each do |remote|
             next if remote == "all"
 
@@ -1864,9 +1893,11 @@ module Kettle
             end
           end
           unless missing_from.empty?
+            emit_remote_parity_event(action: "missing", status: "failed", trunk: trunk, remotes: missing_from, reason: "missing commits")
             abort("Local #{trunk} is missing commits present on: #{missing_from.join(", ")}. Please sync trunk first.")
           end
           puts "Local #{trunk} has all commits from remotes: #{fetched_remotes.join(", ")}"
+          emit_remote_parity_event(action: "ok", status: "ok", trunk: trunk, remotes: fetched_remotes)
           return
         end
 
@@ -1935,8 +1966,10 @@ module Kettle
         attempts.times do |index|
           attempt = index + 1
           puts "Fetching remote '#{remote}' for release parity (attempt #{attempt}/#{attempts})"
+          emit_remote_parity_event(action: "fetch", remote: remote, status: "started", attempt: attempt, attempts: attempts, required: required_remote?(remote))
           begin
             run_cmd!(command)
+            emit_remote_parity_event(action: "fetch", remote: remote, status: "ok", attempt: attempt, attempts: attempts, required: required_remote?(remote))
             return true
           rescue SystemExit => error
             last_error = error
@@ -1947,10 +1980,14 @@ module Kettle
         end
 
         detail = last_error&.message.to_s
-        abort(remote_fetch_failure_message(remote, detail)) if required_remote?(remote)
+        if required_remote?(remote)
+          emit_remote_parity_event(action: "fetch", remote: remote, status: "failed", attempts: attempts, required: true, reason: detail)
+          abort(remote_fetch_failure_message(remote, detail))
+        end
 
         message = optional_remote_fetch_failure_message(remote, detail)
         warn(message)
+        emit_remote_parity_event(action: "skip", remote: remote, status: "skipped", attempts: attempts, required: false, reason: detail)
         record_diagnostic("release_remote_skipped", message, severity: "warning", blocking: false)
         false
       end

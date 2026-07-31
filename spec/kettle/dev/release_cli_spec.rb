@@ -691,6 +691,29 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect { cli.send(:ensure_trunk_synced_before_push!, "main", "feat") }.not_to raise_error
       end
 
+      it "emits remote parity events for skipped optional remotes" do
+        io = StringIO.new
+        event_stream = Kettle::Ndjson.event_stream(io, types: "remote_parity")
+        local_cli = described_class.new(event_stream: event_stream)
+        allow(local_cli).to receive(:has_remote?).with("all").and_return(true)
+        allow(local_cli).to receive(:list_remotes).and_return(%w[all origin cb])
+        allow(local_cli).to receive(:remote_fetch_parity_attempts).and_return(1)
+        expect(local_cli).to receive(:run_cmd!).with("git fetch origin")
+        expect(local_cli).to receive(:run_cmd!).with("git fetch cb").and_raise(MockSystemExit, "Command failed: git fetch cb (exit 128)")
+        allow(local_cli).to receive(:remote_branch_exists?).with("origin", "main").and_return(true)
+        allow(local_cli).to receive(:ahead_behind_counts).with("main", "origin/main").and_return([0, 0])
+
+        expect { local_cli.send(:ensure_trunk_synced_before_push!, "main", "feat") }.not_to raise_error
+
+        events = io.string.lines.map { |line| JSON.parse(line) }
+        expect(events).to include(
+          include("type" => "remote_parity", "action" => "start", "status" => "started", "trunk" => "main"),
+          include("type" => "remote_parity", "action" => "fetch", "remote" => "origin", "status" => "ok", "required" => true),
+          include("type" => "remote_parity", "action" => "skip", "remote" => "cb", "status" => "skipped", "required" => false),
+          include("type" => "remote_parity", "action" => "ok", "status" => "ok", "trunk" => "main")
+        )
+      end
+
       it "blocks release when a required active remote cannot be fetched" do
         cli = described_class.new(required_remotes: "origin,cb")
         allow(cli).to receive(:has_remote?).with("all").and_return(true)
@@ -709,6 +732,26 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
           expect(error.message).to include("K_RELEASE_SKIP_REMOTES=cb kettle-release")
           expect(error.message).to include("Command failed: git fetch cb")
         }
+      end
+
+      it "emits remote parity failure events for failed required remotes" do
+        io = StringIO.new
+        event_stream = Kettle::Ndjson.event_stream(io, types: "remote_parity")
+        local_cli = described_class.new(event_stream: event_stream, required_remotes: "origin,cb")
+        allow(local_cli).to receive(:has_remote?).with("all").and_return(true)
+        allow(local_cli).to receive(:list_remotes).and_return(%w[all origin cb])
+        allow(local_cli).to receive(:remote_fetch_parity_attempts).and_return(1)
+        expect(local_cli).to receive(:run_cmd!).with("git fetch origin")
+        expect(local_cli).to receive(:run_cmd!).with("git fetch cb").and_raise(MockSystemExit, "Command failed: git fetch cb (exit 128)")
+
+        expect do
+          local_cli.send(:ensure_trunk_synced_before_push!, "main", "feat")
+        end.to raise_error(MockSystemExit)
+
+        events = io.string.lines.map { |line| JSON.parse(line) }
+        expect(events).to include(
+          include("type" => "remote_parity", "action" => "fetch", "remote" => "cb", "status" => "failed", "required" => true)
+        )
       end
 
       it "retries transient remote fetch failures before checking parity" do
