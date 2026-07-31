@@ -1609,6 +1609,7 @@ module Kettle
           name: command_event_name(command),
           status: status,
           reason: reason,
+          summary: command_event_summary(command),
           command: command,
           changed_files: []
         }
@@ -1659,6 +1660,38 @@ module Kettle
         end
 
         words
+      end
+
+      def command_event_summary(command)
+        words = Shellwords.split(command.to_s)
+        effective_words = command_event_effective_words(words)
+        joined = effective_words.join(" ")
+
+        return "changelog" if joined.start_with?("bundle exec kettle-changelog")
+        return command_event_bundle_lock_summary(words) if effective_words.first(2) == ["bundle", "lock"]
+        return "setup" if effective_words == ["bin/setup"]
+        return "default task" if effective_words == ["bin/rake"]
+        return "appraisals" if effective_words == ["bin/rake", "appraisal:generate"]
+        return "appraisals" if effective_words == ["bin/rake", "appraisal:update"]
+        return "documentation" if effective_words == ["bin/rake", "yard"]
+        return "build gem" if joined == "bundle exec rake build"
+        return "publish gem" if joined == "bundle exec rake release"
+        return "push gem" if effective_words.first(2) == ["gem", "push"]
+        return "checksums" if effective_words.first == "bin/gem_checksums"
+        return effective_words[2] if effective_words.first(2) == ["git", "fetch"] && effective_words[2]
+        return effective_words[2] if effective_words.first(2) == ["git", "push"] && effective_words[2]
+        return effective_words[2] if effective_words.first(2) == ["git", "pull"] && effective_words[2]
+        return effective_words[2] if effective_words.first(2) == ["git", "rebase"] && effective_words[2]
+        return effective_words[2] if effective_words.first(2) == ["git", "merge"] && effective_words[2]
+
+        nil
+      end
+
+      def command_event_bundle_lock_summary(words)
+        gemfile = words.find { |word| word.start_with?("BUNDLE_GEMFILE=") }&.split("=", 2)&.last
+        return "lockfile" unless gemfile
+
+        File.basename(gemfile)
       end
 
       def record_diagnostic(kind, message, severity:, blocking:)

@@ -37,8 +37,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
-- `kettle-release --events` now emits clearer `command_step` names for common
-  release commands instead of shell-derived labels such as `env__u`.
+- `kettle-release --events` now emits clearer `command_step` names and compact
+  per-command summaries for common release commands instead of shell-derived
+  labels such as `env__u`.
 
 ### Deprecated
 
