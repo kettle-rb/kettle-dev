@@ -151,14 +151,78 @@ RSpec.describe Kettle::Dev::CIMonitor do
       stub_env("K_RELEASE_CI_INITIAL_SLEEP" => "0")
       allow(described_class).to receive(:sleep)
 
-      expect { described_class.monitor_all!(restart_hint: "hint", workflows: ["current.yml"], event_recorder: event_recorder) }.not_to raise_error
+      expect do
+        described_class.monitor_all!(restart_hint: "hint", workflows: ["current.yml"], event_recorder: event_recorder)
+      end.not_to raise_error
 
       events = io.string.lines.map { |line| JSON.parse(line) }
       expect(events).to include(
-        include("type" => "ci_monitor", "action" => "github_discover", "status" => "started", "provider" => "github", "workflows" => ["current.yml"], "total" => 1, "mark" => ">"),
-        include("type" => "ci_monitor", "action" => "github_workflow", "status" => "started", "provider" => "github", "workflow" => "current.yml", "mark" => ">"),
-        include("type" => "ci_monitor", "action" => "github_workflow", "status" => "ok", "provider" => "github", "workflow" => "current.yml", "completed" => 1, "total" => 1, "mark" => "."),
-        include("type" => "ci_monitor", "action" => "github_complete", "status" => "ok", "provider" => "github", "completed" => 1, "total" => 1, "mark" => ".")
+        include(
+          "type" => "ci_monitor",
+          "action" => "github_discover",
+          "status" => "started",
+          "provider" => "github",
+          "workflows" => ["current.yml"],
+          "total" => 1,
+          "mark" => ">"
+        ),
+        include(
+          "type" => "ci_monitor",
+          "action" => "github_wait",
+          "status" => "started",
+          "provider" => "github",
+          "completed" => 0,
+          "total" => 1,
+          "mark" => ">"
+        ),
+        include(
+          "type" => "ci_monitor",
+          "action" => "github_workflow",
+          "status" => "started",
+          "provider" => "github",
+          "workflow" => "current.yml",
+          "mark" => ">"
+        ),
+        include(
+          "type" => "ci_monitor",
+          "action" => "github_started",
+          "status" => "ok",
+          "provider" => "github",
+          "completed" => 0,
+          "total" => 1,
+          "started" => 1,
+          "mark" => "."
+        ),
+        include(
+          "type" => "ci_monitor",
+          "action" => "github_workflow",
+          "status" => "ok",
+          "provider" => "github",
+          "workflow" => "current.yml",
+          "completed" => 1,
+          "total" => 1,
+          "mark" => "."
+        ),
+        include(
+          "type" => "ci_monitor",
+          "action" => "github_tick",
+          "status" => "started",
+          "provider" => "github",
+          "workflow" => "current.yml",
+          "completed_workflow" => "current.yml",
+          "completed" => 1,
+          "total" => 1,
+          "mark" => ">"
+        ),
+        include(
+          "type" => "ci_monitor",
+          "action" => "github_complete",
+          "status" => "ok",
+          "provider" => "github",
+          "completed" => 1,
+          "total" => 1,
+          "mark" => "."
+        )
       )
     end
 

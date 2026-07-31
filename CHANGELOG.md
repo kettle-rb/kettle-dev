@@ -34,6 +34,8 @@ Please file a bug if you notice a violation of semantic versioning.
 - `kettle-release --events` now emits `release_lockfile` and `release_probe`
   events for release lockfile reset/validation and published-gem availability
   probes.
+- `kettle-release --events` now emits GitHub CI wait/start/tick monitor events
+  while waiting for workflow runs to appear and complete.
 - `kettle-dev` now requires `kettle-ndjson` 0.1.9 or newer so release event
   streams resolve against the protocol that includes remote parity and CI
   monitor, pre-release, changelog, release lockfile, and release probe events.

@@ -13,8 +13,10 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
   it "emits pre-release events around checks", :check_output do
     io = StringIO.new
     event_recorder = Kettle::Ndjson.event_stream(io, types: "pre_release")
-    allow(Kettle::Dev::PreReleaseCLI::Markdown).to receive(:project_markdown_files).and_return([])
-    allow(Kettle::Dev::PreReleaseCLI::Markdown).to receive(:extract_image_urls_from_files).and_return([])
+    allow(Kettle::Dev::PreReleaseCLI::Markdown).to receive_messages(
+      project_markdown_files: [],
+      extract_image_urls_from_files: []
+    )
 
     described_class.new(check_num: 1, event_recorder: event_recorder).run
 

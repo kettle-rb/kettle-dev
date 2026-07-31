@@ -304,6 +304,16 @@ module Kettle
         )
         puts "Ensuring GitHub Actions workflows pass on #{branch} (#{owner}/#{repo}) via remote '#{gh_remote}'"
         puts "Waiting for GitHub Actions runs to start for HEAD #{head_sha[0, 12]}."
+        emit_ci_monitor_event(
+          event_recorder,
+          action: "github_wait",
+          status: "started",
+          provider: "github",
+          branch: branch,
+          head_sha: head_sha,
+          completed: 0,
+          total: total
+        )
         pbar = if defined?(ProgressBar)
           ProgressBar.create(title: "CI", total: total, format: "%t %b %c/%C", length: 30)
         end
@@ -322,10 +332,12 @@ module Kettle
         start_deadline = monotonic_time + start_timeout
         keepalive_timer = keepalive_timer(keepalive)
         idx = 0
+        all_started_emitted = false
         loop do
           keepalive_timer.call
           wf = workflows[idx]
           run = Kettle::Dev::CIHelpers.latest_run(owner: owner, repo: repo, workflow_file: wf, branch: branch, require_head: true, head_sha: head_sha)
+          completed_workflow = nil
           if run
             unless started[wf]
               started[wf] = true
@@ -342,9 +354,22 @@ module Kettle
                 total: total
               )
             end
+            if started.size == total && !all_started_emitted
+              all_started_emitted = true
+              emit_ci_monitor_event(
+                event_recorder,
+                action: "github_started",
+                status: "ok",
+                provider: "github",
+                completed: passed.size,
+                total: total,
+                started: started.size
+              )
+            end
             if Kettle::Dev::CIHelpers.success?(run)
               unless passed[wf]
                 passed[wf] = true
+                completed_workflow = wf
                 pbar&.increment
                 emit_ci_monitor_event(
                   event_recorder,
@@ -378,6 +403,19 @@ module Kettle
               abort("Workflow failed: #{wf} -> #{wf_url} Fix the workflow, then restart this tool from CI validation with: #{restart_hint}")
             end
           end
+          emit_ci_monitor_event(
+            event_recorder,
+            action: "github_tick",
+            status: "started",
+            provider: "github",
+            workflow: wf,
+            run_status: run && run["status"],
+            conclusion: run && run["conclusion"],
+            completed_workflow: completed_workflow,
+            completed: passed.size,
+            total: total,
+            started: started.size
+          )
           break if passed.size == total
           if started.size < total && monotonic_time >= start_deadline
             missing = (workflows - started.keys).join(", ")

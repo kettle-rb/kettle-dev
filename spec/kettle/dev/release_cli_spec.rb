@@ -1045,7 +1045,18 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       it "passes an explicit normalized workflow subset to the CI monitor" do
         release_cli = described_class.new(ci_workflows: "current,style.yml")
         allow(release_cli).to receive(:ensure_github_pull_request_for_ci!)
-        allow(Kettle::Dev::CIMonitor).to receive(:monitor_all!)
+        allow(Kettle::Dev::CIMonitor).to receive(:monitor_all!) do |event_recorder:, **_kwargs|
+          Kettle::Ndjson.emit_event(
+            event_recorder,
+            "ci_monitor",
+            action: "github_wait",
+            provider: "github",
+            status: "started",
+            completed: 0,
+            total: 1,
+            mark: ">"
+          )
+        end
 
         release_cli.send(:monitor_workflows_after_push!)
 
@@ -1062,14 +1073,46 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         event_stream = Kettle::Ndjson.event_stream(io, types: "ci_monitor")
         release_cli = described_class.new(ci_workflows: "current", event_stream: event_stream)
         allow(release_cli).to receive(:ensure_github_pull_request_for_ci!)
-        allow(Kettle::Dev::CIMonitor).to receive(:monitor_all!)
+        allow(Kettle::Dev::CIMonitor).to receive(:monitor_all!) do |event_recorder:, **_kwargs|
+          Kettle::Ndjson.emit_event(
+            event_recorder,
+            "ci_monitor",
+            action: "github_wait",
+            provider: "github",
+            status: "started",
+            completed: 0,
+            total: 1,
+            mark: ">"
+          )
+        end
 
         release_cli.send(:monitor_workflows_after_push!)
 
         events = io.string.lines.map { |line| JSON.parse(line) }
         expect(events).to contain_exactly(
-          include("type" => "ci_monitor", "action" => "start", "status" => "started", "workflows" => ["current.yml"], "mark" => ">"),
-          include("type" => "ci_monitor", "action" => "finish", "status" => "ok", "workflows" => ["current.yml"], "mark" => ".")
+          include(
+            "type" => "ci_monitor",
+            "action" => "start",
+            "status" => "started",
+            "workflows" => ["current.yml"],
+            "mark" => ">"
+          ),
+          include(
+            "type" => "ci_monitor",
+            "action" => "github_wait",
+            "status" => "started",
+            "provider" => "github",
+            "completed" => 0,
+            "total" => 1,
+            "mark" => ">"
+          ),
+          include(
+            "type" => "ci_monitor",
+            "action" => "finish",
+            "status" => "ok",
+            "workflows" => ["current.yml"],
+            "mark" => "."
+          )
         )
       end
 

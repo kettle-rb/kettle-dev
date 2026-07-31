@@ -1477,7 +1477,7 @@ module Kettle
           last_status = status
           emit_release_probe_event(
             action: "availability",
-            status: attempt < attempts ? "retrying" : "failed",
+            status: (attempt < attempts) ? "retrying" : "failed",
             candidate: candidate,
             attempt: attempt,
             attempts: attempts,
