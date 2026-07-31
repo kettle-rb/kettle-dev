@@ -74,7 +74,34 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 
 <h3 id="added">Added</h3>
 
+<h3 id="changed">Changed</h3>
+
+<h3 id="deprecated">Deprecated</h3>
+
+<h3 id="removed">Removed</h3>
+
+<h3 id="fixed">Fixed</h3>
+
+<h3 id="security">Security</h3>
+
+<h2 id="2512---2026-07-31">
+<a href="https://github.com/kettle-dev/kettle-dev/compare/v2.5.11...v2.5.12">2.5.12</a> - 2026-07-31</h2>
+
 <ul>
+  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.12">v2.5.12</a>
+</li>
+  <li>COVERAGE: 91.72% – 4960/5408 lines in 46 files</li>
+  <li>BRANCH COVERAGE: 76.06% – 1852/2435 branches in 46 files</li>
+  <li>50.68% documented</li>
+</ul>
+
+<h3 id="added-1">Added</h3>
+
+<ul>
+  <li>
+    <p><code>kettle-release-secrets-doctor</code> can probe 1Password release secret<br>
+authorization across same-process, child-process, and threaded shapes.</p>
+  </li>
   <li>
     <p><code>kettle-release-secrets-doctor</code> now probes additional 1Password<br>
 authorization boundaries, including parent-child, Bundler child, and<br>
@@ -84,42 +111,6 @@ Bundler-env-reset child process shapes.</p>
     <p><code>kettle-release --events</code> now emits <code>secret_provider</code> events around release<br>
 secret keepalives and provider-backed prompt responses.</p>
   </li>
-</ul>
-
-<h3 id="changed">Changed</h3>
-
-<h3 id="deprecated">Deprecated</h3>
-
-<h3 id="removed">Removed</h3>
-
-<h3 id="fixed">Fixed</h3>
-
-<ul>
-  <li>
-<code>kettle-dev</code> now requires <code>kettle-ndjson</code> 0.1.4 or newer so<br>
-<code>kettle-release --events=secret_provider</code> cannot resolve against an older<br>
-event protocol.</li>
-</ul>
-
-<h3 id="security">Security</h3>
-
-<h2 id="2512---2026-07-30">
-<a href="https://github.com/kettle-dev/kettle-dev/compare/v2.5.11...v2.5.12">2.5.12</a> - 2026-07-30</h2>
-
-<ul>
-  <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.12">v2.5.12</a>
-</li>
-  <li>COVERAGE: 92.18% – 4842/5253 lines in 45 files</li>
-  <li>BRANCH COVERAGE: 76.29% – 1828/2396 branches in 45 files</li>
-  <li>52.86% documented</li>
-</ul>
-
-<h3 id="added-1">Added</h3>
-
-<ul>
-  <li>
-<code>kettle-release-secrets-doctor</code> can probe 1Password release secret<br>
-authorization across same-process, child-process, and threaded shapes.</li>
 </ul>
 
 <h3 id="fixed-1">Fixed</h3>
@@ -134,6 +125,22 @@ authorization prompts during long release runs.</p>
     <p><code>kettle-release</code> keepalive alerts now include the elapsed release time so<br>
 delayed 1Password prompts are easier to correlate with the run.</p>
   </li>
+  <li>
+<code>kettle-dev</code> now requires <code>kettle-ndjson</code> 0.1.4 or newer so<br>
+<code>kettle-release --events=secret_provider</code> cannot resolve against an older<br>
+event protocol.</li>
+  <li>
+<code>kettle-release</code> lockfile reset now preserves existing bundle platforms and<br>
+adds the current host platform, preventing release-prep lockfiles from losing<br>
+Linux support during full rebuilds.</li>
+  <li>
+<code>kettle-pre-release</code> Markdown image URL normalization now keeps encoded query<br>
+values stable, avoiding release-time churn in shields URLs with nested URL<br>
+parameters.</li>
+  <li>
+<code>kettle-release</code> now runs <code>bin/setup</code> with inherited Bundler bootstrap<br>
+variables unset, so a release lockfile reset can install newly selected gems<br>
+before later release tasks run.</li>
 </ul>
 
 <h2 id="2511---2026-07-30">

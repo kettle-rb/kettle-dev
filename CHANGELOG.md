@@ -20,13 +20,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
-- `kettle-release-secrets-doctor` now probes additional 1Password
-  authorization boundaries, including parent-child, Bundler child, and
-  Bundler-env-reset child process shapes.
-
-- `kettle-release --events` now emits `secret_provider` events around release
-  secret keepalives and provider-backed prompt responses.
-
 ### Changed
 
 ### Deprecated
@@ -34,6 +27,36 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Removed
 
 ### Fixed
+
+### Security
+
+## [2.5.12] - 2026-07-31
+
+- TAG: [v2.5.12][2.5.12t]
+- COVERAGE: 91.72% -- 4960/5408 lines in 46 files
+- BRANCH COVERAGE: 76.06% -- 1852/2435 branches in 46 files
+- 50.68% documented
+
+### Added
+
+- `kettle-release-secrets-doctor` can probe 1Password release secret
+  authorization across same-process, child-process, and threaded shapes.
+
+- `kettle-release-secrets-doctor` now probes additional 1Password
+  authorization boundaries, including parent-child, Bundler child, and
+  Bundler-env-reset child process shapes.
+
+- `kettle-release --events` now emits `secret_provider` events around release
+  secret keepalives and provider-backed prompt responses.
+
+### Fixed
+
+- `kettle-release` now keeps configured release secrets providers warm during
+  CI waits and alerts before provider lookups, reducing missed 1Password
+  authorization prompts during long release runs.
+
+- `kettle-release` keepalive alerts now include the elapsed release time so
+  delayed 1Password prompts are easier to correlate with the run.
 
 - `kettle-dev` now requires `kettle-ndjson` 0.1.4 or newer so
   `kettle-release --events=secret_provider` cannot resolve against an older
@@ -47,29 +70,6 @@ Please file a bug if you notice a violation of semantic versioning.
 - `kettle-release` now runs `bin/setup` with inherited Bundler bootstrap
   variables unset, so a release lockfile reset can install newly selected gems
   before later release tasks run.
-
-### Security
-
-## [2.5.12] - 2026-07-30
-
-- TAG: [v2.5.12][2.5.12t]
-- COVERAGE: 92.18% -- 4842/5253 lines in 45 files
-- BRANCH COVERAGE: 76.29% -- 1828/2396 branches in 45 files
-- 52.86% documented
-
-### Added
-
-- `kettle-release-secrets-doctor` can probe 1Password release secret
-  authorization across same-process, child-process, and threaded shapes.
-
-### Fixed
-
-- `kettle-release` now keeps configured release secrets providers warm during
-  CI waits and alerts before provider lookups, reducing missed 1Password
-  authorization prompts during long release runs.
-
-- `kettle-release` keepalive alerts now include the elapsed release time so
-  delayed 1Password prompts are easier to correlate with the run.
 
 ## [2.5.11] - 2026-07-30
 

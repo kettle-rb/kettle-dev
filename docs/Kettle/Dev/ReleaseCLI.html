@@ -1301,7 +1301,7 @@
   <span class='id identifier rubyid_prepare_release_lockfiles_for_release_tasks!'>prepare_release_lockfiles_for_release_tasks!</span> <span class='kw'>if</span> <span class='id identifier rubyid_release_lockfile_preflight_needed?'>release_lockfile_preflight_needed?</span>
 
   <span class='comment'># 3. bin/setup
-</span>  <span class='id identifier rubyid_run_cmd!'>run_cmd!</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>bin/setup</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='id identifier rubyid_run_step?'>run_step?</span><span class='lparen'>(</span><span class='int'>3</span><span class='rparen'>)</span>
+</span>  <span class='id identifier rubyid_run_cmd!'>run_cmd!</span><span class='lparen'>(</span><span class='id identifier rubyid_release_setup_command'>release_setup_command</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='id identifier rubyid_run_step?'>run_step?</span><span class='lparen'>(</span><span class='int'>3</span><span class='rparen'>)</span>
   <span class='comment'># 4. bin/rake
 </span>  <span class='id identifier rubyid_run_cmd!'>run_cmd!</span><span class='lparen'>(</span><span class='id identifier rubyid_release_default_task_command'>release_default_task_command</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='id identifier rubyid_run_step?'>run_step?</span><span class='lparen'>(</span><span class='int'>4</span><span class='rparen'>)</span>
 
