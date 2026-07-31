@@ -20,9 +20,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
-- `kettle-release-secrets-doctor` can probe 1Password release secret
-  authorization across same-process, child-process, and threaded shapes.
-
 ### Changed
 
 ### Deprecated
@@ -31,11 +28,25 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [2.5.12] - 2026-07-30
+
+- TAG: [v2.5.12][2.5.12t]
+- COVERAGE: 91.87% -- 4816/5242 lines in 45 files
+- BRANCH COVERAGE: 76.03% -- 1817/2390 branches in 45 files
+- 52.86% documented
+
+### Added
+
+- `kettle-release-secrets-doctor` can probe 1Password release secret
+  authorization across same-process, child-process, and threaded shapes.
+
+### Fixed
+
 - `kettle-release` now keeps configured release secrets providers warm during
   CI waits and alerts before provider lookups, reducing missed 1Password
   authorization prompts during long release runs.
-
-### Security
 
 ## [2.5.11] - 2026-07-30
 
@@ -3084,7 +3095,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.11...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.12...HEAD
+[2.5.12]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.11...v2.5.12
+[2.5.12t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.12
 [2.5.11]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.10...v2.5.11
 [2.5.11t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.11
 [2.5.10]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.9...v2.5.10
