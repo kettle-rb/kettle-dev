@@ -20,6 +20,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- `kettle-release-secrets-doctor` now probes additional 1Password
+  authorization boundaries, including parent-child, Bundler child, and
+  Bundler-env-reset child process shapes.
+
 ### Changed
 
 ### Deprecated
