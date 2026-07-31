@@ -28,11 +28,20 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [2.5.14] - 2026-07-31
+
+- TAG: [v2.5.14][2.5.14t]
+- COVERAGE: 91.94% -- 5146/5597 lines in 46 files
+- BRANCH COVERAGE: 76.13% -- 1946/2556 branches in 46 files
+- 50.41% documented
+
+### Fixed
+
 - `kettle-reset release-lockfiles` now requires SHA-256 checksums only for
   registry-sourced gems, allowing valid Git-sourced dependencies such as the
   `simplecov` fork to remain checksumless.
-
-### Security
 
 ## [2.5.13] - 2026-07-31
 
@@ -3164,7 +3173,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.13...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.14...HEAD
+[2.5.14]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.13...v2.5.14
+[2.5.14t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.14
 [2.5.13]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.12...v2.5.13
 [2.5.13t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.13
 [2.5.12]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.11...v2.5.12
