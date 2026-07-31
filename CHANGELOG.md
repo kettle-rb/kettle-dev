@@ -20,6 +20,31 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [2.5.13] - 2026-07-31
+
+- TAG: [v2.5.13][2.5.13t]
+- COVERAGE: 91.53% -- 5121/5595 lines in 46 files
+- BRANCH COVERAGE: 75.74% -- 1936/2556 branches in 46 files
+- 50.41% documented
+
+### Fixed
+
+- `kettle-release` now treats `origin` as the default required parity remote
+  while allowing optional mirror remotes to be skipped after fetch retries,
+  so a transient Codeberg/GitLab mirror outage does not block publishing.
+
+### Added
+
 - `kettle-release --events` now emits `remote_parity` events for remote parity
   fetch attempts, skipped optional remotes, required failures, and parity
   completion.
@@ -34,38 +59,18 @@ Please file a bug if you notice a violation of semantic versioning.
 - `kettle-release --events` now emits `release_lockfile` and `release_probe`
   events for release lockfile reset/validation and published-gem availability
   probes.
-- `kettle-release --events` now emits GitHub CI wait/start/tick monitor events
-  while waiting for workflow runs to appear and complete.
 - `kettle-dev` now requires `kettle-ndjson` 0.1.9 or newer so release event
   streams resolve against the protocol that includes remote parity and CI
   monitor, pre-release, changelog, release lockfile, and release probe events.
+
+- `kettle-release --events` now emits GitHub CI wait/start/tick monitor events
+  while waiting for workflow runs to appear and complete.
 
 ### Changed
 
 - `kettle-release --events` now emits clearer `command_step` names and compact
   per-command summaries for common release commands instead of shell-derived
   labels such as `env__u`.
-
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
-
-## [2.5.13] - 2026-07-31
-
-- TAG: [v2.5.13][2.5.13t]
-- COVERAGE: 91.70% -- 4973/5423 lines in 46 files
-- BRANCH COVERAGE: 75.97% -- 1856/2443 branches in 46 files
-- 50.54% documented
-
-### Fixed
-
-- `kettle-release` now treats `origin` as the default required parity remote
-  while allowing optional mirror remotes to be skipped after fetch retries,
-  so a transient Codeberg/GitLab mirror outage does not block publishing.
 
 ## [2.5.12] - 2026-07-31
 
