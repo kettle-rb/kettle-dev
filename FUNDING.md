@@ -25,7 +25,7 @@ Many paths lead to being a sponsor or a backer of this project. Are you on such 
 [✉️discord-invite]: https://discord.gg/3qme4XHNKN
 [✉️discord-invite-img]: https://img.shields.io/discord/1373797679469170758?style=flat
 [✉️ruby-forum]: https://www.rubyforum.org/tag/kettle-dev
-[✉️ruby-forum-img]: https://img.shields.io/discourse/topics?server=https://www.rubyforum.org&style=flat&logo=discourse&label=Ruby%20Users%20Forum
+[✉️ruby-forum-img]: https://img.shields.io/discourse/topics?server=https%3A%2F%2Fwww.rubyforum.org&style=flat&logo=discourse&label=Ruby%20Users%20Forum
 
 <!-- RELEASE-NOTES-FOOTER-END -->
 
@@ -71,4 +71,4 @@ I’m developing a new library, [floss_funding][🖇floss-funding-gem], designed
 [🖇floss-funding.dev]: https://floss-funding.dev
 [🖇floss-funding-gem]: https://github.com/galtzo-floss/floss_funding
 [✉️discord-invite-img-ftb]: https://img.shields.io/discord/1373797679469170758?style=for-the-badge
-[✉️ruby-forum-img-ftb]: https://img.shields.io/discourse/topics?server=https://www.rubyforum.org&style=for-the-badge&logo=discourse&label=Ruby%20Users%20Forum
+[✉️ruby-forum-img-ftb]: https://img.shields.io/discourse/topics?server=https%3A%2F%2Fwww.rubyforum.org&style=for-the-badge&logo=discourse&label=Ruby%20Users%20Forum
