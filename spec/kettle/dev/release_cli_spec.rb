@@ -1361,6 +1361,9 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
       it "retries release task lockfile resets when the configured source has not caught up yet" do
         with_release_root do |_root, local_cli|
+          io = StringIO.new
+          event_stream = Kettle::Ndjson.event_stream(io, types: "release_lockfile")
+          local_cli.instance_variable_set(:@event_recorder, Kettle::Ndjson.event_recorder(event_stream, phase_timings: []))
           resetter = instance_double(Kettle::Dev::LockfileReset)
           attempts = 0
           allow(resetter).to receive(:reset) do
@@ -1379,6 +1382,34 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
             local_cli.send(:reset_release_lockfiles!, stage: "before release task bundle installs")
           end.to output(/attempt 1\/2.*could not resolve a gem.*attempt 2\/2.*reset complete/m).to_stdout
           expect(attempts).to eq(2)
+          events = io.string.lines.map { |line| JSON.parse(line) }
+          expect(events).to include(
+            include(
+              "type" => "release_lockfile",
+              "action" => "reset",
+              "status" => "started",
+              "attempt" => 1,
+              "attempts" => 2,
+              "mark" => ">"
+            ),
+            include(
+              "type" => "release_lockfile",
+              "action" => "reset",
+              "status" => "retrying",
+              "attempt" => 1,
+              "attempts" => 2,
+              "mark" => ">"
+            ),
+            include(
+              "type" => "release_lockfile",
+              "action" => "reset",
+              "status" => "ok",
+              "attempt" => 2,
+              "attempts" => 2,
+              "mark" => "."
+            ),
+            include("type" => "release_lockfile", "action" => "validate", "status" => "ok", "count" => 0, "mark" => ".")
+          )
         end
       end
 
@@ -2268,7 +2299,9 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
       it "retries the gem.coop availability probe until the release resolves" do
         Dir.mktmpdir do |root|
-          local_cli = described_class.new
+          io = StringIO.new
+          event_stream = Kettle::Ndjson.event_stream(io, types: "release_probe")
+          local_cli = described_class.new(event_stream: event_stream)
           candidate = Kettle::Dev::ReleaseCLI::ReleaseCandidate.new(
             gem_name: "mygem",
             version: "1.2.3",
@@ -2291,6 +2324,40 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
           expect { expect(local_cli.send(:run_release_availability_probe, candidate)).to be(true) }
             .to output(/attempt 1\/3.*attempt 2\/3.*validated/m).to_stdout
+          events = io.string.lines.map { |line| JSON.parse(line) }
+          expect(events).to include(
+            include(
+              "type" => "release_probe",
+              "action" => "availability",
+              "status" => "started",
+              "gem" => "mygem",
+              "version" => "1.2.3",
+              "attempt" => 1,
+              "attempts" => 3,
+              "mark" => ">"
+            ),
+            include(
+              "type" => "release_probe",
+              "action" => "availability",
+              "status" => "retrying",
+              "gem" => "mygem",
+              "version" => "1.2.3",
+              "attempt" => 1,
+              "attempts" => 3,
+              "reason" => "exit 1",
+              "mark" => ">"
+            ),
+            include(
+              "type" => "release_probe",
+              "action" => "availability",
+              "status" => "ok",
+              "gem" => "mygem",
+              "version" => "1.2.3",
+              "attempt" => 2,
+              "attempts" => 3,
+              "mark" => "."
+            )
+          )
         end
       end
 

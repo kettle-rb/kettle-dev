@@ -596,9 +596,11 @@ module Kettle
         attempts = release_lockfile_reset_attempts(stage)
         attempts.times do |index|
           attempt = index + 1
+          emit_release_lockfile_event(action: "reset", status: "started", stage: stage, attempt: attempt, attempts: attempts)
           puts "Resetting release lockfiles with local path dependencies disabled #{stage} (attempt #{attempt}/#{attempts})..."
           begin
             lockfile_reset.reset(Kettle::Dev::LockfileReset::RELEASE_LOCKFILES_TARGET)
+            emit_release_lockfile_event(action: "reset", status: "ok", stage: stage, attempt: attempt, attempts: attempts)
             break
           rescue Kettle::Dev::Error => error
             raise unless error.message.start_with?("Reset #{Kettle::Dev::LockfileReset::RELEASE_LOCKFILES_TARGET} failed validation:")
@@ -606,9 +608,26 @@ module Kettle
             # Keep release-facing failures shaped like the lockfile validation
             # guard, even when the shared reset helper is the component that
             # detects the unrepaired lockfile.
+            emit_release_lockfile_event(
+              action: "reset",
+              status: "blocked",
+              stage: stage,
+              attempt: attempt,
+              attempts: attempts,
+              reason: error.message
+            )
             break
           rescue => error
-            raise unless retryable_release_lockfile_reset_error?(error) && attempt < attempts
+            retryable = retryable_release_lockfile_reset_error?(error) && attempt < attempts
+            emit_release_lockfile_event(
+              action: "reset",
+              status: retryable ? "retrying" : "failed",
+              stage: stage,
+              attempt: attempt,
+              attempts: attempts,
+              reason: error.message
+            )
+            raise unless retryable
 
             puts "Release lockfile reset could not resolve a gem from #{RELEASE_VALIDATION_SOURCE}; waiting before retry #{attempt + 1}/#{attempts}."
             sleep(release_availability_probe_interval)
@@ -617,7 +636,16 @@ module Kettle
 
         diagnostics = release_lockfile_paths.flat_map { |path| release_lockfile_diagnostics(path) }
         if diagnostics.empty?
+          emit_release_lockfile_event(action: "validate", status: "ok", stage: stage, count: release_lockfile_paths.length)
           puts "Release lockfile reset complete: #{release_lockfile_paths.length} lockfile(s) checked, no diagnostics remain."
+        else
+          emit_release_lockfile_event(
+            action: "validate",
+            status: "failed",
+            stage: stage,
+            count: diagnostics.length,
+            reason: "#{diagnostics.length} diagnostic(s)"
+          )
         end
         @release_lockfiles_reset_for_release_tasks = true if stage == "before release task bundle installs"
       end
@@ -1431,6 +1459,7 @@ module Kettle
         sleep(release_availability_probe_initial_delay)
         attempts.times do |index|
           attempt = index + 1
+          emit_release_probe_event(action: "availability", status: "started", candidate: candidate, attempt: attempt, attempts: attempts)
           puts("Validating #{candidate.gem_name} #{candidate.version} from #{RELEASE_VALIDATION_SOURCE} (attempt #{attempt}/#{attempts})")
           stdout_str = nil
           stderr_str = nil
@@ -1439,10 +1468,21 @@ module Kettle
             stdout_str, stderr_str, status = Open3.capture3(self.class.send(:command_env), Gem.ruby, script_path)
           end
           $stdout.print(stdout_str) unless stdout_str.to_s.empty?
-          return true if status.success?
+          if status.success?
+            emit_release_probe_event(action: "availability", status: "ok", candidate: candidate, attempt: attempt, attempts: attempts)
+            return true
+          end
 
           last_stderr = stderr_str
           last_status = status
+          emit_release_probe_event(
+            action: "availability",
+            status: attempt < attempts ? "retrying" : "failed",
+            candidate: candidate,
+            attempt: attempt,
+            attempts: attempts,
+            reason: "exit #{status.exitstatus}"
+          )
           sleep(release_availability_probe_interval) if attempt < attempts
         end
 
@@ -1729,16 +1769,7 @@ module Kettle
       end
 
       def emit_remote_parity_event(action:, remote: nil, status: nil, trunk: nil, attempt: nil, attempts: nil, required: nil, reason: nil, remotes: nil)
-        mark = case status.to_s
-        when "started"
-          ">"
-        when "ok", "skipped"
-          "."
-        when "failed"
-          "!"
-        else
-          ">"
-        end
+        mark = release_progress_mark(status)
         Kettle::Ndjson.emit_event(
           @event_recorder,
           "remote_parity",
@@ -1754,6 +1785,54 @@ module Kettle
           remotes: remotes,
           mark: mark
         )
+      end
+
+      def emit_release_lockfile_event(action:, status:, stage:, attempt: nil, attempts: nil, count: nil, reason: nil)
+        Kettle::Ndjson.emit_event(
+          @event_recorder,
+          "release_lockfile",
+          action: action,
+          phase: "release",
+          status: status,
+          stage: stage,
+          attempt: attempt,
+          attempts: attempts,
+          count: count,
+          reason: reason,
+          mark: release_progress_mark(status)
+        )
+      end
+
+      def emit_release_probe_event(action:, status:, candidate:, attempt:, attempts:, reason: nil)
+        Kettle::Ndjson.emit_event(
+          @event_recorder,
+          "release_probe",
+          action: action,
+          phase: "release",
+          status: status,
+          gem: candidate.gem_name,
+          version: candidate.version,
+          source: RELEASE_VALIDATION_SOURCE,
+          attempt: attempt,
+          attempts: attempts,
+          reason: reason,
+          mark: release_progress_mark(status)
+        )
+      end
+
+      def release_progress_mark(status)
+        case status.to_s
+        when "started"
+          ">"
+        when "ok", "skipped"
+          "."
+        when "failed", "blocked"
+          "!"
+        when "retrying"
+          ">"
+        else
+          ">"
+        end
       end
 
       def emit_ci_monitor_event(action:, status:, workflows:, restart_hint:, reason: nil)

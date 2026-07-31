@@ -31,9 +31,12 @@ Please file a bug if you notice a violation of semantic versioning.
 - `kettle-changelog --events` now emits `changelog` events around release plan,
   coverage generation, and changelog update activity, and `kettle-release
   --events` forwards those child events.
-- `kettle-dev` now requires `kettle-ndjson` 0.1.8 or newer so release event
+- `kettle-release --events` now emits `release_lockfile` and `release_probe`
+  events for release lockfile reset/validation and published-gem availability
+  probes.
+- `kettle-dev` now requires `kettle-ndjson` 0.1.9 or newer so release event
   streams resolve against the protocol that includes remote parity and CI
-  monitor, pre-release, and changelog events.
+  monitor, pre-release, changelog, release lockfile, and release probe events.
 
 ### Changed
 
