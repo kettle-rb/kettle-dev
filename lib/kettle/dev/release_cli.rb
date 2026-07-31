@@ -1154,9 +1154,25 @@ module Kettle
         return unless release_secrets_configured?
         return unless @secrets_provider.respond_to?(:keepalive!)
 
-        @secrets_provider.keepalive!
+        @secrets_provider.keepalive!(elapsed: release_elapsed_label)
       rescue Kettle::Dev::Error => error
         abort("Release secrets provider keepalive failed before #{purpose}: #{error.message}")
+      end
+
+      def release_elapsed_label
+        return nil unless @started_at
+
+        format_elapsed_seconds(monotonic_time - @started_at)
+      end
+
+      def format_elapsed_seconds(seconds)
+        total = seconds.to_f.round
+        hours = total / 3600
+        minutes = (total % 3600) / 60
+        remaining_seconds = total % 60
+        return format("%d:%02d:%02d", hours, minutes, remaining_seconds) if hours.positive?
+
+        format("%02d:%02d", minutes, remaining_seconds)
       end
 
       def release_secrets_configuration_message(reason)

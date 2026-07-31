@@ -195,10 +195,11 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       end
 
       it "uses the configured release secrets provider for prompt-bearing release commands" do
-        provider = instance_double(Kettle::Dev::ReleaseSecrets::OnePassword, keepalive!: true)
+        provider = instance_double(Kettle::Dev::ReleaseSecrets::OnePassword)
         local_cli = described_class.new(secrets_provider: provider)
         runner = instance_double(Kettle::Dev::InteractiveReleaseCommand)
         status = instance_double(Process::Status, success?: true, exitstatus: 0)
+        allow(provider).to receive(:keepalive!).with(elapsed: nil).and_return(true)
         expect(Kettle::Dev::InteractiveReleaseCommand)
           .to receive(:new)
           .with(secrets_provider: provider)
@@ -207,7 +208,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect(Open3).not_to receive(:capture3)
 
         local_cli.send(:run_cmd!, "bundle exec rake release")
-        expect(provider).to have_received(:keepalive!)
+        expect(provider).to have_received(:keepalive!).with(elapsed: nil)
       end
 
       it "treats the real 1Password provider as configured" do
@@ -243,8 +244,9 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       end
 
       it "fails early when configured release secrets cannot provide the signing passphrase" do
-        provider = instance_double(Kettle::Dev::ReleaseSecrets::OnePassword, gem_signing_passphrase: nil, keepalive!: true)
+        provider = instance_double(Kettle::Dev::ReleaseSecrets::OnePassword, gem_signing_passphrase: nil)
         local_cli = described_class.new(secrets_provider: provider, yes: true)
+        allow(provider).to receive(:keepalive!).with(elapsed: nil).and_return(true)
 
         expect {
           local_cli.send(:ensure_release_secrets_ready_for_signing!)
@@ -928,19 +930,32 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       end
 
       it "keeps configured release secrets alive while monitoring CI" do
-        provider = instance_double(Kettle::Dev::ReleaseSecrets::OnePassword, keepalive!: true)
+        provider = instance_double(Kettle::Dev::ReleaseSecrets::OnePassword)
         release_cli = described_class.new(secrets_provider: provider)
+        allow(provider).to receive(:keepalive!).with(elapsed: nil).and_return(true)
         allow(release_cli).to receive(:ensure_github_pull_request_for_ci!)
         allow(Kettle::Dev::CIMonitor).to receive(:monitor_all!)
 
         release_cli.send(:monitor_workflows_after_push!)
 
-        expect(provider).to have_received(:keepalive!).once
+        expect(provider).to have_received(:keepalive!).with(elapsed: nil).once
         expect(Kettle::Dev::CIMonitor).to have_received(:monitor_all!).with(
           restart_hint: "bundle exec kettle-release start_step=10",
           workflows: [],
           keepalive: kind_of(Proc)
         )
+      end
+
+      it "passes overall release elapsed time to release secret keepalive" do
+        provider = instance_double(Kettle::Dev::ReleaseSecrets::OnePassword)
+        release_cli = described_class.new(secrets_provider: provider)
+        release_cli.instance_variable_set(:@started_at, 100.0)
+        allow(release_cli).to receive(:monotonic_time).and_return(223.4)
+        allow(provider).to receive(:keepalive!).with(elapsed: "02:03").and_return(true)
+
+        release_cli.send(:keep_release_secrets_alive!, "test")
+
+        expect(provider).to have_received(:keepalive!).with(elapsed: "02:03")
       end
 
       it "aborts when a GitHub workflow fails" do

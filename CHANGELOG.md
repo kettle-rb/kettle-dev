@@ -28,6 +28,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-release` keepalive alerts now include the elapsed release time so
+  delayed 1Password prompts are easier to correlate with the run.
+
 ### Security
 
 ## [2.5.12] - 2026-07-30

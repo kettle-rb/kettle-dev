@@ -17,7 +17,7 @@ module Kettle
           nil
         end
 
-        def keepalive!
+        def keepalive!(elapsed: nil)
           nil
         end
       end
@@ -69,11 +69,11 @@ module Kettle
           run_op(argv, purpose: "RubyGems OTP")
         end
 
-        def keepalive!
+        def keepalive!(elapsed: nil)
           argv = [op_cli, "account", "get"]
           account = string_config("account")
           argv.concat(["--account", account]) unless account.empty?
-          run_op(argv, purpose: "authorization keepalive")
+          run_op(argv, purpose: "authorization keepalive", elapsed: elapsed)
           true
         end
 
@@ -112,8 +112,9 @@ module Kettle
           required_config("cli")
         end
 
-        def run_op(argv, purpose:)
-          Kettle::Dev::ReleaseNotifier.alert("1Password #{purpose} lookup starting; watch for authorization prompt.")
+        def run_op(argv, purpose:, elapsed: nil)
+          elapsed_suffix = elapsed.to_s.empty? ? "" : " (elapsed #{elapsed})"
+          Kettle::Dev::ReleaseNotifier.alert("1Password #{purpose} lookup starting#{elapsed_suffix}; watch for authorization prompt.")
           stdout, stderr, status = Open3.capture3(*argv)
           return stdout.to_s.strip if status.success? && !stdout.to_s.strip.empty?
 

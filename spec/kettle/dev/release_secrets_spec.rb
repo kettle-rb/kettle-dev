@@ -61,7 +61,9 @@ RSpec.describe Kettle::Dev::ReleaseSecrets do
 
     provider = described_class::Factory.build(provider_name: "op")
 
-    expect(provider.keepalive!).to be(true)
+    expect(provider.keepalive!(elapsed: "03:21")).to be(true)
+    expect(Kettle::Dev::ReleaseNotifier).to have_received(:alert)
+      .with("1Password authorization keepalive lookup starting (elapsed 03:21); watch for authorization prompt.")
   end
 
   it "alerts before 1Password lookups" do
