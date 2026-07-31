@@ -10,6 +10,23 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
     allow(Kettle::Dev::GhaShaPinsCLI).to receive(:new).and_return(gha_sha_pins_cli)
   end
 
+  it "emits pre-release events around checks", :check_output do
+    io = StringIO.new
+    event_recorder = Kettle::Ndjson.event_stream(io, types: "pre_release")
+    allow(Kettle::Dev::PreReleaseCLI::Markdown).to receive(:project_markdown_files).and_return([])
+    allow(Kettle::Dev::PreReleaseCLI::Markdown).to receive(:extract_image_urls_from_files).and_return([])
+
+    described_class.new(check_num: 1, event_recorder: event_recorder).run
+
+    events = io.string.lines.map { |line| JSON.parse(line) }
+    expect(events).to include(
+      include("type" => "pre_release", "action" => "check", "check" => "github_actions_sha_pins", "status" => "started", "index" => 1, "total" => 3, "mark" => ">"),
+      include("type" => "pre_release", "action" => "check", "check" => "github_actions_sha_pins", "status" => "ok", "index" => 1, "total" => 3, "mark" => "."),
+      include("type" => "pre_release", "action" => "markdown_urls", "status" => "ok", "candidates" => 0, "changed_files" => 0, "mark" => "."),
+      include("type" => "pre_release", "action" => "image_links", "status" => "ok", "urls" => 0, "failures" => 0, "mark" => ".")
+    )
+  end
+
   it "normalizes unicode URLs in markdown files (check 2)" do
     Dir.mktmpdir do |root|
       file = File.join(root, "README.md")

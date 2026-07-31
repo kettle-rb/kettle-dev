@@ -357,7 +357,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     describe "#run_pre_release_checks!" do
       it "runs kettle-pre-release checks from the beginning and invokes kettle-changelog" do
         pre_release = instance_double(Kettle::Dev::PreReleaseCLI, run: nil)
-        expect(Kettle::Dev::PreReleaseCLI).to receive(:new).with(check_num: 1).and_return(pre_release)
+        expect(Kettle::Dev::PreReleaseCLI).to receive(:new).with(check_num: 1, event_recorder: anything).and_return(pre_release)
         expect(cli).to receive(:run_cmd!).with("bundle exec kettle-changelog")
 
         cli.send(:run_pre_release_checks!)
@@ -366,7 +366,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       it "passes an explicit version override to kettle-changelog" do
         versioned_cli = described_class.new(version: "3.2.1")
         pre_release = instance_double(Kettle::Dev::PreReleaseCLI, run: nil)
-        expect(Kettle::Dev::PreReleaseCLI).to receive(:new).with(check_num: 1).and_return(pre_release)
+        expect(Kettle::Dev::PreReleaseCLI).to receive(:new).with(check_num: 1, event_recorder: anything).and_return(pre_release)
         expect(versioned_cli).to receive(:run_cmd!).with("bundle exec kettle-changelog --version 3.2.1")
 
         versioned_cli.send(:run_pre_release_checks!)
@@ -375,7 +375,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       it "passes --yes to kettle-changelog when release auto-approval is enabled" do
         yes_cli = described_class.new(yes: true)
         pre_release = instance_double(Kettle::Dev::PreReleaseCLI, run: nil)
-        expect(Kettle::Dev::PreReleaseCLI).to receive(:new).with(check_num: 1).and_return(pre_release)
+        expect(Kettle::Dev::PreReleaseCLI).to receive(:new).with(check_num: 1, event_recorder: anything).and_return(pre_release)
         expect(yes_cli).to receive(:run_cmd!).with("bundle exec kettle-changelog --yes")
 
         yes_cli.send(:run_pre_release_checks!)

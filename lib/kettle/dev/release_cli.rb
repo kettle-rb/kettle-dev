@@ -577,7 +577,7 @@ module Kettle
 
       def run_pre_release_checks!
         puts "Running pre-release checks via kettle-pre-release..."
-        Kettle::Dev::PreReleaseCLI.new(check_num: 1).run
+        Kettle::Dev::PreReleaseCLI.new(check_num: 1, event_recorder: @event_recorder).run
         run_changelog!
       end
 

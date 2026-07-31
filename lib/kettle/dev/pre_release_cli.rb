@@ -10,6 +10,7 @@ require "net/http"
 require "openssl"
 require "time"
 require_relative "cache_progress"
+require "kettle/ndjson"
 begin
   require "addressable/uri"
 rescue LoadError
@@ -271,9 +272,10 @@ module Kettle
       end
 
       # @param check_num [Integer] 1-based index to resume from
-      def initialize(check_num: 1)
+      def initialize(check_num: 1, event_recorder: nil)
         @check_num = (check_num || 1).to_i
         @check_num = 1 if @check_num < 1
+        @event_recorder = event_recorder
         @image_url_cache_path = configured_image_url_cache_path
         @refresh_image_url_cache = env_truthy?(ENV["KETTLE_IMAGE_URL_CACHE_REFRESH"])
         @image_url_skip_patterns = configured_image_url_skip_patterns
@@ -294,7 +296,14 @@ module Kettle
         checks[begin_idx..-1].each_with_index do |check, i|
           idx = begin_idx + i + 1
           puts "[kettle-pre-release] Running check ##{idx} of #{checks.size}"
-          check.call
+          emit_pre_release_event(action: "check", status: "started", check: check_name(check), index: idx, total: checks.size)
+          begin
+            check.call
+            emit_pre_release_event(action: "check", status: "ok", check: check_name(check), index: idx, total: checks.size)
+          rescue => error
+            emit_pre_release_event(action: "check", status: "failed", check: check_name(check), index: idx, total: checks.size, reason: "#{error.class}: #{error.message}")
+            raise
+          end
         end
         nil
       end
@@ -355,6 +364,7 @@ module Kettle
         end
 
         puts "[kettle-pre-release] Normalization candidates: #{total_candidates}. Files changed: #{changed.uniq.size}."
+        emit_pre_release_event(action: "markdown_urls", status: "ok", candidates: total_candidates, changed_files: changed.uniq.size)
         nil
       end
 
@@ -408,16 +418,45 @@ module Kettle
         puts "[kettle-pre-release] Image URL checks: #{progress.cached_count} cached, #{progress.live_count} live."
         puts "[kettle-pre-release] Skipped #{progress.skipped_count} image URL check(s)." if skipped.any?
         if failures.any?
+          emit_pre_release_event(action: "image_links", status: "failed", urls: urls.size, cached: progress.cached_count, live: progress.live_count, skipped: progress.skipped_count, failures: failures.size)
           warn("[kettle-pre-release] #{failures.size} image URL(s) failed validation:")
           failures.each { |u| warn("  - #{u}") }
           Kettle::Dev::ExitAdapter.abort("Image link validation failed")
         else
+          emit_pre_release_event(action: "image_links", status: "ok", urls: urls.size, cached: progress.cached_count, live: progress.live_count, skipped: progress.skipped_count, failures: 0)
           puts "[kettle-pre-release] All image links validated."
         end
         nil
       end
 
       private
+
+      def check_name(check)
+        check.name.to_s.sub(/\Acheck_/, "").sub(/!\z/, "")
+      end
+
+      def emit_pre_release_event(action:, status:, **payload)
+        mark = case status.to_s
+        when "started"
+          ">"
+        when "ok", "skipped"
+          "."
+        when "failed"
+          "!"
+        else
+          "?"
+        end
+        Kettle::Ndjson.emit_event(
+          @event_recorder,
+          "pre_release",
+          payload.merge(
+            action: action,
+            phase: "release",
+            status: status,
+            mark: mark
+          )
+        )
+      end
 
       def image_url_cache
         return nil if @image_url_cache_path.to_s.empty?
