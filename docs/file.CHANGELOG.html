@@ -82,12 +82,6 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 
 <h3 id="fixed">Fixed</h3>
 
-<ul>
-  <li>
-<code>kettle-release</code> keepalive alerts now include the elapsed release time so<br>
-delayed 1Password prompts are easier to correlate with the run.</li>
-</ul>
-
 <h3 id="security">Security</h3>
 
 <h2 id="2512---2026-07-30">
@@ -96,8 +90,8 @@ delayed 1Password prompts are easier to correlate with the run.</li>
 <ul>
   <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.12">v2.5.12</a>
 </li>
-  <li>COVERAGE: 91.87% – 4816/5242 lines in 45 files</li>
-  <li>BRANCH COVERAGE: 76.03% – 1817/2390 branches in 45 files</li>
+  <li>COVERAGE: 92.18% – 4842/5253 lines in 45 files</li>
+  <li>BRANCH COVERAGE: 76.29% – 1828/2396 branches in 45 files</li>
   <li>52.86% documented</li>
 </ul>
 
@@ -113,9 +107,14 @@ authorization across same-process, child-process, and threaded shapes.</li>
 
 <ul>
   <li>
-<code>kettle-release</code> now keeps configured release secrets providers warm during<br>
+    <p><code>kettle-release</code> now keeps configured release secrets providers warm during<br>
 CI waits and alerts before provider lookups, reducing missed 1Password<br>
-authorization prompts during long release runs.</li>
+authorization prompts during long release runs.</p>
+  </li>
+  <li>
+    <p><code>kettle-release</code> keepalive alerts now include the elapsed release time so<br>
+delayed 1Password prompts are easier to correlate with the run.</p>
+  </li>
 </ul>
 
 <h2 id="2511---2026-07-30">

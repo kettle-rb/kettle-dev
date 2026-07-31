@@ -28,16 +28,13 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- `kettle-release` keepalive alerts now include the elapsed release time so
-  delayed 1Password prompts are easier to correlate with the run.
-
 ### Security
 
 ## [2.5.12] - 2026-07-30
 
 - TAG: [v2.5.12][2.5.12t]
-- COVERAGE: 91.87% -- 4816/5242 lines in 45 files
-- BRANCH COVERAGE: 76.03% -- 1817/2390 branches in 45 files
+- COVERAGE: 92.18% -- 4842/5253 lines in 45 files
+- BRANCH COVERAGE: 76.29% -- 1828/2396 branches in 45 files
 - 52.86% documented
 
 ### Added
@@ -50,6 +47,9 @@ Please file a bug if you notice a violation of semantic versioning.
 - `kettle-release` now keeps configured release secrets providers warm during
   CI waits and alerts before provider lookups, reducing missed 1Password
   authorization prompts during long release runs.
+
+- `kettle-release` keepalive alerts now include the elapsed release time so
+  delayed 1Password prompts are easier to correlate with the run.
 
 ## [2.5.11] - 2026-07-30
 
