@@ -74,6 +74,12 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 
 <h3 id="added">Added</h3>
 
+<ul>
+  <li>
+<code>kettle-release-secrets-doctor</code> can probe 1Password release secret<br>
+authorization across same-process, child-process, and threaded shapes.</li>
+</ul>
+
 <h3 id="changed">Changed</h3>
 
 <h3 id="deprecated">Deprecated</h3>
@@ -81,6 +87,13 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 <h3 id="removed">Removed</h3>
 
 <h3 id="fixed">Fixed</h3>
+
+<ul>
+  <li>
+<code>kettle-release</code> now keeps configured release secrets providers warm during<br>
+CI waits and alerts before provider lookups, reducing missed 1Password<br>
+authorization prompts during long release runs.</li>
+</ul>
 
 <h3 id="security">Security</h3>
 

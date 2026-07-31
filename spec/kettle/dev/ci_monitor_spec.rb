@@ -132,6 +132,17 @@ RSpec.describe Kettle::Dev::CIMonitor do
       expect { described_class.monitor_all!(restart_hint: "hint", workflows: ["current.yml"]) }.not_to raise_error
     end
 
+    it "rate-limits release secret keepalive callbacks during CI polling" do
+      calls = 0
+      stub_env("KETTLE_RELEASE_SECRET_KEEPALIVE_INTERVAL" => "10")
+      timer = described_class.keepalive_timer(-> { calls += 1 })
+      allow(described_class).to receive(:monotonic_time).and_return(0, 5, 11)
+
+      3.times { timer.call }
+
+      expect(calls).to eq(2)
+    end
+
     it "times out when GitHub never starts a run for local HEAD", :check_output do
       allow(helpers).to receive_messages(
         project_root: Dir.pwd,

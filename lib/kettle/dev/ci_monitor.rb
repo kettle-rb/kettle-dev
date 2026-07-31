@@ -47,10 +47,10 @@ module Kettle
       #
       # @param restart_hint [String] guidance command shown on failure
       # @return [void]
-      def monitor_all!(restart_hint: "bundle exec kettle-release start_step=10", workflows: nil, **options)
+      def monitor_all!(restart_hint: "bundle exec kettle-release start_step=10", workflows: nil, keepalive: nil, **options)
         checks_any = false
-        checks_any |= monitor_github_internal!(restart_hint: restart_hint, workflows: workflows)
-        checks_any |= monitor_gitlab_internal!(restart_hint: restart_hint)
+        checks_any |= monitor_github_internal!(restart_hint: restart_hint, workflows: workflows, keepalive: keepalive)
+        checks_any |= monitor_gitlab_internal!(restart_hint: restart_hint, keepalive: keepalive)
         abort("CI configuration not detected (GitHub or GitLab). Ensure CI is configured and remotes point to the correct hosts.") unless checks_any
       end
 
@@ -267,7 +267,7 @@ module Kettle
       end
       module_function :collect_gitlab
 
-      def monitor_github_internal!(restart_hint:, workflows: nil)
+      def monitor_github_internal!(restart_hint:, workflows: nil, keepalive: nil)
         root = Kettle::Dev::CIHelpers.project_root
         workflows = Array(workflows).empty? ? Kettle::Dev::CIHelpers.workflows_list(root) : Array(workflows)
         gh_remote = preferred_github_remote
@@ -306,8 +306,10 @@ module Kettle
         start_timeout = github_start_timeout
         poll_interval = github_poll_interval
         start_deadline = monotonic_time + start_timeout
+        keepalive_timer = keepalive_timer(keepalive)
         idx = 0
         loop do
+          keepalive_timer.call
           wf = workflows[idx]
           run = Kettle::Dev::CIHelpers.latest_run(owner: owner, repo: repo, workflow_file: wf, branch: branch, require_head: true, head_sha: head_sha)
           if run
@@ -364,7 +366,32 @@ module Kettle
       end
       module_function :github_poll_interval
 
-      def monitor_gitlab_internal!(restart_hint:)
+      def keepalive_timer(keepalive)
+        interval = keepalive_interval
+        last_run = nil
+        lambda do
+          if keepalive
+            now = monotonic_time
+            if !last_run || (now - last_run) >= interval
+              keepalive.call
+              last_run = now
+            end
+          end
+        end
+      end
+      module_function :keepalive_timer
+
+      def keepalive_interval
+        seconds = begin
+          Float(ENV["KETTLE_RELEASE_SECRET_KEEPALIVE_INTERVAL"])
+        rescue
+          nil
+        end
+        (seconds && seconds >= 0) ? seconds : 240.0
+      end
+      module_function :keepalive_interval
+
+      def monitor_gitlab_internal!(restart_hint:, keepalive: nil)
         root = Kettle::Dev::CIHelpers.project_root
         gitlab_ci = File.exist?(File.join(root, ".gitlab-ci.yml"))
         gl_remote = gitlab_remote_candidates.first
@@ -380,7 +407,9 @@ module Kettle
         pbar = if defined?(ProgressBar)
           ProgressBar.create(title: "CI", total: 1, format: "%t %b %c/%C", length: 30)
         end
+        keepalive_timer = keepalive_timer(keepalive)
         loop do
+          keepalive_timer.call
           pipe = Kettle::Dev::CIHelpers.gitlab_latest_pipeline(owner: owner, repo: repo, branch: branch)
           if pipe
             if Kettle::Dev::CIHelpers.gitlab_success?(pipe)

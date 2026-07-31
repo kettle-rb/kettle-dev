@@ -46,6 +46,7 @@ module Kettle
     autoload :LockfileReset, "kettle/dev/lockfile_reset"
     autoload :ReadmeBackers, "kettle/dev/readme_backers"
     autoload :OpenCollectiveConfig, "kettle/dev/open_collective_config"
+    autoload :ReleaseNotifier, "kettle/dev/release_notifier"
     autoload :ReleaseCLI, "kettle/dev/release_cli"
     autoload :ReleaseSecrets, "kettle/dev/release_secrets"
     autoload :ResetCLI, "kettle/dev/reset_cli"

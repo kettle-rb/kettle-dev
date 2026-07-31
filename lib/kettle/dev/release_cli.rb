@@ -1004,8 +1004,13 @@ module Kettle
 
       def monitor_workflows_after_push!
         ensure_github_pull_request_for_ci!
+        keep_release_secrets_alive!("CI monitoring")
         # Use abort-on-failure CI monitor to match historical behavior and specs
-        Kettle::Dev::CIMonitor.monitor_all!(restart_hint: "bundle exec kettle-release start_step=10", workflows: @ci_workflows)
+        Kettle::Dev::CIMonitor.monitor_all!(
+          restart_hint: "bundle exec kettle-release start_step=10",
+          workflows: @ci_workflows,
+          keepalive: release_secrets_configured? ? -> { keep_release_secrets_alive!("CI monitoring") } : nil
+        )
       end
 
       def ensure_github_pull_request_for_ci!
@@ -1110,6 +1115,7 @@ module Kettle
       def run_command_with_release_secrets!(cmd)
         return self.class.run_cmd!(cmd) unless release_secret_command?(cmd) && release_secrets_configured?
 
+        keep_release_secrets_alive!("prompt-bearing command")
         puts "$ #{cmd}"
         _stdout_str, stderr_str, status = Kettle::Dev::InteractiveReleaseCommand.new(secrets_provider: @secrets_provider).call(
           self.class.send(:command_env),
@@ -1137,10 +1143,20 @@ module Kettle
       end
 
       def ensure_release_secrets_ready_for_signing!
+        keep_release_secrets_alive!("signing preflight")
         value = @secrets_provider.gem_signing_passphrase.to_s
         abort(release_secrets_configuration_message("gem signing passphrase was empty")) if value.empty?
       rescue Kettle::Dev::Error => error
         abort(release_secrets_configuration_message(error.message))
+      end
+
+      def keep_release_secrets_alive!(purpose)
+        return unless release_secrets_configured?
+        return unless @secrets_provider.respond_to?(:keepalive!)
+
+        @secrets_provider.keepalive!
+      rescue Kettle::Dev::Error => error
+        abort("Release secrets provider keepalive failed before #{purpose}: #{error.message}")
       end
 
       def release_secrets_configuration_message(reason)

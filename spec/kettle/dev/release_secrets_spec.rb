@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 RSpec.describe Kettle::Dev::ReleaseSecrets do
+  before do
+    allow(Kettle::Dev::ReleaseNotifier).to receive(:alert)
+  end
+
   it "builds an interactive provider by default" do
     provider = described_class::Factory.build
 
@@ -48,6 +52,29 @@ RSpec.describe Kettle::Dev::ReleaseSecrets do
     provider = described_class::Factory.build(provider_name: "op")
 
     expect(provider.rubygems_otp).to eq("123456")
+  end
+
+  it "keeps the 1Password authorization session warm without fetching an OTP" do
+    allow(Open3).to receive(:capture3)
+      .with("op", "account", "get")
+      .and_return(["account\n", "", status(success: true)])
+
+    provider = described_class::Factory.build(provider_name: "op")
+
+    expect(provider.keepalive!).to be(true)
+  end
+
+  it "alerts before 1Password lookups" do
+    allow(Kettle::Dev::ReleaseNotifier).to receive(:alert).and_call_original
+    stub_env(
+      "KETTLE_RELEASE_SECRET_BELL" => "false",
+      "KETTLE_RELEASE_SECRET_ALERT" => "true"
+    )
+    stream = StringIO.new
+
+    Kettle::Dev::ReleaseNotifier.alert("watch now", stream: stream)
+
+    expect(stream.string).to eq("watch now\n")
   end
 
   it "supports explicit 1Password references and accounts" do

@@ -302,7 +302,53 @@ via CIHelpers, matching the behavior historically implemented in ReleaseCLI.</p>
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#monitor_all!-class_method" title="monitor_all! (class method)">.<strong>monitor_all!</strong>(restart_hint: &quot;bundle exec kettle-release start_step=10&quot;, workflows: nil, **options)  &#x21d2; void </a>
+      <a href="#keepalive_interval-class_method" title="keepalive_interval (class method)">.<strong>keepalive_interval</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#keepalive_timer-class_method" title="keepalive_timer (class method)">.<strong>keepalive_timer</strong>(keepalive)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#monitor_all!-class_method" title="monitor_all! (class method)">.<strong>monitor_all!</strong>(restart_hint: &quot;bundle exec kettle-release start_step=10&quot;, workflows: nil, keepalive: nil, **options)  &#x21d2; void </a>
     
 
     
@@ -348,7 +394,7 @@ via CIHelpers, matching the behavior historically implemented in ReleaseCLI.</p>
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#monitor_github_internal!-class_method" title="monitor_github_internal! (class method)">.<strong>monitor_github_internal!</strong>(restart_hint:, workflows: nil)  &#x21d2; Object </a>
+      <a href="#monitor_github_internal!-class_method" title="monitor_github_internal! (class method)">.<strong>monitor_github_internal!</strong>(restart_hint:, workflows: nil, keepalive: nil)  &#x21d2; Object </a>
     
 
     
@@ -394,7 +440,7 @@ via CIHelpers, matching the behavior historically implemented in ReleaseCLI.</p>
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#monitor_gitlab_internal!-class_method" title="monitor_gitlab_internal! (class method)">.<strong>monitor_gitlab_internal!</strong>(restart_hint:)  &#x21d2; Object </a>
+      <a href="#monitor_gitlab_internal!-class_method" title="monitor_gitlab_internal! (class method)">.<strong>monitor_gitlab_internal!</strong>(restart_hint:, keepalive: nil)  &#x21d2; Object </a>
     
 
     
@@ -983,17 +1029,17 @@ Results format:</p>
       <pre class="lines">
 
 
-357
-358
 359
 360
 361
 362
 363
-364</pre>
+364
+365
+366</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 357</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 359</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_github_poll_interval'>github_poll_interval</span>
   <span class='id identifier rubyid_seconds'>seconds</span> <span class='op'>=</span> <span class='kw'>begin</span>
@@ -1023,12 +1069,12 @@ Results format:</p>
       <pre class="lines">
 
 
-427
-428
-429</pre>
+456
+457
+458</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 427</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 456</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_github_remote_candidates'>github_remote_candidates</span>
   <span class='id identifier rubyid_remotes_with_urls'>remotes_with_urls</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_n'>n</span><span class='comma'>,</span> <span class='id identifier rubyid_u'>u</span><span class='op'>|</span> <span class='id identifier rubyid_u'>u</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>github.com</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_keys'>keys</span>
@@ -1053,17 +1099,17 @@ Results format:</p>
       <pre class="lines">
 
 
-347
-348
 349
 350
 351
 352
 353
-354</pre>
+354
+355
+356</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 347</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 349</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_github_start_timeout'>github_start_timeout</span>
   <span class='id identifier rubyid_seconds'>seconds</span> <span class='op'>=</span> <span class='kw'>begin</span>
@@ -1093,12 +1139,12 @@ Results format:</p>
       <pre class="lines">
 
 
-432
-433
-434</pre>
+461
+462
+463</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 432</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 461</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_gitlab_remote_candidates'>gitlab_remote_candidates</span>
   <span class='id identifier rubyid_remotes_with_urls'>remotes_with_urls</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_n'>n</span><span class='comma'>,</span> <span class='id identifier rubyid_u'>u</span><span class='op'>|</span> <span class='id identifier rubyid_u'>u</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>gitlab.com</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_keys'>keys</span>
@@ -1109,9 +1155,99 @@ Results format:</p>
 </div>
     
       <div class="method_details ">
+  <h3 class="signature " id="keepalive_interval-class_method">
+  
+    .<strong>keepalive_interval</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+384
+385
+386
+387
+388
+389
+390
+391</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 384</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_keepalive_interval'>keepalive_interval</span>
+  <span class='id identifier rubyid_seconds'>seconds</span> <span class='op'>=</span> <span class='kw'>begin</span>
+    <span class='const'>Float</span><span class='lparen'>(</span><span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>KETTLE_RELEASE_SECRET_KEEPALIVE_INTERVAL</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='rparen'>)</span>
+  <span class='kw'>rescue</span>
+    <span class='kw'>nil</span>
+  <span class='kw'>end</span>
+  <span class='lparen'>(</span><span class='id identifier rubyid_seconds'>seconds</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_seconds'>seconds</span> <span class='op'>&gt;=</span> <span class='int'>0</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_seconds'>seconds</span> <span class='op'>:</span> <span class='float'>240.0</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="keepalive_timer-class_method">
+  
+    .<strong>keepalive_timer</strong>(keepalive)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378
+379
+380
+381</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 369</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_keepalive_timer'>keepalive_timer</span><span class='lparen'>(</span><span class='id identifier rubyid_keepalive'>keepalive</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_interval'>interval</span> <span class='op'>=</span> <span class='id identifier rubyid_keepalive_interval'>keepalive_interval</span>
+  <span class='id identifier rubyid_last_run'>last_run</span> <span class='op'>=</span> <span class='kw'>nil</span>
+  <span class='id identifier rubyid_lambda'>lambda</span> <span class='kw'>do</span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_keepalive'>keepalive</span>
+      <span class='id identifier rubyid_now'>now</span> <span class='op'>=</span> <span class='id identifier rubyid_monotonic_time'>monotonic_time</span>
+      <span class='kw'>if</span> <span class='op'>!</span><span class='id identifier rubyid_last_run'>last_run</span> <span class='op'>||</span> <span class='lparen'>(</span><span class='id identifier rubyid_now'>now</span> <span class='op'>-</span> <span class='id identifier rubyid_last_run'>last_run</span><span class='rparen'>)</span> <span class='op'>&gt;=</span> <span class='id identifier rubyid_interval'>interval</span>
+        <span class='id identifier rubyid_keepalive'>keepalive</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span>
+        <span class='id identifier rubyid_last_run'>last_run</span> <span class='op'>=</span> <span class='id identifier rubyid_now'>now</span>
+      <span class='kw'>end</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
   <h3 class="signature " id="monitor_all!-class_method">
   
-    .<strong>monitor_all!</strong>(restart_hint: &quot;bundle exec kettle-release start_step=10&quot;, workflows: nil, **options)  &#x21d2; <tt>void</tt> 
+    .<strong>monitor_all!</strong>(restart_hint: &quot;bundle exec kettle-release start_step=10&quot;, workflows: nil, keepalive: nil, **options)  &#x21d2; <tt>void</tt> 
   
 
   
@@ -1165,10 +1301,10 @@ This mirrors ReleaseCLI behavior and aborts on first failure.</p>
     <td>
       <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 50</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_monitor_all!'>monitor_all!</span><span class='lparen'>(</span><span class='label'>restart_hint:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>bundle exec kettle-release start_step=10</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='label'>workflows:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_options'>options</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_monitor_all!'>monitor_all!</span><span class='lparen'>(</span><span class='label'>restart_hint:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>bundle exec kettle-release start_step=10</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='label'>workflows:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>keepalive:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_options'>options</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_checks_any'>checks_any</span> <span class='op'>=</span> <span class='kw'>false</span>
-  <span class='id identifier rubyid_checks_any'>checks_any</span> <span class='op'>|=</span> <span class='id identifier rubyid_monitor_github_internal!'>monitor_github_internal!</span><span class='lparen'>(</span><span class='label'>restart_hint:</span> <span class='id identifier rubyid_restart_hint'>restart_hint</span><span class='comma'>,</span> <span class='label'>workflows:</span> <span class='id identifier rubyid_workflows'>workflows</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_checks_any'>checks_any</span> <span class='op'>|=</span> <span class='id identifier rubyid_monitor_gitlab_internal!'>monitor_gitlab_internal!</span><span class='lparen'>(</span><span class='label'>restart_hint:</span> <span class='id identifier rubyid_restart_hint'>restart_hint</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_checks_any'>checks_any</span> <span class='op'>|=</span> <span class='id identifier rubyid_monitor_github_internal!'>monitor_github_internal!</span><span class='lparen'>(</span><span class='label'>restart_hint:</span> <span class='id identifier rubyid_restart_hint'>restart_hint</span><span class='comma'>,</span> <span class='label'>workflows:</span> <span class='id identifier rubyid_workflows'>workflows</span><span class='comma'>,</span> <span class='label'>keepalive:</span> <span class='id identifier rubyid_keepalive'>keepalive</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_checks_any'>checks_any</span> <span class='op'>|=</span> <span class='id identifier rubyid_monitor_gitlab_internal!'>monitor_gitlab_internal!</span><span class='lparen'>(</span><span class='label'>restart_hint:</span> <span class='id identifier rubyid_restart_hint'>restart_hint</span><span class='comma'>,</span> <span class='label'>keepalive:</span> <span class='id identifier rubyid_keepalive'>keepalive</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_abort'>abort</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>CI configuration not detected (GitHub or GitLab). Ensure CI is configured and remotes point to the correct hosts.</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='kw'>unless</span> <span class='id identifier rubyid_checks_any'>checks_any</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -1297,7 +1433,7 @@ Designed for kettle-release.</p>
       <div class="method_details ">
   <h3 class="signature " id="monitor_github_internal!-class_method">
   
-    .<strong>monitor_github_internal!</strong>(restart_hint:, workflows: nil)  &#x21d2; <tt>Object</tt> 
+    .<strong>monitor_github_internal!</strong>(restart_hint:, workflows: nil, keepalive: nil)  &#x21d2; <tt>Object</tt> 
   
 
   
@@ -1378,12 +1514,14 @@ Designed for kettle-release.</p>
 336
 337
 338
-339</pre>
+339
+340
+341</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 270</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_monitor_github_internal!'>monitor_github_internal!</span><span class='lparen'>(</span><span class='label'>restart_hint:</span><span class='comma'>,</span> <span class='label'>workflows:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_monitor_github_internal!'>monitor_github_internal!</span><span class='lparen'>(</span><span class='label'>restart_hint:</span><span class='comma'>,</span> <span class='label'>workflows:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>keepalive:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="CIHelpers.html" title="Kettle::Dev::CIHelpers (module)">CIHelpers</a></span></span><span class='period'>.</span><span class='id identifier rubyid_project_root'><span class='object_link'><a href="CIHelpers.html#project_root-class_method" title="Kettle::Dev::CIHelpers.project_root (method)">project_root</a></span></span>
   <span class='id identifier rubyid_workflows'>workflows</span> <span class='op'>=</span> <span class='const'>Array</span><span class='lparen'>(</span><span class='id identifier rubyid_workflows'>workflows</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span> <span class='op'>?</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="CIHelpers.html" title="Kettle::Dev::CIHelpers (module)">CIHelpers</a></span></span><span class='period'>.</span><span class='id identifier rubyid_workflows_list'><span class='object_link'><a href="CIHelpers.html#workflows_list-class_method" title="Kettle::Dev::CIHelpers.workflows_list (method)">workflows_list</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span><span class='rparen'>)</span> <span class='op'>:</span> <span class='const'>Array</span><span class='lparen'>(</span><span class='id identifier rubyid_workflows'>workflows</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_gh_remote'>gh_remote</span> <span class='op'>=</span> <span class='id identifier rubyid_preferred_github_remote'>preferred_github_remote</span>
@@ -1422,8 +1560,10 @@ Designed for kettle-release.</p>
   <span class='id identifier rubyid_start_timeout'>start_timeout</span> <span class='op'>=</span> <span class='id identifier rubyid_github_start_timeout'>github_start_timeout</span>
   <span class='id identifier rubyid_poll_interval'>poll_interval</span> <span class='op'>=</span> <span class='id identifier rubyid_github_poll_interval'>github_poll_interval</span>
   <span class='id identifier rubyid_start_deadline'>start_deadline</span> <span class='op'>=</span> <span class='id identifier rubyid_monotonic_time'>monotonic_time</span> <span class='op'>+</span> <span class='id identifier rubyid_start_timeout'>start_timeout</span>
+  <span class='id identifier rubyid_keepalive_timer'>keepalive_timer</span> <span class='op'>=</span> <span class='id identifier rubyid_keepalive_timer'>keepalive_timer</span><span class='lparen'>(</span><span class='id identifier rubyid_keepalive'>keepalive</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_idx'>idx</span> <span class='op'>=</span> <span class='int'>0</span>
   <span class='id identifier rubyid_loop'>loop</span> <span class='kw'>do</span>
+    <span class='id identifier rubyid_keepalive_timer'>keepalive_timer</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span>
     <span class='id identifier rubyid_wf'>wf</span> <span class='op'>=</span> <span class='id identifier rubyid_workflows'>workflows</span><span class='lbracket'>[</span><span class='id identifier rubyid_idx'>idx</span><span class='rbracket'>]</span>
     <span class='id identifier rubyid_run'>run</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="CIHelpers.html" title="Kettle::Dev::CIHelpers (module)">CIHelpers</a></span></span><span class='period'>.</span><span class='id identifier rubyid_latest_run'><span class='object_link'><a href="CIHelpers.html#latest_run-class_method" title="Kettle::Dev::CIHelpers.latest_run (method)">latest_run</a></span></span><span class='lparen'>(</span><span class='label'>owner:</span> <span class='id identifier rubyid_owner'>owner</span><span class='comma'>,</span> <span class='label'>repo:</span> <span class='id identifier rubyid_repo'>repo</span><span class='comma'>,</span> <span class='label'>workflow_file:</span> <span class='id identifier rubyid_wf'>wf</span><span class='comma'>,</span> <span class='label'>branch:</span> <span class='id identifier rubyid_branch'>branch</span><span class='comma'>,</span> <span class='label'>require_head:</span> <span class='kw'>true</span><span class='comma'>,</span> <span class='label'>head_sha:</span> <span class='id identifier rubyid_head_sha'>head_sha</span><span class='rparen'>)</span>
     <span class='kw'>if</span> <span class='id identifier rubyid_run'>run</span>
@@ -1533,7 +1673,7 @@ Returns false when GitLab is not configured for this repo/branch.</p>
       <div class="method_details ">
   <h3 class="signature " id="monitor_gitlab_internal!-class_method">
   
-    .<strong>monitor_gitlab_internal!</strong>(restart_hint:)  &#x21d2; <tt>Object</tt> 
+    .<strong>monitor_gitlab_internal!</strong>(restart_hint:, keepalive: nil)  &#x21d2; <tt>Object</tt> 
   
 
   
@@ -1545,33 +1685,6 @@ Returns false when GitLab is not configured for this repo/branch.</p>
       <pre class="lines">
 
 
-367
-368
-369
-370
-371
-372
-373
-374
-375
-376
-377
-378
-379
-380
-381
-382
-383
-384
-385
-386
-387
-388
-389
-390
-391
-392
-393
 394
 395
 396
@@ -1591,12 +1704,41 @@ Returns false when GitLab is not configured for this repo/branch.</p>
 410
 411
 412
-413</pre>
+413
+414
+415
+416
+417
+418
+419
+420
+421
+422
+423
+424
+425
+426
+427
+428
+429
+430
+431
+432
+433
+434
+435
+436
+437
+438
+439
+440
+441
+442</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 367</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 394</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_monitor_gitlab_internal!'>monitor_gitlab_internal!</span><span class='lparen'>(</span><span class='label'>restart_hint:</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_monitor_gitlab_internal!'>monitor_gitlab_internal!</span><span class='lparen'>(</span><span class='label'>restart_hint:</span><span class='comma'>,</span> <span class='label'>keepalive:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="CIHelpers.html" title="Kettle::Dev::CIHelpers (module)">CIHelpers</a></span></span><span class='period'>.</span><span class='id identifier rubyid_project_root'><span class='object_link'><a href="CIHelpers.html#project_root-class_method" title="Kettle::Dev::CIHelpers.project_root (method)">project_root</a></span></span>
   <span class='id identifier rubyid_gitlab_ci'>gitlab_ci</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_exist?'>exist?</span><span class='lparen'>(</span><span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>.gitlab-ci.yml</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_gl_remote'>gl_remote</span> <span class='op'>=</span> <span class='id identifier rubyid_gitlab_remote_candidates'>gitlab_remote_candidates</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span>
@@ -1612,7 +1754,9 @@ Returns false when GitLab is not configured for this repo/branch.</p>
   <span class='id identifier rubyid_pbar'>pbar</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='const'>ProgressBar</span><span class='rparen'>)</span>
     <span class='const'>ProgressBar</span><span class='period'>.</span><span class='id identifier rubyid_create'>create</span><span class='lparen'>(</span><span class='label'>title:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>CI</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='label'>total:</span> <span class='int'>1</span><span class='comma'>,</span> <span class='label'>format:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>%t %b %c/%C</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='label'>length:</span> <span class='int'>30</span><span class='rparen'>)</span>
   <span class='kw'>end</span>
+  <span class='id identifier rubyid_keepalive_timer'>keepalive_timer</span> <span class='op'>=</span> <span class='id identifier rubyid_keepalive_timer'>keepalive_timer</span><span class='lparen'>(</span><span class='id identifier rubyid_keepalive'>keepalive</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_loop'>loop</span> <span class='kw'>do</span>
+    <span class='id identifier rubyid_keepalive_timer'>keepalive_timer</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span>
     <span class='id identifier rubyid_pipe'>pipe</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="CIHelpers.html" title="Kettle::Dev::CIHelpers (module)">CIHelpers</a></span></span><span class='period'>.</span><span class='id identifier rubyid_gitlab_latest_pipeline'><span class='object_link'><a href="CIHelpers.html#gitlab_latest_pipeline-class_method" title="Kettle::Dev::CIHelpers.gitlab_latest_pipeline (method)">gitlab_latest_pipeline</a></span></span><span class='lparen'>(</span><span class='label'>owner:</span> <span class='id identifier rubyid_owner'>owner</span><span class='comma'>,</span> <span class='label'>repo:</span> <span class='id identifier rubyid_repo'>repo</span><span class='comma'>,</span> <span class='label'>branch:</span> <span class='id identifier rubyid_branch'>branch</span><span class='rparen'>)</span>
     <span class='kw'>if</span> <span class='id identifier rubyid_pipe'>pipe</span>
       <span class='kw'>if</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="CIHelpers.html" title="Kettle::Dev::CIHelpers (module)">CIHelpers</a></span></span><span class='period'>.</span><span class='id identifier rubyid_gitlab_success?'><span class='object_link'><a href="CIHelpers.html#gitlab_success%3F-class_method" title="Kettle::Dev::CIHelpers.gitlab_success? (method)">gitlab_success?</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_pipe'>pipe</span><span class='rparen'>)</span>
@@ -1663,12 +1807,12 @@ Returns false when GitLab is not configured for this repo/branch.</p>
       <pre class="lines">
 
 
-342
-343
-344</pre>
+344
+345
+346</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 342</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 344</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_monotonic_time'>monotonic_time</span>
   <span class='const'>Process</span><span class='period'>.</span><span class='id identifier rubyid_clock_gettime'>clock_gettime</span><span class='lparen'>(</span><span class='const'>Process</span><span class='op'>::</span><span class='const'>CLOCK_MONOTONIC</span><span class='rparen'>)</span>
@@ -1693,12 +1837,12 @@ Returns false when GitLab is not configured for this repo/branch.</p>
       <pre class="lines">
 
 
-449
-450
-451</pre>
+478
+479
+480</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 449</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 478</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_parse_github_owner_repo'>parse_github_owner_repo</span><span class='lparen'>(</span><span class='id identifier rubyid_url'>url</span><span class='rparen'>)</span>
   <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="CIHelpers.html" title="Kettle::Dev::CIHelpers (module)">CIHelpers</a></span></span><span class='period'>.</span><span class='id identifier rubyid_parse_hosted_repo'><span class='object_link'><a href="CIHelpers.html#parse_hosted_repo-class_method" title="Kettle::Dev::CIHelpers.parse_hosted_repo (method)">parse_hosted_repo</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_url'>url</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>github.com</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>||</span> <span class='lbracket'>[</span><span class='kw'>nil</span><span class='comma'>,</span> <span class='kw'>nil</span><span class='rbracket'>]</span>
@@ -1723,19 +1867,19 @@ Returns false when GitLab is not configured for this repo/branch.</p>
       <pre class="lines">
 
 
-437
-438
-439
-440
-441
-442
-443
-444
-445
-446</pre>
+466
+467
+468
+469
+470
+471
+472
+473
+474
+475</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 437</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 466</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_preferred_github_remote'>preferred_github_remote</span>
   <span class='id identifier rubyid_cands'>cands</span> <span class='op'>=</span> <span class='id identifier rubyid_github_remote_candidates'>github_remote_candidates</span>
@@ -1767,12 +1911,12 @@ Returns false when GitLab is not configured for this repo/branch.</p>
       <pre class="lines">
 
 
-422
-423
-424</pre>
+451
+452
+453</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 422</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 451</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_remote_url'>remote_url</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
   <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="GitAdapter.html" title="Kettle::Dev::GitAdapter (class)">GitAdapter</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="GitAdapter.html#initialize-instance_method" title="Kettle::Dev::GitAdapter#initialize (method)">new</a></span></span><span class='period'>.</span><span class='id identifier rubyid_remote_url'>remote_url</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
@@ -1807,12 +1951,12 @@ Returns false when GitLab is not configured for this repo/branch.</p>
       <pre class="lines">
 
 
-417
-418
-419</pre>
+446
+447
+448</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 417</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/ci_monitor.rb', line 446</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_remotes_with_urls'>remotes_with_urls</span>
   <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="GitAdapter.html" title="Kettle::Dev::GitAdapter (class)">GitAdapter</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="GitAdapter.html#initialize-instance_method" title="Kettle::Dev::GitAdapter#initialize (method)">new</a></span></span><span class='period'>.</span><span class='id identifier rubyid_remotes_with_urls'>remotes_with_urls</span>

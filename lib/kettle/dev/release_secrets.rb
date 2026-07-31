@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "open3"
+require "kettle/dev/release_notifier"
 
 module Kettle
   module Dev
@@ -13,6 +14,10 @@ module Kettle
         end
 
         def rubygems_otp
+          nil
+        end
+
+        def keepalive!
           nil
         end
       end
@@ -64,6 +69,14 @@ module Kettle
           run_op(argv, purpose: "RubyGems OTP")
         end
 
+        def keepalive!
+          argv = [op_cli, "account", "get"]
+          account = string_config("account")
+          argv.concat(["--account", account]) unless account.empty?
+          run_op(argv, purpose: "authorization keepalive")
+          true
+        end
+
         private
 
         attr_reader :config
@@ -100,6 +113,7 @@ module Kettle
         end
 
         def run_op(argv, purpose:)
+          Kettle::Dev::ReleaseNotifier.alert("1Password #{purpose} lookup starting; watch for authorization prompt.")
           stdout, stderr, status = Open3.capture3(*argv)
           return stdout.to_s.strip if status.success? && !stdout.to_s.strip.empty?
 
