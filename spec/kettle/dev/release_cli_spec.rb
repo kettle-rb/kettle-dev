@@ -70,6 +70,36 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       end
     end
 
+    it "maps common release commands to stable command step names" do
+      local_cli = described_class.new
+
+      names = [
+        "env -u BUNDLE_GEMFILE BUNDLE_GEMFILE=/repo/Gemfile bundle lock --update --add-checksums",
+        "KETTLE_DEV_SKIP_TESTS=true bin/rake",
+        "bin/rake appraisal:generate",
+        "bin/rake yard",
+        "bundle exec rake build",
+        "bundle exec rake release",
+        "bin/gem_checksums /repo/pkg/example-1.2.3.gem",
+        "git fetch origin main",
+        "git push origin main"
+      ].map { |command| local_cli.send(:command_event_name, command) }
+
+      expect(names).to eq(
+        %w[
+          bundle_lock
+          default_task
+          appraisal_generate
+          yard
+          gem_build
+          gem_release
+          gem_checksums
+          git_fetch
+          git_push
+        ]
+      )
+    end
+
     describe "#run_cmd! (signing env injection)", :real_release_rake do
       it "emits command step events around child commands" do
         io = StringIO.new

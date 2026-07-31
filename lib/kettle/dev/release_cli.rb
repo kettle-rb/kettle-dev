@@ -1617,7 +1617,48 @@ module Kettle
       end
 
       def command_event_name(command)
-        command.to_s.split(/\s+/, 3).first(2).join("_").gsub(/[^A-Za-z0-9_]+/, "_").sub(/_+\z/, "")
+        words = Shellwords.split(command.to_s)
+        effective_words = command_event_effective_words(words)
+        joined = effective_words.join(" ")
+
+        return "kettle_changelog" if joined.start_with?("bundle exec kettle-changelog")
+        return "gem_build" if joined == "bundle exec rake build"
+        return "gem_release" if joined == "bundle exec rake release"
+        return "gem_push" if effective_words.first(2) == ["gem", "push"]
+        return "gem_checksums" if effective_words.first == "bin/gem_checksums"
+        return "bundle_lock" if effective_words.first(2) == ["bundle", "lock"]
+        return "bin_setup" if effective_words == ["bin/setup"]
+        return "default_task" if effective_words == ["bin/rake"]
+        return "appraisal_generate" if effective_words == ["bin/rake", "appraisal:generate"]
+        return "appraisal_update" if effective_words == ["bin/rake", "appraisal:update"]
+        return "yard" if effective_words == ["bin/rake", "yard"]
+        return "git_fetch" if effective_words.first(2) == ["git", "fetch"]
+        return "git_pull" if effective_words.first(2) == ["git", "pull"]
+        return "git_rebase" if effective_words.first(2) == ["git", "rebase"]
+        return "git_merge" if effective_words.first(2) == ["git", "merge"]
+        return "git_push" if effective_words.first(2) == ["git", "push"]
+
+        effective_words.first(2).join("_").gsub(/[^A-Za-z0-9_]+/, "_").sub(/_+\z/, "")
+      end
+
+      def command_event_effective_words(words)
+        words = words.dup
+        words.shift while words.first&.match?(/\A[A-Za-z_][A-Za-z0-9_]*=/)
+
+        if words.first == "env"
+          words.shift
+          while words.any?
+            if words.first == "-u"
+              words.shift(2)
+            elsif words.first&.include?("=")
+              words.shift
+            else
+              break
+            end
+          end
+        end
+
+        words
       end
 
       def record_diagnostic(kind, message, severity:, blocking:)
