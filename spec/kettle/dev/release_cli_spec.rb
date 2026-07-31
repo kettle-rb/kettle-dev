@@ -985,6 +985,37 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         )
       end
 
+      it "emits CI monitor events when workflows pass" do
+        io = StringIO.new
+        event_stream = Kettle::Ndjson.event_stream(io, types: "ci_monitor")
+        release_cli = described_class.new(ci_workflows: "current", event_stream: event_stream)
+        allow(release_cli).to receive(:ensure_github_pull_request_for_ci!)
+        allow(Kettle::Dev::CIMonitor).to receive(:monitor_all!)
+
+        release_cli.send(:monitor_workflows_after_push!)
+
+        events = io.string.lines.map { |line| JSON.parse(line) }
+        expect(events).to contain_exactly(
+          include("type" => "ci_monitor", "action" => "start", "status" => "started", "workflows" => ["current.yml"], "mark" => ">"),
+          include("type" => "ci_monitor", "action" => "finish", "status" => "ok", "workflows" => ["current.yml"], "mark" => ".")
+        )
+      end
+
+      it "emits CI monitor failure events when workflows fail" do
+        io = StringIO.new
+        event_stream = Kettle::Ndjson.event_stream(io, types: "ci_monitor")
+        release_cli = described_class.new(event_stream: event_stream)
+        allow(release_cli).to receive(:ensure_github_pull_request_for_ci!)
+        allow(Kettle::Dev::CIMonitor).to receive(:monitor_all!).and_raise(MockSystemExit, "Workflow failed: ci.yml")
+
+        expect { release_cli.send(:monitor_workflows_after_push!) }.to raise_error(MockSystemExit, /Workflow failed/)
+
+        events = io.string.lines.map { |line| JSON.parse(line) }
+        expect(events).to include(
+          include("type" => "ci_monitor", "action" => "finish", "status" => "failed", "reason" => include("Workflow failed: ci.yml"), "mark" => "!")
+        )
+      end
+
       it "uses K_RELEASE_CI_WORKFLOWS when no explicit workflow subset is passed" do
         stub_env("K_RELEASE_CI_WORKFLOWS" => "current,style.yml")
         release_cli = described_class.new

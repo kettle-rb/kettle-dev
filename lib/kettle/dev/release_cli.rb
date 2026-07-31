@@ -1016,12 +1016,23 @@ module Kettle
       def monitor_workflows_after_push!
         ensure_github_pull_request_for_ci!
         keep_release_secrets_alive!("CI monitoring")
+        restart_hint = "bundle exec kettle-release start_step=10"
+        emit_ci_monitor_event(action: "start", status: "started", workflows: @ci_workflows, restart_hint: restart_hint)
         # Use abort-on-failure CI monitor to match historical behavior and specs
-        Kettle::Dev::CIMonitor.monitor_all!(
-          restart_hint: "bundle exec kettle-release start_step=10",
-          workflows: @ci_workflows,
-          keepalive: release_secrets_configured? ? -> { keep_release_secrets_alive!("CI monitoring") } : nil
-        )
+        begin
+          Kettle::Dev::CIMonitor.monitor_all!(
+            restart_hint: restart_hint,
+            workflows: @ci_workflows,
+            keepalive: release_secrets_configured? ? -> { keep_release_secrets_alive!("CI monitoring") } : nil
+          )
+          emit_ci_monitor_event(action: "finish", status: "ok", workflows: @ci_workflows, restart_hint: restart_hint)
+        rescue SystemExit => error
+          emit_ci_monitor_event(action: "finish", status: "failed", workflows: @ci_workflows, restart_hint: restart_hint, reason: error.message)
+          raise
+        rescue => error
+          emit_ci_monitor_event(action: "finish", status: "failed", workflows: @ci_workflows, restart_hint: restart_hint, reason: "#{error.class}: #{error.message}")
+          raise
+        end
       end
 
       def ensure_github_pull_request_for_ci!
@@ -1665,6 +1676,30 @@ module Kettle
           required: required,
           reason: reason,
           remotes: remotes,
+          mark: mark
+        )
+      end
+
+      def emit_ci_monitor_event(action:, status:, workflows:, restart_hint:, reason: nil)
+        mark = case status.to_s
+        when "started"
+          ">"
+        when "ok"
+          "."
+        when "failed"
+          "!"
+        else
+          "?"
+        end
+        Kettle::Ndjson.emit_event(
+          @event_recorder,
+          "ci_monitor",
+          action: action,
+          phase: "release",
+          status: status,
+          workflows: workflows,
+          restart_hint: restart_hint,
+          reason: reason,
           mark: mark
         )
       end
