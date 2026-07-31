@@ -44,6 +44,9 @@ Please file a bug if you notice a violation of semantic versioning.
 - `kettle-pre-release` Markdown image URL normalization now keeps encoded query
   values stable, avoiding release-time churn in shields URLs with nested URL
   parameters.
+- `kettle-release` now runs `bin/setup` with inherited Bundler bootstrap
+  variables unset, so a release lockfile reset can install newly selected gems
+  before later release tasks run.
 
 ### Security
 

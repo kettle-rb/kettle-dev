@@ -128,6 +128,18 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         cli.send(:run_cmd!, "bin/setup")
       end
 
+      it "runs setup with inherited Bundler and Ruby bootstrap env unset" do
+        command = cli.send(:release_setup_command)
+
+        expect(command).to include("env")
+        expect(command).to include("-u BUNDLE_GEMFILE")
+        expect(command).to include("-u BUNDLE_LOCKFILE")
+        expect(command).to include("-u BUNDLER_SETUP")
+        expect(command).to include("-u RUBYLIB")
+        expect(command).to include("-u RUBYOPT")
+        expect(command).to end_with(" bin/setup")
+      end
+
       it "sets bundle audit skip env for release child commands when requested" do
         previous_skip_bundle_audit = ENV["KETTLE_DEV_SKIP_BUNDLE_AUDIT"]
         local_cli = described_class.new(skip_bundle_audit: true)
@@ -1570,7 +1582,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
         # Ensure the initial build/release commands were attempted
         expect(cli).to have_received(:run_pre_release_checks!)
-        expect(cli).to have_received(:run_cmd!).with("bin/setup")
+        expect(cli).to have_received(:run_cmd!).with(a_string_matching(/\Aenv .* bin\/setup\z/))
         expect(cli).to have_received(:run_cmd!).with("bin/rake")
         expect(cli).to have_received(:run_cmd!).with("bin/rake appraisal:generate")
         expect(cli).to have_received(:run_cmd!).with("bin/rake yard")
@@ -1695,7 +1707,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         end
 
         expect { cli.run }.not_to raise_error
-        expect(cli).to have_received(:run_cmd!).with("bin/setup")
+        expect(cli).to have_received(:run_cmd!).with(a_string_matching(/\Aenv .* bin\/setup\z/))
         expect(cli).to have_received(:run_cmd!).with("bin/rake")
         expect(cli).not_to have_received(:run_cmd!).with("bin/rake appraisal:generate")
         expect(cli).to have_received(:run_cmd!).with("bin/rake yard")
@@ -2397,7 +2409,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
         expect { local_cli.run }.not_to raise_error
 
-        expect(local_cli).not_to have_received(:run_cmd!).with("bin/setup")
+        expect(local_cli).not_to have_received(:run_cmd!).with(a_string_matching(/bin\/setup/))
         expect(local_cli).not_to have_received(:run_cmd!).with("bin/rake")
         expect(local_cli).not_to have_received(:run_cmd!).with("bin/rake appraisal:generate")
       end

@@ -276,7 +276,7 @@ module Kettle
         prepare_release_lockfiles_for_release_tasks! if release_lockfile_preflight_needed?
 
         # 3. bin/setup
-        run_cmd!("bin/setup") if run_step?(3)
+        run_cmd!(release_setup_command) if run_step?(3)
         # 4. bin/rake
         run_cmd!(release_default_task_command) if run_step?(4)
 
@@ -771,6 +771,11 @@ module Kettle
         return "KETTLE_DEV_SKIP_TESTS=true bin/rake" if @changelog_generated_coverage
 
         "bin/rake"
+      end
+
+      def release_setup_command
+        unbundled_keys = (BundlerEnvGuard::RESET_ENV_KEYS + %w[RUBYLIB RUBYOPT]).uniq
+        "env #{unbundled_keys.map { |key| "-u #{Shellwords.escape(key)}" }.join(" ")} bin/setup"
       end
 
       def confirm_yes!(message, prompt, abort_message)
