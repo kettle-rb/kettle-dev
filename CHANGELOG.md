@@ -28,11 +28,20 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [2.5.13] - 2026-07-31
+
+- TAG: [v2.5.13][2.5.13t]
+- COVERAGE: 91.70% -- 4973/5423 lines in 46 files
+- BRANCH COVERAGE: 75.97% -- 1856/2443 branches in 46 files
+- 50.54% documented
+
+### Fixed
+
 - `kettle-release` now treats `origin` as the default required parity remote
   while allowing optional mirror remotes to be skipped after fetch retries,
   so a transient Codeberg/GitLab mirror outage does not block publishing.
-
-### Security
 
 ## [2.5.12] - 2026-07-31
 
@@ -3122,7 +3131,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.12...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.13...HEAD
+[2.5.13]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.12...v2.5.13
+[2.5.13t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.13
 [2.5.12]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.11...v2.5.12
 [2.5.12t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.12
 [2.5.11]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.10...v2.5.11
