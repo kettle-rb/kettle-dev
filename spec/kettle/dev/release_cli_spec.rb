@@ -676,7 +676,23 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect { cli.send(:ensure_trunk_synced_before_push!, "main", "feat") }.not_to raise_error
       end
 
-      it "adds a skip-remotes hint when an active remote cannot be fetched" do
+      it "skips a non-required active remote that cannot be fetched" do
+        allow(cli).to receive(:has_remote?).with("all").and_return(true)
+        allow(cli).to receive(:list_remotes).and_return(%w[all origin cb])
+        allow(cli).to receive(:remote_fetch_parity_attempts).and_return(2)
+        allow(cli).to receive(:remote_fetch_parity_interval).and_return(0)
+        expect(cli).to receive(:run_cmd!).with("git fetch origin")
+        expect(cli).to receive(:run_cmd!).with("git fetch cb").twice.and_raise(MockSystemExit, "Command failed: git fetch cb (exit 128)")
+        expect(cli).to receive(:sleep).with(0).once
+        allow(cli).to receive(:remote_branch_exists?).with("origin", "main").and_return(true)
+        allow(cli).to receive(:ahead_behind_counts).with("main", "origin/main").and_return([0, 0])
+        expect(cli).not_to receive(:remote_branch_exists?).with("cb", "main")
+
+        expect { cli.send(:ensure_trunk_synced_before_push!, "main", "feat") }.not_to raise_error
+      end
+
+      it "blocks release when a required active remote cannot be fetched" do
+        cli = described_class.new(required_remotes: "origin,cb")
         allow(cli).to receive(:has_remote?).with("all").and_return(true)
         allow(cli).to receive(:list_remotes).and_return(%w[all origin cb])
         allow(cli).to receive(:remote_fetch_parity_attempts).and_return(2)
@@ -688,7 +704,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect do
           cli.send(:ensure_trunk_synced_before_push!, "main", "feat")
         end.to raise_error(MockSystemExit) { |error|
-          expect(error.message).to include("Unable to fetch git remote 'cb'")
+          expect(error.message).to include("Unable to fetch required git remote 'cb'")
           expect(error.message).to include("kettle-release --skip-remotes cb")
           expect(error.message).to include("K_RELEASE_SKIP_REMOTES=cb kettle-release")
           expect(error.message).to include("Command failed: git fetch cb")

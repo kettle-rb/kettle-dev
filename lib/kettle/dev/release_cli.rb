@@ -117,14 +117,15 @@ module Kettle
 
       public
 
-      def initialize(start_step: 0, local_ci: false, version: nil, appraisal_task: nil, skip_steps: nil, skip_bundle_audit: nil, ci_workflows: nil, skip_remotes: nil, secrets_provider_name: nil, yes: false, **options)
+      def initialize(start_step: 0, local_ci: false, version: nil, appraisal_task: nil, skip_steps: nil, skip_bundle_audit: nil, ci_workflows: nil, skip_remotes: nil, required_remotes: nil, secrets_provider_name: nil, yes: false, **options)
         @root = Kettle::Dev::CIHelpers.project_root
         @git = Kettle::Dev::GitAdapter.new(@root)
         @start_step = (start_step || 0).to_i
         @start_step = 0 if @start_step < 0
         @skip_steps = normalize_skip_steps(skip_steps)
         @ci_workflows = normalize_ci_workflows(ci_workflows || ENV["K_RELEASE_CI_WORKFLOWS"])
-        @skip_remotes = normalize_skip_remotes(skip_remotes || ENV["K_RELEASE_SKIP_REMOTES"])
+        @skip_remotes = normalize_remote_names(skip_remotes || ENV["K_RELEASE_SKIP_REMOTES"], "skip remotes")
+        @required_remotes = normalize_required_remotes(required_remotes)
         @local_ci = !!local_ci
         @skip_bundle_audit = truthy_value?(skip_bundle_audit) || truthy_value?(ENV["KETTLE_DEV_SKIP_BUNDLE_AUDIT"])
         @yes = !!yes
@@ -479,12 +480,17 @@ module Kettle
         workflows.map { |workflow| workflow.match?(/\.ya?ml\z/) ? workflow : "#{workflow}.yml" }.uniq
       end
 
-      def normalize_skip_remotes(value)
+      def normalize_remote_names(value, label)
         remotes = Array(value).flat_map { |part| part.to_s.split(",") }.map(&:strip).reject(&:empty?)
         invalid = remotes.find { |remote| !remote.match?(/\A[A-Za-z0-9_.-]+\z/) }
-        abort("Invalid skip remotes value #{invalid.inspect}; use comma-separated git remote names.") if invalid
+        abort("Invalid #{label} value #{invalid.inspect}; use comma-separated git remote names.") if invalid
 
         remotes.uniq
+      end
+
+      def normalize_required_remotes(value)
+        remotes = normalize_remote_names(value.nil? ? ENV["K_RELEASE_REQUIRED_REMOTES"] : value, "required remotes")
+        remotes.empty? ? ["origin"] : remotes
       end
 
       private
@@ -1798,6 +1804,10 @@ module Kettle
         @skip_remotes.include?(name)
       end
 
+      def required_remote?(name)
+        @required_remotes.include?(name)
+      end
+
       def active_remotes
         list_remotes.reject { |remote| skipped_remote?(remote) }
       end
@@ -1836,17 +1846,18 @@ module Kettle
         if has_remote?("all")
           remotes = active_remotes
           skipped = list_remotes.select { |remote| skipped_remote?(remote) }
+          required = remotes.select { |remote| required_remote?(remote) }
           puts "Remote 'all' detected. Fetching from active remotes and enforcing strict trunk parity..."
           puts "Skipping configured remotes: #{skipped.join(", ")}" unless skipped.empty?
+          puts "Required release parity remotes: #{required.join(", ")}" unless required.empty?
+          fetched_remotes = []
           remotes.each do |remote|
             next if remote == "all"
 
-            fetch_remote_for_parity!(remote)
+            fetched_remotes << remote if fetch_remote_for_parity!(remote)
           end
           missing_from = []
-          remotes.each do |r|
-            next if r == "all"
-
+          fetched_remotes.each do |r|
             if remote_branch_exists?(r, trunk)
               _ahead, behind = ahead_behind_counts(trunk, "#{r}/#{trunk}")
               missing_from << r if behind.positive?
@@ -1855,7 +1866,7 @@ module Kettle
           unless missing_from.empty?
             abort("Local #{trunk} is missing commits present on: #{missing_from.join(", ")}. Please sync trunk first.")
           end
-          puts "Local #{trunk} has all commits from remotes: #{(remotes - ["all"]).join(", ")}"
+          puts "Local #{trunk} has all commits from remotes: #{fetched_remotes.join(", ")}"
           return
         end
 
@@ -1935,7 +1946,13 @@ module Kettle
           sleep(remote_fetch_parity_interval) if attempt < attempts
         end
 
-        abort(remote_fetch_failure_message(remote, last_error&.message.to_s))
+        detail = last_error&.message.to_s
+        abort(remote_fetch_failure_message(remote, detail)) if required_remote?(remote)
+
+        message = optional_remote_fetch_failure_message(remote, detail)
+        warn(message)
+        record_diagnostic("release_remote_skipped", message, severity: "warning", blocking: false)
+        false
       end
 
       def remote_fetch_parity_attempts
@@ -1948,13 +1965,27 @@ module Kettle
 
       def remote_fetch_failure_message(remote, detail)
         <<~MSG
-          Unable to fetch git remote '#{remote}' during release parity checks.
+          Unable to fetch required git remote '#{remote}' during release parity checks.
           kettle-release enforces trunk parity across active remotes before publishing.
 
           If this remote is temporarily unavailable or intentionally not part of this release,
           rerun with one of:
             kettle-release --skip-remotes #{remote}
             K_RELEASE_SKIP_REMOTES=#{remote} kettle-release
+
+          Original failure:
+          #{detail}
+        MSG
+      end
+
+      def optional_remote_fetch_failure_message(remote, detail)
+        <<~MSG
+          Unable to fetch optional git remote '#{remote}' during release parity checks; skipping this remote for this release.
+          Required remotes still block release parity checks.
+
+          To make this remote block releases, configure:
+            kettle-release --required-remotes #{remote}
+            K_RELEASE_REQUIRED_REMOTES=#{remote} kettle-release
 
           Original failure:
           #{detail}

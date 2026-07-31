@@ -28,6 +28,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-release` now treats `origin` as the default required parity remote
+  while allowing optional mirror remotes to be skipped after fetch retries,
+  so a transient Codeberg/GitLab mirror outage does not block publishing.
+
 ### Security
 
 ## [2.5.12] - 2026-07-31
