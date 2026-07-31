@@ -5,6 +5,7 @@ require "json"
 require "net/http"
 require "uri"
 require "fileutils"
+require "kettle/ndjson"
 
 module Kettle
   module Dev
@@ -28,7 +29,7 @@ module Kettle
       # @param update_prep [Boolean] when true, update the most recent prepared release section in place
       # @param version [String, nil] explicit version override for gems without a literal VERSION constant
       # @param yes [Boolean] when true, approve the selected release plan without prompting
-      def initialize(strict: true, enforce_coverage_thresholds: true, update_prep: false, version: nil, root: Kettle::Dev::CIHelpers.project_root, refresh_cache: false, yes: false)
+      def initialize(strict: true, enforce_coverage_thresholds: true, update_prep: false, version: nil, root: Kettle::Dev::CIHelpers.project_root, refresh_cache: false, yes: false, event_stream: nil)
         @root = root
         @changelog_path = resolved_changelog_path
         @coverage_root = resolved_coverage_root
@@ -39,6 +40,7 @@ module Kettle
         @version_override = Kettle::Dev::Versioning.normalize_explicit_version(version)
         @refresh_cache = refresh_cache
         @yes = !!yes
+        @event_recorder = Kettle::Ndjson.event_recorder(event_stream, phase_timings: [])
       end
 
       # Main entry point to update CHANGELOG.md
@@ -70,6 +72,7 @@ module Kettle
 
         if plan.fetch(:action) == :update_prepared_release
           update_prepared_release!(changelog, today, owner, repo, line_cov_line, branch_cov_line, yard_line)
+          emit_changelog_event(action: "update", status: "ok", version: version, plan: plan.fetch(:action).to_s)
           return
         end
 
@@ -140,6 +143,7 @@ module Kettle
         updated = updated.rstrip + "\n"
 
         File.write(@changelog_path, updated)
+        emit_changelog_event(action: "update", status: "ok", version: version, plan: plan.fetch(:action).to_s)
         puts "CHANGELOG.md updated with v#{version} section."
       end
 
@@ -348,6 +352,16 @@ module Kettle
         puts "  latest released for current series: #{plan.fetch(:latest_for_series) || "unknown"}"
         puts "  latest CHANGELOG.md release: #{plan.fetch(:latest_changelog_version) || "none"}"
         puts "  gem: #{plan.fetch(:gem_name) || "unknown"}"
+        emit_changelog_event(
+          action: "plan",
+          status: "ok",
+          plan: plan.fetch(:action).to_s,
+          version: plan.fetch(:version),
+          gem_name: plan.fetch(:gem_name),
+          latest_overall: plan.fetch(:latest_overall),
+          latest_for_series: plan.fetch(:latest_for_series),
+          latest_changelog_version: plan.fetch(:latest_changelog_version)
+        )
         if @yes
           puts("Continue with this plan? [y/N]: y")
           return
@@ -665,20 +679,25 @@ module Kettle
           coverage_dir = File.dirname(@coverage_path)
           if Dir.exist?(coverage_dir)
             puts "Cleaning old coverage data from #{Kettle::Dev.display_path(coverage_dir)}..."
+            emit_changelog_event(action: "coverage_clean", status: "started", path: Kettle::Dev.display_path(coverage_dir))
             Dir.glob(File.join(coverage_dir, "*")).each do |file|
               File.delete(file) if File.file?(file)
             end
+            emit_changelog_event(action: "coverage_clean", status: "ok", path: Kettle::Dev.display_path(coverage_dir))
           end
 
           puts "Generating fresh coverage data by running: bundle exec kettle-test"
+          emit_changelog_event(action: "coverage", status: "started", command: "bundle exec kettle-test", root: Kettle::Dev.display_path(@coverage_root))
 
           success = system(changelog_coverage_env, "bundle", "exec", "kettle-test", chdir: @coverage_root)
 
           unless success
+            emit_changelog_event(action: "coverage", status: "failed", command: "bundle exec kettle-test", root: Kettle::Dev.display_path(@coverage_root), reason: "exit status #{$?.exitstatus || "unknown"}")
             raise "bundle exec kettle-test failed with exit status #{$?.exitstatus || "unknown"}"
           end
 
           puts "Coverage generation complete."
+          emit_changelog_event(action: "coverage", status: "ok", command: "bundle exec kettle-test", root: Kettle::Dev.display_path(@coverage_root))
 
           ensure_changelog_coverage_json!
         else
@@ -737,6 +756,29 @@ module Kettle
           warn("Failed to get coverage data: #{e.class}: #{e.message}")
           [nil, nil]
         end
+      end
+
+      def emit_changelog_event(action:, status:, **payload)
+        mark = case status.to_s
+        when "started"
+          ">"
+        when "ok", "skipped"
+          "."
+        when "failed"
+          "!"
+        else
+          "?"
+        end
+        Kettle::Ndjson.emit_event(
+          @event_recorder,
+          "changelog",
+          payload.merge(
+            action: action,
+            phase: "release",
+            status: status,
+            mark: mark
+          )
+        )
       end
 
       def changelog_coverage_env

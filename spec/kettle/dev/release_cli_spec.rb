@@ -380,6 +380,17 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
         yes_cli.send(:run_pre_release_checks!)
       end
+
+      it "requests changelog events when release events are enabled" do
+        io = StringIO.new
+        event_stream = Kettle::Ndjson.event_stream(io, types: "changelog")
+        evented_cli = described_class.new(yes: true, event_stream: event_stream)
+        pre_release = instance_double(Kettle::Dev::PreReleaseCLI, run: nil)
+        expect(Kettle::Dev::PreReleaseCLI).to receive(:new).with(check_num: 1, event_recorder: anything).and_return(pre_release)
+        expect(evented_cli).to receive(:run_cmd!).with("bundle exec kettle-changelog --yes --events=changelog")
+
+        evented_cli.send(:run_pre_release_checks!)
+      end
     end
 
     describe "latest_released_versions (integration with RubyGems.org via VCR)" do

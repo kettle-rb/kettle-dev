@@ -50,9 +50,11 @@ begin
 
   # This library
   require "kettle/dev"
+  require "kettle/ndjson"
   require "kettle/dev/executable_version"
   Kettle::Dev::ExecutableVersion.print_and_exit!(script_basename, ARGV, value_option: true)
-  Kettle::Dev::ExecutableVersion.print_header(script_basename) unless ARGV.include?("--json")
+  machine_output = ARGV.any? { |arg| arg == "--json" || arg.start_with?("--events") }
+  Kettle::Dev::ExecutableVersion.print_header(script_basename) unless machine_output
 rescue LoadError => e
   warn("#{script_basename}: could not load dependency: #{e.class}: #{e.message}")
   warn("Hint: Ensure the host project has kettle-dev as a dependency and run bundle install.")
@@ -61,7 +63,7 @@ end
 
 if ARGV.include?("-h") || ARGV.include?("--help")
   puts <<~USAGE
-    Usage: kettle-changelog [--version VERSION] [--yes] [--update-prep] [--pending-release] [--release-state] [--refresh-cache] [--add-unreleased-entry --section SECTION --entry TEXT] [--json] [--no-strict] [--no-coverage-threshold]
+    Usage: kettle-changelog [--version VERSION] [--yes] [--update-prep] [--pending-release] [--release-state] [--refresh-cache] [--add-unreleased-entry --section SECTION --entry TEXT] [--json|--events[=TYPES]] [--no-strict] [--no-coverage-threshold]
 
     Detects the current version from lib/**/version.rb, the latest live release, and
     the most recent CHANGELOG.md release section, then prompts to confirm the selected plan:
@@ -82,6 +84,7 @@ if ARGV.include?("-h") || ARGV.include?("--help")
       --section SECTION         Unreleased section to receive the entry (Added, Changed, Deprecated, Removed, Fixed, Security)
       --entry TEXT              Changelog entry text; "- " is added when omitted
       --json                    Print query output as JSON
+      --events[=TYPES]          Print newline-delimited JSON changelog events
       --no-strict               Allow missing coverage and yard data (warnings only, no errors)
       --no-coverage-threshold   Generate coverage without hard-failing below configured thresholds
 
@@ -137,6 +140,22 @@ begin
     Kettle::Dev::Versioning.normalize_explicit_version(version)
   end
 
+  def extract_events_arg!(argv)
+    events = false
+    event_types = nil
+    argv.delete_if do |arg|
+      if arg == "--events"
+        events = true
+      elsif arg.start_with?("--events=")
+        events = true
+        event_types = arg.split("=", 2)[1]
+      else
+        false
+      end
+    end
+    [events, event_types]
+  end
+
   # Determine if strict mode is enabled (default: true)
   strict_mode = !ARGV.include?("--no-strict") && ENV.fetch("K_CHANGELOG_STRICT", "true").downcase != "false"
   update_prep = ARGV.delete("--update-prep")
@@ -146,6 +165,8 @@ begin
   refresh_cache = ARGV.delete("--refresh-cache")
   add_unreleased_entry = ARGV.delete("--add-unreleased-entry") || ARGV.delete("--add-changelog-entry")
   json_output = ARGV.delete("--json")
+  events_output, event_types = extract_events_arg!(ARGV)
+  Kettle::Dev::ExitAdapter.abort("--events cannot be combined with --json") if events_output && json_output
   coverage_threshold_disabled = ARGV.include?("--no-coverage-threshold") || ARGV.include?("--no-coverage-thresholds")
   coverage_hard = !coverage_threshold_disabled && ENV.fetch("K_CHANGELOG_COVERAGE_HARD", "true").downcase != "false"
   version_override = extract_version_arg!(ARGV)
@@ -180,7 +201,8 @@ begin
     exit(0)
   end
 
-  cli = Kettle::Dev::ChangelogCLI.new(strict: strict_mode, enforce_coverage_thresholds: coverage_hard, update_prep: update_prep, version: version_override, refresh_cache: refresh_cache, yes: yes)
+  event_stream = events_output ? Kettle::Ndjson.event_stream($stdout, types: event_types) : nil
+  cli = Kettle::Dev::ChangelogCLI.new(strict: strict_mode, enforce_coverage_thresholds: coverage_hard, update_prep: update_prep, version: version_override, refresh_cache: refresh_cache, yes: yes, event_stream: event_stream)
   if release_state_query
     state = cli.release_state
     puts(json_output ? JSON.pretty_generate(state) : cli.release_state_table(state))

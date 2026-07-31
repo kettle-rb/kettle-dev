@@ -484,6 +484,27 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       end
     end
 
+    it "emits changelog plan events" do
+      io = StringIO.new
+      event_stream = Kettle::Ndjson.event_stream(io, types: "changelog")
+      cli = described_class.new(strict: false, yes: true, event_stream: event_stream)
+      plan = {
+        action: :create_release,
+        version: "1.2.3",
+        gem_name: "demo",
+        latest_overall: "1.2.2",
+        latest_for_series: "1.2.2",
+        latest_changelog_version: "1.2.2"
+      }
+
+      cli.send(:confirm_plan!, plan)
+
+      events = io.string.lines.map { |line| JSON.parse(line) }
+      expect(events).to contain_exactly(
+        include("type" => "changelog", "action" => "plan", "status" => "ok", "plan" => "create_release", "version" => "1.2.3", "gem_name" => "demo", "mark" => ".")
+      )
+    end
+
     it "reformats only when duplicate version exists and user agrees" do
       mkproj do |root|
         File.write(File.join(root, "lib", "my", "gem", "version.rb"), <<~RB)

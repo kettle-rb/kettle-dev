@@ -764,6 +764,7 @@ module Kettle
         cmd = "bundle exec kettle-changelog"
         cmd = "#{cmd} --version #{Shellwords.escape(@version_override)}" if @version_override
         cmd = "#{cmd} --yes" if @yes
+        cmd = "#{cmd} --events=changelog" if @event_stream
         run_cmd!(cmd)
         @changelog_generated_coverage = true
       end

@@ -28,9 +28,12 @@ Please file a bug if you notice a violation of semantic versioning.
   success, and failure.
 - `kettle-release --events` now emits `pre_release` events around
   `kettle-pre-release` checks and selected check summaries.
-- `kettle-dev` now requires `kettle-ndjson` 0.1.7 or newer so release event
+- `kettle-changelog --events` now emits `changelog` events around release plan,
+  coverage generation, and changelog update activity, and `kettle-release
+  --events` forwards those child events.
+- `kettle-dev` now requires `kettle-ndjson` 0.1.8 or newer so release event
   streams resolve against the protocol that includes remote parity and CI
-  monitor and pre-release events.
+  monitor, pre-release, and changelog events.
 
 ### Changed
 
