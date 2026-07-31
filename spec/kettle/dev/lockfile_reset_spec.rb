@@ -433,6 +433,29 @@ RSpec.describe Kettle::Dev::LockfileReset do
     expect(diagnostics.join("\n")).to include("CHECKSUMS has no sha256 for rake 13.4.2")
   end
 
+  it "does not require registry checksums for Git-sourced specs" do
+    reset = described_class.new(root: @root, command_runner: ->(_command) {})
+    File.write(File.join(@root, "Gemfile.lock"), <<~LOCK)
+      GIT
+        remote: https://github.com/kettle-dev/simplecov.git
+        revision: bc14cb6ef921e264332fd7b750bf6fb8916488c1
+        branch: fix-final-parallel-worker-formatting
+        specs:
+          simplecov (1.0.0.rc3)
+
+      GEM
+        remote: https://gem.coop/
+        specs:
+          rake (13.4.2)
+
+      CHECKSUMS
+        rake (13.4.2) sha256=abc123
+        simplecov (1.0.0.rc3)
+    LOCK
+
+    expect(reset.diagnostics(File.join(@root, "Gemfile.lock"))).to be_empty
+  end
+
   it "allows the current gemspec path while targeting sibling paths" do
     reset = described_class.new(root: @root, command_runner: ->(_command) {})
     File.write(File.join(@root, "Gemfile.lock"), <<~LOCK)

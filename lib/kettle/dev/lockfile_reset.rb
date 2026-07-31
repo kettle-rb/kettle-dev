@@ -221,7 +221,7 @@ module Kettle
       end
 
       def empty_registry_checksums(path)
-        path_gems = path_source_gems(path) | path_dependency_gems(path) | self_path_source_gems(path)
+        non_registry_gems = non_registry_source_gems(path) | path_dependency_gems(path)
         in_checksums = false
         entries = File.readlines(path).filter_map.with_index(1) do |line, index|
           stripped = line.strip
@@ -239,7 +239,7 @@ module Kettle
           name = match[1]
           checksum = match[3].to_s
           next unless checksum.empty?
-          next if path_gems.include?(name)
+          next if non_registry_gems.include?(name)
 
           [name, match[2], index]
         end
@@ -282,16 +282,16 @@ module Kettle
         end
       end
 
+      def non_registry_source_gems(path)
+        lockfile_parser(path).specs.each_with_object(Set.new) do |spec, gems|
+          gems << spec.name unless registry_source?(spec.source)
+        end
+      end
+
       def path_dependency_gems(path)
         lockfile_parser(path).dependencies.each_value.each_with_object(Set.new) do |dependency, gems|
           source = dependency.source
           gems << dependency.name if path_source?(source) && !self_path_source?(source)
-        end
-      end
-
-      def self_path_source_gems(path)
-        lockfile_parser(path).specs.each_with_object(Set.new) do |spec, gems|
-          gems << spec.name if self_path_source?(spec.source)
         end
       end
 
@@ -330,6 +330,10 @@ module Kettle
 
       def path_source?(source)
         source.instance_of?(::Bundler::Source::Path)
+      end
+
+      def registry_source?(source)
+        source.instance_of?(::Bundler::Source::Rubygems)
       end
 
       def self_path_source?(source)

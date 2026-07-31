@@ -82,6 +82,13 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 
 <h3 id="fixed">Fixed</h3>
 
+<ul>
+  <li>
+<code>kettle-reset release-lockfiles</code> now requires SHA-256 checksums only for<br>
+registry-sourced gems, allowing valid Git-sourced dependencies such as the<br>
+<code>simplecov</code> fork to remain checksumless.</li>
+</ul>
+
 <h3 id="security">Security</h3>
 
 <h2 id="2513---2026-07-31">
