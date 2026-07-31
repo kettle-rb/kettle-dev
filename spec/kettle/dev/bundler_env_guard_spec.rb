@@ -15,6 +15,7 @@ RSpec.describe Kettle::Dev::BundlerEnvGuard do
       "BUNDLE_GEMFILE" => "Gemfile",
       "BUNDLER_ORIG_BUNDLE_GEMFILE" => "Gemfile",
       "BUNDLE_SILENCE_DEPRECATIONS" => "true",
+      "BUNDLER_DEBUG" => "true",
       "BUNDLE_NEW_SURPRISE" => "1",
       "BUNDLER_NEW_SURPRISE" => "1"
     )

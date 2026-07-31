@@ -335,8 +335,7 @@ module Kettle
           modified = false
 
           urls.each do |url_str|
-            addr = Addressable::URI.parse(url_str)
-            normalized = addr.normalize.to_s
+            normalized = normalized_markdown_image_url(url_str)
             next if normalized == url_str
 
             # Replace exact occurrences of the URL in the markdown content
@@ -357,6 +356,13 @@ module Kettle
 
         puts "[kettle-pre-release] Normalization candidates: #{total_candidates}. Files changed: #{changed.uniq.size}."
         nil
+      end
+
+      def normalized_markdown_image_url(url_str)
+        addr = Addressable::URI.parse(url_str)
+        normalized = addr.normalize
+        normalized.query = addr.query if addr.query && normalized.query != addr.query
+        normalized.to_s
       end
 
       # Check 3: Validate Markdown image links by cached HTTP HEAD/GET.

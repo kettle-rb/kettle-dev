@@ -1,8 +1,8 @@
 {
-  "lib/kettle/dev/bundler_env_guard.rb:4236796966": [
-    [48, 9, 27, "ThreadSafety/ClassInstanceVariable: Avoid class instance variables.", 2963484589],
-    [62, 9, 27, "ThreadSafety/ClassInstanceVariable: Avoid class instance variables.", 2963484589],
-    [64, 24, 27, "ThreadSafety/ClassInstanceVariable: Avoid class instance variables.", 2963484589],
-    [66, 9, 27, "ThreadSafety/ClassInstanceVariable: Avoid class instance variables.", 2963484589]
+  "lib/kettle/dev/bundler_env_guard.rb:4206975428": [
+    [49, 9, 27, "ThreadSafety/ClassInstanceVariable: Avoid class instance variables.", 2963484589],
+    [63, 9, 27, "ThreadSafety/ClassInstanceVariable: Avoid class instance variables.", 2963484589],
+    [65, 24, 27, "ThreadSafety/ClassInstanceVariable: Avoid class instance variables.", 2963484589],
+    [67, 9, 27, "ThreadSafety/ClassInstanceVariable: Avoid class instance variables.", 2963484589]
   ]
 }

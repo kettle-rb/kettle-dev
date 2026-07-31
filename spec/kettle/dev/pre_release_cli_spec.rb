@@ -37,6 +37,27 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
     end
   end
 
+  it "keeps encoded image query values stable while normalizing markdown URLs" do
+    Dir.mktmpdir do |root|
+      file = File.join(root, "README.md")
+      url = "https://img.shields.io/discourse/topics?server=https%3A%2F%2Fwww.rubyforum.org&style=flat&label=Ruby%20Users%20Forum"
+      File.write(file, "![forum](#{url})\n")
+
+      # rubocop:disable ThreadSafety/DirChdir
+      Dir.chdir(root) do
+        cli = described_class.new(check_num: 2)
+        allow(Kettle::Dev::PreReleaseCLI::Markdown).to receive(:extract_image_urls_from_files).and_return([])
+
+        VCR.use_cassette("head_image_ok") do
+          expect { cli.run }.not_to raise_error
+        end
+      end
+      # rubocop:enable ThreadSafety/DirChdir
+
+      expect(File.read(file)).to include(url)
+    end
+  end
+
   describe Kettle::Dev::PreReleaseCLI::Markdown do
     it "extracts inline, reference, and html image urls" do
       md = <<~MD

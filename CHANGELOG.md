@@ -38,6 +38,12 @@ Please file a bug if you notice a violation of semantic versioning.
 - `kettle-dev` now requires `kettle-ndjson` 0.1.4 or newer so
   `kettle-release --events=secret_provider` cannot resolve against an older
   event protocol.
+- `kettle-release` lockfile reset now preserves existing bundle platforms and
+  adds the current host platform, preventing release-prep lockfiles from losing
+  Linux support during full rebuilds.
+- `kettle-pre-release` Markdown image URL normalization now keeps encoded query
+  values stable, avoiding release-time churn in shields URLs with nested URL
+  parameters.
 
 ### Security
 

@@ -79,10 +79,32 @@ module Kettle
           command << " #{key}=#{Shellwords.escape(value)}"
         end
         command << " bundle lock"
+        reset_platforms(path).each do |platform|
+          command << " --add-platform=#{Shellwords.escape(platform)}"
+        end
         command << " --update"
         command << " #{update_gems.map { |gem_name| Shellwords.escape(gem_name) }.join(" ")}" unless update_gems.empty?
         command << " --add-checksums"
         command
+      end
+
+      def reset_platforms(path)
+        (lockfile_platforms(path) | [Gem::Platform.local.to_s]).reject(&:empty?).sort
+      end
+
+      def lockfile_platforms(path)
+        in_platforms = false
+        File.readlines(path).filter_map do |line|
+          stripped = line.strip
+          if stripped.match?(/\A[A-Z][A-Z ]*\z/)
+            in_platforms = stripped == "PLATFORMS"
+            next
+          end
+          next unless in_platforms
+          next if stripped.empty?
+
+          stripped
+        end
       end
 
       def reset_update_gems(path)

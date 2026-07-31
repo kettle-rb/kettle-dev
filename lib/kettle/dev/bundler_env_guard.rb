@@ -19,6 +19,7 @@ module Kettle
         BUNDLE_SILENCE_ROOT_WARNING
         BUNDLE_SUPPRESS_INSTALL_USING_MESSAGES
         BUNDLE_VERBOSE
+        BUNDLER_DEBUG
       ].freeze
 
       INERT_ENV_PREFIXES = %w[

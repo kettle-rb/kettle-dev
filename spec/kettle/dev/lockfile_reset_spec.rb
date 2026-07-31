@@ -73,9 +73,36 @@ RSpec.describe Kettle::Dev::LockfileReset do
     expect(command).to include("K_JEM_TEMPLATING=false")
     expect(command).to include("BUNDLE_GEMFILE=#{File.join(@root, "Gemfile")}")
     expect(command).to include("BUNDLE_LOCKFILE=#{File.join(@root, "Gemfile.lock")}")
-    expect(command).to include("bundle lock --update --add-checksums")
+    expect(command).to include("bundle lock")
+    expect(command).to include("--add-platform=#{Gem::Platform.local}")
+    expect(command).to include("--update --add-checksums")
     expect(command).not_to include("bundle lock --update demo")
     expect(commands).to be_empty
+  end
+
+  it "preserves existing lockfile platforms and adds the current platform during reset" do
+    reset = described_class.new(root: @root, command_runner: ->(_command) {})
+    path = File.join(@root, "Gemfile.lock")
+    File.write(File.join(@root, "Gemfile"), "source \"https://rubygems.org\"\n")
+    File.write(path, <<~LOCK)
+      GEM
+        remote: https://rubygems.org/
+        specs:
+          rake (13.4.2)
+
+      PLATFORMS
+        arm64-darwin
+        x86_64-linux-gnu
+
+      DEPENDENCIES
+        rake
+    LOCK
+
+    command = reset.reset_command(path: path, gemfile: File.join(@root, "Gemfile"), full_update: true)
+
+    expect(command).to include("--add-platform=arm64-darwin")
+    expect(command).to include("--add-platform=x86_64-linux-gnu")
+    expect(command).to include("--add-platform=#{Gem::Platform.local}")
   end
 
   it "fully updates release lockfiles even when no diagnostics are present" do
@@ -106,7 +133,8 @@ RSpec.describe Kettle::Dev::LockfileReset do
 
     reset.reset("release-lockfiles")
 
-    expect(commands.first).to include("bundle lock --update --add-checksums")
+    expect(commands.first).to include("bundle lock")
+    expect(commands.first).to include("--update --add-checksums")
   end
 
   it "uninstalls locally installed workspace gem versions that are not released" do
@@ -154,7 +182,8 @@ RSpec.describe Kettle::Dev::LockfileReset do
     expect(commands.first).to include("-u BUNDLER_SETUP")
     expect(commands.first).to include("-u RUBYLIB")
     expect(commands.first).to include("gem uninstall #{never_released_workspace_gem} -v #{unreleased_workspace_version} -x -I")
-    expect(commands.last).to include("bundle lock --update --add-checksums")
+    expect(commands.last).to include("bundle lock")
+    expect(commands.last).to include("--update --add-checksums")
   end
 
   it "reruns release lockfile reset when Bundler introduces a local-only workspace version" do
@@ -236,7 +265,8 @@ RSpec.describe Kettle::Dev::LockfileReset do
 
     command = reset.reset_command(path: File.join(@root, "Gemfile.lock"), gemfile: File.join(@root, "Gemfile"))
 
-    expect(command).to include("bundle lock --update #{never_released_workspace_gem} --add-checksums")
+    expect(command).to include("bundle lock")
+    expect(command).to include("--update #{never_released_workspace_gem} --add-checksums")
   end
 
   it "continues when another release worker already removed the same local gem version" do
@@ -304,7 +334,8 @@ RSpec.describe Kettle::Dev::LockfileReset do
 
     command = reset.reset_command(path: File.join(@root, "Gemfile.lock"), gemfile: File.join(@root, "Gemfile"))
 
-    expect(command).to include("bundle lock --update kettle-soup-cover --add-checksums")
+    expect(command).to include("bundle lock")
+    expect(command).to include("--update kettle-soup-cover --add-checksums")
   end
 
   it "runs targeted checksum reset commands without rebuilding the lockfile" do
@@ -326,7 +357,8 @@ RSpec.describe Kettle::Dev::LockfileReset do
     reset.reset_lockfile!(File.join(@root, "Gemfile.lock"))
 
     expect(commands.length).to eq(1)
-    expect(commands.first).to include("bundle lock --update kettle-soup-cover --add-checksums")
+    expect(commands.first).to include("bundle lock")
+    expect(commands.first).to include("--update kettle-soup-cover --add-checksums")
     expect(FileUtils).not_to have_received(:rm_f).with(File.join(@root, "Gemfile.lock"))
   end
 
