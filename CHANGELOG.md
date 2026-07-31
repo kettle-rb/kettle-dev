@@ -35,6 +35,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `kettle-dev` now requires `kettle-ndjson` 0.1.4 or newer so
+  `kettle-release --events=secret_provider` cannot resolve against an older
+  event protocol.
+
 ### Security
 
 ## [2.5.12] - 2026-07-30
