@@ -1023,7 +1023,8 @@ module Kettle
           Kettle::Dev::CIMonitor.monitor_all!(
             restart_hint: restart_hint,
             workflows: @ci_workflows,
-            keepalive: release_secrets_configured? ? -> { keep_release_secrets_alive!("CI monitoring") } : nil
+            keepalive: release_secrets_configured? ? -> { keep_release_secrets_alive!("CI monitoring") } : nil,
+            event_recorder: @event_recorder
           )
           emit_ci_monitor_event(action: "finish", status: "ok", workflows: @ci_workflows, restart_hint: restart_hint)
         rescue SystemExit => error

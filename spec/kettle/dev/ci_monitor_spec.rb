@@ -132,6 +132,63 @@ RSpec.describe Kettle::Dev::CIMonitor do
       expect { described_class.monitor_all!(restart_hint: "hint", workflows: ["current.yml"]) }.not_to raise_error
     end
 
+    it "emits per-workflow GitHub CI monitor events", :check_output do
+      io = StringIO.new
+      event_recorder = Kettle::Ndjson.event_stream(io, types: "ci_monitor")
+      allow(helpers).to receive_messages(
+        project_root: Dir.pwd,
+        current_branch: "main",
+        current_head_sha: "abc123"
+      )
+      allow(described_class).to receive_messages(
+        preferred_github_remote: "origin",
+        remote_url: "https://github.com/me/repo.git"
+      )
+      run = {"status" => "completed", "conclusion" => "success", "html_url" => "https://github.com/me/repo/actions/runs/2", "id" => 2, "head_sha" => "abc123"}
+      allow(helpers).to receive(:latest_run).with(owner: "me", repo: "repo", workflow_file: "current.yml", branch: "main", require_head: true, head_sha: "abc123").and_return(run)
+      allow(helpers).to receive(:success?) { |candidate| candidate && candidate["conclusion"] == "success" }
+      allow(helpers).to receive(:failed?) { |candidate| candidate && candidate["conclusion"] == "failure" }
+      stub_env("K_RELEASE_CI_INITIAL_SLEEP" => "0")
+      allow(described_class).to receive(:sleep)
+
+      expect { described_class.monitor_all!(restart_hint: "hint", workflows: ["current.yml"], event_recorder: event_recorder) }.not_to raise_error
+
+      events = io.string.lines.map { |line| JSON.parse(line) }
+      expect(events).to include(
+        include("type" => "ci_monitor", "action" => "github_discover", "status" => "started", "provider" => "github", "workflows" => ["current.yml"], "total" => 1, "mark" => ">"),
+        include("type" => "ci_monitor", "action" => "github_workflow", "status" => "started", "provider" => "github", "workflow" => "current.yml", "mark" => ">"),
+        include("type" => "ci_monitor", "action" => "github_workflow", "status" => "ok", "provider" => "github", "workflow" => "current.yml", "completed" => 1, "total" => 1, "mark" => "."),
+        include("type" => "ci_monitor", "action" => "github_complete", "status" => "ok", "provider" => "github", "completed" => 1, "total" => 1, "mark" => ".")
+      )
+    end
+
+    it "emits per-workflow GitHub CI monitor failure events", :check_output do
+      io = StringIO.new
+      event_recorder = Kettle::Ndjson.event_stream(io, types: "ci_monitor")
+      allow(helpers).to receive_messages(
+        project_root: Dir.pwd,
+        current_branch: "main",
+        current_head_sha: "abc123"
+      )
+      allow(described_class).to receive_messages(
+        preferred_github_remote: "origin",
+        remote_url: "https://github.com/me/repo.git"
+      )
+      run = {"status" => "completed", "conclusion" => "failure", "html_url" => "https://github.com/me/repo/actions/runs/3", "id" => 3, "head_sha" => "abc123"}
+      allow(helpers).to receive(:latest_run).with(owner: "me", repo: "repo", workflow_file: "current.yml", branch: "main", require_head: true, head_sha: "abc123").and_return(run)
+      allow(helpers).to receive(:success?) { |candidate| candidate && candidate["conclusion"] == "success" }
+      allow(helpers).to receive(:failed?) { |candidate| candidate && candidate["conclusion"] == "failure" }
+      stub_env("K_RELEASE_CI_INITIAL_SLEEP" => "0")
+      allow(described_class).to receive(:sleep)
+
+      expect { described_class.monitor_all!(restart_hint: "hint", workflows: ["current.yml"], event_recorder: event_recorder) }.to raise_error(MockSystemExit, /Workflow failed/)
+
+      events = io.string.lines.map { |line| JSON.parse(line) }
+      expect(events).to include(
+        include("type" => "ci_monitor", "action" => "github_workflow", "status" => "failed", "provider" => "github", "workflow" => "current.yml", "url" => "https://github.com/me/repo/actions/runs/3", "reason" => "Workflow failed", "mark" => "!")
+      )
+    end
+
     it "rate-limits release secret keepalive callbacks during CI polling" do
       calls = 0
       stub_env("KETTLE_RELEASE_SECRET_KEEPALIVE_INTERVAL" => "10")

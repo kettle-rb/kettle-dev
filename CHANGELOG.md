@@ -24,7 +24,8 @@ Please file a bug if you notice a violation of semantic versioning.
   fetch attempts, skipped optional remotes, required failures, and parity
   completion.
 - `kettle-release --events` now emits `ci_monitor` events around CI monitoring
-  start, success, and failure.
+  start, per-workflow GitHub Actions progress, GitLab pipeline outcomes,
+  success, and failure.
 - `kettle-dev` now requires `kettle-ndjson` 0.1.6 or newer so release event
   streams resolve against the protocol that includes remote parity and CI
   monitor events.

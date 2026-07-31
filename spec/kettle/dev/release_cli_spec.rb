@@ -981,7 +981,8 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect(Kettle::Dev::CIMonitor).to have_received(:monitor_all!).with(
           restart_hint: "bundle exec kettle-release start_step=10",
           workflows: %w[current.yml style.yml],
-          keepalive: nil
+          keepalive: nil,
+          event_recorder: anything
         )
       end
 
@@ -1027,7 +1028,8 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect(Kettle::Dev::CIMonitor).to have_received(:monitor_all!).with(
           restart_hint: "bundle exec kettle-release start_step=10",
           workflows: %w[current.yml style.yml],
-          keepalive: nil
+          keepalive: nil,
+          event_recorder: anything
         )
       end
 
@@ -1044,7 +1046,8 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect(Kettle::Dev::CIMonitor).to have_received(:monitor_all!).with(
           restart_hint: "bundle exec kettle-release start_step=10",
           workflows: [],
-          keepalive: kind_of(Proc)
+          keepalive: kind_of(Proc),
+          event_recorder: anything
         )
       end
 
