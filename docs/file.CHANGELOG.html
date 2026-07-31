@@ -76,9 +76,14 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 
 <ul>
   <li>
-<code>kettle-release-secrets-doctor</code> now probes additional 1Password<br>
+    <p><code>kettle-release-secrets-doctor</code> now probes additional 1Password<br>
 authorization boundaries, including parent-child, Bundler child, and<br>
-Bundler-env-reset child process shapes.</li>
+Bundler-env-reset child process shapes.</p>
+  </li>
+  <li>
+    <p><code>kettle-release --events</code> now emits <code>secret_provider</code> events around release<br>
+secret keepalives and provider-backed prompt responses.</p>
+  </li>
 </ul>
 
 <h3 id="changed">Changed</h3>

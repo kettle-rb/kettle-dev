@@ -44,6 +44,25 @@ RSpec.describe Kettle::Dev::InteractiveReleaseCommand do
     expect(output.string).to include("RubyGems MFA code loaded from configured secrets provider.")
   end
 
+  it "emits secret provider events around an MFA prompt response" do
+    provider = instance_double(Kettle::Dev::ReleaseSecrets::OnePassword, rubygems_otp: "123456")
+    events = []
+    command = described_class.new(
+      secrets_provider: provider,
+      output: StringIO.new,
+      secret_event_handler: ->(payload) { events << payload }
+    )
+    input = StringIO.new
+
+    command.send(:handle_prompt, input, "Code: ")
+
+    expect(input.string).to eq("123456\n")
+    expect(events).to contain_exactly(
+      include(source: "rubygems_otp", action: "prompt_response", status: "started", label: "RubyGems MFA code"),
+      include(source: "rubygems_otp", action: "prompt_response", status: "ok", label: "RubyGems MFA code")
+    )
+  end
+
   it "memoizes the gem signing passphrase for repeated PEM prompts" do
     provider = instance_double(Kettle::Dev::ReleaseSecrets::OnePassword, gem_signing_passphrase: "secret")
     command = described_class.new(secrets_provider: provider, output: StringIO.new)

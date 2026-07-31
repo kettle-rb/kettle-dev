@@ -5,11 +5,12 @@ require "open3"
 module Kettle
   module Dev
     class InteractiveReleaseCommand
-      def initialize(secrets_provider:, input: $stdin, output: $stdout, error: $stderr)
+      def initialize(secrets_provider:, input: $stdin, output: $stdout, error: $stderr, secret_event_handler: nil)
         @secrets_provider = secrets_provider
         @input = input
         @output = output
         @error = error
+        @secret_event_handler = secret_event_handler
         @gem_signing_passphrase = nil
       end
 
@@ -21,7 +22,7 @@ module Kettle
 
       private
 
-      attr_reader :secrets_provider
+      attr_reader :secrets_provider, :secret_event_handler
 
       def call_with_pty(env, cmd)
         stdout_str = +""
@@ -77,18 +78,20 @@ module Kettle
 
       def handle_prompt(input, chunk)
         if otp_prompt?(chunk)
-          write_secret(input, secrets_provider.rubygems_otp, label: "RubyGems MFA code") if otp_response_prompt?(chunk)
+          write_secret(input, label: "RubyGems MFA code", source: "rubygems_otp") { secrets_provider.rubygems_otp } if otp_response_prompt?(chunk)
           return
         end
 
-        write_secret(input, gem_signing_passphrase, label: "gem signing passphrase") if signing_password_prompt?(chunk)
+        write_secret(input, label: "gem signing passphrase", source: "gem_signing_passphrase") { gem_signing_passphrase } if signing_password_prompt?(chunk)
       end
 
       def gem_signing_passphrase
         @gem_signing_passphrase ||= secrets_provider.gem_signing_passphrase.to_s
       end
 
-      def write_secret(input, value, label:)
+      def write_secret(input, label:, source:)
+        emit_secret_event(source: source, action: "prompt_response", status: "started", label: label)
+        value = yield
         secret = value.to_s
         if secret.empty?
           raise Kettle::Dev::Error, "#{label} prompt reached, but the configured release secrets provider returned no value. Aborting because secret prompts are not allowed when a secrets provider is configured."
@@ -97,6 +100,14 @@ module Kettle
         @output.puts("#{label} loaded from configured secrets provider.")
         input.write("#{secret}\n")
         input.flush
+        emit_secret_event(source: source, action: "prompt_response", status: "ok", label: label)
+      rescue Kettle::Dev::Error => error
+        emit_secret_event(source: source, action: "prompt_response", status: "failed", label: label, reason: error.message)
+        raise
+      end
+
+      def emit_secret_event(payload)
+        secret_event_handler&.call(payload)
       end
 
       def otp_prompt?(chunk)

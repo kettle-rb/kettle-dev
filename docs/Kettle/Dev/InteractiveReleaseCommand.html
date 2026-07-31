@@ -143,7 +143,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#initialize-instance_method" title="#initialize (instance method)">#<strong>initialize</strong>(secrets_provider:, input: $stdin, output: $stdout, error: $stderr)  &#x21d2; InteractiveReleaseCommand </a>
+      <a href="#initialize-instance_method" title="#initialize (instance method)">#<strong>initialize</strong>(secrets_provider:, input: $stdin, output: $stdout, error: $stderr, secret_event_handler: nil)  &#x21d2; InteractiveReleaseCommand </a>
     
 
     
@@ -175,7 +175,7 @@
     <div class="method_details first">
   <h3 class="signature first" id="initialize-instance_method">
   
-    #<strong>initialize</strong>(secrets_provider:, input: $stdin, output: $stdout, error: $stderr)  &#x21d2; <tt><span class='object_link'><a href="" title="Kettle::Dev::InteractiveReleaseCommand (class)">InteractiveReleaseCommand</a></span></tt> 
+    #<strong>initialize</strong>(secrets_provider:, input: $stdin, output: $stdout, error: $stderr, secret_event_handler: nil)  &#x21d2; <tt><span class='object_link'><a href="" title="Kettle::Dev::InteractiveReleaseCommand (class)">InteractiveReleaseCommand</a></span></tt> 
   
 
   
@@ -203,16 +203,18 @@
 11
 12
 13
-14</pre>
+14
+15</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/kettle/dev/interactive_release_command.rb', line 8</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='label'>secrets_provider:</span><span class='comma'>,</span> <span class='label'>input:</span> <span class='gvar'>$stdin</span><span class='comma'>,</span> <span class='label'>output:</span> <span class='gvar'>$stdout</span><span class='comma'>,</span> <span class='label'>error:</span> <span class='gvar'>$stderr</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='label'>secrets_provider:</span><span class='comma'>,</span> <span class='label'>input:</span> <span class='gvar'>$stdin</span><span class='comma'>,</span> <span class='label'>output:</span> <span class='gvar'>$stdout</span><span class='comma'>,</span> <span class='label'>error:</span> <span class='gvar'>$stderr</span><span class='comma'>,</span> <span class='label'>secret_event_handler:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='ivar'>@secrets_provider</span> <span class='op'>=</span> <span class='id identifier rubyid_secrets_provider'>secrets_provider</span>
   <span class='ivar'>@input</span> <span class='op'>=</span> <span class='id identifier rubyid_input'>input</span>
   <span class='ivar'>@output</span> <span class='op'>=</span> <span class='id identifier rubyid_output'>output</span>
   <span class='ivar'>@error</span> <span class='op'>=</span> <span class='id identifier rubyid_error'>error</span>
+  <span class='ivar'>@secret_event_handler</span> <span class='op'>=</span> <span class='id identifier rubyid_secret_event_handler'>secret_event_handler</span>
   <span class='ivar'>@gem_signing_passphrase</span> <span class='op'>=</span> <span class='kw'>nil</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -242,14 +244,14 @@
       <pre class="lines">
 
 
-16
 17
 18
 19
-20</pre>
+20
+21</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/interactive_release_command.rb', line 16</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/interactive_release_command.rb', line 17</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_env'>env</span><span class='comma'>,</span> <span class='id identifier rubyid_cmd'>cmd</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='id identifier rubyid_call_with_pty'>call_with_pty</span><span class='lparen'>(</span><span class='id identifier rubyid_env'>env</span><span class='comma'>,</span> <span class='id identifier rubyid_cmd'>cmd</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='id identifier rubyid_pty_available?'>pty_available?</span>

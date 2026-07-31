@@ -1117,7 +1117,10 @@ module Kettle
 
         keep_release_secrets_alive!("prompt-bearing command")
         puts "$ #{cmd}"
-        _stdout_str, stderr_str, status = Kettle::Dev::InteractiveReleaseCommand.new(secrets_provider: @secrets_provider).call(
+        _stdout_str, stderr_str, status = Kettle::Dev::InteractiveReleaseCommand.new(
+          secrets_provider: @secrets_provider,
+          secret_event_handler: ->(payload) { emit_secret_event(payload) }
+        ).call(
           self.class.send(:command_env),
           cmd
         )
@@ -1154,8 +1157,11 @@ module Kettle
         return unless release_secrets_configured?
         return unless @secrets_provider.respond_to?(:keepalive!)
 
+        emit_secret_event(action: "keepalive", status: "started", purpose: purpose, source: release_secrets_provider_label, elapsed: release_elapsed_label)
         @secrets_provider.keepalive!(elapsed: release_elapsed_label)
+        emit_secret_event(action: "keepalive", status: "ok", purpose: purpose, source: release_secrets_provider_label, elapsed: release_elapsed_label)
       rescue Kettle::Dev::Error => error
+        emit_secret_event(action: "keepalive", status: "failed", purpose: purpose, source: release_secrets_provider_label, elapsed: release_elapsed_label, reason: error.message)
         abort("Release secrets provider keepalive failed before #{purpose}: #{error.message}")
       end
 
@@ -1599,6 +1605,29 @@ module Kettle
         }
         @diagnostics << diagnostic
         Kettle::Ndjson.emit_diagnostic_event(@event_recorder, diagnostic, index: @diagnostics.length)
+      end
+
+      def emit_secret_event(payload)
+        status = payload.fetch(:status).to_s
+        mark = case status
+        when "started"
+          ">"
+        when "ok"
+          "."
+        when "failed"
+          "!"
+        else
+          "?"
+        end
+        Kettle::Ndjson.emit_event(
+          @event_recorder,
+          "secret_provider",
+          payload.merge(
+            phase: "release",
+            provider: release_secrets_provider_label,
+            mark: mark
+          )
+        )
       end
 
       def finish_release_report(status:, error:)

@@ -24,6 +24,9 @@ Please file a bug if you notice a violation of semantic versioning.
   authorization boundaries, including parent-child, Bundler child, and
   Bundler-env-reset child process shapes.
 
+- `kettle-release --events` now emits `secret_provider` events around release
+  secret keepalives and provider-backed prompt responses.
+
 ### Changed
 
 ### Deprecated

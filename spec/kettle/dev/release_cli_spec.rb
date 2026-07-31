@@ -202,7 +202,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         allow(provider).to receive(:keepalive!).with(elapsed: nil).and_return(true)
         expect(Kettle::Dev::InteractiveReleaseCommand)
           .to receive(:new)
-          .with(secrets_provider: provider)
+          .with(secrets_provider: provider, secret_event_handler: kind_of(Proc))
           .and_return(runner)
         expect(runner).to receive(:call).with(kind_of(Hash), "bundle exec rake release").and_return(["", "", status])
         expect(Open3).not_to receive(:capture3)
@@ -956,6 +956,22 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         release_cli.send(:keep_release_secrets_alive!, "test")
 
         expect(provider).to have_received(:keepalive!).with(elapsed: "02:03")
+      end
+
+      it "emits secret provider events around release secret keepalive" do
+        io = StringIO.new
+        event_stream = Kettle::Ndjson.event_stream(io, types: "secret_provider")
+        provider = instance_double(Kettle::Dev::ReleaseSecrets::OnePassword)
+        release_cli = described_class.new(secrets_provider: provider, event_stream: event_stream)
+        allow(provider).to receive(:keepalive!).with(elapsed: nil).and_return(true)
+
+        release_cli.send(:keep_release_secrets_alive!, "test")
+
+        events = io.string.lines.map { |line| JSON.parse(line) }
+        expect(events).to contain_exactly(
+          include("type" => "secret_provider", "action" => "keepalive", "status" => "started", "purpose" => "test", "mark" => ">"),
+          include("type" => "secret_provider", "action" => "keepalive", "status" => "ok", "purpose" => "test", "mark" => ".")
+        )
       end
 
       it "aborts when a GitHub workflow fails" do
