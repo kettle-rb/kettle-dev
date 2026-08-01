@@ -2011,8 +2011,10 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
           [3.1.1t]: https://github.com/acme/demo/releases/tag/v3.1.1
         MD
         cli = described_class.new(strict: false, root: root, yes: true)
-        allow(cli).to receive(:detect_gem_name).and_return("demo")
-        allow(cli).to receive(:latest_released_versions).and_return(["3.1.0", "3.1.0"])
+        allow(cli).to receive_messages(
+          detect_gem_name: "demo",
+          latest_released_versions: ["3.1.0", "3.1.0"]
+        )
         allow(Kettle::Dev::CIHelpers).to receive(:repo_info).and_return(["acme", "demo"])
 
         cli.run
