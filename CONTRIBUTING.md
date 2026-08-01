@@ -288,4 +288,4 @@ NOTE: To build without signing the gem set `SKIP_GEM_SIGNING` to any value in th
 [🏃‍♂️runner-tool-cache]: https://github.com/ruby/ruby-builder/releases/tag/toolcache
 [✉️discord-invite]: https://discord.gg/3qme4XHNKN
 [✉️ruby-forum]: https://www.rubyforum.org/tag/kettle-dev
-[✉️ruby-forum-img]: https://img.shields.io/discourse/topics?server=https://www.rubyforum.org&style=flat&logo=discourse&label=Ruby%20Users%20Forum
+[✉️ruby-forum-img]: https://img.shields.io/discourse/topics?server=https%3A%2F%2Fwww.rubyforum.org&style=flat&logo=discourse&label=Ruby%20Users%20Forum
