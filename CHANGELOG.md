@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Allow the changelog entry writer to add to malformed Unreleased sections with duplicate headings.
+
 ### Security
 
 ## [2.5.14] - 2026-07-31

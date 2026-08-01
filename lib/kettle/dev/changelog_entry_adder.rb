@@ -68,7 +68,7 @@ module Kettle
             owner.location.start_line > unreleased.location.start_line &&
             owner.location.end_line <= unreleased.location.end_line
         end
-        raise Error, "expected exactly one #{heading(3, @section)} section under ## [Unreleased] in CHANGELOG.md, found #{matches.length}" unless matches.length == 1
+        raise Error, "expected at least one #{heading(3, @section)} section under ## [Unreleased] in CHANGELOG.md, found none" if matches.empty?
 
         matches.first
       end

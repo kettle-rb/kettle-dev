@@ -94,6 +94,30 @@ RSpec.describe Kettle::Dev::ChangelogEntryAdder do
     expect(read_changelog.scan("- Existing entry.").size).to eq(1)
   end
 
+  it "adds to the first matching Unreleased section when a legacy changelog has duplicate headings" do
+    write_changelog(<<~MARKDOWN)
+      # Changelog
+
+      ## [Unreleased]
+
+      ### Fixed
+
+      - First section entry.
+
+      ### Changed
+
+      ### Fixed
+
+      - Later legacy section entry.
+    MARKDOWN
+
+    result = described_class.new(root: @root, section: "Fixed", entry: "New entry.").run
+
+    expect(result).to eq(:changed)
+    expect(read_changelog).to include("- First section entry.\n\n- New entry.\n\n### Changed")
+    expect(read_changelog).to include("### Fixed\n\n- Later legacy section entry.")
+  end
+
   it "fails when the changelog entry is empty" do
     expect { described_class.new(root: @root, section: "Changed", entry: "  ") }
       .to raise_error(Kettle::Dev::Error, /changelog entry must not be empty/)
@@ -139,7 +163,7 @@ RSpec.describe Kettle::Dev::ChangelogEntryAdder do
 
     adder = described_class.new(root: @root, section: "Changed", entry: "Entry.")
 
-    expect { adder.run }.to raise_error(Kettle::Dev::Error, /expected exactly one ### Changed section/)
+    expect { adder.run }.to raise_error(Kettle::Dev::Error, /expected at least one ### Changed section/)
   end
 
   it "wraps the Markly CRISPR load error in a kettle-dev error" do
