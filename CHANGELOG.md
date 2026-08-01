@@ -20,6 +20,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- Add verified GitHub Release backfill checks and NDJSON support to kettle-gh-release.
+
 ### Changed
 
 ### Deprecated

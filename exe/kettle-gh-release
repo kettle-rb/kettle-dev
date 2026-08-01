@@ -39,7 +39,7 @@ end
 # Do not guard with __FILE__ == $PROGRAM_NAME because binstubs use Kernel.load.
 if ARGV.include?("-h") || ARGV.include?("--help")
   puts <<~USAGE
-    Usage: #{script_basename} [version=<VERSION>]
+    Usage: #{script_basename} [--release-version VERSION|version=<VERSION>] [--check] [--events] [--allow-unpublished]
 
     Creates a GitHub release for a gem version.
 
@@ -48,29 +48,82 @@ if ARGV.include?("-h") || ARGV.include?("--help")
     failed (e.g., due to token issues or network problems).
 
     Arguments:
-      version=<VERSION>           # Explicit version (e.g., version=1.2.3)
-                                  # If omitted, auto-detects from lib/**/version.rb
+      --release-version VERSION   # Explicit version (e.g., --release-version 1.2.3)
+      version=<VERSION>           # Backward-compatible explicit version form
+      --check                     # Verify RubyGems, remote tag, changelog, and token without creating a release
+      --events                    # Emit the final result as one NDJSON event
+      --allow-unpublished         # Skip the RubyGems publication requirement (for intentionally non-RubyGems projects)
 
     Environment:
       GITHUB_TOKEN / GH_TOKEN     # Required; needs repo:public_repo (classic) or contents:write scope
       DEBUG=true                  # Print backtraces on errors
 
     Examples:
-      #{script_basename}                    # auto-detect version, create release
-      #{script_basename} version=2.0.0      # create release for specific version
-      GITHUB_TOKEN=ghp_xxx #{script_basename}  # explicit token
+      #{script_basename} --check --release-version 2.0.0
+      #{script_basename} --release-version 2.0.0
+      #{script_basename} version=2.0.0      # backward-compatible form
   USAGE
   exit 0
 end
 
-# Parse version=<v> from ARGV
-version_arg = ARGV.find { |a| a.start_with?("version=") }
-explicit_version = version_arg ? version_arg.split("=", 2)[1].strip : nil
+check_only = ARGV.delete("--check")
+events = ARGV.delete("--events")
+allow_unpublished = ARGV.delete("--allow-unpublished")
+version_arg = ARGV.find { |arg| arg.start_with?("version=") }
+ARGV.delete(version_arg) if version_arg
+explicit_version = version_arg&.split("=", 2)&.last&.strip
+
+if (index = ARGV.index("--release-version"))
+  explicit_version = ARGV.fetch(index + 1, nil).to_s.strip
+  ARGV.slice!(index, 2)
+end
+
+unless ARGV.empty?
+  warn("#{script_basename}: unexpected argument(s): #{ARGV.join(" ")}")
+  exit 1
+end
+
+if !explicit_version.nil? && explicit_version.empty?
+  warn("#{script_basename}: --release-version requires a version")
+  exit 1
+end
 
 begin
   cli = Kettle::Dev::ReleaseCLI.new(start_step: 18)
   version = explicit_version || cli.send(:detect_version)
-  cli.send(:maybe_create_github_release!, version)
+  result = cli.send(:github_release_backfill_check, version, require_rubygems: !allow_unpublished)
+
+  if events
+    puts JSON.generate(
+      event_version: 1,
+      type: "github_release",
+      action: check_only ? "check" : "create",
+      status: result.fetch("ok") ? "ok" : "failed",
+      **result
+    )
+  elsif result.fetch("ok")
+    puts "GitHub release prerequisites satisfied for #{result.fetch("tag")}."
+  else
+    warn("GitHub release prerequisites failed for #{result.fetch("tag")}:")
+    result.fetch("diagnostics").each { |diagnostic| warn("  - #{diagnostic}") }
+  end
+
+  exit 1 unless result.fetch("ok")
+  exit 0 if check_only
+
+  created, message = cli.send(:maybe_create_github_release!, version)
+  if events
+    puts JSON.generate(
+      event_version: 1,
+      type: "github_release",
+      action: "create",
+      status: created ? "ok" : "failed",
+      version: result.fetch("version"),
+      tag: result.fetch("tag"),
+      result: message
+    )
+  end
+  exit(created ? 0 : 1)
 rescue LoadError => e
   warn("#{script_basename}: could not load dependency: #{e.class}: #{e.message}")
   warn(Array(e.backtrace).join("\n")) if ENV["DEBUG"]

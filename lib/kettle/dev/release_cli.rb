@@ -436,7 +436,8 @@ module Kettle
         # 18. create GitHub release (optional)
         if run_step?(18)
           version ||= detect_version
-          maybe_create_github_release!(version)
+          created, message = maybe_create_github_release!(version)
+          abort("GitHub release creation failed: #{message}") if github_release_required? && !created
         end
 
         # 19. push tags to remotes (final step)
@@ -2340,24 +2341,27 @@ module Kettle
       # Title: v<version>
       # Body: the CHANGELOG section for this version, followed by the two link references for this version.
       def maybe_create_github_release!(version)
-        token = ENV.fetch("GITHUB_TOKEN", "").strip.to_s
+        token = github_token
         if token.empty?
-          warn("GITHUB_TOKEN not set; skipping GitHub release creation. Set GITHUB_TOKEN with repo:public_repo (classic) or contents:write scope.")
-          return
+          message = "GITHUB_TOKEN or GH_TOKEN is not set; skipping GitHub release creation. Set a token with repo:public_repo (classic) or contents:write scope."
+          warn(message)
+          return [false, message]
         end
 
         gh_remote = preferred_github_remote
         url = remote_url(gh_remote || "origin")
         owner, repo = parse_github_owner_repo(url)
         unless owner && repo
-          warn("GITHUB_TOKEN present but could not determine GitHub owner/repo from remotes. Skipping release creation.")
-          return
+          message = "GitHub token present but could not determine GitHub owner/repo from remotes. Skipping release creation."
+          warn(message)
+          return [false, message]
         end
 
         section, compare_ref, tag_ref = extract_changelog_for_version(version)
         unless section
-          warn("CHANGELOG.md does not contain a section for #{version}. Skipping GitHub release creation.")
-          return
+          message = "CHANGELOG.md does not contain a section for #{version}. Skipping GitHub release creation."
+          warn(message)
+          return [false, message]
         end
 
         body = +""
@@ -2377,6 +2381,72 @@ module Kettle
         else
           warn("GitHub release creation skipped/failed: #{msg}")
         end
+        [ok, msg]
+      end
+
+      # Validate the immutable inputs required to backfill a GitHub Release.
+      # This must never create a tag or publish a gem as a side effect.
+      def github_release_backfill_check(version, require_rubygems: true)
+        normalized_version = version.to_s.delete_prefix("v")
+        tag = "v#{normalized_version}"
+        diagnostics = []
+        token = github_token
+        diagnostics << "GITHUB_TOKEN is not set" if token.empty?
+
+        gem_name = detect_gem_name
+        if require_rubygems && !rubygems_version_published?(gem_name, normalized_version)
+          diagnostics << "RubyGems.org does not list #{gem_name} #{normalized_version}"
+        end
+
+        remote = preferred_github_remote
+        if remote.nil?
+          diagnostics << "no GitHub remote is configured"
+        elsif !remote_tag_exists?(remote, tag)
+          diagnostics << "remote #{remote.inspect} does not contain tag #{tag}"
+        end
+
+        section, = extract_changelog_for_version(normalized_version)
+        diagnostics << "CHANGELOG.md does not contain a section for #{normalized_version}" unless section
+
+        {
+          "ok" => diagnostics.empty?,
+          "version" => normalized_version,
+          "tag" => tag,
+          "gem_name" => gem_name,
+          "remote" => remote,
+          "diagnostics" => diagnostics
+        }
+      end
+
+      def github_release_token_configured?
+        !github_token.empty?
+      end
+
+      def github_release_required?
+        github_release_token_configured? && truthy_value?(ENV["KETTLE_RELEASE_REQUIRE_GITHUB_RELEASE"])
+      end
+
+      def github_token
+        token = ENV.fetch("GITHUB_TOKEN", "").strip
+        return token unless token.empty?
+
+        ENV.fetch("GH_TOKEN", "").strip
+      end
+
+      def rubygems_version_published?(gem_name, version)
+        versions = Kettle::Dev::RubyGemsVersions.fetch(gem_name, version_hint: version, refresh: true)
+        Array(versions).any? { |entry| entry.is_a?(Hash) && entry["number"].to_s == version.to_s }
+      rescue => error
+        warn("Could not verify RubyGems.org publication for #{gem_name} #{version}: #{error.class}: #{error.message}")
+        false
+      end
+
+      def remote_tag_exists?(remote, tag)
+        _stdout, _stderr, status = Open3.capture3("git", "ls-remote", "--exit-code", "--tags", remote, "refs/tags/#{tag}", chdir: @root)
+        status.success?
+      rescue SystemCallError => error
+        warn("Could not verify remote tag #{tag}: #{error.class}: #{error.message}")
+        false
       end
 
       # Returns [section_text, compare_ref_line, tag_ref_line]
