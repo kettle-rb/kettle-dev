@@ -71,6 +71,28 @@ RSpec.describe Kettle::Dev::ChangelogEntryAdder do
     expect(read_changelog).to include("### Added\n\n- Already a bullet.\n\n### Changed")
   end
 
+  it "honors K_CHANGELOG_PATH" do
+    alternate_path = File.join(@root, "alternate.md")
+    File.write(alternate_path, <<~MARKDOWN)
+      # Changelog
+
+      ## [Unreleased]
+
+      ### Added
+      ### Changed
+      ### Deprecated
+      ### Removed
+      ### Fixed
+      ### Security
+    MARKDOWN
+
+    stub_env("K_CHANGELOG_PATH" => alternate_path)
+    described_class.new(root: @root, section: "Fixed", entry: "Alternate path entry.").run
+
+    expect(File.read(alternate_path)).to include("- Alternate path entry.")
+    expect(File).not_to exist(File.join(@root, "CHANGELOG.md"))
+  end
+
   it "does not duplicate an existing exact entry" do
     write_changelog(<<~MARKDOWN)
       # Changelog

@@ -9,7 +9,7 @@ module Kettle
         @root = root
         @section = section.to_s
         @entry = normalize_entry(entry)
-        @changelog_path = File.join(@root, "CHANGELOG.md")
+        @changelog_path = ENV.fetch("K_CHANGELOG_PATH", File.join(@root, "CHANGELOG.md"))
       end
 
       def run

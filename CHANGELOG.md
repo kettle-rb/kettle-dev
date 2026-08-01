@@ -30,6 +30,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - Allow the changelog entry writer to add to malformed Unreleased sections with duplicate headings.
 
+- Honor K_CHANGELOG_PATH when adding an Unreleased changelog entry.
+
 ### Security
 
 ## [2.5.14] - 2026-07-31
