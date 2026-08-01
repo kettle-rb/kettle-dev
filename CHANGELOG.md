@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - Add an explicit historical release-section backfill mode for tagged releases.
 
+- Add kettle-gh-release update mode for existing GitHub Release notes.
+
 ### Changed
 
 ### Deprecated

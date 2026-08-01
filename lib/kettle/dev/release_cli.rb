@@ -2384,6 +2384,31 @@ module Kettle
         [ok, msg]
       end
 
+      def maybe_update_github_release!(version)
+        token = github_token
+        return [false, "GITHUB_TOKEN or GH_TOKEN is not set"] if token.empty?
+
+        owner, repo = parse_github_owner_repo(remote_url(preferred_github_remote || "origin"))
+        return [false, "could not determine GitHub owner/repo from remotes"] unless owner && repo
+
+        body = github_release_body(version)
+        return [false, "CHANGELOG.md does not contain a section for #{version}"] unless body
+
+        github_update_release(owner: owner, repo: repo, token: token, tag: "v#{version}", title: "v#{version}", body: body)
+      end
+
+      def github_release_body(version)
+        section, compare_ref, tag_ref = extract_changelog_for_version(version)
+        return unless section
+
+        body = +section.rstrip
+        body << "\n\n" << compare_ref if compare_ref
+        body << tag_ref if tag_ref
+        footer = extract_release_notes_footer
+        body << "\n" << footer if footer && !footer.strip.empty?
+        body
+      end
+
       # Validate the immutable inputs required to backfill a GitHub Release.
       # This must never create a tag or publish a gem as a side effect.
       def github_release_backfill_check(version, require_rubygems: true)
@@ -2532,6 +2557,28 @@ module Kettle
             [false, "HTTP #{res.code}: #{res.body}"]
           end
         end
+      rescue => e
+        [false, "#{e.class}: #{e.message}"]
+      end
+
+      def github_update_release(owner:, repo:, token:, tag:, title:, body:)
+        lookup = URI("https://api.github.com/repos/#{owner}/#{repo}/releases/tags/#{tag}")
+        get = Net::HTTP::Get.new(lookup)
+        get["Accept"] = "application/vnd.github+json"
+        get["Authorization"] = "token #{token}"
+        get["User-Agent"] = "kettle-dev-release-cli"
+        release = Net::HTTP.start(lookup.host, lookup.port, use_ssl: true) { |http| http.request(get) }
+        return [false, "release #{tag} was not found (HTTP #{release.code})"] unless release.is_a?(Net::HTTPSuccess)
+
+        id = JSON.parse(release.body).fetch("id")
+        uri = URI("https://api.github.com/repos/#{owner}/#{repo}/releases/#{id}")
+        request = Net::HTTP::Patch.new(uri)
+        request["Accept"] = "application/vnd.github+json"
+        request["Authorization"] = "token #{token}"
+        request["User-Agent"] = "kettle-dev-release-cli"
+        request.body = JSON.dump(name: title, body: body)
+        response = Net::HTTP.start(uri.host, uri.port, use_ssl: true) { |http| http.request(request) }
+        response.is_a?(Net::HTTPSuccess) ? [true, "updated"] : [false, "HTTP #{response.code}: #{response.body}"]
       rescue => e
         [false, "#{e.class}: #{e.message}"]
       end

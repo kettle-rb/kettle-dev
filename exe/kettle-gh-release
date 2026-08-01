@@ -39,7 +39,7 @@ end
 # Do not guard with __FILE__ == $PROGRAM_NAME because binstubs use Kernel.load.
 if ARGV.include?("-h") || ARGV.include?("--help")
   puts <<~USAGE
-    Usage: #{script_basename} [--release-version VERSION|version=<VERSION>] [--check] [--events] [--allow-unpublished]
+    Usage: #{script_basename} [--release-version VERSION|version=<VERSION>] [--check|--update] [--events] [--allow-unpublished]
 
     Creates a GitHub release for a gem version.
 
@@ -51,6 +51,7 @@ if ARGV.include?("-h") || ARGV.include?("--help")
       --release-version VERSION   # Explicit version (e.g., --release-version 1.2.3)
       version=<VERSION>           # Backward-compatible explicit version form
       --check                     # Verify RubyGems, remote tag, changelog, and token without creating a release
+      --update                    # Update an existing GitHub Release title/body from CHANGELOG.md
       --events                    # Emit the final result as one NDJSON event
       --allow-unpublished         # Skip the RubyGems publication requirement (for intentionally non-RubyGems projects)
 
@@ -67,6 +68,11 @@ if ARGV.include?("-h") || ARGV.include?("--help")
 end
 
 check_only = ARGV.delete("--check")
+update_only = ARGV.delete("--update")
+if check_only && update_only
+  warn("#{script_basename}: --check and --update cannot be combined")
+  exit 1
+end
 events = ARGV.delete("--events")
 allow_unpublished = ARGV.delete("--allow-unpublished")
 version_arg = ARGV.find { |arg| arg.start_with?("version=") }
@@ -94,10 +100,17 @@ begin
   result = cli.send(:github_release_backfill_check, version, require_rubygems: !allow_unpublished)
 
   if events
+    action = if check_only
+      "check"
+    elsif update_only
+      "update"
+    else
+      "create"
+    end
     puts JSON.generate(
       event_version: 1,
       type: "github_release",
-      action: check_only ? "check" : "create",
+      action: action,
       status: result.fetch("ok") ? "ok" : "failed",
       **result
     )
@@ -111,12 +124,16 @@ begin
   exit 1 unless result.fetch("ok")
   exit 0 if check_only
 
-  created, message = cli.send(:maybe_create_github_release!, version)
+  created, message = if update_only
+    cli.send(:maybe_update_github_release!, version)
+  else
+    cli.send(:maybe_create_github_release!, version)
+  end
   if events
     puts JSON.generate(
       event_version: 1,
       type: "github_release",
-      action: "create",
+      action: update_only ? "update" : "create",
       status: created ? "ok" : "failed",
       version: result.fetch("version"),
       tag: result.fetch("tag"),
