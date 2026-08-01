@@ -24,6 +24,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - Add a changelog reformat mode for historical release metadata repair.
 
+- Add historical changelog reformat and GitHub release reconciliation checks.
+
 ### Changed
 
 ### Deprecated
