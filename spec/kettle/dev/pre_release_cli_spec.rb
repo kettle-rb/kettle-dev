@@ -257,6 +257,29 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
         .to output(/Image URL checks: 0 cached, 0 live\.\n\[kettle-pre-release\] Skipped 1 image URL check\(s\)\./).to_stdout
     end
 
+    it "skips a current-repository workflow badge until its local workflow is pushed" do
+      Dir.mktmpdir do |root|
+        workflow_path = File.join(root, ".github", "workflows", "new-workflow.yml")
+        FileUtils.mkdir_p(File.dirname(workflow_path))
+        File.write(workflow_path, "name: New workflow\n")
+        allow(Open3).to receive(:capture2)
+          .with("git", "config", "--get", "remote.origin.url")
+          .and_return(["git@github.com:example/project.git", instance_double(Process::Status, success?: true)])
+
+        # rubocop:disable ThreadSafety/DirChdir
+        Dir.chdir(root) do
+          allow(Kettle::Dev::PreReleaseCLI::Markdown).to receive(:extract_image_urls_from_files).and_return([
+            "https://github.com/example/project/actions/workflows/new-workflow.yml/badge.svg"
+          ])
+          expect(Kettle::Dev::PreReleaseCLI::HTTP).not_to receive(:head_ok?)
+
+          expect { described_class.new(check_num: 3).run }
+            .to output(/Skipped 1 image URL check/).to_stdout
+        end
+        # rubocop:enable ThreadSafety/DirChdir
+      end
+    end
+
     it "skips image URLs matched by kettle-family config patterns" do
       Dir.mktmpdir do |root|
         File.write(File.join(root, ".kettle-family.yml"), <<~YAML)

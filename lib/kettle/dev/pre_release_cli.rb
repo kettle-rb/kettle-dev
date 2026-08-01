@@ -4,6 +4,7 @@ require "optparse"
 require "English"
 require "json"
 require "fileutils"
+require "open3"
 require "yaml"
 require "uri"
 require "net/http"
@@ -505,9 +506,47 @@ module Kettle
       end
 
       def image_url_skipped?(url)
+        return true if github_actions_badge_for_local_workflow?(url)
+
         @image_url_skip_patterns.any? do |pattern|
           File.fnmatch?(pattern, url, File::FNM_CASEFOLD)
         end
+      end
+
+      # A template run can add a workflow and its README badge in the same
+      # commit. Before that commit is pushed, GitHub correctly returns 404 for
+      # the badge even though the local workflow will make it valid.
+      def github_actions_badge_for_local_workflow?(url)
+        uri = URI.parse(url)
+        return false unless uri.host == "github.com"
+
+        segments = uri.path.split("/").reject(&:empty?)
+        return false unless segments.length == 6
+        return false unless segments[2, 2] == %w[actions workflows] && segments.last == "badge.svg"
+        return false unless local_github_repository_slug == segments.first(2).join("/")
+
+        File.file?(File.join(".github", "workflows", segments[4]))
+      rescue URI::InvalidURIError
+        false
+      end
+
+      def local_github_repository_slug
+        return @local_github_repository_slug if defined?(@local_github_repository_slug)
+
+        remote_url, status = Open3.capture2("git", "config", "--get", "remote.origin.url")
+        @local_github_repository_slug = status.success? ? github_repository_slug(remote_url) : nil
+      end
+
+      def github_repository_slug(remote_url)
+        value = remote_url.to_s.strip
+        return value.split(":", 2).last.delete_suffix(".git") if value.start_with?("git@github.com:")
+
+        uri = URI.parse(value)
+        return unless uri.host == "github.com"
+
+        uri.path.delete_prefix("/").delete_suffix(".git")
+      rescue URI::InvalidURIError
+        nil
       end
 
       def stringify_keys(value)

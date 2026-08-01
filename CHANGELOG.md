@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Pre-release image validation now permits a current-repository workflow badge when its workflow exists locally and awaits the release push.
+
 ### Security
 
 ## [2.5.15] - 2026-08-01
