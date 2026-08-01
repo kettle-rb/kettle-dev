@@ -20,6 +20,25 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [2.5.15] - 2026-08-01
+
+- TAG: [v2.5.15][2.5.15t]
+- COVERAGE: 91.55% -- 5266/5752 lines in 46 files
+- BRANCH COVERAGE: 75.74% -- 1986/2622 branches in 46 files
+- 50.41% documented
+
+### Added
+
 - Add verified GitHub Release backfill checks and NDJSON support to kettle-gh-release.
 
 - Add a changelog reformat mode for historical release metadata repair.
@@ -30,12 +49,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - Add kettle-gh-release update mode for existing GitHub Release notes.
 
-### Changed
-
-### Deprecated
-
-### Removed
-
 ### Fixed
 
 - Allow the changelog entry writer to add to malformed Unreleased sections with duplicate headings.
@@ -45,8 +58,6 @@ Please file a bug if you notice a violation of semantic versioning.
 - Canonicalize legacy release headings and remove redundant historical placeholders during reformat.
 
 - Roll back unpublished prepared changelog sections when version.rb returns to the published version.
-
-### Security
 
 ## [2.5.14] - 2026-07-31
 
@@ -3191,7 +3202,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.14...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.15...HEAD
+[2.5.15]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.14...v2.5.15
+[2.5.15t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.15
 [2.5.14]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.13...v2.5.14
 [2.5.14t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.14
 [2.5.13]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.12...v2.5.13
