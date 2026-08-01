@@ -28,9 +28,10 @@ module Kettle
       # @param enforce_coverage_thresholds [Boolean] when true, fail strict coverage generation below project thresholds
       # @param update_prep [Boolean] when true, update the most recent prepared release section in place
       # @param reformat_only [Boolean] when true, normalize structure without release-state planning
+      # @param historical_backfill_version [String, nil] tagged release to document without moving Unreleased entries
       # @param version [String, nil] explicit version override for gems without a literal VERSION constant
       # @param yes [Boolean] when true, approve the selected release plan without prompting
-      def initialize(strict: true, enforce_coverage_thresholds: true, update_prep: false, reformat_only: false, version: nil, root: Kettle::Dev::CIHelpers.project_root, refresh_cache: false, yes: false, event_stream: nil)
+      def initialize(strict: true, enforce_coverage_thresholds: true, update_prep: false, reformat_only: false, historical_backfill_version: nil, version: nil, root: Kettle::Dev::CIHelpers.project_root, refresh_cache: false, yes: false, event_stream: nil)
         @root = root
         @changelog_path = resolved_changelog_path
         @coverage_root = resolved_coverage_root
@@ -39,6 +40,7 @@ module Kettle
         @enforce_coverage_thresholds = enforce_coverage_thresholds
         @update_prep = update_prep
         @reformat_only = reformat_only
+        @historical_backfill_version = Kettle::Dev::Versioning.normalize_explicit_version(historical_backfill_version)
         @version_override = Kettle::Dev::Versioning.normalize_explicit_version(version)
         @refresh_cache = refresh_cache
         @yes = !!yes
@@ -55,6 +57,11 @@ module Kettle
         if @reformat_only
           reformat_changelog!(File.read(@changelog_path))
           emit_changelog_event(action: "reformat", status: "ok", plan: "reformat_only")
+          return
+        end
+
+        if @historical_backfill_version
+          backfill_historical_release!(@historical_backfill_version)
           return
         end
 
@@ -409,6 +416,42 @@ module Kettle
         updated = updated.rstrip + "\n"
         File.write(@changelog_path, updated)
         puts "CHANGELOG.md reformatted. No new version section added."
+      end
+
+      def backfill_historical_release!(version)
+        changelog = File.read(@changelog_path)
+        abort("CHANGELOG.md already contains a section for #{version}") if release_section_exists?(changelog, version)
+
+        unreleased_block, before, after = extract_unreleased(changelog)
+        abort("Could not find '## [Unreleased]' section in CHANGELOG.md") if unreleased_block.nil?
+
+        date = tagged_release_date(version)
+        owner, repo = Kettle::Dev::CIHelpers.repo_info
+        abort("Could not determine GitHub owner/repo from origin remote") unless owner && repo
+
+        section = <<~MD
+          ## [#{version}] - #{date}
+          - TAG: [v#{version}][#{version}t]
+
+          ### Changed
+
+          - Historical release notes are unavailable in this changelog.
+
+        MD
+        updated = before + "## [Unreleased]\n" + unreleased_block.rstrip + "\n\n" + section + after.to_s
+        updated = update_link_refs(updated, owner, repo, nil, version)
+        updated = normalize_heading_spacing(updated).rstrip + "\n"
+        File.write(@changelog_path, updated)
+        emit_changelog_event(action: "backfill", status: "ok", version: version, plan: "historical_release")
+        puts "CHANGELOG.md backfilled with historical v#{version} section. Unreleased entries were preserved."
+      end
+
+      def tagged_release_date(version)
+        tag = "v#{version}"
+        output, status = Open3.capture2("git", "log", "-1", "--format=%as", tag, chdir: @root)
+        abort("Local git tag #{tag} is required to backfill a historical release section") unless status.success? && !output.strip.empty?
+
+        output.strip
       end
 
       def release_section_exists?(changelog, version)

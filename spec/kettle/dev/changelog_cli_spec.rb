@@ -1912,4 +1912,32 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       expect(transformed).to eq(list_style)
     end
   end
+
+  describe "#backfill_historical_release!" do
+    it "adds a tagged release section without moving Unreleased entries" do
+      mkproj do |root|
+        File.write(File.join(root, "CHANGELOG.md"), <<~MD)
+          # Changelog
+
+          ## [Unreleased]
+
+          ### Fixed
+
+          - Keep this pending change.
+
+          [Unreleased]: https://github.com/acme/demo/compare/HEAD
+        MD
+        cli = described_class.new(strict: false, root: root)
+        allow(cli).to receive(:tagged_release_date).with("1.2.3").and_return("2024-09-24")
+        allow(Kettle::Dev::CIHelpers).to receive(:repo_info).and_return(["acme", "demo"])
+
+        cli.send(:backfill_historical_release!, "1.2.3")
+
+        changelog = File.read(File.join(root, "CHANGELOG.md"))
+        expect(changelog).to include("- Keep this pending change.")
+        expect(changelog).to include("## [1.2.3] - 2024-09-24")
+        expect(changelog).to include("Historical release notes are unavailable in this changelog.")
+      end
+    end
+  end
 end

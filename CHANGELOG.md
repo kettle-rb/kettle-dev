@@ -26,6 +26,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - Add historical changelog reformat and GitHub release reconciliation checks.
 
+- Add an explicit historical release-section backfill mode for tagged releases.
+
 ### Changed
 
 ### Deprecated
