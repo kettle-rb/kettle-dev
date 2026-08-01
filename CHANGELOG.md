@@ -44,6 +44,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - Canonicalize legacy release headings and remove redundant historical placeholders during reformat.
 
+- Roll back unpublished prepared changelog sections when version.rb returns to the published version.
+
 ### Security
 
 ## [2.5.14] - 2026-07-31

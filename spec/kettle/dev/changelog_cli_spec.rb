@@ -1979,4 +1979,51 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       end
     end
   end
+
+  describe "prepared release rollback" do
+    it "returns a higher unpublished prepared section to Unreleased when version.rb was rolled back" do
+      mkproj do |root|
+        write_version(root, "3.1.0")
+        path = File.join(root, "CHANGELOG.md")
+        File.write(path, <<~MD)
+          # Changelog
+
+          ## [Unreleased]
+
+          ### Fixed
+
+          - Existing pending fix.
+
+          ## [3.1.1] - 2024-09-25
+
+          - TAG: [v3.1.1][3.1.1t]
+
+          ### Added
+
+          - Prepared feature.
+
+          ## [3.1.0] - 2024-09-24
+
+          - Published release notes.
+
+          [Unreleased]: https://github.com/acme/demo/compare/v3.1.1...HEAD
+          [3.1.1]: https://github.com/acme/demo/compare/v3.1.0...v3.1.1
+          [3.1.1t]: https://github.com/acme/demo/releases/tag/v3.1.1
+        MD
+        cli = described_class.new(strict: false, root: root, yes: true)
+        allow(cli).to receive(:detect_gem_name).and_return("demo")
+        allow(cli).to receive(:latest_released_versions).and_return(["3.1.0", "3.1.0"])
+        allow(Kettle::Dev::CIHelpers).to receive(:repo_info).and_return(["acme", "demo"])
+
+        cli.run
+
+        changelog = File.read(path)
+        expect(changelog).to include("- Existing pending fix.")
+        expect(changelog).to include("- Prepared feature.")
+        expect(changelog).to include("## [3.1.0] - 2024-09-24")
+        expect(changelog).not_to include("## [3.1.1]")
+        expect(changelog).not_to include("[3.1.1]:")
+      end
+    end
+  end
 end
