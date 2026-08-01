@@ -50,4 +50,23 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
     expect(cli.send(:github_release_token_configured?)).to be(true)
   end
+
+  it "updates an existing release from its changelog section" do
+    allow(cli).to receive(:remote_url).with("origin").and_return("git@github.com:acme/example-gem.git")
+    allow(cli).to receive(:extract_changelog_for_version).with("1.2.3")
+      .and_return(["## [1.2.3]\n\n- Release notes.\n", "[1.2.3]: compare\n", "[1.2.3t]: tag\n"])
+    allow(cli).to receive(:github_update_release).and_return([true, "updated"])
+
+    result = cli.send(:maybe_update_github_release!, "1.2.3")
+
+    expect(result).to eq([true, "updated"])
+    expect(cli).to have_received(:github_update_release).with(hash_including(
+      owner: "acme",
+      repo: "example-gem",
+      token: "token",
+      tag: "v1.2.3",
+      title: "v1.2.3",
+      body: a_string_including("## [1.2.3]\n\n- Release notes.\n\n[1.2.3]: compare\n[1.2.3t]: tag\n")
+    ))
+  end
 end
