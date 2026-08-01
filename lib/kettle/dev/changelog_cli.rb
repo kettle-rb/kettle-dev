@@ -327,17 +327,17 @@ module Kettle
           abort("Aborting: CHANGELOG.md already contains a #{version} section, but the most recent release section is #{latest_changelog_version || "missing"}.")
         else
           action = if section_exists && latest_target == version
-          if unreleased_block_has_entries?(unreleased_block)
-            abort("Aborting: version.rb (#{version}) matches the latest released version for this release line (#{latest_target}); bump version.rb before moving Unreleased entries into a release section.")
+            if unreleased_block_has_entries?(unreleased_block)
+              abort("Aborting: version.rb (#{version}) matches the latest released version for this release line (#{latest_target}); bump version.rb before moving Unreleased entries into a release section.")
+            end
+            :reformat_only
+          elsif section_exists
+            :update_prepared_release
+          elsif latest_target == version
+            abort("Aborting: version.rb (#{version}) matches the latest released version, but CHANGELOG.md does not have #{version} as the most recent release section.")
+          else
+            :new_release
           end
-          :reformat_only
-        elsif section_exists
-          :update_prepared_release
-        elsif latest_target == version
-          abort("Aborting: version.rb (#{version}) matches the latest released version, but CHANGELOG.md does not have #{version} as the most recent release section.")
-        else
-          :new_release
-        end
         end
 
         {
@@ -674,7 +674,7 @@ module Kettle
         abort("Could not find a prepared release section after '## [Unreleased]' in CHANGELOG.md") unless heading
 
         finish = release_lines.each_index.drop(1).find do |index|
-          release_lines[index].start_with?("## [") || release_lines[index].start_with?(UNRELEASED_SECTION_HEADING)
+          release_lines[index].start_with?("## [", UNRELEASED_SECTION_HEADING)
         end || release_lines.length
         prepared_version = heading[1]
         merged = merge_release_body_with_unreleased(release_lines[1...finish].join, unreleased_block)
