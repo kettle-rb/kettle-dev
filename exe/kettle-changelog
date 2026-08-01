@@ -63,7 +63,7 @@ end
 
 if ARGV.include?("-h") || ARGV.include?("--help")
   puts <<~USAGE
-    Usage: kettle-changelog [--version VERSION] [--yes] [--update-prep] [--pending-release] [--release-state] [--refresh-cache] [--add-unreleased-entry --section SECTION --entry TEXT] [--json|--events[=TYPES]] [--no-strict] [--no-coverage-threshold]
+    Usage: kettle-changelog [--version VERSION] [--yes] [--update-prep|--reformat] [--pending-release] [--release-state] [--refresh-cache] [--add-unreleased-entry --section SECTION --entry TEXT] [--json|--events[=TYPES]] [--no-strict] [--no-coverage-threshold]
 
     Detects the current version from lib/**/version.rb, the latest live release, and
     the most recent CHANGELOG.md release section, then prompts to confirm the selected plan:
@@ -76,6 +76,7 @@ if ARGV.include?("-h") || ARGV.include?("--help")
       --version VERSION         Use this version instead of detecting VERSION from lib/**/version.rb
       --yes                     Auto-approve the selected release plan
       --update-prep             Force updating the most recent prepared release section in place
+      --reformat                Normalize CHANGELOG.md structure without release-state planning
       --pending-release         Query whether the changelog has release work pending; exits 0 for yes, 1 for no
       --release-state,
       --release-status          Print changelog release state, including latest published release and pending sources
@@ -159,6 +160,7 @@ begin
   # Determine if strict mode is enabled (default: true)
   strict_mode = !ARGV.include?("--no-strict") && ENV.fetch("K_CHANGELOG_STRICT", "true").downcase != "false"
   update_prep = ARGV.delete("--update-prep")
+  reformat_only = ARGV.delete("--reformat")
   yes = !!ARGV.delete("--yes")
   pending_release_query = ARGV.delete("--pending-release")
   release_state_query = ARGV.delete("--release-state") || ARGV.delete("--release-status")
@@ -202,7 +204,7 @@ begin
   end
 
   event_stream = events_output ? Kettle::Ndjson.event_stream($stdout, types: event_types) : nil
-  cli = Kettle::Dev::ChangelogCLI.new(strict: strict_mode, enforce_coverage_thresholds: coverage_hard, update_prep: update_prep, version: version_override, refresh_cache: refresh_cache, yes: yes, event_stream: event_stream)
+  cli = Kettle::Dev::ChangelogCLI.new(strict: strict_mode, enforce_coverage_thresholds: coverage_hard, update_prep: update_prep, reformat_only: reformat_only, version: version_override, refresh_cache: refresh_cache, yes: yes, event_stream: event_stream)
   if release_state_query
     state = cli.release_state
     puts(json_output ? JSON.pretty_generate(state) : cli.release_state_table(state))

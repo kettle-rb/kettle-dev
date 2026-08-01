@@ -27,9 +27,10 @@ module Kettle
       # @param strict [Boolean] when true (default), require coverage and yard data; raise errors if unavailable
       # @param enforce_coverage_thresholds [Boolean] when true, fail strict coverage generation below project thresholds
       # @param update_prep [Boolean] when true, update the most recent prepared release section in place
+      # @param reformat_only [Boolean] when true, normalize structure without release-state planning
       # @param version [String, nil] explicit version override for gems without a literal VERSION constant
       # @param yes [Boolean] when true, approve the selected release plan without prompting
-      def initialize(strict: true, enforce_coverage_thresholds: true, update_prep: false, version: nil, root: Kettle::Dev::CIHelpers.project_root, refresh_cache: false, yes: false, event_stream: nil)
+      def initialize(strict: true, enforce_coverage_thresholds: true, update_prep: false, reformat_only: false, version: nil, root: Kettle::Dev::CIHelpers.project_root, refresh_cache: false, yes: false, event_stream: nil)
         @root = root
         @changelog_path = resolved_changelog_path
         @coverage_root = resolved_coverage_root
@@ -37,6 +38,7 @@ module Kettle
         @strict = strict
         @enforce_coverage_thresholds = enforce_coverage_thresholds
         @update_prep = update_prep
+        @reformat_only = reformat_only
         @version_override = Kettle::Dev::Versioning.normalize_explicit_version(version)
         @refresh_cache = refresh_cache
         @yes = !!yes
@@ -50,6 +52,12 @@ module Kettle
       #
       # @return [void]
       def run
+        if @reformat_only
+          reformat_changelog!(File.read(@changelog_path))
+          emit_changelog_event(action: "reformat", status: "ok", plan: "reformat_only")
+          return
+        end
+
         version = detect_version
         today = Time.now.strftime("%Y-%m-%d")
         owner, repo = Kettle::Dev::CIHelpers.repo_info

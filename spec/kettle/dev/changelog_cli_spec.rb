@@ -641,6 +641,23 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       end
     end
 
+    it "reformats historical changelogs without requiring a section for the current released version" do
+      mkproj do |root|
+        File.write(File.join(root, "CHANGELOG.md"), <<~MD)
+          # Changelog
+          ## [Unreleased]
+          ### Added
+          ## [1.0.0] - 2020-01-01
+          - TAG: [v1.0.0][1.0.0t]
+        MD
+
+        cli = described_class.new(root: root, strict: false, reformat_only: true)
+
+        expect { cli.run }.not_to raise_error
+        expect(File.read(File.join(root, "CHANGELOG.md"))).to include("# Changelog\n\n## [Unreleased]\n\n### Added")
+      end
+    end
+
     it "updates the most recent prepared release in place", freeze: Time.new(2025, 8, 31) do
       mkproj do |root|
         File.write(File.join(root, "lib", "my", "gem", "version.rb"), <<~RB)

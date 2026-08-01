@@ -22,6 +22,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - Add verified GitHub Release backfill checks and NDJSON support to kettle-gh-release.
 
+- Add a changelog reformat mode for historical release metadata repair.
+
 ### Changed
 
 ### Deprecated
