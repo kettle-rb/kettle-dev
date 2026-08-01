@@ -411,11 +411,57 @@ module Kettle
 
       def reformat_changelog!(changelog)
         updated = convert_heading_tag_suffix_to_list(changelog)
+        updated = normalize_legacy_release_headings(updated)
+        updated = remove_redundant_historical_placeholders(updated)
         updated = normalize_heading_spacing(updated)
         updated = ensure_footer_spacing(updated)
         updated = updated.rstrip + "\n"
         File.write(@changelog_path, updated)
         puts "CHANGELOG.md reformatted. No new version section added."
+      end
+
+      def normalize_legacy_release_headings(changelog)
+        changelog.to_s.lines.map do |line|
+          match = line.match(/^##\s+(?!\[)(v?\d+(?:\.\d+)+(?:[.-][0-9A-Za-z]+)?)(\s+-\s+.*)?\s*$/)
+          next line unless match
+
+          version = match[1].delete_prefix("v")
+          next line unless Gem::Version.correct?(version)
+
+          "## [#{version}]#{match[2]}\n"
+        end.join
+      end
+
+      def remove_redundant_historical_placeholders(changelog)
+        lines = changelog.to_s.lines
+        sections = changelog_release_sections(lines)
+        removals = sections.group_by { |section| section.fetch(:version) }.values.flat_map do |same_version|
+          next [] unless same_version.size > 1
+          next [] unless same_version.any? { |section| !section.fetch(:placeholder) }
+
+          same_version.filter_map do |section|
+            (section.fetch(:start)...section.fetch(:finish)) if section.fetch(:placeholder)
+          end
+        end
+        return changelog if removals.empty?
+
+        lines.each_with_index.reject { |_line, index| removals.any? { |range| range.cover?(index) } }.map(&:first).join
+      end
+
+      def changelog_release_sections(lines)
+        headings = lines.each_index.filter_map do |index|
+          match = lines[index].match(/^## \[(#{CHANGELOG_VERSION_PATTERN_SOURCE})\]/o)
+          {version: match[1], start: index} if match
+        end
+        headings.each_with_index.map do |heading, index|
+          next_heading = headings[index + 1]
+          footer = lines.each_index.find do |line_index|
+            line_index > heading.fetch(:start) && lines[line_index].start_with?(UNRELEASED_SECTION_HEADING)
+          end
+          finish = [next_heading&.fetch(:start), footer, lines.length].compact.min
+          body = lines[heading.fetch(:start)...finish].join
+          heading.merge(finish: finish, placeholder: body.include?("Historical release notes are unavailable in this changelog."))
+        end
       end
 
       def backfill_historical_release!(version)

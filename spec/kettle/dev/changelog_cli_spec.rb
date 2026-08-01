@@ -1940,4 +1940,43 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       end
     end
   end
+
+  describe "#reformat_changelog!" do
+    it "canonicalizes legacy headings and removes only a redundant historical placeholder" do
+      mkproj do |root|
+        path = File.join(root, "CHANGELOG.md")
+        File.write(path, <<~MD)
+          # Changelog
+
+          ## [Unreleased]
+
+          ### Fixed
+
+          - Pending fix.
+
+          ## 1.2.3 - 2024-09-24
+
+          - Original release notes.
+
+          ## [1.2.3] - 2024-09-24
+
+          ### Changed
+
+          - Historical release notes are unavailable in this changelog.
+
+          [Unreleased]: https://github.com/acme/demo/compare/v1.2.3...HEAD
+        MD
+        cli = described_class.new(strict: false, root: root)
+
+        cli.send(:reformat_changelog!, File.read(path))
+
+        changelog = File.read(path)
+        expect(changelog).to include("## [1.2.3] - 2024-09-24")
+        expect(changelog.scan("## [1.2.3]").size).to eq(1)
+        expect(changelog).to include("- Original release notes.")
+        expect(changelog).not_to include("Historical release notes are unavailable")
+        expect(changelog).to include("[Unreleased]: https://github.com/acme/demo/compare/v1.2.3...HEAD")
+      end
+    end
+  end
 end

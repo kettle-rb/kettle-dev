@@ -40,6 +40,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - Honor K_CHANGELOG_PATH when adding an Unreleased changelog entry.
 
+- Canonicalize legacy release headings and remove redundant historical placeholders during reformat.
+
 ### Security
 
 ## [2.5.14] - 2026-07-31
