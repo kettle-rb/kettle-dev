@@ -5,6 +5,7 @@ require "json"
 require "net/http"
 require "uri"
 require "fileutils"
+require "yaml"
 require "kettle/ndjson"
 
 module Kettle
@@ -915,9 +916,29 @@ module Kettle
           "K_SOUP_COV_MULTI_FORMATTERS" => "false",
           "K_SOUP_COV_OPEN_BIN" => ""
         )
+        env.merge!(changelog_coverage_workflow_thresholds)
         gemfile = File.join(@coverage_root, "Gemfile")
         env["BUNDLE_GEMFILE"] = gemfile if File.file?(gemfile)
         env
+      end
+
+      # The changelog coverage run is the final local test gate before a
+      # release commit is pushed. Reuse the checked-in CI workflow thresholds
+      # rather than silently falling back to kettle-soup-cover defaults.
+      def changelog_coverage_workflow_thresholds
+        path = ["coverage.yml", "coverage.yaml"]
+          .map { |name| File.join(@coverage_root, ".github", "workflows", name) }
+          .find { |candidate| File.file?(candidate) }
+        return {} unless path
+
+        workflow = YAML.safe_load_file(path, permitted_classes: [], aliases: false)
+        workflow_env = workflow.is_a?(Hash) && workflow["env"].is_a?(Hash) ? workflow["env"] : {}
+        %w[K_SOUP_COV_MIN_LINE K_SOUP_COV_MIN_BRANCH].each_with_object({}) do |key, thresholds|
+          value = workflow_env[key]
+          thresholds[key] = value.to_s unless value.nil? || value.to_s.empty?
+        end
+      rescue Psych::Exception => error
+        raise "Unable to read coverage thresholds from #{path}: #{error.message}"
       end
 
       def ensure_changelog_coverage_json!

@@ -1115,6 +1115,39 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       end
     end
 
+    it "uses the checked-in coverage workflow thresholds for the changelog test run" do
+      mkproj do |root|
+        allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
+        workflow_dir = File.join(root, ".github", "workflows")
+        FileUtils.mkdir_p(workflow_dir)
+        File.write(File.join(workflow_dir, "coverage.yml"), <<~YAML)
+          env:
+            K_SOUP_COV_MIN_LINE: 91
+            K_SOUP_COV_MIN_BRANCH: 72
+            K_SOUP_COV_MIN_HARD: true
+        YAML
+        coverage_payload = JSON.generate("coverage" => {"lib/a.rb" => {"lines" => [1], "branches" => [{"coverage" => 1}]}})
+
+        expect(cli = described_class.new(strict: true)).to receive(:system).with(
+          hash_including(
+            "K_SOUP_COV_MIN_LINE" => "91",
+            "K_SOUP_COV_MIN_BRANCH" => "72",
+            "K_SOUP_COV_MIN_HARD" => "true"
+          ),
+          "bundle",
+          "exec",
+          "kettle-test",
+          chdir: root
+        ) do
+          FileUtils.mkdir_p(File.join(root, "coverage"))
+          File.write(File.join(root, "coverage", "coverage.json"), coverage_payload)
+          true
+        end
+
+        cli.send(:coverage_lines)
+      end
+    end
+
     it "runs strict coverage from K_CHANGELOG_COVERAGE_ROOT when configured" do
       mkproj do |root|
         coverage_root = File.join(root, "family")
