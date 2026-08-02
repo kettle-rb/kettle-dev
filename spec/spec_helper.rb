@@ -75,7 +75,14 @@ RSpec.configure do |config|
   # Auto-skip examples that require Bundler >= 2.7 (which implies Ruby >= 3.2)
   config.before(:each, :bundler_27_only) do
     # Skip on Ruby < 3.2 using rspec-pending_for's version matcher
-    skip_for(reason: "Requires Bundler >= 2.7 which is unavailable on Ruby < 3.2", versions: %w[2.3 2.4 2.5 2.6 2.7 3.0 3.1])
+    skip_for(reason: "Requires Bundler >= 2.7 which is unavailable on Ruby < 3.2", versions: %w[2.4 2.5 2.6 2.7 3.0 3.1])
+  end
+
+  config.before(:each, :modern_tooling_only) do
+    skip_for(
+      reason: "Exercises Kettle Dev tooling supported on Ruby >= 3.2",
+      versions: %w[2.4 2.5 2.6 2.7 3.0 3.1]
+    )
   end
 
   # Auto-skip examples that require prism-merge (Ruby >= 2.7)

@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Mark modern changelog coverage-threshold tooling specs pending on legacy Ruby Appraisals.
+
 ### Security
 
 ## [2.5.16] - 2026-08-01

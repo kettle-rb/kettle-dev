@@ -1115,7 +1115,7 @@ RSpec.describe Kettle::Dev::ChangelogCLI, :check_output do
       end
     end
 
-    it "uses the checked-in coverage workflow thresholds for the changelog test run" do
+    it "uses the checked-in coverage workflow thresholds for the changelog test run", :modern_tooling_only do
       mkproj do |root|
         allow(Kettle::Dev::CIHelpers).to receive(:project_root).and_return(root)
         workflow_dir = File.join(root, ".github", "workflows")
