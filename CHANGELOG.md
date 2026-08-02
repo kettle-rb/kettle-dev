@@ -22,12 +22,25 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
-- kettle-jem-template-20260801-001 - Generated README gem dashboard links now
-  use ClickGems instead of BestGems.
-
 ### Deprecated
 
 ### Removed
+
+### Fixed
+
+### Security
+
+## [2.5.16] - 2026-08-01
+
+- TAG: [v2.5.16][2.5.16t]
+- COVERAGE: 91.22% -- 5279/5787 lines in 46 files
+- BRANCH COVERAGE: 75.36% -- 1994/2646 branches in 46 files
+- 50.41% documented
+
+### Changed
+
+- kettle-jem-template-20260801-001 - Generated README gem dashboard links now
+  use ClickGems instead of BestGems.
 
 ### Fixed
 
@@ -44,8 +57,6 @@ Please file a bug if you notice a violation of semantic versioning.
 - kettle-jem-template-20260801-004 - Generated organization README logos now
   use GitHub's stable organization avatar endpoint instead of assuming a
   matching Galtzo-hosted asset exists.
-
-### Security
 
 ## [2.5.15] - 2026-08-01
 
@@ -3219,7 +3230,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.15...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.16...HEAD
+[2.5.16]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.15...v2.5.16
+[2.5.16t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.16
 [2.5.15]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.14...v2.5.15
 [2.5.15t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.15
 [2.5.14]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.13...v2.5.14
