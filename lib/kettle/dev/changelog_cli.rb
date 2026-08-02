@@ -932,7 +932,7 @@ module Kettle
         return {} unless path
 
         workflow = YAML.safe_load_file(path, permitted_classes: [], aliases: false)
-        workflow_env = workflow.is_a?(Hash) && workflow["env"].is_a?(Hash) ? workflow["env"] : {}
+        workflow_env = (workflow.is_a?(Hash) && workflow["env"].is_a?(Hash)) ? workflow["env"] : {}
         %w[K_SOUP_COV_MIN_LINE K_SOUP_COV_MIN_BRANCH].each_with_object({}) do |key, thresholds|
           value = workflow_env[key]
           thresholds[key] = value.to_s unless value.nil? || value.to_s.empty?

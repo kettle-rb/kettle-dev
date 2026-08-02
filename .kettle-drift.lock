@@ -8,7 +8,8 @@
         42,
         46,
         50,
-        54
+        54,
+        58
       ]
     }
   ],
@@ -21,7 +22,8 @@
         41,
         45,
         49,
-        53
+        53,
+        57
       ]
     }
   ],
@@ -30,8 +32,8 @@
       "file": ".github/workflows/dep-heads.yml",
       "lines": [
         43,
-        100,
-        157
+        102,
+        161
       ]
     }
   ],
@@ -40,8 +42,8 @@
       "file": ".github/workflows/heads.yml",
       "lines": [
         43,
-        104,
-        162
+        106,
+        166
       ]
     }
   ],
@@ -50,8 +52,8 @@
       "file": ".github/workflows/dep-heads.yml",
       "lines": [
         44,
-        101,
-        158
+        103,
+        162
       ]
     }
   ],
@@ -60,8 +62,26 @@
       "file": ".github/workflows/heads.yml",
       "lines": [
         44,
-        105,
-        163
+        107,
+        167
+      ]
+    }
+  ],
+  "if: ${{ !env.ACT }}\nuses: appraisal-rb/setup-ruby-flash@b22cb587431e9611d9e0a624a43872e2bbfbcd66 # v2.0": [
+    {
+      "file": ".github/workflows/dep-heads.yml",
+      "lines": [
+        63,
+        122,
+        182
+      ]
+    },
+    {
+      "file": ".github/workflows/heads.yml",
+      "lines": [
+        56,
+        119,
+        179
       ]
     }
   ]
