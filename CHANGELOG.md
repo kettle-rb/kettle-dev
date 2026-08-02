@@ -28,10 +28,19 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [2.5.17] - 2026-08-02
+
+- TAG: [v2.5.17][2.5.17t]
+- COVERAGE: 91.45% -- 5292/5787 lines in 46 files
+- BRANCH COVERAGE: 75.66% -- 2002/2646 branches in 46 files
+- 50.41% documented
+
+### Fixed
+
 - kettle-jem-template-20260802-001 - Devcontainer JSON files now merge as JSONC,
   preserving comments and trailing commas during template updates.
-
-### Security
 
 ## [2.5.16] - 2026-08-01
 
@@ -3222,7 +3231,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.16...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.17...HEAD
+[2.5.17]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.16...v2.5.17
+[2.5.17t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.17
 [2.5.16]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.15...v2.5.16
 [2.5.16t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.16
 [2.5.15]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.14...v2.5.15
