@@ -107,12 +107,11 @@ out to `kettle-release` for each member that needs publishing.
 
 ### Compatibility
 
-The gemspec supports installation on MRI Ruby 2.4.0+ and concordant releases
-of JRuby and TruffleRuby so dependent gems can retain their own legacy runtime
-floors. Kettle Dev's command-line and developer tooling is developed and
-supported on current Ruby releases. CI/Appraisal jobs still exercise the legacy
-installation floor, while specs that require current tooling are explicitly
-pending there via `rspec-pending_for`.
+Compatible with MRI Ruby 2.4.0+, and concordant releases of JRuby, and TruffleRuby.
+CI workflows and Appraisals are generated for MRI Ruby 2.4+.
+This test floor is configured by `ruby.test_minimum` in `.kettle-jem.yml` and
+may be higher than the gem's runtime compatibility floor when legacy Rubies are
+not practical for the current toolchain.
 
 <a href="https://github.com/kettle-dev"><img alt="kettle-dev Logo by Aboling0, CC BY-SA 4.0" src="https://logos.galtzo.com/assets/images/kettle-dev/avatar-128px.svg" width="14%" align="right"/></a>
 
