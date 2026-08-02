@@ -4,7 +4,7 @@ PATH
     kettle-dev (2.5.16)
       emoji_regex (>= 15.0)
       kettle-gha-pins (~> 0.3, >= 0.3.3)
-      kettle-ndjson (~> 0.1, >= 0.1.9)
+      kettle-ndjson (~> 0.1, >= 0.1.10)
       kettle-rb (~> 0.1, >= 0.1.8)
       kettle-test (~> 2.0, >= 2.0.12)
       ruby-progressbar (~> 1.13)
@@ -117,7 +117,7 @@ GEM
       ruby-progressbar (~> 1.13)
       tty-progressbar (~> 0.18)
       version_gem (~> 1.1, >= 1.1.14)
-    kettle-ndjson (0.1.9)
+    kettle-ndjson (0.1.10)
       version_gem (~> 1.1, >= 1.1.14)
     kettle-rb (0.1.8)
     kettle-soup-cover (3.0.7)
@@ -520,7 +520,7 @@ CHECKSUMS
   kettle-dev (2.5.16)
   kettle-family (1.2.21) sha256=ec155c850fc44c1262aed24f4a8ab059fe6b561ede120e632bf5ef0f19fb1a3a
   kettle-gha-pins (0.3.4) sha256=270319d8bf282a77c2f7c2f0767a2721d42d12909744b05e8d78e52f0ffab1e4
-  kettle-ndjson (0.1.9) sha256=dd78559bfadebbcd6076ae2c11d5d9f55aa6467fbe2f2fc4a8100fe9bcfbff27
+  kettle-ndjson (0.1.10) sha256=906c83606bb3a4dd24f49cfbcf10a26e1a245cd1daaf9c8a95ee0caec83eba37
   kettle-rb (0.1.8) sha256=a15023eaa5470de7b7c2a6a8017c430f20395b67a43cf35d555e35f02a5391d8
   kettle-soup-cover (3.0.7) sha256=ec7f28ed98f46bda5a7d9ba446f6d24ccb9b888dfae7ac9aa662f2ec955cf3ee
   kettle-test (2.0.17) sha256=0d1d7a40696ddc308c13b9feb5c0317fb92853f0d3c12b4b0a77bccc96599731
