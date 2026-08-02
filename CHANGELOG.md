@@ -28,15 +28,13 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Mark modern changelog coverage-threshold tooling specs pending on legacy Ruby Appraisals.
-
 ### Security
 
 ## [2.5.16] - 2026-08-01
 
 - TAG: [v2.5.16][2.5.16t]
-- COVERAGE: 91.22% -- 5279/5787 lines in 46 files
-- BRANCH COVERAGE: 75.36% -- 1994/2646 branches in 46 files
+- COVERAGE: 91.43% -- 5291/5787 lines in 46 files
+- BRANCH COVERAGE: 75.66% -- 2002/2646 branches in 46 files
 - 50.41% documented
 
 ### Changed
@@ -59,6 +57,8 @@ Please file a bug if you notice a violation of semantic versioning.
 - kettle-jem-template-20260801-004 - Generated organization README logos now
   use GitHub's stable organization avatar endpoint instead of assuming a
   matching Galtzo-hosted asset exists.
+
+- Mark modern changelog coverage-threshold tooling specs pending on legacy Ruby Appraisals.
 
 ## [2.5.15] - 2026-08-01
 
