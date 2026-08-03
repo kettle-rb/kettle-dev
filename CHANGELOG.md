@@ -28,9 +28,18 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Repair release lockfile recovery when locally installed workspace gems are retained as unreleased registry versions.
-
 ### Security
+
+## [2.5.18] - 2026-08-03
+
+- TAG: [v2.5.18][2.5.18t]
+- COVERAGE: 91.15% -- 5276/5788 lines in 46 files
+- BRANCH COVERAGE: 75.36% -- 1994/2646 branches in 46 files
+- 50.41% documented
+
+### Fixed
+
+- Repair release lockfile recovery when locally installed workspace gems are retained as unreleased registry versions.
 
 ## [2.5.17] - 2026-08-02
 
@@ -3233,7 +3242,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.17...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.18...HEAD
+[2.5.18]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.17...v2.5.18
+[2.5.18t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.18
 [2.5.17]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.16...v2.5.17
 [2.5.17t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.17
 [2.5.16]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.15...v2.5.16

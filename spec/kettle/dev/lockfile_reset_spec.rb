@@ -288,12 +288,15 @@ RSpec.describe Kettle::Dev::LockfileReset do
     reset = described_class.new(root: @root, command_runner: ->(_command) {})
     specification = instance_double(Gem::Specification)
 
-    expect(Gem::Specification).to receive(:reset)
-    expect(Gem::Specification).to receive(:find_all_by_name)
+    allow(Gem::Specification).to receive(:reset)
+    allow(Gem::Specification).to receive(:find_all_by_name)
       .with(never_released_workspace_gem, "= #{unreleased_workspace_version}")
       .and_return([specification])
 
     expect(reset.send(:locally_installed?, never_released_workspace_gem, unreleased_workspace_version)).to be(true)
+    expect(Gem::Specification).to have_received(:reset)
+    expect(Gem::Specification).to have_received(:find_all_by_name)
+      .with(never_released_workspace_gem, "= #{unreleased_workspace_version}")
   end
 
   it "uninstalls local workspace gems that do not resolve from the configured source" do
