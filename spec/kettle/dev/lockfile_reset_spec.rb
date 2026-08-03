@@ -284,6 +284,18 @@ RSpec.describe Kettle::Dev::LockfileReset do
       .to raise_error(RuntimeError, "permission denied")
   end
 
+  it "refreshes RubyGems specifications before checking for a local release candidate" do
+    reset = described_class.new(root: @root, command_runner: ->(_command) {})
+    specification = instance_double(Gem::Specification)
+
+    expect(Gem::Specification).to receive(:reset)
+    expect(Gem::Specification).to receive(:find_all_by_name)
+      .with(never_released_workspace_gem, "= #{unreleased_workspace_version}")
+      .and_return([specification])
+
+    expect(reset.send(:locally_installed?, never_released_workspace_gem, unreleased_workspace_version)).to be(true)
+  end
+
   it "uninstalls local workspace gems that do not resolve from the configured source" do
     commands = []
     reset = described_class.new(root: @root, command_runner: lambda { |command|

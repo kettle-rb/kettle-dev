@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Repair release lockfile recovery when locally installed workspace gems are retained as unreleased registry versions.
+
 ### Security
 
 ## [2.5.17] - 2026-08-02

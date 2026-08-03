@@ -418,6 +418,7 @@ module Kettle
       end
 
       def locally_installed?(name, version)
+        Gem::Specification.reset
         Gem::Specification.find_all_by_name(name, "= #{version}").any?
       rescue
         false
