@@ -11,6 +11,57 @@ PATH
       tty-progressbar (~> 0.18)
 
 PATH
+  remote: /home/pboling/src/my/kettle-dev/kettle-drift
+  specs:
+    kettle-drift (1.0.11)
+      version_gem (~> 1.1, >= 1.1.15)
+
+PATH
+  remote: /home/pboling/src/my/kettle-dev/kettle-gha-pins
+  specs:
+    kettle-gha-pins (0.3.6)
+      ruby-progressbar (~> 1.13)
+      tty-progressbar (~> 0.18)
+      version_gem (~> 1.1, >= 1.1.15)
+
+PATH
+  remote: /home/pboling/src/my/kettle-dev/kettle-ndjson
+  specs:
+    kettle-ndjson (0.1.11)
+      version_gem (~> 1.1, >= 1.1.15)
+
+PATH
+  remote: /home/pboling/src/my/kettle-dev/kettle-rb
+  specs:
+    kettle-rb (0.1.9)
+
+PATH
+  remote: /home/pboling/src/my/kettle-dev/kettle-soup-cover
+  specs:
+    kettle-soup-cover (3.0.9)
+      kettle-wash (~> 0.1, >= 0.1.3)
+      simplecov (>= 1.0)
+      simplecov-cobertura (>= 4.0)
+      simplecov-console (~> 0.9, >= 0.9.5)
+      simplecov-rcov (~> 0.3, >= 0.3.7)
+      simplecov_lcov_formatter (~> 0.9, >= 0.9.0)
+
+PATH
+  remote: /home/pboling/src/my/kettle-dev/kettle-test
+  specs:
+    kettle-test (2.0.19)
+      appraisal2 (~> 3.0, >= 3.0.6)
+      backports (~> 3.0)
+      rspec (~> 3.0)
+      rspec-block_is_expected (~> 1.0, >= 1.0.6)
+      rspec-pending_for (~> 0.1, >= 0.1.20)
+      rspec-stubbed_env (~> 1.0, >= 1.0.6)
+      rspec_junit_formatter (~> 0.6)
+      silent_stream (~> 1.0, >= 1.0.12)
+      timecop-rspec (~> 1.0, >= 1.0.3)
+      turbo_tests2 (~> 3.1, >= 3.1.12)
+
+PATH
   remote: /home/pboling/src/my/structuredmerge/ruby/gems/ast-crispr-markdown-markly
   specs:
     ast-crispr-markdown-markly (7.1.0)
@@ -284,40 +335,6 @@ PATH
       tree_haver (= 7.1.0)
       version_gem (~> 1.1, >= 1.1.15)
 
-PATH
-  remote: /var/home/pboling/src/my/kettle-dev/kettle-gha-pins
-  specs:
-    kettle-gha-pins (0.3.6)
-      ruby-progressbar (~> 1.13)
-      tty-progressbar (~> 0.18)
-      version_gem (~> 1.1, >= 1.1.15)
-
-PATH
-  remote: /var/home/pboling/src/my/kettle-dev/kettle-ndjson
-  specs:
-    kettle-ndjson (0.1.11)
-      version_gem (~> 1.1, >= 1.1.15)
-
-PATH
-  remote: /var/home/pboling/src/my/kettle-dev/kettle-rb
-  specs:
-    kettle-rb (0.1.9)
-
-PATH
-  remote: /var/home/pboling/src/my/kettle-dev/kettle-test
-  specs:
-    kettle-test (2.0.19)
-      appraisal2 (~> 3.0, >= 3.0.6)
-      backports (~> 3.0)
-      rspec (~> 3.0)
-      rspec-block_is_expected (~> 1.0, >= 1.0.6)
-      rspec-pending_for (~> 0.1, >= 0.1.20)
-      rspec-stubbed_env (~> 1.0, >= 1.0.6)
-      rspec_junit_formatter (~> 0.6)
-      silent_stream (~> 1.0, >= 1.0.12)
-      timecop-rspec (~> 1.0, >= 1.0.3)
-      turbo_tests2 (~> 3.1, >= 3.1.12)
-
 GEM
   remote: https://gem.coop/
   specs:
@@ -422,8 +439,6 @@ GEM
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
     json (2.21.2)
-    kettle-drift (1.0.11)
-      version_gem (~> 1.1, >= 1.1.15)
     kettle-family (1.2.24)
       command_kit (~> 0.6)
       command_kit-completion (~> 0.1)
@@ -431,13 +446,6 @@ GEM
       kettle-test (~> 2.0, >= 2.0.18)
       tsort (~> 0.2)
       tty-progressbar (~> 0.18)
-    kettle-soup-cover (3.0.9)
-      kettle-wash (~> 0.1, >= 0.1.3)
-      simplecov (>= 1.0)
-      simplecov-cobertura (>= 4.0)
-      simplecov-console (~> 0.9, >= 0.9.5)
-      simplecov-rcov (~> 0.3, >= 0.3.7)
-      simplecov_lcov_formatter (~> 0.9, >= 0.9.0)
     kettle-wash (0.1.4)
       version_gem (~> 1.1, >= 1.1.14)
     kramdown (2.5.2)
@@ -684,16 +692,16 @@ GEM
     toml-rb (4.2.1)
       citrus (~> 3.0, > 3.0)
       racc (~> 1.7)
-    tree_sitter_language_pack (1.14.0)
+    tree_sitter_language_pack (1.14.1)
       rb_sys (>= 0.9, < 0.9.128)
       sorbet-runtime (~> 0.5)
-    tree_sitter_language_pack (1.14.0-aarch64-linux)
+    tree_sitter_language_pack (1.14.1-aarch64-linux)
       sorbet-runtime (~> 0.5)
-    tree_sitter_language_pack (1.14.0-arm64-darwin)
+    tree_sitter_language_pack (1.14.1-arm64-darwin)
       sorbet-runtime (~> 0.5)
-    tree_sitter_language_pack (1.14.0-x86_64-darwin)
+    tree_sitter_language_pack (1.14.1-x86_64-darwin)
       sorbet-runtime (~> 0.5)
-    tree_sitter_language_pack (1.14.0-x86_64-linux)
+    tree_sitter_language_pack (1.14.1-x86_64-linux)
       sorbet-runtime (~> 0.5)
     tsort (0.2.0)
     tty-cursor (0.7.1)
@@ -780,13 +788,13 @@ DEPENDENCIES
   irb (~> 1.17)
   json-merge!
   kettle-dev!
-  kettle-drift (~> 1.0, >= 1.0.11)
+  kettle-drift!
   kettle-family (~> 1.2, >= 1.2.23)
   kettle-gha-pins!
   kettle-jem!
   kettle-ndjson!
   kettle-rb!
-  kettle-soup-cover (~> 3.0, >= 3.0.9)
+  kettle-soup-cover!
   kettle-test!
   kramdown (~> 2.5, >= 2.5.2)
   kramdown-merge!
@@ -1017,11 +1025,11 @@ CHECKSUMS
   toml-merge (7.1.0)
   toml-rb (4.2.1)
   tree_haver (7.1.0)
-  tree_sitter_language_pack (1.14.0)
-  tree_sitter_language_pack (1.14.0-aarch64-linux)
-  tree_sitter_language_pack (1.14.0-arm64-darwin)
-  tree_sitter_language_pack (1.14.0-x86_64-darwin)
-  tree_sitter_language_pack (1.14.0-x86_64-linux)
+  tree_sitter_language_pack (1.14.1)
+  tree_sitter_language_pack (1.14.1-aarch64-linux)
+  tree_sitter_language_pack (1.14.1-arm64-darwin)
+  tree_sitter_language_pack (1.14.1-x86_64-darwin)
+  tree_sitter_language_pack (1.14.1-x86_64-linux)
   tsort (0.2.0) sha256=9650a793f6859a43b6641671278f79cfead60ac714148aabe4e3f0060480089f
   tty-cursor (0.7.1) sha256=79534185e6a777888d88628b14b6a1fdf5154a603f285f80b1753e1908e0bf48
   tty-progressbar (0.18.3) sha256=6cbb4260e55e74a9180d502143eb6a467d2c8e51bf5f3c9509fb5cacc3d4a5f6
