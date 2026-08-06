@@ -44,6 +44,7 @@ module Kettle
     autoload :InputAdapter, "kettle/dev/input_adapter"
     autoload :InteractiveReleaseCommand, "kettle/dev/interactive_release_command"
     autoload :LockfileReset, "kettle/dev/lockfile_reset"
+    autoload :MarkdownReferenceValidator, "kettle/dev/markdown_reference_validator"
     autoload :ReadmeBackers, "kettle/dev/readme_backers"
     autoload :OpenCollectiveConfig, "kettle/dev/open_collective_config"
     autoload :ReleaseNotifier, "kettle/dev/release_notifier"

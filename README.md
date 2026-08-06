@@ -409,6 +409,8 @@ What it does:
 - Script: `exe/kettle-release` (run as `kettle-release`)
 - Purpose: guided release helper that:
     - Runs `kettle-pre-release` as step 0 on full releases, aborting before release setup if any pre-release gate fails.
+    - Validates Markdown reference definitions and local heading anchors across releasable documentation before network checks.
+      Markdown fixtures under `spec/` and `test/`, along with `tmp/`, are intentionally excluded.
     - Skips pre-release checks for any `start_step` greater than `0`, so resumptions begin directly at the requested numbered step.
     - Runs sanity checks (`bin/setup`, `bin/rake`), confirms version/changelog, optionally updates Appraisals, regenerates docs via `bin/rake yard`, commits “🔖 Prepare release vX.Y.Z”.
     - Optionally runs your CI locally with `act` before any push:

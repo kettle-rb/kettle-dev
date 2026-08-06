@@ -11,6 +11,7 @@ require "net/http"
 require "openssl"
 require "time"
 require_relative "cache_progress"
+require_relative "markdown_reference_validator"
 require "kettle/ndjson"
 begin
   require "addressable/uri"
@@ -24,7 +25,8 @@ module Kettle
     # Checks:
     #   1) Ensure GitHub Actions workflow actions are pinned to current SHAs.
     #   2) Normalize Markdown image URLs using Addressable normalization.
-    #   3) Validate Markdown image links resolve via cached HTTP(S) HEAD/GET.
+    #   3) Validate Markdown references and local heading targets.
+    #   4) Validate Markdown image links resolve via cached HTTP(S) HEAD/GET.
     #
     # Usage: Kettle::Dev::PreReleaseCLI.new(check_num: 1).run
     class PreReleaseCLI
@@ -288,6 +290,7 @@ module Kettle
         checks = []
         checks << method(:check_github_actions_sha_pins!)
         checks << method(:check_markdown_uri_normalization!)
+        checks << method(:check_markdown_references!)
         checks << method(:check_markdown_images_http!)
 
         start = @check_num
@@ -376,10 +379,30 @@ module Kettle
         normalized.to_s
       end
 
-      # Check 3: Validate Markdown image links by cached HTTP HEAD/GET.
+      # Check 3: Validate Markdown references and local heading targets.
+      # @return [void]
+      def check_markdown_references!
+        puts "[kettle-pre-release] Check 3: Validate Markdown references and local heading targets"
+        report = MarkdownReferenceValidator.new(
+          root: Dir.pwd,
+          files: Markdown.project_markdown_files
+        ).validate!
+        puts "[kettle-pre-release] Markdown references: #{report.reference_count} references, #{report.local_target_count} local targets, #{report.file_count} files."
+        emit_pre_release_event(
+          action: "markdown_references",
+          status: "ok",
+          files: report.file_count,
+          references: report.reference_count,
+          local_targets: report.local_target_count,
+          failures: 0
+        )
+        nil
+      end
+
+      # Check 4: Validate Markdown image links by cached HTTP HEAD/GET.
       # @return [void]
       def check_markdown_images_http!
-        puts "[kettle-pre-release] Check 3: Validate Markdown image links (cached HTTP HEAD, with GET fallback)"
+        puts "[kettle-pre-release] Check 4: Validate Markdown image links (cached HTTP HEAD, with GET fallback)"
         urls = Markdown.extract_image_urls_from_files
         puts "[kettle-pre-release] Found #{urls.size} unique image URL(s)."
         skipped = []

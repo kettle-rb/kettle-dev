@@ -28,6 +28,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Add release validation for Markdown reference labels and local heading anchors.
+
+- Restore the Discord badge reference in CONTRIBUTING.md.
+
 ### Security
 
 ## [2.5.18] - 2026-08-03

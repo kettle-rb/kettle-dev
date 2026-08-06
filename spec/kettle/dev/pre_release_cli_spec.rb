@@ -22,9 +22,10 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
 
     events = io.string.lines.map { |line| JSON.parse(line) }
     expect(events).to include(
-      include("type" => "pre_release", "action" => "check", "check" => "github_actions_sha_pins", "status" => "started", "index" => 1, "total" => 3, "mark" => ">"),
-      include("type" => "pre_release", "action" => "check", "check" => "github_actions_sha_pins", "status" => "ok", "index" => 1, "total" => 3, "mark" => "."),
+      include("type" => "pre_release", "action" => "check", "check" => "github_actions_sha_pins", "status" => "started", "index" => 1, "total" => 4, "mark" => ">"),
+      include("type" => "pre_release", "action" => "check", "check" => "github_actions_sha_pins", "status" => "ok", "index" => 1, "total" => 4, "mark" => "."),
       include("type" => "pre_release", "action" => "markdown_urls", "status" => "ok", "candidates" => 0, "changed_files" => 0, "mark" => "."),
+      include("type" => "pre_release", "action" => "markdown_references", "status" => "ok", "references" => 0, "local_targets" => 0, "failures" => 0, "mark" => "."),
       include("type" => "pre_release", "action" => "image_links", "status" => "ok", "urls" => 0, "failures" => 0, "mark" => ".")
     )
   end
@@ -171,12 +172,13 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
   end
 
   describe "CLI run flow" do
-    it "runs checks 1, 2, and 3 and completes without abort when all links pass", :check_output do
+    it "runs checks 1 through 4 and completes without abort when all links pass", :check_output do
       cli = described_class.new(check_num: 1)
       # Provide a deterministic URL and use VCR to avoid network
-      allow(Kettle::Dev::PreReleaseCLI::Markdown).to receive(:extract_image_urls_from_files).and_return([
-        "https://httpbin.org/image/png"
-      ])
+      allow(Kettle::Dev::PreReleaseCLI::Markdown).to receive_messages(
+        project_markdown_files: [],
+        extract_image_urls_from_files: ["https://httpbin.org/image/png"]
+      )
       expect {
         VCR.use_cassette("head_image_ok") { cli.run }
       }.not_to raise_error
@@ -191,7 +193,7 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
     end
 
     it "aborts via ExitAdapter when HTTP failures occur in check 3" do
-      cli = described_class.new(check_num: 3)
+      cli = described_class.new(check_num: 4)
       allow(Kettle::Dev::PreReleaseCLI::Markdown).to receive(:extract_image_urls_from_files).and_return([
         "https://httpbin.org/image/png", "https://example.invalid/missing.png"
       ])
@@ -218,7 +220,7 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
         ])
         expect(Kettle::Dev::PreReleaseCLI::HTTP).not_to receive(:head_ok?)
 
-        expect { described_class.new(check_num: 3).run }
+        expect { described_class.new(check_num: 4).run }
           .to output(/Image URL checks: 1 cached, 0 live\./).to_stdout
       end
     end
@@ -248,9 +250,10 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
     end
 
     it "skips built-in volatile star-history image URLs by default" do
-      allow(Kettle::Dev::PreReleaseCLI::Markdown).to receive(:extract_image_urls_from_files).and_return([
-        "https://api.star-history.com/svg?repos=kettle-dev/kettle-test&type=Date"
-      ])
+      allow(Kettle::Dev::PreReleaseCLI::Markdown).to receive_messages(
+        project_markdown_files: [],
+        extract_image_urls_from_files: ["https://api.star-history.com/svg?repos=kettle-dev/kettle-test&type=Date"]
+      )
       expect(Kettle::Dev::PreReleaseCLI::HTTP).not_to receive(:head_ok?)
 
       expect { described_class.new(check_num: 3).run }
@@ -273,7 +276,7 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
           ])
           expect(Kettle::Dev::PreReleaseCLI::HTTP).not_to receive(:head_ok?)
 
-          expect { described_class.new(check_num: 3).run }
+          expect { described_class.new(check_num: 4).run }
             .to output(/Skipped 1 image URL check/).to_stdout
         end
         # rubocop:enable ThreadSafety/DirChdir
@@ -296,7 +299,7 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
           ])
           allow(Kettle::Dev::PreReleaseCLI::HTTP).to receive(:head_ok?).and_return(true)
 
-          expect { described_class.new(check_num: 3).run }.not_to raise_error
+          expect { described_class.new(check_num: 4).run }.not_to raise_error
 
           expect(Kettle::Dev::PreReleaseCLI::HTTP).to have_received(:head_ok?).once.with("https://assets.example.com/stable/logo.svg")
         end
@@ -319,7 +322,7 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
         ])
         expect(Kettle::Dev::PreReleaseCLI::HTTP).not_to receive(:head_ok?)
 
-        expect { described_class.new(check_num: 3).run }.not_to raise_error
+        expect { described_class.new(check_num: 4).run }.not_to raise_error
       end
     end
 
@@ -336,7 +339,7 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
         ])
         allow(Kettle::Dev::PreReleaseCLI::HTTP).to receive(:head_ok?).and_return(true)
 
-        expect { described_class.new(check_num: 3).run }.not_to raise_error
+        expect { described_class.new(check_num: 4).run }.not_to raise_error
 
         expect(Kettle::Dev::PreReleaseCLI::HTTP).to have_received(:head_ok?).with("https://example.com/logo.svg")
         cached_at = JSON.parse(File.read(cache_path)).dig("images", "https://example.com/logo.svg", "cached_at")
@@ -353,7 +356,7 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
         ])
         allow(Kettle::Dev::PreReleaseCLI::HTTP).to receive(:head_ok?).and_return(false)
 
-        expect { described_class.new(check_num: 3).run }.to raise_error(MockSystemExit)
+        expect { described_class.new(check_num: 4).run }.to raise_error(MockSystemExit)
 
         cached = File.file?(cache_path) ? JSON.parse(File.read(cache_path)) : {}
         expect(cached.fetch("images", {})).not_to include("https://example.com/missing.svg")
@@ -375,14 +378,14 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
         ])
         allow(Kettle::Dev::PreReleaseCLI::HTTP).to receive(:head_ok?).and_return(true)
 
-        expect { described_class.new(check_num: 3).run }.not_to raise_error
+        expect { described_class.new(check_num: 4).run }.not_to raise_error
 
         expect(Kettle::Dev::PreReleaseCLI::HTTP).to have_received(:head_ok?).with("https://example.com/logo.svg")
       end
     end
 
     it "respects starting check index (no-op when > number of checks)" do
-      cli = described_class.new(check_num: 4)
+      cli = described_class.new(check_num: 5)
       expect { cli.run }.not_to raise_error
     end
   end
