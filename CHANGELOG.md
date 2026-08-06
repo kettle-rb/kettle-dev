@@ -22,6 +22,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- Track the released kettle-gha-pins client and its cache/tag-resolution contract in the development lockfile and specs.
+
 ### Deprecated
 
 ### Removed

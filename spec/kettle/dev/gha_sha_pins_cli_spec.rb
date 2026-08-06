@@ -403,6 +403,7 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
         {"ref" => "refs/tags/v7", "object" => {"type" => "tag", "sha" => "a" * 40}},
         {"ref" => "refs/tags/v7.0.0", "object" => {"type" => "commit", "sha" => "b" * 40}}
       ])
+      allow(client).to receive(:request_json).with("/repos/foo/bar/git/tags/#{"a" * 40}").and_return({})
 
       versions = client.versions_for_repo("foo/bar")
 
@@ -412,7 +413,7 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       )
     end
 
-    it "defers annotated tag commit resolution until a specific version is needed" do
+    it "resolves annotated tag commit targets while loading release versions" do
       client = described_class.new(token: nil, api_base: Kettle::Dev::GhaShaPinsCLI::API_BASE, user_agent: "kettle-gha-pins")
       allow(client).to receive(:request_json).with("/repos/foo/bar/releases?per_page=100").and_return([
         {"tag_name" => "v1.0.0", "prerelease" => false}
@@ -421,15 +422,17 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
         {"ref" => "refs/tags/v1.0.0", "object" => {"type" => "tag", "sha" => "1" * 40}},
         {"ref" => "refs/tags/v1.0.1", "object" => {"type" => "tag", "sha" => "2" * 40}}
       ])
-      expect(client).not_to receive(:request_json).with(%r{/repos/foo/bar/git/tags/})
+      allow(client).to receive(:request_json).with("/repos/foo/bar/git/tags/#{"1" * 40}").and_return(
+        {"object" => {"type" => "commit", "sha" => "a" * 40}}
+      )
+      allow(client).to receive(:request_json).with("/repos/foo/bar/git/tags/#{"2" * 40}").and_return(
+        {"object" => {"type" => "commit", "sha" => "b" * 40}}
+      )
 
       versions = client.versions_for_repo("foo/bar")
 
       expect(versions.map { |entry| entry[:version] }).to eq(%w[1.0.1 1.0.0])
-      expect(versions.map { |entry| entry[:sha] }).to eq([nil, nil])
-      allow(client).to receive(:request_json).with("/repos/foo/bar/commits/v1.0.1").and_return({"sha" => "b" * 40})
-
-      expect(client.commit_sha("foo/bar", "v1.0.1")).to eq("b" * 40)
+      expect(versions.map { |entry| entry[:sha] }).to eq(["b" * 40, "a" * 40])
     end
 
     it "does not dereference annotated tags that cannot be action release versions" do
@@ -466,7 +469,7 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
       expect(versions.map { |entry| entry[:sha] }).to eq(["b" * 40, "a" * 40])
     end
 
-    it "uses fresh persistent cache entries without GitHub API calls", freeze: Time.utc(2026, 6, 8, 12, 0, 0) do
+    it "uses fresh persistent cache entries after the latest-release probe", freeze: Time.utc(2026, 6, 8, 12, 0, 0) do
       cache = Kettle::Dev::GhaShaPinsCLI::PersistentActionCache.new(
         path: File.join(workflow_root, "gha-cache.json")
       )
@@ -484,7 +487,7 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
         user_agent: "kettle-gha-pins",
         persistent_cache: cache
       )
-      expect(client).not_to receive(:request_json)
+      allow(client).to receive(:request_json).with("/repos/foo/bar/releases/latest").and_return({})
 
       versions = client.versions_for_repo("foo/bar")
 
