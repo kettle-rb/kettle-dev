@@ -31,9 +31,11 @@ begin
   end
   Kettle::Dev.register_default("reek:update") unless Kettle::Dev::IS_CI
 rescue LoadError
+  # simplecov:disable -- Reek is an optional development dependency.
   warn("[kettle-dev][reek.rake] failed to load reek/rake/task") if Kettle::Dev::DEBUGGING
   desc("(stub) reek is unavailable")
   task(:reek) do
     warn("NOTE: reek isn't installed, or is disabled for #{RUBY_VERSION} in the current environment")
   end
+  # simplecov:enable
 end

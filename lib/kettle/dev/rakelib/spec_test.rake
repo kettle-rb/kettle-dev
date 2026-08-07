@@ -24,6 +24,7 @@ begin
     Kettle::Dev.register_default("test") unless Kettle::Dev.default_registered?("coverage")
   end
 rescue LoadError
+  # simplecov:disable -- Rake's optional test task integration varies by runtime.
   warn("[kettle-dev][spec_test.rake] failed to load rake/testtask") if Kettle::Dev::DEBUGGING
   unless Rake::Task.task_defined?(:test)
     desc("test task stub")
@@ -31,6 +32,7 @@ rescue LoadError
       warn("NOTE: minitest isn't installed, or is disabled for #{RUBY_VERSION} in the current environment")
     end
   end
+  # simplecov:enable
 end
 
 setup_spec_task = ->(default:) {

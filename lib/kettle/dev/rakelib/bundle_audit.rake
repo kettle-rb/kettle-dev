@@ -27,10 +27,12 @@ else
     Kettle::Dev.register_default("bundle:audit:update")
     Kettle::Dev.register_default("bundle:audit")
   rescue LoadError
+    # simplecov:disable -- bundler-audit is an optional development dependency.
     warn("[kettle-dev][bundle_audit.rake] failed to load bundle/audit/task") if Kettle::Dev::DEBUGGING
     define_bundle_audit_stub_tasks.call(
       "(stub)",
       ->(_task_name) { "NOTE: bundler-audit isn't installed, or is disabled for #{RUBY_VERSION} in the current environment" }
     )
+    # simplecov:enable
   end
 end

@@ -79,4 +79,67 @@ RSpec.describe Kettle::Dev::MarkdownReferenceValidator do
       expect(report.issues).to be_empty
     end
   end
+
+  it "ignores external and non-Markdown links while accepting shorthand references" do
+    Dir.mktmpdir do |root|
+      write_markdown(root, "README.md", <<~MD)
+        # Introduction
+
+        [docs][]
+        [docs]: docs.txt#ignored
+        [anchor](#introduction)
+        [plain](docs.txt)
+        [external](https://example.test/guide#remote)
+        [protocol-relative](//example.test/guide#remote)
+        [malformed](%zz#remote)
+        [not-a-heading](README.md)
+      MD
+
+      report = described_class.new(root: root, files: ["README.md"]).validate!
+
+      expect(report.reference_count).to eq(1)
+      expect(report.local_target_count).to eq(1)
+      expect(report.issues).to be_empty
+    end
+  end
+
+  it "reports duplicate reference definitions" do
+    Dir.mktmpdir do |root|
+      write_markdown(root, "README.md", <<~MD)
+        [docs][guide]
+        [guide]: https://example.test/one
+        [guide]: https://example.test/two
+      MD
+
+      expect {
+        described_class.new(root: root, files: ["README.md"]).validate!
+      }.to raise_error(Kettle::Dev::Error, /1 issue\(s\)/)
+    end
+  end
+
+  it "discovers Markdown files while ignoring generated and test paths" do
+    Dir.mktmpdir do |root|
+      write_markdown(root, "README.md", "# Readme\n")
+      write_markdown(root, "docs/example.md.example", "# Example\n")
+      write_markdown(root, "tmp/generated.md", "# Generated\n")
+
+      Dir.chdir(root) do # rubocop:disable ThreadSafety/DirChdir
+        report = described_class.new.validate!
+
+        expect(report.file_count).to eq(2)
+      end
+    end
+  end
+
+  it "reports files that cannot be read" do
+    Dir.mktmpdir do |root|
+      path = File.join(root, "README.md")
+      write_markdown(root, "README.md", "# Readme\n")
+      allow(File).to receive(:readlines).with(path, chomp: true).and_raise(Errno::EACCES, path)
+
+      expect {
+        described_class.new(root: root, files: ["README.md"]).validate!
+      }.to raise_error(Kettle::Dev::Error, /Markdown reference validation failed \(1 issue\(s\)/)
+    end
+  end
 end

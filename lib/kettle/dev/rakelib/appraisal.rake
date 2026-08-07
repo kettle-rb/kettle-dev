@@ -219,5 +219,7 @@ begin
     end
   end
 rescue LoadError
+  # simplecov:disable -- Appraisal is an optional development dependency.
   warn("[kettle-dev][appraisal.rake] failed to load appraisal/tasks") if Kettle::Dev::DEBUGGING
+  # simplecov:enable
 end

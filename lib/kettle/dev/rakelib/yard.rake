@@ -14,15 +14,19 @@ begin
   begin
     require "yard/fence"
     Yard::Fence.install_rake_tasks!(:yard)
+    # simplecov:disable -- optional plugin availability is environment-specific.
   rescue LoadError
     # yard-fence not available - that's fine
+    # simplecov:enable
   end
 
   begin
     require "yard/timekeeper"
     Yard::Timekeeper.install_rake_tasks!(:yard)
+    # simplecov:disable -- optional plugin availability is environment-specific.
   rescue LoadError
     # yard-timekeeper not available - that's fine
+    # simplecov:enable
   end
 
   namespace :yard do
@@ -41,10 +45,12 @@ begin
   Kettle::Dev.register_default("yard:lint")
   Kettle::Dev.register_default("yard")
 rescue LoadError
+  # simplecov:disable -- YARD is an optional development dependency.
   warn("[kettle-dev][yard.rake] failed to load yard") if Kettle::Dev::DEBUGGING
   desc("(stub) yard is unavailable")
   task(:yard) do # rubocop:disable Rake/DuplicateTask -- fallback when the real YARD task cannot load
     warn("NOTE: yard isn't installed, or is disabled for #{RUBY_VERSION} in the current environment")
   end
   Kettle::Dev.register_default("yard")
+  # simplecov:enable
 end
