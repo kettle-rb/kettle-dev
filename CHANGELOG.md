@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Allow family orchestration to suppress per-member GitHub releases for monorepo release trains.
+
 ### Security
 
 ## [2.5.23] - 2026-08-07

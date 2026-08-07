@@ -2356,6 +2356,11 @@ module Kettle
       # Title: v<version>
       # Body: the CHANGELOG section for this version, followed by the two link references for this version.
       def maybe_create_github_release!(version)
+        if truthy_value?(ENV["KETTLE_RELEASE_SKIP_GITHUB_RELEASE"])
+          message = "GitHub release creation disabled for this release context"
+          puts "Skipping GitHub release creation: #{message}."
+          return [true, message]
+        end
         token = github_token
         if token.empty?
           message = "GITHUB_TOKEN or GH_TOKEN is not set; skipping GitHub release creation. Set a token with repo:public_repo (classic) or contents:write scope."
