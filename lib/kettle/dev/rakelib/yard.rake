@@ -28,10 +28,7 @@ begin
   namespace :yard do
     desc "Lint YARD Documentation"
     task :lint do
-      unless File.file?(".yard-lint.yml")
-        warn("NOTE: .yard-lint.yml is not present; skipping YARD lint")
-        next
-      end
+      next unless File.file?(".yard-lint.yml")
 
       # Keep warning-only lint runs compact in default/release flows, but rerun
       # with full output when lint fails so the blocking diagnostics are visible.
