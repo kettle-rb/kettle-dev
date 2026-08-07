@@ -85,6 +85,23 @@ RSpec.describe Kettle::Dev::RubyGemsVersions do
     expect(Net::HTTP).not_to have_received(:start)
   end
 
+  it "refreshes a fresh cache when it predates the requested version", freeze: Time.utc(2026, 7, 30, 12, 0, 0) do
+    write_version_cache("demo", "2026-07-01T12:00:00Z", [{"number" => "1.2.2"}])
+    response = ok_response(JSON.generate([{"number" => "1.2.3"}]))
+    request_uri = nil
+    http = instance_double(Net::HTTP)
+    allow(http).to receive(:request) do |request|
+      request_uri = request.uri
+      response
+    end
+    allow(Net::HTTP).to receive(:start).and_yield(http)
+
+    versions = described_class.fetch("demo", version_hint: "1.2.3")
+
+    expect(versions).to eq([{"number" => "1.2.3"}])
+    expect(request_uri.query).to include("_kettle_cache_bust=")
+  end
+
   it "refreshes cached versions when a fresh release marker exists", freeze: Time.utc(2026, 7, 30, 12, 0, 0) do
     write_version_cache("demo", "2026-07-01T12:00:00Z", [{"number" => "1.2.2"}])
     write_marker("demo", "1.2.3", "2026-07-30T11:59:00Z")

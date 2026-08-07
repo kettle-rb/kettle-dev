@@ -30,6 +30,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - Release coverage now honors a project that disables hard coverage thresholds.
 
+- Release-state version lookups now refresh when the cached RubyGems data predates the requested version.
+
 ### Security
 
 ## [2.5.20] - 2026-08-07

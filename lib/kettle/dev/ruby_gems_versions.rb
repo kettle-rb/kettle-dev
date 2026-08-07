@@ -23,7 +23,7 @@ module Kettle
         def fetch(gem_name, version_hint: nil, refresh: false)
           name = gem_name.to_s
           cached = cached_versions(name)
-          cache_bust = refresh || env_refresh? || fresh_release_marker?(name, version_hint)
+          cache_bust = refresh || env_refresh? || fresh_release_marker?(name, version_hint) || cached_behind_version?(cached, version_hint)
           return cached if cached && !cache_bust
 
           uri = versions_uri(gem_name, cache_bust: cache_bust)
@@ -100,6 +100,22 @@ module Kettle
 
           released_at = Time.iso8601(entry["released_at"].to_s)
           released_at >= Time.now.utc - CACHE_BUST_TTL_SECONDS
+        rescue ArgumentError
+          false
+        end
+
+        def cached_behind_version?(cached, version_hint)
+          return false unless cached && version_hint
+
+          cached_versions = cached.each_with_object([]) do |entry, versions|
+            value = entry["number"] if entry.is_a?(Hash)
+            next if value.to_s.empty? || value.to_s =~ /[a-zA-Z]/
+
+            versions << Gem::Version.new(value)
+          end
+          return false if cached_versions.empty?
+
+          cached_versions.max < Gem::Version.new(version_hint)
         rescue ArgumentError
           false
         end
