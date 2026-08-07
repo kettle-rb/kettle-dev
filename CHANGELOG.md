@@ -28,9 +28,18 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- CI monitoring can use an explicit repository root for monorepo release workflows.
-
 ### Security
+
+## [2.5.22] - 2026-08-07
+
+- TAG: [v2.5.22][2.5.22t]
+- COVERAGE: 91.88% -- 5464/5947 lines in 47 files
+- BRANCH COVERAGE: 76.10% -- 2057/2703 branches in 47 files
+- 50.90% documented
+
+### Fixed
+
+- CI monitoring can use an explicit repository root for monorepo release workflows.
 
 ## [2.5.21] - 2026-08-07
 
@@ -3287,7 +3296,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.21...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.22...HEAD
+[2.5.22]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.21...v2.5.22
+[2.5.22t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.22
 [2.5.21]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.20...v2.5.21
 [2.5.21t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.21
 [2.5.20]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.19...v2.5.20
