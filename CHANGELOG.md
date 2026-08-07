@@ -28,11 +28,20 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [2.5.20] - 2026-08-07
+
+- TAG: [v2.5.20][2.5.20t]
+- COVERAGE: 91.35% -- 5436/5951 lines in 47 files
+- BRANCH COVERAGE: 75.41% -- 2042/2708 branches in 47 files
+- 50.77% documented
+
+### Fixed
+
 - Prefer non-cancelled exact-commit GitHub Actions runs when workflow concurrency creates duplicate runs.
 
 - Skip YARD lint when a project has no .yard-lint.yml policy.
-
-### Security
 
 ## [2.5.19] - 2026-08-06
 
@@ -3263,7 +3272,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.19...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.20...HEAD
+[2.5.20]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.19...v2.5.20
+[2.5.20t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.20
 [2.5.19]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.18...v2.5.19
 [2.5.19t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.19
 [2.5.18]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.17...v2.5.18
