@@ -28,11 +28,20 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [2.5.21] - 2026-08-07
+
+- TAG: [v2.5.21][2.5.21t]
+- COVERAGE: 91.99% -- 5469/5945 lines in 47 files
+- BRANCH COVERAGE: 76.14% -- 2058/2703 branches in 47 files
+- 50.77% documented
+
+### Fixed
+
 - Release coverage now honors a project that disables hard coverage thresholds.
 
 - Release-state version lookups now refresh when the cached RubyGems data predates the requested version.
-
-### Security
 
 ## [2.5.20] - 2026-08-07
 
@@ -3276,7 +3285,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.20...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.21...HEAD
+[2.5.21]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.20...v2.5.21
+[2.5.21t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.21
 [2.5.20]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.19...v2.5.20
 [2.5.20t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.20
 [2.5.19]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.18...v2.5.19
