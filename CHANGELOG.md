@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- CI monitoring can use an explicit repository root for monorepo release workflows.
+
 ### Security
 
 ## [2.5.21] - 2026-08-07

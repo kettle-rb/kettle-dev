@@ -28,6 +28,14 @@ module Kettle
         dir || Dir.pwd
       end
 
+      # Return the repository root used by release CI monitoring. Monorepo
+      # member releases execute from a subdirectory but monitor workflows
+      # stored at the shared repository root.
+      # @return [String] absolute CI project root
+      def ci_project_root
+        ENV.fetch("K_RELEASE_CI_ROOT", project_root)
+      end
+
       # Parse the GitHub owner/repo from the configured origin remote.
       # Supports SSH and HTTPS remote URL forms.
       # @return [Array(String, String), nil] [owner, repo] or nil when unavailable

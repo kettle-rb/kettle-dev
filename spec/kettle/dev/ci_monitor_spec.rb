@@ -3,6 +3,15 @@
 RSpec.describe Kettle::Dev::CIMonitor do
   let(:helpers) { Kettle::Dev::CIHelpers }
 
+  describe Kettle::Dev::CIHelpers do
+    it "uses the configured monorepo root for CI monitoring" do
+      allow(helpers).to receive(:project_root).and_return("/member")
+      stub_env("K_RELEASE_CI_ROOT" => "/monorepo")
+
+      expect(helpers.ci_project_root).to eq("/monorepo")
+    end
+  end
+
   describe "::monitor_gitlab! minutes exhausted handling" do
     it "treats insufficient quota/minutes as unknown and continues", :check_output do
       allow(helpers).to receive_messages(project_root: Dir.pwd, current_branch: "feat")

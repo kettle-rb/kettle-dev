@@ -165,7 +165,7 @@ module Kettle
 
       # --- Collectors ---
       def collect_github
-        root = Kettle::Dev::CIHelpers.project_root
+        root = Kettle::Dev::CIHelpers.ci_project_root
         workflows = Kettle::Dev::CIHelpers.workflows_list(root)
         gh_remote = preferred_github_remote
         return unless gh_remote && !workflows.empty?
@@ -223,7 +223,7 @@ module Kettle
       module_function :collect_github
 
       def collect_gitlab
-        root = Kettle::Dev::CIHelpers.project_root
+        root = Kettle::Dev::CIHelpers.ci_project_root
         gitlab_ci = File.exist?(File.join(root, ".gitlab-ci.yml"))
         gl_remote = gitlab_remote_candidates.first
         return unless gitlab_ci && gl_remote
@@ -269,7 +269,7 @@ module Kettle
       module_function :collect_gitlab
 
       def monitor_github_internal!(restart_hint:, workflows: nil, keepalive: nil, event_recorder: nil)
-        root = Kettle::Dev::CIHelpers.project_root
+        root = Kettle::Dev::CIHelpers.ci_project_root
         workflows = Array(workflows).empty? ? Kettle::Dev::CIHelpers.workflows_list(root) : Array(workflows)
         gh_remote = preferred_github_remote
         return false unless gh_remote && !workflows.empty?
@@ -503,7 +503,7 @@ module Kettle
       module_function :keepalive_interval
 
       def monitor_gitlab_internal!(restart_hint:, keepalive: nil, event_recorder: nil)
-        root = Kettle::Dev::CIHelpers.project_root
+        root = Kettle::Dev::CIHelpers.ci_project_root
         gitlab_ci = File.exist?(File.join(root, ".gitlab-ci.yml"))
         gl_remote = gitlab_remote_candidates.first
         return false unless gitlab_ci && gl_remote
