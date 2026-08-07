@@ -20,6 +20,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- GitHub releases can include published gem and checksum artifacts.
+
 ### Changed
 
 ### Deprecated
