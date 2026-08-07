@@ -127,6 +127,25 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
         # rubocop:enable ThreadSafety/DirChdir
       end
     end
+
+    it "excludes Markdown test fixtures from project file discovery" do
+      Dir.mktmpdir do |root|
+        readme = File.join(root, "README.md")
+        fixture = File.join(root, "spec", "fixtures", "README.md")
+        FileUtils.mkdir_p(File.dirname(fixture))
+        File.write(readme, "![current](https://example.com/current.svg)\n")
+        File.write(fixture, "![stale](https://example.com/stale.svg)\n")
+
+        allow(described_class).to receive(:tracked_markdown_files).and_return([])
+
+        # rubocop:disable ThreadSafety/DirChdir
+        Dir.chdir(root) do
+          expect(described_class.project_markdown_files).to contain_exactly("README.md")
+          expect(described_class.extract_image_urls_from_files).to contain_exactly("https://example.com/current.svg")
+        end
+        # rubocop:enable ThreadSafety/DirChdir
+      end
+    end
   end
 
   describe Kettle::Dev::PreReleaseCLI::HTTP do

@@ -194,6 +194,7 @@ module Kettle
         SCRATCH_PATH_PREFIXES = %w[
           tmp/
           .git/
+          spec/fixtures/
         ].freeze
 
         # Extract unique remote HTTP(S) image URLs from markdown or HTML images.

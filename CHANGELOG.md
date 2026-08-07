@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Exclude Markdown test fixtures from release image and reference validation.
+
 ### Security
 
 ## [2.5.22] - 2026-08-07
