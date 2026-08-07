@@ -22,19 +22,30 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
-- Track the released kettle-gha-pins client and its cache/tag-resolution contract in the development lockfile and specs.
-
 ### Deprecated
 
 ### Removed
 
 ### Fixed
 
+### Security
+
+## [2.5.19] - 2026-08-06
+
+- TAG: [v2.5.19][2.5.19t]
+- COVERAGE: 91.34% -- 5431/5946 lines in 47 files
+- BRANCH COVERAGE: 75.28% -- 2037/2706 branches in 47 files
+- 50.64% documented
+
+### Changed
+
+- Track the released kettle-gha-pins client and its cache/tag-resolution contract in the development lockfile and specs.
+
+### Fixed
+
 - Add release validation for Markdown reference labels and local heading anchors.
 
 - Restore the Discord badge reference in CONTRIBUTING.md.
-
-### Security
 
 ## [2.5.18] - 2026-08-03
 
@@ -3248,7 +3259,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.18...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.19...HEAD
+[2.5.19]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.18...v2.5.19
+[2.5.19t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.19
 [2.5.18]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.17...v2.5.18
 [2.5.18t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.18
 [2.5.17]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.16...v2.5.17

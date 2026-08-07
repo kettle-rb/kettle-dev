@@ -295,16 +295,16 @@ Falls back to GET when HEAD is not allowed.</p>
       <pre class="lines">
 
 
-64
-65
 66
 67
 68
 69
-70</pre>
+70
+71
+72</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/pre_release_cli.rb', line 64</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/pre_release_cli.rb', line 66</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_head_ok?'>head_ok?</span><span class='lparen'>(</span><span class='id identifier rubyid_url_str'>url_str</span><span class='comma'>,</span> <span class='label'>limit:</span> <span class='int'>5</span><span class='comma'>,</span> <span class='label'>timeout:</span> <span class='int'>10</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_uri'>uri</span> <span class='op'>=</span> <span class='id identifier rubyid_parse_http_uri'>parse_http_uri</span><span class='lparen'>(</span><span class='id identifier rubyid_url_str'>url_str</span><span class='rparen'>)</span>
@@ -371,8 +371,6 @@ Falls back to GET when HEAD is not allowed.</p>
       <pre class="lines">
 
 
-44
-45
 46
 47
 48
@@ -383,10 +381,12 @@ Falls back to GET when HEAD is not allowed.</p>
 53
 54
 55
-56</pre>
+56
+57
+58</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/pre_release_cli.rb', line 44</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/pre_release_cli.rb', line 46</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_parse_http_uri'>parse_http_uri</span><span class='lparen'>(</span><span class='id identifier rubyid_url_str'>url_str</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='const'>Addressable</span><span class='op'>::</span><span class='const'>URI</span><span class='rparen'>)</span>
@@ -435,8 +435,6 @@ Falls back to GET when HEAD is not allowed.</p>
       <pre class="lines">
 
 
-73
-74
 75
 76
 77
@@ -468,10 +466,12 @@ Falls back to GET when HEAD is not allowed.</p>
 103
 104
 105
-106</pre>
+106
+107
+108</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/pre_release_cli.rb', line 73</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/pre_release_cli.rb', line 75</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_perform'>perform</span><span class='lparen'>(</span><span class='id identifier rubyid_uri'>uri</span><span class='comma'>,</span> <span class='id identifier rubyid_request'>request</span><span class='comma'>,</span> <span class='label'>limit:</span><span class='comma'>,</span> <span class='label'>timeout:</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='const'>ArgumentError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>too many redirects</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_limit'>limit</span> <span class='op'>&lt;=</span> <span class='int'>0</span>
