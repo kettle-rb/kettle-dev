@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Release coverage now honors a project that disables hard coverage thresholds.
+
 ### Security
 
 ## [2.5.20] - 2026-08-07

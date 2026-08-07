@@ -794,8 +794,23 @@ module Kettle
         cmd = "#{cmd} --version #{Shellwords.escape(@version_override)}" if @version_override
         cmd = "#{cmd} --yes" if @yes
         cmd = "#{cmd} --events=changelog" if @event_stream
-        run_cmd!(cmd)
+        with_project_changelog_coverage_policy { run_cmd!(cmd) }
         @changelog_generated_coverage = true
+      end
+
+      # Monorepo subprojects commonly disable their local hard coverage gate
+      # because their narrow test suite cannot satisfy the aggregate root
+      # thresholds. Preserve an explicit changelog policy, otherwise derive
+      # the changelog coverage policy from the project's coverage setting.
+      def with_project_changelog_coverage_policy
+        original = ENV["K_CHANGELOG_COVERAGE_HARD"]
+        changed = original.nil? && ENV["K_SOUP_COV_MIN_HARD"].to_s.casecmp?("false")
+        return yield unless changed
+
+        ENV["K_CHANGELOG_COVERAGE_HARD"] = "false"
+        yield
+      ensure
+        ENV["K_CHANGELOG_COVERAGE_HARD"] = original if changed
       end
 
       def release_default_task_command

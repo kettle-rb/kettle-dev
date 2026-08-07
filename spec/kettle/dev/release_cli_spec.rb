@@ -309,6 +309,18 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect(local_cli.send(:release_default_task_command)).to eq("KETTLE_DEV_SKIP_TESTS=true bin/rake")
       end
 
+      it "derives changelog coverage policy from the project coverage setting" do
+        allow(ENV).to receive(:[]).with("K_SOUP_COV_MIN_HARD").and_return("false")
+        local_cli = described_class.new
+        expect(local_cli).to receive(:run_cmd!) do
+          expect(ENV["K_CHANGELOG_COVERAGE_HARD"]).to eq("false")
+        end
+
+        local_cli.send(:run_changelog!)
+
+        expect(ENV["K_CHANGELOG_COVERAGE_HARD"]).to be_nil
+      end
+
       it "keeps the full default task for resumed releases that did not run changelog coverage" do
         local_cli = described_class.new(start_step: 4)
 
