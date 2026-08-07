@@ -104,9 +104,10 @@ module Kettle
         return unless data
 
         runs = Array(data["workflow_runs"]) || []
-        # Try to match by head_sha first; fall back to first run (branch-scoped) if none matches yet.
+        # Try to match by head_sha first; GitHub may return a cancelled duplicate
+        # before the replacement run created by workflow concurrency.
         run = if sha
-          match = runs.find { |r| r["head_sha"] == sha }
+          match = preferred_head_run(runs.select { |r| r["head_sha"] == sha })
           match ||= latest_repository_workflow_run(owner: owner, repo: repo, workflow_file: workflow_file, branch: b, head_sha: sha, token: token)
           require_head ? match : (match || runs.first)
         else
@@ -134,9 +135,18 @@ module Kettle
         return unless data
 
         workflow_path = ".github/workflows/#{workflow_file}"
-        Array(data["workflow_runs"]).find do |run|
-          run["head_sha"] == head_sha && run["path"] == workflow_path
-        end
+        preferred_head_run(
+          Array(data["workflow_runs"]).select do |run|
+            run["head_sha"] == head_sha && run["path"] == workflow_path
+          end
+        )
+      end
+
+      # Concurrency cancellation can leave an older run for the exact same
+      # commit ahead of its replacement in GitHub's API response. Prefer the
+      # replacement so a cancelled duplicate cannot mask a valid run.
+      def preferred_head_run(runs)
+        runs.find { |run| run["conclusion"] != "cancelled" } || runs.first
       end
 
       def github_get_json(url, token:)

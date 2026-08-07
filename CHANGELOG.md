@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Prefer non-cancelled exact-commit GitHub Actions runs when workflow concurrency creates duplicate runs.
+
 ### Security
 
 ## [2.5.19] - 2026-08-06
