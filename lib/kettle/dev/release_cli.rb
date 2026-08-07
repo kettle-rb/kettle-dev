@@ -2355,7 +2355,7 @@ module Kettle
       # If GITHUB_TOKEN is present, create a GitHub release for the given version tag.
       # Title: v<version>
       # Body: the CHANGELOG section for this version, followed by the two link references for this version.
-      def maybe_create_github_release!(version)
+      def maybe_create_github_release!(version, assets: [])
         if truthy_value?(ENV["KETTLE_RELEASE_SKIP_GITHUB_RELEASE"])
           message = "GitHub release creation disabled for this release context"
           puts "Skipping GitHub release creation: #{message}."
@@ -2395,7 +2395,7 @@ module Kettle
 
         tag = "v#{version}"
         puts "Creating GitHub release #{owner}/#{repo} #{tag}..."
-        ok, msg = github_create_release(owner: owner, repo: repo, token: token, tag: tag, title: tag, body: body)
+        ok, msg = github_create_release(owner: owner, repo: repo, token: token, tag: tag, title: tag, body: body, assets: assets)
         if ok
           puts "GitHub release created for #{tag}."
         else
@@ -2548,7 +2548,7 @@ module Kettle
 
       # POST to GitHub Releases API
       # Returns [ok(Boolean), message(String)]
-      def github_create_release(owner:, repo:, token:, tag:, title:, body:)
+      def github_create_release(owner:, repo:, token:, tag:, title:, body:, assets: [])
         uri = URI("https://api.github.com/repos/#{owner}/#{repo}/releases")
         req = Net::HTTP::Post.new(uri)
         req["Accept"] = "application/vnd.github+json"
@@ -2568,7 +2568,10 @@ module Kettle
 
         case res
         when Net::HTTPSuccess, Net::HTTPCreated
-          [true, "created"]
+          release = JSON.parse(res.body)
+          asset_messages = Array(assets).map { |asset| github_upload_release_asset(release.fetch("id"), owner: owner, repo: repo, token: token, path: asset) }
+          failed_asset = asset_messages.find { |ok, _message| !ok }
+          failed_asset ? failed_asset : [true, "created with #{asset_messages.length} assets"]
         else
           # If release already exists, treat as non-fatal
           if res.code.to_s == "422" && res.body.to_s.include?("already_exists")
@@ -2579,6 +2582,26 @@ module Kettle
         end
       rescue => e
         [false, "#{e.class}: #{e.message}"]
+      end
+
+      def github_upload_release_asset(release_id, owner:, repo:, token:, path:)
+        path = File.expand_path(path)
+        return [false, "asset does not exist: #{path}"] unless File.file?(path)
+
+        uri = URI("https://uploads.github.com/repos/#{owner}/#{repo}/releases/#{release_id}/assets")
+        uri.query = URI.encode_www_form(name: File.basename(path))
+        req = Net::HTTP::Post.new(uri)
+        req["Accept"] = "application/vnd.github+json"
+        req["Authorization"] = "token #{token}"
+        req["Content-Type"] = "application/octet-stream"
+        req["User-Agent"] = "kettle-dev-release-cli"
+        req.body = File.binread(path)
+        res = Net::HTTP.start(uri.host, uri.port, use_ssl: true) { |http| http.request(req) }
+        return [true, File.basename(path)] if res.is_a?(Net::HTTPSuccess) || res.is_a?(Net::HTTPCreated)
+
+        [false, "asset #{File.basename(path)}: HTTP #{res.code}: #{res.body}"]
+      rescue => e
+        [false, "asset #{File.basename(path)}: #{e.class}: #{e.message}"]
       end
 
       def github_update_release(owner:, repo:, token:, tag:, title:, body:)

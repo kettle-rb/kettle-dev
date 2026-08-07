@@ -39,7 +39,7 @@ end
 # Do not guard with __FILE__ == $PROGRAM_NAME because binstubs use Kernel.load.
 if ARGV.include?("-h") || ARGV.include?("--help")
   puts <<~USAGE
-    Usage: #{script_basename} [--release-version VERSION|version=<VERSION>] [--check|--update] [--events] [--allow-unpublished]
+    Usage: #{script_basename} [--release-version VERSION|version=<VERSION>] [--asset PATH ...] [--check|--update] [--events] [--allow-unpublished]
 
     Creates a GitHub release for a gem version.
 
@@ -54,6 +54,7 @@ if ARGV.include?("-h") || ARGV.include?("--help")
       --update                    # Update an existing GitHub Release title/body from CHANGELOG.md
       --events                    # Emit the final result as one NDJSON event
       --allow-unpublished         # Skip the RubyGems publication requirement (for intentionally non-RubyGems projects)
+      --asset PATH                # Attach an artifact to the GitHub release (repeatable)
 
     Environment:
       GITHUB_TOKEN / GH_TOKEN     # Required; needs repo:public_repo (classic) or contents:write scope
@@ -75,6 +76,16 @@ if check_only && update_only
 end
 events = ARGV.delete("--events")
 allow_unpublished = ARGV.delete("--allow-unpublished")
+assets = []
+while (index = ARGV.index("--asset"))
+  asset = ARGV[index + 1].to_s.strip
+  if asset.empty?
+    warn("#{script_basename}: --asset requires a path")
+    exit 1
+  end
+  assets << asset
+  ARGV.slice!(index, 2)
+end
 version_arg = ARGV.find { |arg| arg.start_with?("version=") }
 ARGV.delete(version_arg) if version_arg
 explicit_version = version_arg&.split("=", 2)&.last&.strip
@@ -127,7 +138,7 @@ begin
   created, message = if update_only
     cli.send(:maybe_update_github_release!, version)
   else
-    cli.send(:maybe_create_github_release!, version)
+    cli.send(:maybe_create_github_release!, version, assets: assets)
   end
   if events
     puts JSON.generate(
