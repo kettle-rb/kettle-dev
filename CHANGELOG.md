@@ -30,6 +30,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - Prefer non-cancelled exact-commit GitHub Actions runs when workflow concurrency creates duplicate runs.
 
+- Skip YARD lint when a project has no .yard-lint.yml policy.
+
 ### Security
 
 ## [2.5.19] - 2026-08-06

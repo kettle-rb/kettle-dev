@@ -52,4 +52,12 @@ RSpec.describe "rake yard" do # rubocop:disable RSpec/DescribeClass
       expect(Rake::Task.task_defined?("yard:lint")).to be(false)
     end
   end
+
+  it "skips YARD lint when the project has no lint policy" do
+    Dir.mktmpdir("kettle-dev-yard-lint") do |root|
+      Dir.chdir(root) do # rubocop:disable ThreadSafety/DirChdir
+        expect { Rake::Task["yard:lint"].invoke }.not_to raise_error
+      end
+    end
+  end
 end
