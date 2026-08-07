@@ -2568,6 +2568,8 @@ module Kettle
 
         case res
         when Net::HTTPSuccess, Net::HTTPCreated
+          return [true, "created"] if Array(assets).empty?
+
           release = JSON.parse(res.body)
           asset_messages = Array(assets).map { |asset| github_upload_release_asset(release.fetch("id"), owner: owner, repo: repo, token: token, path: asset) }
           failed_asset = asset_messages.find { |ok, _message| !ok }

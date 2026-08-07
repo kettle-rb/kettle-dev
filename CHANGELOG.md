@@ -32,6 +32,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - Allow family orchestration to suppress per-member GitHub releases for monorepo release trains.
 
+- Preserve successful GitHub release creation when the API response has no asset payload.
+
 ### Security
 
 ## [2.5.23] - 2026-08-07
