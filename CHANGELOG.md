@@ -20,8 +20,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
-- GitHub releases can include published gem and checksum artifacts.
-
 ### Changed
 
 ### Deprecated
@@ -30,11 +28,24 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [2.5.24] - 2026-08-07
+
+- TAG: [v2.5.24][2.5.24t]
+- COVERAGE: 91.79% -- 5480/5970 lines in 47 files
+- BRANCH COVERAGE: 76.12% -- 2065/2713 branches in 47 files
+- 50.90% documented
+
+### Added
+
+- GitHub releases can include published gem and checksum artifacts.
+
+### Fixed
+
 - Allow family orchestration to suppress per-member GitHub releases for monorepo release trains.
 
 - Preserve successful GitHub release creation when the API response has no asset payload.
-
-### Security
 
 ## [2.5.23] - 2026-08-07
 
@@ -3313,7 +3324,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.23...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.24...HEAD
+[2.5.24]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.23...v2.5.24
+[2.5.24t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.24
 [2.5.23]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.22...v2.5.23
 [2.5.23t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.23
 [2.5.22]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.21...v2.5.22

@@ -2573,7 +2573,7 @@ module Kettle
           release = JSON.parse(res.body)
           asset_messages = Array(assets).map { |asset| github_upload_release_asset(release.fetch("id"), owner: owner, repo: repo, token: token, path: asset) }
           failed_asset = asset_messages.find { |ok, _message| !ok }
-          failed_asset ? failed_asset : [true, "created with #{asset_messages.length} assets"]
+          failed_asset || [true, "created with #{asset_messages.length} assets"]
         else
           # If release already exists, treat as non-fatal
           if res.code.to_s == "422" && res.body.to_s.include?("already_exists")
