@@ -40,6 +40,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - Run every project-local release check with the release lockfile environment, including prefixed rake commands, so local workspace paths cannot leak back into release lockfiles.
 
+- Run gem build and publish commands with local workspace dependency switches disabled so release guards see the registry-backed lockfile.
+
 ### Security
 
 ## [2.5.25] - 2026-08-07

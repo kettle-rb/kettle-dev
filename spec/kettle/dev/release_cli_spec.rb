@@ -1850,8 +1850,8 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect(cli).to have_received(:run_cmd!).with(a_string_matching(/env .* bin\/rake\z/))
         expect(cli).to have_received(:run_cmd!).with(a_string_matching(/env .* bin\/rake appraisal:generate\z/))
         expect(cli).to have_received(:run_cmd!).with(a_string_matching(/env .* bin\/rake yard\z/))
-        expect(cli).to have_received(:run_cmd!).with("bundle exec rake build")
-        expect(cli).to have_received(:run_cmd!).with("bundle exec rake release")
+        expect(cli).to have_received(:run_cmd!).with(a_string_matching(/env .* bundle exec rake build\z/))
+        expect(cli).to have_received(:run_cmd!).with(a_string_matching(/env .* bundle exec rake release\z/))
         expect(cli).to have_received(:run_cmd!).with("bin/gem_checksums #{gem_path}")
       end
 
@@ -1888,8 +1888,8 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
         expect { local_cli.run }.not_to raise_error
         expect(local_cli).to have_received(:run_pre_release_checks!)
-        expect(local_cli).to have_received(:run_cmd!).with("bundle exec rake build")
-        expect(local_cli).not_to have_received(:run_cmd!).with("bundle exec rake release")
+        expect(local_cli).to have_received(:run_cmd!).with(a_string_matching(/env .* bundle exec rake build\z/))
+        expect(local_cli).not_to have_received(:run_cmd!).with(a_string_matching(/env .* bundle exec rake release\z/))
       end
 
       it "uses appraisal:update when explicitly requested", :jruby_head_release_flow do
@@ -2738,7 +2738,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
         expect(local_cli).not_to have_received(:monitor_workflows_after_push!)
         expect(local_cli).to have_received(:merge_feature_into_trunk_and_push!).with("main", "feat")
-        expect(local_cli).to have_received(:run_cmd!).with("bundle exec rake build")
+        expect(local_cli).to have_received(:run_cmd!).with(a_string_matching(/env .* bundle exec rake build\z/))
       end
 
       it "rejects invalid skip step values" do

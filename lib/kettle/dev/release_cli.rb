@@ -405,7 +405,7 @@ module Kettle
           else
             puts "Running build (you may be prompted for the signing key password)..."
           end
-          run_cmd!("bundle exec rake build")
+          run_cmd!(release_project_command("bundle exec rake build"))
         end
 
         # 15. release and tag
@@ -423,7 +423,7 @@ module Kettle
               puts "Running release (you may be prompted for signing key password and RubyGems MFA OTP)..."
             end
             with_unpublished_candidate_cleanup do
-              run_cmd!("bundle exec rake release")
+              run_cmd!(release_project_command("bundle exec rake release"))
               @release_candidate.published = true
               confirm_release_candidate_available!(@release_candidate)
             end
