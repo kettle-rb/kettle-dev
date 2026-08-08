@@ -58,7 +58,7 @@ module Kettle
           end
           puts "$ #{cmd}"
           # Pass a plain Hash for the environment to satisfy tests and avoid ENV object oddities
-          env_hash = command_env
+          env_hash = command_env_for(cmd)
 
           # Some commands are interactive (e.g., `bundle exec rake release` prompting for RubyGems MFA).
           # Using capture3 detaches STDIN, preventing prompts from working. For such commands, use system
@@ -102,6 +102,22 @@ module Kettle
           return env_hash if debug_env_enabled?
 
           env_hash.merge(QUIET_ENV)
+        end
+
+        def command_env_for(cmd)
+          env_hash = command_env
+          return env_hash unless project_bundle_command?(cmd)
+
+          env_hash.merge(BundlerEnvGuard.unbundled_env)
+        end
+
+        def project_bundle_command?(cmd)
+          words = Shellwords.split(cmd.to_s)
+          words == ["bin/setup"] ||
+            words.first(1) == ["bin/rake"] ||
+            words.first(3) == ["bundle", "exec", "rake"]
+        rescue ArgumentError
+          false
         end
 
         def debug_env_enabled?
@@ -1194,7 +1210,7 @@ module Kettle
           secrets_provider: @secrets_provider,
           secret_event_handler: ->(payload) { emit_secret_event(payload) }
         ).call(
-          self.class.send(:command_env),
+          self.class.send(:command_env_for, cmd),
           cmd
         )
         return if status.success?

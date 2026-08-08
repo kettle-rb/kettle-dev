@@ -188,6 +188,18 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         cli.send(:run_cmd!, "bin/setup")
       end
 
+      it "does not leak the release tool bundle into project rake commands" do
+        stub_env("BUNDLE_GEMFILE" => "/var/home/pboling/src/my/kettle-dev/Gemfile")
+        status = instance_double(Process::Status, success?: true, exitstatus: 0)
+        expect(Open3).to receive(:capture3) do |env, command|
+          expect(command).to eq("bin/rake")
+          expect(env).to include("BUNDLE_GEMFILE" => nil, "BUNDLE_LOCKFILE" => nil)
+          ["", "", status]
+        end
+
+        cli.send(:run_cmd!, "bin/rake")
+      end
+
       it "runs setup with inherited Bundler and Ruby bootstrap env unset" do
         command = cli.send(:release_setup_command)
 
