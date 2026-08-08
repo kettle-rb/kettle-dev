@@ -125,6 +125,16 @@ RSpec.describe Kettle::Dev::RubyGemsVersions do
     expect(versions).to eq([{"number" => "1.2.2"}])
   end
 
+  it "treats a never-published gem as having no released versions" do
+    response = Net::HTTPNotFound.new("1.1", "404", "Not Found")
+    allow(Net::HTTP).to receive(:start).and_yield(instance_double(Net::HTTP, request: response))
+
+    versions = described_class.fetch("never-published")
+
+    expect(versions).to eq([])
+    expect(JSON.parse(File.read(@version_cache_path)).dig("versions", "never-published", "entries")).to eq([])
+  end
+
   def write_marker(gem_name, version, released_at)
     File.write(
       @cache_bust_path,

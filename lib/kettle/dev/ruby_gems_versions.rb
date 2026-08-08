@@ -35,6 +35,10 @@ module Kettle
           response = Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == "https") do |http|
             http.request(request)
           end
+          if response.code.to_i == 404
+            write_versions(name, [])
+            return []
+          end
           return cached unless response.is_a?(Net::HTTPSuccess)
 
           data = JSON.parse(response.body)
