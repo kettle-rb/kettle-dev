@@ -826,7 +826,12 @@ module Kettle
 
       def release_setup_command
         unbundled_keys = (BundlerEnvGuard::RESET_ENV_KEYS + %w[RUBYLIB RUBYOPT]).uniq
-        "env #{unbundled_keys.map { |key| "-u #{Shellwords.escape(key)}" }.join(" ")} bin/setup"
+        command = +"env #{unbundled_keys.map { |key| "-u #{Shellwords.escape(key)}" }.join(" ")}"
+        release_lockfile_normalization_env.each do |key, value|
+          command << " #{key}=#{Shellwords.escape(value)}"
+        end
+        command << " bin/setup"
+        command
       end
 
       def confirm_yes!(message, prompt, abort_message)

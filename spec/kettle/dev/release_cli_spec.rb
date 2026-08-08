@@ -197,6 +197,8 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect(command).to include("-u BUNDLER_SETUP")
         expect(command).to include("-u RUBYLIB")
         expect(command).to include("-u RUBYOPT")
+        expect(command).to include("KETTLE_DEV_DEV=false")
+        expect(command).to include("STRUCTUREDMERGE_DEV=false")
         expect(command).to end_with(" bin/setup")
       end
 
