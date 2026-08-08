@@ -28,9 +28,18 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Select the most recent GitHub Actions build when multiple runs exist for the same commit.
-
 ### Security
+
+## [2.5.25] - 2026-08-07
+
+- TAG: [v2.5.25][2.5.25t]
+- COVERAGE: 91.48% -- 5465/5974 lines in 47 files
+- BRANCH COVERAGE: 75.95% -- 2059/2711 branches in 47 files
+- 50.90% documented
+
+### Fixed
+
+- Select the most recent GitHub Actions build when multiple runs exist for the same commit.
 
 ## [2.5.24] - 2026-08-07
 
@@ -3326,7 +3335,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.24...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.25...HEAD
+[2.5.25]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.24...v2.5.25
+[2.5.25t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.25
 [2.5.24]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.23...v2.5.24
 [2.5.24t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.24
 [2.5.23]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.22...v2.5.23
