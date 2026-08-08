@@ -302,13 +302,13 @@ module Kettle
           appraisals_path = File.join(@root, "Appraisals")
           if File.file?(appraisals_path)
             puts "Appraisals detected at #{Kettle::Dev.display_path(appraisals_path)}. Running: bin/rake #{@appraisal_task}"
-            run_cmd!("bin/rake #{@appraisal_task}")
+            run_cmd!(release_project_command("bin/rake #{@appraisal_task}"))
           else
             puts "No Appraisals file found; skipping #{@appraisal_task}"
           end
 
           puts "Generating docs site via canonical task: bin/rake yard"
-          run_cmd!("bin/rake yard")
+          run_cmd!(release_project_command("bin/rake yard"))
         end
 
         # 6. git user + commit release prep
@@ -835,18 +835,28 @@ module Kettle
         # its test/coverage prerequisites and still run lint, audit, documentation, and any
         # other non-test release checks. Resumed releases do not set this flag, so they keep
         # the full default task behavior.
-        return "KETTLE_DEV_SKIP_TESTS=true bin/rake" if @changelog_generated_coverage
+        return release_project_command("KETTLE_DEV_SKIP_TESTS=true bin/rake") if @changelog_generated_coverage
 
-        "bin/rake"
+        release_project_command("bin/rake")
       end
 
       def release_setup_command
+        release_project_command("bin/setup")
+      end
+
+      # Every command that loads the project bundle must run outside the
+      # release tool's bundle and with local workspace dependency switches
+      # disabled. The default task may carry a leading environment assignment,
+      # so relying on BundlerEnvGuard's command classification alone is not
+      # sufficient.
+      def release_project_command(command)
+        project_command = command
         unbundled_keys = (BundlerEnvGuard::RESET_ENV_KEYS + %w[RUBYLIB RUBYOPT]).uniq
         command = +"env #{unbundled_keys.map { |key| "-u #{Shellwords.escape(key)}" }.join(" ")}"
         release_lockfile_normalization_env.each do |key, value|
           command << " #{key}=#{Shellwords.escape(value)}"
         end
-        command << " bin/setup"
+        command << " #{project_command}"
         command
       end
 

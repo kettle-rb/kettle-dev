@@ -320,7 +320,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
         local_cli.send(:run_changelog!)
 
-        expect(local_cli.send(:release_default_task_command)).to eq("KETTLE_DEV_SKIP_TESTS=true bin/rake")
+        expect(local_cli.send(:release_default_task_command)).to match(/KETTLE_DEV_SKIP_TESTS=true bin\/rake\z/)
       end
 
       it "derives changelog coverage policy from the project coverage setting" do
@@ -338,7 +338,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       it "keeps the full default task for resumed releases that did not run changelog coverage" do
         local_cli = described_class.new(start_step: 4)
 
-        expect(local_cli.send(:release_default_task_command)).to eq("bin/rake")
+        expect(local_cli.send(:release_default_task_command)).to match(/env .* bin\/rake\z/)
       end
 
       it "fails early when configured release secrets cannot provide the signing passphrase" do
@@ -1768,7 +1768,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
           expect { local_cli.run }.not_to raise_error
           appraisal_reset_index = commands.index { |command| command.include?("BUNDLE_LOCKFILE=#{File.join(root, "Appraisal.root.gemfile.lock")}") }
-          appraisal_generate_index = commands.index("bin/rake appraisal:generate")
+          appraisal_generate_index = commands.index { |command| command.end_with?(" bin/rake appraisal:generate") }
           expect(appraisal_reset_index).not_to be_nil
           expect(appraisal_generate_index).not_to be_nil
           expect(appraisal_reset_index).to be < appraisal_generate_index
@@ -1847,9 +1847,9 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         # Ensure the initial build/release commands were attempted
         expect(cli).to have_received(:run_pre_release_checks!)
         expect(cli).to have_received(:run_cmd!).with(a_string_matching(/\Aenv .* bin\/setup\z/))
-        expect(cli).to have_received(:run_cmd!).with("bin/rake")
-        expect(cli).to have_received(:run_cmd!).with("bin/rake appraisal:generate")
-        expect(cli).to have_received(:run_cmd!).with("bin/rake yard")
+        expect(cli).to have_received(:run_cmd!).with(a_string_matching(/env .* bin\/rake\z/))
+        expect(cli).to have_received(:run_cmd!).with(a_string_matching(/env .* bin\/rake appraisal:generate\z/))
+        expect(cli).to have_received(:run_cmd!).with(a_string_matching(/env .* bin\/rake yard\z/))
         expect(cli).to have_received(:run_cmd!).with("bundle exec rake build")
         expect(cli).to have_received(:run_cmd!).with("bundle exec rake release")
         expect(cli).to have_received(:run_cmd!).with("bin/gem_checksums #{gem_path}")
@@ -1925,7 +1925,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
         expect { update_cli.run }.not_to raise_error
 
-        expect(update_cli).to have_received(:run_cmd!).with("bin/rake appraisal:update")
+        expect(update_cli).to have_received(:run_cmd!).with(a_string_matching(/env .* bin\/rake appraisal:update\z/))
       end
 
       it "skips appraisal generation when Appraisals file missing", :jruby_head_release_flow do
@@ -1972,9 +1972,9 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
         expect { cli.run }.not_to raise_error
         expect(cli).to have_received(:run_cmd!).with(a_string_matching(/\Aenv .* bin\/setup\z/))
-        expect(cli).to have_received(:run_cmd!).with("bin/rake")
+        expect(cli).to have_received(:run_cmd!).with(a_string_matching(/env .* bin\/rake\z/))
         expect(cli).not_to have_received(:run_cmd!).with("bin/rake appraisal:generate")
-        expect(cli).to have_received(:run_cmd!).with("bin/rake yard")
+        expect(cli).to have_received(:run_cmd!).with(a_string_matching(/env .* bin\/rake yard\z/))
       end
 
       it "aborts when signing enabled on tty and user declines prompt", :jruby_head_release_flow do
@@ -2710,7 +2710,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect { local_cli.run }.not_to raise_error
 
         expect(local_cli).not_to have_received(:run_cmd!).with(a_string_matching(/bin\/setup/))
-        expect(local_cli).not_to have_received(:run_cmd!).with("bin/rake")
+        expect(local_cli).not_to have_received(:run_cmd!).with(a_string_matching(/env .* bin\/rake\z/))
         expect(local_cli).not_to have_received(:run_cmd!).with("bin/rake appraisal:generate")
       end
 

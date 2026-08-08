@@ -38,6 +38,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - Reset inherited Bundler file selection before running project release tasks.
 
+- Run every project-local release check with the release lockfile environment, including prefixed rake commands, so local workspace paths cannot leak back into release lockfiles.
+
 ### Security
 
 ## [2.5.25] - 2026-08-07
