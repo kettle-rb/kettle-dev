@@ -106,14 +106,14 @@ module Kettle
         # Scope to the exact commit SHA when available to avoid picking up a previous run on the same branch.
         sha = head_sha || current_head_sha
         data = github_get_json(
-          "https://api.github.com/repos/#{owner}/#{repo}/actions/workflows/#{workflow_file}/runs?branch=#{URI.encode_www_form_component(b)}&per_page=5",
+          "https://api.github.com/repos/#{owner}/#{repo}/actions/workflows/#{workflow_file}/runs?branch=#{URI.encode_www_form_component(b)}&per_page=100",
           token: token
         )
         return unless data
 
         runs = Array(data["workflow_runs"]) || []
-        # Try to match by head_sha first; GitHub may return a cancelled duplicate
-        # before the replacement run created by workflow concurrency.
+        # Match by head_sha first. There may be multiple builds for one commit;
+        # always select the most recent build rather than trusting API order.
         run = if sha
           match = preferred_head_run(runs.select { |r| r["head_sha"] == sha })
           match ||= latest_repository_workflow_run(owner: owner, repo: repo, workflow_file: workflow_file, branch: b, head_sha: sha, token: token)
@@ -150,11 +150,17 @@ module Kettle
         )
       end
 
-      # Concurrency cancellation can leave an older run for the exact same
-      # commit ahead of its replacement in GitHub's API response. Prefer the
-      # replacement so a cancelled duplicate cannot mask a valid run.
+      # GitHub can return multiple builds for the same commit, including an
+      # older failed run before a later retry. Select by run recency so an old
+      # conclusion cannot mask the newest build. `updated_at` also matters for
+      # reruns, which retain the original run's creation timestamp.
       def preferred_head_run(runs)
-        runs.find { |run| run["conclusion"] != "cancelled" } || runs.first
+        runs.max_by do |run|
+          created_at = run["created_at"].to_s
+          updated_at = run["updated_at"].to_s
+          effective_at = [created_at, updated_at].max
+          [effective_at, run["run_number"].to_i, run["run_attempt"].to_i, run["id"].to_i]
+        end
       end
 
       def github_get_json(url, token:)

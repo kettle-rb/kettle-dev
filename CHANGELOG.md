@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Select the most recent GitHub Actions build when multiple runs exist for the same commit.
+
 ### Security
 
 ## [2.5.24] - 2026-08-07

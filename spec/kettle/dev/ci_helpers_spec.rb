@@ -500,6 +500,88 @@ RSpec.describe Kettle::Dev::CIHelpers do
       expect(run).to include("id" => 200, "html_url" => "https://x/success")
     end
 
+    it "selects the newest matching run even when GitHub returns it after an older failure" do
+      allow(described_class).to receive(:current_branch).and_return("main")
+      allow(Open3).to receive(:capture2).with("git", "rev-parse", "HEAD").and_return(["abc123\n", instance_double(Process::Status, success?: true)])
+
+      body = {
+        "workflow_runs" => [
+          {
+            "id" => 100,
+            "run_number" => 40,
+            "run_attempt" => 1,
+            "status" => "completed",
+            "conclusion" => "failure",
+            "created_at" => "2026-08-07T20:00:00Z",
+            "updated_at" => "2026-08-07T20:01:00Z",
+            "html_url" => "https://x/older",
+            "head_sha" => "abc123"
+          },
+          {
+            "id" => 101,
+            "run_number" => 41,
+            "run_attempt" => 1,
+            "status" => "completed",
+            "conclusion" => "success",
+            "created_at" => "2026-08-07T20:02:00Z",
+            "updated_at" => "2026-08-07T20:03:00Z",
+            "html_url" => "https://x/newer",
+            "head_sha" => "abc123"
+          }
+        ]
+      }.to_json
+
+      response = instance_double(Net::HTTPSuccess, body: body)
+      allow(response).to receive(:is_a?).with(Net::HTTPSuccess).and_return(true)
+      http = instance_double(Net::HTTP)
+      allow(http).to receive(:request).with(instance_of(Net::HTTP::Get)).and_return(response)
+      allow(Net::HTTP).to receive(:start).with("api.github.com", 443, use_ssl: true).and_yield(http)
+
+      run = described_class.latest_run(owner: "me", repo: "repo", workflow_file: "ci.yml", branch: "main", token: nil)
+      expect(run).to include("id" => 101, "html_url" => "https://x/newer")
+    end
+
+    it "uses updated_at to select the latest rerun of an existing workflow run" do
+      allow(described_class).to receive(:current_branch).and_return("main")
+      allow(Open3).to receive(:capture2).with("git", "rev-parse", "HEAD").and_return(["abc123\n", instance_double(Process::Status, success?: true)])
+
+      body = {
+        "workflow_runs" => [
+          {
+            "id" => 100,
+            "run_number" => 40,
+            "run_attempt" => 1,
+            "status" => "completed",
+            "conclusion" => "failure",
+            "created_at" => "2026-08-07T20:00:00Z",
+            "updated_at" => "2026-08-07T20:01:00Z",
+            "html_url" => "https://x/failed",
+            "head_sha" => "abc123"
+          },
+          {
+            "id" => 100,
+            "run_number" => 40,
+            "run_attempt" => 2,
+            "status" => "completed",
+            "conclusion" => "success",
+            "created_at" => "2026-08-07T20:00:00Z",
+            "updated_at" => "2026-08-07T20:04:00Z",
+            "html_url" => "https://x/rerun",
+            "head_sha" => "abc123"
+          }
+        ]
+      }.to_json
+
+      response = instance_double(Net::HTTPSuccess, body: body)
+      allow(response).to receive(:is_a?).with(Net::HTTPSuccess).and_return(true)
+      http = instance_double(Net::HTTP)
+      allow(http).to receive(:request).with(instance_of(Net::HTTP::Get)).and_return(response)
+      allow(Net::HTTP).to receive(:start).with("api.github.com", 443, use_ssl: true).and_yield(http)
+
+      run = described_class.latest_run(owner: "me", repo: "repo", workflow_file: "ci.yml", branch: "main", token: nil)
+      expect(run).to include("id" => 100, "html_url" => "https://x/rerun", "conclusion" => "success")
+    end
+
     it "returns nil instead of falling back when exact HEAD is required and no run has started" do
       allow(described_class).to receive(:current_branch).and_return("main")
       allow(Open3).to receive(:capture2).with("git", "rev-parse", "HEAD").and_return(["abc123\n", instance_double(Process::Status, success?: true)])
