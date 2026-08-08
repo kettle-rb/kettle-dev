@@ -297,6 +297,24 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect(provider).to have_received(:keepalive!).with(elapsed: nil)
       end
 
+      it "uses the configured release secrets provider when release commands have an env prefix" do
+        provider = instance_double(Kettle::Dev::ReleaseSecrets::OnePassword)
+        local_cli = described_class.new(secrets_provider: provider)
+        runner = instance_double(Kettle::Dev::InteractiveReleaseCommand)
+        status = instance_double(Process::Status, success?: true, exitstatus: 0)
+        command = "env -u BUNDLE_GEMFILE KETTLE_DEV_DEV=false bundle exec rake release"
+        allow(provider).to receive(:keepalive!).with(elapsed: nil).and_return(true)
+        expect(Kettle::Dev::InteractiveReleaseCommand)
+          .to receive(:new)
+          .with(secrets_provider: provider, secret_event_handler: kind_of(Proc))
+          .and_return(runner)
+        expect(runner).to receive(:call).with(kind_of(Hash), command).and_return(["", "", status])
+        expect(Open3).not_to receive(:capture3)
+
+        local_cli.send(:run_cmd!, command)
+        expect(provider).to have_received(:keepalive!).with(elapsed: nil)
+      end
+
       it "treats the real 1Password provider as configured" do
         provider = Kettle::Dev::ReleaseSecrets::OnePassword.new(
           "gem_signing_passphrase_source" => "cached"

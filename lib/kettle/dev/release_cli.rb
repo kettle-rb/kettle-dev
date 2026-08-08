@@ -63,9 +63,10 @@ module Kettle
           # Some commands are interactive (e.g., `bundle exec rake release` prompting for RubyGems MFA).
           # Using capture3 detaches STDIN, preventing prompts from working. For such commands, use system
           # so they inherit the current TTY and can read the user's input.
-          interactive = /\Abundle(\s+exec)?\s+rake\s+release\b/.match?(cmd) ||
-            /\Agem\s+push\b/.match?(cmd) ||
-            /\A(bundle\s+exec\s+)?kettle-changelog\b/.match?(cmd)
+          interactive_words = effective_command_words(cmd)
+          interactive = interactive_words.first(4) == ["bundle", "exec", "rake", "release"] ||
+            interactive_words.first(2) == ["gem", "push"] ||
+            interactive_words.first(2) == ["bundle", "exec"] && interactive_words[2] == "kettle-changelog"
           if interactive
             ok = system(env_hash, cmd)
             unless ok
@@ -112,12 +113,32 @@ module Kettle
         end
 
         def project_bundle_command?(cmd)
-          words = Shellwords.split(cmd.to_s)
+          words = effective_command_words(cmd)
           words == ["bin/setup"] ||
             words.first(1) == ["bin/rake"] ||
             words.first(3) == ["bundle", "exec", "rake"]
         rescue ArgumentError
           false
+        end
+
+        def effective_command_words(cmd)
+          words = Shellwords.split(cmd.to_s)
+          words.shift while words.first&.match?(/\A[A-Za-z_][A-Za-z0-9_]*=/)
+
+          if words.first == "env"
+            words.shift
+            while words.any?
+              if words.first == "-u"
+                words.shift(2)
+              elsif words.first&.include?("=")
+                words.shift
+              else
+                break
+              end
+            end
+          end
+
+          words
         end
 
         def debug_env_enabled?
@@ -1295,8 +1316,31 @@ module Kettle
       end
 
       def release_secret_command?(cmd)
-        /\Abundle(\s+exec)?\s+rake\s+(build|release)\b/.match?(cmd) ||
-          /\Agem\s+push\b/.match?(cmd)
+        words = effective_command_words(cmd)
+        (words.first(3) == ["bundle", "exec", "rake"] && %w[build release].include?(words[3])) ||
+          words.first(2) == ["gem", "push"]
+      rescue ArgumentError
+        false
+      end
+
+      def effective_command_words(cmd)
+        words = Shellwords.split(cmd.to_s)
+        words.shift while words.first&.match?(/\A[A-Za-z_][A-Za-z0-9_]*=/)
+
+        if words.first == "env"
+          words.shift
+          while words.any?
+            if words.first == "-u"
+              words.shift(2)
+            elsif words.first&.include?("=")
+              words.shift
+            else
+              break
+            end
+          end
+        end
+
+        words
       end
 
       def with_bundle_audit_skip_env

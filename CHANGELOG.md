@@ -42,6 +42,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - Run gem build and publish commands with local workspace dependency switches disabled so release guards see the registry-backed lockfile.
 
+- Recognize release commands with environment prefixes so configured secret providers can answer signing and RubyGems MFA prompts.
+
 ### Security
 
 ## [2.5.25] - 2026-08-07
