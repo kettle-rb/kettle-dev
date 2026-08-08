@@ -854,12 +854,9 @@ module Kettle
         # `kettle-changelog` generates strict coverage by running `bundle exec kettle-test`.
         # When that happened during this same release invocation, the default task can skip
         # its test/coverage prerequisites and still run lint, audit, documentation, and any
-        # other non-test release checks. Force CI lint mode so a local release uses the same
-        # RuboCop Gradual check that GitHub Actions will enforce instead of autocorrecting
-        # and accepting a newly introduced lockfile issue.
-        if @changelog_generated_coverage
-          return release_project_command("CI=true KETTLE_DEV_SKIP_TESTS=true bin/rake")
-        end
+        # other non-test release checks. Resumed releases do not set this flag, so they keep
+        # the full default task behavior.
+        return release_project_command("KETTLE_DEV_SKIP_TESTS=true bin/rake") if @changelog_generated_coverage
 
         release_project_command("bin/rake")
       end

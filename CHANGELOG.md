@@ -28,7 +28,7 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Run release default-task lint in CI check mode while skipping duplicate specs
+- Skip duplicate specs and coverage during release default checks while preserving local lint autocorrection
 
 ### Security
 
