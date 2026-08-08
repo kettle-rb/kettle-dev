@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Support family-level gem names and changelog paths when creating aggregate GitHub releases.
+
 ### Security
 
 ## [2.5.25] - 2026-08-07

@@ -1549,6 +1549,9 @@ module Kettle
       end
 
       def detect_gem_name
+        env_gem_name = ENV.fetch("K_CHANGELOG_GEM_NAME", "").to_s.strip
+        return env_gem_name unless env_gem_name.empty?
+
         gemspecs = Dir[File.join(@root, "*.gemspec")]
         abort("Could not find a .gemspec in project root.") if gemspecs.empty?
         path = gemspecs.min
@@ -2496,7 +2499,7 @@ module Kettle
 
       # Returns [section_text, compare_ref_line, tag_ref_line]
       def extract_changelog_for_version(version)
-        path = File.join(@root, "CHANGELOG.md")
+        path = resolved_changelog_path
         return [nil, nil, nil] unless File.file?(path)
 
         content = File.read(path)
@@ -2523,6 +2526,12 @@ module Kettle
       rescue => e
         warn("Failed to parse CHANGELOG.md: #{e.class}: #{e.message}")
         [nil, nil, nil]
+      end
+
+      def resolved_changelog_path
+        path = ENV.fetch("K_CHANGELOG_PATH", "").to_s.strip
+        path = "CHANGELOG.md" if path.empty?
+        File.expand_path(path, @root)
       end
 
       def extract_release_notes_footer

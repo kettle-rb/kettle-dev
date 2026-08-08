@@ -51,6 +51,28 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     expect(cli.send(:github_release_token_configured?)).to be(true)
   end
 
+  it "uses the configured family gem name without requiring a root gemspec" do
+    stub_env("K_CHANGELOG_GEM_NAME" => "structuredmerge-ruby")
+    allow(cli).to receive(:detect_gem_name).and_call_original
+
+    expect(cli.send(:detect_gem_name)).to eq("structuredmerge-ruby")
+  end
+
+  it "uses the configured family changelog path for release notes" do
+    Dir.mktmpdir("kettle-release-changelog") do |dir|
+      path = File.join(dir, "CHANGELOG.md")
+      File.write(path, "## [1.2.3]\n\n- Family release.\n")
+      stub_env("K_CHANGELOG_PATH" => path)
+      allow(cli).to receive(:extract_changelog_for_version).and_call_original
+
+      section, compare_ref, tag_ref = cli.send(:extract_changelog_for_version, "1.2.3")
+
+      expect(section).to include("Family release.")
+      expect(compare_ref).to be_nil
+      expect(tag_ref).to be_nil
+    end
+  end
+
   it "updates an existing release from its changelog section" do
     allow(cli).to receive(:remote_url).with("origin").and_return("git@github.com:acme/example-gem.git")
     allow(cli).to receive(:extract_changelog_for_version).with("1.2.3")
