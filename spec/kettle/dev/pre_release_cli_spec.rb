@@ -78,6 +78,12 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
     end
   end
 
+  it "preserves Kettle-Jem template tokens while normalizing markdown URLs" do
+    url = "https://img.shields.io/badge/name-{KJ|GEM_SHIELD}-3C2D2D.svg?style=square"
+
+    expect(described_class.new.send(:normalized_markdown_image_url, url)).to eq(url)
+  end
+
   describe Kettle::Dev::PreReleaseCLI::Markdown do
     it "extracts inline, reference, and html image urls" do
       md = <<~MD

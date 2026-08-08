@@ -374,6 +374,10 @@ module Kettle
       end
 
       def normalized_markdown_image_url(url_str)
+        # Kettle-Jem template tokens are intentionally not URI components yet;
+        # encoding them here prevents the templater from recognizing them.
+        return url_str if url_str.include?("{KJ|")
+
         addr = Addressable::URI.parse(url_str)
         normalized = addr.normalize
         normalized.query = addr.query if addr.query && normalized.query != addr.query

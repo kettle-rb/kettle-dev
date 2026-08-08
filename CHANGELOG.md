@@ -34,6 +34,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - Keep local development paths disabled through release setup so release lockfiles remain registry-resolvable.
 
+- Preserve kettle-jem template tokens during Markdown image URL normalization.
+
 ### Security
 
 ## [2.5.25] - 2026-08-07
