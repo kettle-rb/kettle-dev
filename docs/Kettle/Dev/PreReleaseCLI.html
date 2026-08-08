@@ -495,10 +495,6 @@ Checks:<br />
       <pre class="lines">
 
 
-405
-406
-407
-408
 409
 410
 411
@@ -545,10 +541,14 @@ Checks:<br />
 452
 453
 454
-455</pre>
+455
+456
+457
+458
+459</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/pre_release_cli.rb', line 405</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/pre_release_cli.rb', line 409</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_check_markdown_images_http!'>check_markdown_images_http!</span>
   <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>[kettle-pre-release] Check 4: Validate Markdown image links (cached HTTP HEAD, with GET fallback)</span><span class='tstring_end'>&quot;</span></span>
@@ -631,10 +631,6 @@ Checks:<br />
       <pre class="lines">
 
 
-385
-386
-387
-388
 389
 390
 391
@@ -647,10 +643,14 @@ Checks:<br />
 398
 399
 400
-401</pre>
+401
+402
+403
+404
+405</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/pre_release_cli.rb', line 385</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/pre_release_cli.rb', line 389</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_check_markdown_references!'>check_markdown_references!</span>
   <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>[kettle-pre-release] Check 3: Validate Markdown references and local heading targets</span><span class='tstring_end'>&quot;</span></span>
@@ -821,12 +821,20 @@ Checks:<br />
 378
 379
 380
-381</pre>
+381
+382
+383
+384
+385</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/kettle/dev/pre_release_cli.rb', line 376</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_normalized_markdown_image_url'>normalized_markdown_image_url</span><span class='lparen'>(</span><span class='id identifier rubyid_url_str'>url_str</span><span class='rparen'>)</span>
+  <span class='comment'># Kettle-Jem template tokens are intentionally not URI components yet;
+</span>  <span class='comment'># encoding them here prevents the templater from recognizing them.
+</span>  <span class='kw'>return</span> <span class='id identifier rubyid_url_str'>url_str</span> <span class='kw'>if</span> <span class='id identifier rubyid_url_str'>url_str</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>{KJ|</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+
   <span class='id identifier rubyid_addr'>addr</span> <span class='op'>=</span> <span class='const'>Addressable</span><span class='op'>::</span><span class='const'>URI</span><span class='period'>.</span><span class='id identifier rubyid_parse'>parse</span><span class='lparen'>(</span><span class='id identifier rubyid_url_str'>url_str</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_normalized'>normalized</span> <span class='op'>=</span> <span class='id identifier rubyid_addr'>addr</span><span class='period'>.</span><span class='id identifier rubyid_normalize'>normalize</span>
   <span class='id identifier rubyid_normalized'>normalized</span><span class='period'>.</span><span class='id identifier rubyid_query'>query</span> <span class='op'>=</span> <span class='id identifier rubyid_addr'>addr</span><span class='period'>.</span><span class='id identifier rubyid_query'>query</span> <span class='kw'>if</span> <span class='id identifier rubyid_addr'>addr</span><span class='period'>.</span><span class='id identifier rubyid_query'>query</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_normalized'>normalized</span><span class='period'>.</span><span class='id identifier rubyid_query'>query</span> <span class='op'>!=</span> <span class='id identifier rubyid_addr'>addr</span><span class='period'>.</span><span class='id identifier rubyid_query'>query</span>

@@ -131,8 +131,8 @@ RSpec.describe Kettle::Dev::RubyGemsVersions do
 
     versions = described_class.fetch("never-published")
 
-    expect(versions).to eq([])
-    expect(JSON.parse(File.read(@version_cache_path)).dig("versions", "never-published", "entries")).to eq([])
+    expect(versions).to be_empty
+    expect(JSON.parse(File.read(@version_cache_path)).dig("versions", "never-published", "entries")).to be_empty
   end
 
   def write_marker(gem_name, version, released_at)
