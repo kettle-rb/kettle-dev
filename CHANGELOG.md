@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Run release default-task lint in CI check mode while skipping duplicate specs
+
 ### Security
 
 ## [2.5.26] - 2026-08-08

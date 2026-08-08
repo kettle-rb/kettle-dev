@@ -338,7 +338,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
         local_cli.send(:run_changelog!)
 
-        expect(local_cli.send(:release_default_task_command)).to match(/KETTLE_DEV_SKIP_TESTS=true bin\/rake\z/)
+        expect(local_cli.send(:release_default_task_command)).to match(/CI=true KETTLE_DEV_SKIP_TESTS=true bin\/rake\z/)
       end
 
       it "derives changelog coverage policy from the project coverage setting" do
