@@ -28,9 +28,18 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Skip duplicate specs and coverage during release default checks while preserving local lint autocorrection
-
 ### Security
+
+## [2.5.27] - 2026-08-09
+
+- TAG: [v2.5.27][2.5.27t]
+- COVERAGE: 91.77% -- 5530/6026 lines in 47 files
+- BRANCH COVERAGE: 76.28% -- 2094/2745 branches in 47 files
+- 50.90% documented
+
+### Fixed
+
+- Skip duplicate specs and coverage during release default checks while preserving local lint autocorrection
 
 ## [2.5.26] - 2026-08-08
 
@@ -3362,7 +3371,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.26...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.27...HEAD
+[2.5.27]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.26...v2.5.27
+[2.5.27t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.27
 [2.5.26]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.25...v2.5.26
 [2.5.26t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.26
 [2.5.25]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.24...v2.5.25
