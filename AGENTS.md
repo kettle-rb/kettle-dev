@@ -89,13 +89,13 @@ This gem is part of the **StructuredMerge** ecosystem. Key development tools:
 | `kettle-test` | Test infrastructure: RSpec helpers, stubbed_env, timecop |
 | `kettle-jem` | Template management and gem scaffolding |
 
-### Executables (from kettle-dev)
+### Executables (from kettle-dev and its development dependencies)
 
 | Executable | Purpose |
 |-----------|---------|
 | `kettle-release` | Full gem release workflow |
 | `kettle-pre-release` | Pre-release validation |
-| `kettle-changelog` | Changelog generation |
+| `kettle-changelog` | Changelog generation (from the `kettle-changelog` development dependency) |
 | `kettle-dvcs` | DVCS (git) workflow automation |
 | `kettle-commit-msg` | Commit message validation |
 | `kettle-check-eof` | EOF newline validation |

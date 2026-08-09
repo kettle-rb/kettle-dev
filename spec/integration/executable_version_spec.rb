@@ -32,7 +32,6 @@ RSpec.describe "kettle-dev executables" do
   it "does not print the executable header before safe normal output paths by default" do
     safe_commands = {
       "kettle-bump" => ["--help"],
-      "kettle-changelog" => ["--help"],
       "kettle-check-eof" => [],
       "kettle-dev-setup" => [],
       "kettle-dvcs" => ["--help"],
@@ -54,7 +53,6 @@ RSpec.describe "kettle-dev executables" do
   it "prints the executable header when verbose output is requested" do
     safe_commands = {
       "kettle-bump" => ["--verbose", "--help"],
-      "kettle-changelog" => ["--verbose", "--help"],
       "kettle-check-eof" => ["--verbose"],
       "kettle-dev-setup" => ["--verbose"],
       "kettle-dvcs" => ["--verbose", "--help"],

@@ -22,6 +22,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- Move the kettle-changelog executable to the standalone kettle-changelog gem while retaining kettle-dev support APIs for the transition.
+
+- Resolve standalone kettle-changelog through the generated Ruby-4-only modular release-tool Gemfile, with local path wiring for development.
+
 ### Deprecated
 
 ### Removed
