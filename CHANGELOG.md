@@ -28,9 +28,18 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Retry an existing gem publication once with a fresh RubyGems MFA OTP when the release task reports an invalid OTP.
-
 ### Security
+
+## [2.5.28] - 2026-08-09
+
+- TAG: [v2.5.28][2.5.28t]
+- COVERAGE: 91.71% -- 5544/6045 lines in 47 files
+- BRANCH COVERAGE: 76.48% -- 2104/2751 branches in 47 files
+- 50.77% documented
+
+### Fixed
+
+- Retry an existing gem publication once with a fresh RubyGems MFA OTP when the release task reports an invalid OTP.
 
 ## [2.5.27] - 2026-08-09
 
@@ -3373,7 +3382,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.27...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.28...HEAD
+[2.5.28]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.27...v2.5.28
+[2.5.28t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.28
 [2.5.27]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.26...v2.5.27
 [2.5.27t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.27
 [2.5.26]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.25...v2.5.26
