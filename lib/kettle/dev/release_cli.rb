@@ -25,6 +25,7 @@ require_relative "release_secrets"
 module Kettle
   module Dev
     class ReleaseCLI
+      RUBYGEMS_INVALID_OTP = /Your OTP code is incorrect\. Please check it and retry\./.freeze
       QUIET_ENV = {
         "KETTLE_JEM_QUIET" => "true",
         "KETTLE_JEM_DEBUG" => "false",
@@ -1237,7 +1238,7 @@ module Kettle
 
         keep_release_secrets_alive!("prompt-bearing command")
         puts "$ #{cmd}"
-        _stdout_str, stderr_str, status = Kettle::Dev::InteractiveReleaseCommand.new(
+        stdout_str, stderr_str, status = Kettle::Dev::InteractiveReleaseCommand.new(
           secrets_provider: @secrets_provider,
           secret_event_handler: ->(payload) { emit_secret_event(payload) }
         ).call(
@@ -1245,6 +1246,11 @@ module Kettle
           cmd
         )
         return if status.success?
+
+        if gem_release_command?(cmd) && rubygems_invalid_otp?(stdout_str, stderr_str)
+          retry_gem_push_after_invalid_otp!
+          return
+        end
 
         exit_code = status.respond_to?(:exitstatus) ? status.exitstatus : 1
         diag = stderr_str.to_s.empty? ? "" : "\n--- STDERR (last 20 lines) ---\n#{stderr_str.lines.last(20).join}".rstrip
@@ -1259,6 +1265,45 @@ module Kettle
 
       def release_secrets_provider_label
         release_secrets_configured? ? @secrets_provider.class.name.to_s.split("::").last : "interactive"
+      end
+
+      def gem_release_command?(cmd)
+        effective_command_words(cmd).first(4) == ["bundle", "exec", "rake", "release"]
+      end
+
+      def rubygems_invalid_otp?(*output)
+        output.any? { |chunk| chunk.to_s.match?(RUBYGEMS_INVALID_OTP) }
+      end
+
+      def retry_gem_push_after_invalid_otp!
+        version = @release_candidate&.version || detect_version
+        gem_path = gem_file_for_version(version)
+        unless gem_path && File.file?(gem_path)
+          abort("RubyGems rejected the OTP, but the built gem for version #{version} could not be found in pkg/.")
+        end
+
+        puts "RubyGems rejected the OTP after the release task completed; retrying the existing gem publication with a fresh OTP..."
+        emit_secret_event(
+          source: release_secrets_provider_label,
+          action: "otp_retry",
+          status: "started",
+          reason: "RubyGems rejected the first OTP"
+        )
+        run_cmd!("gem push #{Shellwords.escape(gem_path)}")
+        emit_secret_event(
+          source: release_secrets_provider_label,
+          action: "otp_retry",
+          status: "ok",
+          reason: "existing gem artifact published after OTP retry"
+        )
+      rescue SystemExit, Kettle::Dev::Error
+        emit_secret_event(
+          source: release_secrets_provider_label,
+          action: "otp_retry",
+          status: "failed",
+          reason: "fresh OTP retry failed"
+        )
+        raise
       end
 
       def signing_enabled?

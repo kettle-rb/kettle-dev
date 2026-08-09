@@ -315,6 +315,47 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect(provider).to have_received(:keepalive!).with(elapsed: nil)
       end
 
+      it "retries the existing gem when RubyGems rejects an expired-edge OTP" do
+        provider = instance_double(Kettle::Dev::ReleaseSecrets::OnePassword)
+        local_cli = described_class.new(secrets_provider: provider)
+        runner = instance_double(Kettle::Dev::InteractiveReleaseCommand)
+        failed_status = instance_double(Process::Status, success?: false, exitstatus: 1)
+        allow(provider).to receive(:keepalive!).with(elapsed: nil).and_return(true)
+        allow(Kettle::Dev::InteractiveReleaseCommand).to receive(:new)
+          .with(secrets_provider: provider, secret_event_handler: kind_of(Proc))
+          .and_return(runner)
+        gem_path = __FILE__
+        allow(local_cli).to receive(:gem_file_for_version).with(kind_of(String)).and_return(gem_path)
+        allow(runner).to receive(:call).and_return([
+          "Your OTP code is incorrect. Please check it and retry.",
+          "",
+          failed_status
+        ])
+        expect(local_cli).to receive(:run_cmd!).with("gem push #{gem_path}")
+
+        local_cli.send(
+          :run_command_with_release_secrets!,
+          "env -u BUNDLE_GEMFILE KETTLE_DEV_DEV=false bundle exec rake release"
+        )
+      end
+
+      it "does not retry a release failure unrelated to the RubyGems OTP response" do
+        provider = instance_double(Kettle::Dev::ReleaseSecrets::OnePassword)
+        local_cli = described_class.new(secrets_provider: provider)
+        runner = instance_double(Kettle::Dev::InteractiveReleaseCommand)
+        failed_status = instance_double(Process::Status, success?: false, exitstatus: 1)
+        allow(provider).to receive(:keepalive!).with(elapsed: nil).and_return(true)
+        allow(Kettle::Dev::InteractiveReleaseCommand).to receive(:new)
+          .with(secrets_provider: provider, secret_event_handler: kind_of(Proc))
+          .and_return(runner)
+        allow(runner).to receive(:call).and_return(["RubyGems service unavailable", "", failed_status])
+        expect(local_cli).not_to receive(:run_cmd!).with(start_with("gem push"))
+
+        expect {
+          local_cli.send(:run_command_with_release_secrets!, "bundle exec rake release")
+        }.to raise_error(MockSystemExit, /Command failed: bundle exec rake release/)
+      end
+
       it "treats the real 1Password provider as configured" do
         provider = Kettle::Dev::ReleaseSecrets::OnePassword.new(
           "gem_signing_passphrase_source" => "cached"

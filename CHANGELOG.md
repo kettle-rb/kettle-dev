@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Retry an existing gem publication once with a fresh RubyGems MFA OTP when the release task reports an invalid OTP.
+
 ### Security
 
 ## [2.5.27] - 2026-08-09
