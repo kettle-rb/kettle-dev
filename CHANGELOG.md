@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Stop polling 1Password during release monitoring and support family-owned release secret brokers.
+
 ### Security
 
 ## [3.0.1] - 2026-08-10

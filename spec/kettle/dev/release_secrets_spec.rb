@@ -54,17 +54,33 @@ RSpec.describe Kettle::Dev::ReleaseSecrets do
     expect(provider.rubygems_otp).to eq("123456")
   end
 
-  it "keeps the 1Password authorization session warm without fetching an OTP" do
+  it "does not poll 1Password during release keepalive callbacks" do
     provider = described_class::Factory.build(provider_name: "op")
-    command = instance_double(Kettle::Dev::InteractiveReleaseCommand)
-    allow(Kettle::Dev::InteractiveReleaseCommand).to receive(:new).and_return(command)
-    allow(command).to receive(:call_argv).with({}, ["op", "account", "get"])
-      .and_return(["account\n", "", status(success: true)])
 
     expect(provider.keepalive!(elapsed: "03:21")).to be(true)
-    expect(command).to have_received(:call_argv).with({}, ["op", "account", "get"])
-    expect(Kettle::Dev::ReleaseNotifier).to have_received(:alert)
-      .with("1Password authorization keepalive lookup starting (elapsed 03:21); watch for authorization prompt.")
+    expect(Open3).not_to receive(:capture3)
+    expect(Kettle::Dev::InteractiveReleaseCommand).not_to receive(:new)
+  end
+
+  it "uses a family broker for OTP requests" do
+    socket = instance_double(UNIXSocket)
+    allow(UNIXSocket).to receive(:new).with("/run/kettle-secrets.sock").and_return(socket)
+    allow(socket).to receive(:gets).and_return("{\"ok\":true,\"value\":\"123456\"}\n")
+    allow(socket).to receive(:write)
+    allow(socket).to receive(:close)
+
+    provider = described_class::Factory.build(
+      provider_name: "family",
+      config: {"endpoint" => "/run/kettle-secrets.sock"}
+    )
+
+    expect(provider.rubygems_otp).to eq("123456")
+    expect(socket).to have_received(:write).with(/"operation":"rubygems_otp"/)
+  end
+
+  it "requires a broker endpoint for family release secrets" do
+    expect { described_class::Factory.build(provider_name: "family") }
+      .to raise_error(Kettle::Dev::Error, /broker endpoint is required/)
   end
 
   it "alerts before 1Password lookups" do

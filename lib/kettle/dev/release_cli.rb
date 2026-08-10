@@ -1170,7 +1170,7 @@ module Kettle
           Kettle::Dev::CIMonitor.monitor_all!(
             restart_hint: restart_hint,
             workflows: @ci_workflows,
-            keepalive: release_secrets_configured? ? -> { keep_release_secrets_alive!("CI monitoring") } : nil,
+            keepalive: release_secrets_keepalive_required? ? -> { keep_release_secrets_alive!("CI monitoring") } : nil,
             event_recorder: @event_recorder
           )
           emit_ci_monitor_event(action: "finish", status: "ok", workflows: @ci_workflows, restart_hint: restart_hint)
@@ -1368,7 +1368,7 @@ module Kettle
       end
 
       def keep_release_secrets_alive!(purpose)
-        return unless release_secrets_configured?
+        return unless release_secrets_keepalive_required?
         return unless @secrets_provider.respond_to?(:keepalive!)
 
         emit_secret_event(action: "keepalive", status: "started", purpose: purpose, source: release_secrets_provider_label, elapsed: release_elapsed_label)
@@ -1377,6 +1377,16 @@ module Kettle
       rescue Kettle::Dev::Error => error
         emit_secret_event(action: "keepalive", status: "failed", purpose: purpose, source: release_secrets_provider_label, elapsed: release_elapsed_label, reason: error.message)
         abort("Release secrets provider keepalive failed before #{purpose}: #{error.message}")
+      end
+
+      def release_secrets_keepalive_required?
+        return false unless release_secrets_configured?
+        if @secrets_provider.respond_to?(:keepalive_required?)
+          configured = @secrets_provider.keepalive_required?
+          return configured unless configured.nil?
+        end
+
+        true
       end
 
       def release_elapsed_label

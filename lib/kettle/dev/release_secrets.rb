@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require "open3"
+require "json"
+require "socket"
 require "kettle/dev/interactive_release_command"
 require "kettle/dev/release_notifier"
 
@@ -10,6 +12,10 @@ module Kettle
 
     module ReleaseSecrets
       class Provider
+        def keepalive_required?
+          true
+        end
+
         def gem_signing_passphrase
           nil
         end
@@ -20,6 +26,63 @@ module Kettle
 
         def keepalive!(elapsed: nil)
           nil
+        end
+      end
+
+      # Secret provider used by a family-owned release broker. The broker keeps
+      # all 1Password lookups in the family process; member release processes
+      # never authenticate independently.
+      class BrokerClient < Provider
+        def initialize(endpoint)
+          @endpoint = endpoint.to_s
+          raise Kettle::Dev::Error, "release secrets broker endpoint is required" if @endpoint.empty?
+        end
+
+        def gem_signing_passphrase
+          return cached_gem_signing_passphrase if cached_gem_signing_passphrase?
+
+          request("gem_signing_passphrase")
+        end
+
+        def rubygems_otp
+          request("rubygems_otp")
+        end
+
+        # A family broker owns authorization. Polling must never start a new
+        # authentication lookup in the member process.
+        def keepalive!(elapsed: nil)
+          true
+        end
+
+        def keepalive_required?
+          false
+        end
+
+        private
+
+        def cached_gem_signing_passphrase?
+          %w[cached family kettle-family].include?(ENV.fetch("KETTLE_RELEASE_GEM_SIGNING_PASSPHRASE_SOURCE", "").downcase)
+        end
+
+        def cached_gem_signing_passphrase
+          value = ENV.fetch("KETTLE_RELEASE_GEM_SIGNING_PASSPHRASE", "").to_s
+          raise Kettle::Dev::Error, "cached gem signing passphrase was requested but KETTLE_RELEASE_GEM_SIGNING_PASSPHRASE is empty" if value.empty?
+
+          value
+        end
+
+        def request(operation)
+          socket = UNIXSocket.new(@endpoint)
+          socket.write(JSON.generate("operation" => operation))
+          socket.write("\n")
+          response = JSON.parse(socket.gets.to_s)
+          return response.fetch("value").to_s if response["ok"]
+
+          raise Kettle::Dev::Error, response.fetch("error", "release secrets broker request failed")
+        rescue Errno::ENOENT, Errno::ECONNREFUSED => error
+          raise Kettle::Dev::Error, "release secrets broker is unavailable: #{error.message}"
+        ensure
+          socket&.close
         end
       end
 
@@ -71,11 +134,14 @@ module Kettle
         end
 
         def keepalive!(elapsed: nil)
-          argv = [op_cli, "account", "get"]
-          account = string_config("account")
-          argv.concat(["--account", account]) unless account.empty?
-          run_op(argv, purpose: "authorization keepalive", elapsed: elapsed, interactive: true)
+          # 1Password CLI authentication is session-scoped. Starting a fresh
+          # `op account get` for every release poll does not keep it alive; it
+          # only creates repeated authorization prompts and noise.
           true
+        end
+
+        def keepalive_required?
+          false
         end
 
         private
@@ -177,6 +243,10 @@ module Kettle
             provider_name.to_s
           end
           return Provider.new if name.empty? || name == "interactive"
+          if %w[family broker].include?(name.downcase)
+            endpoint = configured.fetch("endpoint", ENV.fetch("KETTLE_RELEASE_SECRETS_BROKER", ""))
+            return BrokerClient.new(endpoint)
+          end
           return OnePassword.new(env_config.merge(configured)) if OnePassword.configured?(name)
 
           raise Kettle::Dev::Error, "unsupported release secrets provider #{name.inspect}"

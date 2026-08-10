@@ -1275,6 +1275,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       it "keeps configured release secrets alive while monitoring CI" do
         provider = instance_double(Kettle::Dev::ReleaseSecrets::OnePassword)
         release_cli = described_class.new(secrets_provider: provider)
+        allow(provider).to receive(:keepalive_required?).and_return(true)
         allow(provider).to receive(:keepalive!).with(elapsed: nil).and_return(true)
         allow(release_cli).to receive(:ensure_github_pull_request_for_ci!)
         allow(Kettle::Dev::CIMonitor).to receive(:monitor_all!)
@@ -1293,6 +1294,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       it "passes overall release elapsed time to release secret keepalive" do
         provider = instance_double(Kettle::Dev::ReleaseSecrets::OnePassword)
         release_cli = described_class.new(secrets_provider: provider)
+        allow(provider).to receive(:keepalive_required?).and_return(true)
         release_cli.instance_variable_set(:@started_at, 100.0)
         allow(release_cli).to receive(:monotonic_time).and_return(223.4)
         allow(provider).to receive(:keepalive!).with(elapsed: "02:03").and_return(true)
@@ -1307,6 +1309,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         event_stream = Kettle::Ndjson.event_stream(io, types: "secret_provider")
         provider = instance_double(Kettle::Dev::ReleaseSecrets::OnePassword)
         release_cli = described_class.new(secrets_provider: provider, event_stream: event_stream)
+        allow(provider).to receive(:keepalive_required?).and_return(true)
         allow(provider).to receive(:keepalive!).with(elapsed: nil).and_return(true)
 
         release_cli.send(:keep_release_secrets_alive!, "test")
