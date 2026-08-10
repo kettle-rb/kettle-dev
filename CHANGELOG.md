@@ -28,9 +28,18 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Skip volatile Star History chart image URLs during pre-release validation.
-
 ### Security
+
+## [3.0.3] - 2026-08-10
+
+- TAG: [v3.0.3][3.0.3t]
+- COVERAGE: 91.36% -- 5617/6148 lines in 47 files
+- BRANCH COVERAGE: 75.85% -- 2120/2795 branches in 47 files
+- 51.00% documented
+
+### Fixed
+
+- Skip volatile Star History chart image URLs during pre-release validation.
 
 ## [3.0.2] - 2026-08-10
 
@@ -3433,7 +3442,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.2...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.3...HEAD
+[3.0.3]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.2...v3.0.3
+[3.0.3t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.3
 [3.0.2]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.1...v3.0.2
 [3.0.2t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.2
 [3.0.1]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.0...v3.0.1
