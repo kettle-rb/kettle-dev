@@ -22,19 +22,32 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
-- Move the kettle-changelog executable to the standalone kettle-changelog gem while retaining kettle-dev support APIs for the transition.
-
-- Resolve standalone kettle-changelog through the generated Ruby-4-only modular release-tool Gemfile, with local path wiring for development.
-
 ### Deprecated
 
 ### Removed
 
 ### Fixed
 
-- Use a dedicated standalone changelog bundle during bootstrap releases when the project bundle does not include kettle-changelog.
+- Keep standalone changelog bootstrap paths out of target release tests and documentation.
 
 ### Security
+
+## [3.0.0] - 2026-08-09
+
+- TAG: [v3.0.0][3.0.0t]
+- COVERAGE: 91.86% -- 5575/6069 lines in 47 files
+- BRANCH COVERAGE: 76.44% -- 2112/2763 branches in 47 files
+- 50.77% documented
+
+### Changed
+
+- Move the kettle-changelog executable to the standalone kettle-changelog gem while retaining kettle-dev support APIs for the transition.
+
+- Resolve standalone kettle-changelog through the generated Ruby-4-only modular release-tool Gemfile, with local path wiring for development.
+
+### Fixed
+
+- Use a dedicated standalone changelog bundle during bootstrap releases when the project bundle does not include kettle-changelog.
 
 ## [2.5.28] - 2026-08-09
 
@@ -3388,7 +3401,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.28...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.0...HEAD
+[3.0.0]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.28...v3.0.0
+[3.0.0t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.0
 [2.5.28]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.27...v2.5.28
 [2.5.28t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v2.5.28
 [2.5.27]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.26...v2.5.27

@@ -847,7 +847,12 @@ module Kettle
         return "bundle exec kettle-changelog" unless gemfile
 
         escaped_gemfile = Shellwords.escape(gemfile)
-        "env -u BUNDLE_GEMFILE -u BUNDLE_LOCKFILE BUNDLE_GEMFILE=#{escaped_gemfile} bundle exec kettle-changelog"
+        command = +"env -u BUNDLE_GEMFILE -u BUNDLE_LOCKFILE"
+        if (local_root = release_changelog_local_root)
+          command << " KETTLE_DEV_DEV=false KETTLE_CHANGELOG_DEV_ROOT=#{Shellwords.escape(local_root)}"
+        end
+        command << " BUNDLE_GEMFILE=#{escaped_gemfile} bundle exec kettle-changelog"
+        command
       end
 
       def release_changelog_gemfile
@@ -859,8 +864,8 @@ module Kettle
           abort("Configured K_RELEASE_CHANGELOG_GEMFILE does not exist: #{path}")
         end
 
-        local_root = ENV["KETTLE_DEV_DEV"].to_s.strip
-        return nil if local_root.empty? || %w[false 0 no off].include?(local_root.downcase)
+        local_root = release_changelog_local_root
+        return nil unless local_root
 
         changelog_root = File.join(File.expand_path(local_root), "kettle-changelog")
         candidates = [
@@ -868,6 +873,13 @@ module Kettle
           File.join(changelog_root, "Gemfile")
         ]
         candidates.find { |path| File.file?(path) }
+      end
+
+      def release_changelog_local_root
+        local_root = ENV["KETTLE_DEV_DEV"].to_s.strip
+        return nil if local_root.empty? || %w[false 0 no off].include?(local_root.downcase)
+
+        File.expand_path(local_root)
       end
 
       # Monorepo subprojects commonly disable their local hard coverage gate

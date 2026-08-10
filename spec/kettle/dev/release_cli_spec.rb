@@ -427,7 +427,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
           local_cli = described_class.new
 
           expect(local_cli).to receive(:run_cmd!).with(
-            "env -u BUNDLE_GEMFILE -u BUNDLE_LOCKFILE BUNDLE_GEMFILE=#{Shellwords.escape(gemfile)} bundle exec kettle-changelog"
+            "env -u BUNDLE_GEMFILE -u BUNDLE_LOCKFILE KETTLE_DEV_DEV=false KETTLE_CHANGELOG_DEV_ROOT=#{Shellwords.escape(root)} BUNDLE_GEMFILE=#{Shellwords.escape(gemfile)} bundle exec kettle-changelog"
           )
 
           local_cli.send(:run_changelog!)
