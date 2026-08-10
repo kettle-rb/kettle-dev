@@ -32,6 +32,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - Allow pre-release GitHub Actions pin validation to use the explicitly requested persistent cache when live TLS access is unavailable.
 
+- Detect locally installed unreleased workspace gems through an unbundled RubyGems probe during release lockfile normalization.
+
 ### Security
 
 ## [3.0.1] - 2026-08-10

@@ -284,19 +284,32 @@ RSpec.describe Kettle::Dev::LockfileReset do
       .to raise_error(RuntimeError, "permission denied")
   end
 
-  it "refreshes RubyGems specifications before checking for a local release candidate" do
+  it "checks for local release candidates through an unbundled RubyGems process" do
     reset = described_class.new(root: @root, command_runner: ->(_command) {})
-    specification = instance_double(Gem::Specification)
+    success = instance_double(Process::Status, success?: true)
 
-    allow(Gem::Specification).to receive(:reset)
-    allow(Gem::Specification).to receive(:find_all_by_name)
-      .with(never_released_workspace_gem, "= #{unreleased_workspace_version}")
-      .and_return([specification])
+    expect(Open3).to receive(:capture3) do |env, *argv|
+      expect(env).to include(
+        "BUNDLE_GEMFILE" => nil,
+        "BUNDLE_LOCKFILE" => nil,
+        "BUNDLER_SETUP" => nil,
+        "RUBYLIB" => nil,
+        "RUBYOPT" => nil
+      )
+      expect(argv).to eq(
+        [
+          "gem",
+          "specification",
+          never_released_workspace_gem,
+          "--version",
+          unreleased_workspace_version,
+          "--local"
+        ]
+      )
+      ["", "", success]
+    end
 
     expect(reset.send(:locally_installed?, never_released_workspace_gem, unreleased_workspace_version)).to be(true)
-    expect(Gem::Specification).to have_received(:reset)
-    expect(Gem::Specification).to have_received(:find_all_by_name)
-      .with(never_released_workspace_gem, "= #{unreleased_workspace_version}")
   end
 
   it "uninstalls local workspace gems that do not resolve from the configured source" do

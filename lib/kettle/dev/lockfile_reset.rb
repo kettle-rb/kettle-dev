@@ -3,6 +3,7 @@
 require "set"
 require "shellwords"
 require "fileutils"
+require "open3"
 require "bundler"
 
 require_relative "bundler_env_guard"
@@ -418,10 +419,24 @@ module Kettle
       end
 
       def locally_installed?(name, version)
-        Gem::Specification.reset
-        Gem::Specification.find_all_by_name(name, "= #{version}").any?
-      rescue
+        _stdout, _stderr, status = Open3.capture3(
+          unbundled_env,
+          "gem",
+          "specification",
+          name,
+          "--version",
+          version.to_s,
+          "--local"
+        )
+        status.success?
+      rescue SystemCallError
         false
+      end
+
+      def unbundled_env
+        UNBUNDLED_ENV_KEYS.each_with_object({}) do |key, env|
+          env[key] = nil
+        end
       end
 
       def gem_source_version_available?(name, version, source_urls)
