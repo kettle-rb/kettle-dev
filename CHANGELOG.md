@@ -28,6 +28,17 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [3.0.2] - 2026-08-10
+
+- TAG: [v3.0.2][3.0.2t]
+- COVERAGE: 91.56% -- 5629/6148 lines in 47 files
+- BRANCH COVERAGE: 76.14% -- 2128/2795 branches in 47 files
+- 51.00% documented
+
+### Fixed
+
 - Stop polling 1Password during release monitoring and support family-owned release secret brokers.
 
 - Allow pre-release GitHub Actions pin validation to use the explicitly requested persistent cache when live TLS access is unavailable.
@@ -35,8 +46,6 @@ Please file a bug if you notice a violation of semantic versioning.
 - Detect locally installed unreleased workspace gems through an unbundled RubyGems probe during release lockfile normalization.
 
 - Isolate standalone kettle-changelog coverage and tests from family release orchestration environment.
-
-### Security
 
 ## [3.0.1] - 2026-08-10
 
@@ -3422,7 +3431,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.1...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.2...HEAD
+[3.0.2]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.1...v3.0.2
+[3.0.2t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.2
 [3.0.1]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.0...v3.0.1
 [3.0.1t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.1
 [3.0.0]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.28...v3.0.0
