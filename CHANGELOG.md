@@ -28,20 +28,20 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Re-normalize release lockfiles after release tasks before commit and CI validation.
-
 ### Security
 
 ## [3.0.1] - 2026-08-10
 
 - TAG: [v3.0.1][3.0.1t]
-- COVERAGE: 91.64% -- 5588/6098 lines in 47 files
-- BRANCH COVERAGE: 76.16% -- 2115/2777 branches in 47 files
+- COVERAGE: 91.87% -- 5602/6098 lines in 47 files
+- BRANCH COVERAGE: 76.29% -- 2117/2775 branches in 47 files
 - 50.64% documented
 
 ### Fixed
 
 - Run 1Password authorization keepalives through the interactive terminal so release prompts remain visible.
+
+- Re-normalize release lockfiles after release tasks before commit and CI validation.
 
 ## [3.0.0] - 2026-08-09
 
