@@ -117,7 +117,8 @@ module Kettle
           words = effective_command_words(cmd)
           words == ["bin/setup"] ||
             words.first(1) == ["bin/rake"] ||
-            words.first(3) == ["bundle", "exec", "rake"]
+            words.first(3) == ["bundle", "exec", "rake"] ||
+            words.first(3) == ["bundle", "exec", "kettle-changelog"]
         rescue ArgumentError
           false
         end
@@ -828,12 +829,45 @@ module Kettle
       end
 
       def run_changelog!
-        cmd = "bundle exec kettle-changelog"
+        cmd = release_changelog_command
         cmd = "#{cmd} --version #{Shellwords.escape(@version_override)}" if @version_override
         cmd = "#{cmd} --yes" if @yes
         cmd = "#{cmd} --events=changelog" if @event_stream
         with_project_changelog_coverage_policy { run_cmd!(cmd) }
         @changelog_generated_coverage = true
+      end
+
+      # The changelog executable is owned by kettle-changelog, not kettle-dev.
+      # During the bootstrap release of kettle-dev it is therefore intentionally
+      # absent from kettle-dev's bundle. When a local kettle-dev workspace is
+      # supplied, run the standalone tool through that project's bundle instead
+      # of relying on an ambient installed executable.
+      def release_changelog_command
+        gemfile = release_changelog_gemfile
+        return "bundle exec kettle-changelog" unless gemfile
+
+        escaped_gemfile = Shellwords.escape(gemfile)
+        "env -u BUNDLE_GEMFILE -u BUNDLE_LOCKFILE BUNDLE_GEMFILE=#{escaped_gemfile} bundle exec kettle-changelog"
+      end
+
+      def release_changelog_gemfile
+        configured = ENV["K_RELEASE_CHANGELOG_GEMFILE"].to_s.strip
+        unless configured.empty?
+          path = File.expand_path(configured)
+          return path if File.file?(path)
+
+          abort("Configured K_RELEASE_CHANGELOG_GEMFILE does not exist: #{path}")
+        end
+
+        local_root = ENV["KETTLE_DEV_DEV"].to_s.strip
+        return nil if local_root.empty? || %w[false 0 no off].include?(local_root.downcase)
+
+        changelog_root = File.join(File.expand_path(local_root), "kettle-changelog")
+        candidates = [
+          File.join(changelog_root, "gemfiles", "release.gemfile"),
+          File.join(changelog_root, "Gemfile")
+        ]
+        candidates.find { |path| File.file?(path) }
       end
 
       # Monorepo subprojects commonly disable their local hard coverage gate

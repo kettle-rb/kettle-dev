@@ -32,6 +32,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Use a dedicated standalone changelog bundle during bootstrap releases when the project bundle does not include kettle-changelog.
+
 ### Security
 
 ## [2.5.28] - 2026-08-09

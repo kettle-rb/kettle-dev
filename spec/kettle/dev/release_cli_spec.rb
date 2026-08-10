@@ -280,6 +280,14 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         cli.send(:run_cmd!, "bundle exec kettle-changelog")
       end
 
+      it "removes the parent bundle environment for standalone changelog commands" do
+        stub_env("BUNDLE_GEMFILE" => "/release-tool/Gemfile", "BUNDLE_LOCKFILE" => "/release-tool/Gemfile.lock")
+        expect(described_class.send(:command_env_for, "bundle exec kettle-changelog")).to include(
+          "BUNDLE_GEMFILE" => nil,
+          "BUNDLE_LOCKFILE" => nil
+        )
+      end
+
       it "uses the configured release secrets provider for prompt-bearing release commands" do
         provider = instance_double(Kettle::Dev::ReleaseSecrets::OnePassword)
         local_cli = described_class.new(secrets_provider: provider)
@@ -392,6 +400,38 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         local_cli.send(:run_changelog!)
 
         expect(ENV["K_CHANGELOG_COVERAGE_HARD"]).to be_nil
+      end
+
+      it "runs the standalone changelog through a configured alternate bundle" do
+        Dir.mktmpdir do |root|
+          gemfile = File.join(root, "Gemfile")
+          File.write(gemfile, "source 'https://gem.coop'\n")
+          stub_env("K_RELEASE_CHANGELOG_GEMFILE" => gemfile)
+          local_cli = described_class.new
+
+          expect(local_cli).to receive(:run_cmd!).with(
+            "env -u BUNDLE_GEMFILE -u BUNDLE_LOCKFILE BUNDLE_GEMFILE=#{Shellwords.escape(gemfile)} bundle exec kettle-changelog"
+          )
+
+          local_cli.send(:run_changelog!)
+        end
+      end
+
+      it "derives the alternate changelog bundle from a local kettle-dev workspace" do
+        Dir.mktmpdir do |root|
+          changelog_root = File.join(root, "kettle-changelog")
+          FileUtils.mkdir_p(changelog_root)
+          gemfile = File.join(changelog_root, "Gemfile")
+          File.write(gemfile, "source 'https://gem.coop'\n")
+          stub_env("KETTLE_DEV_DEV" => root, "K_RELEASE_CHANGELOG_GEMFILE" => nil)
+          local_cli = described_class.new
+
+          expect(local_cli).to receive(:run_cmd!).with(
+            "env -u BUNDLE_GEMFILE -u BUNDLE_LOCKFILE BUNDLE_GEMFILE=#{Shellwords.escape(gemfile)} bundle exec kettle-changelog"
+          )
+
+          local_cli.send(:run_changelog!)
+        end
       end
 
       it "keeps the full default task for resumed releases that did not run changelog coverage" do
