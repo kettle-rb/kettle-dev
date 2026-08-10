@@ -28,15 +28,13 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Keep standalone changelog bootstrap paths out of target release tests and documentation.
-
 ### Security
 
 ## [3.0.0] - 2026-08-09
 
 - TAG: [v3.0.0][3.0.0t]
-- COVERAGE: 91.86% -- 5575/6069 lines in 47 files
-- BRANCH COVERAGE: 76.44% -- 2112/2763 branches in 47 files
+- COVERAGE: 91.71% -- 5566/6069 lines in 47 files
+- BRANCH COVERAGE: 76.29% -- 2108/2763 branches in 47 files
 - 50.77% documented
 
 ### Changed
@@ -48,6 +46,8 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Fixed
 
 - Use a dedicated standalone changelog bundle during bootstrap releases when the project bundle does not include kettle-changelog.
+
+- Keep standalone changelog bootstrap paths out of target release tests and documentation.
 
 ## [2.5.28] - 2026-08-09
 
