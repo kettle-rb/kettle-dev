@@ -316,8 +316,12 @@ module Kettle
       # Check 1: Ensure GitHub Actions workflow action refs are current SHA pins.
       # @return [void]
       def check_github_actions_sha_pins!
-        puts "[kettle-pre-release] Check 1: Validate GitHub Actions SHA pins"
-        status = Kettle::Dev::GhaShaPinsCLI.new(["--root", Dir.pwd, "--check", "--upgrade", "major"]).run!
+        offline = env_truthy?(ENV["KETTLE_PRE_RELEASE_GHA_SHA_PINS_OFFLINE"])
+        mode = offline ? "offline cache" : "live cache validation"
+        puts "[kettle-pre-release] Check 1: Validate GitHub Actions SHA pins (#{mode})"
+        args = ["--root", Dir.pwd, "--check", "--upgrade", "major"]
+        args << "--offline" if offline
+        status = Kettle::Dev::GhaShaPinsCLI.new(args).run!
         return nil if status.zero?
 
         Kettle::Dev::ExitAdapter.abort("GitHub Actions SHA pin validation failed")

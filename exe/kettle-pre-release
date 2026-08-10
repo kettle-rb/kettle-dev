@@ -59,6 +59,10 @@ parser = OptionParser.new do |opts|
     puts "  KETTLE_IMAGE_URL_CACHE=/path/to/cache.json  Use a custom cache path"
     puts "  KETTLE_IMAGE_URL_CACHE=false                Disable the image URL cache"
     puts "  KETTLE_IMAGE_URL_CACHE_REFRESH=true         Ignore cached successes and refresh"
+    puts
+    puts "GitHub Actions pin cache:"
+    puts "  Live cache validation is the default and refreshes stale entries from GitHub."
+    puts "  KETTLE_PRE_RELEASE_GHA_SHA_PINS_OFFLINE=true  Trust the persistent pin cache without network access"
     exit(0)
   end
 end

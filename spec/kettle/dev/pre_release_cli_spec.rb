@@ -217,6 +217,16 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
       expect { cli.run }.to raise_error(MockSystemExit, /GitHub Actions SHA pin validation failed/)
     end
 
+    it "uses the persistent GitHub Actions pin cache when explicitly requested" do
+      stub_env("KETTLE_PRE_RELEASE_GHA_SHA_PINS_OFFLINE" => "true")
+      cli = described_class.new(check_num: 1)
+
+      expect { cli.send(:check_github_actions_sha_pins!) }.not_to raise_error
+      expect(Kettle::Dev::GhaShaPinsCLI).to have_received(:new).with(
+        ["--root", Dir.pwd, "--check", "--upgrade", "major", "--offline"]
+      )
+    end
+
     it "aborts via ExitAdapter when HTTP failures occur in check 3" do
       cli = described_class.new(check_num: 4)
       allow(Kettle::Dev::PreReleaseCLI::Markdown).to receive(:extract_image_urls_from_files).and_return([

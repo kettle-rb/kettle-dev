@@ -30,6 +30,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - Stop polling 1Password during release monitoring and support family-owned release secret brokers.
 
+- Allow pre-release GitHub Actions pin validation to use the explicitly requested persistent cache when live TLS access is unavailable.
+
 ### Security
 
 ## [3.0.1] - 2026-08-10
