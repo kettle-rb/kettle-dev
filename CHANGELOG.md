@@ -28,9 +28,18 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Keep release lockfile platforms stable across repeated normalization passes.
-
 ### Security
+
+## [3.0.5] - 2026-08-10
+
+- TAG: [v3.0.5][3.0.5t]
+- COVERAGE: 91.65% -- 5663/6179 lines in 47 files
+- BRANCH COVERAGE: 76.30% -- 2157/2827 branches in 47 files
+- 50.74% documented
+
+### Fixed
+
+- Keep release lockfile platforms stable across repeated normalization passes.
 
 ## [3.0.4] - 2026-08-10
 
@@ -3455,7 +3464,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.4...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.5...HEAD
+[3.0.5]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.4...v3.0.5
+[3.0.5t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.5
 [3.0.4]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.3...v3.0.4
 [3.0.4t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.4
 [3.0.3]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.2...v3.0.3
