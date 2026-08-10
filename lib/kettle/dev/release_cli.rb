@@ -622,7 +622,10 @@ module Kettle
       end
 
       def prepare_release_lockfiles_for_commit!
-        reset_release_lockfiles!(stage: "before release prep commit") unless @release_lockfiles_reset_for_release_tasks
+        # Release setup and documentation tasks can re-materialize local PATH
+        # sources in the parent development bundle after the preflight reset.
+        # Always normalize again at the commit boundary.
+        reset_release_lockfiles!(stage: "before release prep commit")
         validate_release_lockfiles!(stage: "before release prep commit")
       end
 

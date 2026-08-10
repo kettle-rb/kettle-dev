@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Re-normalize release lockfiles after release tasks before commit and CI validation.
+
 ### Security
 
 ## [3.0.1] - 2026-08-10

@@ -1808,6 +1808,16 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect { local_cli.run }.not_to raise_error
       end
 
+      it "renormalizes lockfiles after release tasks even when preflight already reset them" do
+        local_cli = described_class.new
+        local_cli.instance_variable_set(:@release_lockfiles_reset_for_release_tasks, true)
+
+        expect(local_cli).to receive(:reset_release_lockfiles!).with(stage: "before release prep commit")
+        expect(local_cli).to receive(:validate_release_lockfiles!).with(stage: "before release prep commit")
+
+        local_cli.send(:prepare_release_lockfiles_for_commit!)
+      end
+
       it "repairs a stale appraisal root lock before appraisal generation can install it" do
         Dir.mktmpdir do |root|
           allow(ci_helpers).to receive(:project_root).and_return(root)
