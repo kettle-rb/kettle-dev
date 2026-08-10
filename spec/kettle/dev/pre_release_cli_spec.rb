@@ -287,12 +287,15 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
     it "skips built-in volatile star-history image URLs by default" do
       allow(Kettle::Dev::PreReleaseCLI::Markdown).to receive_messages(
         project_markdown_files: [],
-        extract_image_urls_from_files: ["https://api.star-history.com/svg?repos=kettle-dev/kettle-test&type=Date"]
+        extract_image_urls_from_files: [
+          "https://api.star-history.com/svg?repos=kettle-dev/kettle-test&type=Date",
+          "https://star-history.dera.page/svg?repos=kettle-dev/kettle-test&type=date&legend=top-left"
+        ]
       )
       expect(Kettle::Dev::PreReleaseCLI::HTTP).not_to receive(:head_ok?)
 
       expect { described_class.new(check_num: 3).run }
-        .to output(/Image URL checks: 0 cached, 0 live\.\n\[kettle-pre-release\] Skipped 1 image URL check\(s\)\./).to_stdout
+        .to output(/Image URL checks: 0 cached, 0 live\.\n\[kettle-pre-release\] Skipped 2 image URL check\(s\)\./).to_stdout
     end
 
     it "skips a current-repository workflow badge until its local workflow is pushed" do

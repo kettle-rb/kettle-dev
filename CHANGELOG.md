@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Skip volatile Star History chart image URLs during pre-release validation.
+
 ### Security
 
 ## [3.0.2] - 2026-08-10
