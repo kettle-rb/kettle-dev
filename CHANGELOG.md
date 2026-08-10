@@ -28,9 +28,18 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Run 1Password authorization keepalives through the interactive terminal so release prompts remain visible.
-
 ### Security
+
+## [3.0.1] - 2026-08-10
+
+- TAG: [v3.0.1][3.0.1t]
+- COVERAGE: 91.64% -- 5588/6098 lines in 47 files
+- BRANCH COVERAGE: 76.16% -- 2115/2777 branches in 47 files
+- 50.64% documented
+
+### Fixed
+
+- Run 1Password authorization keepalives through the interactive terminal so release prompts remain visible.
 
 ## [3.0.0] - 2026-08-09
 
@@ -3403,7 +3412,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.0...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.1...HEAD
+[3.0.1]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.0...v3.0.1
+[3.0.1t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.1
 [3.0.0]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.28...v3.0.0
 [3.0.0t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.0
 [2.5.28]: https://github.com/kettle-dev/kettle-dev/compare/v2.5.27...v2.5.28
