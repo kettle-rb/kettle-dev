@@ -80,7 +80,7 @@ RSpec.describe Kettle::Dev::LockfileReset do
     expect(commands).to be_empty
   end
 
-  it "preserves existing lockfile platforms and adds the current platform during reset" do
+  it "preserves the existing lockfile platform set during reset" do
     reset = described_class.new(root: @root, command_runner: ->(_command) {})
     path = File.join(@root, "Gemfile.lock")
     File.write(File.join(@root, "Gemfile"), "source \"https://rubygems.org\"\n")
@@ -102,7 +102,49 @@ RSpec.describe Kettle::Dev::LockfileReset do
 
     expect(command).to include("--add-platform=arm64-darwin")
     expect(command).to include("--add-platform=x86_64-linux-gnu")
-    expect(command).to include("--add-platform=#{Gem::Platform.local}")
+    platforms = command.scan(/--add-platform=([^\s]+)/).flatten
+    expect(platforms).not_to include(Gem::Platform.local.to_s)
+  end
+
+  it "reuses the release platform set when later resets see extra platforms" do
+    commands = []
+    reset = described_class.new(root: @root, command_runner: lambda { |command|
+      commands << command
+      File.write(File.join(@root, "Gemfile.lock"), <<~LOCK)
+        GEM
+          remote: https://rubygems.org/
+          specs:
+            rake (13.4.2)
+
+        PLATFORMS
+          arm64-darwin
+          x86_64-linux
+
+        DEPENDENCIES
+          rake
+      LOCK
+    })
+    File.write(File.join(@root, "Gemfile"), "source \"https://rubygems.org\"\n")
+    File.write(File.join(@root, "Gemfile.lock"), <<~LOCK)
+      GEM
+        remote: https://rubygems.org/
+        specs:
+          rake (13.4.2)
+
+      PLATFORMS
+        arm64-darwin
+
+      DEPENDENCIES
+        rake
+    LOCK
+
+    reset.reset("release-lockfiles")
+    reset.reset("release-lockfiles")
+
+    release_commands = commands.select { |command| command.include?("bundle lock") }
+    expect(release_commands.length).to eq(2)
+    expect(release_commands).to all(include("--add-platform=arm64-darwin"))
+    expect(release_commands).to all(satisfy { |command| !command.match?(/--add-platform=x86_64-linux(?:\s|$)/) })
   end
 
   it "fully updates release lockfiles even when no diagnostics are present" do

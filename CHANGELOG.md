@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Keep release lockfile platforms stable across repeated normalization passes.
+
 ### Security
 
 ## [3.0.4] - 2026-08-10

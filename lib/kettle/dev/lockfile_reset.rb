@@ -30,19 +30,21 @@ module Kettle
       def initialize(root:, command_runner:)
         @root = root
         @command_runner = command_runner
+        @release_platforms = {}
       end
 
       def reset(target)
         BundlerEnvGuard.warn_unexpected_env!
         paths = lockfile_paths_for(target)
         force_full_update = release_lockfiles_target?(target)
+        platforms = release_platforms_for(paths) if force_full_update
         uninstall_unreleased_local_gems(paths) if force_full_update
         paths.each do |path|
-          reset_lockfile!(path, full_update: force_full_update) if force_full_update || normalization_needed?(path)
+          reset_lockfile!(path, full_update: force_full_update, platforms: platforms&.fetch(path)) if force_full_update || normalization_needed?(path)
         end
         if force_full_update && uninstall_unreleased_local_gems(paths)
           paths.each do |path|
-            reset_lockfile!(path, full_update: true)
+            reset_lockfile!(path, full_update: true, platforms: platforms.fetch(path))
           end
         end
         diagnostics = paths.flat_map { |path| diagnostics(path) }
@@ -51,14 +53,14 @@ module Kettle
         paths
       end
 
-      def reset_lockfile!(path, full_update: false)
+      def reset_lockfile!(path, full_update: false, platforms: nil)
         gemfile = gemfile_for_lockfile(path)
         unless gemfile && File.file?(gemfile)
           warn("Cannot reset #{display_path(path)} because its Gemfile was not found.")
           return
         end
 
-        command = reset_command(path: path, gemfile: gemfile, full_update: full_update)
+        command = reset_command(path: path, gemfile: gemfile, full_update: full_update, platforms: platforms)
         if full_update || has_local_path_remote?(path)
           rebuild_lockfile(path) { command_runner.call(command) }
         else
@@ -66,8 +68,10 @@ module Kettle
         end
       end
 
-      def reset_command(path:, gemfile:, full_update: false)
+      def reset_command(path:, gemfile:, full_update: false, platforms: nil)
         update_gems = (full_update || has_local_path_remote?(path)) ? [] : reset_update_gems(path)
+        platforms ||= reset_platforms(path)
+        removed_platforms = full_update ? [] : lockfile_platforms(path) - platforms
         env = normalization_env.merge(
           "BUNDLE_GEMFILE" => gemfile,
           "BUNDLE_LOCKFILE" => path
@@ -80,7 +84,10 @@ module Kettle
           command << " #{key}=#{Shellwords.escape(value)}"
         end
         command << " bundle lock"
-        reset_platforms(path).each do |platform|
+        removed_platforms.sort.each do |platform|
+          command << " --remove-platform=#{Shellwords.escape(platform)}"
+        end
+        platforms.each do |platform|
           command << " --add-platform=#{Shellwords.escape(platform)}"
         end
         command << " --update"
@@ -90,7 +97,15 @@ module Kettle
       end
 
       def reset_platforms(path)
-        (lockfile_platforms(path) | [Gem::Platform.local.to_s]).reject(&:empty?).sort
+        platforms = lockfile_platforms(path)
+        platforms = [Gem::Platform.local.to_s] if platforms.empty?
+        platforms.reject(&:empty?).sort
+      end
+
+      def release_platforms_for(paths)
+        paths.each_with_object({}) do |path, platforms|
+          platforms[path] = (@release_platforms[path] ||= reset_platforms(path))
+        end
       end
 
       def lockfile_platforms(path)
