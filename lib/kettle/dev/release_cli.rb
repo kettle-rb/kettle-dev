@@ -46,6 +46,23 @@ module Kettle
         "BUNDLE_SILENCE_ROOT_WARNING" => "true",
         "BUNDLE_SUPPRESS_INSTALL_USING_MESSAGES" => "true"
       }.freeze
+      RELEASE_CHILD_ENV_KEYS = %w[
+        K_RELEASE_CI_CONTINUE
+        K_RELEASE_REQUIRED_REMOTES
+        KETTLE_FAMILY_CONFIG
+        KETTLE_PRE_RELEASE_GHA_SHA_PINS_OFFLINE
+        KETTLE_RELEASE_SECRETS_PROVIDER
+        KETTLE_RELEASE_SECRETS_BROKER
+        KETTLE_RELEASE_GEM_SIGNING_PASSPHRASE
+        KETTLE_RELEASE_GEM_SIGNING_PASSPHRASE_SOURCE
+        KETTLE_RELEASE_1PASSWORD_ACCOUNT
+        KETTLE_RELEASE_1PASSWORD_CLI
+        KETTLE_RELEASE_1PASSWORD_ITEM
+        KETTLE_RELEASE_1PASSWORD_GEM_SIGNING_PASSPHRASE_FIELD
+        KETTLE_RELEASE_1PASSWORD_RUBYGEMS_OTP_FIELD
+        KETTLE_RELEASE_1PASSWORD_GEM_SIGNING_PASSPHRASE_REFERENCE
+        KETTLE_RELEASE_1PASSWORD_RUBYGEMS_OTP_REFERENCE
+      ].freeze
       DEBUG_TRUE_VALUES = %w[1 true yes on].freeze
       RELEASE_VALIDATION_SOURCE = "https://gem.coop"
 
@@ -110,7 +127,9 @@ module Kettle
           env_hash = command_env
           return env_hash unless project_bundle_command?(cmd)
 
-          env_hash.merge(BundlerEnvGuard.unbundled_env)
+          env_hash.merge(BundlerEnvGuard.unbundled_env).merge(
+            RELEASE_CHILD_ENV_KEYS.each_with_object({}) { |key, env| env[key] = nil }
+          )
         end
 
         def project_bundle_command?(cmd)

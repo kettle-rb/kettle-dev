@@ -284,7 +284,10 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         stub_env("BUNDLE_GEMFILE" => "/release-tool/Gemfile", "BUNDLE_LOCKFILE" => "/release-tool/Gemfile.lock")
         expect(described_class.send(:command_env_for, "bundle exec kettle-changelog")).to include(
           "BUNDLE_GEMFILE" => nil,
-          "BUNDLE_LOCKFILE" => nil
+          "BUNDLE_LOCKFILE" => nil,
+          "KETTLE_RELEASE_SECRETS_PROVIDER" => nil,
+          "KETTLE_RELEASE_SECRETS_BROKER" => nil,
+          "KETTLE_PRE_RELEASE_GHA_SHA_PINS_OFFLINE" => nil
         )
       end
 

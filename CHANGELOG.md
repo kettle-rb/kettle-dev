@@ -34,6 +34,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - Detect locally installed unreleased workspace gems through an unbundled RubyGems probe during release lockfile normalization.
 
+- Isolate standalone kettle-changelog coverage and tests from family release orchestration environment.
+
 ### Security
 
 ## [3.0.1] - 2026-08-10

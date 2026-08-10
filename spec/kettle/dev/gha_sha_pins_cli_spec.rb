@@ -528,7 +528,8 @@ RSpec.describe Kettle::Dev::GhaShaPinsCLI do
 
       expect(versions.map { |entry| entry[:version] }).to eq(%w[2.0.0 1.3.0 1.2.3])
       expect(cached.fetch("actions")).to include("other/action")
-      expect(cached.dig("actions", "foo/bar", "versions")).to include("1.2.0", "1.2.3", "1.3.0", "2.0.0")
+      expect(cached.dig("actions", "foo/bar", "versions")).not_to include("1.2.0")
+      expect(cached.dig("actions", "foo/bar", "versions")).to include("1.2.3", "1.3.0", "2.0.0")
       expect(cached.dig("actions", "foo/bar", "targets", "patch", "1.2", "version")).to eq("1.2.3")
       expect(cached.dig("actions", "foo/bar", "targets", "minor", "1", "version")).to eq("1.3.0")
       expect(cached.dig("actions", "foo/bar", "targets", "major", "*", "version")).to eq("2.0.0")
