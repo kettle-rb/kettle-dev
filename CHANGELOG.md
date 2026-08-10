@@ -28,9 +28,18 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Honor K_RELEASE_CI_CONTINUE during GitHub Actions and GitLab release monitoring, continuing after failed checks instead of aborting.
-
 ### Security
+
+## [3.0.4] - 2026-08-10
+
+- TAG: [v3.0.4][3.0.4t]
+- COVERAGE: 91.44% -- 5640/6168 lines in 47 files
+- BRANCH COVERAGE: 76.16% -- 2147/2819 branches in 47 files
+- 50.87% documented
+
+### Fixed
+
+- Honor K_RELEASE_CI_CONTINUE during GitHub Actions and GitLab release monitoring, continuing after failed checks instead of aborting.
 
 ## [3.0.3] - 2026-08-10
 
@@ -3444,7 +3453,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.3...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.4...HEAD
+[3.0.4]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.3...v3.0.4
+[3.0.4t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.4
 [3.0.3]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.2...v3.0.3
 [3.0.3t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.3
 [3.0.2]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.1...v3.0.2
