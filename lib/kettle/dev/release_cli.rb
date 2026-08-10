@@ -1184,15 +1184,26 @@ module Kettle
         keep_release_secrets_alive!("CI monitoring")
         restart_hint = "bundle exec kettle-release start_step=10"
         emit_ci_monitor_event(action: "start", status: "started", workflows: @ci_workflows, restart_hint: restart_hint)
-        # Use abort-on-failure CI monitor to match historical behavior and specs
+        # The monitor preserves fail-fast behavior by default and returns false
+        # when K_RELEASE_CI_CONTINUE explicitly allows failed CI checks.
         begin
-          Kettle::Dev::CIMonitor.monitor_all!(
+          ci_ok = Kettle::Dev::CIMonitor.monitor_all!(
             restart_hint: restart_hint,
             workflows: @ci_workflows,
             keepalive: release_secrets_keepalive_required? ? -> { keep_release_secrets_alive!("CI monitoring") } : nil,
             event_recorder: @event_recorder
           )
-          emit_ci_monitor_event(action: "finish", status: "ok", workflows: @ci_workflows, restart_hint: restart_hint)
+          if ci_ok
+            emit_ci_monitor_event(action: "finish", status: "ok", workflows: @ci_workflows, restart_hint: restart_hint)
+          else
+            emit_ci_monitor_event(
+              action: "finish",
+              status: "continued",
+              workflows: @ci_workflows,
+              restart_hint: restart_hint,
+              reason: "CI checks failed; continuing because K_RELEASE_CI_CONTINUE=true"
+            )
+          end
         rescue SystemExit => error
           emit_ci_monitor_event(action: "finish", status: "failed", workflows: @ci_workflows, restart_hint: restart_hint, reason: error.message)
           raise

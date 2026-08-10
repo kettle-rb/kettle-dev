@@ -57,6 +57,21 @@ RSpec.describe Kettle::Dev::CIMonitor do
       expect { described_class.monitor_gitlab!(restart_hint: "hint") }.to raise_error(MockSystemExit, /Pipeline failed:/)
     end
 
+    it "continues after a normal failure when CI failures are allowed", :check_output do
+      allow(helpers).to receive_messages(project_root: Dir.pwd, current_branch: "feat")
+      allow(File).to receive(:exist?).and_call_original
+      allow(File).to receive(:exist?).with(File.join(Dir.pwd, ".gitlab-ci.yml")).and_return(true)
+      allow(described_class).to receive(:gitlab_remote_candidates).and_return(["gitlab"])
+
+      allow(helpers).to receive(:repo_info_gitlab).and_return(["me", "repo"])
+
+      pipe = {"status" => "failed", "web_url" => "https://gitlab.com/me/repo/-/pipelines/4", "id" => 4, "failure_reason" => "script_failure"}
+      allow(helpers).to receive_messages(gitlab_latest_pipeline: pipe, gitlab_success?: false, gitlab_failed?: true)
+      stub_env("K_RELEASE_CI_CONTINUE" => "true")
+
+      expect(described_class.monitor_gitlab!(restart_hint: "hint")).to be false
+    end
+
     it "returns false when gitlab not configured" do
       allow(helpers).to receive(:project_root).and_return(Dir.pwd)
       allow(File).to receive(:exist?).and_call_original
@@ -259,6 +274,46 @@ RSpec.describe Kettle::Dev::CIMonitor do
       events = io.string.lines.map { |line| JSON.parse(line) }
       expect(events).to include(
         include("type" => "ci_monitor", "action" => "github_workflow", "status" => "failed", "provider" => "github", "workflow" => "current.yml", "url" => "https://github.com/me/repo/actions/runs/3", "reason" => "Workflow failed", "mark" => "!")
+      )
+    end
+
+    it "continues monitoring remaining workflows when CI failures are allowed", :check_output do
+      io = StringIO.new
+      event_recorder = Kettle::Ndjson.event_stream(io, types: "ci_monitor")
+      allow(helpers).to receive_messages(
+        project_root: Dir.pwd,
+        current_branch: "main",
+        current_head_sha: "abc123"
+      )
+      allow(described_class).to receive_messages(
+        preferred_github_remote: "origin",
+        remote_url: "https://github.com/me/repo.git",
+        gitlab_remote_candidates: []
+      )
+      allow(helpers).to receive(:latest_run) do |workflow_file:, **|
+        if workflow_file == "current.yml"
+          {"status" => "completed", "conclusion" => "failure", "html_url" => "https://github.com/me/repo/actions/runs/4", "id" => 4, "head_sha" => "abc123"}
+        else
+          {"status" => "completed", "conclusion" => "success", "html_url" => "https://github.com/me/repo/actions/runs/5", "id" => 5, "head_sha" => "abc123"}
+        end
+      end
+      allow(helpers).to receive(:success?) { |candidate| candidate && candidate["conclusion"] == "success" }
+      allow(helpers).to receive(:failed?) { |candidate| candidate && candidate["conclusion"] == "failure" }
+      stub_env("K_RELEASE_CI_CONTINUE" => "true", "K_RELEASE_CI_INITIAL_SLEEP" => "0", "K_RELEASE_CI_POLL_INTERVAL" => "0")
+      allow(described_class).to receive(:sleep)
+
+      result = described_class.monitor_all!(
+        restart_hint: "hint",
+        workflows: %w[current.yml style.yml],
+        event_recorder: event_recorder
+      )
+
+      expect(result).to be(false)
+      events = io.string.lines.map { |line| JSON.parse(line) }
+      expect(events).to include(
+        include("type" => "ci_monitor", "action" => "github_workflow", "status" => "failed", "workflow" => "current.yml"),
+        include("type" => "ci_monitor", "action" => "github_workflow", "status" => "ok", "workflow" => "style.yml"),
+        include("type" => "ci_monitor", "action" => "github_complete", "status" => "failed", "completed" => 2, "failed" => ["current.yml"])
       )
     end
 

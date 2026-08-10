@@ -44,16 +44,25 @@ module Kettle
       module_function :status_emoji
 
       # Monitor both GitHub and GitLab CI for the current project/branch.
-      # This mirrors ReleaseCLI behavior and aborts on first failure.
+      # This mirrors ReleaseCLI behavior and returns false when failures are
+      # tolerated through K_RELEASE_CI_CONTINUE.
       #
       # @param restart_hint [String] guidance command shown on failure
-      # @return [void]
+      # @return [Boolean] whether all configured CI providers passed
       def monitor_all!(restart_hint: "bundle exec kettle-release start_step=10", workflows: nil, keepalive: nil, event_recorder: nil, **options)
-        checks_any = false
-        checks_any |= monitor_github_internal!(restart_hint: restart_hint, workflows: workflows, keepalive: keepalive, event_recorder: event_recorder)
-        checks_any |= monitor_gitlab_internal!(restart_hint: restart_hint, keepalive: keepalive, event_recorder: event_recorder)
-        abort("CI configuration not detected (GitHub or GitLab). Ensure CI is configured and remotes point to the correct hosts.") unless checks_any
+        results = [
+          monitor_github_internal!(restart_hint: restart_hint, workflows: workflows, keepalive: keepalive, event_recorder: event_recorder),
+          monitor_gitlab_internal!(restart_hint: restart_hint, keepalive: keepalive, event_recorder: event_recorder)
+        ]
+        abort("CI configuration not detected (GitHub or GitLab). Ensure CI is configured and remotes point to the correct hosts.") if results.all?(&:nil?)
+
+        results.all? { |result| result != false }
       end
+
+      def continue_ci_failures?
+        !!(Kettle::Dev::ENV_TRUE_RE =~ ENV.fetch("K_RELEASE_CI_CONTINUE", "false"))
+      end
+      module_function :continue_ci_failures?
 
       # Public wrapper to monitor GitLab pipeline with abort-on-failure semantics.
       # Matches RBS and call sites expecting ::monitor_gitlab!
@@ -61,7 +70,8 @@ module Kettle
       # @param restart_hint [String]
       # @return [Boolean]
       def monitor_gitlab!(restart_hint: "bundle exec kettle-release start_step=10")
-        monitor_gitlab_internal!(restart_hint: restart_hint)
+        result = monitor_gitlab_internal!(restart_hint: restart_hint)
+        result.nil? ? false : result
       end
       module_function :monitor_gitlab!
 
@@ -272,14 +282,14 @@ module Kettle
         root = Kettle::Dev::CIHelpers.ci_project_root
         workflows = Array(workflows).empty? ? Kettle::Dev::CIHelpers.workflows_list(root) : Array(workflows)
         gh_remote = preferred_github_remote
-        return false unless gh_remote && !workflows.empty?
+        return unless gh_remote && !workflows.empty?
 
         branch = Kettle::Dev::CIHelpers.current_branch
         abort("Could not determine current branch for CI checks.") unless branch
 
         url = remote_url(gh_remote)
         owner, repo = parse_github_owner_repo(url)
-        return false unless owner && repo
+        return unless owner && repo
 
         total = workflows.size
         abort("No GitHub workflows found under .github/workflows; aborting.") if total.zero?
@@ -288,6 +298,7 @@ module Kettle
         abort("Could not determine local HEAD SHA for GitHub Actions checks.") unless head_sha && !head_sha.empty?
 
         passed = {}
+        failed = {}
         started = {}
         emit_ci_monitor_event(
           event_recorder,
@@ -367,7 +378,7 @@ module Kettle
               )
             end
             if Kettle::Dev::CIHelpers.success?(run)
-              unless passed[wf]
+              unless passed[wf] || failed[wf]
                 passed[wf] = true
                 completed_workflow = wf
                 pbar&.increment
@@ -384,7 +395,7 @@ module Kettle
                   total: total
                 )
               end
-            elsif Kettle::Dev::CIHelpers.failed?(run)
+            elsif Kettle::Dev::CIHelpers.failed?(run) && !passed[wf] && !failed[wf]
               puts
               wf_url = run["html_url"] || "https://github.com/#{owner}/#{repo}/actions/workflows/#{wf}"
               emit_ci_monitor_event(
@@ -400,9 +411,16 @@ module Kettle
                 total: total,
                 reason: "Workflow failed"
               )
-              abort("Workflow failed: #{wf} -> #{wf_url} Fix the workflow, then restart this tool from CI validation with: #{restart_hint}")
+              unless continue_ci_failures?
+                abort("Workflow failed: #{wf} -> #{wf_url} Fix the workflow, then restart this tool from CI validation with: #{restart_hint}")
+              end
+
+              failed[wf] = true
+              pbar&.increment
+              puts "Continuing CI monitoring despite #{wf} failure because K_RELEASE_CI_CONTINUE=true."
             end
           end
+          completed = passed.size + failed.size
           emit_ci_monitor_event(
             event_recorder,
             action: "github_tick",
@@ -412,11 +430,11 @@ module Kettle
             run_status: run && run["status"],
             conclusion: run && run["conclusion"],
             completed_workflow: completed_workflow,
-            completed: passed.size,
+            completed: completed,
             total: total,
             started: started.size
           )
-          break if passed.size == total
+          break if completed == total
           if started.size < total && monotonic_time >= start_deadline
             missing = (workflows - started.keys).join(", ")
             puts
@@ -441,14 +459,19 @@ module Kettle
         emit_ci_monitor_event(
           event_recorder,
           action: "github_complete",
-          status: "ok",
+          status: failed.empty? ? "ok" : "failed",
           provider: "github",
           workflows: workflows,
-          completed: passed.size,
-          total: total
+          completed: passed.size + failed.size,
+          total: total,
+          failed: failed.keys
         )
-        puts "\nAll GitHub workflows passing (#{passed.size}/#{total})."
-        true
+        if failed.empty?
+          puts "\nAll GitHub workflows passing (#{passed.size}/#{total})."
+        else
+          puts "\nGitHub workflows completed with failures (#{passed.size}/#{total} passed); continuing because K_RELEASE_CI_CONTINUE=true."
+        end
+        failed.empty?
       end
       module_function :monitor_github_internal!
 
@@ -506,13 +529,13 @@ module Kettle
         root = Kettle::Dev::CIHelpers.ci_project_root
         gitlab_ci = File.exist?(File.join(root, ".gitlab-ci.yml"))
         gl_remote = gitlab_remote_candidates.first
-        return false unless gitlab_ci && gl_remote
+        return unless gitlab_ci && gl_remote
 
         branch = Kettle::Dev::CIHelpers.current_branch
         abort("Could not determine current branch for CI checks.") unless branch
 
         owner, repo = Kettle::Dev::CIHelpers.repo_info_gitlab
-        return false unless owner && repo
+        return unless owner && repo
 
         emit_ci_monitor_event(
           event_recorder,
@@ -530,6 +553,7 @@ module Kettle
           ProgressBar.create(title: "CI", total: 1, format: "%t %b %c/%C", length: 30)
         end
         keepalive_timer = keepalive_timer(keepalive)
+        pipeline_failed = false
         loop do
           keepalive_timer.call
           pipe = Kettle::Dev::CIHelpers.gitlab_latest_pipeline(owner: owner, repo: repo, branch: branch)
@@ -565,7 +589,6 @@ module Kettle
                   completed: 0,
                   total: 1
                 )
-                break
               else
                 puts
                 emit_ci_monitor_event(
@@ -580,8 +603,15 @@ module Kettle
                   total: 1
                 )
                 url = pipe_url
-                abort("Pipeline failed: #{url} Fix the pipeline, then restart this tool from CI validation with: #{restart_hint}")
+                unless continue_ci_failures?
+                  abort("Pipeline failed: #{url} Fix the pipeline, then restart this tool from CI validation with: #{restart_hint}")
+                end
+
+                pipeline_failed = true
+                pbar&.increment unless pbar&.finished?
+                puts "GitLab pipeline failed; continuing because K_RELEASE_CI_CONTINUE=true."
               end
+              break
             elsif pipe["status"] == "blocked"
               # Blocked pipeline (e.g., awaiting approvals) — treat as unknown and continue
               puts "\nGitLab pipeline is blocked. Result is unknown; continuing."
@@ -606,13 +636,14 @@ module Kettle
         emit_ci_monitor_event(
           event_recorder,
           action: "gitlab_complete",
-          status: "ok",
+          status: pipeline_failed ? "failed" : "ok",
           provider: "gitlab",
           completed: 1,
-          total: 1
+          total: 1,
+          failed: pipeline_failed
         )
-        puts "\nGitLab pipeline passing."
-        true
+        puts pipeline_failed ? "\nGitLab pipeline failed; continuing because K_RELEASE_CI_CONTINUE=true." : "\nGitLab pipeline passing."
+        !pipeline_failed
       end
       module_function :monitor_gitlab_internal!
 
@@ -620,7 +651,7 @@ module Kettle
         mark = case status.to_s
         when "started"
           ">"
-        when "ok", "skipped"
+        when "ok", "skipped", "continued"
           "."
         when "failed"
           "!"

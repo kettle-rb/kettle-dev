@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Honor K_RELEASE_CI_CONTINUE during GitHub Actions and GitLab release monitoring, continuing after failed checks instead of aborting.
+
 ### Security
 
 ## [3.0.3] - 2026-08-10

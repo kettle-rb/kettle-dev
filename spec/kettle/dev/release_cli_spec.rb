@@ -1337,6 +1337,18 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect { cli.send(:monitor_workflows_after_push!) }.to raise_error(MockSystemExit, /Workflow failed: .*start_step=10/)
       end
 
+      it "continues the release when CI failures are explicitly allowed" do
+        stub_env("K_RELEASE_CI_CONTINUE" => "true")
+        io = StringIO.new
+        event_stream = Kettle::Ndjson.event_stream(io, types: "ci_monitor")
+        release_cli = described_class.new(event_stream: event_stream)
+        allow(release_cli).to receive(:ensure_github_pull_request_for_ci!)
+        allow(Kettle::Dev::CIMonitor).to receive(:monitor_all!).and_return(false)
+
+        expect { release_cli.send(:monitor_workflows_after_push!) }.not_to raise_error
+        expect(io.string).to include('"status":"continued"')
+      end
+
       it "handles GitLab pipeline success" do
         allow(Kettle::Dev::CIMonitor).to receive(:preferred_github_remote).and_return(nil)
         allow(ci_helpers).to receive(:workflows_list).and_return([])
