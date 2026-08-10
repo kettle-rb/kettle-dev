@@ -1,39 +1,54 @@
 # frozen_string_literal: true
 
 require "open3"
+require "shellwords"
 
 module Kettle
   module Dev
     class InteractiveReleaseCommand
-      def initialize(secrets_provider:, input: $stdin, output: $stdout, error: $stderr, secret_event_handler: nil)
+      def initialize(secrets_provider:, input: $stdin, output: $stdout, error: $stderr, secret_event_handler: nil, forward_stdin: false)
         @secrets_provider = secrets_provider
         @input = input
         @output = output
         @error = error
         @secret_event_handler = secret_event_handler
+        @forward_stdin = forward_stdin
         @gem_signing_passphrase = nil
       end
 
       def call(env, cmd)
-        return call_with_pty(env, cmd) if pty_available?
+        call_argv(env, Shellwords.split(cmd.to_s))
+      end
 
-        call_with_open3(env, cmd)
+      def call_argv(env, argv)
+        return call_with_pty(env, argv) if pty_available?
+
+        call_with_open3(env, argv)
       end
 
       private
 
       attr_reader :secrets_provider, :secret_event_handler
 
-      def call_with_pty(env, cmd)
+      def call_with_pty(env, argv)
         stdout_str = +""
+        prompt_buffer = +""
         status = nil
-        PTY.spawn(env, cmd) do |output, input, pid|
+        PTY.spawn(env, *argv) do |output, input, pid|
           begin
             loop do
-              chunk = output.readpartial(1024)
-              stdout_str << chunk
-              @output.print(chunk)
-              handle_prompt(input, chunk)
+              readers = [output]
+              readers << @input if @forward_stdin && @input.tty?
+              IO.select(readers).first.each do |reader|
+                if reader.equal?(@input)
+                  input.write(@input.readpartial(1024))
+                else
+                  chunk = output.readpartial(1024)
+                  stdout_str << chunk
+                  @output.print(chunk)
+                  prompt_buffer = handle_prompt(input, chunk, prompt_buffer: prompt_buffer)
+                end
+              end
             end
           rescue Errno::EIO
             # PTY raises EIO when the child process exits after closing the slave.
@@ -47,27 +62,33 @@ module Kettle
         [stdout_str, "", status]
       end
 
-      def call_with_open3(env, cmd)
+      def call_with_open3(env, argv)
         stdout_str = +""
         stderr_str = +""
+        prompt_buffer = +""
         status = nil
-        Open3.popen3(env, cmd) do |input, output, error, wait_thread|
+        Open3.popen3(env, *argv) do |input, output, error, wait_thread|
           readers = [output, error]
+          readers << @input if @forward_stdin && @input.tty?
           until readers.empty?
             ready = IO.select(readers)
             ready.first.each do |reader|
-              begin
-                chunk = reader.readpartial(1024)
-                if reader.equal?(output)
-                  stdout_str << chunk
-                  @output.print(chunk)
-                else
-                  stderr_str << chunk
-                  @error.print(chunk)
+              if reader.equal?(@input)
+                input.write(@input.readpartial(1024))
+              else
+                begin
+                  chunk = reader.readpartial(1024)
+                  if reader.equal?(output)
+                    stdout_str << chunk
+                    @output.print(chunk)
+                  else
+                    stderr_str << chunk
+                    @error.print(chunk)
+                  end
+                  prompt_buffer = handle_prompt(input, chunk, prompt_buffer: prompt_buffer)
+                rescue EOFError
+                  readers.delete(reader)
                 end
-                handle_prompt(input, chunk)
-              rescue EOFError
-                readers.delete(reader)
               end
             end
           end
@@ -76,13 +97,21 @@ module Kettle
         [stdout_str, stderr_str, status]
       end
 
-      def handle_prompt(input, chunk)
-        if otp_prompt?(chunk)
-          write_secret(input, label: "RubyGems MFA code", source: "rubygems_otp") { secrets_provider.rubygems_otp } if otp_response_prompt?(chunk)
-          return
+      def handle_prompt(input, chunk, prompt_buffer: nil)
+        prompt_buffer = prompt_buffer.to_s.dup
+        prompt_buffer << chunk.to_s
+        prompt_buffer = prompt_buffer.byteslice([prompt_buffer.bytesize - 4096, 0].max, 4096).to_s
+
+        if otp_prompt?(prompt_buffer)
+          if otp_response_prompt?(prompt_buffer)
+            write_secret(input, label: "RubyGems MFA code", source: "rubygems_otp") { secrets_provider.rubygems_otp }
+            return +""
+          end
+          return prompt_buffer
         end
 
-        write_secret(input, label: "gem signing passphrase", source: "gem_signing_passphrase") { gem_signing_passphrase } if signing_password_prompt?(chunk)
+        write_secret(input, label: "gem signing passphrase", source: "gem_signing_passphrase") { gem_signing_passphrase } if signing_password_prompt?(prompt_buffer)
+        prompt_buffer
       end
 
       def gem_signing_passphrase

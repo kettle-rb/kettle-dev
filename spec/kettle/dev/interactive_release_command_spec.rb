@@ -44,6 +44,18 @@ RSpec.describe Kettle::Dev::InteractiveReleaseCommand do
     expect(output.string).to include("RubyGems MFA code loaded from configured secrets provider.")
   end
 
+  it "buffers prompt text split across output chunks" do
+    provider = instance_double(Kettle::Dev::ReleaseSecrets::OnePassword, rubygems_otp: "123456")
+    command = described_class.new(secrets_provider: provider, output: StringIO.new)
+    input = StringIO.new
+
+    prompt_buffer = command.send(:handle_prompt, input, "You have enabled multi-factor authenti")
+    prompt_buffer = command.send(:handle_prompt, input, "cation.\nCode: ", prompt_buffer: prompt_buffer)
+
+    expect(prompt_buffer).to eq("")
+    expect(input.string).to eq("123456\n")
+  end
+
   it "emits secret provider events around an MFA prompt response" do
     provider = instance_double(Kettle::Dev::ReleaseSecrets::OnePassword, rubygems_otp: "123456")
     events = []

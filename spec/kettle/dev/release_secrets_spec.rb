@@ -55,13 +55,14 @@ RSpec.describe Kettle::Dev::ReleaseSecrets do
   end
 
   it "keeps the 1Password authorization session warm without fetching an OTP" do
-    allow(Open3).to receive(:capture3)
-      .with("op", "account", "get")
+    provider = described_class::Factory.build(provider_name: "op")
+    command = instance_double(Kettle::Dev::InteractiveReleaseCommand)
+    allow(Kettle::Dev::InteractiveReleaseCommand).to receive(:new).and_return(command)
+    allow(command).to receive(:call_argv).with({}, ["op", "account", "get"])
       .and_return(["account\n", "", status(success: true)])
 
-    provider = described_class::Factory.build(provider_name: "op")
-
     expect(provider.keepalive!(elapsed: "03:21")).to be(true)
+    expect(command).to have_received(:call_argv).with({}, ["op", "account", "get"])
     expect(Kettle::Dev::ReleaseNotifier).to have_received(:alert)
       .with("1Password authorization keepalive lookup starting (elapsed 03:21); watch for authorization prompt.")
   end

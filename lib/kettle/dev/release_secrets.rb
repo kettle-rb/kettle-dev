@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "open3"
+require "kettle/dev/interactive_release_command"
 require "kettle/dev/release_notifier"
 
 module Kettle
@@ -73,7 +74,7 @@ module Kettle
           argv = [op_cli, "account", "get"]
           account = string_config("account")
           argv.concat(["--account", account]) unless account.empty?
-          run_op(argv, purpose: "authorization keepalive", elapsed: elapsed)
+          run_op(argv, purpose: "authorization keepalive", elapsed: elapsed, interactive: true)
           true
         end
 
@@ -112,11 +113,30 @@ module Kettle
           required_config("cli")
         end
 
-        def run_op(argv, purpose:, elapsed: nil)
+        def run_op(argv, purpose:, elapsed: nil, interactive: false)
           elapsed_suffix = elapsed.to_s.empty? ? "" : " (elapsed #{elapsed})"
           Kettle::Dev::ReleaseNotifier.alert("1Password #{purpose} lookup starting#{elapsed_suffix}; watch for authorization prompt.")
+          return run_interactive_op(argv, purpose: purpose) if interactive
+
           stdout, stderr, status = Open3.capture3(*argv)
           return stdout.to_s.strip if status.success? && !stdout.to_s.strip.empty?
+
+          details = stderr.to_s.strip
+          details = "op exited #{status.exitstatus}" if details.empty?
+          raise Kettle::Dev::Error, "1Password #{purpose} lookup failed: #{details}"
+        rescue Errno::ENOENT
+          raise Kettle::Dev::Error, "1Password CLI executable #{argv.first.inspect} was not found"
+        end
+
+        def run_interactive_op(argv, purpose:)
+          _stdout, stderr, status = Kettle::Dev::InteractiveReleaseCommand.new(
+            secrets_provider: Provider.new,
+            input: $stdin,
+            output: $stdout,
+            error: $stderr,
+            forward_stdin: true
+          ).call_argv({}, argv)
+          return if status.success?
 
           details = stderr.to_s.strip
           details = "op exited #{status.exitstatus}" if details.empty?

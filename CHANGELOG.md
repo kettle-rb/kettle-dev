@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Run 1Password authorization keepalives through the interactive terminal so release prompts remain visible.
+
 ### Security
 
 ## [3.0.0] - 2026-08-09
