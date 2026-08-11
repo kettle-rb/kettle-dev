@@ -30,6 +30,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Retry RubyGems publication outside the parent Bundler environment after an expired-edge OTP, with a short delay for TOTP refresh.
+
 ### Security
 
 ## [3.0.5] - 2026-08-10

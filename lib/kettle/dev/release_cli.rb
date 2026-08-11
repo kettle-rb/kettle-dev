@@ -26,6 +26,7 @@ module Kettle
   module Dev
     class ReleaseCLI
       RUBYGEMS_INVALID_OTP = /Your OTP code is incorrect\. Please check it and retry\./.freeze
+      OTP_RETRY_DELAY_SECONDS = 2
       QUIET_ENV = {
         "KETTLE_JEM_QUIET" => "true",
         "KETTLE_JEM_DEBUG" => "false",
@@ -125,6 +126,14 @@ module Kettle
 
         def command_env_for(cmd)
           env_hash = command_env
+          if gem_push_command?(cmd)
+            # RubyGems publication is an unbundled operation. In particular, an
+            # OTP retry can run after the parent release task has selected a
+            # different Gemfile; carrying that bundle into `gem push` can make
+            # RubyGems load stale local dependency state before it publishes.
+            return env_hash.merge(BundlerEnvGuard.unbundled_env)
+          end
+
           return env_hash unless project_bundle_command?(cmd)
 
           env_hash.merge(BundlerEnvGuard.unbundled_env).merge(
@@ -138,6 +147,12 @@ module Kettle
             words.first(1) == ["bin/rake"] ||
             words.first(3) == ["bundle", "exec", "rake"] ||
             words.first(3) == ["bundle", "exec", "kettle-changelog"]
+        rescue ArgumentError
+          false
+        end
+
+        def gem_push_command?(cmd)
+          effective_command_words(cmd).first(2) == ["gem", "push"]
         rescue ArgumentError
           false
         end
@@ -1377,6 +1392,10 @@ module Kettle
           status: "started",
           reason: "RubyGems rejected the first OTP"
         )
+        # A rejection at the TOTP boundary can leave the provider returning the
+        # same code for a moment. Wait briefly before starting the retry so the
+        # next prompt can obtain a refreshed code.
+        sleep(OTP_RETRY_DELAY_SECONDS)
         run_cmd!("gem push #{Shellwords.escape(gem_path)}")
         emit_secret_event(
           source: release_secrets_provider_label,

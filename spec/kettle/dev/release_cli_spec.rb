@@ -291,6 +291,15 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         )
       end
 
+      it "removes the parent bundle environment from gem publication commands" do
+        stub_env("BUNDLE_GEMFILE" => "/release-tool/Gemfile", "BUNDLE_LOCKFILE" => "/release-tool/Gemfile.lock")
+
+        expect(described_class.send(:command_env_for, "gem push pkg/example-1.2.3.gem")).to include(
+          "BUNDLE_GEMFILE" => nil,
+          "BUNDLE_LOCKFILE" => nil
+        )
+      end
+
       it "uses the configured release secrets provider for prompt-bearing release commands" do
         provider = instance_double(Kettle::Dev::ReleaseSecrets::OnePassword)
         local_cli = described_class.new(secrets_provider: provider)
@@ -342,7 +351,8 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
           "",
           failed_status
         ])
-        expect(local_cli).to receive(:run_cmd!).with("gem push #{gem_path}")
+        expect(local_cli).to receive(:sleep).with(2).ordered
+        expect(local_cli).to receive(:run_cmd!).with("gem push #{gem_path}").ordered
 
         local_cli.send(
           :run_command_with_release_secrets!,
