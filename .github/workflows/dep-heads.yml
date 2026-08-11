@@ -5,6 +5,8 @@ permissions:
   contents: read
 
 env:
+  # Remove after kettle-changelog v1.0.0 is published and the Gemfile lock is refreshed.
+  KETTLE_DEV_SKIP_CHANGELOG: true
   K_SOUP_COV_DO: false
 
 on:
