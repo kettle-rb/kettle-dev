@@ -20,8 +20,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
-- Add --skip-changelog to release without skipping pre-release gates or the default task.
-
 ### Changed
 
 ### Deprecated
@@ -30,9 +28,24 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [3.0.6] - 2026-08-11
+
+- TAG: [v3.0.6][3.0.6t]
+- COVERAGE: 91.47% -- 5670/6199 lines in 47 files
+- BRANCH COVERAGE: 76.17% -- 2161/2837 branches in 47 files
+- 50.62% documented
+
+### Added
+
+- Add --skip-changelog to release without skipping pre-release gates or the default task.
+
+### Fixed
+
 - Retry RubyGems publication outside the parent Bundler environment after an expired-edge OTP, with a short delay for TOTP refresh.
 
-### Security
+- Make --skip-changelog releases omit the unpublished standalone kettle-changelog dependency during lockfile normalization.
 
 ## [3.0.5] - 2026-08-10
 
@@ -3468,7 +3481,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.5...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.6...HEAD
+[3.0.6]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.5...v3.0.6
+[3.0.6t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.6
 [3.0.5]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.4...v3.0.5
 [3.0.5t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.5
 [3.0.4]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.3...v3.0.4

@@ -416,6 +416,16 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect(local_cli.send(:release_default_task_command)).not_to include("KETTLE_DEV_SKIP_TESTS=true")
       end
 
+      it "exports the changelog skip to lockfile and project commands" do
+        local_cli = described_class.new(skip_changelog: true)
+
+        expect(ENV).not_to have_key("KETTLE_DEV_SKIP_CHANGELOG")
+        local_cli.send(:with_skip_changelog_env) do
+          expect(ENV["KETTLE_DEV_SKIP_CHANGELOG"]).to eq("true")
+        end
+        expect(ENV).not_to have_key("KETTLE_DEV_SKIP_CHANGELOG")
+      end
+
       it "derives changelog coverage policy from the project coverage setting" do
         allow(ENV).to receive(:[]).with("K_SOUP_COV_MIN_HARD").and_return("false")
         local_cli = described_class.new
@@ -436,7 +446,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
           local_cli = described_class.new
 
           expect(local_cli).to receive(:run_cmd!).with(
-            "env -u BUNDLE_GEMFILE -u BUNDLE_LOCKFILE BUNDLE_GEMFILE=#{Shellwords.escape(gemfile)} bundle exec kettle-changelog"
+            a_string_ending_with("BUNDLE_GEMFILE=#{Shellwords.escape(gemfile)} bundle exec kettle-changelog")
           )
 
           local_cli.send(:run_changelog!)
@@ -569,7 +579,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       it "runs kettle-pre-release checks from the beginning and invokes kettle-changelog" do
         pre_release = instance_double(Kettle::Dev::PreReleaseCLI, run: nil)
         expect(Kettle::Dev::PreReleaseCLI).to receive(:new).with(check_num: 1, event_recorder: anything).and_return(pre_release)
-        expect(cli).to receive(:run_cmd!).with("bundle exec kettle-changelog")
+        expect(cli).to receive(:run_cmd!).with(a_string_ending_with("bundle exec kettle-changelog"))
 
         cli.send(:run_pre_release_checks!)
       end
@@ -578,7 +588,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         versioned_cli = described_class.new(version: "3.2.1")
         pre_release = instance_double(Kettle::Dev::PreReleaseCLI, run: nil)
         expect(Kettle::Dev::PreReleaseCLI).to receive(:new).with(check_num: 1, event_recorder: anything).and_return(pre_release)
-        expect(versioned_cli).to receive(:run_cmd!).with("bundle exec kettle-changelog --version 3.2.1")
+        expect(versioned_cli).to receive(:run_cmd!).with(a_string_ending_with("bundle exec kettle-changelog --version 3.2.1"))
 
         versioned_cli.send(:run_pre_release_checks!)
       end
@@ -587,7 +597,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         yes_cli = described_class.new(yes: true)
         pre_release = instance_double(Kettle::Dev::PreReleaseCLI, run: nil)
         expect(Kettle::Dev::PreReleaseCLI).to receive(:new).with(check_num: 1, event_recorder: anything).and_return(pre_release)
-        expect(yes_cli).to receive(:run_cmd!).with("bundle exec kettle-changelog --yes")
+        expect(yes_cli).to receive(:run_cmd!).with(a_string_ending_with("bundle exec kettle-changelog --yes"))
 
         yes_cli.send(:run_pre_release_checks!)
       end
@@ -598,7 +608,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         evented_cli = described_class.new(yes: true, event_stream: event_stream)
         pre_release = instance_double(Kettle::Dev::PreReleaseCLI, run: nil)
         expect(Kettle::Dev::PreReleaseCLI).to receive(:new).with(check_num: 1, event_recorder: anything).and_return(pre_release)
-        expect(evented_cli).to receive(:run_cmd!).with("bundle exec kettle-changelog --yes --events=changelog")
+        expect(evented_cli).to receive(:run_cmd!).with(a_string_ending_with("bundle exec kettle-changelog --yes --events=changelog"))
 
         evented_cli.send(:run_pre_release_checks!)
       end

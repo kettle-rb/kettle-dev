@@ -225,8 +225,10 @@ module Kettle
         status = "ok"
         error = nil
         with_bundle_audit_skip_env do
-          with_machine_stdout_redirect do
-            run_with_release_environment
+          with_skip_changelog_env do
+            with_machine_stdout_redirect do
+              run_with_release_environment
+            end
           end
         end
       rescue SystemExit => e
@@ -1514,6 +1516,18 @@ module Kettle
       ensure
         if skip_bundle_audit?
           previous.nil? ? ENV.delete("KETTLE_DEV_SKIP_BUNDLE_AUDIT") : ENV["KETTLE_DEV_SKIP_BUNDLE_AUDIT"] = previous
+        end
+      end
+
+      def with_skip_changelog_env
+        return yield unless skip_changelog?
+
+        previous = ENV["KETTLE_DEV_SKIP_CHANGELOG"]
+        ENV["KETTLE_DEV_SKIP_CHANGELOG"] = "true"
+        yield
+      ensure
+        if skip_changelog?
+          previous.nil? ? ENV.delete("KETTLE_DEV_SKIP_CHANGELOG") : ENV["KETTLE_DEV_SKIP_CHANGELOG"] = previous
         end
       end
 

@@ -204,7 +204,7 @@ out to <code>kettle-release</code> for each member that needs publishing.</p>
     <tr>
       <td>Source</td>
       <td>
-<a href="https://gitlab.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitLab-FBA326?style=for-the-badge&amp;logo=Gitlab&amp;logoColor=orange" alt="Source on GitLab.com"></a> <a href="https://codeberg.org/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/CodeBerg-4893CC?style=for-the-badge&amp;logo=CodeBerg&amp;logoColor=blue" alt="Source on CodeBerg.org"></a> <a href="https://github.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitHub-238636?style=for-the-badge&amp;logo=GitHub&amp;logoColor=green" alt="Source on GitHub.com"></a> <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"><img src="https://img.shields.io/badge/KLOC-6.179-FFDD67.svg?style=for-the-badge&amp;logo=YouTube&amp;logoColor=blue" alt="The best SHA: dQw4w9WgXcQ!"></a>
+<a href="https://gitlab.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitLab-FBA326?style=for-the-badge&amp;logo=Gitlab&amp;logoColor=orange" alt="Source on GitLab.com"></a> <a href="https://codeberg.org/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/CodeBerg-4893CC?style=for-the-badge&amp;logo=CodeBerg&amp;logoColor=blue" alt="Source on CodeBerg.org"></a> <a href="https://github.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitHub-238636?style=for-the-badge&amp;logo=GitHub&amp;logoColor=green" alt="Source on GitHub.com"></a> <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"><img src="https://img.shields.io/badge/KLOC-6.191-FFDD67.svg?style=for-the-badge&amp;logo=YouTube&amp;logoColor=blue" alt="The best SHA: dQw4w9WgXcQ!"></a>
 </td>
     </tr>
     <tr>
@@ -243,7 +243,7 @@ out to <code>kettle-release</code> for each member that needs publishing.</p>
 
 <h3 id="compatibility">Compatibility</h3>
 
-<p>Compatible with MRI Ruby 2.4.0+, and concordant releases of JRuby, and TruffleRuby.<br>
+<p>Compatible with MRI Ruby 2.4.0+, JRuby, and TruffleRuby.<br>
 CI workflows and Appraisals are generated for MRI Ruby 2.4+.<br>
 This test floor is configured by <code>ruby.test_minimum</code> in <code>.kettle-jem.yml</code> and<br>
 may be higher than the gem’s runtime compatibility floor when legacy Rubies are<br>
@@ -1136,8 +1136,7 @@ prints a recommended <code>kettle-gha-sha-pins --write --upgrade patch</code> co
 <h2 id="-contributing">🤝 Contributing</h2>
 
 <p>If you need some ideas of where to help, you could work on adding more code coverage,<br>
-or if it is already 💯 (see <a href="#code-coverage">below</a>) check <a href="https://github.com/kettle-dev/kettle-dev/issues">issues</a> or <a href="https://github.com/kettle-dev/kettle-dev/pulls">PRs</a>,<br>
-or use the gem and think about how it could be better.</p>
+check <a href="https://github.com/kettle-dev/kettle-dev/issues">issues</a> or <a href="https://github.com/kettle-dev/kettle-dev/pulls">PRs</a>, or use the gem and think about how it could be better.</p>
 
 <p>We <a href="https://keepachangelog.com/en/1.0.0/"><img src="https://img.shields.io/badge/keep--a--changelog-1.0.0-34495e.svg?style=flat" alt="Keep A Changelog"></a> so if you make changes, remember to update it.</p>
 
@@ -1173,19 +1172,6 @@ chat rooms and mailing lists agrees to follow the <a href="https://github.com/ke
 
 <p>Also see GitLab Contributors: <a href="https://gitlab.com/kettle-dev/kettle-dev/-/graphs/main">https://gitlab.com/kettle-dev/kettle-dev/-/graphs/main</a></p>
 
-<details>
-  <summary>⭐️ Star History</summary>
-
-  <p><a href="https://star-history.com/kettle-dev/kettle-dev&amp;Date"></a></p>
-  <picture>
- <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=kettle-dev/kettle-dev&amp;type=Date&amp;theme=dark"></source>
- <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=kettle-dev/kettle-dev&amp;type=Date"></source>
- <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=kettle-dev/kettle-dev&amp;type=Date">
- </picture>
-  <p>&lt;/a&gt;</p>
-
-</details>
-
 <h2 id="-versioning">📌 Versioning</h2>
 
 <p>This library follows <a href="https://semver.org/spec/v2.0.0.html"><img src="https://img.shields.io/badge/semver-2.0.0-259D6C.svg?style=flat" alt="Semantic Versioning 2.0.0"></a> for its public API where practical.<br>
@@ -1193,7 +1179,7 @@ For most applications, prefer the <a href="http://guides.rubygems.org/patterns/#
 
 <p>For example:</p>
 
-<pre class="code language-ruby"><code class="language-ruby">spec.add_dependency(&quot;kettle-dev&quot;, &quot;~&gt; 2.0&quot;)
+<pre class="code language-ruby"><code class="language-ruby">spec.add_dependency(&quot;kettle-dev&quot;, &quot;~&gt; 3.0&quot;)
 </code></pre>
 
 <details>
