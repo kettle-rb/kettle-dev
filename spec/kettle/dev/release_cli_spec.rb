@@ -393,6 +393,19 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect(local_cli.send(:release_default_task_command)).to match(/KETTLE_DEV_SKIP_TESTS=true bin\/rake\z/)
       end
 
+      it "skips changelog coverage while retaining the normal default task" do
+        local_cli = described_class.new(skip_changelog: true)
+        pre_release = instance_double(Kettle::Dev::PreReleaseCLI, run: nil)
+        allow(Kettle::Dev::PreReleaseCLI).to receive(:new).and_return(pre_release)
+
+        expect(local_cli).not_to receive(:run_changelog!)
+        local_cli.send(:run_pre_release_checks!)
+
+        expect(local_cli.send(:skip_changelog?)).to be(true)
+        expect(local_cli.send(:release_default_task_command)).to match(/bin\/rake\z/)
+        expect(local_cli.send(:release_default_task_command)).not_to include("KETTLE_DEV_SKIP_TESTS=true")
+      end
+
       it "derives changelog coverage policy from the project coverage setting" do
         allow(ENV).to receive(:[]).with("K_SOUP_COV_MIN_HARD").and_return("false")
         local_cli = described_class.new

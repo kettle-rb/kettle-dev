@@ -49,7 +49,7 @@ end
 # Do not guard with __FILE__ == $PROGRAM_NAME because binstubs use Kernel.load.
 if ARGV.include?("-h") || ARGV.include?("--help")
   puts <<~USAGE
-    Usage: kettle-release [--version VERSION] [--local-ci] [--yes] [--appraisal-update] [--skip-bundle-audit] [--skip-steps STEPS] [--ci-workflows WORKFLOWS] [--skip-remotes REMOTES] [--required-remotes REMOTES] [--secrets-provider NAME] [--json|--events[=TYPES]] [--report PATH] [start_step=<0-19>]
+    Usage: kettle-release [--version VERSION] [--local-ci] [--yes] [--appraisal-update] [--skip-changelog] [--skip-bundle-audit] [--skip-steps STEPS] [--ci-workflows WORKFLOWS] [--skip-remotes REMOTES] [--required-remotes REMOTES] [--secrets-provider NAME] [--json|--events[=TYPES]] [--report PATH] [start_step=<0-19>]
 
     Automates the release flow for a Ruby gem in the host project.
 
@@ -87,6 +87,7 @@ if ARGV.include?("-h") || ARGV.include?("--help")
       --version VERSION           # Use this version instead of detecting VERSION from lib/**/version.rb
       --yes                       # Auto-approve release confirmation prompts
       --appraisal-update          # Use slower appraisal:update instead of default appraisal:generate
+      --skip-changelog            # Skip kettle-changelog but retain pre-release gates and the default task
       --skip-bundle-audit         # Skip bundle:audit/update during release rake checks
       --ci-workflows WORKFLOWS    # Comma-separated workflow files or stems to monitor at CI step 10
       --skip-remotes REMOTES      # Comma-separated git remote names to exclude from release fetch/push parity
@@ -173,6 +174,19 @@ def extract_skip_steps_arg!(argv)
     end
   end
   skip_steps
+end
+
+def extract_skip_changelog_arg!(argv)
+  skip_changelog = !!argv.delete("--skip-changelog")
+  argv.delete_if do |arg|
+    if arg.start_with?("skip_changelog=")
+      skip_changelog = arg.split("=", 2)[1].to_s.downcase != "false"
+      true
+    else
+      false
+    end
+  end
+  skip_changelog
 end
 
 def extract_ci_workflows_arg!(argv)
@@ -300,6 +314,7 @@ local_ci = ARGV.include?("--local-ci")
 yes = !!ARGV.delete("--yes")
 appraisal_task = ARGV.delete("--appraisal-update") ? "appraisal:update" : nil
 skip_bundle_audit = !!ARGV.delete("--skip-bundle-audit")
+skip_changelog = extract_skip_changelog_arg!(ARGV)
 json_output = !!ARGV.delete("--json")
 events_output, event_types = extract_events_arg!(ARGV)
 Kettle::Dev::ExitAdapter.abort("--events cannot be combined with --json") if events_output && json_output
@@ -315,7 +330,7 @@ secrets_provider = extract_secrets_provider_arg!(ARGV)
 
 begin
   event_stream = events_output ? Kettle::Ndjson.event_stream($stdout, types: event_types) : nil
-  Kettle::Dev::ReleaseCLI.new(start_step: start_step, local_ci: local_ci, version: version_override, appraisal_task: appraisal_task, skip_steps: skip_steps, skip_bundle_audit: skip_bundle_audit, ci_workflows: ci_workflows, skip_remotes: skip_remotes, required_remotes: required_remotes, secrets_provider_name: secrets_provider, yes: yes, event_stream: event_stream, json_output: json_output, json_io: $stdout, report_path: report_path).run
+  Kettle::Dev::ReleaseCLI.new(start_step: start_step, local_ci: local_ci, version: version_override, appraisal_task: appraisal_task, skip_steps: skip_steps, skip_changelog: skip_changelog, skip_bundle_audit: skip_bundle_audit, ci_workflows: ci_workflows, skip_remotes: skip_remotes, required_remotes: required_remotes, secrets_provider_name: secrets_provider, yes: yes, event_stream: event_stream, json_output: json_output, json_io: $stdout, report_path: report_path).run
 rescue LoadError => e
   warn("#{script_basename}: could not load dependency: #{e.class}: #{e.message}")
   warn(Array(e.backtrace).join("\n")) if ENV["DEBUG"]
