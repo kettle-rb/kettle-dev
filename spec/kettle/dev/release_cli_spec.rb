@@ -7,12 +7,16 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     # standalone changelog gem. ReleaseCLI examples exercise their own default
     # behavior and must not inherit that parent-process switch.
     previous_skip_changelog = ENV.delete("KETTLE_DEV_SKIP_CHANGELOG")
-    example.run
-  ensure
-    if previous_skip_changelog.nil?
-      ENV.delete("KETTLE_DEV_SKIP_CHANGELOG")
-    else
-      ENV["KETTLE_DEV_SKIP_CHANGELOG"] = previous_skip_changelog
+    begin
+      example.run
+    ensure
+      if previous_skip_changelog.nil?
+        ENV.delete("KETTLE_DEV_SKIP_CHANGELOG")
+      else
+        # rubocop:disable Env/Assign -- restore the inherited release flag after example isolation
+        ENV["KETTLE_DEV_SKIP_CHANGELOG"] = previous_skip_changelog
+        # rubocop:enable Env/Assign
+      end
     end
   end
 
