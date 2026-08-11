@@ -2,6 +2,20 @@
 
 # rubocop:disable RSpec/ReceiveMessages, RSpec/StubbedMock
 RSpec.describe Kettle::Dev::ReleaseCLI do
+  around do |example|
+    # Release subprocesses export this flag so Bundler can omit the unpublished
+    # standalone changelog gem. ReleaseCLI examples exercise their own default
+    # behavior and must not inherit that parent-process switch.
+    previous_skip_changelog = ENV.delete("KETTLE_DEV_SKIP_CHANGELOG")
+    example.run
+  ensure
+    if previous_skip_changelog.nil?
+      ENV.delete("KETTLE_DEV_SKIP_CHANGELOG")
+    else
+      ENV["KETTLE_DEV_SKIP_CHANGELOG"] = previous_skip_changelog
+    end
+  end
+
   describe "core behaviors" do
     let(:ci_helpers) { Kettle::Dev::CIHelpers }
     let(:cli) { described_class.new }
