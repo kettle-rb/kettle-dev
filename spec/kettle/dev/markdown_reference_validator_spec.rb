@@ -64,6 +64,20 @@ RSpec.describe Kettle::Dev::MarkdownReferenceValidator do
     end
   end
 
+  it "ignores bracket expressions embedded in prose" do
+    Dir.mktmpdir do |root|
+      write_markdown(root, "CHANGELOG.md", <<~MD)
+        - `options[column][:value]` is a hash lookup.
+        - options[column][:value] is also a hash lookup.
+      MD
+
+      report = described_class.new(root: root, files: ["CHANGELOG.md"]).validate!
+
+      expect(report.reference_count).to eq(0)
+      expect(report.issues).to be_empty
+    end
+  end
+
   it "uses GitHub-style suffixes for duplicate headings" do
     Dir.mktmpdir do |root|
       write_markdown(root, "README.md", <<~MD)

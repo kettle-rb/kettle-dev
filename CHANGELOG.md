@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Ignore Ruby-style bracket expressions when validating Markdown reference links.
+
 ### Security
 
 ## [3.0.6] - 2026-08-11

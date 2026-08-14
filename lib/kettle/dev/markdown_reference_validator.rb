@@ -98,7 +98,11 @@ module Kettle
             next
           end
 
-          line.scan(REFERENCE_USAGE_RE) do |text, label|
+          line.to_enum(:scan, REFERENCE_USAGE_RE).each do
+            match = Regexp.last_match
+            next if markdown_bracket_expression?(line, match.begin(0))
+
+            text, label = match.captures
             resolved_label = label.empty? ? text : label
             usages << [line_number, normalize_label(resolved_label)]
           end
@@ -221,6 +225,12 @@ module Kettle
 
       def normalize_label(label)
         label.to_s.downcase.gsub(/\s+/, " ").strip
+      end
+
+      def markdown_bracket_expression?(line, index)
+        return false unless index.positive?
+
+        line[index - 1].match?(/[[:alnum:]_\])]/)
       end
 
       def heading_for(line)
