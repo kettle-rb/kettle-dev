@@ -28,11 +28,20 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [3.0.7] - 2026-08-15
+
+- TAG: [v3.0.7][3.0.7t]
+- COVERAGE: 91.54% -- 5682/6207 lines in 47 files
+- BRANCH COVERAGE: 76.26% -- 2168/2843 branches in 47 files
+- 50.62% documented
+
+### Fixed
+
 - Ignore Ruby-style bracket expressions when validating Markdown reference links.
 
 - Poll all unfinished GitHub Actions workflows each cycle so late-dispatched workflows cannot be missed by the global CI startup timeout.
-
-### Security
 
 ## [3.0.6] - 2026-08-11
 
@@ -3485,7 +3494,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.6...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.7...HEAD
+[3.0.7]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.6...v3.0.7
+[3.0.7t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.7
 [3.0.6]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.5...v3.0.6
 [3.0.6t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.6
 [3.0.5]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.4...v3.0.5
