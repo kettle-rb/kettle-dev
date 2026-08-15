@@ -30,6 +30,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - Ignore Ruby-style bracket expressions when validating Markdown reference links.
 
+- Poll all unfinished GitHub Actions workflows each cycle so late-dispatched workflows cannot be missed by the global CI startup timeout.
+
 ### Security
 
 ## [3.0.6] - 2026-08-11

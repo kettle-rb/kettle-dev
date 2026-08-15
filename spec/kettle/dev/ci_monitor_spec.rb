@@ -134,6 +134,36 @@ RSpec.describe Kettle::Dev::CIMonitor do
       expect { described_class.monitor_all!(restart_hint: "hint") }.not_to raise_error
     end
 
+    it "polls every workflow again before the global start timeout expires", :check_output do
+      allow(helpers).to receive_messages(
+        project_root: Dir.pwd,
+        workflows_list: %w[first.yml second.yml third.yml],
+        current_branch: "main",
+        current_head_sha: "abc123"
+      )
+      allow(described_class).to receive_messages(
+        preferred_github_remote: "origin",
+        remote_url: "https://github.com/me/repo.git"
+      )
+      calls = 0
+      allow(helpers).to receive(:latest_run) do
+        calls += 1
+        if calls <= 3
+          nil
+        else
+          {"status" => "completed", "conclusion" => "success", "html_url" => "https://github.com/me/repo/actions/runs/#{calls}", "id" => calls, "head_sha" => "abc123"}
+        end
+      end
+      allow(helpers).to receive(:success?) { |run| run && run["conclusion"] == "success" }
+      allow(helpers).to receive(:failed?) { |run| run && run["conclusion"] == "failure" }
+      allow(described_class).to receive(:monotonic_time).and_return(0, 0, 1)
+      stub_env("K_RELEASE_CI_INITIAL_SLEEP" => "0", "K_RELEASE_CI_START_TIMEOUT" => "1", "K_RELEASE_CI_POLL_INTERVAL" => "0")
+      allow(described_class).to receive(:sleep)
+
+      expect { described_class.monitor_all!(restart_hint: "hint") }.not_to raise_error
+      expect(calls).to eq(6)
+    end
+
     it "monitors an explicit workflow subset when provided", :check_output do
       allow(helpers).to receive_messages(
         project_root: Dir.pwd,

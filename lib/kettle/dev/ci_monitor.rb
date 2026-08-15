@@ -342,50 +342,29 @@ module Kettle
         poll_interval = github_poll_interval
         start_deadline = monotonic_time + start_timeout
         keepalive_timer = keepalive_timer(keepalive)
-        idx = 0
         all_started_emitted = false
         loop do
           keepalive_timer.call
-          wf = workflows[idx]
-          run = Kettle::Dev::CIHelpers.latest_run(owner: owner, repo: repo, workflow_file: wf, branch: branch, require_head: true, head_sha: head_sha)
-          completed_workflow = nil
-          if run
-            unless started[wf]
-              started[wf] = true
-              emit_ci_monitor_event(
-                event_recorder,
-                action: "github_workflow",
-                status: "started",
-                provider: "github",
-                workflow: wf,
-                url: run["html_url"],
-                run_status: run["status"],
-                conclusion: run["conclusion"],
-                completed: passed.size,
-                total: total
-              )
-            end
-            if started.size == total && !all_started_emitted
-              all_started_emitted = true
-              emit_ci_monitor_event(
-                event_recorder,
-                action: "github_started",
-                status: "ok",
-                provider: "github",
-                completed: passed.size,
-                total: total,
-                started: started.size
-              )
-            end
-            if Kettle::Dev::CIHelpers.success?(run)
-              unless passed[wf] || failed[wf]
-                passed[wf] = true
-                completed_workflow = wf
-                pbar&.increment
+
+          # Poll each unfinished workflow once per cycle. Polling one workflow
+          # per sleep made the global start timeout dependent on workflow order:
+          # late-dispatched workflows could be checked only once before timing
+          # out, while completed workflows consumed the remaining polls.
+          pending_workflows = workflows.reject { |candidate| passed[candidate] || failed[candidate] }
+          break if pending_workflows.empty?
+
+          completed = passed.size + failed.size
+          pending_workflows.each do |wf|
+            keepalive_timer.call
+            run = Kettle::Dev::CIHelpers.latest_run(owner: owner, repo: repo, workflow_file: wf, branch: branch, require_head: true, head_sha: head_sha)
+            completed_workflow = nil
+            if run
+              unless started[wf]
+                started[wf] = true
                 emit_ci_monitor_event(
                   event_recorder,
                   action: "github_workflow",
-                  status: "ok",
+                  status: "started",
                   provider: "github",
                   workflow: wf,
                   url: run["html_url"],
@@ -395,45 +374,76 @@ module Kettle
                   total: total
                 )
               end
-            elsif Kettle::Dev::CIHelpers.failed?(run) && !passed[wf] && !failed[wf]
-              puts
-              wf_url = run["html_url"] || "https://github.com/#{owner}/#{repo}/actions/workflows/#{wf}"
-              emit_ci_monitor_event(
-                event_recorder,
-                action: "github_workflow",
-                status: "failed",
-                provider: "github",
-                workflow: wf,
-                url: wf_url,
-                run_status: run["status"],
-                conclusion: run["conclusion"],
-                completed: passed.size,
-                total: total,
-                reason: "Workflow failed"
-              )
-              unless continue_ci_failures?
-                abort("Workflow failed: #{wf} -> #{wf_url} Fix the workflow, then restart this tool from CI validation with: #{restart_hint}")
+              if started.size == total && !all_started_emitted
+                all_started_emitted = true
+                emit_ci_monitor_event(
+                  event_recorder,
+                  action: "github_started",
+                  status: "ok",
+                  provider: "github",
+                  completed: passed.size,
+                  total: total,
+                  started: started.size
+                )
               end
+              if Kettle::Dev::CIHelpers.success?(run)
+                unless passed[wf] || failed[wf]
+                  passed[wf] = true
+                  completed_workflow = wf
+                  pbar&.increment
+                  emit_ci_monitor_event(
+                    event_recorder,
+                    action: "github_workflow",
+                    status: "ok",
+                    provider: "github",
+                    workflow: wf,
+                    url: run["html_url"],
+                    run_status: run["status"],
+                    conclusion: run["conclusion"],
+                    completed: passed.size,
+                    total: total
+                  )
+                end
+              elsif Kettle::Dev::CIHelpers.failed?(run) && !passed[wf] && !failed[wf]
+                puts
+                wf_url = run["html_url"] || "https://github.com/#{owner}/#{repo}/actions/workflows/#{wf}"
+                emit_ci_monitor_event(
+                  event_recorder,
+                  action: "github_workflow",
+                  status: "failed",
+                  provider: "github",
+                  workflow: wf,
+                  url: wf_url,
+                  run_status: run["status"],
+                  conclusion: run["conclusion"],
+                  completed: passed.size,
+                  total: total,
+                  reason: "Workflow failed"
+                )
+                unless continue_ci_failures?
+                  abort("Workflow failed: #{wf} -> #{wf_url} Fix the workflow, then restart this tool from CI validation with: #{restart_hint}")
+                end
 
-              failed[wf] = true
-              pbar&.increment
-              puts "Continuing CI monitoring despite #{wf} failure because K_RELEASE_CI_CONTINUE=true."
+                failed[wf] = true
+                pbar&.increment
+                puts "Continuing CI monitoring despite #{wf} failure because K_RELEASE_CI_CONTINUE=true."
+              end
             end
+            completed = passed.size + failed.size
+            emit_ci_monitor_event(
+              event_recorder,
+              action: "github_tick",
+              status: "started",
+              provider: "github",
+              workflow: wf,
+              run_status: run && run["status"],
+              conclusion: run && run["conclusion"],
+              completed_workflow: completed_workflow,
+              completed: completed,
+              total: total,
+              started: started.size
+            )
           end
-          completed = passed.size + failed.size
-          emit_ci_monitor_event(
-            event_recorder,
-            action: "github_tick",
-            status: "started",
-            provider: "github",
-            workflow: wf,
-            run_status: run && run["status"],
-            conclusion: run && run["conclusion"],
-            completed_workflow: completed_workflow,
-            completed: completed,
-            total: total,
-            started: started.size
-          )
           break if completed == total
           if started.size < total && monotonic_time >= start_deadline
             missing = (workflows - started.keys).join(", ")
@@ -452,7 +462,6 @@ module Kettle
             abort("Timed out after #{start_timeout}s waiting for GitHub Actions workflows to start for HEAD #{head_sha[0, 12]}: #{missing}. Confirm GitHub Actions started, then restart this tool from CI validation with: #{restart_hint}")
           end
 
-          idx = (idx + 1) % total
           sleep(poll_interval)
         end
         pbar&.finish unless pbar&.finished?
