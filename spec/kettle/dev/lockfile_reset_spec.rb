@@ -106,6 +106,30 @@ RSpec.describe Kettle::Dev::LockfileReset do
     expect(platforms).not_to include(Gem::Platform.local.to_s)
   end
 
+  it "omits the standalone changelog dependency from release lockfile resets" do
+    reset = described_class.new(root: @root, command_runner: ->(_command) {})
+    path = File.join(@root, "Gemfile.lock")
+    File.write(File.join(@root, "Gemfile"), "source \"https://rubygems.org\"\n")
+    File.write(path, <<~LOCK)
+      GEM
+        remote: https://rubygems.org/
+        specs:
+          rake (13.4.2)
+
+      DEPENDENCIES
+        rake
+    LOCK
+
+    command = reset.reset_command(
+      path: path,
+      gemfile: File.join(@root, "Gemfile"),
+      full_update: true,
+      skip_changelog: true
+    )
+
+    expect(command).to include("KETTLE_DEV_SKIP_CHANGELOG=true")
+  end
+
   it "isolates lockfile resolution from shared installed gems" do
     commands = []
     reset = described_class.new(root: @root, command_runner: ->(command) { commands << command })
@@ -198,6 +222,7 @@ RSpec.describe Kettle::Dev::LockfileReset do
 
     expect(commands.first).to include("bundle lock")
     expect(commands.first).to include("--update --add-checksums")
+    expect(commands.first).to include("KETTLE_DEV_SKIP_CHANGELOG=true")
   end
 
   it "uninstalls locally installed workspace gem versions that are not released" do
@@ -680,6 +705,7 @@ RSpec.describe Kettle::Dev::LockfileReset do
     reset.reset("release-lockfiles")
 
     expect(commands.length).to eq(2)
+    expect(commands).to all(include("KETTLE_DEV_SKIP_CHANGELOG=true"))
     expect(commands.first).to include("BUNDLE_LOCKFILE=#{File.join(@root, "Appraisal.root.gemfile.lock")}")
     expect(commands.last).to include("BUNDLE_LOCKFILE=#{File.join(@root, "Gemfile.lock")}")
   end

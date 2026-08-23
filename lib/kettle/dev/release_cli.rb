@@ -689,7 +689,10 @@ module Kettle
           emit_release_lockfile_event(action: "reset", status: "started", stage: stage, attempt: attempt, attempts: attempts)
           puts "Resetting release lockfiles with local path dependencies disabled #{stage} (attempt #{attempt}/#{attempts})..."
           begin
-            lockfile_reset.reset(Kettle::Dev::LockfileReset::RELEASE_LOCKFILES_TARGET)
+            lockfile_reset.reset(
+              Kettle::Dev::LockfileReset::RELEASE_LOCKFILES_TARGET,
+              skip_changelog: true
+            )
             emit_release_lockfile_event(action: "reset", status: "ok", stage: stage, attempt: attempt, attempts: attempts)
             break
           rescue Kettle::Dev::Error => error
@@ -783,7 +786,7 @@ module Kettle
       end
 
       def release_lockfile_normalization_env
-        lockfile_reset.normalization_env
+        lockfile_reset.normalization_env.merge("KETTLE_DEV_SKIP_CHANGELOG" => "true")
       end
 
       def release_lockfile_diagnostics(path)

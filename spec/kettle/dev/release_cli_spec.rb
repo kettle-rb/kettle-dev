@@ -504,6 +504,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
           build_command = local_cli.send(:release_project_command, "bundle exec rake build")
           isolated_lockfile = Dir[File.join(root, "tmp", "kettle-release", "lockfiles", "Gemfile-*.lock")].fetch(0)
 
+          expect(build_command).to include("KETTLE_DEV_SKIP_CHANGELOG=true")
           expect(build_command).to include("BUNDLE_LOCKFILE=#{Shellwords.escape(isolated_lockfile)}")
           expect(File.read(isolated_lockfile)).to eq(File.read(lockfile))
 

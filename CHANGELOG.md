@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Omit the standalone kettle-changelog dependency from normal release-time Bundler resolution, preventing unpublished downstream gem cycles in monorepo release waves.
+
 ### Security
 
 ## [3.0.9] - 2026-08-23
