@@ -36,19 +36,19 @@ GEM
       rubocop (>= 1.0)
       version_gem (~> 1.1, >= 1.1.15)
     ast (2.4.3)
-    ast-crispr (7.1.4)
-      ast-merge (= 7.1.4)
+    ast-crispr (7.1.3)
+      ast-merge (= 7.1.3)
       service_actor (~> 3.9)
       version_gem (~> 1.1, >= 1.1.15)
-    ast-crispr-markdown-markly (7.1.4)
-      ast-crispr (= 7.1.4)
-      markdown-merge (= 7.1.4)
-      markly-merge (= 7.1.4)
+    ast-crispr-markdown-markly (7.1.3)
+      ast-crispr (= 7.1.3)
+      markdown-merge (= 7.1.3)
+      markly-merge (= 7.1.3)
       version_gem (~> 1.1, >= 1.1.15)
-    ast-merge (7.1.4)
+    ast-merge (7.1.3)
       benchmark
       token-resolver (~> 2.0, >= 2.0.4)
-      tree_haver (= 7.1.4)
+      tree_haver (= 7.1.3)
       version_gem (~> 1.1, >= 1.1.15)
     backports (3.25.3)
     benchmark (0.5.0)
@@ -176,13 +176,13 @@ GEM
     language_server-protocol (3.17.0.6)
     lint_roller (1.1.0)
     logger (1.7.0)
-    markdown-merge (7.1.4)
-      ast-merge (= 7.1.4)
-      tree_haver (= 7.1.4)
+    markdown-merge (7.1.3)
+      ast-merge (= 7.1.3)
+      tree_haver (= 7.1.3)
       version_gem (~> 1.1, >= 1.1.15)
     markly (0.17.0)
-    markly-merge (7.1.4)
-      markdown-merge (= 7.1.4)
+    markly-merge (7.1.3)
+      markdown-merge (= 7.1.3)
       markly (~> 0.9)
       version_gem (~> 1.1, >= 1.1.15)
     mister_bin (0.9.0)
@@ -406,7 +406,7 @@ GEM
     token-resolver (2.0.9)
       parslet (~> 2.0)
       version_gem (~> 1.1, >= 1.1.15)
-    tree_haver (7.1.4)
+    tree_haver (7.1.3)
       citrus (~> 3.0)
       parslet (~> 2.0)
       tree_sitter_language_pack (>= 1.13.2, < 2.0)
@@ -531,13 +531,13 @@ CHECKSUMS
   appraisal2 (3.2.2) sha256=80b5ad0f1b6cfe47c44237f01f48aa02c2264ca0abc1e47d216a6e4f507cb4a9
   appraisal2-rubocop (1.0.1) sha256=282d6b7fd9392e5f1e6af9dd6068a2866eb26be1f20a7b7a2c34efbed510d49f
   ast (2.4.3) sha256=954615157c1d6a382bc27d690d973195e79db7f55e9765ac7c481c60bdb4d383
-  ast-crispr (7.1.4)
-  ast-crispr-markdown-markly (7.1.4)
-  ast-merge (7.1.4)
+  ast-crispr (7.1.3) sha256=4e8e2d80688b99966b88f11e343ed542cd7e26f2ea6a3e93955616735ebe0f62
+  ast-crispr-markdown-markly (7.1.3) sha256=e417b8759c461538386ed9443d35ee6d8ae5e58f9ff30cb1bff1a5e4532b64e2
+  ast-merge (7.1.3) sha256=7c2f801ed3fe00da88f567c04c92a6e55ee4fbe9829a4f8f63d9c752fbf4c900
   backports (3.25.3) sha256=94298d32dc3c40ca15633b54e282780b49e2db0c045f602ea1907e4f63a17235
   benchmark (0.5.0) sha256=465df122341aedcb81a2a24b4d3bd19b6c67c1530713fd533f3ff034e419236c
   bigdecimal (4.1.2) sha256=53d217666027eab4280346fba98e7d5b66baaae1b9c3c1c0ffe89d48188a3fbd
-  bundler (4.0.19) sha256=b48056e4c77fb3853cc47775b5447ede44aaa4f53c32f168014ab4fe86587d47
+  bundler (4.0.17) sha256=214e21431b5665dd2f99df8a5511c6b151d7a72e8015c8b38f8b775b61cbb6c1
   bundler-audit (0.9.3) sha256=81c8766c71e47d0d28a0f98c7eed028539f21a6ea3cd8f685eb6f42333c9b4e9
   cgi (0.5.2) sha256=61ca30298171190fd4fa0d8018e57ada456eae9b7a2b78526debf7f0a0e6f8bb
   citrus (3.0.2) sha256=4ec2412fc389ad186735f4baee1460f7900a8e130ffe3f216b30d4f9c684f650
@@ -585,9 +585,9 @@ CHECKSUMS
   language_server-protocol (3.17.0.6) sha256=5ef2c0c138f8267e1bc631d3328347d354f96724b0af22f2c79516120443b7f0
   lint_roller (1.1.0) sha256=2c0c845b632a7d172cb849cc90c1bce937a28c5c8ccccb50dfd46a485003cc87
   logger (1.7.0) sha256=196edec7cc44b66cfb40f9755ce11b392f21f7967696af15d274dde7edff0203
-  markdown-merge (7.1.4)
+  markdown-merge (7.1.3) sha256=263a38df665723f270bd59b2019437a7e5636c899aa541907d2158e2a82b7735
   markly (0.17.0) sha256=fab61b604f7c4c8f771c3b7f2f16b971034bb72ddd27009b90c3fae1990b17e6
-  markly-merge (7.1.4)
+  markly-merge (7.1.3) sha256=5485b4dc9f07f4e12429053cd82c1426cb59b12e546637dc1564e38fb53e1fb8
   mister_bin (0.9.0) sha256=624fe401db4faf1978e84c17e0b320827697a13a6cba4fe656001269079be7d3
   mutex_m (0.3.0) sha256=cfcb04ac16b69c4813777022fdceda24e9f798e48092a2b817eb4c0a782b0751
   nokogiri (1.19.4-aarch64-linux-gnu) sha256=1269fb644a6de405057a53dd5c762b1209b43ca7424f839454d3dbc677c31a8f
@@ -671,7 +671,7 @@ CHECKSUMS
   timecop (0.9.11) sha256=41284dc6e5041f2184f781ace766f942108c842f8d8c1386a26e6343decc7542
   timecop-rspec (1.0.3) sha256=005f14841bb606dcaefb060e321b5388e2e59537742bee8b3a9a9a40e598fab9
   token-resolver (2.0.9) sha256=4d0a6f3cdd252538f949edd94dd2b88f52c0fb02f1d1cd6073af6d7b1f549fe1
-  tree_haver (7.1.4)
+  tree_haver (7.1.3) sha256=a2182b9372bb0caa05fbbe70c0ad150e9f753ec4871d05e8b0c5d51aa5bccc49
   tree_sitter_language_pack (1.15.7-aarch64-linux) sha256=4eceebbab70df70169ab26c55e7cf0ff48d4ca74dd779a681de712f5cc3f5afb
   tree_sitter_language_pack (1.15.7-arm64-darwin) sha256=23505b3f982e1b9216174068a56b3d9984a5c8add4e8bed812a87e0b72834ac6
   tree_sitter_language_pack (1.15.7-x86_64-darwin) sha256=1c1b24b4eabd0405d30e502338e30dbda2731ee41c4600e884c2f100ba1041ca
@@ -698,4 +698,4 @@ CHECKSUMS
   zlib (3.2.3) sha256=5bd316698b32f31a64ab910a8b6c282442ca1626a81bbd6a1674e8522e319c20
 
 BUNDLED WITH
-  4.0.19
+  4.0.17

@@ -28,9 +28,18 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Release lockfile normalization now resolves in isolated gem paths, preventing unreleased locally installed versions from entering release lockfiles.
-
 ### Security
+
+## [3.0.8] - 2026-08-23
+
+- TAG: [v3.0.8][3.0.8t]
+- COVERAGE: 91.36% -- 5679/6216 lines in 47 files
+- BRANCH COVERAGE: 76.24% -- 2169/2845 branches in 47 files
+- 50.62% documented
+
+### Fixed
+
+- Release lockfile normalization now resolves in isolated gem paths, preventing unreleased locally installed versions from entering release lockfiles.
 
 ## [3.0.7] - 2026-08-15
 
@@ -3496,7 +3505,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.7...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.8...HEAD
+[3.0.8]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.7...v3.0.8
+[3.0.8t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.8
 [3.0.7]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.6...v3.0.7
 [3.0.7t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.7
 [3.0.6]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.5...v3.0.6
