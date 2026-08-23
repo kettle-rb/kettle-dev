@@ -64,7 +64,8 @@ if ARGV.include?("-h") || ARGV.include?("--help")
       2. Detect version; RubyGems sanity check; confirm CHANGELOG/version; sync copyright years; update badges/headers
       3. Run bin/setup
       4. Run bin/rake (default task)
-      5. Run bin/rake appraisal:generate if Appraisals present
+      5. Run bin/rake appraisal:generate if Appraisals are present
+         (or appraisal:update with --appraisal-update)
       6. Ensure git user configured; commit release prep
       7. Optional local CI with `act` (controlled by K_RELEASE_LOCAL_CI)
       8. Ensure trunk in sync across remotes; rebase feature as needed
@@ -81,8 +82,8 @@ if ARGV.include?("-h") || ARGV.include?("--help")
      19. Push tags to remotes (final)
 
     Options:
-      start_step=<number>         # Begin at the numbered step above (e.g., 10 to resume at CI monitoring)
-      skip_steps=<numbers>        # Comma-separated numbered steps to skip while running the rest
+      start_step=<number>         # Begin at the numbered step above; use 10 only for a transient CI failure on the same commit
+      skip_steps=<numbers>        # Comma-separated numbered steps to skip while running the rest; 10 skips remote CI monitoring
       --skip-steps NUMBERS        # Alias for skip_steps=NUMBERS (e.g., --skip-steps 10 or --skip-steps 10,18)
       --version VERSION           # Use this version instead of detecting VERSION from lib/**/version.rb
       --yes                       # Auto-approve release confirmation prompts
@@ -99,12 +100,19 @@ if ARGV.include?("-h") || ARGV.include?("--help")
       --local-ci                  # Sensitive release mode: run act locally, publish before any git push,
                                   # create the git tag locally, then push commits and tags after publish
 
+    Recovery guidance:
+      start_step=10                # Retry only CI monitoring after a transient CI/provider failure; do not use after code or metadata changes
+      start_step=11                # Continue after CI monitoring only when that same release commit was intentionally accepted
+      skip_steps=10                # Skip remote CI monitoring for the same prepared release commit; this does not rerun or replace CI
+      kettle-release               # After code, version, changelog, or lockfile changes, rerun the complete flow from step 0
+
     Environment:
       SKIP_GEM_SIGNING=true       # Build/release unsigned; avoids PEM password prompts
       GEM_CERT_USER=<user>        # Select certs/<user>.pem for signing
       K_RELEASE_LOCAL_CI=ask|1|0  # Use 'act' locally before push; 'ask' prompts, '1' forces, default off
       K_RELEASE_LOCAL_CI_WORKFLOW # Name of workflow (without .yml) for local CI; defaults to locked_deps or first
       K_RELEASE_CI_WORKFLOWS      # Comma-separated workflow files or stems to monitor at CI step 10
+      K_RELEASE_CI_CONTINUE=true  # Continue after a failed CI result; monitoring still runs and failures remain visible
       K_RELEASE_SKIP_REMOTES      # Comma-separated git remote names to exclude from release fetch/push parity
       K_RELEASE_REQUIRED_REMOTES  # Comma-separated remotes that must fetch for release parity; defaults to origin
       KETTLE_RELEASE_SECRETS_PROVIDER=1password
@@ -132,8 +140,8 @@ if ARGV.include?("-h") || ARGV.include?("--help")
       kettle-release                       # full flow from the top (start_step=0)
       kettle-release --local-ci            # run local act CI, publish gem, then push commits/tags
       kettle-release start_step=1          # skip pre-release checks and start numbered release steps
-      kettle-release start_step=10         # resume by monitoring CI for the current branch
-      kettle-release skip_steps=10         # run the release but skip remote CI monitoring
+      kettle-release start_step=10         # retry CI monitoring after a transient failure on the unchanged release commit
+      kettle-release skip_steps=10         # intentionally skip remote CI monitoring for the unchanged release commit
       SKIP_GEM_SIGNING=true kettle-release start_step=14  # build+release without signing
   USAGE
   exit 0

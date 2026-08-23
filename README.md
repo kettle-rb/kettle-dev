@@ -426,7 +426,8 @@ What it does:
         2.  Detect version; RubyGems sanity check; confirm CHANGELOG/version; sync copyright years; update badges/headers
         3.  Run bin/setup
         4.  Run bin/rake (default task)
-        5.  Run bin/rake appraisal:update if Appraisals present, then bin/rake yard
+        5.  Run bin/rake appraisal:generate if Appraisals are present, then bin/rake yard
+            (or appraisal:update with --appraisal-update)
         6.  Ensure git user configured; commit release prep
         7.  Optional local CI with `act` (controlled by `K_RELEASE_LOCAL_CI`)
         8.  Ensure trunk in sync across remotes; rebase feature as needed
@@ -442,7 +443,9 @@ What it does:
         18. Create GitHub Release (requires `GITHUB_TOKEN`)
         19. Push tags to remotes (final)
 - Examples:
-    - After intermittent CI failure, restart from monitoring: `bundle exec kettle-release start_step=10`
+    - After a transient CI or provider failure with no code, version, changelog, or lockfile changes, restart from monitoring: `bundle exec kettle-release start_step=10`
+    - If the failure required a code or release-metadata change, rerun `bundle exec kettle-release` from step 0 so the release checks, prep metadata, commit, and CI all describe the new release commit.
+    - For an intentional same-commit CI bypass, use `bundle exec kettle-release skip_steps=10` or `--skip-steps 10`; this skips remote CI monitoring only and does not claim that CI passed.
     - After fixing a failed pre-release gate, rerun from step 0: `bundle exec kettle-release`
     - After intentionally handling a failed pre-release gate, skip it and start numbered release steps: `bundle exec kettle-release start_step=1`
     - Auto-approve release confirmation prompts: `bundle exec kettle-release --yes`
@@ -465,6 +468,18 @@ What it does:
       lockfiles again; if local paths or checksum gaps reappear, it prints the
       diagnostics, attempts one reset, amends the release prep commit if the
       reset changed tracked lockfiles, and aborts if diagnostics remain.
+    - Release build and publish tasks use a disposable copy of `Gemfile.lock`.
+      This is intentional: `bundle lock --add-platform` records the normalized
+      CI platforms, but it is not a permanent preservation directive. A later
+      non-frozen `bundle exec rake build` or `bundle exec rake release` can
+      reconcile the lockfile for the host platform and rewrite the tracked
+      file. RubyGems' `bundler/gem_tasks` then sees that rewrite and aborts at
+      its clean-tree guard, even though the release inputs were valid. The
+      temporary `BUNDLE_LOCKFILE` lets Bundler perform that runtime
+      reconciliation without changing the committed release lockfile; it is
+      removed when the release process exits. `BUNDLE_FROZEN=true` is not a
+      substitute because it converts the same reconciliation into a failure
+      when Bundler needs to write its resolved lockfile.
 - Tips:
     - The commit message helper `exe/kettle-commit-msg` prefers project-local `.git-hooks` (then falls back to `~/.git-hooks`).
     - The goalie file `commit-subjects-goalie.txt` controls when a footer is appended; customize `footer-template.erb.txt` as you like.
