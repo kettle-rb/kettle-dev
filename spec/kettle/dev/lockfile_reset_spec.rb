@@ -106,6 +106,27 @@ RSpec.describe Kettle::Dev::LockfileReset do
     expect(platforms).not_to include(Gem::Platform.local.to_s)
   end
 
+  it "isolates lockfile resolution from shared installed gems" do
+    commands = []
+    reset = described_class.new(root: @root, command_runner: ->(command) { commands << command })
+    path = File.join(@root, "Gemfile.lock")
+    File.write(File.join(@root, "Gemfile"), "source \"https://rubygems.org\"\n")
+    File.write(path, <<~LOCK)
+      GEM
+        remote: https://rubygems.org/
+        specs:
+          rake (13.4.2)
+
+      DEPENDENCIES
+        rake
+    LOCK
+
+    reset.reset_lockfile!(path, full_update: true)
+
+    expect(commands.first).to include("GEM_HOME=#{File.join(@root, "tmp", "kettle-reset")}")
+    expect(commands.first).to include("GEM_PATH=#{File.join(@root, "tmp", "kettle-reset")}")
+  end
+
   it "reuses the release platform set when later resets see extra platforms" do
     commands = []
     reset = described_class.new(root: @root, command_runner: lambda { |command|

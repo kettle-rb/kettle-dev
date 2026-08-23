@@ -4,6 +4,7 @@ require "set"
 require "shellwords"
 require "fileutils"
 require "open3"
+require "tmpdir"
 require "bundler"
 
 require_relative "bundler_env_guard"
@@ -60,15 +61,23 @@ module Kettle
           return
         end
 
-        command = reset_command(path: path, gemfile: gemfile, full_update: full_update, platforms: platforms)
-        if full_update || has_local_path_remote?(path)
-          rebuild_lockfile(path) { command_runner.call(command) }
-        else
-          command_runner.call(command)
+        with_isolated_gem_paths do |gem_home|
+          command = reset_command(
+            path: path,
+            gemfile: gemfile,
+            full_update: full_update,
+            platforms: platforms,
+            isolated_gem_home: gem_home
+          )
+          if full_update || has_local_path_remote?(path)
+            rebuild_lockfile(path) { command_runner.call(command) }
+          else
+            command_runner.call(command)
+          end
         end
       end
 
-      def reset_command(path:, gemfile:, full_update: false, platforms: nil)
+      def reset_command(path:, gemfile:, full_update: false, platforms: nil, isolated_gem_home: nil)
         update_gems = (full_update || has_local_path_remote?(path)) ? [] : reset_update_gems(path)
         platforms ||= reset_platforms(path)
         removed_platforms = full_update ? [] : lockfile_platforms(path) - platforms
@@ -76,6 +85,10 @@ module Kettle
           "BUNDLE_GEMFILE" => gemfile,
           "BUNDLE_LOCKFILE" => path
         )
+        if isolated_gem_home
+          env["GEM_HOME"] = isolated_gem_home
+          env["GEM_PATH"] = isolated_gem_home
+        end
         command = +"env"
         UNBUNDLED_ENV_KEYS.each do |key|
           command << " -u #{key}"
@@ -318,6 +331,12 @@ module Kettle
       private
 
       attr_reader :root, :command_runner
+
+      def with_isolated_gem_paths
+        base = File.join(root, "tmp", "kettle-reset")
+        FileUtils.mkdir_p(base)
+        Dir.mktmpdir("gem-home-", base) { |gem_home| yield(gem_home) }
+      end
 
       def lockfile_parser(path)
         # Bundler validates checksum digest syntax while parsing, but this class

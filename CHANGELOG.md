@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Release lockfile normalization now resolves in isolated gem paths, preventing unreleased locally installed versions from entering release lockfiles.
+
 ### Security
 
 ## [3.0.7] - 2026-08-15
