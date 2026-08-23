@@ -3,10 +3,9 @@
 # rubocop:disable RSpec/ReceiveMessages, RSpec/StubbedMock
 RSpec.describe Kettle::Dev::ReleaseCLI do
   around do |example|
-    # Release subprocesses export this flag so Bundler can omit the unpublished
-    # standalone changelog gem. ReleaseCLI examples exercise their own default
-    # behavior and must not inherit that parent-process switch.
+    # Keep both release-only environment switches isolated from each example.
     previous_skip_changelog = ENV.delete("KETTLE_DEV_SKIP_CHANGELOG")
+    previous_skip_changelog_dependency = ENV.delete("KETTLE_DEV_SKIP_CHANGELOG_DEPENDENCY")
     begin
       example.run
     ensure
@@ -15,6 +14,13 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       else
         # rubocop:disable Env/Assign -- restore the inherited release flag after example isolation
         ENV["KETTLE_DEV_SKIP_CHANGELOG"] = previous_skip_changelog
+        # rubocop:enable Env/Assign
+      end
+      if previous_skip_changelog_dependency.nil?
+        ENV.delete("KETTLE_DEV_SKIP_CHANGELOG_DEPENDENCY")
+      else
+        # rubocop:disable Env/Assign -- restore the inherited dependency flag after example isolation
+        ENV["KETTLE_DEV_SKIP_CHANGELOG_DEPENDENCY"] = previous_skip_changelog_dependency
         # rubocop:enable Env/Assign
       end
     end
@@ -504,7 +510,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
           build_command = local_cli.send(:release_project_command, "bundle exec rake build")
           isolated_lockfile = Dir[File.join(root, "tmp", "kettle-release", "lockfiles", "Gemfile-*.lock")].fetch(0)
 
-          expect(build_command).to include("KETTLE_DEV_SKIP_CHANGELOG=true")
+          expect(build_command).to include("KETTLE_DEV_SKIP_CHANGELOG_DEPENDENCY=true")
           expect(build_command).to include("BUNDLE_LOCKFILE=#{Shellwords.escape(isolated_lockfile)}")
           expect(File.read(isolated_lockfile)).to eq(File.read(lockfile))
 

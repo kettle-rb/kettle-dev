@@ -30,6 +30,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - Omit the standalone kettle-changelog dependency from normal release-time Bundler resolution, preventing unpublished downstream gem cycles in monorepo release waves.
 
+- Use a dependency-specific environment switch when omitting kettle-changelog from release Bundler resolution.
+
 ### Security
 
 ## [3.0.9] - 2026-08-23

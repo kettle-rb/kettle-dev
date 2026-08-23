@@ -691,7 +691,7 @@ module Kettle
           begin
             lockfile_reset.reset(
               Kettle::Dev::LockfileReset::RELEASE_LOCKFILES_TARGET,
-              skip_changelog: true
+              skip_changelog_dependency: true
             )
             emit_release_lockfile_event(action: "reset", status: "ok", stage: stage, attempt: attempt, attempts: attempts)
             break
@@ -778,7 +778,7 @@ module Kettle
       end
 
       def normalize_release_lockfile!(path)
-        lockfile_reset.reset_lockfile!(path)
+        lockfile_reset.reset_lockfile!(path, skip_changelog_dependency: true)
       end
 
       def release_gemfile_for_lockfile(path)
@@ -786,7 +786,7 @@ module Kettle
       end
 
       def release_lockfile_normalization_env
-        lockfile_reset.normalization_env.merge("KETTLE_DEV_SKIP_CHANGELOG" => "true")
+        lockfile_reset.normalization_env.merge("KETTLE_DEV_SKIP_CHANGELOG_DEPENDENCY" => "true")
       end
 
       def release_lockfile_diagnostics(path)

@@ -34,11 +34,11 @@ module Kettle
         @release_platforms = {}
       end
 
-      def reset(target, skip_changelog: false)
+      def reset(target, skip_changelog_dependency: false)
         BundlerEnvGuard.warn_unexpected_env!
         paths = lockfile_paths_for(target)
         force_full_update = release_lockfiles_target?(target)
-        skip_changelog ||= force_full_update
+        skip_changelog_dependency ||= force_full_update
         platforms = release_platforms_for(paths) if force_full_update
         uninstall_unreleased_local_gems(paths) if force_full_update
         paths.each do |path|
@@ -47,13 +47,18 @@ module Kettle
               path,
               full_update: force_full_update,
               platforms: platforms&.fetch(path),
-              skip_changelog: skip_changelog
+              skip_changelog_dependency: skip_changelog_dependency
             )
           end
         end
         if force_full_update && uninstall_unreleased_local_gems(paths)
           paths.each do |path|
-            reset_lockfile!(path, full_update: true, platforms: platforms.fetch(path), skip_changelog: skip_changelog)
+            reset_lockfile!(
+              path,
+              full_update: true,
+              platforms: platforms.fetch(path),
+              skip_changelog_dependency: skip_changelog_dependency
+            )
           end
         end
         diagnostics = paths.flat_map { |path| diagnostics(path) }
@@ -62,7 +67,7 @@ module Kettle
         paths
       end
 
-      def reset_lockfile!(path, full_update: false, platforms: nil, skip_changelog: false)
+      def reset_lockfile!(path, full_update: false, platforms: nil, skip_changelog_dependency: false)
         gemfile = gemfile_for_lockfile(path)
         unless gemfile && File.file?(gemfile)
           warn("Cannot reset #{display_path(path)} because its Gemfile was not found.")
@@ -75,7 +80,7 @@ module Kettle
             gemfile: gemfile,
             full_update: full_update,
             platforms: platforms,
-            skip_changelog: skip_changelog,
+            skip_changelog_dependency: skip_changelog_dependency,
             isolated_gem_home: gem_home
           )
           if full_update || has_local_path_remote?(path)
@@ -86,7 +91,7 @@ module Kettle
         end
       end
 
-      def reset_command(path:, gemfile:, full_update: false, platforms: nil, skip_changelog: false, isolated_gem_home: nil)
+      def reset_command(path:, gemfile:, full_update: false, platforms: nil, skip_changelog_dependency: false, isolated_gem_home: nil)
         update_gems = (full_update || has_local_path_remote?(path)) ? [] : reset_update_gems(path)
         platforms ||= reset_platforms(path)
         removed_platforms = full_update ? [] : lockfile_platforms(path) - platforms
@@ -94,7 +99,7 @@ module Kettle
           "BUNDLE_GEMFILE" => gemfile,
           "BUNDLE_LOCKFILE" => path
         )
-        env["KETTLE_DEV_SKIP_CHANGELOG"] = "true" if skip_changelog
+        env["KETTLE_DEV_SKIP_CHANGELOG_DEPENDENCY"] = "true" if skip_changelog_dependency
         if isolated_gem_home
           env["GEM_HOME"] = isolated_gem_home
           env["GEM_PATH"] = isolated_gem_home

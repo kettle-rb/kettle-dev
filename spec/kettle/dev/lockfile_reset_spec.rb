@@ -124,10 +124,10 @@ RSpec.describe Kettle::Dev::LockfileReset do
       path: path,
       gemfile: File.join(@root, "Gemfile"),
       full_update: true,
-      skip_changelog: true
+      skip_changelog_dependency: true
     )
 
-    expect(command).to include("KETTLE_DEV_SKIP_CHANGELOG=true")
+    expect(command).to include("KETTLE_DEV_SKIP_CHANGELOG_DEPENDENCY=true")
   end
 
   it "isolates lockfile resolution from shared installed gems" do
@@ -222,7 +222,7 @@ RSpec.describe Kettle::Dev::LockfileReset do
 
     expect(commands.first).to include("bundle lock")
     expect(commands.first).to include("--update --add-checksums")
-    expect(commands.first).to include("KETTLE_DEV_SKIP_CHANGELOG=true")
+    expect(commands.first).to include("KETTLE_DEV_SKIP_CHANGELOG_DEPENDENCY=true")
   end
 
   it "uninstalls locally installed workspace gem versions that are not released" do
@@ -705,7 +705,7 @@ RSpec.describe Kettle::Dev::LockfileReset do
     reset.reset("release-lockfiles")
 
     expect(commands.length).to eq(2)
-    expect(commands).to all(include("KETTLE_DEV_SKIP_CHANGELOG=true"))
+    expect(commands).to all(include("KETTLE_DEV_SKIP_CHANGELOG_DEPENDENCY=true"))
     expect(commands.first).to include("BUNDLE_LOCKFILE=#{File.join(@root, "Appraisal.root.gemfile.lock")}")
     expect(commands.last).to include("BUNDLE_LOCKFILE=#{File.join(@root, "Gemfile.lock")}")
   end
