@@ -28,11 +28,20 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [3.0.10] - 2026-08-23
+
+- TAG: [v3.0.10][3.0.10t]
+- COVERAGE: 91.15% -- 5688/6240 lines in 47 files
+- BRANCH COVERAGE: 76.13% -- 2175/2857 branches in 47 files
+- 50.62% documented
+
+### Fixed
+
 - Omit the standalone kettle-changelog dependency from normal release-time Bundler resolution, preventing unpublished downstream gem cycles in monorepo release waves.
 
 - Use a dependency-specific environment switch when omitting kettle-changelog from release Bundler resolution.
-
-### Security
 
 ## [3.0.9] - 2026-08-23
 
@@ -3520,7 +3529,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.9...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.10...HEAD
+[3.0.10]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.9...v3.0.10
+[3.0.10t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.10
 [3.0.9]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.8...v3.0.9
 [3.0.9t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.9
 [3.0.8]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.7...v3.0.8
