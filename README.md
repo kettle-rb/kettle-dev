@@ -463,6 +463,10 @@ What it does:
       variables, known local-template toggles, and writes checksums while
       updating path-sourced and checksum-gap gems back to released registry
       versions.
+    - Release lockfile resets set `KETTLE_DEV_SKIP_CHANGELOG_DEPENDENCY=true`.
+      This does not skip changelog generation; it keeps the development-only
+      `kettle-changelog` gem out of the release bundle so unpublished family
+      gems cannot enter Bundler's resolution graph.
     - During `kettle-release`, release lockfiles are reset before the release
       prep commit. Before pushing, `kettle-release` validates those committed
       lockfiles again; if local paths or checksum gaps reappear, it prints the
