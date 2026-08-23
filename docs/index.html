@@ -204,7 +204,7 @@ out to <code>kettle-release</code> for each member that needs publishing.</p>
     <tr>
       <td>Source</td>
       <td>
-<a href="https://gitlab.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitLab-FBA326?style=for-the-badge&amp;logo=Gitlab&amp;logoColor=orange" alt="Source on GitLab.com"></a> <a href="https://codeberg.org/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/CodeBerg-4893CC?style=for-the-badge&amp;logo=CodeBerg&amp;logoColor=blue" alt="Source on CodeBerg.org"></a> <a href="https://github.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitHub-238636?style=for-the-badge&amp;logo=GitHub&amp;logoColor=green" alt="Source on GitHub.com"></a> <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"><img src="https://img.shields.io/badge/KLOC-6.216-FFDD67.svg?style=for-the-badge&amp;logo=YouTube&amp;logoColor=blue" alt="The best SHA: dQw4w9WgXcQ!"></a>
+<a href="https://gitlab.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitLab-FBA326?style=for-the-badge&amp;logo=Gitlab&amp;logoColor=orange" alt="Source on GitLab.com"></a> <a href="https://codeberg.org/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/CodeBerg-4893CC?style=for-the-badge&amp;logo=CodeBerg&amp;logoColor=blue" alt="Source on CodeBerg.org"></a> <a href="https://github.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitHub-238636?style=for-the-badge&amp;logo=GitHub&amp;logoColor=green" alt="Source on GitHub.com"></a> <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"><img src="https://img.shields.io/badge/KLOC-6.237-FFDD67.svg?style=for-the-badge&amp;logo=YouTube&amp;logoColor=blue" alt="The best SHA: dQw4w9WgXcQ!"></a>
 </td>
     </tr>
     <tr>
@@ -737,7 +737,8 @@ Markdown fixtures under <code>spec/</code> and <code>test/</code>, along with <c
           <li>Detect version; RubyGems sanity check; confirm CHANGELOG/version; sync copyright years; update badges/headers</li>
           <li>Run bin/setup</li>
           <li>Run bin/rake (default task)</li>
-          <li>Run bin/rake appraisal:update if Appraisals present, then bin/rake yard</li>
+          <li>Run bin/rake appraisal:generate if Appraisals are present, then bin/rake yard<br>
+(or appraisal:update with –appraisal-update)</li>
           <li>Ensure git user configured; commit release prep</li>
           <li>Optional local CI with <code>act</code> (controlled by <code>K_RELEASE_LOCAL_CI</code>)</li>
           <li>Ensure trunk in sync across remotes; rebase feature as needed</li>
@@ -758,8 +759,10 @@ Markdown fixtures under <code>spec/</code> and <code>test/</code>, along with <c
   </li>
   <li>Examples:
     <ul>
-      <li>After intermittent CI failure, restart from monitoring: <code>bundle exec kettle-release start_step=10</code>
+      <li>After a transient CI or provider failure with no code, version, changelog, or lockfile changes, restart from monitoring: <code>bundle exec kettle-release start_step=10</code>
 </li>
+      <li>If the failure required a code or release-metadata change, rerun <code>bundle exec kettle-release</code> from step 0 so the release checks, prep metadata, commit, and CI all describe the new release commit.</li>
+      <li>For an intentional same-commit CI bypass, use <code>bundle exec kettle-release skip_steps=10</code> or <code>--skip-steps 10</code>; this skips remote CI monitoring only and does not claim that CI passed.</li>
       <li>After fixing a failed pre-release gate, rerun from step 0: <code>bundle exec kettle-release</code>
 </li>
       <li>After intentionally handling a failed pre-release gate, skip it and start numbered release steps: <code>bundle exec kettle-release start_step=1</code>
@@ -794,6 +797,18 @@ prep commit. Before pushing, <code>kettle-release</code> validates those committ
 lockfiles again; if local paths or checksum gaps reappear, it prints the<br>
 diagnostics, attempts one reset, amends the release prep commit if the<br>
 reset changed tracked lockfiles, and aborts if diagnostics remain.</li>
+      <li>Release build and publish tasks use a disposable copy of <code>Gemfile.lock</code>.<br>
+This is intentional: <code>bundle lock --add-platform</code> records the normalized<br>
+CI platforms, but it is not a permanent preservation directive. A later<br>
+non-frozen <code>bundle exec rake build</code> or <code>bundle exec rake release</code> can<br>
+reconcile the lockfile for the host platform and rewrite the tracked<br>
+file. RubyGems’ <code>bundler/gem_tasks</code> then sees that rewrite and aborts at<br>
+its clean-tree guard, even though the release inputs were valid. The<br>
+temporary <code>BUNDLE_LOCKFILE</code> lets Bundler perform that runtime<br>
+reconciliation without changing the committed release lockfile; it is<br>
+removed when the release process exits. <code>BUNDLE_FROZEN=true</code> is not a<br>
+substitute because it converts the same reconciliation into a failure<br>
+when Bundler needs to write its resolved lockfile.</li>
     </ul>
   </li>
   <li>Tips:

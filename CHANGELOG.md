@@ -28,9 +28,18 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Keep Bundler platform reconciliation in an isolated lockfile during release builds and publication so normalized release lockfiles remain clean.
-
 ### Security
+
+## [3.0.9] - 2026-08-23
+
+- TAG: [v3.0.9][3.0.9t]
+- COVERAGE: 91.36% -- 5698/6237 lines in 47 files
+- BRANCH COVERAGE: 76.08% -- 2172/2855 branches in 47 files
+- 50.62% documented
+
+### Fixed
+
+- Keep Bundler platform reconciliation in an isolated lockfile during release builds and publication so normalized release lockfiles remain clean.
 
 ## [3.0.8] - 2026-08-23
 
@@ -3507,7 +3516,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.8...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.9...HEAD
+[3.0.9]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.8...v3.0.9
+[3.0.9t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.9
 [3.0.8]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.7...v3.0.8
 [3.0.8t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.8
 [3.0.7]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.6...v3.0.7
