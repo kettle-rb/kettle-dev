@@ -494,6 +494,27 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect(local_cli.send(:release_default_task_command)).to match(/env .* bin\/rake\z/)
       end
 
+      it "isolates the lockfile used by gem build and release tasks" do
+        Dir.mktmpdir do |root|
+          allow(ci_helpers).to receive(:project_root).and_return(root)
+          lockfile = File.join(root, "Gemfile.lock")
+          File.write(lockfile, "PLATFORMS\n  x86_64-linux\n  x86_64-linux-musl\n")
+          local_cli = described_class.new
+
+          build_command = local_cli.send(:release_project_command, "bundle exec rake build")
+          isolated_lockfile = Dir[File.join(root, "tmp", "kettle-release", "lockfiles", "Gemfile-*.lock")].fetch(0)
+
+          expect(build_command).to include("BUNDLE_LOCKFILE=#{Shellwords.escape(isolated_lockfile)}")
+          expect(File.read(isolated_lockfile)).to eq(File.read(lockfile))
+
+          release_command = local_cli.send(:release_project_command, "bundle exec rake release")
+          expect(release_command).to include("BUNDLE_LOCKFILE=#{Shellwords.escape(isolated_lockfile)}")
+
+          local_cli.send(:cleanup_release_task_lockfile!)
+          expect(File).not_to exist(isolated_lockfile)
+        end
+      end
+
       it "fails early when configured release secrets cannot provide the signing passphrase" do
         provider = instance_double(Kettle::Dev::ReleaseSecrets::OnePassword, gem_signing_passphrase: nil)
         local_cli = described_class.new(secrets_provider: provider, yes: true)

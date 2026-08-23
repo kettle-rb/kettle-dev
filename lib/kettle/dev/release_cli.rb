@@ -217,6 +217,7 @@ module Kettle
         @started_at = nil
         @finished_report = nil
         @changelog_generated_coverage = false
+        @release_task_lockfile_path = nil
       end
 
       def run
@@ -242,6 +243,7 @@ module Kettle
         record_diagnostic("release_error", "#{e.class}: #{e.message}", severity: "error", blocking: true)
         raise
       ensure
+        cleanup_release_task_lockfile!
         finish_release_report(status: status, error: error)
       end
 
@@ -972,8 +974,45 @@ module Kettle
         release_lockfile_normalization_env.each do |key, value|
           command << " #{key}=#{Shellwords.escape(value)}"
         end
+        if release_task_command?(project_command)
+          if (lockfile = release_task_lockfile_path)
+            command << " BUNDLE_LOCKFILE=#{Shellwords.escape(lockfile)}"
+          end
+        end
         command << " #{project_command}"
         command
+      end
+
+      def release_task_command?(command)
+        ["bundle exec rake build", "bundle exec rake release"].include?(command.to_s.strip)
+      end
+
+      # Bundler may reconcile the current machine's platform while loading a
+      # project bundle. That is useful during development, but it can dirty the
+      # release-preparation commit between the final lockfile reset and
+      # bundler/gem_tasks' release:guard_clean check. Keep that reconciliation
+      # in a disposable lockfile so the committed, normalized lockfile remains
+      # unchanged throughout build and publication.
+      def release_task_lockfile_path
+        return @release_task_lockfile_path if @release_task_lockfile_path
+
+        source = File.join(@root, "Gemfile.lock")
+        return unless File.file?(source)
+
+        directory = File.join(@root, "tmp", "kettle-release", "lockfiles")
+        FileUtils.mkdir_p(directory)
+        @release_task_lockfile_path = File.join(directory, "Gemfile-#{$$}.lock")
+        FileUtils.cp(source, @release_task_lockfile_path)
+        @release_task_lockfile_path
+      rescue SystemCallError => error
+        abort("Unable to isolate the release task lockfile: #{error.message}")
+      end
+
+      def cleanup_release_task_lockfile!
+        return unless @release_task_lockfile_path
+
+        FileUtils.rm_f(@release_task_lockfile_path)
+        @release_task_lockfile_path = nil
       end
 
       def confirm_yes!(message, prompt, abort_message)

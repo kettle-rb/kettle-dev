@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Keep Bundler platform reconciliation in an isolated lockfile during release builds and publication so normalized release lockfiles remain clean.
+
 ### Security
 
 ## [3.0.8] - 2026-08-23
