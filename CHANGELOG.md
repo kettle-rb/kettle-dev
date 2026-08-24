@@ -30,6 +30,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - Run release changelog coverage against the registry-backed dependency graph instead of inheriting local templating paths.
 
+- Reset dynamic Bundler parent markers before switching a child process to another Gemfile, so release changelog coverage runs the target project specs.
+
 ### Security
 
 ## [3.0.10] - 2026-08-23

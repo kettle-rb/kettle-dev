@@ -44,4 +44,13 @@ RSpec.describe Kettle::Dev::BundlerEnvGuard do
 
     expect(stream.string.scan("Unexpected Bundler environment variable").size).to eq(1)
   end
+
+  it "clears dynamic Bundler parent markers from child environments" do
+    stub_env("BUNDLER_ORIG_BUNDLE_GEMFILE" => "parent/Gemfile")
+
+    expect(described_class.unbundled_env).to include(
+      "BUNDLE_GEMFILE" => nil,
+      "BUNDLER_ORIG_BUNDLE_GEMFILE" => nil
+    )
+  end
 end

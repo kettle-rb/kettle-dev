@@ -12,6 +12,14 @@ module Kettle
         BUNDLER_VERSION
       ].freeze
 
+      # Bundler uses these markers to restore the environment of the parent
+      # bundle. They are not inert when a child explicitly selects another
+      # Gemfile: Bundler can use BUNDLER_ORIG_BUNDLE_GEMFILE to reselect the
+      # parent bundle. Clear the dynamic keys along with RESET_ENV_KEYS.
+      RESET_ENV_PREFIXES = %w[
+        BUNDLER_ORIG_
+      ].freeze
+
       INERT_ENV_KEYS = %w[
         BUNDLE_DEBUG
         BUNDLE_QUIET
@@ -22,16 +30,18 @@ module Kettle
         BUNDLER_DEBUG
       ].freeze
 
-      INERT_ENV_PREFIXES = %w[
-        BUNDLER_ORIG_
-      ].freeze
-
       module_function
 
       def unbundled_env
-        RESET_ENV_KEYS.each_with_object({}) do |key, env|
+        env = RESET_ENV_KEYS.each_with_object({}) do |key, result|
+          result[key] = nil
+        end
+        ENV.each_key do |key|
+          next unless RESET_ENV_PREFIXES.any? { |prefix| key.start_with?(prefix) }
+
           env[key] = nil
         end
+        env
       end
 
       def warn_unexpected_env!(stream: $stderr)
@@ -45,6 +55,7 @@ module Kettle
         )
       end
 
+      # rubocop:disable ThreadSafety/ClassInstanceVariable -- warning state is intentionally shared by module functions.
       def reset_warning_cache!
         @warned_unexpected_env_keys = {}
       end
@@ -56,7 +67,7 @@ module Kettle
       def expected_env_key?(key)
         RESET_ENV_KEYS.include?(key) ||
           INERT_ENV_KEYS.include?(key) ||
-          INERT_ENV_PREFIXES.any? { |prefix| key.start_with?(prefix) }
+          RESET_ENV_PREFIXES.any? { |prefix| key.start_with?(prefix) }
       end
 
       def warned_unexpected_env?(keys)
@@ -67,6 +78,7 @@ module Kettle
         @warned_unexpected_env_keys[signature] = true
         false
       end
+      # rubocop:enable ThreadSafety/ClassInstanceVariable
     end
   end
 end
