@@ -902,7 +902,10 @@ module Kettle
         escaped_gemfile = Shellwords.escape(gemfile)
         command = +"env -u BUNDLE_GEMFILE -u BUNDLE_LOCKFILE"
         if (local_root = release_changelog_local_root)
-          command << " KETTLE_DEV_DEV=false KETTLE_CHANGELOG_DEV_ROOT=#{Shellwords.escape(local_root)}"
+          # Changelog coverage runs before the release lockfile reset. Keep it
+          # on the registry-backed release graph instead of reintroducing local
+          # sibling paths through the inherited templating switch.
+          command << " KETTLE_DEV_DEV=false K_JEM_TEMPLATING=false KETTLE_CHANGELOG_DEV_ROOT=#{Shellwords.escape(local_root)}"
         end
         command << " BUNDLE_GEMFILE=#{escaped_gemfile} bundle exec kettle-changelog"
         command

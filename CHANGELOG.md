@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Run release changelog coverage against the registry-backed dependency graph instead of inheriting local templating paths.
+
 ### Security
 
 ## [3.0.10] - 2026-08-23
