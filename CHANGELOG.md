@@ -28,11 +28,20 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [3.0.11] - 2026-08-24
+
+- TAG: [v3.0.11][3.0.11t]
+- COVERAGE: 91.27% -- 5699/6244 lines in 47 files
+- BRANCH COVERAGE: 76.11% -- 2176/2859 branches in 47 files
+- 51.11% documented
+
+### Fixed
+
 - Run release changelog coverage against the registry-backed dependency graph instead of inheriting local templating paths.
 
 - Reset dynamic Bundler parent markers before switching a child process to another Gemfile, so release changelog coverage runs the target project specs.
-
-### Security
 
 ## [3.0.10] - 2026-08-23
 
@@ -3533,7 +3542,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.10...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.11...HEAD
+[3.0.11]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.10...v3.0.11
+[3.0.11t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.11
 [3.0.10]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.9...v3.0.10
 [3.0.10t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.10
 [3.0.9]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.8...v3.0.9
