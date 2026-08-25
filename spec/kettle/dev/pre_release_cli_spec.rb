@@ -298,6 +298,16 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
         .to output(/Image URL checks: 0 cached, 0 live\.\n\[kettle-pre-release\] Skipped 2 image URL check\(s\)\./).to_stdout
     end
 
+    it "skips unresolved Kettle-Jem template image URLs" do
+      allow(Kettle::Dev::PreReleaseCLI::Markdown).to receive(:extract_image_urls_from_files).and_return([
+        "https://contrib.rocks/image?repo={KJ|README:CONTRIBUTORS_IMAGE_REPO}"
+      ])
+      expect(Kettle::Dev::PreReleaseCLI::HTTP).not_to receive(:head_ok?)
+
+      expect { described_class.new(check_num: 4).run }
+        .to output(/Image URL checks: 0 cached, 0 live\.\n\[kettle-pre-release\] Skipped 1 image URL check\(s\)\./).to_stdout
+    end
+
     it "skips a current-repository workflow badge until its local workflow is pushed" do
       Dir.mktmpdir do |root|
         workflow_path = File.join(root, ".github", "workflows", "new-workflow.yml")

@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Skip unresolved Kettle-Jem template image URLs during pre-release validation.
+
 ### Security
 
 ## [3.0.11] - 2026-08-24

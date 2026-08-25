@@ -539,6 +539,7 @@ module Kettle
       end
 
       def image_url_skipped?(url)
+        return true if url.to_s.include?("{KJ|")
         return true if github_actions_badge_for_local_workflow?(url)
 
         @image_url_skip_patterns.any? do |pattern|
