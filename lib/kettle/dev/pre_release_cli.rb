@@ -511,6 +511,9 @@ module Kettle
       end
 
       def configured_image_url_skip_patterns
+        # Keep generic release safety in kettle-dev. Family-specific patterns
+        # are optional policy loaded from the family config when present, so a
+        # standalone kettle-release remains complete without kettle-family.
         DEFAULT_IMAGE_URL_SKIP_PATTERNS + family_configured_image_url_skip_patterns
       end
 
@@ -539,6 +542,9 @@ module Kettle
       end
 
       def image_url_skipped?(url)
+        # Unresolved Kettle-Jem tokens are valid in template source files and
+        # are not real URLs until templating. This rule must live here because
+        # direct kettle-dev releases do not run through kettle-family.
         return true if url.to_s.include?("{KJ|")
         return true if github_actions_badge_for_local_workflow?(url)
 
