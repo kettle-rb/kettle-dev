@@ -748,6 +748,66 @@ RSpec.describe Kettle::Dev::LockfileReset do
     expect(reset.send(:gem_source_version_available?, released_registry_gem, released_registry_version, ["https://gem.coop"])).to be(true)
   end
 
+  it "parses local path remotes from lockfile source" do
+    source = <<~LOCK
+      PATH
+        remote: .
+        specs:
+          kettle-dev (3.0.11)
+        remote: ../sibling
+        specs:
+          sibling (1.0.0)
+
+      GEM
+        remote: https://gem.coop/
+        specs:
+          rake (13.4.2)
+    LOCK
+
+    expect(described_class.local_path_remote_lines_from_source(source)).to eq([5])
+  end
+
+  it "parses checksum entries from lockfile source" do
+    source = <<~LOCK
+      GEM
+        remote: https://gem.coop/
+        specs:
+          rake (13.4.2)
+
+      CHECKSUMS
+        rake (13.4.2) sha256=abc123
+        thor (1.4.0)
+
+      DEPENDENCIES
+        rake
+    LOCK
+
+    expect(described_class.checksum_entries_from_source(source)).to eq(
+      {
+        ["rake", "13.4.2"] => "sha256=abc123",
+        ["thor", "1.4.0"] => ""
+      }
+    )
+  end
+
+  it "parses top-level GEM specs from lockfile source" do
+    source = <<~LOCK
+      GEM
+        remote: https://gem.coop/
+        specs:
+          rake (13.4.2)
+            json (2.7.2)
+          rake (13.4.2)
+
+      GIT
+        remote: https://github.com/example/demo.git
+        specs:
+          demo (1.0.0)
+    LOCK
+
+    expect(described_class.gem_specs_from_source(source)).to eq([["rake", "13.4.2"]])
+  end
+
   it "returns false when the exact artifact cannot be installed from the configured source" do
     reset = described_class.new(root: @root, command_runner: ->(_command) {})
     failure = instance_double(Process::Status, success?: false)

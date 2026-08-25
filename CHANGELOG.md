@@ -22,6 +22,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- Expose shared lockfile section inspection primitives for family release validation.
+
 ### Deprecated
 
 ### Removed

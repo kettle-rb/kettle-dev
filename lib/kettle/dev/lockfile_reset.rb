@@ -28,6 +28,84 @@ module Kettle
         RUBYOPT
       ]).freeze
 
+      class << self
+        def local_path_remote_lines_from_source(lockfile_source)
+          in_path = false
+          lockfile_source.each_line.with_index(1).filter_map do |line, index|
+            stripped = line.strip
+            if stripped.match?(/\A[A-Z][A-Z ]*\z/)
+              in_path = stripped == "PATH"
+              next
+            end
+            next unless in_path
+            next unless stripped.start_with?("remote:")
+            next if stripped == "remote: ."
+            next unless stripped.start_with?("remote: /", "remote: ./", "remote: ../")
+
+            index
+          end
+        end
+
+        def checksum_entries_from_source(lockfile_source)
+          in_checksums = false
+          entries = {}
+          lockfile_source.each_line do |line|
+            stripped = line.chomp
+            if stripped == "CHECKSUMS"
+              in_checksums = true
+              next
+            end
+            next unless in_checksums
+            break if !stripped.empty? && stripped == stripped.upcase && !stripped.start_with?(" ")
+            next unless stripped.start_with?("  ")
+
+            parsed = parse_lockfile_spec_line(stripped)
+            entries[[parsed.fetch(:name), parsed.fetch(:version)]] = parsed.fetch(:suffix) if parsed
+          end
+          in_checksums ? entries : nil
+        end
+
+        def gem_specs_from_source(lockfile_source)
+          in_gem = false
+          in_specs = false
+          specs = []
+          lockfile_source.each_line do |line|
+            stripped = line.chomp
+            if stripped == "GEM"
+              in_gem = true
+              in_specs = false
+              next
+            end
+            next unless in_gem
+            break if !stripped.empty? && stripped == stripped.upcase && !stripped.start_with?(" ")
+
+            if stripped == "  specs:"
+              in_specs = true
+              next
+            end
+            next unless in_specs
+            next unless line.start_with?("    ") && !line.start_with?("      ")
+
+            parsed = parse_lockfile_spec_line(stripped)
+            specs << [parsed.fetch(:name), parsed.fetch(:version)] if parsed
+          end
+          specs.uniq
+        end
+
+        private
+
+        def parse_lockfile_spec_line(line)
+          stripped = line.to_s.strip
+          return nil if stripped.empty? || !stripped.include?(" (")
+
+          name, remainder = stripped.split(" (", 2)
+          version, suffix = remainder.to_s.split(")", 2)
+          return nil if name.to_s.empty? || version.to_s.empty?
+
+          {name: name, version: version, suffix: suffix.to_s.strip}
+        end
+      end
+
       def initialize(root:, command_runner:)
         @root = root
         @command_runner = command_runner
@@ -248,20 +326,7 @@ module Kettle
       end
 
       def local_path_remote_lines(path)
-        in_path = false
-        File.readlines(path).filter_map.with_index(1) do |line, index|
-          stripped = line.strip
-          if stripped.match?(/\A[A-Z][A-Z ]*\z/)
-            in_path = stripped == "PATH"
-            next
-          end
-          next unless in_path
-          next unless stripped.start_with?("remote:")
-          next if stripped == "remote: ."
-          next unless stripped.start_with?("remote: /", "remote: ./", "remote: ../")
-
-          index
-        end
+        self.class.local_path_remote_lines_from_source(File.read(path))
       end
 
       def empty_registry_checksums(path)
