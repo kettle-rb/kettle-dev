@@ -22,6 +22,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- Add named standalone release aliases for CI bypass and numbered-step recovery.
+
 ### Deprecated
 
 ### Removed

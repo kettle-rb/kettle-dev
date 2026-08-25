@@ -49,16 +49,16 @@ end
 # Do not guard with __FILE__ == $PROGRAM_NAME because binstubs use Kernel.load.
 if ARGV.include?("-h") || ARGV.include?("--help")
   puts <<~USAGE
-    Usage: kettle-release [--version VERSION] [--local-ci] [--yes] [--appraisal-update] [--skip-changelog] [--skip-bundle-audit] [--skip-steps STEPS] [--ci-workflows WORKFLOWS] [--skip-remotes REMOTES] [--required-remotes REMOTES] [--secrets-provider NAME] [--json|--events[=TYPES]] [--report PATH] [start_step=<0-19>]
+    Usage: kettle-release [--version VERSION] [--local-ci] [--yes] [--appraisal-update] [--skip-changelog] [--skip-bundle-audit] [--start-step STEP] [--skip-ci] [--skip-steps STEPS] [--ci-workflows WORKFLOWS] [--skip-remotes REMOTES] [--required-remotes REMOTES] [--secrets-provider NAME] [--json|--events[=TYPES]] [--report PATH] [start_step=<0-19>]
 
     Automates the release flow for a Ruby gem in the host project.
 
     Full releases start at step 0 and run `kettle-pre-release` plus
-    `kettle-changelog` before the numbered release steps. Any start_step
+    `kettle-changelog` before the numbered release steps. Any start step
     greater than 0 skips pre-release prep and resumes directly at the
     requested numbered step.
 
-    Start steps (use start_step=<n> to begin at that step):
+    Start steps (use --start-step <n>; start_step=<n> remains supported):
       0. Run kettle-pre-release gates and kettle-changelog
       1. Verify Bundler >= 2.7 (start at 1 to skip pre-release checks)
       2. Detect version; RubyGems sanity check; confirm CHANGELOG/version; sync copyright years; update badges/headers
@@ -82,7 +82,9 @@ if ARGV.include?("-h") || ARGV.include?("--help")
      19. Push tags to remotes (final)
 
     Options:
-      start_step=<number>         # Begin at the numbered step above; use 10 only for a transient CI failure on the same commit
+      --start-step NUMBER         # Begin at the numbered step above; use 10 only for a transient CI failure on the same commit
+      start_step=<number>         # Legacy alias for --start-step
+      --skip-ci                   # Alias for --skip-steps 10; skips remote CI monitoring while running the rest
       skip_steps=<numbers>        # Comma-separated numbered steps to skip while running the rest; 10 skips remote CI monitoring
       --skip-steps NUMBERS        # Alias for skip_steps=NUMBERS (e.g., --skip-steps 10 or --skip-steps 10,18)
       --version VERSION           # Use this version instead of detecting VERSION from lib/**/version.rb
@@ -101,9 +103,11 @@ if ARGV.include?("-h") || ARGV.include?("--help")
                                   # create the git tag locally, then push commits and tags after publish
 
     Recovery guidance:
-      start_step=10                # Retry only CI monitoring after a transient CI/provider failure; do not use after code or metadata changes
-      start_step=11                # Continue after CI monitoring only when that same release commit was intentionally accepted
-      skip_steps=10                # Skip remote CI monitoring for the same prepared release commit; this does not rerun or replace CI
+      --start-step 10              # Retry only CI monitoring after a transient CI/provider failure; do not use after code or metadata changes
+      --start-step 11              # Continue after CI monitoring only when that same release commit was intentionally accepted
+      --skip-ci                    # Skip remote CI monitoring for the same prepared release commit; this does not rerun or replace CI
+      start_step=10                # Legacy spelling of --start-step 10
+      skip_steps=10                # Legacy spelling of --skip-ci
       kettle-release               # After code, version, changelog, or lockfile changes, rerun the complete flow from step 0
 
     Environment:
@@ -139,10 +143,11 @@ if ARGV.include?("-h") || ARGV.include?("--help")
     Examples:
       kettle-release                       # full flow from the top (start_step=0)
       kettle-release --local-ci            # run local act CI, publish gem, then push commits/tags
-      kettle-release start_step=1          # skip pre-release checks and start numbered release steps
-      kettle-release start_step=10         # retry CI monitoring after a transient failure on the unchanged release commit
-      kettle-release skip_steps=10         # intentionally skip remote CI monitoring for the unchanged release commit
-      SKIP_GEM_SIGNING=true kettle-release start_step=14  # build+release without signing
+      kettle-release --start-step 1      # skip pre-release checks and start numbered release steps
+      kettle-release --start-step 10     # retry CI monitoring after a transient failure on the unchanged release commit
+      kettle-release --skip-ci           # intentionally skip remote CI monitoring for the unchanged release commit
+      kettle-release start_step=10       # legacy spelling of --start-step 10
+      SKIP_GEM_SIGNING=true kettle-release --start-step 14  # build+release without signing
   USAGE
   exit 0
 end
@@ -182,6 +187,31 @@ def extract_skip_steps_arg!(argv)
     end
   end
   skip_steps
+end
+
+def extract_start_step_arg!(argv)
+  start_step = nil
+  if (idx = argv.index("--start-step"))
+    start_step = argv[idx + 1]
+    if start_step.to_s.empty? || start_step.to_s.start_with?("-")
+      Kettle::Dev::ExitAdapter.abort("--start-step requires a numbered release step")
+    end
+    argv.slice!(idx, 2)
+  end
+  argv.delete_if do |arg|
+    if arg.start_with?("--start-step=", "start_step=")
+      start_step = arg.split("=", 2)[1]
+      Kettle::Dev::ExitAdapter.abort("--start-step requires a numbered release step") if start_step.to_s.empty?
+      true
+    else
+      false
+    end
+  end
+  start_step
+end
+
+def extract_skip_ci_arg!(argv)
+  !!argv.delete("--skip-ci")
 end
 
 def extract_skip_changelog_arg!(argv)
@@ -326,10 +356,11 @@ skip_changelog = extract_skip_changelog_arg!(ARGV)
 json_output = !!ARGV.delete("--json")
 events_output, event_types = extract_events_arg!(ARGV)
 Kettle::Dev::ExitAdapter.abort("--events cannot be combined with --json") if events_output && json_output
-start_step_arg = ARGV.find { |a| a.start_with?("start_step=") }
-start_step = start_step_arg ? start_step_arg.split("=", 2)[1].to_i : 0
+start_step = extract_start_step_arg!(ARGV) || 0
+skip_ci = extract_skip_ci_arg!(ARGV)
 version_override = extract_version_arg!(ARGV)
 skip_steps = extract_skip_steps_arg!(ARGV)
+skip_steps = [skip_steps, "10"].compact.join(",") if skip_ci
 ci_workflows = extract_ci_workflows_arg!(ARGV)
 skip_remotes = extract_skip_remotes_arg!(ARGV)
 required_remotes = extract_required_remotes_arg!(ARGV)

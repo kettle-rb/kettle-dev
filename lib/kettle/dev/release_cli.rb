@@ -1253,7 +1253,7 @@ module Kettle
       def monitor_workflows_after_push!
         ensure_github_pull_request_for_ci!
         keep_release_secrets_alive!("CI monitoring")
-        restart_hint = "bundle exec kettle-release start_step=10"
+        restart_hint = "bundle exec kettle-release --start-step 10"
         emit_ci_monitor_event(action: "start", status: "started", workflows: @ci_workflows, restart_hint: restart_hint)
         # The monitor preserves fail-fast behavior by default and returns false
         # when K_RELEASE_CI_CONTINUE explicitly allows failed CI checks.

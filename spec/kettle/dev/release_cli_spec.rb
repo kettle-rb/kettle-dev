@@ -1268,7 +1268,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         release_cli.send(:monitor_workflows_after_push!)
 
         expect(Kettle::Dev::CIMonitor).to have_received(:monitor_all!).with(
-          restart_hint: "bundle exec kettle-release start_step=10",
+          restart_hint: "bundle exec kettle-release --start-step 10",
           workflows: %w[current.yml style.yml],
           keepalive: nil,
           event_recorder: anything
@@ -1347,7 +1347,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         release_cli.send(:monitor_workflows_after_push!)
 
         expect(Kettle::Dev::CIMonitor).to have_received(:monitor_all!).with(
-          restart_hint: "bundle exec kettle-release start_step=10",
+          restart_hint: "bundle exec kettle-release --start-step 10",
           workflows: %w[current.yml style.yml],
           keepalive: nil,
           event_recorder: anything
@@ -1366,7 +1366,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
         expect(provider).to have_received(:keepalive!).with(elapsed: nil).once
         expect(Kettle::Dev::CIMonitor).to have_received(:monitor_all!).with(
-          restart_hint: "bundle exec kettle-release start_step=10",
+          restart_hint: "bundle exec kettle-release --start-step 10",
           workflows: [],
           keepalive: kind_of(Proc),
           event_recorder: anything
@@ -1413,7 +1413,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         allow(ci_helpers).to receive(:latest_run).and_return(run)
         allow(ci_helpers).to receive(:success?).and_return(false)
         allow(ci_helpers).to receive(:failed?).and_return(true)
-        expect { cli.send(:monitor_workflows_after_push!) }.to raise_error(MockSystemExit, /Workflow failed: .*start_step=10/)
+        expect { cli.send(:monitor_workflows_after_push!) }.to raise_error(MockSystemExit, /Workflow failed: .*--start-step 10/)
       end
 
       it "continues the release when CI failures are explicitly allowed" do
@@ -1451,7 +1451,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         allow(ci_helpers).to receive(:gitlab_success?).and_return(false)
         allow(ci_helpers).to receive(:gitlab_failed?).and_return(true)
         allow(Kettle::Dev::CIMonitor).to receive(:gitlab_remote_candidates).and_return(["gitlab"])
-        expect { cli.send(:monitor_workflows_after_push!) }.to raise_error(MockSystemExit, /Pipeline failed: .*start_step=10/)
+        expect { cli.send(:monitor_workflows_after_push!) }.to raise_error(MockSystemExit, /Pipeline failed: .*--start-step 10/)
       end
 
       it "aborts when no CI configured" do

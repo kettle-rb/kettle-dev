@@ -49,7 +49,7 @@ module Kettle
       #
       # @param restart_hint [String] guidance command shown on failure
       # @return [Boolean] whether all configured CI providers passed
-      def monitor_all!(restart_hint: "bundle exec kettle-release start_step=10", workflows: nil, keepalive: nil, event_recorder: nil, **options)
+      def monitor_all!(restart_hint: "bundle exec kettle-release --start-step 10", workflows: nil, keepalive: nil, event_recorder: nil, **options)
         results = [
           monitor_github_internal!(restart_hint: restart_hint, workflows: workflows, keepalive: keepalive, event_recorder: event_recorder),
           monitor_gitlab_internal!(restart_hint: restart_hint, keepalive: keepalive, event_recorder: event_recorder)
@@ -69,7 +69,7 @@ module Kettle
       # Returns false when GitLab is not configured for this repo/branch.
       # @param restart_hint [String]
       # @return [Boolean]
-      def monitor_gitlab!(restart_hint: "bundle exec kettle-release start_step=10")
+      def monitor_gitlab!(restart_hint: "bundle exec kettle-release --start-step 10")
         result = monitor_gitlab_internal!(restart_hint: restart_hint)
         result.nil? ? false : result
       end
@@ -138,7 +138,7 @@ module Kettle
       # Designed for kettle-release.
       # @param restart_hint [String]
       # @return [void]
-      def monitor_and_prompt_for_release!(restart_hint: "bundle exec kettle-release start_step=10")
+      def monitor_and_prompt_for_release!(restart_hint: "bundle exec kettle-release --start-step 10")
         results = collect_all
         any_checks = !(results[:github].nil? || results[:github].empty?) || !!results[:gitlab]
         abort("CI configuration not detected (GitHub or GitLab). Ensure CI is configured and remotes point to the correct hosts.") unless any_checks
