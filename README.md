@@ -635,10 +635,12 @@ versions that are newer than the latest released version.
 - Checks:
     - 1) Validate GitHub Actions workflow action refs with `kettle-gha-sha-pins --check`; if pins are stale, it prints an outdated-actions summary, exits non-zero, and recommends `kettle-gha-sha-pins --write --upgrade patch`.
     - 2) Normalize Markdown image URLs.
-    - 3) Validate that all image URLs referenced by Markdown files resolve (HTTP HEAD).
+    - 3) Validate Markdown references and local heading targets.
+    - 4) Validate that all image URLs referenced by Markdown files resolve (HTTP HEAD).
 - Image URL skips:
     - Star-history image API URLs are skipped by default because they are volatile.
-    - Add project-specific shell-style URL patterns in `.kettle-family.yml` or a config path pointed to by `KETTLE_FAMILY_CONFIG`:
+    - Unresolved Kettle-Jem template tokens are skipped because they are not URLs until templating completes.
+    - Add project-specific shell-style URL patterns in `.kettle-family.yml` or a config path pointed to by `KETTLE_FAMILY_CONFIG`. `kettle-family` passes this path through when it orchestrates a member release, but `kettle-dev` owns the matching and validation:
         ```yaml
         pre_release:
           image_url_skip_patterns:
