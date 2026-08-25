@@ -22,8 +22,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
-- Add named standalone release aliases for CI bypass and numbered-step recovery.
-
 ### Deprecated
 
 ### Removed
@@ -31,6 +29,17 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Fixed
 
 ### Security
+
+## [3.0.13] - 2026-08-25
+
+- TAG: [v3.0.13][3.0.13t]
+- COVERAGE: 91.54% -- 5758/6290 lines in 47 files
+- BRANCH COVERAGE: 76.44% -- 2210/2891 branches in 47 files
+- 50.74% documented
+
+### Changed
+
+- Add named standalone release aliases for CI bypass and numbered-step recovery.
 
 ## [3.0.12] - 2026-08-25
 
@@ -3559,7 +3568,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.12...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.13...HEAD
+[3.0.13]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.12...v3.0.13
+[3.0.13t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.13
 [3.0.12]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.11...v3.0.12
 [3.0.12t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.12
 [3.0.11]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.10...v3.0.11

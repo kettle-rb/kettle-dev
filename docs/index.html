@@ -759,13 +759,12 @@ Markdown fixtures under <code>spec/</code> and <code>test/</code>, along with <c
   </li>
   <li>Examples:
     <ul>
-      <li>After a transient CI or provider failure with no code, version, changelog, or lockfile changes, restart from monitoring: <code>bundle exec kettle-release start_step=10</code>
-</li>
+      <li>After a transient CI or provider failure with no code, version, changelog, or lockfile changes, restart from monitoring: <code>bundle exec kettle-release --start-step 10</code> (the legacy <code>start_step=10</code> spelling remains supported)</li>
       <li>If the failure required a code or release-metadata change, rerun <code>bundle exec kettle-release</code> from step 0 so the release checks, prep metadata, commit, and CI all describe the new release commit.</li>
-      <li>For an intentional same-commit CI bypass, use <code>bundle exec kettle-release skip_steps=10</code> or <code>--skip-steps 10</code>; this skips remote CI monitoring only and does not claim that CI passed.</li>
+      <li>For an intentional same-commit CI bypass, use <code>bundle exec kettle-release --skip-ci</code> (or <code>--skip-steps 10</code>); this skips remote CI monitoring only and does not claim that CI passed.</li>
       <li>After fixing a failed pre-release gate, rerun from step 0: <code>bundle exec kettle-release</code>
 </li>
-      <li>After intentionally handling a failed pre-release gate, skip it and start numbered release steps: <code>bundle exec kettle-release start_step=1</code>
+      <li>After intentionally handling a failed pre-release gate, skip it and start numbered release steps: <code>bundle exec kettle-release --start-step 1</code>
 </li>
       <li>Auto-approve release confirmation prompts: <code>bundle exec kettle-release --yes</code>
 </li>
