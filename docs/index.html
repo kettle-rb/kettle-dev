@@ -204,7 +204,7 @@ out to <code>kettle-release</code> for each member that needs publishing.</p>
     <tr>
       <td>Source</td>
       <td>
-<a href="https://gitlab.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitLab-FBA326?style=for-the-badge&amp;logo=Gitlab&amp;logoColor=orange" alt="Source on GitLab.com"></a> <a href="https://codeberg.org/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/CodeBerg-4893CC?style=for-the-badge&amp;logo=CodeBerg&amp;logoColor=blue" alt="Source on CodeBerg.org"></a> <a href="https://github.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitHub-238636?style=for-the-badge&amp;logo=GitHub&amp;logoColor=green" alt="Source on GitHub.com"></a> <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"><img src="https://img.shields.io/badge/KLOC-6.244-FFDD67.svg?style=for-the-badge&amp;logo=YouTube&amp;logoColor=blue" alt="The best SHA: dQw4w9WgXcQ!"></a>
+<a href="https://gitlab.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitLab-FBA326?style=for-the-badge&amp;logo=Gitlab&amp;logoColor=orange" alt="Source on GitLab.com"></a> <a href="https://codeberg.org/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/CodeBerg-4893CC?style=for-the-badge&amp;logo=CodeBerg&amp;logoColor=blue" alt="Source on CodeBerg.org"></a> <a href="https://github.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitHub-238636?style=for-the-badge&amp;logo=GitHub&amp;logoColor=green" alt="Source on GitHub.com"></a> <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"><img src="https://img.shields.io/badge/KLOC-6.290-FFDD67.svg?style=for-the-badge&amp;logo=YouTube&amp;logoColor=blue" alt="The best SHA: dQw4w9WgXcQ!"></a>
 </td>
     </tr>
     <tr>
@@ -998,13 +998,15 @@ prints a recommended <code>kettle-gha-sha-pins --write --upgrade patch</code> co
     <ul>
       <li>1) Validate GitHub Actions workflow action refs with <code>kettle-gha-sha-pins --check</code>; if pins are stale, it prints an outdated-actions summary, exits non-zero, and recommends <code>kettle-gha-sha-pins --write --upgrade patch</code>.</li>
       <li>2) Normalize Markdown image URLs.</li>
-      <li>3) Validate that all image URLs referenced by Markdown files resolve (HTTP HEAD).</li>
+      <li>3) Validate Markdown references and local heading targets.</li>
+      <li>4) Validate that all image URLs referenced by Markdown files resolve (HTTP HEAD).</li>
     </ul>
   </li>
   <li>Image URL skips:
     <ul>
       <li>Star-history image API URLs are skipped by default because they are volatile.</li>
-      <li>Add project-specific shell-style URL patterns in <code>.kettle-family.yml</code> or a config path pointed to by <code>KETTLE_FAMILY_CONFIG</code>:
+      <li>Unresolved Kettle-Jem template tokens are skipped because they are not URLs until templating completes.</li>
+      <li>Add project-specific shell-style URL patterns in <code>.kettle-family.yml</code> or a config path pointed to by <code>KETTLE_FAMILY_CONFIG</code>. <code>kettle-family</code> passes this path through when it orchestrates a member release, but <code>kettle-dev</code> owns the matching and validation:
         <pre class="code language-yaml"><code class="language-yaml">  pre_release:
     image_url_skip_patterns:
       - https://assets.example.com/generated/*

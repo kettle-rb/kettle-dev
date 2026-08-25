@@ -22,17 +22,28 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
-- Expose shared lockfile section inspection primitives for family release validation.
-
 ### Deprecated
 
 ### Removed
 
 ### Fixed
 
-- Skip unresolved Kettle-Jem template image URLs during pre-release validation.
-
 ### Security
+
+## [3.0.12] - 2026-08-25
+
+- TAG: [v3.0.12][3.0.12t]
+- COVERAGE: 91.48% -- 5754/6290 lines in 47 files
+- BRANCH COVERAGE: 76.34% -- 2207/2891 branches in 47 files
+- 50.74% documented
+
+### Changed
+
+- Expose shared lockfile section inspection primitives for family release validation.
+
+### Fixed
+
+- Skip unresolved Kettle-Jem template image URLs during pre-release validation.
 
 ## [3.0.11] - 2026-08-24
 
@@ -3546,7 +3557,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.11...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.12...HEAD
+[3.0.12]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.11...v3.0.12
+[3.0.12t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.12
 [3.0.11]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.10...v3.0.11
 [3.0.11t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.11
 [3.0.10]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.9...v3.0.10
