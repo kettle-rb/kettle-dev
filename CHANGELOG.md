@@ -28,9 +28,18 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Correct Markdown reference validation after indented fenced code blocks in list items.
-
 ### Security
+
+## [3.0.15] - 2026-08-28
+
+- TAG: [v3.0.15][3.0.15t]
+- COVERAGE: 91.24% -- 5804/6361 lines in 47 files
+- BRANCH COVERAGE: 76.00% -- 2226/2929 branches in 47 files
+- 51.10% documented
+
+### Fixed
+
+- Correct Markdown reference validation after indented fenced code blocks in list items.
 
 ## [3.0.14] - 2026-08-28
 
@@ -3599,7 +3608,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.14...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.15...HEAD
+[3.0.15]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.14...v3.0.15
+[3.0.15t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.15
 [3.0.14]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.13...v3.0.14
 [3.0.14t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.14
 [3.0.13]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.12...v3.0.13

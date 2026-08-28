@@ -106,10 +106,12 @@
   <div class="discussion">
     <p>Validates Markdown reference labels and local link destinations.</p>
 
-<p>This is intentionally a small source scanner rather than a second Markdown<br />
-rendering pipeline. The release gate needs reference integrity and local<br />
-anchor checks, while the existing Markdown merge/parser dependencies are<br />
-not runtime dependencies of kettle-dev.</p>
+<p>This deliberately validates only the small Markdown subset needed by the<br />
+release gate. Available general-purpose parsers either reject reference<br />
+layouts accepted by existing project changelogs or discard unresolved<br />
+reference syntax, so they cannot provide these diagnostics. Keep the<br />
+scanner bounded to reference definitions/usages, local destinations, and<br />
+headings; it is not a general Markdown parser.</p>
 
 
   </div>
@@ -137,9 +139,19 @@ not runtime dependencies of kettle-dev.</p>
     <dl class="constants">
       
         <dt id="FENCE_RE-constant" class="">FENCE_RE =
-          
+          <div class="docstring">
+  <div class="discussion">
+    <p>CommonMark permits at most three leading spaces before a fenced block.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
         </dt>
-        <dd><pre class="code"><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\A\s*(`{3,}|~{3,})</span><span class='regexp_end'>/</span></span><span class='period'>.</span><span class='id identifier rubyid_freeze'>freeze</span></pre></dd>
+        <dd><pre class="code"><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\A {0,3}(`{3,}|~{3,})</span><span class='regexp_end'>/</span></span><span class='period'>.</span><span class='id identifier rubyid_freeze'>freeze</span></pre></dd>
       
         <dt id="IGNORED_PATH_PREFIXES-constant" class="">IGNORED_PATH_PREFIXES =
           
@@ -268,13 +280,13 @@ not runtime dependencies of kettle-dev.</p>
       <pre class="lines">
 
 
-26
-27
-28
-29</pre>
+29
+30
+31
+32</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/markdown_reference_validator.rb', line 26</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/markdown_reference_validator.rb', line 29</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='label'>root:</span> <span class='const'>Dir</span><span class='period'>.</span><span class='id identifier rubyid_pwd'>pwd</span><span class='comma'>,</span> <span class='label'>files:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='ivar'>@root</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_expand_path'>expand_path</span><span class='lparen'>(</span><span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span><span class='rparen'>)</span>
@@ -330,9 +342,6 @@ not runtime dependencies of kettle-dev.</p>
       <pre class="lines">
 
 
-31
-32
-33
 34
 35
 36
@@ -343,10 +352,13 @@ not runtime dependencies of kettle-dev.</p>
 41
 42
 43
-44</pre>
+44
+45
+46
+47</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/markdown_reference_validator.rb', line 31</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/markdown_reference_validator.rb', line 34</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_validate!'>validate!</span>
   <span class='id identifier rubyid_documents'>documents</span> <span class='op'>=</span> <span class='ivar'>@files</span><span class='period'>.</span><span class='id identifier rubyid_each_with_object'>each_with_object</span><span class='lparen'>(</span><span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_path'>path</span><span class='comma'>,</span> <span class='id identifier rubyid_result'>result</span><span class='op'>|</span>
