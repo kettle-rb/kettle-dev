@@ -204,7 +204,7 @@ out to <code>kettle-release</code> for each member that needs publishing.</p>
     <tr>
       <td>Source</td>
       <td>
-<a href="https://gitlab.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitLab-FBA326?style=for-the-badge&amp;logo=Gitlab&amp;logoColor=orange" alt="Source on GitLab.com"></a> <a href="https://codeberg.org/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/CodeBerg-4893CC?style=for-the-badge&amp;logo=CodeBerg&amp;logoColor=blue" alt="Source on CodeBerg.org"></a> <a href="https://github.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitHub-238636?style=for-the-badge&amp;logo=GitHub&amp;logoColor=green" alt="Source on GitHub.com"></a> <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"><img src="https://img.shields.io/badge/KLOC-6.304-FFDD67.svg?style=for-the-badge&amp;logo=YouTube&amp;logoColor=blue" alt="The best SHA: dQw4w9WgXcQ!"></a>
+<a href="https://gitlab.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitLab-FBA326?style=for-the-badge&amp;logo=Gitlab&amp;logoColor=orange" alt="Source on GitLab.com"></a> <a href="https://codeberg.org/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/CodeBerg-4893CC?style=for-the-badge&amp;logo=CodeBerg&amp;logoColor=blue" alt="Source on CodeBerg.org"></a> <a href="https://github.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitHub-238636?style=for-the-badge&amp;logo=GitHub&amp;logoColor=green" alt="Source on GitHub.com"></a> <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"><img src="https://img.shields.io/badge/KLOC-6.361-FFDD67.svg?style=for-the-badge&amp;logo=YouTube&amp;logoColor=blue" alt="The best SHA: dQw4w9WgXcQ!"></a>
 </td>
     </tr>
     <tr>
@@ -716,7 +716,8 @@ Examples:</li>
       <li>Validates Markdown reference definitions and local heading anchors across releasable documentation before network checks.<br>
 Markdown fixtures under <code>spec/</code> and <code>test/</code>, along with <code>tmp/</code>, are intentionally excluded.</li>
       <li>Skips pre-release checks for any <code>start_step</code> greater than <code>0</code>, so resumptions begin directly at the requested numbered step.</li>
-      <li>Runs sanity checks (<code>bin/setup</code>, <code>bin/rake</code>), confirms version/changelog, optionally updates Appraisals, regenerates docs via <code>bin/rake yard</code>, commits “🔖 Prepare release vX.Y.Z”.</li>
+      <li>Verifies Bundler &gt;= 2.7, updates the primary and appraisal bundles with <code>bundle update --bundler</code>, and commits those lockfiles separately as <code>🔒️ Update bundle</code> before release preparation.</li>
+      <li>Runs sanity checks (<code>bin/setup</code>, <code>bin/rake</code>), confirms version/changelog, optionally updates Appraisals, regenerates docs via <code>bin/rake yard</code>, and commits “🔖 Prepare release vX.Y.Z”.</li>
       <li>Optionally runs your CI locally with <code>act</code> before any push:
         <ul>
           <li>Enable with env: <code>K_RELEASE_LOCAL_CI="true"</code> (run automatically) or <code>K_RELEASE_LOCAL_CI="ask"</code> (prompt [Y/n]).</li>
@@ -734,7 +735,7 @@ Markdown fixtures under <code>spec/</code> and <code>test/</code>, along with <c
 <code>start_step</code> map (skip directly to a phase):
         <ol>
           <li>Run <code>kettle-pre-release</code> gates</li>
-          <li>Verify Bundler &gt;= 2.7 (start at 1 to skip pre-release checks)</li>
+          <li>Verify Bundler &gt;= 2.7; update and commit the primary/appraisal Bundler lockfiles (start at 1 to skip pre-release checks)</li>
           <li>Detect version; RubyGems sanity check; confirm CHANGELOG/version; sync copyright years; update badges/headers</li>
           <li>Run bin/setup</li>
           <li>Run bin/rake (default task)</li>
@@ -792,15 +793,26 @@ paths or checksum-less local gem versions: <code>bundle exec kettle-reset Gemfil
 variables, known local-template toggles, and writes checksums while<br>
 updating path-sourced and checksum-gap gems back to released registry<br>
 versions.</li>
-      <li>Release lockfile resets set <code>KETTLE_DEV_SKIP_CHANGELOG_DEPENDENCY=true</code>.<br>
-This does not skip changelog generation; it keeps the development-only<br>
-<code>kettle-changelog</code> gem out of the release bundle so unpublished family<br>
-gems cannot enter Bundler’s resolution graph.</li>
+      <li>Release lockfile resets normally keep the complete development Gemfile<br>
+graph, including the development-only <code>kettle-changelog</code> dependency.<br>
+<code>kettle-changelog</code> depends on <code>kettle-dev</code>, so including it in<br>
+<code>kettle-dev</code>’s development bundle creates a downstream development-cycle<br>
+when sibling versions are unpublished. The<br>
+<code>KETTLE_DEV_SKIP_CHANGELOG_DEPENDENCY=true</code> switch remains available for<br>
+an explicit bootstrap/release graph that cannot resolve that downstream<br>
+tool, but it is not used while rewriting the tracked development<br>
+lockfiles.</li>
+      <li>At release step 1, <code>kettle-release</code> runs the equivalent of<br>
+<code>kettle-family bupb</code>: it updates the primary lockfile and, when present,<br>
+<code>Appraisal.root.gemfile.lock</code>, resets appraisal locks, and commits only<br>
+those lockfiles as <code>🔒️ Update bundle</code>. This keeps Bundler maintenance in<br>
+its own atomic commit. <code>kettle-changelog</code> writes changelog content but<br>
+does not own this commit; the release helper commits release metadata<br>
+separately.</li>
       <li>Release-target resets also pass <code>bundle lock --bundler</code>, recording the<br>
 Bundler that performed the final reset in each committed release<br>
-lockfile. This is part of release preparation so the release’s own<br>
-Bundler upgrade is included in the prep commit instead of dirtying the<br>
-working tree before the post-push pull.</li>
+lockfile. This keeps the normalized lockfile consistent with the<br>
+Bundler used by the release.</li>
       <li>During <code>kettle-release</code>, release lockfiles are reset before the release<br>
 prep commit. Before pushing, <code>kettle-release</code> validates those committed<br>
 lockfiles again; if local paths or checksum gaps reappear, it prints the<br>

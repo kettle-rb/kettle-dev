@@ -28,16 +28,14 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Standalone releases now commit Bundler lockfile updates separately before release preparation.
-
 ### Security
 
 ## [3.0.14] - 2026-08-28
 
 - TAG: [v3.0.14][3.0.14t]
-- COVERAGE: 91.43% -- 5764/6304 lines in 47 files
-- BRANCH COVERAGE: 76.41% -- 2212/2895 branches in 47 files
-- 50.74% documented
+- COVERAGE: 91.46% -- 5818/6361 lines in 47 files
+- BRANCH COVERAGE: 76.14% -- 2230/2929 branches in 47 files
+- 50.86% documented
 
 ### Changed
 
@@ -58,6 +56,8 @@ Please file a bug if you notice a violation of semantic versioning.
 - Teach kettle-bump to update literal fallback versions in conditional gemspec loaders.
 
 - Release lockfile resets now update the locked Bundler version before the release preparation commit, preventing the release's own Bundler upgrade from dirtying the working tree during publication.
+
+- Standalone releases now commit Bundler lockfile updates separately before release preparation.
 
 ## [3.0.13] - 2026-08-25
 

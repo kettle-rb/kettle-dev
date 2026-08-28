@@ -90,9 +90,9 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 <ul>
   <li>TAG: <a href="https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.14">v3.0.14</a>
 </li>
-  <li>COVERAGE: 91.43% – 5764/6304 lines in 47 files</li>
-  <li>BRANCH COVERAGE: 76.41% – 2212/2895 branches in 47 files</li>
-  <li>50.74% documented</li>
+  <li>COVERAGE: 91.46% – 5818/6361 lines in 47 files</li>
+  <li>BRANCH COVERAGE: 76.14% – 2230/2929 branches in 47 files</li>
+  <li>50.86% documented</li>
 </ul>
 
 <h3 id="changed-1">Changed</h3>
@@ -124,6 +124,9 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   </li>
   <li>
     <p>Release lockfile resets now update the locked Bundler version before the release preparation commit, preventing the release’s own Bundler upgrade from dirtying the working tree during publication.</p>
+  </li>
+  <li>
+    <p>Standalone releases now commit Bundler lockfile updates separately before release preparation.</p>
   </li>
 </ul>
 
