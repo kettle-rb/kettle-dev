@@ -67,6 +67,7 @@ kettle_dev_local_gems = %w[
   kettle-family
   kettle-test
   kettle-soup-cover
+  kettle-changelog
   kettle-drift
 ]
 declared_gems = instance_variable_get(:@dependencies).to_a.map(&:name)
