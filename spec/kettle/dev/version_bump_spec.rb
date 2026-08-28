@@ -60,6 +60,32 @@ RSpec.describe Kettle::Dev::VersionBump, :check_output, :prism_only do
     expect(RubyVM::InstructionSequence.compile(content)).to be_a(RubyVM::InstructionSequence) if defined?(RubyVM::InstructionSequence)
   end
 
+  it "updates literal versions inside conditional gemspec loaders" do
+    version_file, gemspec_path = write_project(version: "1.2.3")
+    File.write(gemspec_path, <<~RUBY)
+      gem_version =
+        if Gem.ruby_version >= Gem::Version.new("3.1")
+          "modern"
+        elsif Gem.ruby_version >= Gem::Version.new("2.2")
+          "anonymous"
+        else
+          "1.2.3"
+        end
+
+      Gem::Specification.new do |spec|
+        spec.name = "demo"
+        spec.version = gem_version
+      end
+    RUBY
+
+    bump = described_class.new(root: @root, target_version: "1.2.4")
+    described_class.write_edits(bump.edits)
+
+    expect(File.read(version_file)).to include('VERSION = "1.2.4"')
+    expect(File.read(gemspec_path)).to include('"1.2.4"')
+    expect(File.read(gemspec_path)).not_to include('else\n    "1.2.3"')
+  end
+
   def write_project(version:, pre_version_content: nil)
     FileUtils.mkdir_p(File.join(@root, "lib", "demo"))
     version_file = File.join(@root, "lib", "demo", "version.rb")

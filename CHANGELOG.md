@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Teach kettle-bump to update literal fallback versions in conditional gemspec loaders.
+
 ### Security
 
 ## [3.0.13] - 2026-08-25

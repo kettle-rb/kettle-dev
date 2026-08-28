@@ -189,16 +189,40 @@ module Kettle
 
         source = File.read(gemspec_path)
         parse_result = self.class.parse_source(source, gemspec_path)
-        self.class.each_node(parse_result.value).filter_map do |node|
-          next unless node.is_a?(Prism::CallNode) && node.name == :version=
-
-          version_node = node.arguments&.arguments&.first
-          next unless version_node.is_a?(Prism::StringNode)
+        gemspec_version_literal_nodes(parse_result).filter_map do |version_node|
           next unless version_node.unescaped == current_version
           next if version_node.unescaped == target_version
 
           replacement = self.class.quote_like(version_node.location.slice, target_version)
           self.class.file_edit(gemspec_path, source, version_node.location.start_offset, version_node.location.end_offset, replacement)
+        end
+      end
+
+      def gemspec_version_literal_nodes(parse_result)
+        version_assignments = self.class.each_node(parse_result.value).select do |node|
+          node.is_a?(Prism::CallNode) && node.name == :version=
+        end
+        local_version_assignments = self.class.each_node(parse_result.value).select do |node|
+          node.is_a?(Prism::LocalVariableWriteNode) && node.name == :gem_version
+        end
+
+        version_assignments.flat_map do |assignment|
+          value = assignment.arguments&.arguments&.first
+          if value.is_a?(Prism::StringNode)
+            [value]
+          elsif value.is_a?(Prism::LocalVariableReadNode) && value.name == :gem_version
+            local_version_assignments.flat_map { |node| version_literals(node.value) }
+          else
+            version_literals(value)
+          end
+        end.uniq
+      end
+
+      def version_literals(node)
+        return [] unless node
+
+        self.class.each_node(node).select do |candidate|
+          candidate.is_a?(Prism::StringNode)
         end
       end
 
