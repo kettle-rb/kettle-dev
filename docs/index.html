@@ -204,7 +204,7 @@ out to <code>kettle-release</code> for each member that needs publishing.</p>
     <tr>
       <td>Source</td>
       <td>
-<a href="https://gitlab.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitLab-FBA326?style=for-the-badge&amp;logo=Gitlab&amp;logoColor=orange" alt="Source on GitLab.com"></a> <a href="https://codeberg.org/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/CodeBerg-4893CC?style=for-the-badge&amp;logo=CodeBerg&amp;logoColor=blue" alt="Source on CodeBerg.org"></a> <a href="https://github.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitHub-238636?style=for-the-badge&amp;logo=GitHub&amp;logoColor=green" alt="Source on GitHub.com"></a> <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"><img src="https://img.shields.io/badge/KLOC-6.290-FFDD67.svg?style=for-the-badge&amp;logo=YouTube&amp;logoColor=blue" alt="The best SHA: dQw4w9WgXcQ!"></a>
+<a href="https://gitlab.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitLab-FBA326?style=for-the-badge&amp;logo=Gitlab&amp;logoColor=orange" alt="Source on GitLab.com"></a> <a href="https://codeberg.org/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/CodeBerg-4893CC?style=for-the-badge&amp;logo=CodeBerg&amp;logoColor=blue" alt="Source on CodeBerg.org"></a> <a href="https://github.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitHub-238636?style=for-the-badge&amp;logo=GitHub&amp;logoColor=green" alt="Source on GitHub.com"></a> <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"><img src="https://img.shields.io/badge/KLOC-6.304-FFDD67.svg?style=for-the-badge&amp;logo=YouTube&amp;logoColor=blue" alt="The best SHA: dQw4w9WgXcQ!"></a>
 </td>
     </tr>
     <tr>
@@ -362,8 +362,9 @@ not practical for the current toolchain.</p>
 
 </details>
 
-<h3 id="enterprise-support-">Enterprise Support <a href="https://tidelift.com/subscription/pkg/rubygems-kettle-dev?utm_source=rubygems-kettle-dev&amp;utm_medium=referral&amp;utm_campaign=readme"><img src="https://tidelift.com/badges/package/rubygems/kettle-dev" alt="Tidelift"></a>
-</h3>
+<h3 id="enterprise-support">Enterprise Support</h3>
+
+<p><a href="https://tidelift.com/subscription/pkg/rubygems-kettle-dev?utm_source=rubygems-kettle-dev&amp;utm_medium=referral&amp;utm_campaign=readme"><img src="https://tidelift.com/badges/package/rubygems/kettle-dev" alt="Tidelift"></a></p>
 
 <p>Available as part of the Tidelift Subscription.</p>
 
@@ -795,6 +796,11 @@ versions.</li>
 This does not skip changelog generation; it keeps the development-only<br>
 <code>kettle-changelog</code> gem out of the release bundle so unpublished family<br>
 gems cannot enter Bundler’s resolution graph.</li>
+      <li>Release-target resets also pass <code>bundle lock --bundler</code>, recording the<br>
+Bundler that performed the final reset in each committed release<br>
+lockfile. This is part of release preparation so the release’s own<br>
+Bundler upgrade is included in the prep commit instead of dirtying the<br>
+working tree before the post-push pull.</li>
       <li>During <code>kettle-release</code>, release lockfiles are reset before the release<br>
 prep commit. Before pushing, <code>kettle-release</code> validates those committed<br>
 lockfiles again; if local paths or checksum gaps reappear, it prints the<br>
