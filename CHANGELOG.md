@@ -28,9 +28,18 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Retry release lockfile resets while newly published workspace gems propagate to the configured source.
-
 ### Security
+
+## [3.0.16] - 2026-08-28
+
+- TAG: [v3.0.16][3.0.16t]
+- COVERAGE: 91.20% -- 5807/6367 lines in 47 files
+- BRANCH COVERAGE: 75.93% -- 2227/2933 branches in 47 files
+- 51.10% documented
+
+### Fixed
+
+- Retry release lockfile resets while newly published workspace gems propagate to the configured source.
 
 ## [3.0.15] - 2026-08-28
 
@@ -3610,7 +3619,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.15...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.16...HEAD
+[3.0.16]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.15...v3.0.16
+[3.0.16t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.16
 [3.0.15]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.14...v3.0.15
 [3.0.15t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.15
 [3.0.14]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.13...v3.0.14
