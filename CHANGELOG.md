@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Retry release lockfile resets while newly published workspace gems propagate to the configured source.
+
 ### Security
 
 ## [3.0.15] - 2026-08-28

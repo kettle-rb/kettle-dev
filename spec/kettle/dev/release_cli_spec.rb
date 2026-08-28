@@ -1722,6 +1722,34 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         end
       end
 
+      it "retries reset validation while a newly published workspace gem propagates" do
+        with_release_root do |_root, local_cli|
+          resetter = instance_double(Kettle::Dev::LockfileReset)
+          attempts = 0
+          allow(resetter).to receive(:reset) do
+            attempts += 1
+            if attempts == 1
+              raise Kettle::Dev::Error, <<~MESSAGE
+                Reset release-lockfiles failed validation:
+                  - Gemfile.lock locks local workspace gem kettle-dev 3.0.15 as a registry gem, but that version is not resolvable from the configured gem source at line 164
+              MESSAGE
+            end
+
+            []
+          end
+          allow(local_cli).to receive(:lockfile_reset).and_return(resetter)
+          allow(local_cli).to receive(:release_lockfile_paths).and_return([])
+          allow(local_cli).to receive(:release_availability_probe_attempts).and_return(2)
+          allow(local_cli).to receive(:release_availability_probe_interval).and_return(0)
+          expect(local_cli).to receive(:sleep).with(0).once
+
+          expect do
+            local_cli.send(:reset_release_lockfiles!, stage: "before release task bundle installs")
+          end.to output(/attempt 1\/2.*newly published workspace gem.*attempt 2\/2.*reset complete/m).to_stdout
+          expect(attempts).to eq(2)
+        end
+      end
+
       it "ignores generated appraisal lockfiles outside the release lockfile set" do
         with_release_root do |root, local_cli|
           gemfiles_dir = File.join(root, "gemfiles")

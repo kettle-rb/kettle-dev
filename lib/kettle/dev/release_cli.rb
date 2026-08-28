@@ -702,17 +702,24 @@ module Kettle
           rescue Kettle::Dev::Error => error
             raise unless error.message.start_with?("Reset #{Kettle::Dev::LockfileReset::RELEASE_LOCKFILES_TARGET} failed validation:")
 
-            # Keep release-facing failures shaped like the lockfile validation
-            # guard, even when the shared reset helper is the component that
-            # detects the unrepaired lockfile.
+            retryable = retryable_release_lockfile_reset_error?(error) && attempt < attempts
             emit_release_lockfile_event(
               action: "reset",
-              status: "blocked",
+              status: retryable ? "retrying" : "blocked",
               stage: stage,
               attempt: attempt,
               attempts: attempts,
               reason: error.message
             )
+            if retryable
+              puts "Release lockfile reset could not resolve a newly published workspace gem from #{RELEASE_VALIDATION_SOURCE}; waiting before retry #{attempt + 1}/#{attempts}."
+              sleep(release_availability_probe_interval)
+              next
+            end
+
+            # Keep non-transient release-facing failures shaped like the
+            # lockfile validation guard, even when the shared reset helper
+            # detects the unrepaired lockfile.
             break
           rescue => error
             retryable = retryable_release_lockfile_reset_error?(error) && attempt < attempts
@@ -755,7 +762,9 @@ module Kettle
         message = error.message.to_s
         message.include?("Bundler::GemNotFound") ||
           message.include?("Could not find gem") ||
-          message.include?("can no longer be found in that source")
+          message.include?("can no longer be found in that source") ||
+          message.include?("locks local workspace gem") &&
+            message.include?("not resolvable from the configured gem source")
       end
 
       def validate_release_lockfiles!(stage:)
