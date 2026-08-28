@@ -37,6 +37,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       allow_any_instance_of(described_class).to receive(:prepare_release_lockfiles_for_commit!)
       allow_any_instance_of(described_class).to receive(:prepare_release_lockfiles_for_release_tasks!)
       allow_any_instance_of(described_class).to receive(:validate_release_lockfiles!)
+      allow_any_instance_of(described_class).to receive(:update_bundler_and_commit!)
       # rubocop:enable RSpec/AnyInstance
     end
 
@@ -98,6 +99,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       local_cli = described_class.new
 
       names = [
+        "env -u BUNDLE_GEMFILE bundle update --bundler",
         "env -u BUNDLE_GEMFILE BUNDLE_GEMFILE=/repo/Gemfile bundle lock --update --add-checksums",
         "KETTLE_DEV_SKIP_TESTS=true bin/rake",
         "bin/rake appraisal:generate",
@@ -111,6 +113,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
       expect(names).to eq(
         %w[
+          bundle_update
           bundle_lock
           default_task
           appraisal_generate
@@ -128,6 +131,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       local_cli = described_class.new
 
       summaries = [
+        "BUNDLE_GEMFILE=/repo/Appraisal.root.gemfile BUNDLE_LOCKFILE=/repo/Appraisal.root.gemfile.lock bundle update --bundler",
         "env -u BUNDLE_GEMFILE BUNDLE_GEMFILE=/repo/Gemfile bundle lock --update --add-checksums",
         "KETTLE_DEV_SKIP_TESTS=true bin/rake",
         "bin/rake appraisal:generate",
@@ -141,6 +145,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
       expect(summaries).to eq(
         [
+          "bundle update",
           "Gemfile",
           "default task",
           "appraisals",
@@ -510,7 +515,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
           build_command = local_cli.send(:release_project_command, "bundle exec rake build")
           isolated_lockfile = Dir[File.join(root, "tmp", "kettle-release", "lockfiles", "Gemfile-*.lock")].fetch(0)
 
-          expect(build_command).to include("KETTLE_DEV_SKIP_CHANGELOG_DEPENDENCY=true")
+          expect(build_command).not_to include("KETTLE_DEV_SKIP_CHANGELOG_DEPENDENCY")
           expect(build_command).to include("BUNDLE_LOCKFILE=#{Shellwords.escape(isolated_lockfile)}")
           expect(File.read(isolated_lockfile)).to eq(File.read(lockfile))
 
@@ -581,6 +586,44 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         stub_const("Bundler", Class.new)
         stub_const("Bundler::VERSION", "2.7.1")
         expect { cli.send(:ensure_bundler_2_7_plus!) }.not_to raise_error
+      end
+    end
+
+    describe "#update_bundler_and_commit!" do
+      it "updates the primary and appraisal bundles before committing only lockfiles" do
+        Dir.mktmpdir do |root|
+          allow(ci_helpers).to receive(:project_root).and_return(root)
+          File.write(File.join(root, "Appraisal.root.gemfile"), "source \"https://rubygems.org\"\n")
+          local_cli = described_class.new
+          allow(local_cli).to receive(:update_bundler_and_commit!).and_call_original
+          git = local_cli.instance_variable_get(:@git)
+          paths = ["Gemfile.lock", "Appraisal.root.gemfile.lock"]
+
+          allow(local_cli).to receive(:release_project_command) { |command| "release #{command}" }
+          allow(local_cli).to receive(:changed_bundle_lockfile_paths).and_return(paths)
+          expect(local_cli).to receive(:run_cmd!).with("release bundle update --bundler").ordered
+          expect(local_cli).to receive(:run_cmd!).with(
+            "release BUNDLE_GEMFILE=#{Shellwords.escape(File.join(root, "Appraisal.root.gemfile"))} " \
+              "BUNDLE_LOCKFILE=#{Shellwords.escape(File.join(root, "Appraisal.root.gemfile.lock"))} bundle update --bundler"
+          ).ordered
+          expect(local_cli).to receive(:run_cmd!).with("release bundle exec rake appraisal:reset").ordered
+          expect(git).to receive(:add_paths).with(paths).and_return(true)
+          expect(git).to receive(:commit_staged).with("🔒️ Update bundle").and_return(true)
+          expect(local_cli).to receive(:reconcile_bundle_update_commit!)
+
+          expect { local_cli.send(:update_bundler_and_commit!) }.not_to raise_error
+        end
+      end
+
+      it "refuses to mix already-staged non-lockfile changes into the bundle commit" do
+        local_cli = described_class.new
+        allow(local_cli).to receive(:changed_bundle_lockfile_paths).and_return(["Gemfile.lock"])
+        allow(local_cli).to receive(:staged_paths).and_return(["lib/kettle/dev/release_cli.rb"])
+
+        expect { local_cli.send(:commit_bundle_update!) }.to raise_error(
+          MockSystemExit,
+          /unrelated files are already staged.*release_cli\.rb/m
+        )
       end
     end
 
@@ -690,9 +733,10 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
       it "commits and returns true when there are changes" do
         git = cli.instance_variable_get(:@git)
-        allow(cli).to receive(:git_output).with(%w[status --porcelain]).and_return([" M file", true])
+        allow(cli).to receive(:git_output).with(%w[status --porcelain]).and_return([" M file", true], ["", true])
         expect(git).to receive(:add_all).and_return(true)
         expect(git).to receive(:commit_all).with("🔖 Prepare release v1.0.0").and_return(true)
+        expect(git).not_to receive(:commit_amend_no_edit)
         expect(cli.send(:commit_release_prep!, "1.0.0")).to be true
       end
     end

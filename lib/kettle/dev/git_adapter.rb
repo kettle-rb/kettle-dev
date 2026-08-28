@@ -82,6 +82,21 @@ module Kettle
         false
       end
 
+      # Commit only the changes already staged by the caller.
+      #
+      # This is intentionally different from +commit_all+: bundle maintenance
+      # must not sweep unrelated release-preparation changes into its own
+      # atomic commit.
+      #
+      # @param message [String]
+      # @return [Boolean]
+      def commit_staged(message)
+        git_system("commit", "-m", message.to_s)
+      rescue => e
+        Kettle::Dev.debug_error(e, __method__)
+        false
+      end
+
       # Amend the current commit without changing its message.
       #
       # @return [Boolean]

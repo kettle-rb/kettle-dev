@@ -30,6 +30,7 @@ RSpec.shared_context "with mocked git adapter" do
       add_all: true,
       add_paths: true,
       commit_all: true,
+      commit_staged: true,
       commit_amend_no_edit: true,
       diff_quiet?: true,
       diff_head_quiet?: true,

@@ -414,7 +414,8 @@ What it does:
     - Validates Markdown reference definitions and local heading anchors across releasable documentation before network checks.
       Markdown fixtures under `spec/` and `test/`, along with `tmp/`, are intentionally excluded.
     - Skips pre-release checks for any `start_step` greater than `0`, so resumptions begin directly at the requested numbered step.
-    - Runs sanity checks (`bin/setup`, `bin/rake`), confirms version/changelog, optionally updates Appraisals, regenerates docs via `bin/rake yard`, commits “🔖 Prepare release vX.Y.Z”.
+    - Verifies Bundler >= 2.7, updates the primary and appraisal bundles with `bundle update --bundler`, and commits those lockfiles separately as `🔒️ Update bundle` before release preparation.
+    - Runs sanity checks (`bin/setup`, `bin/rake`), confirms version/changelog, optionally updates Appraisals, regenerates docs via `bin/rake yard`, and commits “🔖 Prepare release vX.Y.Z”.
     - Optionally runs your CI locally with `act` before any push:
         - Enable with env: `K_RELEASE_LOCAL_CI="true"` (run automatically) or `K_RELEASE_LOCAL_CI="ask"` (prompt \[Y/n\]).
         - Select workflow with `K_RELEASE_LOCAL_CI_WORKFLOW` (with or without .yml/.yaml). Defaults to `locked_deps.yml` if present; otherwise the first workflow discovered.
@@ -424,7 +425,7 @@ What it does:
 - Options:
     - `start_step` map (skip directly to a phase):
         0.  Run `kettle-pre-release` gates
-        1.  Verify Bundler \>= 2.7 (start at 1 to skip pre-release checks)
+        1.  Verify Bundler \>= 2.7; update and commit the primary/appraisal Bundler lockfiles (start at 1 to skip pre-release checks)
         2.  Detect version; RubyGems sanity check; confirm CHANGELOG/version; sync copyright years; update badges/headers
         3.  Run bin/setup
         4.  Run bin/rake (default task)
@@ -465,15 +466,26 @@ What it does:
       variables, known local-template toggles, and writes checksums while
       updating path-sourced and checksum-gap gems back to released registry
       versions.
-    - Release lockfile resets set `KETTLE_DEV_SKIP_CHANGELOG_DEPENDENCY=true`.
-      This does not skip changelog generation; it keeps the development-only
-      `kettle-changelog` gem out of the release bundle so unpublished family
-      gems cannot enter Bundler's resolution graph.
+    - Release lockfile resets normally keep the complete development Gemfile
+      graph, including the development-only `kettle-changelog` dependency.
+      `kettle-changelog` depends on `kettle-dev`, so including it in
+      `kettle-dev`'s development bundle creates a downstream development-cycle
+      when sibling versions are unpublished. The
+      `KETTLE_DEV_SKIP_CHANGELOG_DEPENDENCY=true` switch remains available for
+      an explicit bootstrap/release graph that cannot resolve that downstream
+      tool, but it is not used while rewriting the tracked development
+      lockfiles.
+    - At release step 1, `kettle-release` runs the equivalent of
+      `kettle-family bupb`: it updates the primary lockfile and, when present,
+      `Appraisal.root.gemfile.lock`, resets appraisal locks, and commits only
+      those lockfiles as `🔒️ Update bundle`. This keeps Bundler maintenance in
+      its own atomic commit. `kettle-changelog` writes changelog content but
+      does not own this commit; the release helper commits release metadata
+      separately.
     - Release-target resets also pass `bundle lock --bundler`, recording the
       Bundler that performed the final reset in each committed release
-      lockfile. This is part of release preparation so the release's own
-      Bundler upgrade is included in the prep commit instead of dirtying the
-      working tree before the post-push pull.
+      lockfile. This keeps the normalized lockfile consistent with the
+      Bundler used by the release.
     - During `kettle-release`, release lockfiles are reset before the release
       prep commit. Before pushing, `kettle-release` validates those committed
       lockfiles again; if local paths or checksum gaps reappear, it prints the

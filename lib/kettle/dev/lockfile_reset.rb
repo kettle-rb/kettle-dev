@@ -116,7 +116,6 @@ module Kettle
         BundlerEnvGuard.warn_unexpected_env!
         paths = lockfile_paths_for(target)
         force_full_update = release_lockfiles_target?(target)
-        skip_changelog_dependency ||= force_full_update
         platforms = release_platforms_for(paths) if force_full_update
         uninstall_unreleased_local_gems(paths) if force_full_update
         paths.each do |path|

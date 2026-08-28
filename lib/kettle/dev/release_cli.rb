@@ -145,6 +145,7 @@ module Kettle
           words = effective_command_words(cmd)
           words == ["bin/setup"] ||
             words.first(1) == ["bin/rake"] ||
+            words.first(2) == ["bundle", "update"] ||
             words.first(3) == ["bundle", "exec", "rake"] ||
             words.first(3) == ["bundle", "exec", "kettle-changelog"]
         rescue ArgumentError
@@ -252,8 +253,12 @@ module Kettle
       def run_with_release_environment
         run_pre_release_checks! if run_step?(0)
 
-        # 1. Ensure Bundler version ✓
-        ensure_bundler_2_7_plus! if run_step?(1)
+        # 1. Ensure Bundler version and record its current release in the
+        # development lockfiles before any release-preparation commit.
+        if run_step?(1)
+          ensure_bundler_2_7_plus!
+          update_bundler_and_commit!
+        end
 
         version = nil
         committed = nil
@@ -690,8 +695,7 @@ module Kettle
           puts "Resetting release lockfiles with local path dependencies disabled #{stage} (attempt #{attempt}/#{attempts})..."
           begin
             lockfile_reset.reset(
-              Kettle::Dev::LockfileReset::RELEASE_LOCKFILES_TARGET,
-              skip_changelog_dependency: true
+              Kettle::Dev::LockfileReset::RELEASE_LOCKFILES_TARGET
             )
             emit_release_lockfile_event(action: "reset", status: "ok", stage: stage, attempt: attempt, attempts: attempts)
             break
@@ -778,7 +782,7 @@ module Kettle
       end
 
       def normalize_release_lockfile!(path)
-        lockfile_reset.reset_lockfile!(path, skip_changelog_dependency: true)
+        lockfile_reset.reset_lockfile!(path)
       end
 
       def release_gemfile_for_lockfile(path)
@@ -786,7 +790,7 @@ module Kettle
       end
 
       def release_lockfile_normalization_env
-        lockfile_reset.normalization_env.merge("KETTLE_DEV_SKIP_CHANGELOG_DEPENDENCY" => "true")
+        lockfile_reset.normalization_env
       end
 
       def release_lockfile_diagnostics(path)
@@ -1602,6 +1606,90 @@ module Kettle
         end
       end
 
+      # Keep Bundler maintenance separate from the release metadata commit.
+      # The project lockfiles are shared development state, so the update must
+      # be real and committed rather than hidden behind a temporary lockfile.
+      def update_bundler_and_commit!
+        run_cmd!(release_project_command("bundle update --bundler"))
+
+        appraisal_gemfile = File.join(@root, "Appraisal.root.gemfile")
+        if File.file?(appraisal_gemfile)
+          appraisal_lockfile = File.join(@root, "Appraisal.root.gemfile.lock")
+          appraisal_command = "BUNDLE_GEMFILE=#{Shellwords.escape(appraisal_gemfile)} " \
+            "BUNDLE_LOCKFILE=#{Shellwords.escape(appraisal_lockfile)} bundle update --bundler"
+          run_cmd!(release_project_command(appraisal_command))
+          run_cmd!(release_project_command("bundle exec rake appraisal:reset"))
+        end
+
+        commit_bundle_update!
+      end
+
+      def commit_bundle_update!
+        paths = changed_bundle_lockfile_paths
+        return false if paths.empty?
+
+        unexpected = staged_paths - paths
+        unless unexpected.empty?
+          abort(<<~MSG)
+            Cannot commit Bundler updates atomically because unrelated files are already staged:
+            #{unexpected.map { |path| "  - #{path}" }.join("\n")}
+            Commit or unstage those files, then retry the release.
+          MSG
+        end
+
+        puts "Committing Bundler update in #{paths.length} lockfile(s)."
+        abort("Failed to stage Bundler update lockfiles.") unless @git.add_paths(paths)
+        abort("Failed to commit Bundler update lockfiles.") unless @git.commit_staged("🔒️ Update bundle")
+        reconcile_bundle_update_commit!
+        true
+      end
+
+      def changed_bundle_lockfile_paths
+        tracked, tracked_ok = git_output(["diff", "--name-only", "HEAD", "--"])
+        untracked, untracked_ok = git_output(["ls-files", "--others", "--exclude-standard"])
+        return [] unless tracked_ok && untracked_ok
+
+        (tracked.lines + untracked.lines).map(&:strip).reject(&:empty?).select { |path| bundle_lockfile_path?(path) }.uniq
+      end
+
+      def staged_paths
+        output, ok = git_output(["diff", "--cached", "--name-only"])
+        return [] unless ok
+
+        output.lines.map(&:strip).reject(&:empty?).uniq
+      end
+
+      def bundle_lockfile_path?(path)
+        path == "Gemfile.lock" || File.basename(path).end_with?(".lock")
+      end
+
+      def reconcile_bundle_update_commit!
+        3.times do
+          paths = changed_bundle_lockfile_paths
+          return if paths.empty?
+
+          puts "Bundler changed lockfiles while committing; amending the bundle update commit."
+          abort("Failed to stage post-commit Bundler lockfile changes.") unless @git.add_paths(paths)
+          abort("Failed to amend the bundle update commit.") unless @git.commit_amend_no_edit
+        end
+
+        abort("Bundler continued changing lockfiles after the bundle update commit.") unless changed_bundle_lockfile_paths.empty?
+      end
+
+      def reconcile_release_prep_commit!
+        3.times do
+          output, = git_output(["status", "--porcelain"])
+          return if output.empty?
+
+          puts "Release commit hooks changed tracked files; amending the release preparation commit."
+          abort("Failed to stage post-commit release changes.") unless @git.add_all
+          abort("Failed to amend the release preparation commit.") unless @git.commit_amend_no_edit
+        end
+
+        output, = git_output(["status", "--porcelain"])
+        abort("Release commit hooks continued changing files after the release preparation commit.") unless output.empty?
+      end
+
       def maybe_run_local_ci_before_push!(committed, force: false)
         mode = (ENV["K_RELEASE_LOCAL_CI"] || "").strip.downcase
         run_it =
@@ -1898,6 +1986,7 @@ module Kettle
           false
         else
           abort("Failed to commit release prep changes.") unless @git.commit_all(msg)
+          reconcile_release_prep_commit!
           true
         end
       end
@@ -1982,6 +2071,7 @@ module Kettle
         return "gem_release" if joined == "bundle exec rake release"
         return "gem_push" if effective_words.first(2) == ["gem", "push"]
         return "gem_checksums" if effective_words.first == "bin/gem_checksums"
+        return "bundle_update" if effective_words.first(2) == ["bundle", "update"]
         return "bundle_lock" if effective_words.first(2) == ["bundle", "lock"]
         return "bin_setup" if effective_words == ["bin/setup"]
         return "default_task" if effective_words == ["bin/rake"]
@@ -2023,6 +2113,7 @@ module Kettle
         joined = effective_words.join(" ")
 
         return "changelog" if joined.start_with?("bundle exec kettle-changelog")
+        return "bundle update" if effective_words.first(2) == ["bundle", "update"]
         return command_event_bundle_lock_summary(words) if effective_words.first(2) == ["bundle", "lock"]
         return "setup" if effective_words == ["bin/setup"]
         return "default task" if effective_words == ["bin/rake"]

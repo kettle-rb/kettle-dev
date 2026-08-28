@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Standalone releases now commit Bundler lockfile updates separately before release preparation.
+
 ### Security
 
 ## [3.0.14] - 2026-08-28

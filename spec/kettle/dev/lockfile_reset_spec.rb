@@ -272,7 +272,7 @@ RSpec.describe Kettle::Dev::LockfileReset do
     expect(commands.first).to include("--update")
     expect(commands.first).to include("--bundler")
     expect(commands.first).to include("--add-checksums")
-    expect(commands.first).to include("KETTLE_DEV_SKIP_CHANGELOG_DEPENDENCY=true")
+    expect(commands.first).not_to include("KETTLE_DEV_SKIP_CHANGELOG_DEPENDENCY")
   end
 
   it "uninstalls locally installed workspace gem versions that are not released" do
@@ -757,7 +757,7 @@ RSpec.describe Kettle::Dev::LockfileReset do
     reset.reset("release-lockfiles")
 
     expect(commands.length).to eq(2)
-    expect(commands).to all(include("KETTLE_DEV_SKIP_CHANGELOG_DEPENDENCY=true"))
+    expect(commands).to all(satisfy { |command| !command.include?("KETTLE_DEV_SKIP_CHANGELOG_DEPENDENCY") })
     expect(commands.first).to include("BUNDLE_LOCKFILE=#{File.join(@root, "Appraisal.root.gemfile.lock")}")
     expect(commands.last).to include("BUNDLE_LOCKFILE=#{File.join(@root, "Gemfile.lock")}")
   end

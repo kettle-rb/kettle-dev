@@ -241,6 +241,14 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
       expect(adapter.push_tags(nil)).to be true
       expect(adapter).to have_received(:system).with("git", "push", "--tags")
     end
+
+    it "commits only changes already staged by the caller" do
+      adapter = described_class.new
+      allow(adapter).to receive(:system).with("git", "commit", "-m", "🔒️ Update bundle").and_return(true)
+
+      expect(adapter.commit_staged("🔒️ Update bundle")).to be true
+      expect(adapter).to have_received(:system).with("git", "commit", "-m", "🔒️ Update bundle")
+    end
   end
 
   describe "ENV override to disable git gem" do
