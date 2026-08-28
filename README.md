@@ -469,6 +469,11 @@ What it does:
       This does not skip changelog generation; it keeps the development-only
       `kettle-changelog` gem out of the release bundle so unpublished family
       gems cannot enter Bundler's resolution graph.
+    - Release-target resets also pass `bundle lock --bundler`, recording the
+      Bundler that performed the final reset in each committed release
+      lockfile. This is part of release preparation so the release's own
+      Bundler upgrade is included in the prep commit instead of dirtying the
+      working tree before the post-push pull.
     - During `kettle-release`, release lockfiles are reset before the release
       prep commit. Before pushing, `kettle-release` validates those committed
       lockfiles again; if local paths or checksum gaps reappear, it prints the

@@ -106,6 +106,54 @@ RSpec.describe Kettle::Dev::LockfileReset do
     expect(platforms).not_to include(Gem::Platform.local.to_s)
   end
 
+  it "updates the locked Bundler version for release lockfile resets" do
+    commands = []
+    reset = described_class.new(root: @root, command_runner: ->(command) { commands << command })
+    path = File.join(@root, "Gemfile.lock")
+    File.write(File.join(@root, "Gemfile"), "source \"https://rubygems.org\"\n")
+    File.write(path, <<~LOCK)
+      GEM
+        remote: https://rubygems.org/
+        specs:
+          rake (13.4.2)
+
+      PLATFORMS
+        x86_64-linux
+
+      DEPENDENCIES
+        rake
+    LOCK
+
+    reset.reset("release-lockfiles")
+
+    expect(commands.first).to include("--update --bundler --add-checksums")
+  end
+
+  it "does not update Bundler for ordinary targeted lockfile resets" do
+    reset = described_class.new(root: @root, command_runner: ->(_command) {})
+    path = File.join(@root, "Gemfile.lock")
+    File.write(File.join(@root, "Gemfile"), "source \"https://rubygems.org\"\n")
+    File.write(path, <<~LOCK)
+      GEM
+        remote: https://rubygems.org/
+        specs:
+          rake (13.4.2)
+
+      PLATFORMS
+        x86_64-linux
+
+      DEPENDENCIES
+        rake
+    LOCK
+
+    command = reset.reset_command(
+      path: path,
+      gemfile: File.join(@root, "Gemfile")
+    )
+
+    expect(command).not_to include("--bundler")
+  end
+
   it "omits the standalone changelog dependency from release lockfile resets" do
     reset = described_class.new(root: @root, command_runner: ->(_command) {})
     path = File.join(@root, "Gemfile.lock")
@@ -221,7 +269,9 @@ RSpec.describe Kettle::Dev::LockfileReset do
     reset.reset("release-lockfiles")
 
     expect(commands.first).to include("bundle lock")
-    expect(commands.first).to include("--update --add-checksums")
+    expect(commands.first).to include("--update")
+    expect(commands.first).to include("--bundler")
+    expect(commands.first).to include("--add-checksums")
     expect(commands.first).to include("KETTLE_DEV_SKIP_CHANGELOG_DEPENDENCY=true")
   end
 
@@ -271,7 +321,9 @@ RSpec.describe Kettle::Dev::LockfileReset do
     expect(commands.first).to include("-u RUBYLIB")
     expect(commands.first).to include("gem uninstall #{never_released_workspace_gem} -v #{unreleased_workspace_version} -x -I")
     expect(commands.last).to include("bundle lock")
-    expect(commands.last).to include("--update --add-checksums")
+    expect(commands.last).to include("--update")
+    expect(commands.last).to include("--bundler")
+    expect(commands.last).to include("--add-checksums")
   end
 
   it "reruns release lockfile reset when Bundler introduces a local-only workspace version" do

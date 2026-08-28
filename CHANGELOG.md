@@ -42,6 +42,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - Teach kettle-bump to update literal fallback versions in conditional gemspec loaders.
 
+- Release lockfile resets now update the locked Bundler version before the release preparation commit, preventing the release's own Bundler upgrade from dirtying the working tree during publication.
+
 ### Security
 
 ## [3.0.13] - 2026-08-25

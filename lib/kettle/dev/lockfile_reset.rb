@@ -125,7 +125,8 @@ module Kettle
               path,
               full_update: force_full_update,
               platforms: platforms&.fetch(path),
-              skip_changelog_dependency: skip_changelog_dependency
+              skip_changelog_dependency: skip_changelog_dependency,
+              update_bundler: force_full_update
             )
           end
         end
@@ -135,7 +136,8 @@ module Kettle
               path,
               full_update: true,
               platforms: platforms.fetch(path),
-              skip_changelog_dependency: skip_changelog_dependency
+              skip_changelog_dependency: skip_changelog_dependency,
+              update_bundler: true
             )
           end
         end
@@ -145,7 +147,7 @@ module Kettle
         paths
       end
 
-      def reset_lockfile!(path, full_update: false, platforms: nil, skip_changelog_dependency: false)
+      def reset_lockfile!(path, full_update: false, platforms: nil, skip_changelog_dependency: false, update_bundler: false)
         gemfile = gemfile_for_lockfile(path)
         unless gemfile && File.file?(gemfile)
           warn("Cannot reset #{display_path(path)} because its Gemfile was not found.")
@@ -159,6 +161,7 @@ module Kettle
             full_update: full_update,
             platforms: platforms,
             skip_changelog_dependency: skip_changelog_dependency,
+            update_bundler: update_bundler,
             isolated_gem_home: gem_home
           )
           if full_update || has_local_path_remote?(path)
@@ -169,7 +172,7 @@ module Kettle
         end
       end
 
-      def reset_command(path:, gemfile:, full_update: false, platforms: nil, skip_changelog_dependency: false, isolated_gem_home: nil)
+      def reset_command(path:, gemfile:, full_update: false, platforms: nil, skip_changelog_dependency: false, update_bundler: false, isolated_gem_home: nil)
         update_gems = (full_update || has_local_path_remote?(path)) ? [] : reset_update_gems(path)
         platforms ||= reset_platforms(path)
         removed_platforms = full_update ? [] : lockfile_platforms(path) - platforms
@@ -198,6 +201,11 @@ module Kettle
         end
         command << " --update"
         command << " #{update_gems.map { |gem_name| Shellwords.escape(gem_name) }.join(" ")}" unless update_gems.empty?
+        # Bundler preserves BUNDLED WITH during a normal lockfile update.
+        # Release lockfiles must record the Bundler that performed the final
+        # reset, or the next release command can dirty them after the prep
+        # commit by reconciling to a newer installed Bundler.
+        command << " --bundler" if update_bundler
         command << " --add-checksums"
         command
       end
