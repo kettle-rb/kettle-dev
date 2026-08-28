@@ -7,15 +7,18 @@ module Kettle
   module Dev
     # Validates Markdown reference labels and local link destinations.
     #
-    # This is intentionally a small source scanner rather than a second Markdown
-    # rendering pipeline. The release gate needs reference integrity and local
-    # anchor checks, while the existing Markdown merge/parser dependencies are
-    # not runtime dependencies of kettle-dev.
+    # This deliberately validates only the small Markdown subset needed by the
+    # release gate. Available general-purpose parsers either reject reference
+    # layouts accepted by existing project changelogs or discard unresolved
+    # reference syntax, so they cannot provide these diagnostics. Keep the
+    # scanner bounded to reference definitions/usages, local destinations, and
+    # headings; it is not a general Markdown parser.
     class MarkdownReferenceValidator
       Issue = Struct.new(:path, :line, :message)
       Report = Struct.new(:file_count, :reference_count, :local_target_count, :issues)
 
-      FENCE_RE = /\A\s*(`{3,}|~{3,})/.freeze
+      # CommonMark permits at most three leading spaces before a fenced block.
+      FENCE_RE = /\A {0,3}(`{3,}|~{3,})/.freeze
       IGNORED_PATH_PREFIXES = %w[tmp/ .git/ spec/ test/].freeze
       REFERENCE_DEFINITION_RE = /\A {0,3}\[([^\]]+)\]:\s*(?:<([^>]+)>|(\S+))/
       REFERENCE_USAGE_RE = /!?\[([^\]]*)\]\[([^\]]*)\]/

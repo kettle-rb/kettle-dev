@@ -64,6 +64,26 @@ RSpec.describe Kettle::Dev::MarkdownReferenceValidator do
     end
   end
 
+  it "continues parsing after an indented list-item fence closes" do
+    Dir.mktmpdir do |root|
+      write_markdown(root, "CHANGELOG.md", <<~MD)
+        - ```rake
+
+            task :release
+            ```
+
+        [release][3.0.9t]
+
+        [3.0.9t]: https://github.com/kettle-dev/kettle-soup-cover/releases/tag/v3.0.9
+      MD
+
+      report = described_class.new(root: root, files: ["CHANGELOG.md"]).validate!
+
+      expect(report.reference_count).to eq(1)
+      expect(report.issues).to be_empty
+    end
+  end
+
   it "ignores bracket expressions embedded in prose" do
     Dir.mktmpdir do |root|
       write_markdown(root, "CHANGELOG.md", <<~MD)

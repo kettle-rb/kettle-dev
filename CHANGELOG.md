@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Correct Markdown reference validation after indented fenced code blocks in list items.
+
 ### Security
 
 ## [3.0.14] - 2026-08-28
