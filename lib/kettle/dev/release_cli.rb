@@ -1009,12 +1009,10 @@ module Kettle
         command_body = command
         command = +"env"
         release_child_environment.each do |key, value|
-          suffix = if value.nil?
-            " -u #{Shellwords.escape(key)}"
-          else
-            " #{key}=#{Shellwords.escape(value)}"
-          end
-          command << suffix
+          command << " -u #{Shellwords.escape(key)}" if value.nil?
+        end
+        release_child_environment.each do |key, value|
+          command << " #{key}=#{Shellwords.escape(value)}" unless value.nil?
         end
         environment.each do |key, value|
           command << " #{key}=#{Shellwords.escape(value)}"

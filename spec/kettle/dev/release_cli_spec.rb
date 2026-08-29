@@ -549,6 +549,17 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         )
       end
 
+      it "builds a runnable env command with unset options before assignments" do
+        stub_env("KETTLE_DEV_DEV" => "/workspace/kettle-dev", "BUNDLE_GEMFILE" => "/workspace/family/Gemfile")
+        local_cli = described_class.new
+        command = local_cli.send(:release_child_command, "ruby -e 'print ENV.fetch(%q[KETTLE_DEV_DEV])'")
+
+        output, status = Open3.capture2(command)
+
+        expect(status).to be_success
+        expect(output).to eq("false")
+      end
+
       it "fails early when configured release secrets cannot provide the signing passphrase" do
         provider = instance_double(Kettle::Dev::ReleaseSecrets::OnePassword, gem_signing_passphrase: nil)
         local_cli = described_class.new(secrets_provider: provider, yes: true)
