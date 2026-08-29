@@ -28,11 +28,20 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [3.0.17] - 2026-08-29
+
+- TAG: [v3.0.17][3.0.17t]
+- COVERAGE: 91.47% -- 5830/6374 lines in 47 files
+- BRANCH COVERAGE: 76.13% -- 2233/2933 branches in 47 files
+- 50.97% documented
+
+### Fixed
+
 - Stage Bundler update lockfiles correctly when releasing a monorepo subgem.
 
 - Bound RubyGems version lookups so release reconciliation cannot wait indefinitely on a live registry request.
-
-### Security
 
 ## [3.0.16] - 2026-08-28
 
@@ -3623,7 +3632,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.16...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.17...HEAD
+[3.0.17]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.16...v3.0.17
+[3.0.17t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.17
 [3.0.16]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.15...v3.0.16
 [3.0.16t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.16
 [3.0.15]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.14...v3.0.15

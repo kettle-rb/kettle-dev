@@ -187,6 +187,29 @@ the system <code>git</code> executable for the small set of operations we need.<
         <li class="public ">
   <span class="summary_signature">
     
+      <a href="#add_repository_paths-instance_method" title="#add_repository_paths (instance method)">#<strong>add_repository_paths</strong>(paths)  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Stage paths reported by Git commands such as <code>git diff --name-only</code>.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
       <a href="#blame_porcelain-instance_method" title="#blame_porcelain (instance method)">#<strong>blame_porcelain</strong>(path)  &#x21d2; String </a>
     
 
@@ -701,30 +724,30 @@ the system <code>git</code> executable for the small set of operations we need.<
       <pre class="lines">
 
 
-159
-160
-161
-162
-163
-164
-165
-166
-167
-168
-169
-170
-171
-172
-173
 174
 175
 176
 177
 178
-179</pre>
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 159</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 174</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span> <span class='op'>=</span> <span class='const'>Dir</span><span class='period'>.</span><span class='id identifier rubyid_pwd'>pwd</span><span class='rparen'>)</span>
   <span class='ivar'>@root</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_expand_path'>expand_path</span><span class='lparen'>(</span><span class='id identifier rubyid_root'><span class='object_link'><a href="../../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span>
@@ -893,6 +916,93 @@ the system <code>git</code> executable for the small set of operations we need.<
 </div>
     
       <div class="method_details ">
+  <h3 class="signature " id="add_repository_paths-instance_method">
+  
+    #<strong>add_repository_paths</strong>(paths)  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Stage paths reported by Git commands such as <code>git diff --name-only</code>.<br />
+Git reports these paths relative to the repository root, even when this<br />
+adapter operates from a monorepo subdirectory. <code>:(top)</code> keeps the<br />
+pathspec rooted at that repository root in either topology.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>paths</span>
+      
+      
+        <span class='type'>(<tt>Array&lt;String&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>repository-root-relative paths</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>true when Git stages every path</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+81
+82
+83
+84
+85
+86
+87</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 81</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_add_repository_paths'>add_repository_paths</span><span class='lparen'>(</span><span class='id identifier rubyid_paths'>paths</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_pathspecs'>pathspecs</span> <span class='op'>=</span> <span class='const'>Array</span><span class='lparen'>(</span><span class='id identifier rubyid_paths'>paths</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_path'>path</span><span class='op'>|</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>:(top)</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_path'>path</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='rbrace'>}</span>
+  <span class='id identifier rubyid_git_system'>git_system</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>add</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>--</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='op'>*</span><span class='id identifier rubyid_pathspecs'>pathspecs</span><span class='rparen'>)</span>
+<span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+  <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='period'>.</span><span class='id identifier rubyid_debug_error'><span class='object_link'><a href="../Dev.html#debug_error-class_method" title="Kettle::Dev.debug_error (method)">debug_error</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span>
+  <span class='kw'>false</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
   <h3 class="signature " id="blame_porcelain-instance_method">
   
     #<strong>blame_porcelain</strong>(path)  &#x21d2; <tt>String</tt> 
@@ -957,16 +1067,16 @@ string (e.g. +CopyrightCollector+) should stub this method in specs.</p>
       <pre class="lines">
 
 
-281
-282
-283
-284
-285
-286
-287</pre>
+296
+297
+298
+299
+300
+301
+302</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 281</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 296</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_blame_porcelain'>blame_porcelain</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_out'>out</span><span class='comma'>,</span> <span class='id identifier rubyid_status'>status</span> <span class='op'>=</span> <span class='id identifier rubyid_git_capture2'>git_capture2</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>blame</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>--porcelain</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_path'>path</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span>
@@ -1116,20 +1226,20 @@ this method to avoid shelling out.</p>
       <pre class="lines">
 
 
-349
-350
-351
-352
-353
-354
-355
-356
-357
-358
-359</pre>
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 349</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 364</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_checkout'>checkout</span><span class='lparen'>(</span><span class='id identifier rubyid_branch'>branch</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='ivar'>@backend</span> <span class='op'>==</span> <span class='symbol'>:gem</span>
@@ -1287,15 +1397,15 @@ this method to avoid shelling out.</p>
       <pre class="lines">
 
 
-78
-79
-80
-81
-82
-83</pre>
+93
+94
+95
+96
+97
+98</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 78</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 93</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_commit_all'>commit_all</span><span class='lparen'>(</span><span class='id identifier rubyid_message'>message</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_git_system'>git_system</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>commit</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>-am</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_message'>message</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span>
@@ -1346,15 +1456,15 @@ this method to avoid shelling out.</p>
       <pre class="lines">
 
 
-103
-104
-105
-106
-107
-108</pre>
+118
+119
+120
+121
+122
+123</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 103</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 118</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_commit_amend_no_edit'>commit_amend_no_edit</span>
   <span class='id identifier rubyid_git_system'>git_system</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>commit</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>--amend</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>--no-edit</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
@@ -1424,15 +1534,15 @@ atomic commit.</p>
       <pre class="lines">
 
 
-93
-94
-95
-96
-97
-98</pre>
+108
+109
+110
+111
+112
+113</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 93</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 108</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_commit_staged'>commit_staged</span><span class='lparen'>(</span><span class='id identifier rubyid_message'>message</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_git_system'>git_system</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>commit</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>-m</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_message'>message</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span>
@@ -1487,20 +1597,20 @@ atomic commit.</p>
       <pre class="lines">
 
 
-241
-242
-243
-244
-245
-246
-247
-248
-249
-250
-251</pre>
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 241</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 256</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_current_branch'>current_branch</span>
   <span class='kw'>if</span> <span class='ivar'>@backend</span> <span class='op'>==</span> <span class='symbol'>:gem</span>
@@ -1571,16 +1681,16 @@ atomic commit.</p>
       <pre class="lines">
 
 
-126
-127
-128
-129
-130
-131
-132</pre>
+141
+142
+143
+144
+145
+146
+147</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 126</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 141</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_diff_head_quiet?'>diff_head_quiet?</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span>
   <span class='id identifier rubyid__out'>_out</span><span class='comma'>,</span> <span class='id identifier rubyid_status'>status</span> <span class='op'>=</span> <span class='id identifier rubyid_git_capture2'>git_capture2</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>diff</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>--quiet</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>HEAD</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>--</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_path'>path</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span>
@@ -1647,16 +1757,16 @@ atomic commit.</p>
       <pre class="lines">
 
 
-114
-115
-116
-117
-118
-119
-120</pre>
+129
+130
+131
+132
+133
+134
+135</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 114</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 129</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_diff_quiet?'>diff_quiet?</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span>
   <span class='id identifier rubyid__out'>_out</span><span class='comma'>,</span> <span class='id identifier rubyid_status'>status</span> <span class='op'>=</span> <span class='id identifier rubyid_git_capture2'>git_capture2</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>diff</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>--quiet</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>--</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_path'>path</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span>
@@ -1736,26 +1846,26 @@ atomic commit.</p>
       <pre class="lines">
 
 
-381
-382
-383
-384
-385
-386
-387
-388
-389
-390
-391
-392
-393
-394
-395
 396
-397</pre>
+397
+398
+399
+400
+401
+402
+403
+404
+405
+406
+407
+408
+409
+410
+411
+412</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 381</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 396</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_fetch'>fetch</span><span class='lparen'>(</span><span class='id identifier rubyid_remote'>remote</span><span class='comma'>,</span> <span class='id identifier rubyid_ref'>ref</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='ivar'>@backend</span> <span class='op'>==</span> <span class='symbol'>:gem</span>
@@ -1821,25 +1931,25 @@ atomic commit.</p>
       <pre class="lines">
 
 
-256
-257
-258
-259
-260
-261
-262
-263
-264
-265
-266
-267
-268
-269
-270
-271</pre>
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 256</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 271</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_ls_files'>ls_files</span>
   <span class='kw'>if</span> <span class='ivar'>@backend</span> <span class='op'>==</span> <span class='symbol'>:gem</span>
@@ -1926,20 +2036,20 @@ atomic commit.</p>
       <pre class="lines">
 
 
-365
-366
-367
-368
-369
-370
-371
-372
-373
-374
-375</pre>
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 365</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 380</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_pull'>pull</span><span class='lparen'>(</span><span class='id identifier rubyid_remote'>remote</span><span class='comma'>,</span> <span class='id identifier rubyid_branch'>branch</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='ivar'>@backend</span> <span class='op'>==</span> <span class='symbol'>:gem</span>
@@ -2050,21 +2160,6 @@ atomic commit.</p>
       <pre class="lines">
 
 
-186
-187
-188
-189
-190
-191
-192
-193
-194
-195
-196
-197
-198
-199
-200
 201
 202
 203
@@ -2072,10 +2167,25 @@ atomic commit.</p>
 205
 206
 207
-208</pre>
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 186</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 201</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_push'>push</span><span class='lparen'>(</span><span class='id identifier rubyid_remote'>remote</span><span class='comma'>,</span> <span class='id identifier rubyid_branch'>branch</span><span class='comma'>,</span> <span class='label'>force:</span> <span class='kw'>false</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='ivar'>@backend</span> <span class='op'>==</span> <span class='symbol'>:gem</span>
@@ -2175,27 +2285,27 @@ which typically uses the current branch’s upstream.</p>
       <pre class="lines">
 
 
-221
-222
-223
-224
-225
-226
-227
-228
-229
-230
-231
-232
-233
-234
-235
 236
 237
-238</pre>
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 221</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 236</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_push_tags'>push_tags</span><span class='lparen'>(</span><span class='id identifier rubyid_remote'>remote</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='ivar'>@backend</span> <span class='op'>==</span> <span class='symbol'>:gem</span>
@@ -2273,21 +2383,21 @@ which typically uses the current branch’s upstream.</p>
       <pre class="lines">
 
 
-333
-334
-335
-336
-337
-338
-339
-340
-341
-342
-343
-344</pre>
+348
+349
+350
+351
+352
+353
+354
+355
+356
+357
+358
+359</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 333</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 348</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_remote_url'>remote_url</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='ivar'>@backend</span> <span class='op'>==</span> <span class='symbol'>:gem</span>
@@ -2348,20 +2458,20 @@ which typically uses the current branch’s upstream.</p>
       <pre class="lines">
 
 
-290
-291
-292
-293
-294
-295
-296
-297
-298
-299
-300</pre>
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 290</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 305</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_remotes'>remotes</span>
   <span class='kw'>if</span> <span class='ivar'>@backend</span> <span class='op'>==</span> <span class='symbol'>:gem</span>
@@ -2421,21 +2531,6 @@ which typically uses the current branch’s upstream.</p>
       <pre class="lines">
 
 
-303
-304
-305
-306
-307
-308
-309
-310
-311
-312
-313
-314
-315
-316
-317
 318
 319
 320
@@ -2447,10 +2542,25 @@ which typically uses the current branch’s upstream.</p>
 326
 327
 328
-329</pre>
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 303</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 318</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_remotes_with_urls'>remotes_with_urls</span>
   <span class='kw'>if</span> <span class='ivar'>@backend</span> <span class='op'>==</span> <span class='symbol'>:gem</span>
@@ -2537,15 +2647,15 @@ which typically uses the current branch’s upstream.</p>
       <pre class="lines">
 
 
-150
-151
-152
-153
-154
-155</pre>
+165
+166
+167
+168
+169
+170</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 150</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 165</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_reset_soft'>reset_soft</span><span class='lparen'>(</span><span class='id identifier rubyid_ref'>ref</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_git_system'>git_system</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>reset</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>--soft</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_ref'>ref</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span>
@@ -2622,15 +2732,15 @@ which typically uses the current branch’s upstream.</p>
       <pre class="lines">
 
 
-139
-140
-141
-142
-143
-144</pre>
+154
+155
+156
+157
+158
+159</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 139</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/git_adapter.rb', line 154</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_tag_annotated'>tag_annotated</span><span class='lparen'>(</span><span class='id identifier rubyid_tag'>tag</span><span class='comma'>,</span> <span class='id identifier rubyid_message'>message</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_git_system'>git_system</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>tag</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>-a</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_tag'>tag</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>-m</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_message'>message</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span>
