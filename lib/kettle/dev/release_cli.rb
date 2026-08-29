@@ -1647,7 +1647,7 @@ module Kettle
         end
 
         puts "Committing Bundler update in #{paths.length} lockfile(s)."
-        abort("Failed to stage Bundler update lockfiles.") unless @git.add_paths(paths)
+        abort("Failed to stage Bundler update lockfiles.") unless @git.add_repository_paths(paths)
         abort("Failed to commit Bundler update lockfiles.") unless @git.commit_staged("🔒️ Update bundle")
         reconcile_bundle_update_commit!
         true
@@ -1678,7 +1678,7 @@ module Kettle
           return if paths.empty?
 
           puts "Bundler changed lockfiles while committing; amending the bundle update commit."
-          abort("Failed to stage post-commit Bundler lockfile changes.") unless @git.add_paths(paths)
+          abort("Failed to stage post-commit Bundler lockfile changes.") unless @git.add_repository_paths(paths)
           abort("Failed to amend the bundle update commit.") unless @git.commit_amend_no_edit
         end
 

@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Stage Bundler update lockfiles correctly when releasing a monorepo subgem.
+
 ### Security
 
 ## [3.0.16] - 2026-08-28

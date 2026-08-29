@@ -2,6 +2,30 @@
 
 RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
   include_context "with truffleruby 3.1..3.2 skip"
+
+  describe "#add_repository_paths" do
+    it "stages a monorepo subgem path relative to the repository root" do
+      Dir.mktmpdir("kettle-dev-git-adapter-monorepo") do |repository_root|
+        subgem_root = File.join(repository_root, "gems", "example")
+        FileUtils.mkdir_p(subgem_root)
+        File.write(File.join(subgem_root, "Gemfile.lock"), "initial\n")
+        expect(system("git", "init", "-q", repository_root)).to be(true)
+        expect(system("git", "-C", repository_root, "config", "user.email", "test@example.com")).to be(true)
+        expect(system("git", "-C", repository_root, "config", "user.name", "Test User")).to be(true)
+        expect(system("git", "-C", repository_root, "add", ".")).to be(true)
+        expect(system("git", "-C", repository_root, "commit", "-q", "-m", "initial")).to be(true)
+        File.write(File.join(subgem_root, "Gemfile.lock"), "updated\n")
+
+        adapter = described_class.new(subgem_root)
+        expect(adapter.add_repository_paths(["gems/example/Gemfile.lock"])).to be(true)
+
+        staged, staged_ok = adapter.capture(%w[diff --cached --name-only])
+        expect(staged_ok).to be(true)
+        expect(staged).to eq("gems/example/Gemfile.lock")
+      end
+    end
+  end
+
   describe "git operations with git gem present" do
     let(:git_repo) { double("Git::Base") }
 
@@ -248,6 +272,15 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
 
       expect(adapter.commit_staged("🔒️ Update bundle")).to be true
       expect(adapter).to have_received(:system).with("git", "commit", "-m", "🔒️ Update bundle")
+    end
+
+    it "stages repository-root-relative paths from a monorepo subdirectory" do
+      adapter = described_class.new("/workspace/monorepo/gems/example")
+      allow(adapter).to receive(:git_system)
+        .with("add", "--", ":(top)gems/example/Gemfile.lock")
+        .and_return(true)
+
+      expect(adapter.add_repository_paths(["gems/example/Gemfile.lock"])).to be(true)
     end
   end
 

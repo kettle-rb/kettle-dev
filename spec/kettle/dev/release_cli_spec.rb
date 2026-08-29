@@ -607,7 +607,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
               "BUNDLE_LOCKFILE=#{Shellwords.escape(File.join(root, "Appraisal.root.gemfile.lock"))} bundle update --bundler"
           ).ordered
           expect(local_cli).to receive(:run_cmd!).with("release bundle exec rake appraisal:reset").ordered
-          expect(git).to receive(:add_paths).with(paths).and_return(true)
+          expect(git).to receive(:add_repository_paths).with(paths).and_return(true)
           expect(git).to receive(:commit_staged).with("🔒️ Update bundle").and_return(true)
           expect(local_cli).to receive(:reconcile_bundle_update_commit!)
 

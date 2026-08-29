@@ -71,6 +71,21 @@ module Kettle
         false
       end
 
+      # Stage paths reported by Git commands such as `git diff --name-only`.
+      # Git reports these paths relative to the repository root, even when this
+      # adapter operates from a monorepo subdirectory. `:(top)` keeps the
+      # pathspec rooted at that repository root in either topology.
+      #
+      # @param paths [Array<String>] repository-root-relative paths
+      # @return [Boolean] true when Git stages every path
+      def add_repository_paths(paths)
+        pathspecs = Array(paths).map { |path| ":(top)#{path}" }
+        git_system("add", "--", *pathspecs)
+      rescue => e
+        Kettle::Dev.debug_error(e, __method__)
+        false
+      end
+
       # Commit all staged/tracked changes with a message.
       #
       # @param message [String]
