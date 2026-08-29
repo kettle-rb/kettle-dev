@@ -204,7 +204,7 @@ out to <code>kettle-release</code> for each member that needs publishing.</p>
     <tr>
       <td>Source</td>
       <td>
-<a href="https://gitlab.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitLab-FBA326?style=for-the-badge&amp;logo=Gitlab&amp;logoColor=orange" alt="Source on GitLab.com"></a> <a href="https://codeberg.org/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/CodeBerg-4893CC?style=for-the-badge&amp;logo=CodeBerg&amp;logoColor=blue" alt="Source on CodeBerg.org"></a> <a href="https://github.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitHub-238636?style=for-the-badge&amp;logo=GitHub&amp;logoColor=green" alt="Source on GitHub.com"></a> <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"><img src="https://img.shields.io/badge/KLOC-6.374-FFDD67.svg?style=for-the-badge&amp;logo=YouTube&amp;logoColor=blue" alt="The best SHA: dQw4w9WgXcQ!"></a>
+<a href="https://gitlab.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitLab-FBA326?style=for-the-badge&amp;logo=Gitlab&amp;logoColor=orange" alt="Source on GitLab.com"></a> <a href="https://codeberg.org/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/CodeBerg-4893CC?style=for-the-badge&amp;logo=CodeBerg&amp;logoColor=blue" alt="Source on CodeBerg.org"></a> <a href="https://github.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitHub-238636?style=for-the-badge&amp;logo=GitHub&amp;logoColor=green" alt="Source on GitHub.com"></a> <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"><img src="https://img.shields.io/badge/KLOC-6.383-FFDD67.svg?style=for-the-badge&amp;logo=YouTube&amp;logoColor=blue" alt="The best SHA: dQw4w9WgXcQ!"></a>
 </td>
     </tr>
     <tr>
@@ -830,6 +830,54 @@ reconciliation without changing the committed release lockfile; it is<br>
 removed when the release process exits. <code>BUNDLE_FROZEN=true</code> is not a<br>
 substitute because it converts the same reconciliation into a failure<br>
 when Bundler needs to write its resolved lockfile.</li>
+      <li>
+        <p>Lockfile roles are explicit during a release:</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Role</th>
+              <th>Lockfile</th>
+              <th>Used by</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Family runner</td>
+              <td>The family/orchestrator bundle</td>
+              <td>May resolve local sibling gems to run <code>kettle-family</code>; it never becomes the target project’s lockfile.</td>
+            </tr>
+            <tr>
+              <td>Canonical release state</td>
+              <td>Tracked <code>Gemfile.lock</code> and, when present, <code>Appraisal.root.gemfile.lock</code>
+</td>
+              <td>Step 1 Bundler update, steps 3-6 setup/checks/appraisals/docs/prep commit, and step 16 checksums. These commands disable local <code>*_DEV</code>/<code>*_LOCAL</code> switches.</td>
+            </tr>
+            <tr>
+              <td>Release task state</td>
+              <td><code>tmp/kettle-release/lockfiles/Gemfile-&lt;pid&gt;.lock</code></td>
+              <td>Steps 14-15 build and publish only. It begins as a copy of canonical <code>Gemfile.lock</code> and is deleted at process exit.</td>
+            </tr>
+            <tr>
+              <td>Tool state</td>
+              <td>A tool-owned Gemfile such as <code>kettle-changelog/gemfiles/release.gemfile</code>
+</td>
+              <td>The tool’s own dependencies. The command still disables local dependency switches before it can trigger target-project work.</td>
+            </tr>
+            <tr>
+              <td>Git-hook state</td>
+              <td>Canonical release environment</td>
+              <td>Every release-created commit and amend. Hooks remain enabled, but cannot inherit the family runner’s local sibling graph.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p>A command must select one of these roles. Do not construct an ad hoc<br>
+<code>BUNDLE_GEMFILE</code>, <code>BUNDLE_LOCKFILE</code>, or local-development environment in<br>
+a release phase. <code>ReleaseCLI#release_child_command</code> owns canonical/tool<br>
+command construction; <code>ReleaseCLI#release_project_command</code> selects the<br>
+disposable task lock only for build and publish.</p>
+      </li>
     </ul>
   </li>
   <li>Tips:
