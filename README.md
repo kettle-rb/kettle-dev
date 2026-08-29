@@ -503,6 +503,21 @@ What it does:
       removed when the release process exits. `BUNDLE_FROZEN=true` is not a
       substitute because it converts the same reconciliation into a failure
       when Bundler needs to write its resolved lockfile.
+    - Lockfile roles are explicit during a release:
+
+      | Role | Lockfile | Used by |
+      | --- | --- | --- |
+      | Family runner | The family/orchestrator bundle | May resolve local sibling gems to run `kettle-family`; it never becomes the target project's lockfile. |
+      | Canonical release state | Tracked `Gemfile.lock` and, when present, `Appraisal.root.gemfile.lock` | Step 1 Bundler update, steps 3-6 setup/checks/appraisals/docs/prep commit, and step 16 checksums. These commands disable local `*_DEV`/`*_LOCAL` switches. |
+      | Release task state | `tmp/kettle-release/lockfiles/Gemfile-<pid>.lock` | Steps 14-15 build and publish only. It begins as a copy of canonical `Gemfile.lock` and is deleted at process exit. |
+      | Tool state | A tool-owned Gemfile such as `kettle-changelog/gemfiles/release.gemfile` | The tool's own dependencies. The command still disables local dependency switches before it can trigger target-project work. |
+      | Git-hook state | Canonical release environment | Every release-created commit and amend. Hooks remain enabled, but cannot inherit the family runner's local sibling graph. |
+
+      A command must select one of these roles. Do not construct an ad hoc
+      `BUNDLE_GEMFILE`, `BUNDLE_LOCKFILE`, or local-development environment in
+      a release phase. `ReleaseCLI#release_child_command` owns canonical/tool
+      command construction; `ReleaseCLI#release_project_command` selects the
+      disposable task lock only for build and publish.
 - Tips:
     - The commit message helper `exe/kettle-commit-msg` prefers project-local `.git-hooks` (then falls back to `~/.git-hooks`).
     - The goalie file `commit-subjects-goalie.txt` controls when a footer is appended; customize `footer-template.erb.txt` as you like.

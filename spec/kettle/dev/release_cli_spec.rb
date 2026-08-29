@@ -492,7 +492,9 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
           local_cli = described_class.new
 
           expect(local_cli).to receive(:run_cmd!).with(
-            "env -u BUNDLE_GEMFILE -u BUNDLE_LOCKFILE KETTLE_DEV_DEV=false K_JEM_TEMPLATING=false KETTLE_CHANGELOG_DEV_ROOT=#{Shellwords.escape(root)} BUNDLE_GEMFILE=#{Shellwords.escape(gemfile)} bundle exec kettle-changelog"
+            a_string_matching(
+              /\Aenv .*KETTLE_DEV_DEV=false.*K_JEM_TEMPLATING=false.*BUNDLE_GEMFILE=#{Regexp.escape(Shellwords.escape(gemfile))}.*KETTLE_CHANGELOG_DEV_ROOT=#{Regexp.escape(Shellwords.escape(root))}.*bundle exec kettle-changelog\z/
+            )
           )
 
           local_cli.send(:run_changelog!)
@@ -525,6 +527,26 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
           local_cli.send(:cleanup_release_task_lockfile!)
           expect(File).not_to exist(isolated_lockfile)
         end
+      end
+
+      it "keeps canonical commands and Git hooks off the caller's local bundle" do
+        stub_env(
+          "KETTLE_DEV_DEV" => "/workspace/kettle-dev",
+          "BUNDLER_ORIG_BUNDLE_GEMFILE" => "/workspace/family/Gemfile"
+        )
+        local_cli = described_class.new
+
+        command = local_cli.send(:release_project_command, "bin/rake")
+        environment = local_cli.send(:release_git_hook_environment)
+
+        expect(command).to include("KETTLE_DEV_DEV=false")
+        expect(command).to include("-u BUNDLER_ORIG_BUNDLE_GEMFILE")
+        expect(command).not_to include("BUNDLE_LOCKFILE=")
+        expect(environment).to include(
+          "KETTLE_DEV_DEV" => "false",
+          "BUNDLE_GEMFILE" => nil,
+          "BUNDLER_ORIG_BUNDLE_GEMFILE" => nil
+        )
       end
 
       it "fails early when configured release secrets cannot provide the signing passphrase" do
@@ -608,7 +630,9 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
           ).ordered
           expect(local_cli).to receive(:run_cmd!).with("release bundle exec rake appraisal:reset").ordered
           expect(git).to receive(:add_repository_paths).with(paths).and_return(true)
-          expect(git).to receive(:commit_staged).with("🔒️ Update bundle").and_return(true)
+          expect(git).to receive(:commit_staged)
+            .with("🔒️ Update bundle", env: hash_including("KETTLE_DEV_DEV" => "false"))
+            .and_return(true)
           expect(local_cli).to receive(:reconcile_bundle_update_commit!)
 
           expect { local_cli.send(:update_bundler_and_commit!) }.not_to raise_error
@@ -735,7 +759,9 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         git = cli.instance_variable_get(:@git)
         allow(cli).to receive(:git_output).with(%w[status --porcelain]).and_return([" M file", true], ["", true])
         expect(git).to receive(:add_all).and_return(true)
-        expect(git).to receive(:commit_all).with("🔖 Prepare release v1.0.0").and_return(true)
+        expect(git).to receive(:commit_all)
+          .with("🔖 Prepare release v1.0.0", env: hash_including("KETTLE_DEV_DEV" => "false"))
+          .and_return(true)
         expect(git).not_to receive(:commit_amend_no_edit)
         expect(cli.send(:commit_release_prep!, "1.0.0")).to be true
       end
@@ -1871,7 +1897,9 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
           git = local_cli.instance_variable_get(:@git)
           allow(git).to receive(:diff_head_quiet?).with(File.join(root, "Gemfile.lock")).and_return(false)
           expect(git).to receive(:add_paths).with([File.join(root, "Gemfile.lock")]).and_return(true)
-          expect(git).to receive(:commit_amend_no_edit).and_return(true)
+          expect(git).to receive(:commit_amend_no_edit)
+            .with(env: hash_including("KETTLE_DEV_DEV" => "false"))
+            .and_return(true)
 
           expect do
             local_cli.send(:validate_release_lockfiles!, stage: "before push")
@@ -2130,7 +2158,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect(cli).to have_received(:run_cmd!).with(a_string_matching(/env .* bin\/rake yard\z/))
         expect(cli).to have_received(:run_cmd!).with(a_string_matching(/env .* bundle exec rake build\z/))
         expect(cli).to have_received(:run_cmd!).with(a_string_matching(/env .* bundle exec rake release\z/))
-        expect(cli).to have_received(:run_cmd!).with("bin/gem_checksums #{gem_path}")
+        expect(cli).to have_received(:run_cmd!).with(a_string_matching(/\Aenv .* bin\/gem_checksums #{Regexp.escape(gem_path)}\z/))
       end
 
       it "runs local-ci mode without pushing until after the gem is published", :jruby_head_release_flow do

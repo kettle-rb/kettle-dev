@@ -89,9 +89,10 @@ module Kettle
       # Commit all staged/tracked changes with a message.
       #
       # @param message [String]
+      # @param env [Hash{String => String, nil}] environment overrides for Git hooks
       # @return [Boolean]
-      def commit_all(message)
-        git_system("commit", "-am", message.to_s)
+      def commit_all(message, env: {})
+        git_system("commit", "-am", message.to_s, env: env)
       rescue => e
         Kettle::Dev.debug_error(e, __method__)
         false
@@ -104,9 +105,10 @@ module Kettle
       # atomic commit.
       #
       # @param message [String]
+      # @param env [Hash{String => String, nil}] environment overrides for Git hooks
       # @return [Boolean]
-      def commit_staged(message)
-        git_system("commit", "-m", message.to_s)
+      def commit_staged(message, env: {})
+        git_system("commit", "-m", message.to_s, env: env)
       rescue => e
         Kettle::Dev.debug_error(e, __method__)
         false
@@ -114,9 +116,10 @@ module Kettle
 
       # Amend the current commit without changing its message.
       #
+      # @param env [Hash{String => String, nil}] environment overrides for Git hooks
       # @return [Boolean]
-      def commit_amend_no_edit
-        git_system("commit", "--amend", "--no-edit")
+      def commit_amend_no_edit(env: {})
+        git_system("commit", "--amend", "--no-edit", env: env)
       rescue => e
         Kettle::Dev.debug_error(e, __method__)
         false
@@ -421,11 +424,15 @@ module Kettle
         end
       end
 
-      def git_system(*args)
+      def git_system(*args, env: {})
+        command = ["git", *args]
+        return system(*command) if env.empty? && @root == Dir.pwd
+        return system(*command, chdir: @root) if env.empty?
+
         if @root == Dir.pwd
-          system("git", *args)
+          system(env, *command)
         else
-          system("git", *args, chdir: @root)
+          system(env, *command, chdir: @root)
         end
       end
     end

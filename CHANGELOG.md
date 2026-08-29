@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Keep release child commands and commit hooks on the canonical registry-backed lockfile environment.
+
 ### Security
 
 ## [3.0.17] - 2026-08-29

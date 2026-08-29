@@ -506,7 +506,7 @@ module Kettle
           # Generate checksums for the just-built artifact, commit them, then validate
           version ||= detect_version
           gem_path = checksum_gem_path_for_version!(version)
-          run_cmd!("bin/gem_checksums #{Shellwords.escape(gem_path)}")
+          run_cmd!(release_child_command("bin/gem_checksums #{Shellwords.escape(gem_path)}"))
           validate_checksums!(version, stage: "after release")
         end
 
@@ -802,6 +802,20 @@ module Kettle
         lockfile_reset.normalization_env
       end
 
+      # The release process has three distinct lockfile roles:
+      #
+      # - canonical: tracked project lockfiles, always registry-backed;
+      # - task: a disposable Gemfile.lock copy for build and publication; and
+      # - tool: a tool-owned Gemfile, such as kettle-changelog's release bundle.
+      #
+      # A family may use local sibling gems to launch this process, but no
+      # release child may inherit that graph. Git hooks are release children
+      # too: they commonly load project tooling and otherwise can silently
+      # rewrite the canonical lockfile with local PATH sources.
+      def release_git_hook_environment
+        release_child_environment
+      end
+
       def release_lockfile_diagnostics(path)
         lockfile_reset.diagnostics(path)
       end
@@ -869,7 +883,7 @@ module Kettle
 
         puts "Fallback release lockfile reset result: diagnostics cleared; amending release prep commit with #{paths.length} lockfile(s)."
         abort("Failed to stage reset release lockfiles.") unless @git.add_paths(paths)
-        abort("Failed to amend release prep commit with reset lockfiles.") unless @git.commit_amend_no_edit
+        abort("Failed to amend release prep commit with reset lockfiles.") unless @git.commit_amend_no_edit(env: release_git_hook_environment)
       end
 
       def changed_release_lockfile_paths
@@ -910,18 +924,13 @@ module Kettle
       # of relying on an ambient installed executable.
       def release_changelog_command
         gemfile = release_changelog_gemfile
-        return "bundle exec kettle-changelog" unless gemfile
+        return release_child_command("bundle exec kettle-changelog") unless gemfile
 
-        escaped_gemfile = Shellwords.escape(gemfile)
-        command = +"env -u BUNDLE_GEMFILE -u BUNDLE_LOCKFILE"
+        environment = {"BUNDLE_GEMFILE" => gemfile}
         if (local_root = release_changelog_local_root)
-          # Changelog coverage runs before the release lockfile reset. Keep it
-          # on the registry-backed release graph instead of reintroducing local
-          # sibling paths through the inherited templating switch.
-          command << " KETTLE_DEV_DEV=false K_JEM_TEMPLATING=false KETTLE_CHANGELOG_DEV_ROOT=#{Shellwords.escape(local_root)}"
+          environment["KETTLE_CHANGELOG_DEV_ROOT"] = local_root
         end
-        command << " BUNDLE_GEMFILE=#{escaped_gemfile} bundle exec kettle-changelog"
-        command
+        release_child_command("bundle exec kettle-changelog", environment: environment)
       end
 
       def release_changelog_gemfile
@@ -981,29 +990,46 @@ module Kettle
         release_project_command("bin/setup")
       end
 
-      # Every command that loads the project bundle must run outside the
-      # release tool's bundle and with local workspace dependency switches
-      # disabled. The default task may carry a leading environment assignment,
-      # so relying on BundlerEnvGuard's command classification alone is not
-      # sufficient.
+      # Canonical release commands use the tracked project lockfiles. These
+      # lockfiles are shared state and are normalized/committed before release
+      # prep; they must never contain sibling PATH sources.
       def release_project_command(command)
-        project_command = command
-        unbundled_keys = (BundlerEnvGuard::RESET_ENV_KEYS + %w[RUBYLIB RUBYOPT]).uniq
-        command = +"env #{unbundled_keys.map { |key| "-u #{Shellwords.escape(key)}" }.join(" ")}"
-        release_lockfile_normalization_env.each do |key, value|
-          command << " #{key}=#{Shellwords.escape(value)}"
-        end
-        if release_task_command?(project_command)
-          if (lockfile = release_task_lockfile_path)
-            command << " BUNDLE_LOCKFILE=#{Shellwords.escape(lockfile)}"
-          end
-        end
-        command << " #{project_command}"
-        command
+        release_child_command(command, lockfile: release_task_command?(command) ? release_task_lockfile_path : nil)
       end
 
       def release_task_command?(command)
         ["bundle exec rake build", "bundle exec rake release"].include?(command.to_s.strip)
+      end
+
+      # Every release child runs outside the release tool's Bundler context and
+      # with local sibling switches disabled. The optional lockfile identifies
+      # a disposable task lockfile; omitting it deliberately selects the
+      # canonical tracked lockfile for setup, checks, docs, and checksums.
+      def release_child_command(command, environment: {}, lockfile: nil)
+        command_body = command
+        command = +"env"
+        release_child_environment.each do |key, value|
+          suffix = if value.nil?
+            " -u #{Shellwords.escape(key)}"
+          else
+            " #{key}=#{Shellwords.escape(value)}"
+          end
+          command << suffix
+        end
+        environment.each do |key, value|
+          command << " #{key}=#{Shellwords.escape(value)}"
+        end
+        command << " BUNDLE_LOCKFILE=#{Shellwords.escape(lockfile)}" if lockfile
+        command << " #{command_body}"
+        command
+      end
+
+      def release_child_environment
+        @release_child_environment ||= begin
+          release_lockfile_normalization_env
+            .merge(BundlerEnvGuard.unbundled_env)
+            .merge("RUBYLIB" => nil, "RUBYOPT" => nil)
+        end
       end
 
       # Bundler may reconcile the current machine's platform while loading a
@@ -1648,7 +1674,7 @@ module Kettle
 
         puts "Committing Bundler update in #{paths.length} lockfile(s)."
         abort("Failed to stage Bundler update lockfiles.") unless @git.add_repository_paths(paths)
-        abort("Failed to commit Bundler update lockfiles.") unless @git.commit_staged("🔒️ Update bundle")
+        abort("Failed to commit Bundler update lockfiles.") unless @git.commit_staged("🔒️ Update bundle", env: release_git_hook_environment)
         reconcile_bundle_update_commit!
         true
       end
@@ -1679,7 +1705,7 @@ module Kettle
 
           puts "Bundler changed lockfiles while committing; amending the bundle update commit."
           abort("Failed to stage post-commit Bundler lockfile changes.") unless @git.add_repository_paths(paths)
-          abort("Failed to amend the bundle update commit.") unless @git.commit_amend_no_edit
+          abort("Failed to amend the bundle update commit.") unless @git.commit_amend_no_edit(env: release_git_hook_environment)
         end
 
         abort("Bundler continued changing lockfiles after the bundle update commit.") unless changed_bundle_lockfile_paths.empty?
@@ -1692,7 +1718,7 @@ module Kettle
 
           puts "Release commit hooks changed tracked files; amending the release preparation commit."
           abort("Failed to stage post-commit release changes.") unless @git.add_all
-          abort("Failed to amend the release preparation commit.") unless @git.commit_amend_no_edit
+          abort("Failed to amend the release preparation commit.") unless @git.commit_amend_no_edit(env: release_git_hook_environment)
         end
 
         output, = git_output(["status", "--porcelain"])
@@ -1994,7 +2020,7 @@ module Kettle
           puts "No changes to commit for release prep (continuing)."
           false
         else
-          abort("Failed to commit release prep changes.") unless @git.commit_all(msg)
+          abort("Failed to commit release prep changes.") unless @git.commit_all(msg, env: release_git_hook_environment)
           reconcile_release_prep_commit!
           true
         end

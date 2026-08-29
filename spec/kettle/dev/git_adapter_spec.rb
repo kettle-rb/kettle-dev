@@ -26,6 +26,32 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
     end
   end
 
+  describe "commit hook environment" do
+    it "passes explicit environment overrides through to Git hooks" do
+      Dir.mktmpdir("kettle-dev-git-adapter-hooks") do |root|
+        hooks = File.join(root, "hooks")
+        FileUtils.mkdir_p(hooks)
+        File.write(File.join(root, "README.md"), "initial\n")
+        File.write(File.join(hooks, "prepare-commit-msg"), <<~SH)
+          #!/bin/sh
+          printf '%s|%s' "${KETTLE_DEV_DEV-unset}" "${BUNDLE_GEMFILE-unset}" > hook-environment.txt
+        SH
+        FileUtils.chmod(0o755, File.join(hooks, "prepare-commit-msg"))
+        expect(system("git", "init", "-q", root)).to be(true)
+        expect(system("git", "-C", root, "config", "user.email", "test@example.com")).to be(true)
+        expect(system("git", "-C", root, "config", "user.name", "Test User")).to be(true)
+        expect(system("git", "-C", root, "config", "core.hooksPath", hooks)).to be(true)
+        expect(system("git", "-C", root, "add", "README.md")).to be(true)
+
+        adapter = described_class.new(root)
+        environment = {"KETTLE_DEV_DEV" => "false", "BUNDLE_GEMFILE" => nil}
+
+        expect(adapter.commit_staged("🔒️ Update bundle", env: environment)).to be(true)
+        expect(File.read(File.join(root, "hook-environment.txt"))).to eq("false|unset")
+      end
+    end
+  end
+
   describe "git operations with git gem present" do
     let(:git_repo) { double("Git::Base") }
 
@@ -272,6 +298,15 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
 
       expect(adapter.commit_staged("🔒️ Update bundle")).to be true
       expect(adapter).to have_received(:system).with("git", "commit", "-m", "🔒️ Update bundle")
+    end
+
+    it "passes an explicit environment to commit hooks" do
+      adapter = described_class.new
+      environment = {"KETTLE_DEV_DEV" => "false"}
+      allow(adapter).to receive(:system).with(environment, "git", "commit", "-m", "🔒️ Update bundle").and_return(true)
+
+      expect(adapter.commit_staged("🔒️ Update bundle", env: environment)).to be true
+      expect(adapter).to have_received(:system).with(environment, "git", "commit", "-m", "🔒️ Update bundle")
     end
 
     it "stages repository-root-relative paths from a monorepo subdirectory" do
