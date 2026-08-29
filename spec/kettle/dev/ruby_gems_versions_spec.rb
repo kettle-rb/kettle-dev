@@ -54,6 +54,13 @@ RSpec.describe Kettle::Dev::RubyGemsVersions do
     versions = described_class.fetch("demo", version_hint: "1.2.3")
 
     expect(versions).to eq([{"number" => "1.2.3"}])
+    expect(Net::HTTP).to have_received(:start).with(
+      "rubygems.org",
+      443,
+      use_ssl: true,
+      open_timeout: described_class::HTTP_OPEN_TIMEOUT_SECONDS,
+      read_timeout: described_class::HTTP_READ_TIMEOUT_SECONDS
+    )
     expect(request_uri.query).to include("_kettle_cache_bust=")
     expect(request_headers.fetch("cache-control")).to eq(["no-cache"])
     expect(request_headers.fetch("pragma")).to eq(["no-cache"])

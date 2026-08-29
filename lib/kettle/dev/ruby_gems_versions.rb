@@ -14,6 +14,8 @@ module Kettle
     module RubyGemsVersions
       CACHE_BUST_TTL_SECONDS = 30 * 24 * 60 * 60
       VERSION_CACHE_TTL_SECONDS = 30 * 24 * 60 * 60
+      HTTP_OPEN_TIMEOUT_SECONDS = 5
+      HTTP_READ_TIMEOUT_SECONDS = 10
       ENV_REFRESH = "KETTLE_RUBYGEMS_REFRESH"
       ENV_MARKER_PATH = "KETTLE_RUBYGEMS_CACHE_BUST_PATH"
       ENV_VERSION_CACHE_PATH = "KETTLE_RUBYGEMS_VERSION_CACHE_PATH"
@@ -32,7 +34,13 @@ module Kettle
             request["Cache-Control"] = "no-cache"
             request["Pragma"] = "no-cache"
           end
-          response = Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == "https") do |http|
+          response = Net::HTTP.start(
+            uri.host,
+            uri.port,
+            use_ssl: uri.scheme == "https",
+            open_timeout: HTTP_OPEN_TIMEOUT_SECONDS,
+            read_timeout: HTTP_READ_TIMEOUT_SECONDS
+          ) do |http|
             http.request(request)
           end
           if response.code.to_i == 404

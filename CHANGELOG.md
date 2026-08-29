@@ -30,6 +30,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - Stage Bundler update lockfiles correctly when releasing a monorepo subgem.
 
+- Bound RubyGems version lookups so release reconciliation cannot wait indefinitely on a live registry request.
+
 ### Security
 
 ## [3.0.16] - 2026-08-28
