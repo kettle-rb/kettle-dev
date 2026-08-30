@@ -19,65 +19,6 @@ PATH
       ruby-progressbar (~> 1.13)
       tty-progressbar (~> 0.18)
 
-PATH
-  remote: /var/home/pboling/src/my/kettle-dev/kettle-changelog
-  specs:
-    kettle-changelog (1.0.6)
-      ast-crispr-markdown-markly (~> 7.1, >= 7.1.1)
-      kettle-dev (>= 3.0.17, < 4.0.0)
-      version_gem (~> 1.1, >= 1.1.15)
-
-PATH
-  remote: /var/home/pboling/src/my/kettle-dev/kettle-drift
-  specs:
-    kettle-drift (1.0.13)
-      version_gem (~> 1.1, >= 1.1.15)
-
-PATH
-  remote: /var/home/pboling/src/my/kettle-dev/kettle-gha-pins
-  specs:
-    kettle-gha-pins (0.3.14)
-      ruby-progressbar (~> 1.13)
-      tty-progressbar (~> 0.18)
-      version_gem (~> 1.1, >= 1.1.15)
-
-PATH
-  remote: /var/home/pboling/src/my/kettle-dev/kettle-ndjson
-  specs:
-    kettle-ndjson (0.1.13)
-      version_gem (~> 1.1, >= 1.1.15)
-
-PATH
-  remote: /var/home/pboling/src/my/kettle-dev/kettle-rb
-  specs:
-    kettle-rb (0.1.11)
-
-PATH
-  remote: /var/home/pboling/src/my/kettle-dev/kettle-soup-cover
-  specs:
-    kettle-soup-cover (3.0.10)
-      kettle-wash (~> 0.1, >= 0.1.6)
-      simplecov (>= 1.0)
-      simplecov-cobertura (>= 4.0)
-      simplecov-console (~> 0.9, >= 0.9.5)
-      simplecov-rcov (~> 0.3, >= 0.3.7)
-      simplecov_lcov_formatter (~> 0.9, >= 0.9.0)
-
-PATH
-  remote: /var/home/pboling/src/my/kettle-dev/kettle-test
-  specs:
-    kettle-test (2.0.21)
-      appraisal2 (~> 3.0, >= 3.0.6)
-      backports (~> 3.0)
-      rspec (~> 3.0)
-      rspec-block_is_expected (~> 1.0, >= 1.0.6)
-      rspec-pending_for (~> 0.1, >= 0.1.20)
-      rspec-stubbed_env (~> 1.0, >= 1.0.6)
-      rspec_junit_formatter (~> 0.6)
-      silent_stream (~> 1.0, >= 1.0.12)
-      timecop-rspec (~> 1.0, >= 1.0.3)
-      turbo_tests2 (~> 3.1, >= 3.1.12)
-
 GEM
   remote: https://gem.coop/
   specs:
@@ -221,6 +162,10 @@ GEM
       ast-merge (= 7.1.4)
       tree_haver (= 7.1.4)
       version_gem (~> 1.1, >= 1.1.15)
+    kettle-changelog (1.0.6)
+      ast-crispr-markdown-markly (~> 7.1, >= 7.1.1)
+      kettle-dev (>= 3.0.17, < 4.0.0)
+      version_gem (~> 1.1, >= 1.1.15)
     kettle-family (1.2.64)
       command_kit (~> 0.6)
       command_kit-completion (~> 0.1)
@@ -232,6 +177,10 @@ GEM
       tsort (~> 0.2)
       tty-screen (~> 0.8)
       unicode-display_width (~> 2.6)
+      version_gem (~> 1.1, >= 1.1.15)
+    kettle-gha-pins (0.3.14)
+      ruby-progressbar (~> 1.13)
+      tty-progressbar (~> 0.18)
       version_gem (~> 1.1, >= 1.1.15)
     kettle-jem (7.1.11)
       addressable (>= 2.8, < 3)
@@ -262,6 +211,27 @@ GEM
       toml-rb (~> 4.2)
       tree_haver (~> 7.1, >= 7.1.4)
       yaml-merge (~> 7.1, >= 7.1.4)
+    kettle-ndjson (0.1.13)
+      version_gem (~> 1.1, >= 1.1.15)
+    kettle-rb (0.1.11)
+    kettle-soup-cover (3.0.10)
+      kettle-wash (~> 0.1, >= 0.1.6)
+      simplecov (>= 1.0)
+      simplecov-cobertura (>= 4.0)
+      simplecov-console (~> 0.9, >= 0.9.5)
+      simplecov-rcov (~> 0.3, >= 0.3.7)
+      simplecov_lcov_formatter (~> 0.9, >= 0.9.0)
+    kettle-test (2.0.21)
+      appraisal2 (~> 3.0, >= 3.0.6)
+      backports (~> 3.0)
+      rspec (~> 3.0)
+      rspec-block_is_expected (~> 1.0, >= 1.0.6)
+      rspec-pending_for (~> 0.1, >= 0.1.20)
+      rspec-stubbed_env (~> 1.0, >= 1.0.6)
+      rspec_junit_formatter (~> 0.6)
+      silent_stream (~> 1.0, >= 1.0.12)
+      timecop-rspec (~> 1.0, >= 1.0.3)
+      turbo_tests2 (~> 3.1, >= 3.1.12)
     kettle-wash (0.1.6)
       version_gem (~> 1.1, >= 1.1.15)
     kramdown (2.5.2)
@@ -623,15 +593,10 @@ DEPENDENCIES
   gem_bench (~> 2.0, >= 2.0.5)
   gitmoji-regex (~> 2.0, >= 2.0.12)
   irb (~> 1.17)
-  kettle-changelog!
+  kettle-changelog (~> 1.0, >= 1.0.3)
   kettle-dev!
-  kettle-drift!
   kettle-family (~> 1.2, >= 1.2.62)
-  kettle-gha-pins!
-  kettle-ndjson!
-  kettle-rb!
-  kettle-soup-cover!
-  kettle-test!
+  kettle-soup-cover (~> 3.0, >= 3.0.9)
   kramdown (~> 2.5, >= 2.5.2)
   kramdown-parser-gfm (~> 1.1)
   mutex_m (~> 0.2)
@@ -724,7 +689,6 @@ CHECKSUMS
   json-merge (7.1.4) sha256=70e78f84a1db0ab1145996a79be5f9951fe928aa76288f540c704e48dd431601
   kettle-changelog (1.0.6)
   kettle-dev (3.0.18)
-  kettle-drift (1.0.13)
   kettle-family (1.2.64) sha256=d2893bc6ec832370f3fc1e4905088f558837797a612e47bd1f63af2fb2c7b29f
   kettle-gha-pins (0.3.14)
   kettle-jem (7.1.11) sha256=7b3676b63d9d75758edb08c9b96211c649683cfcbf4861da56658e4546a687f1
