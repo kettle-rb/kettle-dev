@@ -28,13 +28,22 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [3.0.19] - 2026-08-30
+
+- TAG: [v3.0.19][3.0.19t]
+- COVERAGE: 91.50% -- 5855/6399 lines in 47 files
+- BRANCH COVERAGE: 76.21% -- 2249/2951 branches in 47 files
+- 50.97% documented
+
+### Fixed
+
 - Run changelog coverage with the disposable release lockfile so host platform reconciliation cannot dirty a release.
 
 - Normalize release lockfiles before changelog coverage runs.
 
 - Isolate changelog coverage with the selected coverage Gemfile lockfile during release.
-
-### Security
 
 ## [3.0.18] - 2026-08-30
 
@@ -3657,7 +3666,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.18...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.19...HEAD
+[3.0.19]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.18...v3.0.19
+[3.0.19t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.19
 [3.0.18]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.17...v3.0.18
 [3.0.18t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.18
 [3.0.17]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.16...v3.0.17
