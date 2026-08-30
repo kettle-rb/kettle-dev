@@ -9,11 +9,11 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
         subgem_root = File.join(repository_root, "gems", "example")
         FileUtils.mkdir_p(subgem_root)
         File.write(File.join(subgem_root, "Gemfile.lock"), "initial\n")
-        expect(system("git", "init", "-q", repository_root)).to be(true)
+        expect(system("git", "-c", "maintenance.auto=false", "init", "-q", repository_root)).to be(true)
         expect(system("git", "-C", repository_root, "config", "user.email", "test@example.com")).to be(true)
         expect(system("git", "-C", repository_root, "config", "user.name", "Test User")).to be(true)
         expect(system("git", "-C", repository_root, "add", ".")).to be(true)
-        expect(system("git", "-C", repository_root, "commit", "-q", "-m", "initial")).to be(true)
+        expect(system("git", "-C", repository_root, "-c", "maintenance.auto=false", "commit", "-q", "-m", "initial")).to be(true)
         File.write(File.join(subgem_root, "Gemfile.lock"), "updated\n")
 
         adapter = described_class.new(subgem_root)
@@ -37,7 +37,7 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
           printf '%s|%s' "${KETTLE_DEV_DEV-unset}" "${BUNDLE_GEMFILE-unset}" > hook-environment.txt
         SH
         FileUtils.chmod(0o755, File.join(hooks, "prepare-commit-msg"))
-        expect(system("git", "init", "-q", root)).to be(true)
+        expect(system("git", "-c", "maintenance.auto=false", "init", "-q", root)).to be(true)
         expect(system("git", "-C", root, "config", "user.email", "test@example.com")).to be(true)
         expect(system("git", "-C", root, "config", "user.name", "Test User")).to be(true)
         expect(system("git", "-C", root, "config", "core.hooksPath", hooks)).to be(true)

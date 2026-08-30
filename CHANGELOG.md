@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Prevent temporary Git fixture maintenance from racing with parallel test cleanup.
+
 ### Security
 
 ## [3.0.18] - 2026-08-30
