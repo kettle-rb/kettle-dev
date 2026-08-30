@@ -204,7 +204,7 @@ out to <code>kettle-release</code> for each member that needs publishing.</p>
     <tr>
       <td>Source</td>
       <td>
-<a href="https://gitlab.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitLab-FBA326?style=for-the-badge&amp;logo=Gitlab&amp;logoColor=orange" alt="Source on GitLab.com"></a> <a href="https://codeberg.org/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/CodeBerg-4893CC?style=for-the-badge&amp;logo=CodeBerg&amp;logoColor=blue" alt="Source on CodeBerg.org"></a> <a href="https://github.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitHub-238636?style=for-the-badge&amp;logo=GitHub&amp;logoColor=green" alt="Source on GitHub.com"></a> <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"><img src="https://img.shields.io/badge/KLOC-6.435-FFDD67.svg?style=for-the-badge&amp;logo=YouTube&amp;logoColor=blue" alt="The best SHA: dQw4w9WgXcQ!"></a>
+<a href="https://gitlab.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitLab-FBA326?style=for-the-badge&amp;logo=Gitlab&amp;logoColor=orange" alt="Source on GitLab.com"></a> <a href="https://codeberg.org/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/CodeBerg-4893CC?style=for-the-badge&amp;logo=CodeBerg&amp;logoColor=blue" alt="Source on CodeBerg.org"></a> <a href="https://github.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitHub-238636?style=for-the-badge&amp;logo=GitHub&amp;logoColor=green" alt="Source on GitHub.com"></a> <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"><img src="https://img.shields.io/badge/KLOC-6.438-FFDD67.svg?style=for-the-badge&amp;logo=YouTube&amp;logoColor=blue" alt="The best SHA: dQw4w9WgXcQ!"></a>
 </td>
     </tr>
     <tr>
@@ -799,10 +799,11 @@ graph, including the development-only <code>kettle-changelog</code> dependency.<
 <code>kettle-changelog</code> depends on <code>kettle-dev</code>, so including it in<br>
 <code>kettle-dev</code>’s development bundle creates a downstream development-cycle<br>
 when sibling versions are unpublished. The<br>
-<code>KETTLE_DEV_SKIP_CHANGELOG_DEPENDENCY=true</code> switch remains available for<br>
-an explicit bootstrap/release graph that cannot resolve that downstream<br>
-tool, but it is not used while rewriting the tracked development<br>
-lockfiles.</li>
+<code>--skip-changelog-dependency</code> (or the equivalent<br>
+<code>KETTLE_DEV_SKIP_CHANGELOG_DEPENDENCY=true</code> Gemfile switch) is available<br>
+for an explicit bootstrap/release graph that cannot resolve that<br>
+downstream tool. It is intentionally not the default for standalone<br>
+tracked development lockfiles.</li>
       <li>At release step 1, <code>kettle-release</code> runs the equivalent of<br>
 <code>kettle-family bupb</code>: it updates the primary lockfile and, when present,<br>
 <code>Appraisal.root.gemfile.lock</code>, resets appraisal locks, and commits only<br>

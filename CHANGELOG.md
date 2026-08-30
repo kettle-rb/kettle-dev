@@ -28,9 +28,18 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Add an explicit reset option for release graphs that must omit the optional changelog dependency.
-
 ### Security
+
+## [3.0.23] - 2026-08-30
+
+- TAG: [v3.0.23][3.0.23t]
+- COVERAGE: 91.35% -- 5881/6438 lines in 47 files
+- BRANCH COVERAGE: 76.01% -- 2250/2960 branches in 47 files
+- 50.47% documented
+
+### Fixed
+
+- Add an explicit reset option for release graphs that must omit the optional changelog dependency.
 
 ## [3.0.22] - 2026-08-30
 
@@ -3701,7 +3710,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.22...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.23...HEAD
+[3.0.23]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.22...v3.0.23
+[3.0.23t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.23
 [3.0.22]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.21...v3.0.22
 [3.0.22t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.22
 [3.0.21]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.20...v3.0.21
