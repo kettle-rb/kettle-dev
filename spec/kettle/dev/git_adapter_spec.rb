@@ -10,6 +10,7 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
         FileUtils.mkdir_p(subgem_root)
         File.write(File.join(subgem_root, "Gemfile.lock"), "initial\n")
         expect(system("git", "-c", "maintenance.auto=false", "init", "-q", repository_root)).to be(true)
+        expect(system("git", "-C", repository_root, "config", "maintenance.auto", "false")).to be(true)
         expect(system("git", "-C", repository_root, "config", "user.email", "test@example.com")).to be(true)
         expect(system("git", "-C", repository_root, "config", "user.name", "Test User")).to be(true)
         expect(system("git", "-C", repository_root, "add", ".")).to be(true)
@@ -38,6 +39,7 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
         SH
         FileUtils.chmod(0o755, File.join(hooks, "prepare-commit-msg"))
         expect(system("git", "-c", "maintenance.auto=false", "init", "-q", root)).to be(true)
+        expect(system("git", "-C", root, "config", "maintenance.auto", "false")).to be(true)
         expect(system("git", "-C", root, "config", "user.email", "test@example.com")).to be(true)
         expect(system("git", "-C", root, "config", "user.name", "Test User")).to be(true)
         expect(system("git", "-C", root, "config", "core.hooksPath", hooks)).to be(true)

@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Prevent temporary Git fixture cleanup from racing with Git auto-maintenance on older Ruby CI.
+
 ### Security
 
 ## [3.0.18] - 2026-08-30
