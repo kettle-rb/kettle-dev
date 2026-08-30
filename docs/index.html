@@ -1069,7 +1069,7 @@ prints a recommended <code>kettle-gha-sha-pins --write --upgrade patch</code> co
   </li>
   <li>Image URL skips:
     <ul>
-      <li>Star-history image API URLs are skipped by default because they are volatile.</li>
+      <li>Star-history and contrib.rocks generated image URLs are skipped by default because they are volatile.</li>
       <li>Unresolved Kettle-Jem template tokens are skipped because they are not URLs until templating completes.</li>
       <li>Add project-specific shell-style URL patterns in <code>.kettle-family.yml</code> or a config path pointed to by <code>KETTLE_FAMILY_CONFIG</code>. <code>kettle-family</code> passes this path through when it orchestrates a member release, but <code>kettle-dev</code> owns the matching and validation:
         <pre class="code language-yaml"><code class="language-yaml">  pre_release:

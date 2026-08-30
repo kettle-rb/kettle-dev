@@ -28,9 +28,18 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Skip volatile contrib.rocks contributor images during pre-release Markdown image validation.
-
 ### Security
+
+## [3.0.18] - 2026-08-30
+
+- TAG: [v3.0.18][3.0.18t]
+- COVERAGE: 91.54% -- 5843/6383 lines in 47 files
+- BRANCH COVERAGE: 76.27% -- 2243/2941 branches in 47 files
+- 50.97% documented
+
+### Fixed
+
+- Skip volatile contrib.rocks contributor images during pre-release Markdown image validation.
 
 ## [3.0.17] - 2026-08-29
 
@@ -3636,7 +3645,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.17...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.18...HEAD
+[3.0.18]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.17...v3.0.18
+[3.0.18t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.18
 [3.0.17]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.16...v3.0.17
 [3.0.17t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.17
 [3.0.16]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.15...v3.0.16

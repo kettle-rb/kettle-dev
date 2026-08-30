@@ -150,7 +150,8 @@ Checks:<br />
         </dt>
         <dd><pre class="code"><span class='lbracket'>[</span>
   <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>https://api.star-history.com/svg*</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
-  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>https://star-history.dera.page/svg*</span><span class='tstring_end'>&quot;</span></span>
+  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>https://star-history.dera.page/svg*</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>https://contrib.rocks/image*</span><span class='tstring_end'>&quot;</span></span>
 <span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_freeze'>freeze</span></pre></dd>
       
         <dt id="FAMILY_CONFIG_PATHS-constant" class="">FAMILY_CONFIG_PATHS =
@@ -391,17 +392,17 @@ Checks:<br />
       <pre class="lines">
 
 
-280
 281
 282
 283
 284
 285
 286
-287</pre>
+287
+288</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/pre_release_cli.rb', line 280</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/pre_release_cli.rb', line 281</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='label'>check_num:</span> <span class='int'>1</span><span class='comma'>,</span> <span class='label'>event_recorder:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='ivar'>@check_num</span> <span class='op'>=</span> <span class='lparen'>(</span><span class='id identifier rubyid_check_num'>check_num</span> <span class='op'>||</span> <span class='int'>1</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_to_i'>to_i</span>
@@ -448,7 +449,6 @@ Checks:<br />
       <pre class="lines">
 
 
-319
 320
 321
 322
@@ -458,10 +458,11 @@ Checks:<br />
 326
 327
 328
-329</pre>
+329
+330</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/pre_release_cli.rb', line 319</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/pre_release_cli.rb', line 320</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_check_github_actions_sha_pins!'>check_github_actions_sha_pins!</span>
   <span class='id identifier rubyid_offline'>offline</span> <span class='op'>=</span> <span class='id identifier rubyid_env_truthy?'>env_truthy?</span><span class='lparen'>(</span><span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>KETTLE_PRE_RELEASE_GHA_SHA_PINS_OFFLINE</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='rparen'>)</span>
@@ -504,7 +505,6 @@ Checks:<br />
       <pre class="lines">
 
 
-414
 415
 416
 417
@@ -554,10 +554,11 @@ Checks:<br />
 461
 462
 463
-464</pre>
+464
+465</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/pre_release_cli.rb', line 414</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/pre_release_cli.rb', line 415</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_check_markdown_images_http!'>check_markdown_images_http!</span>
   <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>[kettle-pre-release] Check 4: Validate Markdown image links (cached HTTP HEAD, with GET fallback)</span><span class='tstring_end'>&quot;</span></span>
@@ -640,7 +641,6 @@ Checks:<br />
       <pre class="lines">
 
 
-394
 395
 396
 397
@@ -656,10 +656,11 @@ Checks:<br />
 407
 408
 409
-410</pre>
+410
+411</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/pre_release_cli.rb', line 394</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/pre_release_cli.rb', line 395</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_check_markdown_references!'>check_markdown_references!</span>
   <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>[kettle-pre-release] Check 3: Validate Markdown references and local heading targets</span><span class='tstring_end'>&quot;</span></span>
@@ -709,7 +710,6 @@ Checks:<br />
       <pre class="lines">
 
 
-334
 335
 336
 337
@@ -754,10 +754,11 @@ Checks:<br />
 376
 377
 378
-379</pre>
+379
+380</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/pre_release_cli.rb', line 334</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/pre_release_cli.rb', line 335</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_check_markdown_uri_normalization!'>check_markdown_uri_normalization!</span>
   <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>[kettle-pre-release] Check 2: Normalize Markdown image URLs</span><span class='tstring_end'>&quot;</span></span>
@@ -825,7 +826,6 @@ Checks:<br />
       <pre class="lines">
 
 
-381
 382
 383
 384
@@ -834,10 +834,11 @@ Checks:<br />
 387
 388
 389
-390</pre>
+390
+391</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/pre_release_cli.rb', line 381</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/pre_release_cli.rb', line 382</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_normalized_markdown_image_url'>normalized_markdown_image_url</span><span class='lparen'>(</span><span class='id identifier rubyid_url_str'>url_str</span><span class='rparen'>)</span>
   <span class='comment'># Kettle-Jem template tokens are intentionally not URI components yet;
@@ -892,7 +893,6 @@ Checks:<br />
       <pre class="lines">
 
 
-291
 292
 293
 294
@@ -916,10 +916,11 @@ Checks:<br />
 312
 313
 314
-315</pre>
+315
+316</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/pre_release_cli.rb', line 291</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/pre_release_cli.rb', line 292</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_run'>run</span>
   <span class='id identifier rubyid_checks'>checks</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
