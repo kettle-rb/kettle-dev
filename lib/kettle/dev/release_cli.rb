@@ -927,6 +927,12 @@ module Kettle
         return release_child_command("bundle exec kettle-changelog") unless gemfile
 
         environment = {"BUNDLE_GEMFILE" => gemfile}
+        # Changelog coverage runs the target project's bundle. Give that nested
+        # invocation the same disposable lockfile used by release tasks so
+        # Bundler's host-platform reconciliation cannot dirty the prep commit.
+        if (lockfile = release_task_lockfile_path)
+          environment["KETTLE_CHANGELOG_COVERAGE_LOCKFILE"] = lockfile
+        end
         if (local_root = release_changelog_local_root)
           environment["KETTLE_CHANGELOG_DEV_ROOT"] = local_root
         end

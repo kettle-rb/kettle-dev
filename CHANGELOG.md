@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Run changelog coverage with the disposable release lockfile so host platform reconciliation cannot dirty a release.
+
 ### Security
 
 ## [3.0.18] - 2026-08-30

@@ -469,16 +469,26 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
       it "runs the standalone changelog through a configured alternate bundle" do
         Dir.mktmpdir do |root|
+          allow(ci_helpers).to receive(:project_root).and_return(root)
           gemfile = File.join(root, "Gemfile")
+          lockfile = File.join(root, "Gemfile.lock")
           File.write(gemfile, "source 'https://gem.coop'\n")
+          File.write(lockfile, "PLATFORMS\n  x86_64-linux\n")
           stub_env("K_RELEASE_CHANGELOG_GEMFILE" => gemfile)
           local_cli = described_class.new
+          coverage_lockfile = File.join(root, "tmp", "kettle-release", "lockfiles", "Gemfile-#{Process.pid}.lock")
 
           expect(local_cli).to receive(:run_cmd!).with(
-            a_string_ending_with("BUNDLE_GEMFILE=#{Shellwords.escape(gemfile)} bundle exec kettle-changelog")
+            a_string_ending_with(
+              "BUNDLE_GEMFILE=#{Shellwords.escape(gemfile)} " \
+              "KETTLE_CHANGELOG_COVERAGE_LOCKFILE=#{Shellwords.escape(coverage_lockfile)} " \
+              "bundle exec kettle-changelog"
+            )
           )
 
           local_cli.send(:run_changelog!)
+          expect(File.read(coverage_lockfile)).to eq(File.read(lockfile))
+          local_cli.send(:cleanup_release_task_lockfile!)
         end
       end
 
