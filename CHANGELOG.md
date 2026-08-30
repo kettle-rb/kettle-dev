@@ -22,6 +22,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- Mark coordinated family release-preparation commits so CI can distinguish aggregate validation from duplicate member release commits.
+
 ### Deprecated
 
 ### Removed

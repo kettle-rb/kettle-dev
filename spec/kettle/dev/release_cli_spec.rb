@@ -840,6 +840,14 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect(git).not_to receive(:commit_amend_no_edit)
         expect(cli.send(:commit_release_prep!, "1.0.0")).to be true
       end
+
+      it "marks aggregate family validation and member release commits explicitly" do
+        stub_env("KETTLE_RELEASE_FAMILY_CI_MODE" => "validation")
+        expect(cli.send(:release_prep_ci_marker)).to eq(" [kettle-family:aggregate-ci]")
+
+        stub_env("KETTLE_RELEASE_FAMILY_CI_MODE" => "member")
+        expect(cli.send(:release_prep_ci_marker)).to eq(" [kettle-family:aggregate-member]")
+      end
     end
 
     describe "#push!" do

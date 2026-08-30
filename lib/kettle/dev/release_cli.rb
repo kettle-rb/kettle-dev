@@ -2037,7 +2037,7 @@ module Kettle
       end
 
       def commit_release_prep!(version)
-        msg = "🔖 Prepare release v#{version}"
+        msg = "🔖 Prepare release v#{version}#{release_prep_ci_marker}"
         # Stage all changes (including new/untracked files) prior to committing
         abort("Failed to stage release prep changes.") unless @git.add_all
         out, _ = git_output(["status", "--porcelain"])
@@ -2048,6 +2048,17 @@ module Kettle
           abort("Failed to commit release prep changes.") unless @git.commit_all(msg, env: release_git_hook_environment)
           reconcile_release_prep_commit!
           true
+        end
+      end
+
+      def release_prep_ci_marker
+        case ENV.fetch("KETTLE_RELEASE_FAMILY_CI_MODE", "").to_s.strip
+        when "validation"
+          " [kettle-family:aggregate-ci]"
+        when "member"
+          " [kettle-family:aggregate-member]"
+        else
+          ""
         end
       end
 
