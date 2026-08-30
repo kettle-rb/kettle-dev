@@ -191,13 +191,14 @@ module Kettle
 
       public
 
-      def initialize(start_step: 0, local_ci: false, version: nil, appraisal_task: nil, skip_steps: nil, skip_changelog: nil, skip_bundle_audit: nil, ci_workflows: nil, skip_remotes: nil, required_remotes: nil, secrets_provider_name: nil, yes: false, **options)
+      def initialize(start_step: 0, local_ci: false, version: nil, appraisal_task: nil, skip_steps: nil, skip_changelog: nil, skip_appraisals: nil, skip_bundle_audit: nil, ci_workflows: nil, skip_remotes: nil, required_remotes: nil, secrets_provider_name: nil, yes: false, **options)
         @root = Kettle::Dev::CIHelpers.project_root
         @git = Kettle::Dev::GitAdapter.new(@root)
         @start_step = (start_step || 0).to_i
         @start_step = 0 if @start_step < 0
         @skip_steps = normalize_skip_steps(skip_steps)
         @skip_changelog = truthy_value?(skip_changelog) || truthy_value?(ENV["KETTLE_DEV_SKIP_CHANGELOG"])
+        @skip_appraisals = truthy_value?(skip_appraisals) || truthy_value?(ENV["KETTLE_DEV_SKIP_APPRAISALS"])
         @ci_workflows = normalize_ci_workflows(ci_workflows || ENV["K_RELEASE_CI_WORKFLOWS"])
         @skip_remotes = normalize_remote_names(skip_remotes || ENV["K_RELEASE_SKIP_REMOTES"], "skip remotes")
         @required_remotes = normalize_required_remotes(required_remotes)
@@ -371,7 +372,9 @@ module Kettle
         # 5. appraisal:generate (optional) + canonical docs build
         if run_step?(5)
           appraisals_path = File.join(@root, "Appraisals")
-          if File.file?(appraisals_path)
+          if skip_appraisals?
+            puts "Skipping #{@appraisal_task} because --skip-appraisals was provided."
+          elsif File.file?(appraisals_path)
             puts "Appraisals detected at #{Kettle::Dev.display_path(appraisals_path)}. Running: bin/rake #{@appraisal_task}"
             run_cmd!(release_project_command("bin/rake #{@appraisal_task}"))
           else
@@ -678,6 +681,10 @@ module Kettle
 
       def skip_changelog?
         @skip_changelog
+      end
+
+      def skip_appraisals?
+        @skip_appraisals
       end
 
       def prepare_release_lockfiles_for_commit!

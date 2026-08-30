@@ -22,6 +22,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- Add an appraisal-only release skip while preserving documentation generation.
+
 ### Deprecated
 
 ### Removed

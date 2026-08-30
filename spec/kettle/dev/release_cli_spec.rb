@@ -127,6 +127,13 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       )
     end
 
+    it "supports skipping appraisal generation without skipping documentation" do
+      local_cli = described_class.new(skip_appraisals: true)
+
+      expect(local_cli.send(:skip_appraisals?)).to be(true)
+      expect(local_cli.send(:skip_changelog?)).to be(false)
+    end
+
     it "summarizes common release command steps" do
       local_cli = described_class.new
 
