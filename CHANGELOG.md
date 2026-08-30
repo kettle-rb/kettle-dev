@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Preserve configured monorepo member-path lockfiles during release while rejecting unapproved local paths.
+
 ### Security
 
 ## [3.0.19] - 2026-08-30

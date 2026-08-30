@@ -21,6 +21,8 @@ module Kettle
         "GALTZO_FLOSS_DEV" => "false",
         "UR_BRAIN_DEV" => "false"
       }.freeze
+      ALLOWED_LOCAL_PATH_ROOTS_ENV = "KETTLE_RELEASE_ALLOWED_LOCAL_PATH_ROOTS"
+      ALLOWED_LOCAL_PATH_ENVS_ENV = "KETTLE_RELEASE_ALLOWED_LOCAL_PATH_ENVS"
       RELEASE_LOCKFILES_TARGET = "release-lockfiles"
       SUPPORTED_TARGETS = ["Gemfile.lock", "Appraisal.root.gemfile.lock", RELEASE_LOCKFILES_TARGET].freeze
       UNBUNDLED_ENV_KEYS = (BundlerEnvGuard::RESET_ENV_KEYS + %w[
@@ -110,12 +112,18 @@ module Kettle
         @root = root
         @command_runner = command_runner
         @release_platforms = {}
+        @allowed_local_path_roots = configured_allowed_local_path_roots
+        @allowed_local_path_env_names = configured_allowed_local_path_env_names
       end
 
       def reset(target, skip_changelog_dependency: false)
         BundlerEnvGuard.warn_unexpected_env!
         paths = lockfile_paths_for(target)
-        force_full_update = release_lockfiles_target?(target)
+        # A monorepo lockfile may deliberately use paths rooted in the
+        # repository's members directory. Keep that valid development graph;
+        # only rebuild when an unapproved path or other diagnostic remains.
+        force_full_update = release_lockfiles_target?(target) &&
+          (allowed_local_path_roots.empty? || paths.any? { |path| normalization_needed?(path) })
         platforms = release_platforms_for(paths) if force_full_update
         uninstall_unreleased_local_gems(paths) if force_full_update
         paths.each do |path|
@@ -251,7 +259,7 @@ module Kettle
 
       def diagnostics(path)
         diagnostics = []
-        local_path_remote_lines(path).each do |line_number|
+        disallowed_local_path_remote_lines(path).each do |line_number|
           diagnostics << "#{display_path(path)} has local path remote at line #{line_number}"
         end
         empty_registry_checksums(path).each do |name, version, line_number|
@@ -308,13 +316,16 @@ module Kettle
       end
 
       def normalization_env
-        DEFAULT_DISABLED_ENV.merge(dynamic_local_path_env)
+        DEFAULT_DISABLED_ENV
+          .reject { |name, _| allowed_local_path_env_names.include?(name) }
+          .merge(dynamic_local_path_env)
       end
 
       def dynamic_local_path_env
         ENV.each_with_object({}) do |(key, value), env|
           next unless key.end_with?("_DEV", "_LOCAL")
           next unless local_path_env_value?(value)
+          next if allowed_local_path_env_names.include?(key)
 
           env[key] = "false"
         end
@@ -329,11 +340,47 @@ module Kettle
       end
 
       def has_local_path_remote?(path)
-        !local_path_remote_lines(path).empty?
+        !disallowed_local_path_remote_lines(path).empty?
       end
 
       def local_path_remote_lines(path)
         self.class.local_path_remote_lines_from_source(File.read(path))
+      end
+
+      attr_reader :allowed_local_path_roots, :allowed_local_path_env_names
+
+      def disallowed_local_path_remote_lines(path)
+        local_path_remote_lines(path).reject do |line_number|
+          allowed_local_path?(local_path_remote_at(path, line_number))
+        end
+      end
+
+      def configured_allowed_local_path_roots
+        ENV.fetch(ALLOWED_LOCAL_PATH_ROOTS_ENV, "").split(File::PATH_SEPARATOR).filter_map do |value|
+          next if value.strip.empty?
+
+          canonical_path(value)
+        end.uniq
+      end
+
+      def configured_allowed_local_path_env_names
+        ENV.fetch(ALLOWED_LOCAL_PATH_ENVS_ENV, "").split(",").map(&:strip).reject(&:empty?).uniq
+      end
+
+      def local_path_remote_at(path, line_number)
+        File.readlines(path)[line_number - 1].to_s.split("remote:", 2).last.to_s.strip
+      end
+
+      def allowed_local_path?(path)
+        remote = canonical_path(path)
+        allowed_local_path_roots.any? { |root| remote == root || remote.start_with?("#{root}/") }
+      end
+
+      def canonical_path(path)
+        expanded = File.expand_path(path, root)
+        File.realpath(expanded)
+      rescue Errno::ENOENT
+        expanded
       end
 
       def empty_registry_checksums(path)

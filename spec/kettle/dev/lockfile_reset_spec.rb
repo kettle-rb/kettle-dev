@@ -129,6 +129,36 @@ RSpec.describe Kettle::Dev::LockfileReset do
     expect(commands.first).to include("--update --bundler --add-checksums")
   end
 
+  it "preserves configured monorepo path sources during a release lockfile reset" do
+    monorepo_gems = File.join(@root, "gems")
+    local_gem = File.join(monorepo_gems, "demo")
+    FileUtils.mkdir_p(local_gem)
+    File.write(File.join(@root, "Gemfile"), "source \"https://rubygems.org\"\n")
+    File.write(File.join(@root, "Gemfile.lock"), <<~LOCK)
+      PATH
+        remote: #{local_gem}
+        specs:
+          demo (0.1.0)
+
+      DEPENDENCIES
+        demo!
+    LOCK
+
+    commands = []
+    stub_env(
+      "KETTLE_RELEASE_ALLOWED_LOCAL_PATH_ROOTS" => monorepo_gems,
+      "KETTLE_RELEASE_ALLOWED_LOCAL_PATH_ENVS" => "STRUCTUREDMERGE_DEV",
+      "STRUCTUREDMERGE_DEV" => monorepo_gems
+    )
+    reset = described_class.new(root: @root, command_runner: ->(command) { commands << command })
+
+    reset.reset("release-lockfiles")
+
+    expect(commands).to be_empty
+    expect(reset.diagnostics(File.join(@root, "Gemfile.lock"))).to be_empty
+    expect(reset.normalization_env).not_to include("STRUCTUREDMERGE_DEV" => "false")
+  end
+
   it "does not update Bundler for ordinary targeted lockfile resets" do
     reset = described_class.new(root: @root, command_runner: ->(_command) {})
     path = File.join(@root, "Gemfile.lock")

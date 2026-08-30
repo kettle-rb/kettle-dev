@@ -508,7 +508,7 @@ What it does:
       | Role | Lockfile | Used by |
       | --- | --- | --- |
       | Family runner | The family/orchestrator bundle | May resolve local sibling gems to run `kettle-family`; it never becomes the target project's lockfile. |
-      | Canonical release state | Tracked `Gemfile.lock` and, when present, `Appraisal.root.gemfile.lock` | Step 1 Bundler update, steps 3-6 setup/checks/appraisals/docs/prep commit, and step 16 checksums. These commands disable local `*_DEV`/`*_LOCAL` switches. |
+      | Canonical release state | Tracked `Gemfile.lock` and, when present, `Appraisal.root.gemfile.lock` | Step 1 Bundler update, steps 3-6 setup/checks/appraisals/docs/prep commit, and step 16 checksums. These commands disable local `*_DEV`/`*_LOCAL` switches, except a narrow member-root policy supplied by `kettle-family` for an explicit monorepo. |
       | Release task state | `tmp/kettle-release/lockfiles/Gemfile-<pid>.lock` | Steps 14-15 build and publish only. It begins as a copy of canonical `Gemfile.lock` and is deleted at process exit. |
       | Tool state | A tool-owned Gemfile such as `kettle-changelog/gemfiles/release.gemfile` | The tool's own dependencies. The command still disables local dependency switches before it can trigger target-project work. |
       | Git-hook state | Canonical release environment | Every release-created commit and amend. Hooks remain enabled, but cannot inherit the family runner's local sibling graph. |
@@ -518,6 +518,14 @@ What it does:
       a release phase. `ReleaseCLI#release_child_command` owns canonical/tool
       command construction; `ReleaseCLI#release_project_command` selects the
       disposable task lock only for build and publish.
+
+      The monorepo exception is intentionally narrow. `kettle-family` derives
+      it only from `family.mode: monorepo` and its configured members root, then
+      passes the allowed root and activating environment name to
+      `kettle-release`. A sibling Kettle Dev checkout is not covered: normal
+      releases must use the released `kettle-family`, `kettle-changelog`, and
+      other Kettle dependencies. Local Kettle Dev integration is an explicit
+      development opt-in, never a canonical release-lock default.
 - Tips:
     - The commit message helper `exe/kettle-commit-msg` prefers project-local `.git-hooks` (then falls back to `~/.git-hooks`).
     - The goalie file `commit-subjects-goalie.txt` controls when a footer is appended; customize `footer-template.erb.txt` as you like.
