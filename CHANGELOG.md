@@ -28,15 +28,13 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Prevent temporary Git fixture cleanup from racing with Git auto-maintenance on older Ruby CI.
-
 ### Security
 
 ## [3.0.18] - 2026-08-30
 
 - TAG: [v3.0.18][3.0.18t]
-- COVERAGE: 91.50% -- 5847/6390 lines in 47 files
-- BRANCH COVERAGE: 76.25% -- 2244/2943 branches in 47 files
+- COVERAGE: 91.58% -- 5852/6390 lines in 47 files
+- BRANCH COVERAGE: 76.21% -- 2243/2943 branches in 47 files
 - 50.97% documented
 
 ### Fixed
@@ -46,6 +44,8 @@ Please file a bug if you notice a violation of semantic versioning.
 - Prevent temporary Git fixture maintenance from racing with parallel test cleanup.
 
 - Ensure release Git hooks receive nil-valued environment overrides as unset variables on JRuby.
+
+- Prevent temporary Git fixture cleanup from racing with Git auto-maintenance on older Ruby CI.
 
 ## [3.0.17] - 2026-08-29
 
