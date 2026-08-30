@@ -251,6 +251,11 @@ module Kettle
       attr_reader :finished_report
 
       def run_with_release_environment
+        # Changelog generation at step 0 runs the target project's test bundle
+        # to collect coverage. Normalize its canonical release lockfile before
+        # that subprocess starts; otherwise a local development PATH lock can
+        # force Bundler to resolve an invalid mixed local/released graph.
+        prepare_release_lockfiles_for_release_tasks! if release_lockfile_preflight_needed?
         run_pre_release_checks! if run_step?(0)
 
         # 1. Ensure Bundler version and record its current release in the
@@ -357,7 +362,6 @@ module Kettle
         end
 
         prepare_rubocop_lts_local_branch! if rubocop_lts_release_preflight_needed?
-        prepare_release_lockfiles_for_release_tasks! if release_lockfile_preflight_needed?
 
         # 3. bin/setup
         run_cmd!(release_setup_command) if run_step?(3)
@@ -602,7 +606,10 @@ module Kettle
       end
 
       def release_lockfile_preflight_needed?
-        (3..5).any? { |step| run_step?(step) }
+        # Step 0 invokes kettle-changelog, which runs `bundle exec kettle-test`
+        # for fresh coverage. It therefore needs the same registry-backed
+        # release lockfile as later setup, task, and documentation steps.
+        run_step?(0) || (3..5).any? { |step| run_step?(step) }
       end
 
       def prepare_rubocop_lts_local_branch!

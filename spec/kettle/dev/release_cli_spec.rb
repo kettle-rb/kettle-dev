@@ -710,6 +710,15 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     end
 
     describe "#run_pre_release_checks!" do
+      it "normalizes release lockfiles before changelog coverage can run" do
+        release_cli = described_class.new(start_step: 0, skip_steps: "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19")
+
+        expect(release_cli).to receive(:prepare_release_lockfiles_for_release_tasks!).ordered
+        expect(release_cli).to receive(:run_pre_release_checks!).ordered
+
+        expect { release_cli.run }.not_to raise_error
+      end
+
       it "runs kettle-pre-release checks from the beginning and invokes kettle-changelog" do
         pre_release = instance_double(Kettle::Dev::PreReleaseCLI, run: nil)
         expect(Kettle::Dev::PreReleaseCLI).to receive(:new).with(check_num: 1, event_recorder: anything).and_return(pre_release)

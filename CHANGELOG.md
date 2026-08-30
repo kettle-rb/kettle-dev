@@ -30,6 +30,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - Run changelog coverage with the disposable release lockfile so host platform reconciliation cannot dirty a release.
 
+- Normalize release lockfiles before changelog coverage runs.
+
 ### Security
 
 ## [3.0.18] - 2026-08-30
