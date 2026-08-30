@@ -22,8 +22,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
-- Add an appraisal-only release skip while preserving documentation generation.
-
 ### Deprecated
 
 ### Removed
@@ -31,6 +29,17 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Fixed
 
 ### Security
+
+## [3.0.22] - 2026-08-30
+
+- TAG: [v3.0.22][3.0.22t]
+- COVERAGE: 91.58% -- 5893/6435 lines in 47 files
+- BRANCH COVERAGE: 76.32% -- 2259/2960 branches in 47 files
+- 50.47% documented
+
+### Changed
+
+- Add an appraisal-only release skip while preserving documentation generation.
 
 ## [3.0.21] - 2026-08-30
 
@@ -3690,7 +3699,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.21...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.22...HEAD
+[3.0.22]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.21...v3.0.22
+[3.0.22t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.22
 [3.0.21]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.20...v3.0.21
 [3.0.21t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.21
 [3.0.20]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.19...v3.0.20

@@ -204,7 +204,7 @@ out to <code>kettle-release</code> for each member that needs publishing.</p>
     <tr>
       <td>Source</td>
       <td>
-<a href="https://gitlab.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitLab-FBA326?style=for-the-badge&amp;logo=Gitlab&amp;logoColor=orange" alt="Source on GitLab.com"></a> <a href="https://codeberg.org/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/CodeBerg-4893CC?style=for-the-badge&amp;logo=CodeBerg&amp;logoColor=blue" alt="Source on CodeBerg.org"></a> <a href="https://github.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitHub-238636?style=for-the-badge&amp;logo=GitHub&amp;logoColor=green" alt="Source on GitHub.com"></a> <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"><img src="https://img.shields.io/badge/KLOC-6.430-FFDD67.svg?style=for-the-badge&amp;logo=YouTube&amp;logoColor=blue" alt="The best SHA: dQw4w9WgXcQ!"></a>
+<a href="https://gitlab.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitLab-FBA326?style=for-the-badge&amp;logo=Gitlab&amp;logoColor=orange" alt="Source on GitLab.com"></a> <a href="https://codeberg.org/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/CodeBerg-4893CC?style=for-the-badge&amp;logo=CodeBerg&amp;logoColor=blue" alt="Source on CodeBerg.org"></a> <a href="https://github.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitHub-238636?style=for-the-badge&amp;logo=GitHub&amp;logoColor=green" alt="Source on GitHub.com"></a> <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"><img src="https://img.shields.io/badge/KLOC-6.435-FFDD67.svg?style=for-the-badge&amp;logo=YouTube&amp;logoColor=blue" alt="The best SHA: dQw4w9WgXcQ!"></a>
 </td>
     </tr>
     <tr>
@@ -717,7 +717,7 @@ Examples:</li>
 Markdown fixtures under <code>spec/</code> and <code>test/</code>, along with <code>tmp/</code>, are intentionally excluded.</li>
       <li>Skips pre-release checks for any <code>start_step</code> greater than <code>0</code>, so resumptions begin directly at the requested numbered step.</li>
       <li>Verifies Bundler &gt;= 2.7, updates the primary and appraisal bundles with <code>bundle update --bundler</code>, and commits those lockfiles separately as <code>🔒️ Update bundle</code> before release preparation.</li>
-      <li>Runs sanity checks (<code>bin/setup</code>, <code>bin/rake</code>), confirms version/changelog, optionally updates Appraisals, regenerates docs via <code>bin/rake yard</code>, and commits “🔖 Prepare release vX.Y.Z”.</li>
+      <li>Runs sanity checks (<code>bin/setup</code>, <code>bin/rake</code>), confirms version/changelog, optionally updates Appraisals, regenerates docs via <code>bin/rake yard</code>, and commits “🔖 Prepare release vX.Y.Z”. Use <code>--skip-appraisals</code> only to omit appraisal generation while retaining documentation generation.</li>
       <li>Optionally runs your CI locally with <code>act</code> before any push:
         <ul>
           <li>Enable with env: <code>K_RELEASE_LOCAL_CI="true"</code> (run automatically) or <code>K_RELEASE_LOCAL_CI="ask"</code> (prompt [Y/n]).</li>
@@ -761,9 +761,10 @@ Markdown fixtures under <code>spec/</code> and <code>test/</code>, along with <c
   </li>
   <li>Examples:
     <ul>
-      <li>After a transient CI or provider failure with no code, version, changelog, or lockfile changes, restart from monitoring: <code>bundle exec kettle-release --start-step 10</code> (the legacy <code>start_step=10</code> spelling remains supported)</li>
+      <li>After a transient CI or provider failure with no code, version, changelog, or lockfile changes, restart at the failed step: for example, <code>bundle exec kettle-release --start-step 10</code> for CI monitoring or <code>bundle exec kettle-release --start-step 15</code> for RubyGems publication. The legacy <code>start_step=10</code> spelling remains supported.</li>
       <li>If the failure required a code or release-metadata change, rerun <code>bundle exec kettle-release</code> from step 0 so the release checks, prep metadata, commit, and CI all describe the new release commit.</li>
       <li>For an intentional same-commit CI bypass, use <code>bundle exec kettle-release --skip-ci</code> (or <code>--skip-steps 10</code>); this skips remote CI monitoring only and does not claim that CI passed.</li>
+      <li>To retain release documentation generation while bypassing a known Appraisal-only issue, use <code>bundle exec kettle-release --skip-appraisals</code>.</li>
       <li>After fixing a failed pre-release gate, rerun from step 0: <code>bundle exec kettle-release</code>
 </li>
       <li>After intentionally handling a failed pre-release gate, skip it and start numbered release steps: <code>bundle exec kettle-release --start-step 1</code>
