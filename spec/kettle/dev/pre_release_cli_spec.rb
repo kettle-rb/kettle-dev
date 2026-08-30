@@ -284,18 +284,19 @@ RSpec.describe Kettle::Dev::PreReleaseCLI do
       expect(output.string).to include("Images skipped")
     end
 
-    it "skips built-in volatile star-history image URLs by default" do
+    it "skips built-in volatile generated image URLs by default" do
       allow(Kettle::Dev::PreReleaseCLI::Markdown).to receive_messages(
         project_markdown_files: [],
         extract_image_urls_from_files: [
           "https://api.star-history.com/svg?repos=kettle-dev/kettle-test&type=Date",
-          "https://star-history.dera.page/svg?repos=kettle-dev/kettle-test&type=date&legend=top-left"
+          "https://star-history.dera.page/svg?repos=kettle-dev/kettle-test&type=date&legend=top-left",
+          "https://contrib.rocks/image?repo=kettle-dev/kettle-test"
         ]
       )
       expect(Kettle::Dev::PreReleaseCLI::HTTP).not_to receive(:head_ok?)
 
       expect { described_class.new(check_num: 3).run }
-        .to output(/Image URL checks: 0 cached, 0 live\.\n\[kettle-pre-release\] Skipped 2 image URL check\(s\)\./).to_stdout
+        .to output(/Image URL checks: 0 cached, 0 live\.\n\[kettle-pre-release\] Skipped 3 image URL check\(s\)\./).to_stdout
     end
 
     it "skips unresolved Kettle-Jem template image URLs" do

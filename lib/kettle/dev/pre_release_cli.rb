@@ -33,7 +33,8 @@ module Kettle
       IMAGE_URL_CACHE_TTL_SECONDS = 7 * 24 * 60 * 60
       DEFAULT_IMAGE_URL_SKIP_PATTERNS = [
         "https://api.star-history.com/svg*",
-        "https://star-history.dera.page/svg*"
+        "https://star-history.dera.page/svg*",
+        "https://contrib.rocks/image*"
       ].freeze
       FAMILY_CONFIG_PATHS = [".kettle-family.yml", ".structuredmerge/kettle-family.yml"].freeze
 

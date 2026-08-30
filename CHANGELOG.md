@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Skip volatile contrib.rocks contributor images during pre-release Markdown image validation.
+
 ### Security
 
 ## [3.0.17] - 2026-08-29
