@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Ensure release Git hooks receive nil-valued environment overrides as unset variables on JRuby.
+
 ### Security
 
 ## [3.0.18] - 2026-08-30

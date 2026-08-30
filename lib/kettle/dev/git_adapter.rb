@@ -429,11 +429,25 @@ module Kettle
         return system(*command) if env.empty? && @root == Dir.pwd
         return system(*command, chdir: @root) if env.empty?
 
+        # JRuby 9.2 passes nil-valued entries to child processes as empty
+        # strings. Use POSIX env(1) for those entries so release hooks see an
+        # actually absent Bundler variable on every supported Unix engine.
+        if env.values.any?(&:nil?) && !Gem.win_platform?
+          command = command_with_unset_environment(command, env)
+          env = {}
+        end
+
         if @root == Dir.pwd
           system(env, *command)
         else
           system(env, *command, chdir: @root)
         end
+      end
+
+      def command_with_unset_environment(command, env)
+        unset_names = env.select { |_name, value| value.nil? }.keys
+        set_values = env.reject { |_name, value| value.nil? }.map { |name, value| "#{name}=#{value}" }
+        ["env", *unset_names.flat_map { |name| ["-u", name] }, *set_values, *command]
       end
     end
   end

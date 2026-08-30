@@ -309,6 +309,20 @@ RSpec.describe Kettle::Dev::GitAdapter, :real_git_adapter do
       expect(adapter).to have_received(:system).with(environment, "git", "commit", "-m", "🔒️ Update bundle")
     end
 
+    it "uses env -u for nil-valued hook environment overrides on Unix" do
+      skip "Windows does not provide POSIX env -u" if Gem.win_platform?
+
+      adapter = described_class.new
+      environment = {"KETTLE_DEV_DEV" => "false", "BUNDLE_GEMFILE" => nil}
+      allow(adapter).to receive(:system)
+        .with({}, "env", "-u", "BUNDLE_GEMFILE", "KETTLE_DEV_DEV=false", "git", "commit", "-m", "🔒️ Update bundle")
+        .and_return(true)
+
+      expect(adapter.commit_staged("🔒️ Update bundle", env: environment)).to be(true)
+      expect(adapter).to have_received(:system)
+        .with({}, "env", "-u", "BUNDLE_GEMFILE", "KETTLE_DEV_DEV=false", "git", "commit", "-m", "🔒️ Update bundle")
+    end
+
     it "stages repository-root-relative paths from a monorepo subdirectory" do
       adapter = described_class.new("/workspace/monorepo/gems/example")
       allow(adapter).to receive(:git_system)
