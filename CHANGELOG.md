@@ -22,8 +22,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
-- Mark coordinated family release-preparation commits so CI can distinguish aggregate validation from duplicate member release commits.
-
 ### Deprecated
 
 ### Removed
@@ -31,6 +29,17 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Fixed
 
 ### Security
+
+## [3.0.21] - 2026-08-30
+
+- TAG: [v3.0.21][3.0.21t]
+- COVERAGE: 91.66% -- 5894/6430 lines in 47 files
+- BRANCH COVERAGE: 76.40% -- 2260/2958 branches in 47 files
+- 50.47% documented
+
+### Changed
+
+- Mark coordinated family release-preparation commits so CI can distinguish aggregate validation from duplicate member release commits.
 
 ## [3.0.20] - 2026-08-30
 
@@ -3679,7 +3688,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.20...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.21...HEAD
+[3.0.21]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.20...v3.0.21
+[3.0.21t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.21
 [3.0.20]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.19...v3.0.20
 [3.0.20t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.20
 [3.0.19]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.18...v3.0.19
