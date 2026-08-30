@@ -28,20 +28,20 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Prevent temporary Git fixture maintenance from racing with parallel test cleanup.
-
 ### Security
 
 ## [3.0.18] - 2026-08-30
 
 - TAG: [v3.0.18][3.0.18t]
-- COVERAGE: 91.54% -- 5843/6383 lines in 47 files
-- BRANCH COVERAGE: 76.27% -- 2243/2941 branches in 47 files
+- COVERAGE: 91.23% -- 5823/6383 lines in 47 files
+- BRANCH COVERAGE: 76.03% -- 2236/2941 branches in 47 files
 - 50.97% documented
 
 ### Fixed
 
 - Skip volatile contrib.rocks contributor images during pre-release Markdown image validation.
+
+- Prevent temporary Git fixture maintenance from racing with parallel test cleanup.
 
 ## [3.0.17] - 2026-08-29
 
