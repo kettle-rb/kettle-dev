@@ -35,7 +35,7 @@ RSpec.describe Kettle::Dev::ResetCLI do
     allow(resetter).to receive(:lockfile_paths_for).with("Gemfile.lock").and_return([path])
     allow(resetter).to receive(:release_lockfiles_target?).with("Gemfile.lock").and_return(false)
     allow(resetter).to receive(:normalization_needed?).with(path).and_return(true)
-    allow(resetter).to receive(:reset).with("Gemfile.lock").and_return(path)
+    allow(resetter).to receive(:reset).with("Gemfile.lock", skip_changelog_dependency: false).and_return(path)
 
     expect(cli.run!).to eq(0)
   end
@@ -60,7 +60,19 @@ RSpec.describe Kettle::Dev::ResetCLI do
     allow(Kettle::Dev::LockfileReset).to receive(:new).and_return(resetter)
     allow(resetter).to receive(:lockfile_paths_for).with("release-lockfiles").and_return([path])
     allow(resetter).to receive(:release_lockfiles_target?).with("release-lockfiles").and_return(true)
-    allow(resetter).to receive(:reset).with("release-lockfiles").and_return([path])
+    allow(resetter).to receive(:reset).with("release-lockfiles", skip_changelog_dependency: false).and_return([path])
+
+    expect(cli.run!).to eq(0)
+  end
+
+  it "omits the optional changelog dependency when requested" do
+    cli = described_class.new(%w[--skip-changelog-dependency release-lockfiles], root: @root)
+    resetter = instance_double(Kettle::Dev::LockfileReset)
+    path = File.join(@root, "Gemfile.lock")
+    allow(Kettle::Dev::LockfileReset).to receive(:new).and_return(resetter)
+    allow(resetter).to receive(:lockfile_paths_for).with("release-lockfiles").and_return([path])
+    allow(resetter).to receive(:release_lockfiles_target?).with("release-lockfiles").and_return(true)
+    allow(resetter).to receive(:reset).with("release-lockfiles", skip_changelog_dependency: true).and_return([path])
 
     expect(cli.run!).to eq(0)
   end

@@ -9,6 +9,7 @@ module Kettle
         @argv = Array(argv).dup
         @root = root
         @check = false
+        @skip_changelog_dependency = false
       end
 
       def run!
@@ -25,7 +26,7 @@ module Kettle
             puts "#{target} is already reset."
             return 0
           end
-          resetter.reset(target)
+          resetter.reset(target, skip_changelog_dependency: skip_changelog_dependency)
           puts "Reset #{target}."
         end
         0
@@ -33,7 +34,7 @@ module Kettle
 
       private
 
-      attr_reader :argv, :root, :check
+      attr_reader :argv, :root, :check, :skip_changelog_dependency
 
       def parse!
         parser.parse!(argv)
@@ -43,9 +44,12 @@ module Kettle
 
       def parser
         OptionParser.new do |opts|
-          opts.banner = "Usage: kettle-reset [--check] TARGET"
+          opts.banner = "Usage: kettle-reset [--check] [--skip-changelog-dependency] TARGET"
           opts.separator "Targets: Gemfile.lock, Appraisal.root.gemfile.lock, release-lockfiles"
           opts.on("--check", "Validate TARGET without changing it") { @check = true }
+          opts.on("--skip-changelog-dependency", "Omit optional kettle-changelog while resetting a bootstrap/release graph") do
+            @skip_changelog_dependency = true
+          end
           opts.on("-h", "--help", "Show this help") do
             puts opts
             exit(0)

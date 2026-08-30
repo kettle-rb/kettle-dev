@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Add an explicit reset option for release graphs that must omit the optional changelog dependency.
+
 ### Security
 
 ## [3.0.22] - 2026-08-30

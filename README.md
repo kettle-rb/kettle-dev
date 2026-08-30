@@ -472,10 +472,11 @@ What it does:
       `kettle-changelog` depends on `kettle-dev`, so including it in
       `kettle-dev`'s development bundle creates a downstream development-cycle
       when sibling versions are unpublished. The
-      `KETTLE_DEV_SKIP_CHANGELOG_DEPENDENCY=true` switch remains available for
-      an explicit bootstrap/release graph that cannot resolve that downstream
-      tool, but it is not used while rewriting the tracked development
-      lockfiles.
+      `--skip-changelog-dependency` (or the equivalent
+      `KETTLE_DEV_SKIP_CHANGELOG_DEPENDENCY=true` Gemfile switch) is available
+      for an explicit bootstrap/release graph that cannot resolve that
+      downstream tool. It is intentionally not the default for standalone
+      tracked development lockfiles.
     - At release step 1, `kettle-release` runs the equivalent of
       `kettle-family bupb`: it updates the primary lockfile and, when present,
       `Appraisal.root.gemfile.lock`, resets appraisal locks, and commits only
