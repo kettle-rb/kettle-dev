@@ -32,6 +32,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - Normalize release lockfiles before changelog coverage runs.
 
+- Isolate changelog coverage with the selected coverage Gemfile lockfile during release.
+
 ### Security
 
 ## [3.0.18] - 2026-08-30

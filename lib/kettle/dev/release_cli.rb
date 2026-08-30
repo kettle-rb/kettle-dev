@@ -218,7 +218,7 @@ module Kettle
         @started_at = nil
         @finished_report = nil
         @changelog_generated_coverage = false
-        @release_task_lockfile_path = nil
+        @release_task_lockfile_paths = {}
       end
 
       def run
@@ -934,10 +934,12 @@ module Kettle
         return release_child_command("bundle exec kettle-changelog") unless gemfile
 
         environment = {"BUNDLE_GEMFILE" => gemfile}
+        coverage_gemfile = changelog_coverage_gemfile
+        environment["K_CHANGELOG_COVERAGE_GEMFILE"] = coverage_gemfile if coverage_gemfile
         # Changelog coverage runs the target project's bundle. Give that nested
-        # invocation the same disposable lockfile used by release tasks so
+        # invocation a disposable lockfile for its selected coverage Gemfile so
         # Bundler's host-platform reconciliation cannot dirty the prep commit.
-        if (lockfile = release_task_lockfile_path)
+        if (lockfile = release_task_lockfile_path(gemfile: coverage_gemfile || File.join(@root, "Gemfile")))
           environment["KETTLE_CHANGELOG_COVERAGE_LOCKFILE"] = lockfile
         end
         if (local_root = release_changelog_local_root)
@@ -971,6 +973,18 @@ module Kettle
         return nil if local_root.empty? || %w[false 0 no off].include?(local_root.downcase)
 
         File.expand_path(local_root)
+      end
+
+      # A generated coverage appraisal is intentionally smaller than the root
+      # development bundle and therefore avoids release-only tool dependency
+      # conflicts. Let kettle-changelog retain the root-Gemfile fallback when
+      # a project has not generated this optional bundle.
+      def changelog_coverage_gemfile
+        configured = ENV["K_CHANGELOG_COVERAGE_GEMFILE"].to_s.strip
+        return File.expand_path(configured, @root) unless configured.empty?
+
+        generated = File.join(@root, "gemfiles", "coverage.gemfile")
+        generated if File.file?(generated)
       end
 
       # Monorepo subprojects commonly disable their local hard coverage gate
@@ -1049,26 +1063,26 @@ module Kettle
       # bundler/gem_tasks' release:guard_clean check. Keep that reconciliation
       # in a disposable lockfile so the committed, normalized lockfile remains
       # unchanged throughout build and publication.
-      def release_task_lockfile_path
-        return @release_task_lockfile_path if @release_task_lockfile_path
+      def release_task_lockfile_path(gemfile: File.join(@root, "Gemfile"))
+        return @release_task_lockfile_paths[gemfile] if @release_task_lockfile_paths.key?(gemfile)
 
-        source = File.join(@root, "Gemfile.lock")
+        source = "#{gemfile}.lock"
         return unless File.file?(source)
 
         directory = File.join(@root, "tmp", "kettle-release", "lockfiles")
         FileUtils.mkdir_p(directory)
-        @release_task_lockfile_path = File.join(directory, "Gemfile-#{$$}.lock")
-        FileUtils.cp(source, @release_task_lockfile_path)
-        @release_task_lockfile_path
+        path = File.join(directory, "#{File.basename(gemfile)}-#{$$}.lock")
+        FileUtils.cp(source, path)
+        @release_task_lockfile_paths[gemfile] = path
       rescue SystemCallError => error
         abort("Unable to isolate the release task lockfile: #{error.message}")
       end
 
       def cleanup_release_task_lockfile!
-        return unless @release_task_lockfile_path
+        return if @release_task_lockfile_paths.empty?
 
-        FileUtils.rm_f(@release_task_lockfile_path)
-        @release_task_lockfile_path = nil
+        @release_task_lockfile_paths.each_value { |path| FileUtils.rm_f(path) }
+        @release_task_lockfile_paths.clear
       end
 
       def confirm_yes!(message, prompt, abort_message)

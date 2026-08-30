@@ -492,6 +492,35 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         end
       end
 
+      it "runs changelog coverage through the generated coverage bundle when present" do
+        Dir.mktmpdir do |root|
+          allow(ci_helpers).to receive(:project_root).and_return(root)
+          release_gemfile = File.join(root, "Gemfile")
+          coverage_gemfile = File.join(root, "gemfiles", "coverage.gemfile")
+          coverage_lockfile = "#{coverage_gemfile}.lock"
+          FileUtils.mkdir_p(File.dirname(coverage_gemfile))
+          File.write(release_gemfile, "source 'https://gem.coop'\n")
+          File.write(coverage_gemfile, "source 'https://gem.coop'\n")
+          File.write(coverage_lockfile, "PLATFORMS\n  x86_64-linux\n")
+          stub_env("K_RELEASE_CHANGELOG_GEMFILE" => release_gemfile)
+          local_cli = described_class.new
+          disposable_lockfile = File.join(root, "tmp", "kettle-release", "lockfiles", "coverage.gemfile-#{Process.pid}.lock")
+
+          expect(local_cli).to receive(:run_cmd!).with(
+            a_string_ending_with(
+              "BUNDLE_GEMFILE=#{Shellwords.escape(release_gemfile)} " \
+              "K_CHANGELOG_COVERAGE_GEMFILE=#{Shellwords.escape(coverage_gemfile)} " \
+              "KETTLE_CHANGELOG_COVERAGE_LOCKFILE=#{Shellwords.escape(disposable_lockfile)} " \
+              "bundle exec kettle-changelog"
+            )
+          )
+
+          local_cli.send(:run_changelog!)
+          expect(File.read(disposable_lockfile)).to eq(File.read(coverage_lockfile))
+          local_cli.send(:cleanup_release_task_lockfile!)
+        end
+      end
+
       it "derives the alternate changelog bundle from a local kettle-dev workspace" do
         Dir.mktmpdir do |root|
           changelog_root = File.join(root, "kettle-changelog")
