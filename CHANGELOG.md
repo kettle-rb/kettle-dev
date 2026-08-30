@@ -28,9 +28,18 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Preserve configured monorepo member-path lockfiles during release while rejecting unapproved local paths.
-
 ### Security
+
+## [3.0.20] - 2026-08-30
+
+- TAG: [v3.0.20][3.0.20t]
+- COVERAGE: 91.44% -- 5875/6425 lines in 47 files
+- BRANCH COVERAGE: 76.07% -- 2248/2955 branches in 47 files
+- 50.47% documented
+
+### Fixed
+
+- Preserve configured monorepo member-path lockfiles during release while rejecting unapproved local paths.
 
 ## [3.0.19] - 2026-08-30
 
@@ -3668,7 +3677,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.19...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.20...HEAD
+[3.0.20]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.19...v3.0.20
+[3.0.20t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.20
 [3.0.19]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.18...v3.0.19
 [3.0.19t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.19
 [3.0.18]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.17...v3.0.18
