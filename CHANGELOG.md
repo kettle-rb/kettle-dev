@@ -28,9 +28,18 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Attach missing assets when recovering an existing GitHub Release.
-
 ### Security
+
+## [3.0.25] - 2026-08-31
+
+- TAG: [v3.0.25][3.0.25t]
+- COVERAGE: 91.30% -- 5949/6516 lines in 47 files
+- BRANCH COVERAGE: 76.09% -- 2282/2999 branches in 47 files
+- 50.47% documented
+
+### Fixed
+
+- Attach missing assets when recovering an existing GitHub Release.
 
 ## [3.0.24] - 2026-08-31
 
@@ -3727,7 +3736,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.24...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.25...HEAD
+[3.0.25]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.24...v3.0.25
+[3.0.25t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.25
 [3.0.24]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.23...v3.0.24
 [3.0.24t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.24
 [3.0.23]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.22...v3.0.23
