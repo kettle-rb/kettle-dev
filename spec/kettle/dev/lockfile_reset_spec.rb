@@ -241,6 +241,32 @@ RSpec.describe Kettle::Dev::LockfileReset do
     expect(commands.first).to include("GEM_PATH=#{File.join(@root, "tmp", "kettle-reset")}")
   end
 
+  it "keeps installed bootstrap gems available for allowed local path Gemfiles" do
+    commands = []
+    monorepo_gems = File.join(@root, "gems")
+    stub_env(
+      "KETTLE_RELEASE_ALLOWED_LOCAL_PATH_ENVS" => "STRUCTUREDMERGE_DEV",
+      "STRUCTUREDMERGE_DEV" => monorepo_gems
+    )
+    reset = described_class.new(root: @root, command_runner: ->(command) { commands << command })
+    path = File.join(@root, "Gemfile.lock")
+    File.write(File.join(@root, "Gemfile"), "source \"https://rubygems.org\"\n")
+    File.write(path, <<~LOCK)
+      GEM
+        remote: https://rubygems.org/
+        specs:
+          rake (13.4.2)
+
+      DEPENDENCIES
+        rake
+    LOCK
+
+    reset.reset_lockfile!(path, full_update: true)
+
+    expect(commands.first).to include("GEM_PATH=#{File.join(@root, "tmp", "kettle-reset")}")
+    expect(commands.first).to include(Gem.path.join(File::PATH_SEPARATOR))
+  end
+
   it "reuses the release platform set when later resets see extra platforms" do
     commands = []
     reset = described_class.new(root: @root, command_runner: lambda { |command|

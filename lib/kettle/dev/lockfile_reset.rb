@@ -161,7 +161,7 @@ module Kettle
           return
         end
 
-        with_isolated_gem_paths do |gem_home|
+        with_isolated_gem_paths do |gem_home, gem_path|
           command = reset_command(
             path: path,
             gemfile: gemfile,
@@ -169,7 +169,8 @@ module Kettle
             platforms: platforms,
             skip_changelog_dependency: skip_changelog_dependency,
             update_bundler: update_bundler,
-            isolated_gem_home: gem_home
+            isolated_gem_home: gem_home,
+            isolated_gem_path: gem_path
           )
           if full_update || has_local_path_remote?(path)
             rebuild_lockfile(path) { command_runner.call(command) }
@@ -179,7 +180,7 @@ module Kettle
         end
       end
 
-      def reset_command(path:, gemfile:, full_update: false, platforms: nil, skip_changelog_dependency: false, update_bundler: false, isolated_gem_home: nil)
+      def reset_command(path:, gemfile:, full_update: false, platforms: nil, skip_changelog_dependency: false, update_bundler: false, isolated_gem_home: nil, isolated_gem_path: nil)
         update_gems = (full_update || has_local_path_remote?(path)) ? [] : reset_update_gems(path)
         platforms ||= reset_platforms(path)
         removed_platforms = full_update ? [] : lockfile_platforms(path) - platforms
@@ -190,7 +191,7 @@ module Kettle
         env["KETTLE_DEV_SKIP_CHANGELOG_DEPENDENCY"] = "true" if skip_changelog_dependency
         if isolated_gem_home
           env["GEM_HOME"] = isolated_gem_home
-          env["GEM_PATH"] = isolated_gem_home
+          env["GEM_PATH"] = isolated_gem_path || isolated_gem_home
         end
         command = +"env"
         UNBUNDLED_ENV_KEYS.each do |key|
@@ -469,7 +470,14 @@ module Kettle
       def with_isolated_gem_paths
         base = File.join(root, "tmp", "kettle-reset")
         FileUtils.mkdir_p(base)
-        Dir.mktmpdir("gem-home-", base) { |gem_home| yield(gem_home) }
+        Dir.mktmpdir("gem-home-", base) do |gem_home|
+          gem_path = preserve_bundle_bootstrap_gems? ? [gem_home, *Gem.path].join(File::PATH_SEPARATOR) : gem_home
+          yield(gem_home, gem_path)
+        end
+      end
+
+      def preserve_bundle_bootstrap_gems?
+        allowed_local_path_env_names.any? { |name| local_path_env_value?(ENV[name]) }
       end
 
       def lockfile_parser(path)
