@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Attach missing assets when recovering an existing GitHub Release.
+
 ### Security
 
 ## [3.0.24] - 2026-08-31

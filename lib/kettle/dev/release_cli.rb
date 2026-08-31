@@ -3066,15 +3066,52 @@ module Kettle
           failed_asset = asset_messages.find { |ok, _message| !ok }
           failed_asset || [true, "created with #{asset_messages.length} assets"]
         else
-          # If release already exists, treat as non-fatal
           if res.code.to_s == "422" && res.body.to_s.include?("already_exists")
-            [true, "already exists"]
+            return [true, "already exists"] if Array(assets).empty?
+
+            upload_missing_github_release_assets(
+              owner: owner,
+              repo: repo,
+              token: token,
+              tag: tag,
+              assets: assets
+            )
           else
             [false, "HTTP #{res.code}: #{res.body}"]
           end
         end
       rescue => e
         [false, "#{e.class}: #{e.message}"]
+      end
+
+      def upload_missing_github_release_assets(owner:, repo:, token:, tag:, assets:)
+        release, error = github_release_for_tag(owner: owner, repo: repo, token: token, tag: tag)
+        return [false, error] unless release
+
+        existing_names = Array(release["assets"]).filter_map { |asset| asset["name"] }.to_set
+        missing_assets = Array(assets).reject { |asset| existing_names.include?(File.basename(asset)) }
+        return [true, "already exists with all assets present"] if missing_assets.empty?
+
+        asset_messages = missing_assets.map do |asset|
+          github_upload_release_asset(release.fetch("id"), owner: owner, repo: repo, token: token, path: asset)
+        end
+        failed_asset = asset_messages.find { |ok, _message| !ok }
+        asset_noun = asset_messages.one? ? "asset" : "assets"
+        failed_asset || [true, "already exists with #{asset_messages.length} #{asset_noun} uploaded"]
+      end
+
+      def github_release_for_tag(owner:, repo:, token:, tag:)
+        uri = URI("https://api.github.com/repos/#{owner}/#{repo}/releases/tags/#{tag}")
+        request = Net::HTTP::Get.new(uri)
+        request["Accept"] = "application/vnd.github+json"
+        request["Authorization"] = "token #{token}"
+        request["User-Agent"] = "kettle-dev-release-cli"
+        response = Net::HTTP.start(uri.host, uri.port, use_ssl: true) { |http| http.request(request) }
+        return [JSON.parse(response.body), nil] if response.is_a?(Net::HTTPSuccess)
+
+        [nil, "release #{tag} was not found (HTTP #{response.code})"]
+      rescue => e
+        [nil, "#{e.class}: #{e.message}"]
       end
 
       def github_upload_release_asset(release_id, owner:, repo:, token:, path:)

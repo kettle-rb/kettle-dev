@@ -3564,6 +3564,35 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         end
       end
 
+      it "uploads only missing assets when a release already exists", :aggregate_failures do
+        cli = described_class.new
+        existing_release = {"id" => 42, "assets" => [{"name" => "already.gem"}]}
+        already_exists = instance_double(Net::HTTPUnprocessableEntity, code: "422", body: "{\"errors\":[{\"code\":\"already_exists\"}]}")
+        http = instance_double(Net::HTTP)
+        allow(http).to receive(:request).with(instance_of(Net::HTTP::Post)).and_return(already_exists)
+        allow(Net::HTTP).to receive(:start).with("api.github.com", 443, use_ssl: true).and_yield(http)
+        allow(cli).to receive_messages(
+          github_release_for_tag: [existing_release, nil],
+          github_upload_release_asset: [true, "missing.gem"]
+        )
+
+        result = cli.send(
+          :github_create_release,
+          owner: "me",
+          repo: "repo",
+          token: "token",
+          tag: "v1.2.3",
+          title: "v1.2.3",
+          body: "notes",
+          assets: ["/artifacts/already.gem", "/artifacts/missing.gem"]
+        )
+
+        expect(result).to eq([true, "already exists with 1 asset uploaded"])
+        expect(cli).to have_received(:github_release_for_tag).with(owner: "me", repo: "repo", token: "token", tag: "v1.2.3")
+        expect(cli).to have_received(:github_upload_release_asset).with(42, owner: "me", repo: "repo", token: "token", path: "/artifacts/missing.gem")
+        expect(cli).not_to have_received(:github_upload_release_asset).with(42, owner: "me", repo: "repo", token: "token", path: "/artifacts/already.gem")
+      end
+
       it "uses origin when preferred remote is nil", :aggregate_failures do
         Dir.mktmpdir do |root|
           File.write(File.join(root, "CHANGELOG.md"), <<~MD)
