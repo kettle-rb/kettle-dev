@@ -220,7 +220,7 @@ RSpec.describe Kettle::Dev::LockfileReset do
     expect(command).to include("KETTLE_DEV_SKIP_CHANGELOG_DEPENDENCY=true")
   end
 
-  it "isolates lockfile resolution from shared installed gems" do
+  it "keeps installed Gemfile bootstrap gems available while isolating new installs" do
     commands = []
     reset = described_class.new(root: @root, command_runner: ->(command) { commands << command })
     path = File.join(@root, "Gemfile.lock")
@@ -238,31 +238,6 @@ RSpec.describe Kettle::Dev::LockfileReset do
     reset.reset_lockfile!(path, full_update: true)
 
     expect(commands.first).to include("GEM_HOME=#{File.join(@root, "tmp", "kettle-reset")}")
-    expect(commands.first).to include("GEM_PATH=#{File.join(@root, "tmp", "kettle-reset")}")
-  end
-
-  it "keeps installed bootstrap gems available for allowed local path Gemfiles" do
-    commands = []
-    monorepo_gems = File.join(@root, "gems")
-    stub_env(
-      "KETTLE_RELEASE_ALLOWED_LOCAL_PATH_ENVS" => "STRUCTUREDMERGE_DEV",
-      "STRUCTUREDMERGE_DEV" => monorepo_gems
-    )
-    reset = described_class.new(root: @root, command_runner: ->(command) { commands << command })
-    path = File.join(@root, "Gemfile.lock")
-    File.write(File.join(@root, "Gemfile"), "source \"https://rubygems.org\"\n")
-    File.write(path, <<~LOCK)
-      GEM
-        remote: https://rubygems.org/
-        specs:
-          rake (13.4.2)
-
-      DEPENDENCIES
-        rake
-    LOCK
-
-    reset.reset_lockfile!(path, full_update: true)
-
     expect(commands.first).to include("GEM_PATH=#{File.join(@root, "tmp", "kettle-reset")}")
     expect(commands.first).to include(Gem.path.join(File::PATH_SEPARATOR))
   end

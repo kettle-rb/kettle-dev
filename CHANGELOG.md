@@ -30,6 +30,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - Keep Gemfile bootstrap dependencies available while resetting explicitly allowed monorepo release lockfiles.
 
+- Keep installed Gemfile bootstrap dependencies available for every release lockfile reset.
+
 ### Security
 
 ## [3.0.23] - 2026-08-30

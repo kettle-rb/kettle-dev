@@ -471,13 +471,12 @@ module Kettle
         base = File.join(root, "tmp", "kettle-reset")
         FileUtils.mkdir_p(base)
         Dir.mktmpdir("gem-home-", base) do |gem_home|
-          gem_path = preserve_bundle_bootstrap_gems? ? [gem_home, *Gem.path].join(File::PATH_SEPARATOR) : gem_home
+          # Bundler parses the Gemfile before it resolves its declared gems.
+          # Keep installed bootstrap gems (for example nomono/bundler) visible
+          # while isolating new installation output in the temporary GEM_HOME.
+          gem_path = [gem_home, *Gem.path].join(File::PATH_SEPARATOR)
           yield(gem_home, gem_path)
         end
-      end
-
-      def preserve_bundle_bootstrap_gems?
-        allowed_local_path_env_names.any? { |name| local_path_env_value?(ENV[name]) }
       end
 
       def lockfile_parser(path)
