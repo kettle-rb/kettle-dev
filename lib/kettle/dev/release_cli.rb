@@ -365,12 +365,13 @@ module Kettle
         prepare_rubocop_lts_local_branch! if rubocop_lts_release_preflight_needed?
 
         # 3. bin/setup
-        run_cmd!(release_setup_command) if run_step?(3)
+        with_release_resume_step(3) { run_cmd!(release_setup_command) } if run_step?(3)
         # 4. bin/rake
-        run_cmd!(release_default_task_command) if run_step?(4)
+        with_release_resume_step(4) { run_cmd!(release_default_task_command) } if run_step?(4)
 
         # 5. appraisal:generate (optional) + canonical docs build
-        if run_step?(5)
+        with_release_resume_step(5) do
+          if run_step?(5)
           appraisals_path = File.join(@root, "Appraisals")
           if skip_appraisals?
             puts "Skipping #{@appraisal_task} because --skip-appraisals was provided."
@@ -383,6 +384,7 @@ module Kettle
 
           puts "Generating docs site via canonical task: bin/rake yard"
           run_cmd!(release_project_command("bin/rake yard"))
+          end
         end
 
         # 6. git user + commit release prep
@@ -472,7 +474,8 @@ module Kettle
         end
 
         # 14. build
-        if run_step?(14)
+        with_release_resume_step(14) do
+          if run_step?(14)
           ensure_release_secrets_ready_for_signing! if signing_enabled? && release_secrets_configured?
           if signing_enabled? && release_secrets_configured?
             puts "Running build with gem signing passphrase from configured secrets provider (#{release_secrets_provider_label})..."
@@ -480,10 +483,12 @@ module Kettle
             puts "Running build (you may be prompted for the signing key password)..."
           end
           run_cmd!(release_project_command("bundle exec rake build"))
+          end
         end
 
         # 15. release and tag
-        if run_step?(15)
+        with_release_resume_step(15) do
+          if run_step?(15)
           version ||= detect_version
           gem_name = detect_gem_name
           @release_candidate = build_release_candidate(gem_name, version)
@@ -503,18 +508,21 @@ module Kettle
             end
             mark_rubygems_release_cache_bust(version)
           end
+          end
         end
 
         # 16. generate checksums
         #    Checksums are generated after release to avoid including checksums/ in gem package
         #    Rationale: Running gem_checksums before release may commit checksums/ and cause Bundler's
         #    release build to include them in the gem, thus altering the artifact, and invalidating the checksums.
-        if run_step?(16)
+        with_release_resume_step(16) do
+          if run_step?(16)
           # Generate checksums for the just-built artifact, commit them, then validate
           version ||= detect_version
           gem_path = checksum_gem_path_for_version!(version)
           run_cmd!(release_child_command("bin/gem_checksums #{Shellwords.escape(gem_path)}"))
           validate_checksums!(version, stage: "after release")
+          end
         end
 
         # 17. push checksum commit (gem_checksums already commits)
@@ -1429,20 +1437,20 @@ module Kettle
         abort("GitHub pull request setup failed: gh CLI is required to create or find the release PR.")
       end
 
-      def run_cmd!(cmd)
+      def run_cmd!(cmd, resume_step: @release_resume_step)
         cmd = bundle_audit_skip_command(cmd)
-        emit_command_event(cmd, "started")
+        emit_command_event(cmd, "started", resume_step: resume_step)
         with_bundle_audit_skip_env do
           with_machine_stdout_redirect do
             run_command_with_release_secrets!(cmd)
           end
         end
-        emit_command_event(cmd, "ok")
+        emit_command_event(cmd, "ok", resume_step: resume_step)
       rescue SystemExit => e
-        emit_command_event(cmd, "failed", reason: e.message)
+        emit_command_event(cmd, "failed", reason: e.message, resume_step: resume_step)
         raise
       rescue => e
-        emit_command_event(cmd, "failed", reason: "#{e.class}: #{e.message}")
+        emit_command_event(cmd, "failed", reason: "#{e.class}: #{e.message}", resume_step: resume_step)
         raise
       end
 
@@ -1452,6 +1460,14 @@ module Kettle
         return cmd if cmd.start_with?("KETTLE_DEV_SKIP_BUNDLE_AUDIT=")
 
         "KETTLE_DEV_SKIP_BUNDLE_AUDIT=true #{cmd}"
+      end
+
+      def with_release_resume_step(step)
+        previous_step = @release_resume_step
+        @release_resume_step = step
+        yield
+      ensure
+        @release_resume_step = previous_step
       end
 
       def run_command_with_release_secrets!(cmd)
@@ -2124,7 +2140,7 @@ module Kettle
         )
       end
 
-      def emit_command_event(command, status, reason: nil)
+      def emit_command_event(command, status, reason: nil, resume_step: nil)
         event = {
           phase: "release",
           index: @command_events.length + 1,
@@ -2135,6 +2151,7 @@ module Kettle
           command: command,
           changed_files: []
         }
+        event[:resume_step] = resume_step if resume_step
         @command_events << event unless status == "started"
         Kettle::Ndjson.emit_step_event(@event_recorder, "command_step", event, phase: "release", index: event[:index])
       end

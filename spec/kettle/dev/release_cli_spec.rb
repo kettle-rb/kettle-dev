@@ -183,6 +183,19 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         )
       end
 
+      it "emits the logical release step separately from command event ordering" do
+        status = instance_double(Process::Status, success?: true, exitstatus: 0)
+        allow(Open3).to receive(:capture3).and_return(["", "", status])
+        emitted_steps = []
+        allow(Kettle::Ndjson).to receive(:emit_step_event) { |_recorder, _type, step, **_| emitted_steps << step }
+
+        cli.send(:with_release_resume_step, 15) do
+          cli.send(:run_cmd!, "bin/setup")
+        end
+
+        expect(emitted_steps).to all(include(resume_step: 15))
+      end
+
       it "prefixes SKIP_GEM_SIGNING for 'bundle exec rake build' when env set" do
         stub_env("SKIP_GEM_SIGNING" => "true")
         status = instance_double(Process::Status, success?: true, exitstatus: 0)

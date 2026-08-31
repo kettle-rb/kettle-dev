@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Emit explicit logical release resume-step metadata instead of relying on command-event ordering.
+
 ### Security
 
 ## [3.0.24] - 2026-08-30
