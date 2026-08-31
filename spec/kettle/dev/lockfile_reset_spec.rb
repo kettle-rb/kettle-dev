@@ -220,7 +220,38 @@ RSpec.describe Kettle::Dev::LockfileReset do
     expect(command).to include("KETTLE_DEV_SKIP_CHANGELOG_DEPENDENCY=true")
   end
 
-  it "keeps installed Gemfile bootstrap gems available while isolating new installs" do
+  it "installs locked Gemfile bootstrap gems into an isolated reset environment" do
+    commands = []
+    reset = described_class.new(root: @root, command_runner: ->(command) { commands << command })
+    path = File.join(@root, "Gemfile.lock")
+    File.write(File.join(@root, "Gemfile"), <<~RUBY)
+      source "https://rubygems.org"
+      require "nomono/bundler"
+    RUBY
+    File.write(path, <<~LOCK)
+      GEM
+        remote: https://rubygems.org/
+        specs:
+          nomono (1.1.5)
+          rake (13.4.2)
+
+      DEPENDENCIES
+        nomono
+        rake
+    LOCK
+
+    reset.reset_lockfile!(path, full_update: true)
+
+    expect(commands.first).to include("gem install nomono -v \\=\\ 1.1.5")
+    expect(commands.first).to include("GEM_HOME=#{File.join(@root, "tmp", "kettle-reset")}")
+    expect(commands.first).to include("GEM_PATH=#{File.join(@root, "tmp", "kettle-reset")}")
+    expect(commands.first).not_to include(Gem.path.join(File::PATH_SEPARATOR))
+    expect(commands.last).to include("bundle lock")
+    expect(commands.last).to include("GEM_PATH=#{File.join(@root, "tmp", "kettle-reset")}")
+    expect(commands.last).not_to include(Gem.path.join(File::PATH_SEPARATOR))
+  end
+
+  it "does not install a bootstrap gem when the Gemfile does not require one" do
     commands = []
     reset = described_class.new(root: @root, command_runner: ->(command) { commands << command })
     path = File.join(@root, "Gemfile.lock")
@@ -237,9 +268,9 @@ RSpec.describe Kettle::Dev::LockfileReset do
 
     reset.reset_lockfile!(path, full_update: true)
 
-    expect(commands.first).to include("GEM_HOME=#{File.join(@root, "tmp", "kettle-reset")}")
+    expect(commands).to contain_exactly(a_string_including("bundle lock"))
     expect(commands.first).to include("GEM_PATH=#{File.join(@root, "tmp", "kettle-reset")}")
-    expect(commands.first).to include(Gem.path.join(File::PATH_SEPARATOR))
+    expect(commands.first).not_to include(Gem.path.join(File::PATH_SEPARATOR))
   end
 
   it "reuses the release platform set when later resets see extra platforms" do

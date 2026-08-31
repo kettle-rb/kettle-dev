@@ -467,14 +467,14 @@ What it does:
       variables, known local-template toggles, and writes checksums while
       updating path-sourced and checksum-gap gems back to released registry
       versions.
-    - Gemfile bootstrap dependencies are a separate concern from dependency
-      resolution. A generated Gemfile can require `nomono/bundler` while it is
-      being evaluated, before Bundler has resolved its declared `nomono` gem.
-      Lockfile resets therefore use an isolated `GEM_HOME` for all reset output
-      but retain the invoking Ruby's installed `GEM_PATH` for read-only
-      bootstrap loading. Run `bundle install` once in the project before a
-      local-path or templating release; this installs `nomono`. `kettle-reset`
-      does not currently install bootstrap gems itself.
+    - Gemfile bootstrap dependencies are separate from dependency resolution.
+      A generated Gemfile can require `nomono/bundler` while it is being
+      evaluated, before Bundler has resolved its declared `nomono` gem.
+      `kettle-reset` detects that literal bootstrap require and installs the
+      locked registry version of `nomono` into its temporary `GEM_HOME` before
+      invoking Bundler. Its `GEM_PATH` contains only that reset sandbox: no
+      unrelated gems installed for the invoking Ruby can affect lockfile
+      resolution.
     - Release lockfile resets normally keep the complete development Gemfile
       graph, including the development-only `kettle-changelog` dependency.
       `kettle-changelog` depends on `kettle-dev`, so including it in
@@ -518,7 +518,7 @@ What it does:
       | Role | Lockfile | Used by |
       | --- | --- | --- |
       | Family runner | The family/orchestrator bundle | May resolve local sibling gems to run `kettle-family`; it never becomes the target project's lockfile. |
-      | Canonical release state | Tracked `Gemfile.lock` and, when present, `Appraisal.root.gemfile.lock` | Step 1 Bundler update, steps 3-6 setup/checks/appraisals/docs/prep commit, and step 16 checksums. These commands disable local `*_DEV`/`*_LOCAL` switches, except an explicitly allowed monorepo member-root policy supplied by `kettle-family`. Reset output is isolated in `GEM_HOME`; installed bootstrap gems remain readable through `GEM_PATH` so the Gemfile itself can be evaluated. |
+      | Canonical release state | Tracked `Gemfile.lock` and, when present, `Appraisal.root.gemfile.lock` | Step 1 Bundler update, steps 3-6 setup/checks/appraisals/docs/prep commit, and step 16 checksums. These commands disable local `*_DEV`/`*_LOCAL` switches, except an explicitly allowed monorepo member-root policy supplied by `kettle-family`. Reset `GEM_HOME` and `GEM_PATH` are isolated; direct Gemfile bootstrap requirements are installed from their locked registry source into that sandbox before Bundler evaluates the Gemfile. |
       | Release task state | `tmp/kettle-release/lockfiles/Gemfile-<pid>.lock` | Steps 14-15 build and publish only. It begins as a copy of canonical `Gemfile.lock` and is deleted at process exit. |
       | Tool state | A tool-owned Gemfile such as `kettle-changelog/gemfiles/release.gemfile` | The tool's own dependencies. The command still disables local dependency switches before it can trigger target-project work. |
       | Git-hook state | Canonical release environment | Every release-created commit and amend. Hooks remain enabled, but cannot inherit the family runner's local sibling graph. |

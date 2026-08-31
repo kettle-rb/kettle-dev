@@ -6,6 +6,7 @@ require "fileutils"
 require "open3"
 require "tmpdir"
 require "bundler"
+require "ripper"
 
 require_relative "bundler_env_guard"
 
@@ -161,7 +162,8 @@ module Kettle
           return
         end
 
-        with_isolated_gem_paths do |gem_home, gem_path|
+        with_isolated_gem_paths do |gem_home|
+          install_gemfile_bootstrap_gems!(gemfile: gemfile, lockfile: path, gem_home: gem_home)
           command = reset_command(
             path: path,
             gemfile: gemfile,
@@ -169,8 +171,7 @@ module Kettle
             platforms: platforms,
             skip_changelog_dependency: skip_changelog_dependency,
             update_bundler: update_bundler,
-            isolated_gem_home: gem_home,
-            isolated_gem_path: gem_path
+            isolated_gem_home: gem_home
           )
           if full_update || has_local_path_remote?(path)
             rebuild_lockfile(path) { command_runner.call(command) }
@@ -471,12 +472,82 @@ module Kettle
         base = File.join(root, "tmp", "kettle-reset")
         FileUtils.mkdir_p(base)
         Dir.mktmpdir("gem-home-", base) do |gem_home|
-          # Bundler parses the Gemfile before it resolves its declared gems.
-          # Keep installed bootstrap gems (for example nomono/bundler) visible
-          # while isolating new installation output in the temporary GEM_HOME.
-          gem_path = [gem_home, *Gem.path].join(File::PATH_SEPARATOR)
-          yield(gem_home, gem_path)
+          yield(gem_home)
         end
+      end
+
+      # Bundler evaluates a Gemfile before it resolves the gems declared in it.
+      # Install only direct, literal bootstrap requires into the reset sandbox so
+      # unrelated gems from the invoking Ruby cannot influence resolution.
+      def install_gemfile_bootstrap_gems!(gemfile:, lockfile:, gem_home:)
+        gemfile_bootstrap_gem_names(gemfile).each do |name|
+          version = locked_registry_gem_version(lockfile, name)
+          source_url = registry_source_urls(lockfile).first
+          unless version && source_url
+            raise Error, "Cannot isolate Gemfile bootstrap #{name.inspect}: #{display_path(lockfile)} does not lock it from a registry source"
+          end
+
+          command_runner.call(bootstrap_gem_install_command(name, version, source_url, gem_home))
+        end
+      end
+
+      def gemfile_bootstrap_gem_names(gemfile)
+        calls = require_calls_from_ripper(Ripper.sexp(File.read(gemfile)))
+        calls.filter_map { |method_name, argument| bootstrap_gem_name(method_name, argument) }.uniq
+      end
+
+      def require_calls_from_ripper(node, calls = [])
+        return calls unless node.is_a?(Array)
+
+        case node.first
+        when :command
+          calls << [node.dig(1, 1), string_literal_value(node[2])]
+        when :method_add_arg
+          calls << [node.dig(1, 1, 1), string_literal_value(node[2])]
+        end
+        node.each { |child| require_calls_from_ripper(child, calls) if child.is_a?(Array) }
+        calls
+      end
+
+      def string_literal_value(node)
+        return unless node.is_a?(Array)
+
+        parts = []
+        collect_string_content(node, parts)
+        parts.join unless parts.empty?
+      end
+
+      def collect_string_content(node, parts)
+        return unless node.is_a?(Array)
+
+        parts << node[1] if node.first == :@tstring_content
+        node.each { |child| collect_string_content(child, parts) if child.is_a?(Array) }
+      end
+
+      def bootstrap_gem_name(method_name, argument)
+        return unless method_name == "require" && argument == "nomono/bundler"
+
+        "nomono"
+      end
+
+      def locked_registry_gem_version(lockfile, name)
+        lockfile_parser(lockfile).specs.find do |spec|
+          spec.name == name && registry_source?(spec.source)
+        end&.version&.to_s
+      end
+
+      def bootstrap_gem_install_command(name, version, source_url, gem_home)
+        env = unbundled_env.merge("GEM_HOME" => gem_home, "GEM_PATH" => gem_home)
+        command = +"env"
+        env.each do |key, value|
+          assignment = value.nil? ? " -u #{key}" : " #{key}=#{Shellwords.escape(value)}"
+          command << assignment
+        end
+        command << " gem install #{Shellwords.escape(name)}"
+        command << " -v #{Shellwords.escape("= #{version}")}"
+        command << " --source #{Shellwords.escape(source_url)} --clear-sources --no-document"
+        command << " --install-dir #{Shellwords.escape(gem_home)}"
+        command
       end
 
       def lockfile_parser(path)
