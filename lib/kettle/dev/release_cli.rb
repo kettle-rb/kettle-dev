@@ -3069,11 +3069,13 @@ module Kettle
           if res.code.to_s == "422" && res.body.to_s.include?("already_exists")
             return [true, "already exists"] if Array(assets).empty?
 
-            upload_missing_github_release_assets(
+            update_existing_github_release_with_assets(
               owner: owner,
               repo: repo,
               token: token,
               tag: tag,
+              title: title,
+              body: body,
               assets: assets
             )
           else
@@ -3084,20 +3086,30 @@ module Kettle
         [false, "#{e.class}: #{e.message}"]
       end
 
-      def upload_missing_github_release_assets(owner:, repo:, token:, tag:, assets:)
+      def update_existing_github_release_with_assets(owner:, repo:, token:, tag:, title:, body:, assets:)
         release, error = github_release_for_tag(owner: owner, repo: repo, token: token, tag: tag)
         return [false, error] unless release
 
+        updated, error = github_update_release_by_id(
+          release.fetch("id"),
+          owner: owner,
+          repo: repo,
+          token: token,
+          title: title,
+          body: body
+        )
+        return [false, error] unless updated
+
         existing_names = Array(release["assets"]).filter_map { |asset| asset["name"] }.to_set
         missing_assets = Array(assets).reject { |asset| existing_names.include?(File.basename(asset)) }
-        return [true, "already exists with all assets present"] if missing_assets.empty?
+        return [true, "updated existing release with all assets present"] if missing_assets.empty?
 
         asset_messages = missing_assets.map do |asset|
           github_upload_release_asset(release.fetch("id"), owner: owner, repo: repo, token: token, path: asset)
         end
         failed_asset = asset_messages.find { |ok, _message| !ok }
         asset_noun = asset_messages.one? ? "asset" : "assets"
-        failed_asset || [true, "already exists with #{asset_messages.length} #{asset_noun} uploaded"]
+        failed_asset || [true, "updated existing release with #{asset_messages.length} #{asset_noun} uploaded"]
       end
 
       def github_release_for_tag(owner:, repo:, token:, tag:)
@@ -3135,15 +3147,13 @@ module Kettle
       end
 
       def github_update_release(owner:, repo:, token:, tag:, title:, body:)
-        lookup = URI("https://api.github.com/repos/#{owner}/#{repo}/releases/tags/#{tag}")
-        get = Net::HTTP::Get.new(lookup)
-        get["Accept"] = "application/vnd.github+json"
-        get["Authorization"] = "token #{token}"
-        get["User-Agent"] = "kettle-dev-release-cli"
-        release = Net::HTTP.start(lookup.host, lookup.port, use_ssl: true) { |http| http.request(get) }
-        return [false, "release #{tag} was not found (HTTP #{release.code})"] unless release.is_a?(Net::HTTPSuccess)
+        release, error = github_release_for_tag(owner: owner, repo: repo, token: token, tag: tag)
+        return [false, error] unless release
 
-        id = JSON.parse(release.body).fetch("id")
+        github_update_release_by_id(release.fetch("id"), owner: owner, repo: repo, token: token, title: title, body: body)
+      end
+
+      def github_update_release_by_id(id, owner:, repo:, token:, title:, body:)
         uri = URI("https://api.github.com/repos/#{owner}/#{repo}/releases/#{id}")
         request = Net::HTTP::Patch.new(uri)
         request["Accept"] = "application/vnd.github+json"

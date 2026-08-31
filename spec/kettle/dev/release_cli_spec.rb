@@ -3573,6 +3573,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         allow(Net::HTTP).to receive(:start).with("api.github.com", 443, use_ssl: true).and_yield(http)
         allow(cli).to receive_messages(
           github_release_for_tag: [existing_release, nil],
+          github_update_release_by_id: [true, "updated"],
           github_upload_release_asset: [true, "missing.gem"]
         )
 
@@ -3587,8 +3588,9 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
           assets: ["/artifacts/already.gem", "/artifacts/missing.gem"]
         )
 
-        expect(result).to eq([true, "already exists with 1 asset uploaded"])
+        expect(result).to eq([true, "updated existing release with 1 asset uploaded"])
         expect(cli).to have_received(:github_release_for_tag).with(owner: "me", repo: "repo", token: "token", tag: "v1.2.3")
+        expect(cli).to have_received(:github_update_release_by_id).with(42, owner: "me", repo: "repo", token: "token", title: "v1.2.3", body: "notes")
         expect(cli).to have_received(:github_upload_release_asset).with(42, owner: "me", repo: "repo", token: "token", path: "/artifacts/missing.gem")
         expect(cli).not_to have_received(:github_upload_release_asset).with(42, owner: "me", repo: "repo", token: "token", path: "/artifacts/already.gem")
       end

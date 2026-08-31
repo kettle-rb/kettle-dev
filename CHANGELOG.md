@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Refresh existing GitHub Release notes while backfilling missing assets.
+
 ### Security
 
 ## [3.0.25] - 2026-08-31
