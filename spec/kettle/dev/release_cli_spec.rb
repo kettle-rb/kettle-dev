@@ -3597,6 +3597,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
 
       it "retries a transient TLS failure while uploading a release asset", :aggregate_failures do
         cli = described_class.new
+        allow(Kettle::Ndjson).to receive(:emit_event)
         Dir.mktmpdir do |directory|
           path = File.join(directory, "release.gem")
           File.binwrite(path, "gem")
@@ -3616,6 +3617,16 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
           expect(result).to eq([true, "release.gem"])
           expect(Net::HTTP).to have_received(:start).twice
           expect(cli).to have_received(:sleep).with(1).once
+          expect(Kettle::Ndjson).to have_received(:emit_event).with(
+            anything,
+            "github_release",
+            hash_including(action: "asset_upload", status: "retrying", asset: "release.gem", attempt: 1, attempts: 3)
+          )
+          expect(Kettle::Ndjson).to have_received(:emit_event).with(
+            anything,
+            "github_release",
+            hash_including(action: "asset_upload", status: "ok", asset: "release.gem", attempt: 2, attempts: 3)
+          )
         end
       end
 

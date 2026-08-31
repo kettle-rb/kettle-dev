@@ -2883,7 +2883,9 @@ module Kettle
 
         tag = "v#{version}"
         puts "Creating GitHub release #{owner}/#{repo} #{tag}..."
+        emit_github_release_event(action: "create", status: "started", tag: tag, assets: Array(assets).length)
         ok, msg = github_create_release(owner: owner, repo: repo, token: token, tag: tag, title: tag, body: body, assets: assets)
+        emit_github_release_event(action: "create", status: ok ? "ok" : "failed", tag: tag, assets: Array(assets).length, reason: msg)
         if ok
           puts "GitHub release created for #{tag}."
         else
@@ -3140,8 +3142,31 @@ module Kettle
 
         attempts = GITHUB_RELEASE_ASSET_UPLOAD_ATTEMPTS
         attempts.times do |attempt|
+          emit_github_release_event(
+            action: "asset_upload",
+            status: "started",
+            asset: File.basename(path),
+            attempt: attempt + 1,
+            attempts: attempts
+          )
           result = github_upload_release_asset_once(release_id, owner: owner, repo: repo, token: token, path: path)
-          return result if result.first || !retryable_github_release_asset_upload_result?(result.last) || attempt == attempts - 1
+          retrying = !result.first && retryable_github_release_asset_upload_result?(result.last) && attempt < attempts - 1
+          status = if result.first
+            "ok"
+          elsif retrying
+            "retrying"
+          else
+            "failed"
+          end
+          emit_github_release_event(
+            action: "asset_upload",
+            status: status,
+            asset: File.basename(path),
+            attempt: attempt + 1,
+            attempts: attempts,
+            reason: result.first ? nil : result.last
+          )
+          return result unless retrying
 
           warn("GitHub release asset upload failed for #{File.basename(path)}; retrying #{attempt + 2}/#{attempts}.")
           sleep(GITHUB_RELEASE_ASSET_UPLOAD_RETRY_DELAY_SECONDS)
@@ -3169,6 +3194,23 @@ module Kettle
 
       def retryable_github_release_asset_upload_result?(message)
         message.match?(/(?:OpenSSL::SSL::SSLError|IOError|Errno::|(?:Net::)?(?:Open|Read)Timeout|HTTP (?:429|5\d\d))/)
+      end
+
+      def emit_github_release_event(action:, status:, tag: nil, asset: nil, assets: nil, attempt: nil, attempts: nil, reason: nil)
+        Kettle::Ndjson.emit_event(
+          @event_recorder,
+          "github_release",
+          action: action,
+          phase: "release",
+          status: status,
+          tag: tag,
+          asset: asset,
+          assets: assets,
+          attempt: attempt,
+          attempts: attempts,
+          reason: reason,
+          mark: release_progress_mark(status)
+        )
       end
 
       def github_update_release(owner:, repo:, token:, tag:, title:, body:)

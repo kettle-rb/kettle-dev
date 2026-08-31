@@ -20,6 +20,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- Emit GitHub Release creation and asset-upload lifecycle events, including retry attempts.
+
 ### Changed
 
 ### Deprecated

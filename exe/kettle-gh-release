@@ -26,6 +26,7 @@ $LOAD_PATH.unshift(repo_lib) if File.directory?(repo_lib) && !$LOAD_PATH.include
 
 begin
   require "kettle/dev"
+  require "kettle/ndjson"
   require "kettle/dev/executable_version"
   Kettle::Dev::ExecutableVersion.print_and_exit!(script_basename, ARGV)
   Kettle::Dev::ExecutableVersion.print_header(script_basename)
@@ -52,7 +53,7 @@ if ARGV.include?("-h") || ARGV.include?("--help")
       version=<VERSION>           # Backward-compatible explicit version form
       --check                     # Verify RubyGems, remote tag, changelog, and token without creating a release
       --update                    # Update an existing GitHub Release title/body from CHANGELOG.md
-      --events                    # Emit the final result as one NDJSON event
+      --events                    # Emit GitHub Release lifecycle and asset NDJSON events
       --allow-unpublished         # Skip the RubyGems publication requirement (for intentionally non-RubyGems projects)
       --asset PATH                # Attach an artifact to the GitHub release (repeatable)
 
@@ -106,7 +107,8 @@ if !explicit_version.nil? && explicit_version.empty?
 end
 
 begin
-  cli = Kettle::Dev::ReleaseCLI.new(start_step: 18)
+  event_stream = events ? Kettle::Ndjson.event_stream($stdout, types: "github_release") : nil
+  cli = Kettle::Dev::ReleaseCLI.new(start_step: 18, event_stream: event_stream)
   version = explicit_version || cli.send(:detect_version)
   result = cli.send(:github_release_backfill_check, version, require_rubygems: !allow_unpublished)
 
@@ -135,21 +137,10 @@ begin
   exit 1 unless result.fetch("ok")
   exit 0 if check_only
 
-  created, message = if update_only
+  created, _message = if update_only
     cli.send(:maybe_update_github_release!, version)
   else
     cli.send(:maybe_create_github_release!, version, assets: assets)
-  end
-  if events
-    puts JSON.generate(
-      event_version: 1,
-      type: "github_release",
-      action: update_only ? "update" : "create",
-      status: created ? "ok" : "failed",
-      version: result.fetch("version"),
-      tag: result.fetch("tag"),
-      result: message
-    )
   end
   exit(created ? 0 : 1)
 rescue LoadError => e
