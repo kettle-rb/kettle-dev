@@ -20,8 +20,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
-- Emit GitHub Release creation and asset-upload lifecycle events, including retry attempts.
-
 ### Changed
 
 ### Deprecated
@@ -30,9 +28,22 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Retry transient GitHub Release asset uploads and report every failed asset.
-
 ### Security
+
+## [3.0.27] - 2026-08-31
+
+- TAG: [v3.0.27][3.0.27t]
+- COVERAGE: 91.68% -- 5998/6542 lines in 47 files
+- BRANCH COVERAGE: 76.20% -- 2296/3013 branches in 47 files
+- 50.24% documented
+
+### Added
+
+- Emit GitHub Release creation and asset-upload lifecycle events, including retry attempts.
+
+### Fixed
+
+- Retry transient GitHub Release asset uploads and report every failed asset.
 
 ## [3.0.26] - 2026-08-31
 
@@ -3751,7 +3762,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.26...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.27...HEAD
+[3.0.27]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.26...v3.0.27
+[3.0.27t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.27
 [3.0.26]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.25...v3.0.26
 [3.0.26t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.26
 [3.0.25]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.24...v3.0.25
