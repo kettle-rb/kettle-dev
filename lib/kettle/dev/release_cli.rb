@@ -7,6 +7,7 @@ require "shellwords"
 require "time"
 require "fileutils"
 require "net/http"
+require "openssl"
 require "json"
 require "uri"
 require "yaml"
@@ -27,6 +28,8 @@ module Kettle
     class ReleaseCLI
       RUBYGEMS_INVALID_OTP = /Your OTP code is incorrect\. Please check it and retry\./.freeze
       OTP_RETRY_DELAY_SECONDS = 2
+      GITHUB_RELEASE_ASSET_UPLOAD_ATTEMPTS = 3
+      GITHUB_RELEASE_ASSET_UPLOAD_RETRY_DELAY_SECONDS = 1
       QUIET_ENV = {
         "KETTLE_JEM_QUIET" => "true",
         "KETTLE_JEM_DEBUG" => "false",
@@ -3063,8 +3066,7 @@ module Kettle
 
           release = JSON.parse(res.body)
           asset_messages = Array(assets).map { |asset| github_upload_release_asset(release.fetch("id"), owner: owner, repo: repo, token: token, path: asset) }
-          failed_asset = asset_messages.find { |ok, _message| !ok }
-          failed_asset || [true, "created with #{asset_messages.length} assets"]
+          github_release_asset_result(asset_messages, "created")
         else
           if res.code.to_s == "422" && res.body.to_s.include?("already_exists")
             return [true, "already exists"] if Array(assets).empty?
@@ -3107,9 +3109,15 @@ module Kettle
         asset_messages = missing_assets.map do |asset|
           github_upload_release_asset(release.fetch("id"), owner: owner, repo: repo, token: token, path: asset)
         end
-        failed_asset = asset_messages.find { |ok, _message| !ok }
+        github_release_asset_result(asset_messages, "updated existing release")
+      end
+
+      def github_release_asset_result(asset_messages, success_prefix)
+        failures = asset_messages.reject(&:first).map(&:last)
+        return [false, failures.join("; ")] unless failures.empty?
+
         asset_noun = asset_messages.one? ? "asset" : "assets"
-        failed_asset || [true, "updated existing release with #{asset_messages.length} #{asset_noun} uploaded"]
+        [true, "#{success_prefix} with #{asset_messages.length} #{asset_noun} uploaded"]
       end
 
       def github_release_for_tag(owner:, repo:, token:, tag:)
@@ -3130,6 +3138,19 @@ module Kettle
         path = File.expand_path(path)
         return [false, "asset does not exist: #{path}"] unless File.file?(path)
 
+        attempts = GITHUB_RELEASE_ASSET_UPLOAD_ATTEMPTS
+        attempts.times do |attempt|
+          result = github_upload_release_asset_once(release_id, owner: owner, repo: repo, token: token, path: path)
+          return result if result.first || !retryable_github_release_asset_upload_result?(result.last) || attempt == attempts - 1
+
+          warn("GitHub release asset upload failed for #{File.basename(path)}; retrying #{attempt + 2}/#{attempts}.")
+          sleep(GITHUB_RELEASE_ASSET_UPLOAD_RETRY_DELAY_SECONDS)
+        end
+      rescue => e
+        [false, "asset #{File.basename(path)}: #{e.class}: #{e.message}"]
+      end
+
+      def github_upload_release_asset_once(release_id, owner:, repo:, token:, path:)
         uri = URI("https://uploads.github.com/repos/#{owner}/#{repo}/releases/#{release_id}/assets")
         uri.query = URI.encode_www_form(name: File.basename(path))
         req = Net::HTTP::Post.new(uri)
@@ -3142,8 +3163,12 @@ module Kettle
         return [true, File.basename(path)] if res.is_a?(Net::HTTPSuccess) || res.is_a?(Net::HTTPCreated)
 
         [false, "asset #{File.basename(path)}: HTTP #{res.code}: #{res.body}"]
-      rescue => e
+      rescue OpenSSL::SSL::SSLError, IOError, SystemCallError, Timeout::Error => e
         [false, "asset #{File.basename(path)}: #{e.class}: #{e.message}"]
+      end
+
+      def retryable_github_release_asset_upload_result?(message)
+        message.match?(/(?:OpenSSL::SSL::SSLError|IOError|Errno::|(?:Net::)?(?:Open|Read)Timeout|HTTP (?:429|5\d\d))/)
       end
 
       def github_update_release(owner:, repo:, token:, tag:, title:, body:)

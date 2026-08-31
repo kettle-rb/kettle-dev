@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Retry transient GitHub Release asset uploads and report every failed asset.
+
 ### Security
 
 ## [3.0.26] - 2026-08-31

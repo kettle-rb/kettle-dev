@@ -3595,6 +3595,41 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect(cli).not_to have_received(:github_upload_release_asset).with(42, owner: "me", repo: "repo", token: "token", path: "/artifacts/already.gem")
       end
 
+      it "retries a transient TLS failure while uploading a release asset", :aggregate_failures do
+        cli = described_class.new
+        Dir.mktmpdir do |directory|
+          path = File.join(directory, "release.gem")
+          File.binwrite(path, "gem")
+          response = Net::HTTPCreated.new("1.1", "201", "Created")
+          http = instance_double(Net::HTTP, request: response)
+          calls = 0
+          allow(Net::HTTP).to receive(:start) do |_host, _port, **_options, &block|
+            calls += 1
+            raise OpenSSL::SSL::SSLError, "tlsv1 alert protocol version" if calls == 1
+
+            block.call(http)
+          end
+          allow(cli).to receive(:sleep)
+
+          result = cli.send(:github_upload_release_asset, 42, owner: "me", repo: "repo", token: "token", path: path)
+
+          expect(result).to eq([true, "release.gem"])
+          expect(Net::HTTP).to have_received(:start).twice
+          expect(cli).to have_received(:sleep).with(1).once
+        end
+      end
+
+      it "reports every failed release asset", :aggregate_failures do
+        cli = described_class.new
+        result = cli.send(
+          :github_release_asset_result,
+          [[false, "asset one.gem: timeout"], [false, "asset two.gem: HTTP 503"]],
+          "created"
+        )
+
+        expect(result).to eq([false, "asset one.gem: timeout; asset two.gem: HTTP 503"])
+      end
+
       it "uses origin when preferred remote is nil", :aggregate_failures do
         Dir.mktmpdir do |root|
           File.write(File.join(root, "CHANGELOG.md"), <<~MD)
