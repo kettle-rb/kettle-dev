@@ -28,11 +28,20 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [3.0.24] - 2026-08-30
+
+- TAG: [v3.0.24][3.0.24t]
+- COVERAGE: 91.52% -- 5934/6484 lines in 47 files
+- BRANCH COVERAGE: 76.20% -- 2276/2987 branches in 47 files
+- 50.47% documented
+
+### Fixed
+
 - Keep Gemfile bootstrap dependencies available while resetting explicitly allowed monorepo release lockfiles.
 
 - Keep installed Gemfile bootstrap dependencies available for every release lockfile reset.
-
-### Security
 
 ## [3.0.23] - 2026-08-30
 
@@ -3714,7 +3723,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.23...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.24...HEAD
+[3.0.24]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.23...v3.0.24
+[3.0.24t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.24
 [3.0.23]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.22...v3.0.23
 [3.0.23t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.23
 [3.0.22]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.21...v3.0.22

@@ -204,7 +204,7 @@ out to <code>kettle-release</code> for each member that needs publishing.</p>
     <tr>
       <td>Source</td>
       <td>
-<a href="https://gitlab.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitLab-FBA326?style=for-the-badge&amp;logo=Gitlab&amp;logoColor=orange" alt="Source on GitLab.com"></a> <a href="https://codeberg.org/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/CodeBerg-4893CC?style=for-the-badge&amp;logo=CodeBerg&amp;logoColor=blue" alt="Source on CodeBerg.org"></a> <a href="https://github.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitHub-238636?style=for-the-badge&amp;logo=GitHub&amp;logoColor=green" alt="Source on GitHub.com"></a> <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"><img src="https://img.shields.io/badge/KLOC-6.438-FFDD67.svg?style=for-the-badge&amp;logo=YouTube&amp;logoColor=blue" alt="The best SHA: dQw4w9WgXcQ!"></a>
+<a href="https://gitlab.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitLab-FBA326?style=for-the-badge&amp;logo=Gitlab&amp;logoColor=orange" alt="Source on GitLab.com"></a> <a href="https://codeberg.org/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/CodeBerg-4893CC?style=for-the-badge&amp;logo=CodeBerg&amp;logoColor=blue" alt="Source on CodeBerg.org"></a> <a href="https://github.com/kettle-dev/kettle-dev"><img src="https://img.shields.io/badge/GitHub-238636?style=for-the-badge&amp;logo=GitHub&amp;logoColor=green" alt="Source on GitHub.com"></a> <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"><img src="https://img.shields.io/badge/KLOC-6.484-FFDD67.svg?style=for-the-badge&amp;logo=YouTube&amp;logoColor=blue" alt="The best SHA: dQw4w9WgXcQ!"></a>
 </td>
     </tr>
     <tr>
@@ -794,6 +794,14 @@ paths or checksum-less local gem versions: <code>bundle exec kettle-reset Gemfil
 variables, known local-template toggles, and writes checksums while<br>
 updating path-sourced and checksum-gap gems back to released registry<br>
 versions.</li>
+      <li>Gemfile bootstrap dependencies are separate from dependency resolution.<br>
+A generated Gemfile can require <code>nomono/bundler</code> while it is being<br>
+evaluated, before Bundler has resolved its declared <code>nomono</code> gem.<br>
+<code>kettle-reset</code> detects that literal bootstrap require and installs the<br>
+locked registry version of <code>nomono</code> into its temporary <code>GEM_HOME</code> before<br>
+invoking Bundler. Its <code>GEM_PATH</code> contains only that reset sandbox: no<br>
+unrelated gems installed for the invoking Ruby can affect lockfile<br>
+resolution.</li>
       <li>Release lockfile resets normally keep the complete development Gemfile<br>
 graph, including the development-only <code>kettle-changelog</code> dependency.<br>
 <code>kettle-changelog</code> depends on <code>kettle-dev</code>, so including it in<br>
@@ -853,7 +861,7 @@ when Bundler needs to write its resolved lockfile.</li>
               <td>Canonical release state</td>
               <td>Tracked <code>Gemfile.lock</code> and, when present, <code>Appraisal.root.gemfile.lock</code>
 </td>
-              <td>Step 1 Bundler update, steps 3-6 setup/checks/appraisals/docs/prep commit, and step 16 checksums. These commands disable local <code>*_DEV</code>/<code>*_LOCAL</code> switches, except a narrow member-root policy supplied by <code>kettle-family</code> for an explicit monorepo.</td>
+              <td>Step 1 Bundler update, steps 3-6 setup/checks/appraisals/docs/prep commit, and step 16 checksums. These commands disable local <code>*_DEV</code>/<code>*_LOCAL</code> switches, except an explicitly allowed monorepo member-root policy supplied by <code>kettle-family</code>. Reset <code>GEM_HOME</code> and <code>GEM_PATH</code> are isolated; direct Gemfile bootstrap requirements are installed from their locked registry source into that sandbox before Bundler evaluates the Gemfile.</td>
             </tr>
             <tr>
               <td>Release task state</td>
