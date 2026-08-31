@@ -159,6 +159,18 @@ RSpec.describe Kettle::Dev::LockfileReset do
     expect(reset.normalization_env).not_to include("STRUCTUREDMERGE_DEV" => "false")
   end
 
+  it "preserves an allowed template context with configured monorepo paths" do
+    stub_env(
+      "KETTLE_RELEASE_ALLOWED_LOCAL_PATH_ENVS" => "STRUCTUREDMERGE_DEV,K_JEM_TEMPLATING",
+      "STRUCTUREDMERGE_DEV" => File.join(@root, "gems"),
+      "K_JEM_TEMPLATING" => "true"
+    )
+    reset = described_class.new(root: @root, command_runner: ->(_command) {})
+
+    expect(reset.normalization_env).not_to include("STRUCTUREDMERGE_DEV" => "false")
+    expect(reset.normalization_env).not_to include("K_JEM_TEMPLATING" => "false")
+  end
+
   it "does not update Bundler for ordinary targeted lockfile resets" do
     reset = described_class.new(root: @root, command_runner: ->(_command) {})
     path = File.join(@root, "Gemfile.lock")
