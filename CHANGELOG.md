@@ -28,15 +28,13 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Emit explicit logical release resume-step metadata instead of relying on command-event ordering.
-
 ### Security
 
-## [3.0.24] - 2026-08-30
+## [3.0.24] - 2026-08-31
 
 - TAG: [v3.0.24][3.0.24t]
-- COVERAGE: 91.52% -- 5934/6484 lines in 47 files
-- BRANCH COVERAGE: 76.20% -- 2276/2987 branches in 47 files
+- COVERAGE: 91.38% -- 5934/6494 lines in 47 files
+- BRANCH COVERAGE: 75.98% -- 2271/2989 branches in 47 files
 - 50.47% documented
 
 ### Fixed
@@ -44,6 +42,8 @@ Please file a bug if you notice a violation of semantic versioning.
 - Keep Gemfile bootstrap dependencies available while resetting explicitly allowed monorepo release lockfiles.
 
 - Keep installed Gemfile bootstrap dependencies available for every release lockfile reset.
+
+- Emit explicit logical release resume-step metadata instead of relying on command-event ordering.
 
 ## [3.0.23] - 2026-08-30
 

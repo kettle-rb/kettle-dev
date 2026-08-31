@@ -372,18 +372,18 @@ module Kettle
         # 5. appraisal:generate (optional) + canonical docs build
         with_release_resume_step(5) do
           if run_step?(5)
-          appraisals_path = File.join(@root, "Appraisals")
-          if skip_appraisals?
-            puts "Skipping #{@appraisal_task} because --skip-appraisals was provided."
-          elsif File.file?(appraisals_path)
-            puts "Appraisals detected at #{Kettle::Dev.display_path(appraisals_path)}. Running: bin/rake #{@appraisal_task}"
-            run_cmd!(release_project_command("bin/rake #{@appraisal_task}"))
-          else
-            puts "No Appraisals file found; skipping #{@appraisal_task}"
-          end
+            appraisals_path = File.join(@root, "Appraisals")
+            if skip_appraisals?
+              puts "Skipping #{@appraisal_task} because --skip-appraisals was provided."
+            elsif File.file?(appraisals_path)
+              puts "Appraisals detected at #{Kettle::Dev.display_path(appraisals_path)}. Running: bin/rake #{@appraisal_task}"
+              run_cmd!(release_project_command("bin/rake #{@appraisal_task}"))
+            else
+              puts "No Appraisals file found; skipping #{@appraisal_task}"
+            end
 
-          puts "Generating docs site via canonical task: bin/rake yard"
-          run_cmd!(release_project_command("bin/rake yard"))
+            puts "Generating docs site via canonical task: bin/rake yard"
+            run_cmd!(release_project_command("bin/rake yard"))
           end
         end
 
@@ -476,38 +476,38 @@ module Kettle
         # 14. build
         with_release_resume_step(14) do
           if run_step?(14)
-          ensure_release_secrets_ready_for_signing! if signing_enabled? && release_secrets_configured?
-          if signing_enabled? && release_secrets_configured?
-            puts "Running build with gem signing passphrase from configured secrets provider (#{release_secrets_provider_label})..."
-          else
-            puts "Running build (you may be prompted for the signing key password)..."
-          end
-          run_cmd!(release_project_command("bundle exec rake build"))
+            ensure_release_secrets_ready_for_signing! if signing_enabled? && release_secrets_configured?
+            if signing_enabled? && release_secrets_configured?
+              puts "Running build with gem signing passphrase from configured secrets provider (#{release_secrets_provider_label})..."
+            else
+              puts "Running build (you may be prompted for the signing key password)..."
+            end
+            run_cmd!(release_project_command("bundle exec rake build"))
           end
         end
 
         # 15. release and tag
         with_release_resume_step(15) do
           if run_step?(15)
-          version ||= detect_version
-          gem_name = detect_gem_name
-          @release_candidate = build_release_candidate(gem_name, version)
-          if local_ci?
-            with_unpublished_candidate_cleanup { release_gem_and_tag_locally!(version) }
-          else
-            ensure_release_secrets_ready_for_signing! if signing_enabled? && release_secrets_configured?
-            if release_secrets_configured?
-              puts "Running release with configured secrets provider (#{release_secrets_provider_label}) for signing and RubyGems MFA prompts..."
+            version ||= detect_version
+            gem_name = detect_gem_name
+            @release_candidate = build_release_candidate(gem_name, version)
+            if local_ci?
+              with_unpublished_candidate_cleanup { release_gem_and_tag_locally!(version) }
             else
-              puts "Running release (you may be prompted for signing key password and RubyGems MFA OTP)..."
+              ensure_release_secrets_ready_for_signing! if signing_enabled? && release_secrets_configured?
+              if release_secrets_configured?
+                puts "Running release with configured secrets provider (#{release_secrets_provider_label}) for signing and RubyGems MFA prompts..."
+              else
+                puts "Running release (you may be prompted for signing key password and RubyGems MFA OTP)..."
+              end
+              with_unpublished_candidate_cleanup do
+                run_cmd!(release_project_command("bundle exec rake release"))
+                @release_candidate.published = true
+                confirm_release_candidate_available!(@release_candidate)
+              end
+              mark_rubygems_release_cache_bust(version)
             end
-            with_unpublished_candidate_cleanup do
-              run_cmd!(release_project_command("bundle exec rake release"))
-              @release_candidate.published = true
-              confirm_release_candidate_available!(@release_candidate)
-            end
-            mark_rubygems_release_cache_bust(version)
-          end
           end
         end
 
@@ -517,11 +517,11 @@ module Kettle
         #    release build to include them in the gem, thus altering the artifact, and invalidating the checksums.
         with_release_resume_step(16) do
           if run_step?(16)
-          # Generate checksums for the just-built artifact, commit them, then validate
-          version ||= detect_version
-          gem_path = checksum_gem_path_for_version!(version)
-          run_cmd!(release_child_command("bin/gem_checksums #{Shellwords.escape(gem_path)}"))
-          validate_checksums!(version, stage: "after release")
+            # Generate checksums for the just-built artifact, commit them, then validate
+            version ||= detect_version
+            gem_path = checksum_gem_path_for_version!(version)
+            run_cmd!(release_child_command("bin/gem_checksums #{Shellwords.escape(gem_path)}"))
+            validate_checksums!(version, stage: "after release")
           end
         end
 
