@@ -132,6 +132,7 @@ parent bundle. Clear the dynamic keys along with RESET_ENV_KEYS.</p>
         </dt>
         <dd><pre class="code"><span class='qwords_beg'>%w[</span><span class='words_sep'>
 </span><span class='words_sep'>  </span><span class='tstring_content'>BUNDLE_DEBUG</span><span class='words_sep'>
+</span><span class='words_sep'>  </span><span class='tstring_content'>BUNDLE_DISABLE_CHECKSUM_VALIDATION</span><span class='words_sep'>
 </span><span class='words_sep'>  </span><span class='tstring_content'>BUNDLE_QUIET</span><span class='words_sep'>
 </span><span class='words_sep'>  </span><span class='tstring_content'>BUNDLE_SILENCE_DEPRECATIONS</span><span class='words_sep'>
 </span><span class='words_sep'>  </span><span class='tstring_content'>BUNDLE_SILENCE_ROOT_WARNING</span><span class='words_sep'>
@@ -343,14 +344,14 @@ parent bundle. Clear the dynamic keys along with RESET_ENV_KEYS.</p>
       <pre class="lines">
 
 
-67
 68
 69
 70
-71</pre>
+71
+72</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/bundler_env_guard.rb', line 67</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/bundler_env_guard.rb', line 68</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_expected_env_key?'>expected_env_key?</span><span class='lparen'>(</span><span class='id identifier rubyid_key'>key</span><span class='rparen'>)</span>
   <span class='const'><span class='object_link'><a href="#RESET_ENV_KEYS-constant" title="Kettle::Dev::BundlerEnvGuard::RESET_ENV_KEYS (constant)">RESET_ENV_KEYS</a></span></span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_key'>key</span><span class='rparen'>)</span> <span class='op'>||</span>
@@ -387,12 +388,12 @@ parent bundle. Clear the dynamic keys along with RESET_ENV_KEYS.</p>
       <pre class="lines">
 
 
-59
 60
-61</pre>
+61
+62</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/bundler_env_guard.rb', line 59</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/bundler_env_guard.rb', line 60</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_reset_warning_cache!'>reset_warning_cache!</span>
   <span class='ivar'>@warned_unexpected_env_keys</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
@@ -417,7 +418,6 @@ parent bundle. Clear the dynamic keys along with RESET_ENV_KEYS.</p>
       <pre class="lines">
 
 
-35
 36
 37
 38
@@ -427,10 +427,11 @@ parent bundle. Clear the dynamic keys along with RESET_ENV_KEYS.</p>
 42
 43
 44
-45</pre>
+45
+46</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/bundler_env_guard.rb', line 35</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/bundler_env_guard.rb', line 36</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_unbundled_env'>unbundled_env</span>
   <span class='id identifier rubyid_env'>env</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="#RESET_ENV_KEYS-constant" title="Kettle::Dev::BundlerEnvGuard::RESET_ENV_KEYS (constant)">RESET_ENV_KEYS</a></span></span><span class='period'>.</span><span class='id identifier rubyid_each_with_object'>each_with_object</span><span class='lparen'>(</span><span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_key'>key</span><span class='comma'>,</span> <span class='id identifier rubyid_result'>result</span><span class='op'>|</span>
@@ -463,12 +464,12 @@ parent bundle. Clear the dynamic keys along with RESET_ENV_KEYS.</p>
       <pre class="lines">
 
 
-63
 64
-65</pre>
+65
+66</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/bundler_env_guard.rb', line 63</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/bundler_env_guard.rb', line 64</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_unexpected_env_keys'>unexpected_env_keys</span>
   <span class='const'>ENV</span><span class='period'>.</span><span class='id identifier rubyid_to_hash'>to_hash</span><span class='period'>.</span><span class='id identifier rubyid_keys'>keys</span><span class='period'>.</span><span class='id identifier rubyid_grep'>grep</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\ABUNDLE(?:R)?_</span><span class='regexp_end'>/</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_reject'>reject</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_key'>key</span><span class='op'>|</span> <span class='id identifier rubyid_expected_env_key?'>expected_env_key?</span><span class='lparen'>(</span><span class='id identifier rubyid_key'>key</span><span class='rparen'>)</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_sort'>sort</span>
@@ -493,7 +494,6 @@ parent bundle. Clear the dynamic keys along with RESET_ENV_KEYS.</p>
       <pre class="lines">
 
 
-47
 48
 49
 50
@@ -502,10 +502,11 @@ parent bundle. Clear the dynamic keys along with RESET_ENV_KEYS.</p>
 53
 54
 55
-56</pre>
+56
+57</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/bundler_env_guard.rb', line 47</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/bundler_env_guard.rb', line 48</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_warn_unexpected_env!'>warn_unexpected_env!</span><span class='lparen'>(</span><span class='label'>stream:</span> <span class='gvar'>$stderr</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_unexpected'>unexpected</span> <span class='op'>=</span> <span class='id identifier rubyid_unexpected_env_keys'>unexpected_env_keys</span>
@@ -560,17 +561,17 @@ parent bundle. Clear the dynamic keys along with RESET_ENV_KEYS.</p>
       <pre class="lines">
 
 
-73
 74
 75
 76
 77
 78
 79
-80</pre>
+80
+81</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/bundler_env_guard.rb', line 73</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/bundler_env_guard.rb', line 74</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_warned_unexpected_env?'>warned_unexpected_env?</span><span class='lparen'>(</span><span class='id identifier rubyid_keys'>keys</span><span class='rparen'>)</span>
   <span class='ivar'>@warned_unexpected_env_keys</span> <span class='op'>||=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>

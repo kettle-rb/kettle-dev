@@ -28,9 +28,18 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Recognize disabled checksum validation as inert in unbundled command environments.
-
 ### Security
+
+## [3.0.28] - 2026-09-01
+
+- TAG: [v3.0.28][3.0.28t]
+- COVERAGE: 91.50% -- 5986/6542 lines in 47 files
+- BRANCH COVERAGE: 75.94% -- 2288/3013 branches in 47 files
+- 50.24% documented
+
+### Fixed
+
+- Recognize disabled checksum validation as inert in unbundled command environments.
 
 ## [3.0.27] - 2026-08-31
 
@@ -3764,7 +3773,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.27...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.28...HEAD
+[3.0.28]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.27...v3.0.28
+[3.0.28t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.28
 [3.0.27]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.26...v3.0.27
 [3.0.27t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.27
 [3.0.26]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.25...v3.0.26
