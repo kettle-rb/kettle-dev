@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Recognize disabled checksum validation as inert in unbundled command environments.
+
 ### Security
 
 ## [3.0.27] - 2026-08-31
