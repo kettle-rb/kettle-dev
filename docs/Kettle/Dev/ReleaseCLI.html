@@ -196,6 +196,16 @@
         </dt>
         <dd><pre class="code"><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>https://gem.coop</span><span class='tstring_end'>&quot;</span></span></pre></dd>
       
+        <dt id="FAMILY_MEMBER_PUBLISH_MODE_ENV-constant" class="">FAMILY_MEMBER_PUBLISH_MODE_ENV =
+          
+        </dt>
+        <dd><pre class="code"><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>KETTLE_RELEASE_FAMILY_MEMBER_PUBLISH</span><span class='tstring_end'>&quot;</span></span></pre></dd>
+      
+        <dt id="FAMILY_MEMBER_FINALIZE_MODE_ENV-constant" class="">FAMILY_MEMBER_FINALIZE_MODE_ENV =
+          
+        </dt>
+        <dd><pre class="code"><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>KETTLE_RELEASE_FAMILY_MEMBER_FINALIZE</span><span class='tstring_end'>&quot;</span></span></pre></dd>
+      
     </dl>
   
 
@@ -497,8 +507,6 @@
       <pre class="lines">
 
 
-197
-198
 199
 200
 201
@@ -526,10 +534,14 @@
 223
 224
 225
-226</pre>
+226
+227
+228
+229
+230</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 197</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 199</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='label'>start_step:</span> <span class='int'>0</span><span class='comma'>,</span> <span class='label'>local_ci:</span> <span class='kw'>false</span><span class='comma'>,</span> <span class='label'>version:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>appraisal_task:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>skip_steps:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>skip_changelog:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>skip_appraisals:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>skip_bundle_audit:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>ci_workflows:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>skip_remotes:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>required_remotes:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>secrets_provider_name:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>yes:</span> <span class='kw'>false</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_options'>options</span><span class='rparen'>)</span>
   <span class='ivar'>@root</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../Kettle.html" title="Kettle (module)">Kettle</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Dev.html" title="Kettle::Dev (module)">Dev</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="CIHelpers.html" title="Kettle::Dev::CIHelpers (module)">CIHelpers</a></span></span><span class='period'>.</span><span class='id identifier rubyid_project_root'><span class='object_link'><a href="CIHelpers.html#project_root-class_method" title="Kettle::Dev::CIHelpers.project_root (method)">project_root</a></span></span>
@@ -560,6 +572,8 @@
   <span class='ivar'>@finished_report</span> <span class='op'>=</span> <span class='kw'>nil</span>
   <span class='ivar'>@changelog_generated_coverage</span> <span class='op'>=</span> <span class='kw'>false</span>
   <span class='ivar'>@release_task_lockfile_paths</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
+  <span class='ivar'>@family_member_publish</span> <span class='op'>=</span> <span class='id identifier rubyid_truthy_value?'>truthy_value?</span><span class='lparen'>(</span><span class='const'>ENV</span><span class='lbracket'>[</span><span class='const'><span class='object_link'><a href="#FAMILY_MEMBER_PUBLISH_MODE_ENV-constant" title="Kettle::Dev::ReleaseCLI::FAMILY_MEMBER_PUBLISH_MODE_ENV (constant)">FAMILY_MEMBER_PUBLISH_MODE_ENV</a></span></span><span class='rbracket'>]</span><span class='rparen'>)</span>
+  <span class='ivar'>@family_member_finalize</span> <span class='op'>=</span> <span class='id identifier rubyid_truthy_value?'>truthy_value?</span><span class='lparen'>(</span><span class='const'>ENV</span><span class='lbracket'>[</span><span class='const'><span class='object_link'><a href="#FAMILY_MEMBER_FINALIZE_MODE_ENV-constant" title="Kettle::Dev::ReleaseCLI::FAMILY_MEMBER_FINALIZE_MODE_ENV (constant)">FAMILY_MEMBER_FINALIZE_MODE_ENV</a></span></span><span class='rbracket'>]</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -598,12 +612,12 @@
       <pre class="lines">
 
 
-255
-256
-257</pre>
+259
+260
+261</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 255</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 259</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_finished_report'>finished_report</span>
   <span class='ivar'>@finished_report</span>
@@ -635,8 +649,6 @@
       <pre class="lines">
 
 
-74
-75
 76
 77
 78
@@ -680,10 +692,12 @@
 116
 117
 118
-119</pre>
+119
+120
+121</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 74</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 76</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_run_cmd!'>run_cmd!</span><span class='lparen'>(</span><span class='id identifier rubyid_cmd'>cmd</span><span class='rparen'>)</span>
   <span class='comment'># For Bundler-invoked build/release, explicitly prefix SKIP_GEM_SIGNING so
@@ -757,17 +771,17 @@
       <pre class="lines">
 
 
-559
-560
-561
-562
-563
-564
-565
-566</pre>
+566
+567
+568
+569
+570
+571
+572
+573</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 559</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 566</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_normalize_appraisal_task'>normalize_appraisal_task</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_task'>task</span> <span class='op'>=</span> <span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_strip'>strip</span>
@@ -797,13 +811,13 @@
       <pre class="lines">
 
 
-580
-581
-582
-583</pre>
+587
+588
+589
+590</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 580</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 587</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_normalize_ci_workflows'>normalize_ci_workflows</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_workflows'>workflows</span> <span class='op'>=</span> <span class='const'>Array</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_flat_map'>flat_map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_part'>part</span><span class='op'>|</span> <span class='id identifier rubyid_part'>part</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>,</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:strip</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_reject'>reject</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:empty?</span><span class='rparen'>)</span>
@@ -829,16 +843,16 @@
       <pre class="lines">
 
 
-585
-586
-587
-588
-589
-590
-591</pre>
+592
+593
+594
+595
+596
+597
+598</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 585</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 592</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_normalize_remote_names'>normalize_remote_names</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='comma'>,</span> <span class='id identifier rubyid_label'>label</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_remotes'>remotes</span> <span class='op'>=</span> <span class='const'>Array</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_flat_map'>flat_map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_part'>part</span><span class='op'>|</span> <span class='id identifier rubyid_part'>part</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>,</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:strip</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_reject'>reject</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:empty?</span><span class='rparen'>)</span>
@@ -867,13 +881,13 @@
       <pre class="lines">
 
 
-593
-594
-595
-596</pre>
+600
+601
+602
+603</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 593</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 600</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_normalize_required_remotes'>normalize_required_remotes</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_remotes'>remotes</span> <span class='op'>=</span> <span class='id identifier rubyid_normalize_remote_names'>normalize_remote_names</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>?</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>K_RELEASE_REQUIRED_REMOTES</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>:</span> <span class='id identifier rubyid_value'>value</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>required remotes</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
@@ -899,20 +913,20 @@
       <pre class="lines">
 
 
-568
-569
-570
-571
-572
-573
-574
 575
 576
 577
-578</pre>
+578
+579
+580
+581
+582
+583
+584
+585</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 568</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 575</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_normalize_skip_steps'>normalize_skip_steps</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_raw_steps'>raw_steps</span> <span class='op'>=</span> <span class='const'>Array</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_flat_map'>flat_map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_part'>part</span><span class='op'>|</span> <span class='id identifier rubyid_part'>part</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>,</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:strip</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_reject'>reject</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:empty?</span><span class='rparen'>)</span>
@@ -945,10 +959,6 @@
       <pre class="lines">
 
 
-228
-229
-230
-231
 232
 233
 234
@@ -970,10 +980,14 @@
 250
 251
 252
-253</pre>
+253
+254
+255
+256
+257</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 228</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 232</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_run'>run</span>
   <span class='ivar'>@started_at</span> <span class='op'>=</span> <span class='id identifier rubyid_monotonic_time'>monotonic_time</span>
@@ -1021,10 +1035,6 @@
       <pre class="lines">
 
 
-257
-258
-259
-260
 261
 262
 263
@@ -1321,12 +1331,22 @@
 554
 555
 556
-557</pre>
+557
+558
+559
+560
+561
+562
+563
+564</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 257</span>
+      <pre class="code"><span class="info file"># File 'lib/kettle/dev/release_cli.rb', line 261</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_run_with_release_environment'>run_with_release_environment</span>
+  <span class='kw'>return</span> <span class='id identifier rubyid_run_family_member_publish'>run_family_member_publish</span> <span class='kw'>if</span> <span class='id identifier rubyid_family_member_publish?'>family_member_publish?</span>
+  <span class='kw'>return</span> <span class='id identifier rubyid_run_family_member_finalize'>run_family_member_finalize</span> <span class='kw'>if</span> <span class='id identifier rubyid_family_member_finalize?'>family_member_finalize?</span>
+
   <span class='comment'># Changelog generation at step 0 runs the target project&#39;s test bundle
 </span>  <span class='comment'># to collect coverage. Normalize its canonical release lockfile before
 </span>  <span class='comment'># that subprocess starts; otherwise a local development PATH lock can

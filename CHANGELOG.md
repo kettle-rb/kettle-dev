@@ -28,11 +28,20 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [3.0.30] - 2026-09-01
+
+- TAG: [v3.0.30][3.0.30t]
+- COVERAGE: 91.68% -- 6038/6586 lines in 47 files
+- BRANCH COVERAGE: 76.31% -- 2310/3027 branches in 47 files
+- 50.00% documented
+
+### Fixed
+
 - Add an isolated family-member publish mode for concurrent monorepo releases.
 
 - Add serialized family-member checksum finalization for concurrent monorepo releases.
-
-### Security
 
 ## [3.0.29] - 2026-09-01
 
@@ -3790,7 +3799,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.29...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.30...HEAD
+[3.0.30]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.29...v3.0.30
+[3.0.30t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.30
 [3.0.29]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.28...v3.0.29
 [3.0.29t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.29
 [3.0.28]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.27...v3.0.28
