@@ -28,11 +28,20 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [3.0.29] - 2026-09-01
+
+- TAG: [v3.0.29][3.0.29t]
+- COVERAGE: 91.58% -- 6003/6555 lines in 47 files
+- BRANCH COVERAGE: 76.25% -- 2302/3019 branches in 47 files
+- 50.24% documented
+
+### Fixed
+
 - Install bootstrap gems required by statically evaluated Gemfiles before isolated release lockfile resolution.
 
 - Ignore inactive nested Gemfile bootstrap requirements when their appraisal lockfile does not include the bootstrap gem.
-
-### Security
 
 ## [3.0.28] - 2026-09-01
 
@@ -3777,7 +3786,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.28...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.29...HEAD
+[3.0.29]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.28...v3.0.29
+[3.0.29t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.29
 [3.0.28]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.27...v3.0.28
 [3.0.28t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.28
 [3.0.27]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.26...v3.0.27
