@@ -30,6 +30,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - Add an isolated family-member publish mode for concurrent monorepo releases.
 
+- Add serialized family-member checksum finalization for concurrent monorepo releases.
+
 ### Security
 
 ## [3.0.29] - 2026-09-01

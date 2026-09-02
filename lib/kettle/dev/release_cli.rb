@@ -70,6 +70,7 @@ module Kettle
       DEBUG_TRUE_VALUES = %w[1 true yes on].freeze
       RELEASE_VALIDATION_SOURCE = "https://gem.coop"
       FAMILY_MEMBER_PUBLISH_MODE_ENV = "KETTLE_RELEASE_FAMILY_MEMBER_PUBLISH"
+      FAMILY_MEMBER_FINALIZE_MODE_ENV = "KETTLE_RELEASE_FAMILY_MEMBER_FINALIZE"
 
       class << self
         def run_cmd!(cmd)
@@ -225,6 +226,7 @@ module Kettle
         @changelog_generated_coverage = false
         @release_task_lockfile_paths = {}
         @family_member_publish = truthy_value?(ENV[FAMILY_MEMBER_PUBLISH_MODE_ENV])
+        @family_member_finalize = truthy_value?(ENV[FAMILY_MEMBER_FINALIZE_MODE_ENV])
       end
 
       def run
@@ -258,6 +260,7 @@ module Kettle
 
       def run_with_release_environment
         return run_family_member_publish if family_member_publish?
+        return run_family_member_finalize if family_member_finalize?
 
         # Changelog generation at step 0 runs the target project's test bundle
         # to collect coverage. Normalize its canonical release lockfile before
@@ -616,6 +619,10 @@ module Kettle
         @family_member_publish
       end
 
+      def family_member_finalize?
+        @family_member_finalize
+      end
+
       def run_family_member_publish
         version = detect_version
         ensure_signing_setup_or_skip!
@@ -626,6 +633,17 @@ module Kettle
         @release_candidate = build_release_candidate(gem_name, version)
         with_unpublished_candidate_cleanup { publish_built_gem!(version) }
         human_output.puts "\n🚀 Published #{gem_name} v#{version} from family member mode 🚀"
+      end
+
+      # Kettle Family invokes this serially in the primary checkout after
+      # concurrent member publication. bin/gem_checksums owns its checksum
+      # commit; the family owns the one shared tag, pushes, and GitHub Release.
+      def run_family_member_finalize
+        version = detect_version
+        gem_path = checksum_gem_path_for_version!(version)
+        run_cmd!(release_child_command("bin/gem_checksums #{Shellwords.escape(gem_path)}"))
+        validate_checksums!(version, stage: "after family member publish")
+        human_output.puts "\n🔒 Finalized checksums for #{detect_gem_name} v#{version} from family member mode 🔒"
       end
 
       def truthy_value?(value)

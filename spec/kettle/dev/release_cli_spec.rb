@@ -7,6 +7,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     previous_skip_changelog = ENV.delete("KETTLE_DEV_SKIP_CHANGELOG")
     previous_skip_changelog_dependency = ENV.delete("KETTLE_DEV_SKIP_CHANGELOG_DEPENDENCY")
     previous_family_member_publish = ENV.delete("KETTLE_RELEASE_FAMILY_MEMBER_PUBLISH")
+    previous_family_member_finalize = ENV.delete("KETTLE_RELEASE_FAMILY_MEMBER_FINALIZE")
     begin
       example.run
     ensure
@@ -29,6 +30,13 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       else
         # rubocop:disable Env/Assign -- restore the inherited family worker flag after example isolation
         ENV["KETTLE_RELEASE_FAMILY_MEMBER_PUBLISH"] = previous_family_member_publish
+        # rubocop:enable Env/Assign
+      end
+      if previous_family_member_finalize.nil?
+        ENV.delete("KETTLE_RELEASE_FAMILY_MEMBER_FINALIZE")
+      else
+        # rubocop:disable Env/Assign -- restore the inherited family finalizer flag after example isolation
+        ENV["KETTLE_RELEASE_FAMILY_MEMBER_FINALIZE"] = previous_family_member_finalize
         # rubocop:enable Env/Assign
       end
     end
@@ -120,6 +128,27 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       expect(local_cli).to receive(:publish_built_gem!).with("1.2.3").ordered
       expect(local_cli).not_to receive(:run_pre_release_checks!)
       expect(local_cli).not_to receive(:commit_release_prep!)
+      expect(local_cli).not_to receive(:push!)
+      expect(local_cli).not_to receive(:push_tags!)
+      expect(local_cli).not_to receive(:maybe_create_github_release!)
+
+      local_cli.send(:run_with_release_environment)
+    end
+
+    it "finalizes member checksums without running release or GitHub steps" do
+      # rubocop:disable Env/Assign -- opt into the explicit family finalizer contract for this example
+      ENV["KETTLE_RELEASE_FAMILY_MEMBER_FINALIZE"] = "true"
+      # rubocop:enable Env/Assign
+      local_cli = described_class.new
+
+      allow(local_cli).to receive(:detect_version).and_return("1.2.3")
+      allow(local_cli).to receive(:detect_gem_name).and_return("mygem")
+      allow(local_cli).to receive(:checksum_gem_path_for_version!).with("1.2.3").and_return("pkg/mygem-1.2.3.gem")
+
+      expect(local_cli).to receive(:run_cmd!).with(a_string_including("bin/gem_checksums pkg/mygem-1.2.3.gem")).ordered
+      expect(local_cli).to receive(:validate_checksums!).with("1.2.3", stage: "after family member publish").ordered
+      expect(local_cli).not_to receive(:run_pre_release_checks!)
+      expect(local_cli).not_to receive(:release_gem_and_tag_locally!)
       expect(local_cli).not_to receive(:push!)
       expect(local_cli).not_to receive(:push_tags!)
       expect(local_cli).not_to receive(:maybe_create_github_release!)
