@@ -6,6 +6,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     # Keep both release-only environment switches isolated from each example.
     previous_skip_changelog = ENV.delete("KETTLE_DEV_SKIP_CHANGELOG")
     previous_skip_changelog_dependency = ENV.delete("KETTLE_DEV_SKIP_CHANGELOG_DEPENDENCY")
+    previous_family_member_publish = ENV.delete("KETTLE_RELEASE_FAMILY_MEMBER_PUBLISH")
     begin
       example.run
     ensure
@@ -21,6 +22,13 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       else
         # rubocop:disable Env/Assign -- restore the inherited dependency flag after example isolation
         ENV["KETTLE_DEV_SKIP_CHANGELOG_DEPENDENCY"] = previous_skip_changelog_dependency
+        # rubocop:enable Env/Assign
+      end
+      if previous_family_member_publish.nil?
+        ENV.delete("KETTLE_RELEASE_FAMILY_MEMBER_PUBLISH")
+      else
+        # rubocop:disable Env/Assign -- restore the inherited family worker flag after example isolation
+        ENV["KETTLE_RELEASE_FAMILY_MEMBER_PUBLISH"] = previous_family_member_publish
         # rubocop:enable Env/Assign
       end
     end
@@ -93,6 +101,30 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         local_cli = described_class.new(version: "4.5.6")
         expect(local_cli.send(:detect_version)).to eq("4.5.6")
       end
+    end
+
+    it "publishes a prepared family member without touching shared release steps" do
+      # rubocop:disable Env/Assign -- opt into the explicit family worker contract for this example
+      ENV["KETTLE_RELEASE_FAMILY_MEMBER_PUBLISH"] = "true"
+      # rubocop:enable Env/Assign
+      local_cli = described_class.new
+
+      allow(local_cli).to receive(:detect_version).and_return("1.2.3")
+      allow(local_cli).to receive(:detect_gem_name).and_return("mygem")
+      allow(local_cli).to receive(:signing_enabled?).and_return(false)
+      allow(local_cli).to receive(:build_release_candidate).with("mygem", "1.2.3").and_return(double)
+      allow(local_cli).to receive(:with_unpublished_candidate_cleanup).and_yield
+
+      expect(local_cli).to receive(:ensure_signing_setup_or_skip!).ordered
+      expect(local_cli).to receive(:run_cmd!).with(a_string_including("bundle exec rake build")).ordered
+      expect(local_cli).to receive(:publish_built_gem!).with("1.2.3").ordered
+      expect(local_cli).not_to receive(:run_pre_release_checks!)
+      expect(local_cli).not_to receive(:commit_release_prep!)
+      expect(local_cli).not_to receive(:push!)
+      expect(local_cli).not_to receive(:push_tags!)
+      expect(local_cli).not_to receive(:maybe_create_github_release!)
+
+      local_cli.send(:run_with_release_environment)
     end
 
     it "maps common release commands to stable command step names" do

@@ -69,6 +69,7 @@ module Kettle
       ].freeze
       DEBUG_TRUE_VALUES = %w[1 true yes on].freeze
       RELEASE_VALIDATION_SOURCE = "https://gem.coop"
+      FAMILY_MEMBER_PUBLISH_MODE_ENV = "KETTLE_RELEASE_FAMILY_MEMBER_PUBLISH"
 
       class << self
         def run_cmd!(cmd)
@@ -223,6 +224,7 @@ module Kettle
         @finished_report = nil
         @changelog_generated_coverage = false
         @release_task_lockfile_paths = {}
+        @family_member_publish = truthy_value?(ENV[FAMILY_MEMBER_PUBLISH_MODE_ENV])
       end
 
       def run
@@ -255,6 +257,8 @@ module Kettle
       attr_reader :finished_report
 
       def run_with_release_environment
+        return run_family_member_publish if family_member_publish?
+
         # Changelog generation at step 0 runs the target project's test bundle
         # to collect coverage. Normalize its canonical release lockfile before
         # that subprocess starts; otherwise a local development PATH lock can
@@ -603,6 +607,25 @@ module Kettle
 
       def skip_bundle_audit?
         @skip_bundle_audit
+      end
+
+      # Kettle Family uses this mode only after it has prepared and validated
+      # the shared monorepo release commit. A member may build and publish its
+      # gem, but it must never alter the shared Git repository or release it.
+      def family_member_publish?
+        @family_member_publish
+      end
+
+      def run_family_member_publish
+        version = detect_version
+        ensure_signing_setup_or_skip!
+        ensure_release_secrets_ready_for_signing! if signing_enabled? && release_secrets_configured?
+        run_cmd!(release_project_command("bundle exec rake build"))
+
+        gem_name = detect_gem_name
+        @release_candidate = build_release_candidate(gem_name, version)
+        with_unpublished_candidate_cleanup { publish_built_gem!(version) }
+        human_output.puts "\n🚀 Published #{gem_name} v#{version} from family member mode 🚀"
       end
 
       def truthy_value?(value)
@@ -1866,6 +1889,15 @@ module Kettle
         else
           puts "Creating local git tag #{tag} without pushing it."
           abort("Failed to create local tag #{tag}.") unless @git.tag_annotated(tag, tag)
+        end
+
+        publish_built_gem!(version)
+      end
+
+      def publish_built_gem!(version)
+        gem_path = gem_file_for_version(version)
+        unless gem_path && File.file?(gem_path)
+          abort("Unable to locate built gem for version #{version} in pkg/. Did the build succeed?")
         end
 
         puts "Publishing #{File.basename(gem_path)} to RubyGems without pushing git refs..."
