@@ -220,12 +220,17 @@ RSpec.describe Kettle::Dev::LockfileReset do
     expect(command).to include("KETTLE_DEV_SKIP_CHANGELOG_DEPENDENCY=true")
   end
 
-  it "installs locked Gemfile bootstrap gems into an isolated reset environment" do
+  it "installs bootstrap gems from statically evaluated Gemfiles into an isolated reset environment" do
     commands = []
     reset = described_class.new(root: @root, command_runner: ->(command) { commands << command })
+    modular_gemfile = File.join(@root, "gemfiles", "modular", "templating_local.gemfile")
     path = File.join(@root, "Gemfile.lock")
     File.write(File.join(@root, "Gemfile"), <<~RUBY)
       source "https://rubygems.org"
+      eval_gemfile "gemfiles/modular/templating_local.gemfile"
+    RUBY
+    FileUtils.mkdir_p(File.dirname(modular_gemfile))
+    File.write(modular_gemfile, <<~RUBY)
       require "nomono/bundler"
     RUBY
     File.write(path, <<~LOCK)

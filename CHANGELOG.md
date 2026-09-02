@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Install bootstrap gems required by statically evaluated Gemfiles before isolated release lockfile resolution.
+
 ### Security
 
 ## [3.0.28] - 2026-09-01

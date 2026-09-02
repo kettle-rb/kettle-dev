@@ -476,9 +476,10 @@ module Kettle
         end
       end
 
-      # Bundler evaluates a Gemfile before it resolves the gems declared in it.
-      # Install only direct, literal bootstrap requires into the reset sandbox so
-      # unrelated gems from the invoking Ruby cannot influence resolution.
+      # Bundler evaluates a Gemfile and its static eval_gemfile inputs before it
+      # resolves declared gems. Install only literal bootstrap requires into the
+      # reset sandbox so unrelated gems from the invoking Ruby cannot influence
+      # resolution.
       def install_gemfile_bootstrap_gems!(gemfile:, lockfile:, gem_home:)
         gemfile_bootstrap_gem_names(gemfile).each do |name|
           version = locked_registry_gem_version(lockfile, name)
@@ -492,8 +493,24 @@ module Kettle
       end
 
       def gemfile_bootstrap_gem_names(gemfile)
-        calls = require_calls_from_ripper(Ripper.sexp(File.read(gemfile)))
-        calls.filter_map { |method_name, argument| bootstrap_gem_name(method_name, argument) }.uniq
+        gemfile_source_paths(gemfile).flat_map do |path|
+          calls = require_calls_from_ripper(Ripper.sexp(File.read(path)))
+          calls.filter_map { |method_name, argument| bootstrap_gem_name(method_name, argument) }
+        end.uniq
+      end
+
+      def gemfile_source_paths(gemfile, seen = Set.new)
+        path = File.expand_path(gemfile)
+        return [] if seen.include?(path) || !File.file?(path)
+
+        seen << path
+        calls = require_calls_from_ripper(Ripper.sexp(File.read(path)))
+        nested_paths = calls.filter_map do |method_name, argument|
+          next unless method_name == "eval_gemfile" && argument
+
+          File.expand_path(argument, File.dirname(path))
+        end
+        [path, *nested_paths.flat_map { |nested_path| gemfile_source_paths(nested_path, seen) }]
       end
 
       def require_calls_from_ripper(node, calls = [])
