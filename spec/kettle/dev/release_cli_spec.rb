@@ -123,6 +123,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       allow(local_cli).to receive(:build_release_candidate).with("mygem", "1.2.3").and_return(double)
       allow(local_cli).to receive(:with_unpublished_candidate_cleanup).and_yield
 
+      expect(local_cli).to receive(:prepare_release_lockfiles_for_release_tasks!).ordered
       expect(local_cli).to receive(:ensure_signing_setup_or_skip!).ordered
       expect(local_cli).to receive(:run_cmd!).with(a_string_including("bundle exec rake build")).ordered
       expect(local_cli).to receive(:publish_built_gem!).with("1.2.3").ordered

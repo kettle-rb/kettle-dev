@@ -625,6 +625,7 @@ module Kettle
 
       def run_family_member_publish
         version = detect_version
+        prepare_release_lockfiles_for_release_tasks!
         ensure_signing_setup_or_skip!
         ensure_release_secrets_ready_for_signing! if signing_enabled? && release_secrets_configured?
         run_cmd!(release_project_command("bundle exec rake build"))
