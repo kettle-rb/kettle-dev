@@ -259,8 +259,14 @@ RSpec.describe Kettle::Dev::LockfileReset do
   it "does not install a bootstrap gem when the Gemfile does not require one" do
     commands = []
     reset = described_class.new(root: @root, command_runner: ->(command) { commands << command })
+    modular_gemfile = File.join(@root, "gemfiles", "modular", "inactive_local.gemfile")
     path = File.join(@root, "Gemfile.lock")
-    File.write(File.join(@root, "Gemfile"), "source \"https://rubygems.org\"\n")
+    File.write(File.join(@root, "Gemfile"), <<~RUBY)
+      source "https://rubygems.org"
+      eval_gemfile "gemfiles/modular/inactive_local.gemfile" if ENV.fetch("FEATURE", "false") == "true"
+    RUBY
+    FileUtils.mkdir_p(File.dirname(modular_gemfile))
+    File.write(modular_gemfile, "require \"nomono/bundler\"\n")
     File.write(path, <<~LOCK)
       GEM
         remote: https://rubygems.org/

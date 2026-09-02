@@ -481,10 +481,13 @@ module Kettle
       # reset sandbox so unrelated gems from the invoking Ruby cannot influence
       # resolution.
       def install_gemfile_bootstrap_gems!(gemfile:, lockfile:, gem_home:)
-        gemfile_bootstrap_gem_names(gemfile).each do |name|
+        gemfile_bootstrap_gems(gemfile).each do |name, required_by_root_gemfile|
           version = locked_registry_gem_version(lockfile, name)
           source_url = registry_source_urls(lockfile).first
-          unless version && source_url
+          needs_install = required_by_root_gemfile || (version && source_url)
+          next unless needs_install
+
+          if !version || !source_url
             raise Error, "Cannot isolate Gemfile bootstrap #{name.inspect}: #{display_path(lockfile)} does not lock it from a registry source"
           end
 
@@ -492,11 +495,13 @@ module Kettle
         end
       end
 
-      def gemfile_bootstrap_gem_names(gemfile)
-        gemfile_source_paths(gemfile).flat_map do |path|
+      def gemfile_bootstrap_gems(gemfile)
+        gemfile_source_paths(gemfile).each_with_index.each_with_object({}) do |(path, index), gems|
           calls = require_calls_from_ripper(Ripper.sexp(File.read(path)))
-          calls.filter_map { |method_name, argument| bootstrap_gem_name(method_name, argument) }
-        end.uniq
+          calls.filter_map { |method_name, argument| bootstrap_gem_name(method_name, argument) }.each do |name|
+            gems[name] = gems.fetch(name, false) || index.zero?
+          end
+        end
       end
 
       def gemfile_source_paths(gemfile, seen = Set.new)

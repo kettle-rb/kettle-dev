@@ -30,6 +30,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - Install bootstrap gems required by statically evaluated Gemfiles before isolated release lockfile resolution.
 
+- Ignore inactive nested Gemfile bootstrap requirements when their appraisal lockfile does not include the bootstrap gem.
+
 ### Security
 
 ## [3.0.28] - 2026-09-01
