@@ -266,7 +266,10 @@ module Kettle
         # to collect coverage. Normalize its canonical release lockfile before
         # that subprocess starts; otherwise a local development PATH lock can
         # force Bundler to resolve an invalid mixed local/released graph.
-        prepare_release_lockfiles_for_release_tasks! if release_lockfile_preflight_needed?
+        if release_lockfile_preflight_needed?
+          prepare_release_lockfiles_for_release_tasks!
+          materialize_release_lockfiles_for_release_tasks!
+        end
         run_pre_release_checks! if run_step?(0)
 
         # 1. Ensure Bundler version and record its current release in the
@@ -750,6 +753,36 @@ module Kettle
 
       def prepare_release_lockfiles_for_release_tasks!
         reset_release_lockfiles!(stage: "before release task bundle installs")
+      end
+
+      # Resetting can select a platform-specific artifact that is not installed
+      # in the invoking development bundle. Materialize every canonical release
+      # bundle before a release gate runs `bundle exec`. Use a disposable copy:
+      # Bundler may reconcile the active host platform during installation, and
+      # that must never alter the canonical release-preparation lockfile.
+      def materialize_release_lockfiles_for_release_tasks!
+        release_lockfile_paths.each do |lockfile|
+          gemfile = release_gemfile_for_lockfile(lockfile)
+          next unless gemfile && File.file?(gemfile)
+
+          begin
+            stage = "before release task bundle installs"
+            task_lockfile = release_task_lockfile_path(gemfile: gemfile)
+            emit_release_lockfile_event(action: "install", status: "started", stage: stage, reason: File.basename(gemfile))
+            puts "Installing normalized release bundle for #{File.basename(gemfile)}..."
+            run_cmd!(release_child_command(
+              "bundle install",
+              environment: {
+                "BUNDLE_GEMFILE" => gemfile,
+                "BUNDLE_LOCKFILE" => task_lockfile || lockfile
+              }
+            ))
+            emit_release_lockfile_event(action: "install", status: "ok", stage: stage, reason: File.basename(gemfile))
+          rescue => error
+            emit_release_lockfile_event(action: "install", status: "failed", stage: stage, reason: error.message)
+            raise
+          end
+        end
       end
 
       def reset_release_lockfiles!(stage:)

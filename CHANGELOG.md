@@ -30,6 +30,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - Preserve every configured Bundler lockfile platform when resetting release lockfiles.
 
+- Materialize normalized release bundles before running bundle-exec release checks.
+
 ### Security
 
 ## [3.0.30] - 2026-09-01

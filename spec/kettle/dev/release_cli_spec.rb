@@ -52,6 +52,7 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
       # rubocop:disable RSpec/AnyInstance
       allow_any_instance_of(described_class).to receive(:prepare_release_lockfiles_for_commit!)
       allow_any_instance_of(described_class).to receive(:prepare_release_lockfiles_for_release_tasks!)
+      allow_any_instance_of(described_class).to receive(:materialize_release_lockfiles_for_release_tasks!)
       allow_any_instance_of(described_class).to receive(:validate_release_lockfiles!)
       allow_any_instance_of(described_class).to receive(:update_bundler_and_commit!)
       # rubocop:enable RSpec/AnyInstance
@@ -837,13 +838,52 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
     end
 
     describe "#run_pre_release_checks!" do
-      it "normalizes release lockfiles before changelog coverage can run" do
+      it "normalizes and materializes release lockfiles before changelog coverage can run" do
         release_cli = described_class.new(start_step: 0, skip_steps: "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19")
 
         expect(release_cli).to receive(:prepare_release_lockfiles_for_release_tasks!).ordered
+        expect(release_cli).to receive(:materialize_release_lockfiles_for_release_tasks!).ordered
         expect(release_cli).to receive(:run_pre_release_checks!).ordered
 
         expect { release_cli.run }.not_to raise_error
+      end
+
+      it "installs each normalized release bundle through a disposable lockfile", :real_release_lockfiles do
+        Dir.mktmpdir do |root|
+          allow(ci_helpers).to receive(:project_root).and_return(root)
+          root_gemfile = File.join(root, "Gemfile")
+          root_lockfile = File.join(root, "Gemfile.lock")
+          appraisal_gemfile = File.join(root, "Appraisal.root.gemfile")
+          appraisal_lockfile = File.join(root, "Appraisal.root.gemfile.lock")
+          File.write(root_gemfile, "")
+          File.write(appraisal_gemfile, "")
+          File.write(root_lockfile, "PLATFORMS\n  x86_64-linux-gnu\n")
+          File.write(appraisal_lockfile, "PLATFORMS\n  ruby\n")
+          canonical_lockfiles = {
+            root_lockfile => File.read(root_lockfile),
+            appraisal_lockfile => File.read(appraisal_lockfile)
+          }
+          release_cli = described_class.new
+
+          expect(release_cli).to receive(:run_cmd!).with(
+            a_string_matching(/BUNDLE_GEMFILE=.*Appraisal\.root\.gemfile.*BUNDLE_LOCKFILE=.*tmp\/kettle-release\/lockfiles\/Appraisal\.root\.gemfile-.*\.lock.*bundle install/)
+          ).ordered do |command|
+            task_lockfile = Shellwords.split(command).find { |part| part.start_with?("BUNDLE_LOCKFILE=") }.delete_prefix("BUNDLE_LOCKFILE=")
+            File.write(task_lockfile, "PLATFORMS\n  x86_64-linux\n")
+          end
+          expect(release_cli).to receive(:run_cmd!).with(
+            a_string_matching(/BUNDLE_GEMFILE=.*Gemfile.*BUNDLE_LOCKFILE=.*tmp\/kettle-release\/lockfiles\/Gemfile-.*\.lock.*bundle install/)
+          ).ordered do |command|
+            task_lockfile = Shellwords.split(command).find { |part| part.start_with?("BUNDLE_LOCKFILE=") }.delete_prefix("BUNDLE_LOCKFILE=")
+            File.write(task_lockfile, "PLATFORMS\n  x86_64-linux\n")
+          end
+
+          release_cli.send(:materialize_release_lockfiles_for_release_tasks!)
+
+          canonical_lockfiles.each do |path, contents|
+            expect(File.read(path)).to eq(contents)
+          end
+        end
       end
 
       it "runs kettle-pre-release checks from the beginning and invokes kettle-changelog" do
