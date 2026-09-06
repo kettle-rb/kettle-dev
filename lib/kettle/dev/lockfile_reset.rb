@@ -202,12 +202,10 @@ module Kettle
           command << " #{key}=#{Shellwords.escape(value)}"
         end
         command << " bundle lock"
-        removed_platforms.sort.each do |platform|
-          command << " --remove-platform=#{Shellwords.escape(platform)}"
-        end
-        platforms.each do |platform|
-          command << " --add-platform=#{Shellwords.escape(platform)}"
-        end
+        # Bundler accepts each platform option once followed by a list. Repeating
+        # either option silently keeps only the final occurrence with Bundler 4.
+        command << " --remove-platform #{removed_platforms.sort.map { |platform| Shellwords.escape(platform) }.join(" ")}" unless removed_platforms.empty?
+        command << " --add-platform #{platforms.map { |platform| Shellwords.escape(platform) }.join(" ")}" unless platforms.empty?
         command << " --update"
         command << " #{update_gems.map { |gem_name| Shellwords.escape(gem_name) }.join(" ")}" unless update_gems.empty?
         # Bundler preserves BUNDLED WITH during a normal lockfile update.

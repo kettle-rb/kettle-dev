@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Preserve every configured Bundler lockfile platform when resetting release lockfiles.
+
 ### Security
 
 ## [3.0.30] - 2026-09-01

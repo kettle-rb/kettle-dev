@@ -74,7 +74,7 @@ RSpec.describe Kettle::Dev::LockfileReset do
     expect(command).to include("BUNDLE_GEMFILE=#{File.join(@root, "Gemfile")}")
     expect(command).to include("BUNDLE_LOCKFILE=#{File.join(@root, "Gemfile.lock")}")
     expect(command).to include("bundle lock")
-    expect(command).to include("--add-platform=#{Gem::Platform.local}")
+    expect(command).to include("--add-platform #{Gem::Platform.local}")
     expect(command).to include("--update --add-checksums")
     expect(command).not_to include("bundle lock --update demo")
     expect(commands).to be_empty
@@ -100,10 +100,8 @@ RSpec.describe Kettle::Dev::LockfileReset do
 
     command = reset.reset_command(path: path, gemfile: File.join(@root, "Gemfile"), full_update: true)
 
-    expect(command).to include("--add-platform=arm64-darwin")
-    expect(command).to include("--add-platform=x86_64-linux-gnu")
-    platforms = command.scan(/--add-platform=([^\s]+)/).flatten
-    expect(platforms).not_to include(Gem::Platform.local.to_s)
+    expect(command).to include("--add-platform arm64-darwin x86_64-linux-gnu")
+    expect(command).not_to include("--add-platform #{Gem::Platform.local}")
   end
 
   it "updates the locked Bundler version for release lockfile resets" do
@@ -321,8 +319,8 @@ RSpec.describe Kettle::Dev::LockfileReset do
 
     release_commands = commands.select { |command| command.include?("bundle lock") }
     expect(release_commands.length).to eq(2)
-    expect(release_commands).to all(include("--add-platform=arm64-darwin"))
-    expect(release_commands).to all(satisfy { |command| !command.match?(/--add-platform=x86_64-linux(?:\s|$)/) })
+    expect(release_commands).to all(include("--add-platform arm64-darwin"))
+    expect(release_commands).to all(satisfy { |command| !command.match?(/--add-platform .*\bx86_64-linux(?:\s|$)/) })
   end
 
   it "fully updates release lockfiles even when no diagnostics are present" do
