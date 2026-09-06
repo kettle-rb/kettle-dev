@@ -28,11 +28,20 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [3.0.31] - 2026-09-06
+
+- TAG: [v3.0.31][3.0.31t]
+- COVERAGE: 91.85% -- 6060/6598 lines in 47 files
+- BRANCH COVERAGE: 76.33% -- 2315/3033 branches in 47 files
+- 50.00% documented
+
+### Fixed
+
 - Preserve every configured Bundler lockfile platform when resetting release lockfiles.
 
 - Materialize normalized release bundles before running bundle-exec release checks.
-
-### Security
 
 ## [3.0.30] - 2026-09-01
 
@@ -3803,7 +3812,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.30...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.31...HEAD
+[3.0.31]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.30...v3.0.31
+[3.0.31t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.31
 [3.0.30]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.29...v3.0.30
 [3.0.30t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.30
 [3.0.29]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.28...v3.0.29
