@@ -28,9 +28,18 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Preserve active local dependency selectors while generating Appraisal files during family templating.
-
 ### Security
+
+## [3.0.32] - 2026-09-07
+
+- TAG: [v3.0.32][3.0.32t]
+- COVERAGE: 91.83% -- 6067/6607 lines in 47 files
+- BRANCH COVERAGE: 76.38% -- 2318/3035 branches in 47 files
+- 50.35% documented
+
+### Fixed
+
+- Preserve active local dependency selectors while generating Appraisal files during family templating.
 
 ## [3.0.31] - 2026-09-06
 
@@ -3814,7 +3823,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Selecting will run the selected workflow via `act`
   - This may move to its own gem in the future.
 
-[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.31...HEAD
+[Unreleased]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.32...HEAD
+[3.0.32]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.31...v3.0.32
+[3.0.32t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.32
 [3.0.31]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.30...v3.0.31
 [3.0.31t]: https://github.com/kettle-dev/kettle-dev/releases/tag/v3.0.31
 [3.0.30]: https://github.com/kettle-dev/kettle-dev/compare/v3.0.29...v3.0.30
