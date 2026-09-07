@@ -6,6 +6,7 @@ require "open3"
 require "shellwords"
 require "time"
 require "fileutils"
+require "tmpdir"
 require "net/http"
 require "openssl"
 require "json"
@@ -2035,7 +2036,13 @@ module Kettle
           stderr_str = nil
           status = nil
           with_unbundled_release_probe_env do
-            stdout_str, stderr_str, status = Open3.capture3(self.class.send(:command_env), Gem.ruby, script_path)
+            with_release_availability_probe_gem_home do |gem_home|
+              stdout_str, stderr_str, status = Open3.capture3(
+                self.class.send(:command_env).merge("GEM_HOME" => gem_home, "GEM_PATH" => gem_home),
+                Gem.ruby,
+                script_path
+              )
+            end
           end
           $stdout.print(stdout_str) unless stdout_str.to_s.empty?
           if status.success?
@@ -2072,6 +2079,12 @@ module Kettle
 
       def release_availability_probe_interval
         10
+      end
+
+      def with_release_availability_probe_gem_home
+        dir = File.join(@root, "tmp", "kettle-release")
+        FileUtils.mkdir_p(dir)
+        Dir.mktmpdir("probe-gem-home-", dir) { |gem_home| yield gem_home }
       end
 
       def with_unbundled_release_probe_env(&block)

@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Isolate the published-gem availability probe from locally activated gems so release validation resolves the registry dependency graph.
+
 ### Security
 
 ## [3.0.32] - 2026-09-07

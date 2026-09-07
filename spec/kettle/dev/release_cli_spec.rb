@@ -2877,6 +2877,35 @@ RSpec.describe Kettle::Dev::ReleaseCLI do
         expect(script).not_to include("Gem.loaded_specs")
       end
 
+      it "isolates the availability probe from activated local gems" do
+        Dir.mktmpdir do |root|
+          allow(ci_helpers).to receive(:project_root).and_return(root)
+          local_cli = described_class.new
+          candidate = Kettle::Dev::ReleaseCLI::ReleaseCandidate.new(
+            gem_name: "mygem",
+            version: "1.2.3",
+            installed_before: false,
+            published: false
+          )
+          script_path = File.join(root, "probe.rb")
+          File.write(script_path, "probe")
+          passed = instance_double(Process::Status, success?: true, exitstatus: 0)
+
+          allow(local_cli).to receive(:write_release_availability_probe).with(candidate).and_return(script_path)
+          allow(local_cli).to receive(:release_availability_probe_attempts).and_return(1)
+          allow(local_cli).to receive(:release_availability_probe_initial_delay).and_return(0)
+          allow(local_cli).to receive(:sleep)
+          expect(Open3).to receive(:capture3) do |environment, ruby, path|
+            expect(environment.fetch("GEM_HOME")).to start_with(File.join(root, "tmp", "kettle-release", "probe-gem-home-"))
+            expect(environment.fetch("GEM_PATH")).to eq(environment.fetch("GEM_HOME"))
+            expect(ruby).to eq(Gem.ruby)
+            expect(path).to eq(script_path)
+          end.and_return(["validated\n", "", passed])
+
+          expect(local_cli.send(:run_release_availability_probe, candidate)).to be(true)
+        end
+      end
+
       it "retries the gem.coop availability probe until the release resolves" do
         Dir.mktmpdir do |root|
           io = StringIO.new
