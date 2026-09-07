@@ -98,6 +98,12 @@ RSpec.describe "appraisal rake tasks" do # rubocop:disable RSpec/DescribeClass
     expect(multi_argument_merges).to be_empty
   end
 
+  it "uses the template-aware appraisal normalization environment" do
+    source = File.read(File.expand_path("../../../../lib/kettle/dev/rakelib/appraisal.rake", __dir__))
+
+    expect(source).to include(".appraisal_normalization_env")
+  end
+
   describe "rake appraisal:install" do
     let(:task_name) { "appraisal:install" }
     let(:appraisal_install_call) { [appraisal_env, "bundle", "exec", "appraisal", "generate-install"] }

@@ -28,6 +28,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Preserve active local dependency selectors while generating Appraisal files during family templating.
+
 ### Security
 
 ## [3.0.31] - 2026-09-06

@@ -321,6 +321,19 @@ module Kettle
           .merge(dynamic_local_path_env)
       end
 
+      # Appraisal generation normally uses the release-normalized environment.
+      # During family templating it instead needs the caller's deliberately
+      # selected local graph so generated Appraisal Gemfiles can resolve
+      # unpublished sibling dependencies.
+      def appraisal_normalization_env
+        env = normalization_env
+        return env unless template_local_environment?
+
+        env.reject do |name, _value|
+          name == "K_JEM_TEMPLATING" || active_local_path_env?(name)
+        end
+      end
+
       def dynamic_local_path_env
         ENV.each_with_object({}) do |(key, value), env|
           next unless key.end_with?("_DEV", "_LOCAL")
@@ -337,6 +350,14 @@ module Kettle
         return true if text.start_with?("/", "./", "../", "~")
 
         text.include?(File::SEPARATOR)
+      end
+
+      def template_local_environment?
+        %w[1 true yes on].include?(ENV.fetch("K_JEM_TEMPLATING", "").to_s.strip.downcase)
+      end
+
+      def active_local_path_env?(name)
+        local_path_env_value?(ENV[name])
       end
 
       def has_local_path_remote?(path)

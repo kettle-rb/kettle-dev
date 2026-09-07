@@ -30,7 +30,7 @@ begin
     "BUNDLE_SUPPRESS_INSTALL_USING_MESSAGES" => "true"
   }
   appraisal_env = quiet_env.merge(
-    Kettle::Dev::LockfileReset.new(root: Dir.pwd, command_runner: ->(_command) {}).normalization_env
+    Kettle::Dev::LockfileReset.new(root: Dir.pwd, command_runner: ->(_command) {}).appraisal_normalization_env
   ).merge(
     unbundled_env
   ).merge(

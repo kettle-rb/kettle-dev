@@ -169,6 +169,30 @@ RSpec.describe Kettle::Dev::LockfileReset do
     expect(reset.normalization_env).not_to include("K_JEM_TEMPLATING" => "false")
   end
 
+  it "preserves explicitly selected local paths while generating appraisals during templating" do
+    stub_env(
+      "K_JEM_TEMPLATING" => "true",
+      "RUBOCOP_LTS_LOCAL" => "/workspace/rubocop-lts",
+      "KETTLE_DEV_DEV" => "false"
+    )
+    reset = described_class.new(root: @root, command_runner: ->(_command) {})
+
+    expect(reset.appraisal_normalization_env).not_to include(
+      "K_JEM_TEMPLATING" => "false",
+      "RUBOCOP_LTS_LOCAL" => "false"
+    )
+  end
+
+  it "keeps local paths disabled for appraisal generation outside templating" do
+    stub_env("K_JEM_TEMPLATING" => "false", "RUBOCOP_LTS_LOCAL" => "/workspace/rubocop-lts")
+    reset = described_class.new(root: @root, command_runner: ->(_command) {})
+
+    expect(reset.appraisal_normalization_env).to include(
+      "K_JEM_TEMPLATING" => "false",
+      "RUBOCOP_LTS_LOCAL" => "false"
+    )
+  end
+
   it "does not update Bundler for ordinary targeted lockfile resets" do
     reset = described_class.new(root: @root, command_runner: ->(_command) {})
     path = File.join(@root, "Gemfile.lock")
